@@ -1,0 +1,178 @@
+TODO list for Oregano.
+---------------------
+* Bugs (#13) must be close (See project page)
+
+* Documentation : User manual, quick reference, doc for developers ,etc
+
+* Add a BUGs file that describe bugs by #.
+
+* Fix components rotation.
+
+* Autorefdes, find highest N and go from there?
+
+> If in the simulation I set a start time quite greater than 0, and use
+> some pulse and/or sine generator to simulate the input to the circuit,
+> then I got no output (because of no input is present). It looks like
+> the imput is present only for a duration of tstop - tsart, and always
+> starting at time=0
+
+* Use library_name::symbol_name as key to hash the symbols.
+
+* Methods to save/load ItemData's (save first).
+
+* Context menus: make it possible to have entries that only show up when there are
+  x selected items (e.g. 1 or 1+).
+  Example: edit properties should only work with 1 selected part.
+
+* Draw more symbols (JFETs, real zener diode, more opamps)
+
+* Add comments, notes, author, copyright etc info to schematics (with glade).
+
+<property>
+  label: Period  <--- add this?
+  name : per
+  value: 1.0
+</property>
+
+* Undo/redo
+
+* Find and plug memory leaks
+
+* Finish printing code 
+
+* Voltage/current meters at nodes
+
+* Handle SIGCHLD in case spice dies
+
+* New Sheet widget (resizable). (Gazer: Maybe fixed page model like Orcad)
+
+* Tooltips for sheet-items?
+  new member: note = text for tooltip.
+  autoshow/keybinding.
+  item-data holds the text and sheet-item checks for leave/enter notify.
+  show properties...?
+
+* Hierarchic schematics (use a schematic as a part).
+
+
++-------------------------+
+| IDEAS                   |
++-------------------------+
+CRITICAL:
+
+  netlists
+
+  nodes at wire endpoints.
+
+  wires försvinner ur noder ibland när man roterar...
+   dela upp count i wire/part och skriv ut när man går över debug-nod-plupparna
+
+
+TODO:
+ 
+  select wire -> handles to drag/resize the wire
+
+  split node->count into wires adn parts (to get connection dots...)
+
+
+Ideas for part/wire store
+-------------------------
+
+	Electrical circuits are represented as canvas items on a Sheet,
+	connected with wires.
+
+	The user can place parts on the sheet and draw wires. Thus, we
+	need to represent the parts and wires in a way that is closely
+	bound to the canvas, or the graphical layout of the circuit.
+
+	Since we must also be able to generate netlists for SPICE, and do
+	things like showing voltages in different circuit nodes, there
+	has be a way to treat the circuit "as a circuit", where a node is
+	a number of pins connected with wires. This has little to do with
+	the representation of the circuit as a graphical layout.
+
+Structures
+----------
+
+Pins
+	Pins are stored in a hash table, using the coordinate (x,y) as key.
+      
+Wires
+	All Wires are stored in a list.
+
+SheetNodes
+	For every position on the sheet that is populated with at least
+	one pin, there is a SheetNode. This SheetNode contains a list of
+	pins that are connected to it, as well as a list of wires. (The
+	SheetNode might also contain a pointer to the NetNode that this
+	node is part of?)
+
+NetNodes
+	NetNodes are the nodes that correspond to the spice netlist nodes.
+	A NetNode holds a list of SheetNodes.
+
+
+Algorithms
+----------
+
+Lookup
+	Pins are easy to retrieve at a certain coordinate; just perform a
+	hash table lookup at (x, y).
+
+	When we need to see if there is a wire at a certain position,
+	we can use the gnome_canvas_get_item_at () function. This doesn't
+	work reliably though, since it depends on the wire being on top and
+	also uses the close_enough variable, which makes it non-exact.
+
+	Another method would be to search through all the wires contained
+	within the sheet to see if any of them matches the given coordinate.
+	This could be slow and inefficient, but maybe not, given that there
+	will not be thousands of wires in a normal circuit, but rather
+	hundreds. However, this is still not the best way to do it. 
+	Scalability is a goal, so this must be taken in consideration.
+
+	To see if a wire crosses a pin, we would have to search through
+	all the pins and check for matches.
+
+Moving/Removing/Adding
+	Parts
+	Wires
+	Groups of parts/wires
+
+
+
+Wires hmmm
+----------
+
+	Performace issues:
+
+		sheet_node_store_is_wire_at ()
+		sheet_node_store_wires_intersect ()
+
+	Perfomance testing shows that it will not really be a bottleneck even
+	if many wires are used. Checking for intersection between one test wire
+	and 100 000 random wires takes 3 seconds on a P-166, less than 1 second
+	on a PII-350.
+
+	Other stuff:
+
+	Do we store wires in the SheetNode? Could be nice to know where wires
+	start/end, to use for resizing them.
+
+	Make sure we can have "connection dots": small filled circles placed on
+	wires where connections are made.
+
+
+REMEMBER
+--------
+
+	We must be able to do a "reconnect all nodes"-thing. A function that goes
+	through all the parts/wires and makes sure that things that are on the
+	same node are connected and so on. This means we cannot depend on any
+	canvas helper stuff, like signals from items etc.
+
+
+
+	When loading schematic files from disk, we need to read the node structure
+	and not build it on the fly. Unless it will be efficient enough...
+

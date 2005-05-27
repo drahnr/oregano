@@ -1,0 +1,165 @@
+zener: .MODEL wally D IS 1E-14 N 1 BV 15 IBV 5M
+
+
+        1) Diode 1N4148ÀÇ SPICE Model Parameter
+
+           .model D1N4148 (Is=0.1pA Rs=16 CJO=2p Tt=12n Bv=100 Ibv=0.1p)
+
+
+        2) Zener Diode 1N3020ÀÇ SPICE Macro Model netlist
+
+           .subckt zener_diode   1   2
+
+           Dforward   1   2   1mA_diode
+
+           Dreverse   2   4   ideal_diode
+
+           Vzo   4   3   DC   4.9V
+
+           Rz    1   3   10
+
+          .model 1mA_diode D (Is=100pA n=1.679)
+
+          .model ideal_diode D (Is=100pA n=0.01)
+
+          .ends zener_diode
+
+* zener diode subcircuit 
+.subckt zener_diode 1 2
+* connections:      | |
+*               anode |
+*               cathode
+Dforward 1 2 1mA_diode
+Dreverse 2 4 ideal_diode
+Vz0 4 3 DC 7.3V 
+Rz 1 3 10
+* diode model statement
+.model 1mA_diode D (Is=100pA n=1.679 )
+.model ideal_diode D (Is=100pA n=0.01 )
+.ends zener_diode
+
+** Circuit Description **
+* dc supplies
+Vdd 1 0 DC +10V
+* JFET circuit
+J1 2 0 3  n_jfet
+Rd 1 2 1k
+Rs 3 0 0.5k
+* n-channel jfet model statement 
+.model n_jfet NJF (beta=1m Vto=-4V lambda=0)
+** Analysis Requests **
+* calculate DC bias point
+.OP
+** Output Requests **
+* none required 
+.end
+
+
+
+** Circuit Description **
+* dc supplies
+Vdd 1 0 DC +5V
+Vss 4 0 DC -5V
+Ib  1 2 DC 1mA
+* JFET circuit
+J1 3 0 2 p_jfet
+Rd 3 4 2k
+* p-channel jfet model statement 
+.model p_jfet PJF (beta=1m Vto=-2V lambda=0)
+** Analysis Requests **
+* calculate DC bias point
+.OP
+** Output Requests **
+* none required 
+.end
+
+
+
+Subcircuit for the 741 Op Amp Circuit
+
+.subckt uA741         1 2 3 4 5
+* connections:        | | | | |
+*                     | | | | |
+*   non-inverting input | | | |
+*         inverting input | | |
+*     positive power supply | |
+*       negative power supply |
+*                        output
+*
+*
+  c1   11 12 8.661E-12
+  c2    6  7 30.00E-12
+  dc    5 53 dx
+  de   54  5 dx
+  dlp  90 91 dx
+  dln  92 90 dx
+  dp    4  3 dx
+  egnd 99  0 poly(2) (3,0) (4,0) 0 .5 .5
+  fb    7 99 poly(5) vb vc ve vlp vln 0 10.61E6 -10E6 10E6 10E6 -10E6
+  ga    6  0 11 12 188.5E-6
+  gcm   0  6 10 99 5.961E-9
+  iee  10  4 dc 15.16E-6
+  hlim 90  0 vlim 1K
+  q1   11  2 13 qx
+  q2   12  1 14 qx
+  r2    6  9 100.0E3
+  rc1   3 11 5.305E3
+  rc2   3 12 5.305E3
+  re1  13 10 1.836E3
+  re2  14 10 1.836E3
+  ree  10 99 13.19E6
+  ro1   8  5 50
+  ro2   7 99 100
+  rp    3  4 18.16E3
+  vb    9  0 dc 0
+  vc    3 53 dc 1
+  ve   54  4 dc 1
+  vlim  7  8 dc 0
+  vlp  91  0 dc 40
+  vln   0 92 dc 40
+.model dx D(Is=800.0E-18 Rs=1)
+.model qx NPN(Is=800.0E-18 Bf=93.75)
+.ends UA741
+
+
+
+
+* TTL Two-input NAND Gate
+.subckt   NAND   10 9 4 1 
+* connections:    | | | |
+*            inputA | | |
+*              inputB | |
+*                output |
+*                     Vcc
+*
+Q1a 7 8 10  npn_transistor
+Q1b 7 8 9   npn_transistor
+Q2  6 7 5   npn_transistor
+Q3  4 5 0   npn_transistor
+Q4  2 6 3   npn_transistor
+QD1 3 3 4   npn_transistor
+R1 1 8 4k   TC=1200u
+R2 1 6 1.6k TC=1200u
+R3 5 0 1k   TC=1200u
+R4 1 2 130  TC=1200u
+* BJT model statement
+.model npn_transistor npn (Is=1.81e-15 Bf=50 Br=0.02 Va=100
++                          Tf=0.1ns Cje=1pF Cjc=1.5pF)
+.ends NAND
+
+** Main Circuit **
+* dc supplies
+Vcc 1 0 DC +5V
+* input digital signals
+Va 10 0 DC  0V
+Vb  9 0 DC +5V
+* 1st NAND gate: inputB is held high
+Xnand_gate1 10 9 4  1 NAND
+* 2nd NAND gate: inputB is held high
+Xnand_gate2  4 9 40 1 NAND
+** Analysis Requests **
+.DC Va 0V 5V 40mV
+** Output Requests **
+.Plot DC V(4) I(Va)
+.probe
+.end

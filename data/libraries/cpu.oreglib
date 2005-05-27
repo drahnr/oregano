@@ -1,0 +1,4676 @@
+<?xml version="1.0"?>
+<ogo:library xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
+  <ogo:name>CPU</ogo:name>
+  <ogo:description>CPU Library</ogo:description>
+  <ogo:version>0.30</ogo:version>
+  <ogo:author>Hector Bellesi</ogo:author>
+  <ogo:last-updated>6-jul-2001</ogo:last-updated>
+
+  <ogo:symbols>
+
+   <ogo:symbol>
+      <ogo:name>8051</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 250)(0 250)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(-20 60)(0 60)</ogo:line>
+        <ogo:line>(-20 90)(0 90)</ogo:line>
+        <ogo:line>(-20 120)(-6 120)</ogo:line>
+        <ogo:line>(-20 130)(-6 130)</ogo:line>
+        <ogo:line>(-20 140)(0 140)</ogo:line>
+        <ogo:line>(-20 150)(0 150)</ogo:line>
+        <ogo:line>(-20 170)(0 170)</ogo:line>
+        <ogo:line>(-20 180)(0 180)</ogo:line>
+        <ogo:line>(-20 190)(0 190)</ogo:line>
+        <ogo:line>(-20 200)(0 200)</ogo:line>
+        <ogo:line>(-20 210)(0 210)</ogo:line>
+        <ogo:line>(-20 220)(0 220)</ogo:line>
+        <ogo:line>(-20 230)(0 230)</ogo:line>
+        <ogo:line>(-20 240)(0 240)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 250)(40 270)</ogo:line>
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(80 170)(100 170)</ogo:line>
+        <ogo:line>(86 190)(100 190)</ogo:line>
+        <ogo:line>(86 200)(100 200)</ogo:line>
+        <ogo:line>(86 210)(100 210)</ogo:line>
+        <ogo:line>(80 220)(100 220)</ogo:line>
+        <ogo:line>(80 230)(100 230)</ogo:line>
+        <ogo:line>(80 240)(100 240)</ogo:line>
+        <ogo:arc>(-6 117)(0 123)</ogo:arc>
+        <ogo:arc>(-6 127)(0 133)</ogo:arc>
+        <ogo:arc>(80 187)(86 193)</ogo:arc>
+        <ogo:arc>(80 197)(86 203)</ogo:arc>
+        <ogo:arc>(80 207)(86 213)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 31)</ogo:connection>
+        <ogo:connection>(-20 30 19)</ogo:connection>
+        <ogo:connection>(-20 60 18)</ogo:connection>
+        <ogo:connection>(-20 90 9)</ogo:connection>
+        <ogo:connection>(-20 120 12)</ogo:connection>
+        <ogo:connection>(-20 130 13)</ogo:connection>
+        <ogo:connection>(-20 140 14)</ogo:connection>
+        <ogo:connection>(-20 150 15)</ogo:connection>
+        <ogo:connection>(-20 170 1)</ogo:connection>
+        <ogo:connection>(-20 180 2)</ogo:connection>
+        <ogo:connection>(-20 190 3)</ogo:connection>
+        <ogo:connection>(-20 200 4)</ogo:connection>
+        <ogo:connection>(-20 210 5)</ogo:connection>
+        <ogo:connection>(-20 220 6)</ogo:connection>
+        <ogo:connection>(-20 230 7)</ogo:connection>
+        <ogo:connection>(-20 240 8)</ogo:connection>
+        <ogo:connection>(40 -20 40)</ogo:connection>
+        <ogo:connection>(40 270 20)</ogo:connection>
+        <ogo:connection>(100 10 39)</ogo:connection>
+        <ogo:connection>(100 20 38)</ogo:connection>
+        <ogo:connection>(100 30 37)</ogo:connection>
+        <ogo:connection>(100 40 36)</ogo:connection>
+        <ogo:connection>(100 50 35)</ogo:connection>
+        <ogo:connection>(100 60 34)</ogo:connection>
+        <ogo:connection>(100 70 33)</ogo:connection>
+        <ogo:connection>(100 80 32)</ogo:connection>
+        <ogo:connection>(100 100 21)</ogo:connection>
+        <ogo:connection>(100 110 22)</ogo:connection>
+        <ogo:connection>(100 120 23)</ogo:connection>
+        <ogo:connection>(100 130 24)</ogo:connection>
+        <ogo:connection>(100 140 25)</ogo:connection>
+        <ogo:connection>(100 150 26)</ogo:connection>
+        <ogo:connection>(100 160 27)</ogo:connection>
+        <ogo:connection>(100 170 28)</ogo:connection>
+        <ogo:connection>(100 190 17)</ogo:connection>
+        <ogo:connection>(100 200 16)</ogo:connection>
+        <ogo:connection>(100 210 29)</ogo:connection>
+        <ogo:connection>(100 220 30)</ogo:connection>
+        <ogo:connection>(100 230 11)</ogo:connection>
+        <ogo:connection>(100 240 10)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>eq</ogo:name>
+      <ogo:objects>
+      </ogo:objects>
+      <ogo:connections>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>6809</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 280)(0 280)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 40)(0 40)</ogo:line>
+        <ogo:line>(-20 60)(-6 60)</ogo:line>
+        <ogo:line>(-20 80)(-6 80)</ogo:line>
+        <ogo:line>(-20 100)(-6 100)</ogo:line>
+        <ogo:line>(-20 120)(-6 120)</ogo:line>
+        <ogo:line>(-20 140)(-6 140)</ogo:line>
+        <ogo:line>(-20 160)(0 160)</ogo:line>
+        <ogo:line>(-20 180)(0 180)</ogo:line>
+        <ogo:line>(-20 200)(0 200)</ogo:line>
+        <ogo:line>(-20 210)(0 210)</ogo:line>
+        <ogo:line>(-20 220)(0 220)</ogo:line>
+        <ogo:line>(-20 230)(0 230)</ogo:line>
+        <ogo:line>(-20 240)(0 240)</ogo:line>
+        <ogo:line>(-20 250)(0 250)</ogo:line>
+        <ogo:line>(-20 260)(0 260)</ogo:line>
+        <ogo:line>(-20 270)(0 270)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 280)(40 300)</ogo:line>
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 90)(100 90)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(80 180)(100 180)</ogo:line>
+        <ogo:line>(80 200)(100 200)</ogo:line>
+        <ogo:line>(80 220)(100 220)</ogo:line>
+        <ogo:line>(80 240)(100 240)</ogo:line>
+        <ogo:line>(80 260)(100 260)</ogo:line>
+        <ogo:arc>(-6 57)(0 63)</ogo:arc>
+        <ogo:arc>(-6 77)(0 83)</ogo:arc>
+        <ogo:arc>(-6 97)(0 103)</ogo:arc>
+        <ogo:arc>(-6 117)(0 123)</ogo:arc>
+        <ogo:arc>(-6 137)(0 143)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 39)</ogo:connection>
+        <ogo:connection>(-20 40 38)</ogo:connection>
+        <ogo:connection>(-20 60 37)</ogo:connection>
+        <ogo:connection>(-20 80 2)</ogo:connection>
+        <ogo:connection>(-20 100 40)</ogo:connection>
+        <ogo:connection>(-20 120 3)</ogo:connection>
+        <ogo:connection>(-20 140 4)</ogo:connection>
+        <ogo:connection>(-20 160 36)</ogo:connection>
+        <ogo:connection>(-20 180 33)</ogo:connection>
+        <ogo:connection>(-20 200 31)</ogo:connection>
+        <ogo:connection>(-20 210 30)</ogo:connection>
+        <ogo:connection>(-20 220 29)</ogo:connection>
+        <ogo:connection>(-20 230 28)</ogo:connection>
+        <ogo:connection>(-20 240 27)</ogo:connection>
+        <ogo:connection>(-20 250 26)</ogo:connection>
+        <ogo:connection>(-20 260 25)</ogo:connection>
+        <ogo:connection>(-20 270 24)</ogo:connection>
+        <ogo:connection>(40 -20 7)</ogo:connection>
+        <ogo:connection>(40 300 1)</ogo:connection>
+        <ogo:connection>(100 10 8)</ogo:connection>
+        <ogo:connection>(100 20 9)</ogo:connection>
+        <ogo:connection>(100 30 10)</ogo:connection>
+        <ogo:connection>(100 40 11)</ogo:connection>
+        <ogo:connection>(100 50 12)</ogo:connection>
+        <ogo:connection>(100 60 13)</ogo:connection>
+        <ogo:connection>(100 70 14)</ogo:connection>
+        <ogo:connection>(100 80 15)</ogo:connection>
+        <ogo:connection>(100 90 16)</ogo:connection>
+        <ogo:connection>(100 100 17)</ogo:connection>
+        <ogo:connection>(100 110 18)</ogo:connection>
+        <ogo:connection>(100 120 19)</ogo:connection>
+        <ogo:connection>(100 130 20)</ogo:connection>
+        <ogo:connection>(100 140 21)</ogo:connection>
+        <ogo:connection>(100 150 22)</ogo:connection>
+        <ogo:connection>(100 160 23)</ogo:connection>
+        <ogo:connection>(100 180 34)</ogo:connection>
+        <ogo:connection>(100 200 35)</ogo:connection>
+        <ogo:connection>(100 220 6)</ogo:connection>
+        <ogo:connection>(100 240 5)</ogo:connection>
+        <ogo:connection>(100 260 32)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>6811A0</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 310)(0 310)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 40)(0 40)</ogo:line>
+        <ogo:line>(-20 60)(-6 60)</ogo:line>
+        <ogo:line>(-20 70)(-6 70)</ogo:line>
+        <ogo:line>(-20 80)(-6 80)</ogo:line>
+        <ogo:line>(-20 100)(0 100)</ogo:line>
+        <ogo:line>(-20 110)(0 110)</ogo:line>
+        <ogo:line>(-20 130)(0 130)</ogo:line>
+        <ogo:line>(-20 140)(0 140)</ogo:line>
+        <ogo:line>(-20 160)(0 160)</ogo:line>
+        <ogo:line>(-20 170)(0 170)</ogo:line>
+        <ogo:line>(-20 180)(0 180)</ogo:line>
+        <ogo:line>(-20 200)(0 200)</ogo:line>
+        <ogo:line>(-20 210)(0 210)</ogo:line>
+        <ogo:line>(-20 220)(0 220)</ogo:line>
+        <ogo:line>(-20 230)(0 230)</ogo:line>
+        <ogo:line>(-20 240)(0 240)</ogo:line>
+        <ogo:line>(-20 250)(0 250)</ogo:line>
+        <ogo:line>(-20 270)(0 270)</ogo:line>
+        <ogo:line>(-20 280)(0 280)</ogo:line>
+        <ogo:line>(-20 290)(0 290)</ogo:line>
+        <ogo:line>(-20 300)(0 300)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 310)(40 330)</ogo:line>
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(80 170)(100 170)</ogo:line>
+        <ogo:line>(80 190)(100 190)</ogo:line>
+        <ogo:line>(80 200)(100 200)</ogo:line>
+        <ogo:line>(86 210)(100 210)</ogo:line>
+        <ogo:line>(80 220)(100 220)</ogo:line>
+        <ogo:line>(80 230)(100 230)</ogo:line>
+        <ogo:line>(80 240)(100 240)</ogo:line>
+        <ogo:line>(80 250)(100 250)</ogo:line>
+        <ogo:line>(80 260)(100 260)</ogo:line>
+        <ogo:arc>(-6 57)(0 63)</ogo:arc>
+        <ogo:arc>(-6 67)(0 73)</ogo:arc>
+        <ogo:arc>(-6 77)(0 83)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 30)</ogo:connection>
+        <ogo:connection>(-20 40 29)</ogo:connection>
+        <ogo:connection>(-20 60 39)</ogo:connection>
+        <ogo:connection>(-20 70 41)</ogo:connection>
+        <ogo:connection>(-20 80 40)</ogo:connection>
+        <ogo:connection>(-20 100 22)</ogo:connection>
+        <ogo:connection>(-20 110 21)</ogo:connection>
+        <ogo:connection>(-20 130 25)</ogo:connection>
+        <ogo:connection>(-20 140 24)</ogo:connection>
+        <ogo:connection>(-20 160 27)</ogo:connection>
+        <ogo:connection>(-20 170 26)</ogo:connection>
+        <ogo:connection>(-20 180 28)</ogo:connection>
+        <ogo:connection>(-20 200 42)</ogo:connection>
+        <ogo:connection>(-20 210 43)</ogo:connection>
+        <ogo:connection>(-20 220 44)</ogo:connection>
+        <ogo:connection>(-20 230 45)</ogo:connection>
+        <ogo:connection>(-20 240 46)</ogo:connection>
+        <ogo:connection>(-20 250 47)</ogo:connection>
+        <ogo:connection>(-20 270 17)</ogo:connection>
+        <ogo:connection>(-20 280 18)</ogo:connection>
+        <ogo:connection>(-20 290 19)</ogo:connection>
+        <ogo:connection>(-20 300 20)</ogo:connection>
+        <ogo:connection>(40 -20 48)</ogo:connection>
+        <ogo:connection>(40 330 23)</ogo:connection>
+        <ogo:connection>(100 10 8)</ogo:connection>
+        <ogo:connection>(100 20 7)</ogo:connection>
+        <ogo:connection>(100 30 6)</ogo:connection>
+        <ogo:connection>(100 40 5)</ogo:connection>
+        <ogo:connection>(100 50 4)</ogo:connection>
+        <ogo:connection>(100 60 3)</ogo:connection>
+        <ogo:connection>(100 70 2)</ogo:connection>
+        <ogo:connection>(100 80 1)</ogo:connection>
+        <ogo:connection>(100 100 16)</ogo:connection>
+        <ogo:connection>(100 110 15)</ogo:connection>
+        <ogo:connection>(100 120 14)</ogo:connection>
+        <ogo:connection>(100 130 13)</ogo:connection>
+        <ogo:connection>(100 140 12)</ogo:connection>
+        <ogo:connection>(100 150 11)</ogo:connection>
+        <ogo:connection>(100 160 10)</ogo:connection>
+        <ogo:connection>(100 170 9)</ogo:connection>
+        <ogo:connection>(100 190 31)</ogo:connection>
+        <ogo:connection>(100 200 32)</ogo:connection>
+        <ogo:connection>(100 210 33)</ogo:connection>
+        <ogo:connection>(100 220 34)</ogo:connection>
+        <ogo:connection>(100 230 35)</ogo:connection>
+        <ogo:connection>(100 240 36)</ogo:connection>
+        <ogo:connection>(100 250 37)</ogo:connection>
+        <ogo:connection>(100 260 38)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>Z80</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 260)(0 260)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 20)(0 20)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(-20 40)(0 40)</ogo:line>
+        <ogo:line>(-20 50)(0 50)</ogo:line>
+        <ogo:line>(-20 60)(0 60)</ogo:line>
+        <ogo:line>(-20 70)(0 70)</ogo:line>
+        <ogo:line>(-20 80)(0 80)</ogo:line>
+        <ogo:line>(-20 100)(0 100)</ogo:line>
+        <ogo:line>(-20 110)(-6 110)</ogo:line>
+        <ogo:line>(-20 130)(-6 130)</ogo:line>
+        <ogo:line>(-20 140)(-6 140)</ogo:line>
+        <ogo:line>(-20 160)(-6 160)</ogo:line>
+        <ogo:line>(-20 170)(-6 170)</ogo:line>
+        <ogo:line>(-20 190)(-6 190)</ogo:line>
+        <ogo:line>(-20 200)(-6 200)</ogo:line>
+        <ogo:line>(-20 220)(-6 220)</ogo:line>
+        <ogo:line>(-20 230)(-6 230)</ogo:line>
+        <ogo:line>(-20 240)(-6 240)</ogo:line>
+        <ogo:line>(-20 250)(-6 250)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 260)(40 280)</ogo:line>
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 90)(100 90)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(86 200)(100 200)</ogo:line>
+        <ogo:line>(86 220)(100 220)</ogo:line>
+        <ogo:arc>(-6 107)(0 113)</ogo:arc>
+        <ogo:arc>(-6 127)(0 133)</ogo:arc>
+        <ogo:arc>(-6 137)(0 143)</ogo:arc>
+        <ogo:arc>(-6 157)(0 163)</ogo:arc>
+        <ogo:arc>(-6 167)(0 173)</ogo:arc>
+        <ogo:arc>(-6 187)(0 193)</ogo:arc>
+        <ogo:arc>(-6 197)(0 203)</ogo:arc>
+        <ogo:arc>(-6 217)(0 223)</ogo:arc>
+        <ogo:arc>(-6 227)(0 233)</ogo:arc>
+        <ogo:arc>(-6 237)(0 243)</ogo:arc>
+        <ogo:arc>(-6 247)(0 253)</ogo:arc>
+        <ogo:arc>(80 197)(86 203)</ogo:arc>
+        <ogo:arc>(80 217)(86 223)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 14)</ogo:connection>
+        <ogo:connection>(-20 20 15)</ogo:connection>
+        <ogo:connection>(-20 30 12)</ogo:connection>
+        <ogo:connection>(-20 40 8)</ogo:connection>
+        <ogo:connection>(-20 50 7)</ogo:connection>
+        <ogo:connection>(-20 60 9)</ogo:connection>
+        <ogo:connection>(-20 70 10)</ogo:connection>
+        <ogo:connection>(-20 80 13)</ogo:connection>
+        <ogo:connection>(-20 100 6)</ogo:connection>
+        <ogo:connection>(-20 110 27)</ogo:connection>
+        <ogo:connection>(-20 130 26)</ogo:connection>
+        <ogo:connection>(-20 140 28)</ogo:connection>
+        <ogo:connection>(-20 160 16)</ogo:connection>
+        <ogo:connection>(-20 170 17)</ogo:connection>
+        <ogo:connection>(-20 190 18)</ogo:connection>
+        <ogo:connection>(-20 200 24)</ogo:connection>
+        <ogo:connection>(-20 220 19)</ogo:connection>
+        <ogo:connection>(-20 230 20)</ogo:connection>
+        <ogo:connection>(-20 240 21)</ogo:connection>
+        <ogo:connection>(-20 250 22)</ogo:connection>
+        <ogo:connection>(40 -20 11)</ogo:connection>
+        <ogo:connection>(40 280 29)</ogo:connection>
+        <ogo:connection>(100 10 30)</ogo:connection>
+        <ogo:connection>(100 20 31)</ogo:connection>
+        <ogo:connection>(100 30 32)</ogo:connection>
+        <ogo:connection>(100 40 33)</ogo:connection>
+        <ogo:connection>(100 50 34)</ogo:connection>
+        <ogo:connection>(100 60 35)</ogo:connection>
+        <ogo:connection>(100 70 36)</ogo:connection>
+        <ogo:connection>(100 80 37)</ogo:connection>
+        <ogo:connection>(100 90 38)</ogo:connection>
+        <ogo:connection>(100 100 39)</ogo:connection>
+        <ogo:connection>(100 110 40)</ogo:connection>
+        <ogo:connection>(100 120 1)</ogo:connection>
+        <ogo:connection>(100 130 2)</ogo:connection>
+        <ogo:connection>(100 140 3)</ogo:connection>
+        <ogo:connection>(100 150 4)</ogo:connection>
+        <ogo:connection>(100 160 5)</ogo:connection>
+        <ogo:connection>(100 200 25)</ogo:connection>
+        <ogo:connection>(100 220 23)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>6811E9</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 320)(0 320)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 40)(0 40)</ogo:line>
+        <ogo:line>(-20 60)(-6 60)</ogo:line>
+        <ogo:line>(-20 70)(-6 70)</ogo:line>
+        <ogo:line>(-20 80)(-6 80)</ogo:line>
+        <ogo:line>(-20 100)(0 100)</ogo:line>
+        <ogo:line>(-20 110)(0 110)</ogo:line>
+        <ogo:line>(-20 130)(0 130)</ogo:line>
+        <ogo:line>(-20 140)(0 140)</ogo:line>
+        <ogo:line>(-20 160)(0 160)</ogo:line>
+        <ogo:line>(-20 170)(0 170)</ogo:line>
+        <ogo:line>(-20 180)(0 180)</ogo:line>
+        <ogo:line>(-20 200)(0 200)</ogo:line>
+        <ogo:line>(-20 210)(0 210)</ogo:line>
+        <ogo:line>(-20 220)(0 220)</ogo:line>
+        <ogo:line>(-20 230)(0 230)</ogo:line>
+        <ogo:line>(-20 240)(0 240)</ogo:line>
+        <ogo:line>(-20 250)(0 250)</ogo:line>
+        <ogo:line>(-20 280)(0 280)</ogo:line>
+        <ogo:line>(-20 290)(0 290)</ogo:line>
+        <ogo:line>(-20 300)(0 300)</ogo:line>
+        <ogo:line>(-20 310)(0 310)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 320)(40 340)</ogo:line>
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(80 170)(100 170)</ogo:line>
+        <ogo:line>(80 190)(100 190)</ogo:line>
+        <ogo:line>(80 200)(100 200)</ogo:line>
+        <ogo:line>(86 210)(100 210)</ogo:line>
+        <ogo:line>(80 220)(100 220)</ogo:line>
+        <ogo:line>(80 230)(100 230)</ogo:line>
+        <ogo:line>(80 240)(100 240)</ogo:line>
+        <ogo:line>(80 250)(100 250)</ogo:line>
+        <ogo:line>(80 260)(100 260)</ogo:line>
+        <ogo:line>(80 280)(100 280)</ogo:line>
+        <ogo:line>(80 290)(100 290)</ogo:line>
+        <ogo:line>(80 300)(100 300)</ogo:line>
+        <ogo:line>(80 310)(100 310)</ogo:line>
+        <ogo:arc>(-6 57)(0 63)</ogo:arc>
+        <ogo:arc>(-6 67)(0 73)</ogo:arc>
+        <ogo:arc>(-6 77)(0 83)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 8)</ogo:connection>
+        <ogo:connection>(-20 40 7)</ogo:connection>
+        <ogo:connection>(-20 60 17)</ogo:connection>
+        <ogo:connection>(-20 70 19)</ogo:connection>
+        <ogo:connection>(-20 80 18)</ogo:connection>
+        <ogo:connection>(-20 100 52)</ogo:connection>
+        <ogo:connection>(-20 110 51)</ogo:connection>
+        <ogo:connection>(-20 130 3)</ogo:connection>
+        <ogo:connection>(-20 140 2)</ogo:connection>
+        <ogo:connection>(-20 160 5)</ogo:connection>
+        <ogo:connection>(-20 170 4)</ogo:connection>
+        <ogo:connection>(-20 180 6)</ogo:connection>
+        <ogo:connection>(-20 200 20)</ogo:connection>
+        <ogo:connection>(-20 210 21)</ogo:connection>
+        <ogo:connection>(-20 220 22)</ogo:connection>
+        <ogo:connection>(-20 230 23)</ogo:connection>
+        <ogo:connection>(-20 240 24)</ogo:connection>
+        <ogo:connection>(-20 250 25)</ogo:connection>
+        <ogo:connection>(-20 280 43)</ogo:connection>
+        <ogo:connection>(-20 290 44)</ogo:connection>
+        <ogo:connection>(-20 300 45)</ogo:connection>
+        <ogo:connection>(-20 310 46)</ogo:connection>
+        <ogo:connection>(40 -20 26)</ogo:connection>
+        <ogo:connection>(40 340 1)</ogo:connection>
+        <ogo:connection>(100 10 34)</ogo:connection>
+        <ogo:connection>(100 20 33)</ogo:connection>
+        <ogo:connection>(100 30 32)</ogo:connection>
+        <ogo:connection>(100 40 31)</ogo:connection>
+        <ogo:connection>(100 50 30)</ogo:connection>
+        <ogo:connection>(100 60 29)</ogo:connection>
+        <ogo:connection>(100 70 28)</ogo:connection>
+        <ogo:connection>(100 80 27)</ogo:connection>
+        <ogo:connection>(100 100 42)</ogo:connection>
+        <ogo:connection>(100 110 41)</ogo:connection>
+        <ogo:connection>(100 120 40)</ogo:connection>
+        <ogo:connection>(100 130 39)</ogo:connection>
+        <ogo:connection>(100 140 38)</ogo:connection>
+        <ogo:connection>(100 150 37)</ogo:connection>
+        <ogo:connection>(100 160 36)</ogo:connection>
+        <ogo:connection>(100 170 35)</ogo:connection>
+        <ogo:connection>(100 190 9)</ogo:connection>
+        <ogo:connection>(100 200 10)</ogo:connection>
+        <ogo:connection>(100 210 11)</ogo:connection>
+        <ogo:connection>(100 220 12)</ogo:connection>
+        <ogo:connection>(100 230 13)</ogo:connection>
+        <ogo:connection>(100 240 14)</ogo:connection>
+        <ogo:connection>(100 250 15)</ogo:connection>
+        <ogo:connection>(100 260 16)</ogo:connection>
+        <ogo:connection>(100 280 47)</ogo:connection>
+        <ogo:connection>(100 290 48)</ogo:connection>
+        <ogo:connection>(100 300 49)</ogo:connection>
+        <ogo:connection>(100 310 50)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>8088</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 260)(0 260)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 20)(0 20)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(-20 50)(0 50)</ogo:line>
+        <ogo:line>(-20 70)(0 70)</ogo:line>
+        <ogo:line>(-20 80)(0 80)</ogo:line>
+        <ogo:line>(-20 100)(0 100)</ogo:line>
+        <ogo:line>(-20 110)(0 110)</ogo:line>
+        <ogo:line>(-20 130)(-6 130)</ogo:line>
+        <ogo:line>(-20 140)(-6 140)</ogo:line>
+        <ogo:line>(-20 180)(0 180)</ogo:line>
+        <ogo:line>(-20 200)(0 200)</ogo:line>
+       <ogo:line>(-20 220)(0 220)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 260)(40 280)</ogo:line>
+        <ogo:line>(50 260)(50 280)</ogo:line>
+
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 90)(100 90)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(80 170)(100 170)</ogo:line>
+        <ogo:line>(80 180)(100 180)</ogo:line>
+        <ogo:line>(80 190)(100 190)</ogo:line>
+        <ogo:line>(80 200)(100 200)</ogo:line>
+
+        <ogo:line>(86 220)(100 220)</ogo:line>
+        <ogo:line>(86 230)(100 230)</ogo:line>
+        <ogo:line>(86 240)(100 240)</ogo:line>
+        <ogo:line>(86 250)(100 250)</ogo:line>
+
+        <ogo:arc>(-6 127)(0 133)</ogo:arc>
+        <ogo:arc>(-6 137)(0 143)</ogo:arc>
+        <ogo:arc>(80 217)(86 223)</ogo:arc>
+        <ogo:arc>(80 227)(86 233)</ogo:arc>
+        <ogo:arc>(80 237)(86 243)</ogo:arc>
+        <ogo:arc>(80 247)(86 253)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 19)</ogo:connection>
+        <ogo:connection>(-20 20 22)</ogo:connection>
+        <ogo:connection>(-20 30 21)</ogo:connection>
+        <ogo:connection>(-20 50 33)</ogo:connection>
+        <ogo:connection>(-20 70 18)</ogo:connection>
+        <ogo:connection>(-20 80 17)</ogo:connection>
+        <ogo:connection>(-20 100 31)</ogo:connection>
+        <ogo:connection>(-20 110 30)</ogo:connection>
+        <ogo:connection>(-20 130 34)</ogo:connection>
+        <ogo:connection>(-20 140 23)</ogo:connection>
+        <ogo:connection>(-20 180 27)</ogo:connection>
+        <ogo:connection>(-20 200 25)</ogo:connection>
+        <ogo:connection>(-20 220 28)</ogo:connection>
+        <ogo:connection>(40 -20 40)</ogo:connection>
+        <ogo:connection>(40 280 20)</ogo:connection>
+        <ogo:connection>(50 280 1)</ogo:connection>
+        <ogo:connection>(100 10 16)</ogo:connection>
+        <ogo:connection>(100 20 15)</ogo:connection>
+        <ogo:connection>(100 30 14)</ogo:connection>
+        <ogo:connection>(100 40 13)</ogo:connection>
+        <ogo:connection>(100 50 12)</ogo:connection>
+        <ogo:connection>(100 60 11)</ogo:connection>
+        <ogo:connection>(100 70 10)</ogo:connection>
+        <ogo:connection>(100 80 9)</ogo:connection>
+        <ogo:connection>(100 90 8)</ogo:connection>
+        <ogo:connection>(100 100 7)</ogo:connection>
+        <ogo:connection>(100 110 6)</ogo:connection>
+        <ogo:connection>(100 120 5)</ogo:connection>
+        <ogo:connection>(100 130 4)</ogo:connection>
+        <ogo:connection>(100 140 3)</ogo:connection>
+        <ogo:connection>(100 150 2)</ogo:connection>
+        <ogo:connection>(100 160 39)</ogo:connection>
+        <ogo:connection>(100 170 38)</ogo:connection>
+        <ogo:connection>(100 180 37)</ogo:connection>
+        <ogo:connection>(100 190 36)</ogo:connection>
+        <ogo:connection>(100 200 25)</ogo:connection>
+        <ogo:connection>(100 220 32)</ogo:connection>
+        <ogo:connection>(100 230 29)</ogo:connection>
+        <ogo:connection>(100 240 24)</ogo:connection>
+        <ogo:connection>(100 250 26)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>8048</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(80 0)(80 250)(0 250)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(-20 60)(0 60)</ogo:line>
+        <ogo:line>(-20 90)(0 90)</ogo:line>
+        <ogo:line>(-20 120)(-6 120)</ogo:line>
+        <ogo:line>(-20 130)(-6 130)</ogo:line>
+        <ogo:line>(-20 140)(0 140)</ogo:line>
+        <ogo:line>(-20 150)(0 150)</ogo:line>
+        <ogo:line>(-20 170)(0 170)</ogo:line>
+        <ogo:line>(-20 180)(0 180)</ogo:line>
+        <ogo:line>(-20 190)(0 190)</ogo:line>
+        <ogo:line>(-20 200)(0 200)</ogo:line>
+        <ogo:line>(-20 210)(0 210)</ogo:line>
+        <ogo:line>(-20 220)(0 220)</ogo:line>
+        <ogo:line>(-20 230)(0 230)</ogo:line>
+        <ogo:line>(-20 240)(0 240)</ogo:line>
+        <ogo:line>(40 -20)(40 0)</ogo:line>
+        <ogo:line>(40 250)(40 270)</ogo:line>
+        <ogo:line>(80 10)(100 10)</ogo:line>
+        <ogo:line>(80 20)(100 20)</ogo:line>
+        <ogo:line>(80 30)(100 30)</ogo:line>
+        <ogo:line>(80 40)(100 40)</ogo:line>
+        <ogo:line>(80 50)(100 50)</ogo:line>
+        <ogo:line>(80 60)(100 60)</ogo:line>
+        <ogo:line>(80 70)(100 70)</ogo:line>
+        <ogo:line>(80 80)(100 80)</ogo:line>
+        <ogo:line>(80 100)(100 100)</ogo:line>
+        <ogo:line>(80 110)(100 110)</ogo:line>
+        <ogo:line>(80 120)(100 120)</ogo:line>
+        <ogo:line>(80 130)(100 130)</ogo:line>
+        <ogo:line>(80 140)(100 140)</ogo:line>
+        <ogo:line>(80 150)(100 150)</ogo:line>
+        <ogo:line>(80 160)(100 160)</ogo:line>
+        <ogo:line>(80 170)(100 170)</ogo:line>
+        <ogo:line>(86 190)(100 190)</ogo:line>
+        <ogo:line>(86 200)(100 200)</ogo:line>
+        <ogo:line>(86 210)(100 210)</ogo:line>
+        <ogo:line>(80 220)(100 220)</ogo:line>
+        <ogo:line>(80 230)(100 230)</ogo:line>
+        <ogo:line>(80 240)(100 240)</ogo:line>
+        <ogo:arc>(-6 117)(0 123)</ogo:arc>
+        <ogo:arc>(-6 127)(0 133)</ogo:arc>
+        <ogo:arc>(80 187)(86 193)</ogo:arc>
+        <ogo:arc>(80 197)(86 203)</ogo:arc>
+        <ogo:arc>(80 207)(86 213)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 10 7)</ogo:connection>
+        <ogo:connection>(-20 30 2)</ogo:connection>
+        <ogo:connection>(-20 60 3)</ogo:connection>
+        <ogo:connection>(-20 90 4)</ogo:connection>
+        <ogo:connection>(-20 120 6)</ogo:connection>
+        <ogo:connection>(-20 130 5)</ogo:connection>
+        <ogo:connection>(-20 140 1)</ogo:connection>
+        <ogo:connection>(-20 150 39)</ogo:connection>
+        <ogo:connection>(-20 170 27)</ogo:connection>
+        <ogo:connection>(-20 180 28)</ogo:connection>
+        <ogo:connection>(-20 190 29)</ogo:connection>
+        <ogo:connection>(-20 200 30)</ogo:connection>
+        <ogo:connection>(-20 210 31)</ogo:connection>
+        <ogo:connection>(-20 220 32)</ogo:connection>
+        <ogo:connection>(-20 230 33)</ogo:connection>
+        <ogo:connection>(-20 240 34)</ogo:connection>
+        <ogo:connection>(40 -20 40)</ogo:connection>
+        <ogo:connection>(40 270 20)</ogo:connection>
+        <ogo:connection>(100 10 12)</ogo:connection>
+        <ogo:connection>(100 20 13)</ogo:connection>
+        <ogo:connection>(100 30 14)</ogo:connection>
+        <ogo:connection>(100 40 15)</ogo:connection>
+        <ogo:connection>(100 50 16)</ogo:connection>
+        <ogo:connection>(100 60 17)</ogo:connection>
+        <ogo:connection>(100 70 18)</ogo:connection>
+        <ogo:connection>(100 80 19)</ogo:connection>
+        <ogo:connection>(100 100 21)</ogo:connection>
+        <ogo:connection>(100 110 22)</ogo:connection>
+        <ogo:connection>(100 120 23)</ogo:connection>
+        <ogo:connection>(100 130 24)</ogo:connection>
+        <ogo:connection>(100 140 35)</ogo:connection>
+        <ogo:connection>(100 150 36)</ogo:connection>
+        <ogo:connection>(100 160 37)</ogo:connection>
+        <ogo:connection>(100 170 38)</ogo:connection>
+        <ogo:connection>(100 190 8)</ogo:connection>
+        <ogo:connection>(100 200 10)</ogo:connection>
+        <ogo:connection>(100 210 9)</ogo:connection>
+        <ogo:connection>(100 220 11)</ogo:connection>
+        <ogo:connection>(100 230 25)</ogo:connection>
+        <ogo:connection>(100 240 26)</ogo:connection>
+      </ogo:connections>
+   </ogo:symbol>
+
+
+
+
+
+
+  </ogo:symbols>
+
+
+
+  <ogo:parts>
+
+
+   <ogo:part>
+      <ogo:name>8051</ogo:name>
+       <ogo:symbol>8051</ogo:symbol>
+      <ogo:description>Microcontroller</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>EA|VP</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+       <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>X1</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(-17 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>X2</ogo:text>
+          <ogo:position>(2 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(-12 90)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RESET</ogo:text>
+          <ogo:position>(2 95)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(-17 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INT0</ogo:text>
+          <ogo:position>(2 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(-17 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INT1</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(-17 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>T0</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(-17 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>T1</ogo:text>
+          <ogo:position>(2 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(-17 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.0</ogo:text>
+          <ogo:position>(2 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-17 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.1</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-17 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.2</ogo:text>
+          <ogo:position>(2 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.3</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-17 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.4</ogo:text>
+          <ogo:position>(2 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.5</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(-17 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.6</ogo:text>
+          <ogo:position>(2 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(-17 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.7</ogo:text>
+          <ogo:position>(2 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(22 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(22 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.0</ogo:text>
+          <ogo:position>(55 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.1</ogo:text>
+          <ogo:position>(55 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.2</ogo:text>
+          <ogo:position>(55 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.3</ogo:text>
+          <ogo:position>(55 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.4</ogo:text>
+          <ogo:position>(55 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.5</ogo:text>
+          <ogo:position>(55 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.6</ogo:text>
+          <ogo:position>(55 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P0.7</ogo:text>
+          <ogo:position>(55 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.0</ogo:text>
+          <ogo:position>(55 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.1</ogo:text>
+          <ogo:position>(55 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.2</ogo:text>
+          <ogo:position>(55 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.3</ogo:text>
+          <ogo:position>(55 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.4</ogo:text>
+          <ogo:position>(55 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.5</ogo:text>
+          <ogo:position>(55 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.6</ogo:text>
+          <ogo:position>(55 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(87 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.7</ogo:text>
+          <ogo:position>(55 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(87 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RD</ogo:text>
+          <ogo:position>(60 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>WR</ogo:text>
+          <ogo:position>(60 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(87 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PSEN</ogo:text>
+          <ogo:position>(50 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>ALE</ogo:text>
+          <ogo:position>(58 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>TXD</ogo:text>
+          <ogo:position>(58 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RXD</ogo:text>
+          <ogo:position>(58 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>8051</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>8052</ogo:name>
+       <ogo:symbol>eq</ogo:symbol>
+      <ogo:description>See 8051</ogo:description>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>8048</ogo:name>
+       <ogo:symbol>8048</ogo:symbol>
+      <ogo:description>Microcontroller</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>EA</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+       <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>X1</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>X2</ogo:text>
+          <ogo:position>(2 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(-12 90)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RESET</ogo:text>
+          <ogo:position>(2 95)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INT</ogo:text>
+          <ogo:position>(2 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-12 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>SS</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(-12 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>T0</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(-17 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>T1</ogo:text>
+          <ogo:position>(2 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(-17 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.0</ogo:text>
+          <ogo:position>(2 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(-17 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.1</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(-17 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.2</ogo:text>
+          <ogo:position>(2 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.3</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(-17 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.4</ogo:text>
+          <ogo:position>(2 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.5</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(-17 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.6</ogo:text>
+          <ogo:position>(2 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(-17 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P1.7</ogo:text>
+          <ogo:position>(2 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(27 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(27 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D0</ogo:text>
+          <ogo:position>(65 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D1</ogo:text>
+          <ogo:position>(65 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D2</ogo:text>
+          <ogo:position>(65 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D3</ogo:text>
+          <ogo:position>(65 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D4</ogo:text>
+          <ogo:position>(65 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D5</ogo:text>
+          <ogo:position>(65 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D6</ogo:text>
+          <ogo:position>(65 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D7</ogo:text>
+          <ogo:position>(65 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.0</ogo:text>
+          <ogo:position>(55 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.1</ogo:text>
+          <ogo:position>(55 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.2</ogo:text>
+          <ogo:position>(55 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.3</ogo:text>
+          <ogo:position>(55 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.4</ogo:text>
+          <ogo:position>(55 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.5</ogo:text>
+          <ogo:position>(55 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.6</ogo:text>
+          <ogo:position>(55 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>P2.7</ogo:text>
+          <ogo:position>(55 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(87 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RD</ogo:text>
+          <ogo:position>(65 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>WR</ogo:text>
+          <ogo:position>(65 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(87 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PSEN</ogo:text>
+          <ogo:position>(50 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>ALE</ogo:text>
+          <ogo:position>(58 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(87 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PRG</ogo:text>
+          <ogo:position>(58 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>VP</ogo:text>
+          <ogo:position>(65 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(48 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>8048</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>8049</ogo:name>
+       <ogo:symbol>eq</ogo:symbol>
+      <ogo:description>See 8048</ogo:description>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>6809</ogo:name>
+       <ogo:symbol>6809</ogo:symbol>
+      <ogo:description>Microprocessor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>X1</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+       <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(-17 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>EX2</ogo:text>
+          <ogo:position>(2 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(-17 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RESET</ogo:text>
+          <ogo:position>(2 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>NMI</ogo:text>
+          <ogo:position>(2 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(-17 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>HALT</ogo:text>
+          <ogo:position>(2 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>IRQ</ogo:text>
+          <ogo:position>(2 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(-12 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>FIRQ</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(-17 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RDY</ogo:text>
+          <ogo:position>(2 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(-17 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>DMA</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D0</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(-17 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D1</ogo:text>
+          <ogo:position>(2 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D2</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(-17 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D3</ogo:text>
+          <ogo:position>(2 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(-17 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D4</ogo:text>
+          <ogo:position>(2 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(-17 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D5</ogo:text>
+          <ogo:position>(2 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(-17 260)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D6</ogo:text>
+          <ogo:position>(2 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(-17 270)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D7</ogo:text>
+          <ogo:position>(2 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(27 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(27 295)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A0</ogo:text>
+          <ogo:position>(65 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A1</ogo:text>
+          <ogo:position>(65 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A2</ogo:text>
+          <ogo:position>(65 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A3</ogo:text>
+          <ogo:position>(65 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A4</ogo:text>
+          <ogo:position>(65 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A5</ogo:text>
+          <ogo:position>(65 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A6</ogo:text>
+          <ogo:position>(65 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A7</ogo:text>
+          <ogo:position>(65 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 90)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A8</ogo:text>
+          <ogo:position>(65 95)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A9</ogo:text>
+          <ogo:position>(65 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A10</ogo:text>
+          <ogo:position>(60 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A11</ogo:text>
+          <ogo:position>(60 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A12</ogo:text>
+          <ogo:position>(60 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A13</ogo:text>
+          <ogo:position>(60 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A14</ogo:text>
+          <ogo:position>(60 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A15</ogo:text>
+          <ogo:position>(60 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(87 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>E</ogo:text>
+          <ogo:position>(67 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>Q</ogo:text>
+          <ogo:position>(67 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>BA</ogo:text>
+          <ogo:position>(65 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>BS</ogo:text>
+          <ogo:position>(65 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 260)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>R|W</ogo:text>
+          <ogo:position>(60 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 295)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>6809</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>68HC11A0</ogo:name>
+       <ogo:symbol>6811A0</ogo:symbol>
+      <ogo:description>Microcontroller</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>XT</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+       <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(-17 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>EX</ogo:text>
+          <ogo:position>(2 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(-17 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RESET</ogo:text>
+          <ogo:position>(2 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>41</ogo:name>
+          <ogo:text>41</ogo:text>
+          <ogo:position>(-17 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>IRQ</ogo:text>
+          <ogo:position>(2 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(-17 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>XIRQ</ogo:text>
+          <ogo:position>(2 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(-17 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>VRH</ogo:text>
+          <ogo:position>(2 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(-17 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>VRL</ogo:text>
+          <ogo:position>(2 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(-17 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MODA</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(-17 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MODB</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(-17 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>E</ogo:text>
+          <ogo:position>(2 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(-17 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AS</ogo:text>
+          <ogo:position>(2 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(-17 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>R|W</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>42</ogo:name>
+          <ogo:text>42</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD0</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>43</ogo:name>
+          <ogo:text>43</ogo:text>
+          <ogo:position>(-17 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD1</ogo:text>
+          <ogo:position>(2 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>44</ogo:name>
+          <ogo:text>44</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD2</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>45</ogo:name>
+          <ogo:text>45</ogo:text>
+          <ogo:position>(-17 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD3</ogo:text>
+          <ogo:position>(2 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>46</ogo:name>
+          <ogo:text>46</ogo:text>
+          <ogo:position>(-17 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD4</ogo:text>
+          <ogo:position>(2 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>47</ogo:name>
+          <ogo:text>47</ogo:text>
+          <ogo:position>(-17 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD5</ogo:text>
+          <ogo:position>(2 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(-17 270)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE0</ogo:text>
+          <ogo:position>(2 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(-17 280)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE1</ogo:text>
+          <ogo:position>(2 285)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(-17 290)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE2</ogo:text>
+          <ogo:position>(2 295)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(-17 300)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE3</ogo:text>
+          <ogo:position>(2 305)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>48</ogo:name>
+          <ogo:text>48</ogo:text>
+          <ogo:position>(22 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(22 325)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA0</ogo:text>
+          <ogo:position>(60 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA1</ogo:text>
+          <ogo:position>(60 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA2</ogo:text>
+          <ogo:position>(60 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA3</ogo:text>
+          <ogo:position>(60 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA4</ogo:text>
+          <ogo:position>(60 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA5</ogo:text>
+          <ogo:position>(60 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA6</ogo:text>
+          <ogo:position>(60 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA7</ogo:text>
+          <ogo:position>(60 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB0</ogo:text>
+          <ogo:position>(60 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB1</ogo:text>
+          <ogo:position>(60 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB2</ogo:text>
+          <ogo:position>(60 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB3</ogo:text>
+          <ogo:position>(60 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB4</ogo:text>
+          <ogo:position>(60 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB5</ogo:text>
+          <ogo:position>(60 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB6</ogo:text>
+          <ogo:position>(60 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(87 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB7</ogo:text>
+          <ogo:position>(60 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(87 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC0</ogo:text>
+          <ogo:position>(60 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC1</ogo:text>
+          <ogo:position>(60 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(87 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC2</ogo:text>
+          <ogo:position>(60 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC3</ogo:text>
+          <ogo:position>(60 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC4</ogo:text>
+          <ogo:position>(60 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC5</ogo:text>
+          <ogo:position>(60 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC6</ogo:text>
+          <ogo:position>(60 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 260)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC7</ogo:text>
+          <ogo:position>(60 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 325)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>68HC11A0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 %41 %42 %43 %44 %45 %46 %47 %48 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+     </ogo:part>
+
+   <ogo:part>
+      <ogo:name>68HC11E9</ogo:name>
+       <ogo:symbol>6811E9</ogo:symbol>
+      <ogo:description>Microcontroller</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>XT</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+       <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(-12 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>EX</ogo:text>
+          <ogo:position>(2 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(-17 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RESET</ogo:text>
+          <ogo:position>(2 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(-17 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>IRQ</ogo:text>
+          <ogo:position>(2 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(-17 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>XIRQ</ogo:text>
+          <ogo:position>(2 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>52</ogo:name>
+          <ogo:text>52</ogo:text>
+          <ogo:position>(-17 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>VRH</ogo:text>
+          <ogo:position>(2 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>51</ogo:name>
+          <ogo:text>51</ogo:text>
+          <ogo:position>(-17 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>VRL</ogo:text>
+          <ogo:position>(2 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MODA</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MODB</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-12 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>E</ogo:text>
+          <ogo:position>(2 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(-12 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AS</ogo:text>
+          <ogo:position>(2 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>R|W</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD0</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(-17 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD1</ogo:text>
+          <ogo:position>(2 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD2</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(-17 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD3</ogo:text>
+          <ogo:position>(2 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(-17 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD4</ogo:text>
+          <ogo:position>(2 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(-17 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PD5</ogo:text>
+          <ogo:position>(2 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>43</ogo:name>
+          <ogo:text>43</ogo:text>
+          <ogo:position>(-17 280)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE0</ogo:text>
+          <ogo:position>(2 285)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>44</ogo:name>
+          <ogo:text>44</ogo:text>
+          <ogo:position>(-17 290)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE1</ogo:text>
+          <ogo:position>(2 295)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>45</ogo:name>
+          <ogo:text>45</ogo:text>
+          <ogo:position>(-17 300)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE2</ogo:text>
+          <ogo:position>(2 305)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>46</ogo:name>
+          <ogo:text>46</ogo:text>
+          <ogo:position>(-17 310)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE3</ogo:text>
+          <ogo:position>(2 315)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(22 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(27 335)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA0</ogo:text>
+          <ogo:position>(60 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA1</ogo:text>
+          <ogo:position>(60 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA2</ogo:text>
+          <ogo:position>(60 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA3</ogo:text>
+          <ogo:position>(60 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA4</ogo:text>
+          <ogo:position>(60 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA5</ogo:text>
+          <ogo:position>(60 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA6</ogo:text>
+          <ogo:position>(60 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PA7</ogo:text>
+          <ogo:position>(60 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>42</ogo:name>
+          <ogo:text>42</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB0</ogo:text>
+          <ogo:position>(60 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>41</ogo:name>
+          <ogo:text>41</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB1</ogo:text>
+          <ogo:position>(60 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB2</ogo:text>
+          <ogo:position>(60 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB3</ogo:text>
+          <ogo:position>(60 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB4</ogo:text>
+          <ogo:position>(60 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB5</ogo:text>
+          <ogo:position>(60 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB6</ogo:text>
+          <ogo:position>(60 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PB7</ogo:text>
+          <ogo:position>(60 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(87 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC0</ogo:text>
+          <ogo:position>(60 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC1</ogo:text>
+          <ogo:position>(60 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 210)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC2</ogo:text>
+          <ogo:position>(60 215)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC3</ogo:text>
+          <ogo:position>(60 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(87 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC4</ogo:text>
+          <ogo:position>(60 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC5</ogo:text>
+          <ogo:position>(60 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(87 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC6</ogo:text>
+          <ogo:position>(60 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 260)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PC7</ogo:text>
+          <ogo:position>(60 265)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>47</ogo:name>
+          <ogo:text>47</ogo:text>
+          <ogo:position>(87 280)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE4</ogo:text>
+          <ogo:position>(60 285)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>48</ogo:name>
+          <ogo:text>48</ogo:text>
+          <ogo:position>(87 290)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE5</ogo:text>
+          <ogo:position>(60 295)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>49</ogo:name>
+          <ogo:text>49</ogo:text>
+          <ogo:position>(87 300)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE6</ogo:text>
+          <ogo:position>(60 305)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>50</ogo:name>
+          <ogo:text>50</ogo:text>
+          <ogo:position>(87 310)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>PE7</ogo:text>
+          <ogo:position>(60 315)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 335)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>68HC11E9</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 %41 %42 %43 %44 %45 %46 %47 %48 %49 %50 %51 %52 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+     </ogo:part>
+
+
+   <ogo:part>
+      <ogo:name>Z80</ogo:name>
+       <ogo:symbol>Z80</ogo:symbol>
+      <ogo:description>Microprocessor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>CLK</ogo:text>
+          <ogo:position>(2 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+       <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(-17 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>M1</ogo:text>
+          <ogo:position>(2 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(-17 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RESET</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(-17 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RFSH</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(-17 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INT</ogo:text>
+          <ogo:position>(2 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(-17 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>NMI</ogo:text>
+          <ogo:position>(2 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(-17 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>HALT</ogo:text>
+          <ogo:position>(2 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>WAIT</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MREQ</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(-17 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>IOREQ</ogo:text>
+          <ogo:position>(2 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(-17 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RD</ogo:text>
+          <ogo:position>(2 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(-17 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>WR</ogo:text>
+          <ogo:position>(2 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D0</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(-17 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D1</ogo:text>
+          <ogo:position>(2 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D2</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(-12 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D3</ogo:text>
+          <ogo:position>(2 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(-12 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D4</ogo:text>
+          <ogo:position>(2 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(-12 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D5</ogo:text>
+          <ogo:position>(2 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(-17 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D6</ogo:text>
+          <ogo:position>(2 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(-17 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>D7</ogo:text>
+          <ogo:position>(2 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(22 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(22 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A0</ogo:text>
+          <ogo:position>(65 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A1</ogo:text>
+          <ogo:position>(65 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A2</ogo:text>
+          <ogo:position>(65 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A3</ogo:text>
+          <ogo:position>(65 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A4</ogo:text>
+          <ogo:position>(65 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A5</ogo:text>
+          <ogo:position>(65 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A6</ogo:text>
+          <ogo:position>(65 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A7</ogo:text>
+          <ogo:position>(65 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 90)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A8</ogo:text>
+          <ogo:position>(65 95)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A9</ogo:text>
+          <ogo:position>(65 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A10</ogo:text>
+          <ogo:position>(60 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A11</ogo:text>
+          <ogo:position>(60 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A12</ogo:text>
+          <ogo:position>(60 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A13</ogo:text>
+          <ogo:position>(60 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A14</ogo:text>
+          <ogo:position>(60 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A15</ogo:text>
+          <ogo:position>(60 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>BUSRQ</ogo:text>
+          <ogo:position>(43 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>BUSAK</ogo:text>
+          <ogo:position>(43 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>Z80</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>8088 MIN</ogo:name>
+       <ogo:symbol>8088</ogo:symbol>
+      <ogo:description>Microprocessor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>CLK</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(-17 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RDY</ogo:text>
+          <ogo:position>(2 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RST</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(-17 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MN|MX</ogo:text>
+          <ogo:position>(2 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(-17 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INTR</ogo:text>
+          <ogo:position>(2 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(-17 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>NMI</ogo:text>
+          <ogo:position>(2 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(-17 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>HOLD</ogo:text>
+          <ogo:position>(2 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(-17 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>HLDA</ogo:text>
+          <ogo:position>(2 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(-17 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>SSO</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(-17 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>TEST</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(-17 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>DT|R</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>ALE</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>IO|M</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(22 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(25 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(45 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD0</ogo:text>
+          <ogo:position>(57 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD1</ogo:text>
+          <ogo:position>(57 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD2</ogo:text>
+          <ogo:position>(57 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD3</ogo:text>
+          <ogo:position>(57 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD4</ogo:text>
+          <ogo:position>(57 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD5</ogo:text>
+          <ogo:position>(57 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD6</ogo:text>
+          <ogo:position>(57 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD7</ogo:text>
+          <ogo:position>(57 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(87 90)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A8</ogo:text>
+          <ogo:position>(62 95)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A9</ogo:text>
+          <ogo:position>(62 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A10</ogo:text>
+          <ogo:position>(57 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A11</ogo:text>
+          <ogo:position>(57 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A12</ogo:text>
+          <ogo:position>(57 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A13</ogo:text>
+          <ogo:position>(57 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A14</ogo:text>
+          <ogo:position>(57 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A15</ogo:text>
+          <ogo:position>(57 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A16|S3</ogo:text>
+          <ogo:position>(42 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A17|S4</ogo:text>
+          <ogo:position>(42 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A18|S5</ogo:text>
+          <ogo:position>(42 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A19|S6</ogo:text>
+          <ogo:position>(42 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RD</ogo:text>
+          <ogo:position>(62 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(87 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>WR</ogo:text>
+          <ogo:position>(62 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INTA</ogo:text>
+          <ogo:position>(54 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(87 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>DEN</ogo:text>
+          <ogo:position>(56 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(-20 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>8088</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>8088 MAX</ogo:name>
+       <ogo:symbol>8088</ogo:symbol>
+      <ogo:description>Microprocessor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(0 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>19</ogo:name>
+          <ogo:text>19</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>CLK</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>22</ogo:name>
+          <ogo:text>22</ogo:text>
+          <ogo:position>(-17 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RDY</ogo:text>
+          <ogo:position>(2 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>21</ogo:name>
+          <ogo:text>21</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RST</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>33</ogo:name>
+          <ogo:text>33</ogo:text>
+          <ogo:position>(-17 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>MN|MX</ogo:text>
+          <ogo:position>(2 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>18</ogo:name>
+          <ogo:text>18</ogo:text>
+          <ogo:position>(-17 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>INTR</ogo:text>
+          <ogo:position>(2 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>17</ogo:name>
+          <ogo:text>17</ogo:text>
+          <ogo:position>(-17 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>NMI</ogo:text>
+          <ogo:position>(2 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>31</ogo:name>
+          <ogo:text>31</ogo:text>
+          <ogo:position>(-17 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>GT0</ogo:text>
+          <ogo:position>(2 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>30</ogo:name>
+          <ogo:text>30</ogo:text>
+          <ogo:position>(-17 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>GT1</ogo:text>
+          <ogo:position>(2 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>34</ogo:name>
+          <ogo:text>34</ogo:text>
+          <ogo:position>(-17 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>HIGH</ogo:text>
+          <ogo:position>(2 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>23</ogo:name>
+          <ogo:text>23</ogo:text>
+          <ogo:position>(-17 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>TEST</ogo:text>
+          <ogo:position>(2 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>27</ogo:name>
+          <ogo:text>27</ogo:text>
+          <ogo:position>(-17 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>S1</ogo:text>
+          <ogo:position>(2 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>25</ogo:name>
+          <ogo:text>25</ogo:text>
+          <ogo:position>(-17 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>QS0</ogo:text>
+          <ogo:position>(2 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>28</ogo:name>
+          <ogo:text>28</ogo:text>
+          <ogo:position>(-17 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>S2</ogo:text>
+          <ogo:position>(2 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>40</ogo:name>
+          <ogo:text>40</ogo:text>
+          <ogo:position>(22 -2)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>20</ogo:name>
+          <ogo:text>20</ogo:text>
+          <ogo:position>(25 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>1</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(45 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>16</ogo:name>
+          <ogo:text>16</ogo:text>
+          <ogo:position>(87 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD0</ogo:text>
+          <ogo:position>(57 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>15</ogo:name>
+          <ogo:text>15</ogo:text>
+          <ogo:position>(87 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD1</ogo:text>
+          <ogo:position>(57 25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>14</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(87 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD2</ogo:text>
+          <ogo:position>(57 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>13</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(87 40)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD3</ogo:text>
+          <ogo:position>(57 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>12</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(87 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD4</ogo:text>
+          <ogo:position>(57 55)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>11</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(87 60)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD5</ogo:text>
+          <ogo:position>(57 65)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>10</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(87 70)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD6</ogo:text>
+          <ogo:position>(57 75)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>9</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(87 80)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>AD7</ogo:text>
+          <ogo:position>(57 85)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>8</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(87 90)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A8</ogo:text>
+          <ogo:position>(62 95)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>7</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(87 100)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A9</ogo:text>
+          <ogo:position>(62 105)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>6</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(87 110)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A10</ogo:text>
+          <ogo:position>(57 115)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>5</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(87 120)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A11</ogo:text>
+          <ogo:position>(57 125)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>4</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(87 130)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A12</ogo:text>
+          <ogo:position>(57 135)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>3</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(87 140)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A13</ogo:text>
+          <ogo:position>(57 145)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>2</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(87 150)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A14</ogo:text>
+          <ogo:position>(57 155)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>39</ogo:name>
+          <ogo:text>39</ogo:text>
+          <ogo:position>(87 160)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A15</ogo:text>
+          <ogo:position>(57 165)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>38</ogo:name>
+          <ogo:text>38</ogo:text>
+          <ogo:position>(87 170)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A16|S3</ogo:text>
+          <ogo:position>(42 175)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>37</ogo:name>
+          <ogo:text>37</ogo:text>
+          <ogo:position>(87 180)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A17|S4</ogo:text>
+          <ogo:position>(42 185)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>36</ogo:name>
+          <ogo:text>36</ogo:text>
+          <ogo:position>(87 190)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A18|S5</ogo:text>
+          <ogo:position>(42 195)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>35</ogo:name>
+          <ogo:text>35</ogo:text>
+          <ogo:position>(87 200)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>A19|S6</ogo:text>
+          <ogo:position>(42 205)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>32</ogo:name>
+          <ogo:text>32</ogo:text>
+          <ogo:position>(87 220)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>RD</ogo:text>
+          <ogo:position>(62 225)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>29</ogo:name>
+          <ogo:text>29</ogo:text>
+          <ogo:position>(87 230)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>LOCK</ogo:text>
+          <ogo:position>(52 235)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>24</ogo:name>
+          <ogo:text>24</ogo:text>
+          <ogo:position>(87 240)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>QS1</ogo:text>
+          <ogo:position>(55 245)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>26</ogo:name>
+          <ogo:text>26</ogo:text>
+          <ogo:position>(87 250)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>S0</ogo:text>
+          <ogo:position>(62 255)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(-20 275)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>8088</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %29 %30 %31 %32 %33 %34 %35 %36 %37 %38 %39 %40 @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+
+
+  </ogo:parts>
+</ogo:library>

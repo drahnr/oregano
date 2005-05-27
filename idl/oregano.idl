@@ -1,0 +1,14 @@
+module GNOME {
+	module Oregano {
+		interface Sheet {
+
+			//
+			// Selection
+			//
+			void    select_all ();
+			boolean is_all_selected ();
+
+			Sheet sheet_load (in string name);
+		};
+	};
+};

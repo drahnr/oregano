@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "/usr/share/xml/docbook/schema/dtd/4.1.2/docbookx.dtd" [
+<!ENTITY legal SYSTEM "legal.xml">
+<!ENTITY appversion "0.1">
+<!ENTITY manrevision "0.1">
+<!ENTITY date "03 Mayo 2004">
+<!ENTITY app "<application>Oregano</application>">
+]>
+<article id="index" lang="es">
+  <articleinfo>
+    <title><application>Oregano</application>Manual de Usuario</title>
+		<copyright> 
+						<year>2003</year> 
+						<year>2004</year> 
+						<holder>LUGFi</holder> 
+    </copyright> 
+    <copyright> 
+						<year>1999</year> 
+						<year>2001</year> 
+						<year>2002</year> 
+						<holder>Richard Hult</holder> 
+    </copyright>
+    <publisher> 
+      <publishername> LUGFI </publishername> 
+    </publisher> 
+    
+    <authorgroup>
+      <author>
+							<firstname>Ricardo</firstname> <surname>Markiewicz</surname>
+	<affiliation>
+	  <address>
+						<email>rmarkie@fi.uba.ar</email>
+	  </address>
+		</affiliation>
+     </author>
+    </authorgroup>
+    <revhistory>
+	    <revision>
+				<revnumber>Manual de Oregano</revnumber>
+				<date>2004</date>
+				<revdescription>
+				  <para role="author">Ricardo Markiewicz</para>
+				</revdescription>
+      </revision>
+    </revhistory>
+
+    <releaseinfo>
+      Oregano is a tool for schematic capture and simulation
+      of electrical circuits. It simplifes design of simple circuits
+      by letting the user draw the circuit and then simulate its
+      electrical characteristics.
+      
+      This document is mostly meant to be an introduction
+      for someone who already is familiar with circuit simulation
+      and wants to try out Oregano.
+    </releaseinfo> 
+      <legalnotice> 
+      <title>Feedback</title> 
+      <para>To report a bug or make a suggestion regarding the
+      <application>Oregano</application> application or
+      this manual, follow the directions in the <ulink url="ghelp:oregano-feedback" type="help">Oregano Feedback Page</ulink>. 
+      </para>
+      </legalnotice>
+  </articleinfo>
+
+  <sect1 id="getting-started">
+    <title>Introducci&#xF3;n</title>
+
+    
+
+    
+    
+    
+
+  <para><application>Oregano</application> es una aplicaci&#xF3;n de captura esquem&#xE1;tica y simulaci&#xF3;n de circuitos electr&#xF3;nicos.</para></sect1>
+
+  <sect1 id="editing">
+    <title>Editando un Circuito</title>
+
+    
+
+      
+
+    
+
+  <para>Al iniciar la aplicaci&#xF3;n tendr&#xE1; una hoja vac&#xED;a donde podr&#xE1; comenzar a agregar los componentes de su circuito. Los componentes se encuentran en la lista de la derecha, agrupados por categor&#xED;as.</para></sect1>
+
+  <sect1 id="simulation">
+    <title>Simulaci&#xF3;n de Circuitos</title>
+
+    
+
+        
+
+  <sect2><title>Par&#xE1;metros de simulaci&#xF3;n</title><para>TODO</para></sect2></sect1>
+<sect1><title>Configurar <application>Oregano</application></title><sect2><title>Opciones de Edici&#xF3;n</title><para>TODO</para></sect2><sect2><title>Rutas de archivos</title><para>TODO : agregar que se supone que se configura aca</para><simplelist><member>Oregano Parser : Especifica el n&#xF3;mbre y ruta donde se encuentra el script <filename>oregano_parser.pl</filename> que es utilizado para la simulaci&#xF3;n. Este ejecutable es el encargado de realizar la simulaci&#xF3;n utilizando el motor (TODO:ver de poner un ref a donde se explique los motores de simulaci&#xF3;n) y entregar los datos en un formato que Oregano pueda entender.</member></simplelist></sect2><sect2><title>Formato de Archivos</title><simplelist><member>Comprimir los archivos guardados : Especifica si los archivos guardados deben ser comprimidos. Oregano utiliza el estandar XML para guardar los archivos. Al ser estos de texto, puede que uds quiera guardarlos comprimidos para que ocupen menos lugar. Tenga en cuenta que no todos los parsers XML soportan compresi&#xF3;n y esta opci&#xF3;n puede dificultar exportar el documento guardado para ser utilizado con otra aplicaci&#xF3;n.</member></simplelist></sect2><sect2><title>Motor de Simulaci&#xF3;n</title><para>Puede seleccionar entre dos motores de simulaci&#xF3;n : GNU Cap o ngSpice.</para></sect2></sect1></article>

@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "/usr/share/xml/docbook/schema/dtd/4.1.2/docbookx.dtd" [
+  <!ENTITY legal SYSTEM "legal.xml">
+  <!ENTITY appversion "0.1">
+  <!ENTITY manrevision "0.1">
+	<!ENTITY date "03 Mayo 2004">
+  <!ENTITY app "<application>Oregano</application>">
+]>
+<article id="index" lang="en">
+  <articleinfo>
+    <title><application>Oregano</application> User's Guide</title>
+		<copyright> 
+						<year>2003</year> 
+						<year>2004</year> 
+						<holder>LUGFi</holder> 
+    </copyright> 
+    <copyright> 
+						<year>1999</year> 
+						<year>2001</year> 
+						<year>2002</year> 
+						<holder>Richard Hult</holder> 
+    </copyright>
+    <publisher> 
+      <publishername> LUGFI </publishername> 
+    </publisher> 
+    
+    <authorgroup>
+      <author>
+							<firstname>Ricardo</firstname> <surname>Markiewicz</surname>
+	<affiliation>
+	  <address>
+						<email>rmarkie@fi.uba.ar</email>
+	  </address>
+		</affiliation>
+     </author>
+    </authorgroup>
+    <revhistory>
+	    <revision>
+				<revnumber>Oregano Manual V 0</revnumber>
+				<date>2004</date>
+				<revdescription>
+				  <para role="author">Ricardo Markiewicz</para>
+				</revdescription>
+      </revision>
+    </revhistory>
+
+    <releaseinfo>
+      Oregano is a tool for schematic capture and simulation
+      of electrical circuits. It simplifes design of simple circuits
+      by letting the user draw the circuit and then simulate its
+      electrical characteristics.
+      
+      This document is mostly meant to be an introduction
+      for someone who already is familiar with circuit simulation
+      and wants to try out Oregano.
+    </releaseinfo> 
+      <legalnotice> 
+      <title>Feedback</title> 
+      <para>To report a bug or make a suggestion regarding the
+      <application>Oregano 2</application> application or
+      this manual, follow the directions in the <ulink
+      url="ghelp:oregano-feedback" type="help">Oregano Feedback Page</ulink>. 
+      </para>
+      </legalnotice>
+  </articleinfo>
+
+  <sect1 id="getting-started">
+    <title>Getting Started with Oregano</title>
+
+    <para>When you first start Oregano, you will be presented to an
+    empty sheet, where you can place circuit components and connect
+    them with wires. To place a component, also known as 'part',
+    first select one in the part browser on the right hand side of 
+    the application window. Then press the 'Place' button, or double-click
+    the selected part. You can also drag the part preview and drop it
+    on the sheet.</para>
+
+    <para>When you have some parts placed on the sheet, you can start
+    connecting them with wires. Select the wire tool on the toolbar,
+    and click on the sheet where you want the wire to start. Then
+    click where you want to fixate the wire.</para>
+    
+    <para>Make sure you connect at least one ground node to the circuit,
+    as this is neccessary to perform a simulation.</para>
+
+  </sect1>
+
+  <sect1 id="editing">
+    <title>Editing the Circuit</title>
+
+    <para>There are a few accelerator keys that can help editing the
+    circuit:</para>
+
+      <variablelist>
+        <varlistentry><term>Ctrl-A</term><listitem><para>Select all objects on the sheet</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>Ctrl-Shift-A</term><listitem><para>Deselect all objects</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>r</term><listitem><para>Rotate the selected objects 90 degrees clockwise</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>&lt;Del&gt;</term><listitem><para>Delete the selected objects</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>l</term><listitem><para>Place the currently selected part</para>
+        </listitem></varlistentry>
+
+      </variablelist>
+
+    <para>Parts and wires can be selected by clicking on them, and by holding the
+    Shift-key while clicking, you can select multiple parts and wires. You can
+    also select objects by 'rubber-banding': hold down the mouse button while dragging
+    the pointer over the objects that you wish to select.</para>
+
+  </sect1>
+
+  <sect1 id="simulation">
+    <title>Simulation</title>
+
+    <para>When you have a circuit and wish to run a simulation, either press the
+    simulate button on the toolbar or select
+    <guimenu>Tools</guimenu>-&gt;<guimenuitem>Simulation</guimenuitem>.
+    The simulation then starts and you can follow the progress on the dialog box
+    that pops up.</para>
+
+    <para>If you want to change the simulation parameters, select
+    <guimenu>Settings</guimenu>-&gt;<guimenuitem>Simulation Settings</guimenuitem>.
+    </para>    
+
+  </sect1>
+</article>

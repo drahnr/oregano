@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="text/oregano">
+    <comment xml:lang="es">Archivo de esquemas</comment>
+    <comment xml:lang="en">Schematic file</comment>
+    <glob pattern="*.oregano"/>
+	</mime-type>
+	<mime-type type="text/netlist">
+		<comment xml:lang="en">net list from circuits</comment>
+		<comment xml:lang="es">Lista de nodos de los circuitos</comment>
+		<glob pattern="*.netlist"/>
+  </mime-type>
+</mime-info>

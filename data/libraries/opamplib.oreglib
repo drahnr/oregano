@@ -1,0 +1,2786 @@
+<?xml version="1.0"?>
+<ogo:library xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
+  <ogo:name>Opamps</ogo:name>
+  <ogo:description>OpAmp Library</ogo:description>
+  <ogo:version>0.26</ogo:version>
+  <ogo:author>Hector Bellesi / Dietmar Eberhard, Dietmar.Eberhard@ipm.fhg.de</ogo:author>  
+<ogo:last-updated>19-Aug-2001</ogo:last-updated>   <ogo:symbols>
+
+   <ogo:symbol>
+      <ogo:name>LF353b</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 5)</ogo:connection>
+        <ogo:connection>(-20 10 6)</ogo:connection>
+        <ogo:connection>(60 20 7)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LF347c</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 10)</ogo:connection>
+        <ogo:connection>(-20 10 9)</ogo:connection>
+        <ogo:connection>(60 20 8)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LF347d</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 12)</ogo:connection>
+        <ogo:connection>(-20 10 13)</ogo:connection>
+        <ogo:connection>(60 20 14)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LM339b</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 7)</ogo:connection>
+        <ogo:connection>(-20 10 6)</ogo:connection>
+        <ogo:connection>(60 20 1)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LM339c</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 9)</ogo:connection>
+        <ogo:connection>(-20 10 8)</ogo:connection>
+        <ogo:connection>(60 20 14)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LM339d</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 11)</ogo:connection>
+        <ogo:connection>(-20 10 10)</ogo:connection>
+        <ogo:connection>(60 20 13)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+   <ogo:symbol>
+      <ogo:name>LF353a</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(20 -10 8)</ogo:connection>
+        <ogo:connection>(20 50 4)</ogo:connection>
+        <ogo:connection>(60 20 1)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LF347a</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(20 -10 4)</ogo:connection>
+        <ogo:connection>(20 50 11)</ogo:connection>
+        <ogo:connection>(60 20 1)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LM339a</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 5)</ogo:connection>
+        <ogo:connection>(-20 10 4)</ogo:connection>
+        <ogo:connection>(20 -10 3)</ogo:connection>
+        <ogo:connection>(20 50 12)</ogo:connection>
+        <ogo:connection>(60 20 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+   <ogo:symbol>
+      <ogo:name>LM741</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 25)(30 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 7)</ogo:connection>
+        <ogo:connection>(10 50 4)</ogo:connection>
+        <ogo:connection>(20 50 1)</ogo:connection>
+        <ogo:connection>(30 50 5)</ogo:connection>
+        <ogo:connection>(60 20 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>OP77</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 25)(30 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 7)</ogo:connection>
+        <ogo:connection>(10 50 4)</ogo:connection>
+        <ogo:connection>(20 50 1)</ogo:connection>
+        <ogo:connection>(30 50 8)</ogo:connection>
+        <ogo:connection>(60 20 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LF356</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 15)(30 -10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 7)</ogo:connection>
+        <ogo:connection>(20 -10 1)</ogo:connection>
+        <ogo:connection>(30 -10 5)</ogo:connection>
+        <ogo:connection>(10 50 4)</ogo:connection>
+        <ogo:connection>(60 20 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>CA3140</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 25)(30 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 7)</ogo:connection>
+        <ogo:connection>(20 -10 8)</ogo:connection>
+        <ogo:connection>(10 50 4)</ogo:connection>
+        <ogo:connection>(20 50 1)</ogo:connection>
+        <ogo:connection>(30 50 5)</ogo:connection>
+        <ogo:connection>(60 20 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LM318</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 25)(30 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 8)</ogo:connection>
+        <ogo:connection>(20 -10 7)</ogo:connection>
+        <ogo:connection>(10 50 4)</ogo:connection>
+        <ogo:connection>(20 50 1)</ogo:connection>
+        <ogo:connection>(30 50 5)</ogo:connection>
+        <ogo:connection>(60 20 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>LM311</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 25)(30 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 8)</ogo:connection>
+        <ogo:connection>(20 -10 5)</ogo:connection>
+        <ogo:connection>(10 50 4)</ogo:connection>
+        <ogo:connection>(20 50 1)</ogo:connection>
+        <ogo:connection>(30 50 6)</ogo:connection>
+        <ogo:connection>(60 20 7)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>CA3130</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(40 20)(0 0)</ogo:line>
+        <ogo:line>(-20 10)(0 10)</ogo:line>
+        <ogo:line>(-20 30)(0 30)</ogo:line>
+        <ogo:line>(40 20)(60 20)</ogo:line>
+        <ogo:line>(10 5)(10 -10)</ogo:line>
+        <ogo:line>(20 10)(20 -10)</ogo:line>
+        <ogo:line>(20 30)(20 50)</ogo:line>
+        <ogo:line>(10 35)(10 50)</ogo:line>
+        <ogo:line>(30 25)(30 50)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-20 30 3)</ogo:connection>
+        <ogo:connection>(-20 10 2)</ogo:connection>
+        <ogo:connection>(10 -10 7)</ogo:connection>
+        <ogo:connection>(20 -10 4)</ogo:connection>
+        <ogo:connection>(10 50 8)</ogo:connection>
+        <ogo:connection>(20 50 1)</ogo:connection>
+        <ogo:connection>(30 50 5)</ogo:connection>
+        <ogo:connection>(60 20 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>U_NonLin</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 40)(30 40)(30 0)(0 0)</ogo:line>
+        <ogo:line>(17.5 17.5)(17.5 22.5)(20 25)(25 25)(27.5 22.5)
+                  (27.5 17.5)(25 15)(20 15)(17.5 17.5)</ogo:line>  
+        <ogo:line>(30 30)(22.5 30)(22.5 25)</ogo:line>
+        <ogo:line>(22.5 15)(22.5 10)(30 10)</ogo:line>
+        <ogo:line>(22.5 17.5)(22.5 22.5)(21 20)
+                  (24 20)(22.5 22.5)</ogo:line>
+
+        <ogo:line>(-10 10)(0 10)</ogo:line>
+        <ogo:line>(-10 30)(0 30)</ogo:line>
+
+        <ogo:line>(30 10)(40 10)</ogo:line>
+        <ogo:line>(30 30)(40 30)</ogo:line>
+
+        <ogo:line>(5 30)(10 30)</ogo:line>
+        <ogo:line>(5 10)(10 10)</ogo:line>
+        <ogo:line>(7.5 7.5)(7.5 12.5)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 10)</ogo:connection>
+        <ogo:connection>(40 30)</ogo:connection>
+        <ogo:connection>(-10 10)</ogo:connection>
+        <ogo:connection>(-10 30)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+   <ogo:symbol>
+      <ogo:name>MULT</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(25 15)(0 30)(0 0)</ogo:line>
+        <ogo:line>(0 50)(25 65)(0 80)(0 50)</ogo:line>
+
+        <ogo:line>(25 15)(30 15)(30 30)(25 30)(20 35)(20 45)
+                  (25 50)(35 50)(40 45)(40 35)(35 30)(30 30)</ogo:line>
+        <ogo:line>(30 50)(30 65)(25 65)</ogo:line>
+
+        <ogo:line>(25 35)(35 45)</ogo:line>
+        <ogo:line>(35 35)(25 45)</ogo:line>
+
+        <ogo:line>(3 10)(9 10)</ogo:line>
+        <ogo:line>(6 7)(6 13)</ogo:line>
+        <ogo:line>(3 20)(9 20)</ogo:line>
+        <ogo:line>(3 60)(9 60)</ogo:line>
+        <ogo:line>(6 57)(6 63)</ogo:line>
+        <ogo:line>(3 70)(9 70)</ogo:line>
+
+        <ogo:line>(-10 10)(0 10)</ogo:line>
+        <ogo:line>(-10 20)(0 20)</ogo:line>
+        <ogo:line>(-10 60)(0 60)</ogo:line>
+        <ogo:line>(-10 70)(0 70)</ogo:line>
+
+        <ogo:line>(40 40)(44 40)(44 38)(48 40)
+                  (44 42)(44 40)(50 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(50 40)</ogo:connection>
+        <ogo:connection>(-10 10)</ogo:connection>
+        <ogo:connection>(-10 20)</ogo:connection>
+        <ogo:connection>(-10 60)</ogo:connection>
+        <ogo:connection>(-10 70)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+  </ogo:symbols>
+
+  <ogo:parts>
+
+
+
+    <ogo:part>
+      <ogo:name>OP77</ogo:name>
+      <ogo:symbol>OP77</ogo:symbol>
+      <ogo:description>Precision Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>5000 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>0.3 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>0.1 uV/V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>45 Mohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>60 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>0.7 uV/V</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>45 uV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>OP77</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>U=f(U)</ogo:name>
+      <ogo:symbol>U_NonLin</ogo:symbol>
+      <ogo:description>Voltage controlled nonlin voltage source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -5)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Function designator</ogo:name>
+          <ogo:text>U=@func</ogo:text>
+          <ogo:position>(0 55)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>B</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Func</ogo:name>
+          <ogo:value>sin</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+<ogo:value>B_@refdes %out+ %out- V= @func (V( %i+ , %i- ))</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>IdealMult</ogo:name>
+      <ogo:symbol>MULT</ogo:symbol>
+      <ogo:description>Ideal multiplier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(20 5)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>UMULT</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+<ogo:value>B_@refdes %out 0 V=V( %i1+ , %i1- )*V( %i2+ , %i2- )</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+     <ogo:part>
+      <ogo:name>OP37</ogo:name>
+      <ogo:symbol>OP77</ogo:symbol>
+      <ogo:description>Fast Precision Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>1500 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>17 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>120 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>2 Gohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>70 ohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>2 uV/V</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>30 uV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>OP37</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF356</ogo:name>
+      <ogo:symbol>LF356</ogo:symbol>
+      <ogo:description>JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>12 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>3 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF356</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF357</ogo:name>
+      <ogo:symbol>LF356</ogo:symbol>
+      <ogo:description>Fast JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>50 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>3 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF357</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM318</ogo:name>
+      <ogo:symbol>LM318</ogo:symbol>
+      <ogo:description>Fast Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(13 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>cmp</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>50 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>3 Mohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>80 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>4 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM318</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %cmp %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM741</ogo:name>
+      <ogo:symbol>LM741</ogo:symbol>
+      <ogo:description>General Purpose Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>0.5 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>90 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>2 Mohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>75 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>96 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>2 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM741</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF353a</ogo:name>
+      <ogo:symbol>LF353a</ogo:symbol>
+      <ogo:description>Dual JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(12 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(12 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>13 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF353a</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF353b</ogo:name>
+      <ogo:symbol>LF353b</ogo:symbol>
+      <ogo:description>Dual JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>13 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF353b</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF347a</ogo:name>
+      <ogo:symbol>LF347a</ogo:symbol>
+      <ogo:description>Quad JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(12 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(9 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>13 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF347a</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF347b</ogo:name>
+      <ogo:symbol>LF353b</ogo:symbol>
+      <ogo:description>Quad JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>13 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF347b</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF347c</ogo:name>
+      <ogo:symbol>LF347c</ogo:symbol>
+      <ogo:description>Quad JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>13 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF347c</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF347d</ogo:name>
+      <ogo:symbol>LF347d</ogo:symbol>
+      <ogo:description>Quad JFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>13 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>150 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF347d</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM311</ogo:name>
+      <ogo:symbol>LM311</ogo:symbol>
+      <ogo:description>Comparator</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(13 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>gnd</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>200 ns</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>100 nA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>2 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM311</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM393a</ogo:name>
+      <ogo:symbol>LF353a</ogo:symbol>
+      <ogo:description>Dual Comparators</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(12 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(12 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>1.3 us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>25 nA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>1 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM393a</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM393b</ogo:name>
+      <ogo:symbol>LF353b</ogo:symbol>
+      <ogo:description>Dual Comparators</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>1.3 us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>25 nA</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>1 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF393b</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM339a</ogo:name>
+      <ogo:symbol>LM339a</ogo:symbol>
+      <ogo:description>Quad Low Power Compatators</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(12 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>12</ogo:text>
+          <ogo:position>(9 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>1.3 us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>25 nA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>2 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM339a</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM339b</ogo:name>
+      <ogo:symbol>LM339b</ogo:symbol>
+      <ogo:description>Quad Low Power Compatators</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>1.3 us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>25 nA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>2 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM339b</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM339c</ogo:name>
+      <ogo:symbol>LM339c</ogo:symbol>
+      <ogo:description>Quad Low Power Compatators</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>14</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>1.3 us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>25 nA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>2 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM339c</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LM339d</ogo:name>
+      <ogo:symbol>LM339d</ogo:symbol>
+      <ogo:description>Quad Low Power Compatators</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>10</ogo:text>
+          <ogo:position>(-17 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>11</ogo:text>
+          <ogo:position>(-17 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>13</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>1.3 us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>25 nA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>2 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LM339d</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>LF311</ogo:name>
+      <ogo:symbol>LM311</ogo:symbol>
+      <ogo:description>FET Input Comparator</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(13 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>gnd</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>200 V/mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RT</ogo:name>
+          <ogo:value>200 ns</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Iin</ogo:name>
+          <ogo:value>20 pA</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>1 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LF311</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>OPA128</ogo:name>
+      <ogo:symbol>CA3140</ogo:symbol>
+      <ogo:description>Low Bias Current Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>gnd</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(13 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>128 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>3 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>118 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>10 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>100 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>120 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>140 uV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>OPA128</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>CA3130</ogo:name>
+      <ogo:symbol>CA3130</ogo:symbol>
+      <ogo:description>MOSFET Input CMOS Output Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(13 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>cmp</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>110 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>30 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>90 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1.5 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>100 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>32 uV/V</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>8 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>CA3130</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %cmp %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>CA3140</ogo:name>
+      <ogo:symbol>CA3140</ogo:symbol>
+      <ogo:description>MOSFET Input Operational Amplifier</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(35 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(35 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in-</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(-12 10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>-</ogo:text>
+          <ogo:position>(2 15)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>in+</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(-12 30)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:text>+</ogo:text>
+          <ogo:position>(2 35)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V+</ogo:name>
+          <ogo:text>7</ogo:text>
+          <ogo:position>(3 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>stb</ogo:name>
+          <ogo:text>8</ogo:text>
+          <ogo:position>(13 0)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V-</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(4 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>out</ogo:name>
+          <ogo:text>6</ogo:text>
+          <ogo:position>(46 20)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo+</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(14 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Vo-</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(24 50)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>100 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>SR</ogo:name>
+          <ogo:value>7 V/us</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>CMRR</ogo:name>
+          <ogo:value>90 dB</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rin</ogo:name>
+          <ogo:value>1.5 Tohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Rout</ogo:name>
+          <ogo:value>60 ohm</ogo:value>
+        </ogo:property>
+     <ogo:property>
+          <ogo:name>PSRR</ogo:name>
+          <ogo:value>80 dB</ogo:value>
+        </ogo:property>
+       <ogo:property>
+          <ogo:name>Vos</ogo:name>
+          <ogo:value>5 mV</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>CA3140</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@refdes %in+ %in- %V+ %V- %stb %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+
+
+
+
+  </ogo:parts>
+</ogo:library>

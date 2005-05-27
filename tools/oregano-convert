@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+
+# Fix the namespace.
+while (<>) {
+    if (/<schematic/) {
+	s/</<ogo:/;
+	s/>/ xmlns:ogo="http:\/\/www.dtek.chalmers.se\/~d4hult\/oregano\/v1">/;
+	print;
+	last;
+    }
+
+    if (/<schematic/) {
+	print;
+	last;
+    }
+
+    print;
+}
+
+# Add namespace to tags.
+while (<>) {
+    
+    if (/<[a-zA-Z]/) {
+	s/</<ogo:/;
+    }
+
+    s/<\//<\/ogo:/;
+    print;
+}
+
+

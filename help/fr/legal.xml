@@ -1,0 +1,28 @@
+  <legalnotice id="legalnotice">
+	<para>
+	  L'utilisateur est libre de copier, distribuer et/ou modifier le pr&eacute;sent document dans les termes de la GFDL (GNU Free Documentation License), Version 1.1 ou toute autre version ult&eacute;rieure publi&eacute;e par la Free Software Foundation sans section invariante, sans texte de page de couverture et sans textes de plat verso.  Vous trouverez un exemplaire de la GFDL au <ulink type="help" url="ghelp:fdl">lien</ulink> suivant ou dans le fichier COPYING-DOCS fourni avec le pr&eacute;sent manuel.
+         </para>
+         <para> Le pr&eacute;sent manuel fait partie d'une collection de manuels GNOME distribu&eacute;s dans les termes de la GFDL.  Vous souhaitez, si vous le souhaitez, le distribuer ind&eacute;pendamment de la collection en incluant un exemplaire de la licence du manuel, comme le d&eacute;crit la section 6 de la licence.
+	</para>
+
+	<para>
+	  La plupart des noms utilis&eacute;s par les entreprises pour leurs produits et leurs services sont des marques d&eacute;pos&eacute;es. Lorsque ces noms apparaissent dans la documentation GNOME et que les membres du projet de documentation GNOME sont inform&eacute;s de l'existence de ces marques d&eacute;pos&eacute;es, ces noms apparaissent en majuscules, ou la premi&egrave;re lettre en majuscule.
+	</para>
+
+	<para>
+	  LE PR&Eacute;SENT DOCUMENT ET SES VERSIONS DE MISE &Agrave; JOUR SONT FOURNIS SOUS LES CONDITIONS DE L'ACCORD DE LICENCE DE DOCUMENTATION LIBRE GNU, SACHANT QUE :
+
+	  <orderedlist>
+		<listitem>
+		  <para>LE PR&Eacute;SENT DOCUMENT EST FOURNI "TEL QUEL", SANS AUCUNE GARANTIE, EXPRESSE OU IMPLICITE, ET INCLUT SANS LIMITATION LES GARANTIES DE BONNE QUALIT&Eacute; MARCHANDE OU D'APTITUDE &Agrave; UN EMPLOI PARTICULIER OU AUTORIS&Eacute; DU DOCUMENT OU DE SA VERSION DE MISE &Agrave; JOUR. THE ENTIRE RISK AS TO THE QUALITY, ACCURACY, AND PERFORMANCE OF THE DOCUMENT OR MODIFIED VERSION OF THE DOCUMENT IS WITH YOU. DANS LE CAS OU UN DOCUMENT OU SA VERSION DE MISE &Agrave; JOUR S'AV&Eacute;RAIT D&Eacute;FECTUEUX DE QUELQUE MANI&Egrave;RE QUE CE SOIT, L'UTILISATEUR (ET NON LE REDACTEUR INITIAL, L'AUTEUR OU TOUT AUTRE PARTICIPANT) ENDOSSERA LES CO&Ucirc;TS N&Eacute;CESSAIRES &Agrave; TOUTE INTERVENTION, R&Eacute;PARATION OU CORRECTION. CETTE LIMITATION DE RESPONSABILIT&Eacute; CONSTITUE UNE PARTIE ESSENTIELLE DE LA PR&Eacute;SENTE LICENCE. AUCUNE UTILISATION DU PR&Eacute;SENT DOCUMENT OU DE SA VERSION DE MISE &Agrave; JOUR N'EST AUTORIS&Eacute;E AUX TERMES DU PR&Eacute;SENT ACCORD, EXCEPT&Eacute; SOUS CETTE LIMITATION DE RESPONSABILIT&Eacute; ;
+		  </para>
+		</listitem>
+		<listitem>
+		  <para>EN AUCUNE CIRCONSTANCE ET SOUS AUCUNE INTERPR&Eacute;TATION DE LA LOI, QU'IL S'AGISSE DE RESPONSABILIT&Eacute; CIVILE (Y COMPRIS LA N&Eacute;GLIGENCE), CONTRACTUELLE OU AUTRE, L'AUTEUR, LE R&Eacute;DACTEUR INITIAL, TOUT PARTICIPANT ET TOUT DISTRIBUTEUR DE CE DOCUMENTOU DE SA VERSION DE MISE &Agrave; JOUR AINSI QUE TOUT FOURNISSEUR DE QUELQUE PARTIE QUE CE SOIT NE POURRONT &Ecirc;TRE TENUS RESPONSABLES &Agrave; L'&Eacute;GARD DE QUICONQUE POUR TOUT DOMMAGE DIRECT, INDIRECT, PARTICULIER OU ACCIDENTEL DE TOUT TYPE Y COMPRIS, SANS LIMITATION, LES DOMMAGES LI&Eacute;S &Agrave; LA PERTE DE CLIENT&Egrave;LE, AUX ARR&Ecirc;TS DE TRAVAIL, AUX D&Eacute;FAILLANCES ET AUX DYSFONCTIONNEMENTS INFORMATIQUES OU TOUT AUTRE DOMMAGE OU PERTE LI&Eacute;E &Agrave; L'UTILISATION DU PR&Eacute;SENT DOCUMENT ET DE SES VERSIONS DE MISE &Agrave; JOUR, ET CE M&Ecirc;ME SI CES PARTIES ONT &Eacute;T&Eacute; INFORM&Eacute;ES DE LA POSSIBILIT&Eacute; DE TELS DOMMAGES.
+		  </para>
+		</listitem>
+	  </orderedlist>
+	</para>
+  </legalnotice>
+
+

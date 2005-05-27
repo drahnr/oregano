@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "/usr/share/xml/docbook/schema/dtd/4.1.2/docbookx.dtd" [
+  <!ENTITY legal SYSTEM "legal.xml">
+  <!ENTITY appversion "0.1">
+  <!ENTITY manrevision "0.1">
+	<!ENTITY date "03 Mayo 2004">
+  <!ENTITY app "<application>Oregano</application>">
+]>
+<article id="index" lang="fr">
+  <articleinfo>
+    <title>Manuel de l'Utilisateur d'<application>Oregano</application></title>
+		<copyright> 
+						<year>2003</year> 
+						<year>2004</year> 
+						<holder>LUGFi</holder> 
+    </copyright> 
+    <copyright> 
+						<year>1999</year> 
+						<year>2001</year> 
+						<year>2002</year> 
+						<holder>Richard Hult</holder> 
+    </copyright>
+    <publisher> 
+      <publishername> LUGFI </publishername> 
+    </publisher> 
+    
+    <authorgroup>
+      <author>
+							<firstname>Ricardo</firstname> <surname>Markiewicz</surname>
+	<affiliation>
+	  <address>
+						<email>rmarkie@fi.uba.ar</email>
+	  </address>
+		</affiliation>
+     </author>
+    </authorgroup>
+    <revhistory>
+	    <revision>
+				<revnumber>Oregano Manual V 0</revnumber>
+				<date>2004</date>
+				<revdescription>
+				  <para role="author">Ricardo Markiewicz</para>
+				</revdescription>
+      </revision>
+    </revhistory>
+
+    <releaseinfo>
+      Oregano est &agrave; la fois un logiciel de saisie de sch&eacute;ma
+      &eacute;l&eacute;ctrique et un outil de simulation. Dans son utilisation,
+      il simplifie la conception de cicuit &eacute;l&eacute;ctrique simple en
+      laissant l'utilisateur passer facilement de la saisie du
+      sch&eacute;ma &agrave; la simulation.
+      
+      Ce document ne pr&eacute;tend &ecirc;tre qu'une introduction &agrave; la simulation
+      &eacute;l&eacute;ctrique pour celui qui est d&eacute;j&agrave; familier &agrave; ce genre de pratique.
+    </releaseinfo> 
+      <legalnotice> 
+      <title>Retour d'exp&eacute;rience</title> 
+      <para>Pour faire part d'un problegrave;egrave;me our faire une suggestion au
+      sujet de <application>Oregano 2</application> ou de ce manuel, nous
+      vous proposons de suivre les instructions propos&eacute;es dans <ulink
+      url="ghelp:oregano-feedback" type="help">Oregano Feedback Page</ulink>.
+      </para>
+      </legalnotice>
+  </articleinfo>
+
+  <sect1 id="getting-started">
+    <title>Comment utiliser oregano pour la premi&egrave;re fois</title>
+
+    <para>Quand vous lancez Oregano, vous vous trouvez face &agrave; une feuille
+    de saisie vide, sur laquelle vous pouvez placer des composants et les
+    relier. Pour positionner un composant,s&eacute;l&eacute;ctionner le dans le navigateur
+    de composants install&eacute; sur le c&ocirc;t&eacute; droit de la fen&ecirc;tre de l'application.
+    Appuyer, alors, sur le boutton Placer ou bien clicker deux fois sur
+    le composant choisi. Vous pouvez aussi partir du composant pr&eacute;visualis&eacute;, 
+    le faire glisser et le coller sur la feuille de saisie.</para>
+    
+    <para>Une fois que quelques composants sont positionn&eacute;s sur la feuille
+    de saisie, vous pouvez commencez &agrave; les connecter. S&eacute;lectionner l'outil
+    de saisie des fils &eacute;l&eacute;ctriques sur la barre d'outils et clicker une fois
+    avec le boutton gauche de la souris pour d&eacute;terminer le lieu de d&eacute;part du
+    cablage. Pour arr&ecirc;ter le fil, cliquer &agrave; nouveau sur lieu o&ugrave; vous 
+    souhaiter l'arr&ecirc;ter.</para>
+
+    <para>Assurez-vous d'avoir connecter au moins une masse au circuit,
+    celle-ci &eacute;tant n&eacute;cessaire pour r&eacute;aliser une simulation.</para>
+
+  </sect1>
+
+  <sect1 id="editing">
+    <title>Saisie d'un circuit</title>
+
+    <para>Il existe quelques raccourcis calvier permettant d'acc&eacute;l&eacute;rer l'&eacute;dition du
+    sch&eacute;ma :</para>
+
+      <variablelist>
+	<varlistentry><term>Ctrl-A</term><listitem><para>Permet de s&eacute;lectionner tous les objets
+	sur le sch&eacute;ma</para>
+	</listitem></varlistentry>
+
+        <varlistentry><term>Ctrl-Shift-A</term><listitem><para>Permet de d&eacute;s&eacute;lectionner tous les objets</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>r</term><listitem><para>Permet de tourner l'objet s&eacute;lectionner de 90 degr&eacute;s dans le
+	sens des aiguilles d'une montre</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>&lt;Del&gt;</term><listitem><para>Permet de d&eacute;truire les objets s&eacute;lectionn&eacute;s</para>
+        </listitem></varlistentry>
+
+        <varlistentry><term>l</term><listitem><para>Permet de mette en place le composant s&eacute;lectionn&eacute;</para>
+        </listitem></varlistentry>
+
+      </variablelist>
+
+    <para>Composants et fils sont s&eacute;lectionn&eacute;s en cliquant dessus, et en maintenant la
+    touche Shiftn vous pouvez effectuer une s&eacute;lection multiple. Vous pouvez en outre
+    s&eacute;lectionner plusieurs objets en les 'entourrant' : maintenez le boutton gauche appuy&eacute;
+    lorsque vous encadrez les objets que vous d&eacute;sirez s&eacute;lectionner.</para>
+
+  </sect1>
+
+  <sect1 id="simulation">
+    <title>Simulation</title>
+
+    <para>Quand vous avez dessin&eacute; un circuit et souhaitez effectuer une simulation,
+    pressez soit le boutton sur la barre d'outils ou s&eacute;lectionner <guimenu>Outils
+    </guimenu>-&gt;<guimenuitem>Simulation</guimenuitem>.
+    La simulation est alors lanc&eacute;e et vous suivez sa progression sur la fen&ecirc;tre qui
+    apparait devant vous.</para>
+
+    <para>Si vous souhaitez changer les param&egrave;tres de simulation, s&eacute;lectionner
+    <guimenu>Param&egrave;tres</guimenu>-&gt;<guimenuitem>Param&egrave;tres de Simulation</guimenuitem>.
+    </para>
+
+  </sect1>
+</article>

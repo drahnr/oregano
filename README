@@ -1,0 +1,32 @@
+
+      Oregano - An electrical engineering tool for GNOME
+
+Oregano is an application for schematic capture and simulation of
+electrical circuits. The actual simulation is performed by Berkeley
+Spice, or GNUcap or the new generation ngspice.
+
+Oregano is licensed under the terms of the GNU GPL included in the
+file COPYING.
+
+You need libgnome2, libglade2, libgnomeprintui2, libgnomeui2, libgtksourceview1.0
+and libxml2 to run Oregano. 
+They can be found at ftp.gnome.org or mirrors. You must do 'make install' 
+before running Oregano. 
+
+Oregano still lacks many features. If you want to help out, please
+send an email to the project.
+
+Mailing List: arrakis-devel@lists.lug.fi.uba.ar
+WWW  : http://oregano.gforge.lug.fi.uba.ar/
+
+Note
+----
+This is an alpha release and things might not work as expected.
+Examples of things that are not finished:
+
+Plots: more or less there just to make it easier to see if simulation works.
+Undo, redo: Not implemented.
++ Lots more that I can't think of right now.
+
+LUGFI
+
