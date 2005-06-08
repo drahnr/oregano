@@ -47,10 +47,6 @@
 #include "gtkcairoplotitems.h"
 #include "gtkcairoplotmodel.h"
 
-/*
- * Unused header
-#include "pixmaps/mini_icon_plot.xpm"
-*/
 #define PLOT_PADDING_X 50
 #define PLOT_PADDING_Y 40
 #define PLOT_WIDTH 400
@@ -113,9 +109,6 @@ typedef struct {
 
 	gint width;  /* width of the plot, excluding */
 	gint height; /* axes, titles and padding etc */
-
-	gdouble x_factor,x_scale;
-	gdouble y_factor,y_scale;
 
 	gdouble plot_min, plot_max;
 	gdouble x_min,x_max;
@@ -378,7 +371,7 @@ static void
 make_plot (Plot *plot, gint plot_number)
 {
 	GtkTreeView *clist;
-	GtkTreeModel *model; //, *sort;
+	GtkTreeModel *model;
 
 	GtkTreeSelection *selection;
 	GList *sel, *l_iter;
@@ -441,31 +434,12 @@ make_plot (Plot *plot, gint plot_number)
 		sx = plot->plot_min;
 	}
 
-/*	get_order_of_magnitude(sx, &sy, &ey);
-	if (ey != 0.0) {
-		sy = pow (10.0, ey);
-		ysc = g_strdup_printf("%.1e", sy);
-	} else {
-		sy = 1.0;
-	}
-*/
-	plot->y_scale = sy;
-
 	x_min = plot->current->min_data[0];
 	x_max = plot->current->max_data[0];
 
-/*	get_order_of_magnitude(x_max, &sx, &ex);
-	if (ex != 0.0) {
-		sx = pow(10.0, ex);
-		xsc = g_strdup_printf("%.1e", sx);
-	} else
-		sx = 1.0;
-*/
-	plot->x_scale = sx;
 	if (plot->logx) {
 		x_min = log10(x_min);
 		x_max = log10(x_max);
-		plot->x_scale = 1.0;
 	}
 
 	/*
@@ -519,11 +493,6 @@ plot_window_create (Plot *plot)
 	GtkWidget *outer_table, *window, *button, *plot_scrolled;
 	GtkStyle *style;
 	GdkColormap *colormap;
-	/*
-	 * Unused variables
-	GdkPixmap *icon;
-	GdkBitmap *icon_mask;
-	*/
 	GladeXML *gui;
 	gchar *msg;
 	GtkCairoPlotViewItem *plot_title;
