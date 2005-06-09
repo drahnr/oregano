@@ -42,7 +42,7 @@
  * @return the name of a macro variable
  */
 static char *get_macro_name (const char *str, char **cls1,
-	char **cls2, unsigned int *sz)
+	char **cls2, size_t *sz)
 {
 	char separators[] = { ",.;/|()" };
 	GString *out;
