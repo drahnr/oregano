@@ -11,7 +11,7 @@ CLEANFILES = $(mime_DATA)
 
 install-data-hook: 
 if UPDATE_MIME
-	update-mime-database $(datadir)/mime
+	update-mime-database $(DESTDIR)$(datadir)/mime
 else
 	@true
 endif
