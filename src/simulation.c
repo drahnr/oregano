@@ -53,7 +53,7 @@ typedef struct {
 } Simulation;
 
 static int progress_bar_timeout_callback (Simulation *s);
-static void cancel_callback (GtkWidget *widget, ging arg1, Simulation *s);
+static void cancel_callback (GtkWidget *widget, gint arg1, Simulation *s);
 static void input_done_callback (SimEngine *engine, Simulation *s);
 static void input_aborted_callback (SimEngine *engine, Simulation *s);
 static gboolean simulate_cmd (Simulation *s);
