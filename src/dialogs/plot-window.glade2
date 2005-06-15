@@ -43,7 +43,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label3">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">    </property>
+		  <property name="label" translatable="no">    </property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -129,7 +129,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label4">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">    </property>
+		  <property name="label" translatable="no">    </property>
 		  <property name="use_underline">False</property>
 		  <property name="use_markup">False</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -172,7 +172,7 @@
 			  <property name="max_length">0</property>
 			  <property name="text" translatable="yes"></property>
 			  <property name="has_frame">True</property>
-			  <property name="invisible_char" translatable="yes">*</property>
+			  <property name="invisible_char" translatable="no">*</property>
 			  <property name="activates_default">False</property>
 			</widget>
 		      </child>
@@ -272,7 +272,7 @@
 	      <property name="max_length">0</property>
 	      <property name="text" translatable="yes">(0, 0)</property>
 	      <property name="has_frame">True</property>
-	      <property name="invisible_char" translatable="yes">*</property>
+	      <property name="invisible_char">*</property>
 	      <property name="activates_default">False</property>
 	      <property name="width_chars">14</property>
 	    </widget>
