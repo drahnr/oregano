@@ -53,7 +53,7 @@ typedef struct {
 } Simulation;
 
 static int progress_bar_timeout_callback (Simulation *s);
-static void cancel_callback (GtkWidget *widget, Simulation *s);
+static void cancel_callback (GtkWidget *widget, ging arg1, Simulation *s);
 static void input_done_callback (SimEngine *engine, Simulation *s);
 static void input_aborted_callback (SimEngine *engine, Simulation *s);
 static gboolean simulate_cmd (Simulation *s);
@@ -143,15 +143,12 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	w = glade_xml_get_widget (gui, "progressbar");
 	s->progress = GTK_PROGRESS_BAR (w);
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 0.0);
-//	gtk_widget_draw (w, NULL);	Aparently there is no need to do this, maybe gtk_widget_queue_draw_area ()
 
-/*		  gnome_dialog_button_connect (GNOME_DIALOG (s->dialog),
-		  0,
-		  cancel_callback,
-		  s);
+	g_signal_connect (G_OBJECT (s->dialog),
+		"response",
+		G_CALLBACK (cancel_callback),
+		s);
 
-		  gnome_dialog_set_parent (GNOME_DIALOG (s->dialog), GTK_WINDOW (sv->toplevel));
-*/
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
 
 	s->sv = sv;
@@ -241,7 +238,7 @@ input_aborted_callback (SimEngine *engine, Simulation *s)
 }
 
 static void
-cancel_callback (GtkWidget *widget, Simulation *s)
+cancel_callback (GtkWidget *widget, gint arg1, Simulation *s)
 {
 	g_return_if_fail (s != NULL);
 
