@@ -12,11 +12,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: src/dialogs.c:103
-#, fuzzy
 msgid ""
 "(c) 2003-2004 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
-msgstr "Copyright © 1999, 2000 Richard Hult"
+msgstr "Copyright © 2003-2004 LUGFI\n"
+"1999-2001 Richard Hult"
 
 #: src/dialogs.c:118
 msgid "Schematic capture and circuit simulation.\n"
@@ -170,7 +170,7 @@ msgstr ""
 
 #: src/part-item.c:656 src/part-item.c:812
 msgid "Could not create part properties dialog."
-msgstr "Konnte Teile-Eigenschften-Dialog nicht öffnene"
+msgstr "Konnte Teile-Eigenschaften-Dialog nicht öffnen."
 
 #: src/plot.c:67 src/plot.c:68
 msgid "Sans 10"
@@ -892,7 +892,7 @@ msgstr "Optionen"
 #: src/dialogs/clamp-properties-dialog.glade2.h:4
 #, fuzzy
 msgid "<b>Type</b>"
-msgstr "Transient"
+msgstr ""
 
 #: src/dialogs/clamp-properties-dialog.glade2.h:5
 #, fuzzy
@@ -940,7 +940,7 @@ msgstr "Oragano Logbuch Fenster"
 #: src/dialogs/page-properties.glade2.h:2
 #, fuzzy
 msgid "<b>Alignment</b>"
-msgstr "Transient"
+msgstr ""
 
 #: src/dialogs/page-properties.glade2.h:3
 #, fuzzy
@@ -959,7 +959,7 @@ msgstr ""
 #: src/dialogs/part-browser.glade2.h:1
 #, fuzzy
 msgid "<b>Preview</b>"
-msgstr "Fourier"
+msgstr ""
 
 #: src/dialogs/part-browser.glade2.h:2
 #, fuzzy
@@ -1009,7 +1009,7 @@ msgstr ""
 #: src/dialogs/plot-window.glade2.h:4
 #, fuzzy
 msgid "<b>Plot</b>"
-msgstr "Datei-Format"
+msgstr ""
 
 #: src/dialogs/plot-window.glade2.h:5
 #, fuzzy
@@ -1024,7 +1024,7 @@ msgstr "Fenster2"
 #: src/dialogs/properties.glade2.h:3
 #, fuzzy
 msgid "<b>Comments</b>"
-msgstr "Transient"
+msgstr ""
 
 #: src/dialogs/properties.glade2.h:4
 msgid "Author:"
@@ -1081,14 +1081,12 @@ msgid "GnuCap"
 msgstr ""
 
 #: src/dialogs/settings.glade2.h:13
-#, fuzzy
 msgid "Grid size[px]   "
-msgstr "Gittergrösse [pixel]:"
+msgstr "Gittergröße [px]:"
 
 #: src/dialogs/settings.glade2.h:14
-#, fuzzy
 msgid "Library"
-msgstr "Bilbliothek:"
+msgstr "Bilbliothek"
 
 #: src/dialogs/settings.glade2.h:15
 msgid "Model"
@@ -1134,19 +1132,16 @@ msgid "<b>AC</b>"
 msgstr ""
 
 #: src/dialogs/sim-settings.glade2.h:3
-#, fuzzy
 msgid "<b>DC Sweep</b>"
-msgstr "DC-Schleife"
+msgstr "<b>DC-Schleife</b>"
 
 #: src/dialogs/sim-settings.glade2.h:4
-#, fuzzy
 msgid "<b>Fourier</b>"
-msgstr "Fourier"
+msgstr "<b>Fourier</b>"
 
 #: src/dialogs/sim-settings.glade2.h:5
-#, fuzzy
 msgid "<b>Transient</b>"
-msgstr "Transient"
+msgstr "<b>Transient</b>"
 
 #: src/dialogs/sim-settings.glade2.h:6
 #, fuzzy
@@ -1233,7 +1228,7 @@ msgstr "Datei öffne"
 #: src/dialogs/textbox-properties-dialog.glade2.h:3
 #, fuzzy
 msgid "<b>Text</b>"
-msgstr "Transient"
+msgstr ""
 
 #: src/dialogs/textbox-properties-dialog.glade2.h:4
 msgid "ABCDEFGHIJK abcdefghi"
@@ -1252,12 +1247,12 @@ msgstr "Schaltungsname"
 #: src/dialogs/plot-export.glade2.h:2
 #, fuzzy
 msgid "<b>Format</b>"
-msgstr "Datei-Format"
+msgstr "Format"
 
 #: src/dialogs/plot-export.glade2.h:3
 #, fuzzy
 msgid "<b>Size</b>"
-msgstr "Transient"
+msgstr ""
 
 #: src/dialogs/plot-export.glade2.h:4
 msgid "Height : "
@@ -1351,7 +1346,7 @@ msgstr ""
 #~ msgstr "Kein Erdungspunkt. Abbruch\n"
 
 #~ msgid "_Close"
-#~ msgstr "_Schliessen"
+#~ msgstr "_Schließen"
 
 #, fuzzy
 #~ msgid "Print Schematic"
@@ -1427,7 +1422,7 @@ msgstr ""
 #~ msgstr "Stopzeit:"
 
 #~ msgid "Step size: "
-#~ msgstr "Schrittgrösse:"
+#~ msgstr "Schrittgröße:"
 
 #~ msgid "Enable"
 #~ msgstr "Aktivieren"
@@ -1471,4 +1466,4 @@ msgstr ""
 #~ msgid ""
 #~ "To place the selected part, either press the 'Place' button, press the "
 #~ "key 'l', or drag the preview to the sheet."
-#~ msgstr "Um das ausgewählte Teil zu plazieren entweder den den 'Plazieren'-Knopf drücken, die 'I'-Taste drücken oder die Vorschau auf die Seite ziehen"
+#~ msgstr "Um das ausgewählte Teil zu plazieren entweder den 'Plazieren'-Knopf drücken, die 'I'-Taste drücken oder die Vorschau auf die Seite ziehen"
