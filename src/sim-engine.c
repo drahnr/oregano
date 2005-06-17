@@ -265,6 +265,7 @@ sim_engine_start_with_file (SimEngine *engine, const gchar *netlist)
 	/* TODO Would be recomendable to use pthread? */
 	engine->child_pid = fork();
 	if (engine->child_pid == 0) {
+		setpgrp ();
 		/* Now oregano.simtype has gnucap or ngspice */
 		gchar *simexec = oregano.simexec;
         /* !!!!!!!!!!! "-s" "-n" */
@@ -357,7 +358,8 @@ sim_engine_stop (SimEngine *engine)
 	engine->data_input_id = 0;
 	engine->error_input_id = 0;
 
-	kill (engine->child_pid, SIGKILL);
+	kill (-engine->child_pid, SIGTERM);
+
 	waitpid (engine->child_pid, &status, WUNTRACED);
 	engine->child_pid = 0;
 
