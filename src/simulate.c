@@ -544,7 +544,7 @@ void nl_generate_spice (net_out * output, FILE *file, NetlistData * data)
 		   "*\tNGSPICE - NETLIST"
 		   "\n", file);
 	/* Prints Options */
-	fputs (".options NOPAGE\n",file);
+	fputs (".options NOPAGE \n",file);
 
 	while (list) {
 		so = list->data;
@@ -624,7 +624,7 @@ void nl_generate_gnucap (net_out * output, FILE *file, NetlistData * data)
 		   "*\tGNUCAP - NETLIST"
 		   "\n", file);
 	/* Prints Options */
-	fputs (".options OUT=120",file);
+	fputs (".options OUT=120 ",file);
 
 	while (list) {
 		so = list->data;
