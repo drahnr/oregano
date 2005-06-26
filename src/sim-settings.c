@@ -876,9 +876,23 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_tree_view_append_column(opt_list, column_option);
 	gtk_tree_view_append_column(opt_list, column_value);
 
-	for (i = 0; default_options[i].name; i++) {
-		gtk_list_store_append(opt_model, &iter);
-		gtk_list_store_set(opt_model, &iter, 0, default_options[i].name, -1);
+	if (s->priv->options == NULL) {
+		/* Load defaults */
+		for (i = 0; default_options[i].name; i++) {
+			gtk_list_store_append(opt_model, &iter);
+			gtk_list_store_set(opt_model, &iter, 0, default_options[i].name, -1);
+		}
+	} else {
+		/* Load schematic options */
+		list = s->priv->options;
+		while (list) {
+			SimOption *so = list->data;
+			if (so) {
+				gtk_list_store_append(opt_model, &iter);
+				gtk_list_store_set(opt_model, &iter, 0, so->name, -1);
+			}
+			list = list->next;
+		}
 	}
 
 	/* Set the optinos already stored */
