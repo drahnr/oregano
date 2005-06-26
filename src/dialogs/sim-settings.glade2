@@ -1632,7 +1632,7 @@
 	      </child>
 
 	      <child>
-		<widget class="GtkButton" id="button1">
+		<widget class="GtkButton" id="add_option">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
@@ -1674,7 +1674,7 @@
 			  </child>
 
 			  <child>
-			    <widget class="GtkLabel" id="add_option">
+			    <widget class="GtkLabel" id="labelbtn">
 			      <property name="visible">True</property>
 			      <property name="label" translatable="yes">Add new options</property>
 			      <property name="use_underline">True</property>
