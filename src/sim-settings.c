@@ -233,6 +233,39 @@ option_setvalue (GtkWidget *w, SimSettings *s)
 }
 
 static void
+add_option (GtkWidget *w, SimSettings *s)
+{
+	GtkEntry *entry;
+	GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add new option"),
+		NULL,
+		GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_STOCK_CANCEL,
+		GTK_RESPONSE_REJECT,
+		GTK_STOCK_OK,
+		GTK_RESPONSE_OK,
+		NULL);
+
+	entry = GTK_ENTRY (gtk_entry_new ());
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), GTK_WIDGET (entry));
+	gtk_widget_show (GTK_WIDGET (entry));
+
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_OK) {
+		GtkTreeIter iter;
+		SimOption *opt = g_new0 (SimOption, 1);
+		opt->name = g_strdup (gtk_entry_get_text (entry));
+		opt->value = g_strdup ("");
+		/* Warning : don't free opt later, is added to the list */
+		sim_settings_add_option (s, opt);
+	
+		gtk_list_store_append (GTK_LIST_STORE (gtk_tree_view_get_model(s->priv->w_opt_list)), &iter);
+		gtk_list_store_set (GTK_LIST_STORE (gtk_tree_view_get_model(s->priv->w_opt_list)), &iter, 0, opt->name, -1);
+	}
+
+	gtk_widget_destroy (dialog);
+}
+
+
+static void
 option_remove (GtkWidget *w, SimSettings *s)
 {
 	GtkTreeModel *model;
@@ -911,6 +944,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT(w),"clicked", G_CALLBACK(option_setvalue), s);
 	w = glade_xml_get_widget (gui, "opt_remove");
 	g_signal_connect (G_OBJECT(w),"clicked", G_CALLBACK(option_remove), s);
+	w = glade_xml_get_widget (gui, "add_option");
+	g_signal_connect (G_OBJECT(w),"clicked", G_CALLBACK(add_option), s);
 
 	/* Setup callbacks. */
 	g_signal_connect (G_OBJECT (pbox),
