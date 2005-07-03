@@ -209,7 +209,7 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	gchar *txt;
 	gboolean logx;
 	/* Window-View Port Transformation variables */
-	gdouble aX, bX, aY, bY;
+	gdouble aX, bX, aY, bY, xaxis_y, yaxis_x;
 
 	draw = GTK_CAIRO_PLOT_ITEM_DRAW (item);
 
@@ -261,9 +261,15 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	cairo_save (cr);
 
 	/* Y Axis */
+	yaxis_x = 0;
+	if (xmin > 0)
+		yaxis_x = xmin;
+	if (xmax < 0)
+		yaxis_x = xmax;
+
 	cairo_set_rgb_color (cr, 1, 0, 0);
-	cairo_move_to (cr, X(0), Y(ymin));
-	cairo_line_to (cr, X(0), Y(ymax));
+	cairo_move_to (cr, X(yaxis_x), Y(ymin));
+	cairo_line_to (cr, X(yaxis_x), Y(ymax));
 	cairo_stroke (cr);
 	cairo_set_rgb_color (cr, 0, 0, 0);
 		
@@ -287,13 +293,13 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 		txt = g_strdup_printf ("%.2f", y);
 		cairo_text_extents (cr, txt, &extend);
 
-		cairo_move_to (cr, X(0) - extend.width-6, Y(y));
+		cairo_move_to (cr, X(yaxis_x) - extend.width-6, Y(y));
 		cairo_show_text (cr, txt);
 
 		cairo_save (cr);
 			cairo_set_line_width (cr, 0.5);
-			cairo_move_to (cr, X(0)-5, Y(y));
-			cairo_line_to (cr, X(0)+5, Y(y));
+			cairo_move_to (cr, X(yaxis_x)-5, Y(y));
+			cairo_line_to (cr, X(yaxis_x)+5, Y(y));
 			cairo_stroke (cr);
 		cairo_restore (cr);
 		g_free (txt);
@@ -303,13 +309,13 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 		txt = g_strdup_printf ("%.2f", y);
 		cairo_text_extents (cr, txt, &extend);
 
-		cairo_move_to (cr, X(0) - extend.width-6, Y(y));
+		cairo_move_to (cr, X(yaxis_x) - extend.width-6, Y(y));
 		cairo_show_text (cr, txt);
 
 		cairo_save (cr);
 			cairo_set_line_width (cr, 0.5);
-			cairo_move_to (cr, X(0)-5, Y(y));
-			cairo_line_to (cr, X(0)+5, Y(y));
+			cairo_move_to (cr, X(yaxis_x)-5, Y(y));
+			cairo_line_to (cr, X(yaxis_x)+5, Y(y));
 			cairo_stroke (cr);
 		cairo_restore (cr);
 		cairo_stroke (cr);
@@ -334,10 +340,17 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 		g_free (y_title);
 		g_free (txt);
 	}
+
 	/* X Axis */
+	xaxis_y = 0;
+	if (ymin > 0)
+		xaxis_y = ymin;
+	if (ymax < 0)
+		xaxis_y = ymax;
+
 	cairo_set_rgb_color (cr, 1, 0, 0);
-	cairo_move_to (cr, X(xmin), Y(0));
-	cairo_line_to (cr, X(xmax), Y(0));
+	cairo_move_to (cr, X(xmin), Y(xaxis_y));
+	cairo_line_to (cr, X(xmax), Y(xaxis_y));
 	cairo_stroke (cr);
 	
 	paso = (xmax - xmin)/cant_y_vals;
@@ -355,7 +368,7 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 		else
 			txt = g_strdup_printf ("%.1e", xreal);
 		cairo_save (cr);
-			cairo_move_to (cr, X(x), Y(0)+7);
+			cairo_move_to (cr, X(x), Y(xaxis_y)+7);
 			cairo_rotate (cr, 45*DEGREE_TO_RADIANS);
 			cairo_show_text (cr, txt);
 		cairo_restore (cr);
@@ -363,8 +376,8 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 
 		cairo_save (cr);
 			cairo_set_line_width (cr, 0.5);
-			cairo_move_to (cr, X(x), Y(0)-5);
-			cairo_line_to (cr, X(x), Y(0)+5);
+			cairo_move_to (cr, X(x), Y(xaxis_y)-5);
+			cairo_line_to (cr, X(x), Y(xaxis_y)+5);
 			cairo_stroke (cr);
 		cairo_restore (cr);
 	}
