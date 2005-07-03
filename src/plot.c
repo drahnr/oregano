@@ -209,6 +209,8 @@ gchar *tmp;
 
 	if (!strcmp (str, "voltage")) {
 		tmp = g_strdup ("Volt");
+	} else if (!strcmp (str, "db") ) {
+		tmp = g_strdup ("db");
 	} else if (!strcmp (str, "time") ) {
 		tmp = g_strdup ("s");
 	} else if (!strcmp (str, "frequency") ) {
@@ -260,12 +262,20 @@ static gboolean
 plot_selected(GtkWidget *widget, GdkEventButton *event, Plot *plot)
 {
 	plot->selected = 0;
-	if (plot->ytitle) {
-		g_free (plot->ytitle);
-	}
 
-	plot->ytitle = get_variable_units(plot->current->var_units[plot->selected+1]);
+	if (plot->xtitle) g_free (plot->xtitle);
+	plot->xtitle = get_variable_units (plot->current->var_units[0]);
+
+	if (plot->ytitle) g_free (plot->ytitle);
+	plot->ytitle = get_variable_units (plot->current->var_units[1]);
+
+	g_object_set (G_OBJECT (plot->plot_model),
+		"x-unit", plot->xtitle,
+		"y-unit", plot->ytitle,
+		NULL);
+
 	show_plot (plot);
+
 	return TRUE;
 }
 
@@ -304,6 +314,8 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 
 	g_free (plot->xtitle);
 	plot->xtitle = get_variable_units (plot->current->var_units[0]);
+	g_free (plot->ytitle);
+	plot->ytitle = get_variable_units (plot->current->var_units[1]);
 
 	g_free (plot->title);
 	plot->title = g_strdup_printf(_("Plot - %s"),
@@ -653,7 +665,7 @@ plot_show (SimEngine *engine)
 
 	plot->title = g_strdup_printf (_("Plot - %s"), s_current);
 	plot->xtitle = get_variable_units (first ? first->var_units[0] : "##");
-	plot->ytitle = g_strdup (first ? first->var_units[1] : "!!");
+	plot->ytitle = get_variable_units (first ? first->var_units[1] : "!!");
 
 	g_object_set (G_OBJECT (plot->plot_model), "title", plot->title, NULL);
 

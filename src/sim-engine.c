@@ -601,19 +601,26 @@ data_input_cb (SimEngine *engine, gint source, GdkInputCondition condition)
 		}
 		for(i=0; i<n; i++) {
 			sdata->var_names[i] = g_strdup(variables[i].name);
-			/* FIXME : unit depend of user input !! */
 			switch (sdata->type) {
 			case TRANSIENT:
 				if (i==0)
 					sdata->var_units[i] = g_strdup("time");
-				else
-					sdata->var_units[i] = g_strdup("voltage");
+				else {
+					if (strstr (sdata->var_names[i], "db") != NULL) {
+						sdata->var_units[i] = g_strdup("db");
+					} else
+						sdata->var_units[i] = g_strdup("voltage");
+				}
 				break;
 			case AC:
 				if (i==0)
 					sdata->var_units[i] = g_strdup("frequency");
-				else
-					sdata->var_units[i] = g_strdup("voltage");
+				else {
+					if (strstr (sdata->var_names[i], "db") != NULL) {
+						sdata->var_units[i] = g_strdup("db");
+					} else
+						sdata->var_units[i] = g_strdup("voltage");
+				}
 				break;
 			default:
 				sdata->var_units[i] = g_strdup("");
