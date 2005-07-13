@@ -149,9 +149,9 @@ gtk_cairo_plot_model_init (GtkCairoPlotModel *model)
 	priv->y_title = NULL;
 	/* TODO : Provide destroy functions for key and value */
 	priv->functions = g_hash_table_new (g_str_hash, g_str_equal);
-	priv->x_max = G_MINDOUBLE;
+	priv->x_max = -G_MAXDOUBLE;
 	priv->x_min = G_MAXDOUBLE;
-	priv->y_max = G_MINDOUBLE;
+	priv->y_max = -G_MAXDOUBLE;
 	priv->y_min = G_MAXDOUBLE;
 }
 
@@ -352,9 +352,9 @@ gtk_cairo_plot_model_clear (GtkCairoPlotModel *model)
 
 	g_hash_table_destroy (model->priv->functions);
 	model->priv->functions = g_hash_table_new (g_str_hash, g_str_equal);
-	model->priv->x_max = G_MINDOUBLE;
+	model->priv->x_max = -G_MAXDOUBLE;
 	model->priv->x_min = G_MAXDOUBLE;
-	model->priv->y_max = G_MINDOUBLE;
+	model->priv->y_max = -G_MAXDOUBLE;
 	model->priv->y_min = G_MAXDOUBLE;
 }
 
