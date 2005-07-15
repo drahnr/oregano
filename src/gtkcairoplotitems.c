@@ -34,14 +34,15 @@
 static void cr_clear(cairo_t *cr, guint w, guint h)
 {
 	return;
-	cairo_save (cr);
+	/*cairo_save (cr);
 		cairo_set_operator (cr, CAIRO_OPERATOR_SRC);
-		cairo_set_rgb_color (cr, 1, 1, 1);
+		cairo_set_source_rgb (cr, 1, 1, 1);
 		cairo_set_alpha (cr, 0);
 		cairo_rectangle (cr, 0, 0, w, h);
 		cairo_fill (cr);
 		cairo_stroke (cr);
 	cairo_restore (cr);
+	*/
 }
 
 /* Buscar una manera de hacerlo mas "lindo" */
@@ -267,14 +268,15 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	if (xmax < 0)
 		yaxis_x = xmax;
 
-	cairo_set_rgb_color (cr, 1, 0, 0);
+	cairo_set_source_rgb (cr, 1, 0, 0);
+
 	cairo_move_to (cr, X(yaxis_x), Y(ymin));
 	cairo_line_to (cr, X(yaxis_x), Y(ymax));
 	cairo_stroke (cr);
-	cairo_set_rgb_color (cr, 0, 0, 0);
+	cairo_set_source_rgb (cr, 0, 0, 0);
 		
-	cairo_select_font (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-	cairo_scale_font (cr, 10);
+	cairo_select_font_face (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	cairo_set_font_size (cr, 10);
 
 	cairo_text_extents (cr, "1234567890", &extend);
 	cant_y_vals = 10;
@@ -290,7 +292,15 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 
 	/* Draw postives values */
 	for(y=0; y <= ceil(ymax); y+=paso) {
-		txt = g_strdup_printf ("%.2f", y);
+		double yreal;
+		yreal = y;
+		if (sy) yreal /= sy;
+
+		if (fabs(yreal) < 9e3)
+			txt = g_strdup_printf ("%.3f", yreal);
+		else
+			txt = g_strdup_printf ("%.1e", yreal);
+
 		cairo_text_extents (cr, txt, &extend);
 
 		cairo_move_to (cr, X(yaxis_x) - extend.width-6, Y(y));
@@ -306,7 +316,15 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	}
 	/* Draw negatives values */
 	for(y=0; y >= floor(ymin); y-=paso) {
-		txt = g_strdup_printf ("%.2f", y);
+		double yreal;
+		yreal = y;
+		if (sy) yreal /= sy;
+
+		if (fabs(yreal) < 9e3)
+			txt = g_strdup_printf ("%.3g", yreal);
+		else
+			txt = g_strdup_printf ("%.1e", yreal);
+
 		cairo_text_extents (cr, txt, &extend);
 
 		cairo_move_to (cr, X(yaxis_x) - extend.width-6, Y(y));
@@ -348,7 +366,8 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	if (ymax < 0)
 		xaxis_y = ymax;
 
-	cairo_set_rgb_color (cr, 1, 0, 0);
+	cairo_set_source_rgb (cr, 1, 0, 0);
+
 	cairo_move_to (cr, X(xmin), Y(xaxis_y));
 	cairo_line_to (cr, X(xmax), Y(xaxis_y));
 	cairo_stroke (cr);
@@ -358,11 +377,13 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	/* Prevent infinite loop */
 	if (paso < 1e-8) paso = 1e-8;
 
-	cairo_set_rgb_color (cr, 0, 0, 0);
+	cairo_set_source_rgb (cr, 0, 0, 0);
 	for (x=xmin; x <= xmax; x+=paso) {
 		gdouble xreal;
 
 		xreal = (logx)?pow(10,x):(x);
+		if (sx) xreal /= sx;
+
 		if (xreal < 9e3)
 			txt = g_strdup_printf ("%.3f", xreal);
 		else
@@ -401,8 +422,7 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	}
 
 	cairo_save (cr); /* Draw Lines */
-	cairo_set_rgb_color (cr, 0, 0, 0);
-	cairo_set_alpha (cr, 1);
+	cairo_set_source_rgba (cr, 0, 0, 0, 1);
 
 	current_color = 0;
 	for (node = funcs; node; node = node->next) {
@@ -411,7 +431,7 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 		}
 	
 		cairo_save (cr);
-		cairo_set_rgb_color (cr, 
+		cairo_set_source_rgb (cr, 
 			func_colors[current_color].r,
 			func_colors[current_color].g,
 			func_colors[current_color].b
@@ -503,9 +523,9 @@ gtk_cairo_plot_item_title_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel 
 	g_object_get (G_OBJECT (model), "title", &title, NULL);
 	if (title) {
 		cairo_save (cr);
-			cairo_set_rgb_color (cr, 0, 0, 0);
-			cairo_select_font (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-			cairo_scale_font (cr, 18);
+			cairo_set_source_rgb (cr, 0, 0, 0);
+			cairo_select_font_face (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+			cairo_set_font_size (cr, 18);
 	
 			cairo_text_extents (cr, "1234567890", &extend);
 
@@ -585,11 +605,10 @@ gtk_cairo_plot_item_rect_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	/* Redimensionar (es decir, eliminar y volver a crear) la surface para
 	 * este item no es util. Hay que reveer como hacerlo de mejor manera
 	 */
-	cairo_set_rgb_color (cr, 0, 0, 0);
+	cairo_set_source_rgb (cr, 0, 0, 0);
 	cairo_rectangle (cr, 0, 0, w, h);
 	cairo_save (cr);
-		cairo_set_alpha (cr, 0.2);
-		cairo_set_rgb_color (cr, 0.2, 0.7, 0.2);
+		cairo_set_source_rgba (cr, 0.2, 0.7, 0.2, 0.2);
 		cairo_fill (cr);
 	cairo_restore (cr);
 	cairo_stroke (cr);

@@ -48,7 +48,7 @@ PKG_CHECK_MODULES(OREGANO,
 	libxml-2.0 >= 0.14.0 \
 	libgnomecanvas-2.0 >= 2.2 \
 	gtksourceview-1.0 >= 1.0 \
-	cairo <= 0.4.0 \
+	cairo >= 0.5.0 \
 	libgnomeprintui-2.2 >= 1.106.0)
 
 

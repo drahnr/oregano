@@ -37,7 +37,7 @@ enum {
 
 struct _GtkCairoPlotViewPriv {
 	GList *items;
-	guint width, height;
+	gint width, height;
 	GtkCairoPlotViewItem *attached;
 	gboolean scaled;
 };
@@ -192,27 +192,6 @@ gtk_cairo_plot_view_new (void)
 	return view;
 }
 
-static void
-cairo_gdk (cairo_t* ct, GdkDrawable* window)
-{
-	Display* dpy;
-	Drawable drawable;
-	GdkDrawable* real_drawable;
-	gint x_off, y_off;
-
-	if (GDK_IS_WINDOW (window)) {
-		gdk_window_get_internal_paint_info (window, &real_drawable, &x_off, &y_off);
-		dpy = gdk_x11_drawable_get_xdisplay (real_drawable);
-		drawable = gdk_x11_drawable_get_xid (real_drawable);
-	} else {
-		dpy = gdk_x11_drawable_get_xdisplay (window);
-		drawable = gdk_x11_drawable_get_xid (window);
-	}
-	cairo_set_target_drawable (ct, dpy, drawable);
-    
-	if (GDK_IS_WINDOW (window)) cairo_translate (ct, -(double)x_off,-(double)y_off);
-}
-
 void 
 gtk_cairo_plot_view_set_scroll_region (GtkCairoPlotView *item, gdouble x1, gdouble x2, gdouble y1, gdouble y2)
 {
@@ -226,13 +205,30 @@ void
 gtk_cairo_plot_view_draw (GtkCairoPlotView *view, GtkCairoPlotModel *model, GdkWindow *window)
 {
 	cairo_t *cr;
+	cairo_surface_t *target;
+	GdkDrawable* real_drawable;
+	Display* dpy;
+	Drawable drawable;
+	gint x_off, y_off;
+	gint width, height;
 
 	g_return_if_fail (IS_GTK_CAIRO_PLOT_VIEW (view));
 	g_return_if_fail (IS_GTK_CAIRO_PLOT_MODEL (model));
 
-	cr = cairo_create ();  
+	gdk_window_get_internal_paint_info (window, &real_drawable, &x_off, &y_off);
+	dpy = gdk_x11_drawable_get_xdisplay (real_drawable);
+	drawable = gdk_x11_drawable_get_xid (real_drawable);
+	gdk_drawable_get_size (real_drawable, &width, &height);
+
+	view->priv->width = width;
+	view->priv->height = height;
+
+	target = cairo_xlib_surface_create (dpy, drawable,
+			gdk_x11_visual_get_xvisual (gdk_drawable_get_visual (real_drawable)),
+			width,
+			height);
 	
-	cairo_gdk (cr, window);
+	cr = cairo_create (target);
 
 	view->priv->scaled = FALSE;
 	gtk_cairo_plot_view_generic_draw (view, model, cr);
@@ -253,8 +249,8 @@ gtk_cairo_plot_view_generic_draw (GtkCairoPlotView *view, GtkCairoPlotModel *mod
 	g_return_if_fail (IS_GTK_CAIRO_PLOT_MODEL (model));
 
 	cairo_save (cr);
-		cairo_set_rgb_color (cr, 1, 1, 1);
-		cairo_rectangle (cr, 0, 0, 500, 500);
+		cairo_set_source_rgb (cr, 1, 1, 1);
+		cairo_rectangle (cr, 0, 0, view->priv->width, view->priv->height);
 		cairo_fill (cr);
 		cairo_stroke (cr);
 	cairo_restore (cr);
@@ -585,11 +581,11 @@ void
 gtk_cairo_plot_view_save (
 	GtkCairoPlotView *view, GtkCairoPlotModel *model, gint w, gint h, gchar *fn, int format)
 {
-	cairo_t *cr;
+	/*cairo_t *cr;
 	FILE *fp;
-	gdouble sx, sy;
+	gdouble sx, sy;*/
 
-	fp = fopen (fn, "w");
+	/*fp = fopen (fn, "w");
 	cr = cairo_create ();
 	switch (format) {
 		case GTK_CAIRO_PLOT_VIEW_SAVE_PNG:
@@ -612,5 +608,6 @@ gtk_cairo_plot_view_save (
 	cairo_show_page (cr);
 	cairo_destroy (cr);
 	fclose(fp);
+	*/
 }
 
