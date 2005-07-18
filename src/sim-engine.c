@@ -572,6 +572,7 @@ data_input_cb (SimEngine *engine, gint source, GdkInputCondition condition)
 		engine->num_analysis++;
 		sdata->state = STATE_IDLE;
 		sdata->type  = ANALYSIS_UNKNOWN;
+		sdata->functions = NULL;
 
 		/* Calculates the quantity of variables */
 		variables = _get_variables(buf, &n);
@@ -733,3 +734,28 @@ data_input_cb (SimEngine *engine, gint source, GdkInputCondition condition)
 		}
 	}
 }
+
+double
+sim_engine_do_function (SimulationFunctionType type, double first, double second)
+{
+	double outval = 0.0f;
+
+	switch (type) {
+		case FUNCTION_MINUS:
+			outval = first - second;
+		break;
+		case FUNCTION_TRANSFER:
+			if (second < 0.000001f) {
+				/* TODO */
+				if (first < 0)
+					outval = -G_MAXDOUBLE;
+				else
+					outval = G_MAXDOUBLE;
+			} else {
+				outval = first / second;
+			}
+		break;
+	}
+	return outval;
+}
+

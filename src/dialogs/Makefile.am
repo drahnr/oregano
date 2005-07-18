@@ -15,7 +15,8 @@ glade_DATA = 			\
 	view-netlist.glade2 \
 	splash.glade2 \
 	splash.xpm \
-	plot-export.glade2
+	plot-export.glade2 \
+	plot-add-function.glade2
 
 EXTRA_DIST = $(glade_DATA)
 

@@ -46,6 +46,7 @@
 #include "gtkcairoplotview.h"
 #include "gtkcairoplotitems.h"
 #include "gtkcairoplotmodel.h"
+#include "plot-add-function.h"
 
 #define PLOT_PADDING_X 50
 #define PLOT_PADDING_Y 40
@@ -67,14 +68,24 @@ const gchar *UPSCRIPT_FONT = N_("Sans 8");
 #define PLOT_AXIS_COLOR "black"
 #define PLOT_CURVE_COLOR "medium sea green"
 
-static int n_curve_colors = 5;
+static int n_curve_colors = 6;
 static char *plot_curve_colors[] = {
-	"medium sea green",
-	"royal blue",
-	"firebrick",
-	"gold",
-	"turquoise",
+	"black",
+	"blue",
+	"green",
+	"red",
+	"yellow",
+	"cyan",
 	0
+};
+
+static RGB plot_curve_colors_rgb[] = {
+	{0, 0, 0},
+	{0, 0, 1},
+	{0, 1, 0},
+	{1, 0, 0},
+	{1, 1, 0},
+	{0, 1, 1}
 };
 
 static gdouble x_min, x_max;
@@ -143,6 +154,7 @@ static void plot_zoom_150_cmd (GtkWidget *widget, Plot *plot);
 static void plot_zoom_200_cmd (GtkWidget *widget, Plot *plot);
 static void plot_toggle_cross (GtkWidget *widget, Plot *plot);
 static void plot_export (GtkWidget *widget, Plot *plot);
+static void add_function (GtkWidget *widget, Plot *plot);
 
 
 static GnomeUIInfo plot_file_menu[] =
@@ -154,6 +166,8 @@ static GnomeUIInfo plot_file_menu[] =
 	GNOMEUIINFO_SEPARATOR,
 	GNOMEUIINFO_ITEM_NONE(N_("Export plot"),
 		N_("Show the export menu"), plot_export),
+	GNOMEUIINFO_ITEM_NONE(N_("Add Function"),
+		N_("Add a new function to thegraphic"), add_function),
 	GNOMEUIINFO_SEPARATOR,
 	GNOMEUIINFO_MENU_CLOSE_ITEM(destroy_window,NULL),
 	GNOMEUIINFO_END
@@ -259,9 +273,29 @@ show_plot (Plot *plot)
 }
 
 static gboolean
-plot_selected(GtkWidget *widget, GdkEventButton *event, Plot *plot)
+plot_selected (GtkTreeView *treeview, GtkTreePath *arg1, GtkTreeViewColumn *arg2, Plot *plot)
 {
+	GtkTreeIter iter;
+	GtkTreeModel *model;
 	plot->selected = 0;
+	gboolean activo;
+
+	/* Check if selected row is leaf or root */
+	if (gtk_tree_path_get_depth (arg1) == 1) {
+		if (!gtk_tree_view_row_expanded (treeview, arg1))
+			gtk_tree_view_expand_row (treeview, arg1, FALSE);
+		else
+			gtk_tree_view_collapse_row (treeview, arg1);
+		return TRUE;
+	}
+
+	model = gtk_tree_view_get_model (treeview);
+	if (!gtk_tree_model_get_iter (model , &iter, arg1))
+		return TRUE;
+
+	gtk_tree_model_get (model, &iter, 0, &activo, -1);
+	activo = !activo;
+	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, activo, -1);
 
 	if (plot->xtitle) g_free (plot->xtitle);
 	plot->xtitle = get_variable_units (plot->current->var_units[0]);
@@ -287,7 +321,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	GtkWidget *entry;
 	GtkTreeView *list;
 	GtkTreeModel *model;
-	GtkTreeIter iter;
+	GtkTreeIter parent_nodes, parent_functions;
 	GList *analysis;
 	SimulationData *sdat;
 
@@ -307,7 +341,6 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 
 	if (plot->current == NULL) {
 		/* Simulation failed? */
-		//g_warning("No hay datos de la simulacion!!\n");
 		g_warning (_("No data for the Simulation !!\n"));
 		return;
 	}
@@ -328,21 +361,37 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 
 
 	/*  Set the variable names in the list  */
-	model = gtk_tree_view_get_model(GTK_TREE_VIEW(list));
-	//model = gtk_tree_model_sort_get_model(GTK_TREE_MODEL_SORT(sort));
-	gtk_list_store_clear(GTK_LIST_STORE(model));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
+	gtk_tree_store_clear (GTK_TREE_STORE (model));
+
+	/* Create root nodes */
+	gtk_tree_store_append (GTK_TREE_STORE (model), &parent_nodes, NULL);
+	gtk_tree_store_set (GTK_TREE_STORE (model), &parent_nodes, 0, FALSE, 1, _("Nodes"), 2, FALSE, 3, "white", -1);
+
+	gtk_tree_store_append(GTK_TREE_STORE(model), &parent_functions, NULL);
+	gtk_tree_store_set(GTK_TREE_STORE(model), &parent_functions, 0, NULL, 1, _("Functions"), 2, FALSE, 3, "white", -1);
+
 	for (i = 1; i < plot->current->n_variables; i++) {
+		GtkTreeIter iter;
 		if (plot->current->type != DC_TRANSFER) {
 			if (strchr(plot->current->var_names[i], '#') == NULL) {
-				gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-				gtk_list_store_set(GTK_LIST_STORE(model),
-					&iter, 0, plot->current->var_names[i],
+				gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
+				gtk_tree_store_set (GTK_TREE_STORE (model),
+					&iter,
+				 	0, FALSE, 
+					1, plot->current->var_names[i],
+				 	2, TRUE,
+					3, "white",
 					-1);
 			}
 		} else {
-			gtk_list_store_append(GTK_LIST_STORE(model), &iter);
-			gtk_list_store_set(GTK_LIST_STORE(model), &iter, 0,
-				plot->current->var_names[i], -1);
+			gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
+			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 
+				0, FALSE, 
+				1, plot->current->var_names[i],
+			 	2, TRUE,
+				3, "white",
+			 	-1);
 		}
 	}
 }
@@ -384,16 +433,14 @@ make_plot (Plot *plot, gint plot_number)
 {
 	GtkTreeView *clist;
 	GtkTreeModel *model;
-
-	GtkTreeSelection *selection;
-	GList *sel, *l_iter;
-
+	gboolean valid;
 	gchar *xtitle, *ytitle, *title;
+	GtkTreePath *path;
+	GtkTreeIter iter;
 
 	double plot_title_width, plot_title_height;
 	double y_factor, y;
 	double x_factor;
-	double y_min, y_max;
 	gint   i, j, k, npts, n_curve;
 	double data, data1;
 	char   *ysc=0,*xsc=0;
@@ -401,88 +448,97 @@ make_plot (Plot *plot, gint plot_number)
 	gdouble xmin, xmax;
 	gdouble ymin, ymax;
 
+	GList *l_iter;
+
 	clist = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT(plot->window), "clist"));
-	y_min = 1.0e20;
-	y_max =-1.0e20;
 	y = 0.0;
 
 	model = gtk_tree_view_get_model(GTK_TREE_VIEW(clist));
-
-	selection = gtk_tree_view_get_selection(clist);
-	sel = gtk_tree_selection_get_selected_rows(selection, &model);
-
-	l_iter = sel;
-	while (l_iter) {
-		gint *id = gtk_tree_path_get_indices(l_iter->data);
-		i = id[0] + 1;
-		y = plot->current->min_data[i];
-		if (y_min>y)
-			y_min=y;
-		y = plot->current->max_data[i];
-		if (y_max < y)
-			y_max = y;
-
-		l_iter = l_iter->next;
-	}
-
-	plot->logx = FALSE;
-	if (plot->current->type == AC) {
-		if (!strcmp (sim_settings_get_ac_type (plot->sim->sim_settings), "DEC"))
-			plot->logx = TRUE;
-	}
-
-	if (y_max == y_min) {
-		plot->plot_max = (y_max==0.0 ? 1.0 : 1.1 * y_max);
-		plot->plot_min = (y_max==0.0 ? -1.0 : 0.9 * y_max);
-	} else {
-		gdouble interval = (y_max - y_min);
-		plot->plot_max = y_max + 0.1 * interval;
-		plot->plot_min = y_min - 0.1 * interval;
-	}
-
-	if (fabs(plot->plot_max) > fabs(plot->plot_min)) {
-		sx = plot->plot_max;
-	} else {
-		sx = plot->plot_min;
-	}
-
-	x_min = plot->current->min_data[0];
-	x_max = plot->current->max_data[0];
-
-	if (plot->logx) {
-		x_min = log10(x_min);
-		x_max = log10(x_max);
-	}
 
 	/*
 	 * 2. Plot the curve, using the calculated scale factors.
 	 */
 	n_curve = 0;
-	l_iter = sel;
 	gtk_cairo_plot_model_clear (plot->plot_model);
-	while (l_iter) {
-		gint *id = gtk_tree_path_get_indices(l_iter->data);
+	i = 0;
+	path = gtk_tree_path_new_from_string ("0:0");
+	valid = gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_path_free (path);
+	while (valid) {
 		gdouble text_height;
-		plot_number = id[0]+1;
+		gboolean active;
+		gtk_tree_model_get (model, &iter, 0, &active, -1);
+		if (active) {
+			plot_number = i+1;
+			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, plot_curve_colors[n_curve], -1);
 
-		for (j = 0; j < plot->current->data[plot_number]->len; j++) {
-			/* Loop while the step is positive in the X axis. */
-			Point p;
-			data = g_array_index (
-				plot->current->data[plot_number],
-				double, j);
-			p.y = data;
-
-			data = g_array_index (plot->current->data[0], double, j);
-			/* TODO : que lo haga el plot view! */
-			if (plot->logx)
-				data = log10 (data);
-			p.x = data;
-			gtk_cairo_plot_model_add_point (plot->plot_model, plot->current->var_names[plot_number], p);
+			for (j = 0; j < plot->current->data[plot_number]->len; j++) {
+				/* Loop while the step is positive in the X axis. */
+				Point p;
+				data = g_array_index (
+					plot->current->data[plot_number],
+					double, j);
+				p.y = data;
+	
+				data = g_array_index (plot->current->data[0], double, j);
+				/* TODO : que lo haga el plot view! */
+				if (plot->logx)
+					data = log10 (data);
+				p.x = data;
+				gtk_cairo_plot_model_add_point (plot->plot_model, plot->current->var_names[plot_number], p);
+			}
+	
+			g_object_set (G_OBJECT (plot->plot_model), "logx", plot->logx, NULL);
+			n_curve++;
+		} else {
+			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, NULL, -1);
 		}
+		valid = gtk_tree_model_iter_next (model, &iter);
+		i++;
+	}
 
-		g_object_set (G_OBJECT (plot->plot_model), "logx", plot->logx, NULL);
-		n_curve++;
+	/* Plot Functions */
+	l_iter = plot->current->functions;
+	path = gtk_tree_path_new_from_string ("1:0");
+	valid = gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_path_free (path);
+	while (l_iter) {
+		gchar *name;
+		SimulationFunction *func = (SimulationFunction *)l_iter->data;
+
+		gdouble text_height;
+		gboolean active;
+		gtk_tree_model_get (model, &iter, 0, &active, -1);
+		if (active) {
+			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, plot_curve_colors[n_curve], -1);
+			name = g_strdup_printf ("%s-%s", plot->current->var_names[func->first], plot->current->var_names[func->second]);
+
+			for (j = 0; j < plot->current->data[func->first]->len; j++) {
+				/* Loop while the step is positive in the X axis. */
+				Point p;
+				data = g_array_index (
+					plot->current->data[func->first],
+					double, j);
+				p.y = data;
+	
+				data = g_array_index (
+					plot->current->data[func->second],
+					double, j);
+				p.y = sim_engine_do_function (func->type, p.y, data);
+		
+				data = g_array_index (plot->current->data[0], double, j);
+				/* TODO : que lo haga el plot view! */
+				if (plot->logx)
+					data = log10 (data);
+				p.x = data;
+			
+				gtk_cairo_plot_model_add_point (plot->plot_model, name, p);
+			}
+			n_curve++;
+		} else {
+			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, NULL, -1);
+		}
+		valid = gtk_tree_model_iter_next (model, &iter);
 		l_iter = l_iter->next;
 	}
 
@@ -496,8 +552,9 @@ make_plot (Plot *plot, gint plot_number)
 static GtkWidget *
 plot_window_create (Plot *plot)
 {
+	int i;
 	GtkTreeView *list;
-	GtkListStore *list_model;
+	GtkTreeStore *tree_model;
 	GtkCellRenderer *cell;
 	GtkTreeViewColumn *column;
 	GtkTreeSelection *selection;
@@ -576,30 +633,40 @@ plot_window_create (Plot *plot)
 		G_CALLBACK(destroy_window), plot);
 
 	list = GTK_TREE_VIEW(glade_xml_get_widget (gui, "variable_list"));
-	list_model = gtk_list_store_new(1, G_TYPE_STRING);
-	cell = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes("Variable", cell,
-		"text", 0, NULL);
+	tree_model = gtk_tree_store_new (4, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
 
-	gtk_tree_view_set_model(list, GTK_TREE_MODEL(list_model));
+	/* One Column with 2 CellRenderer. First the Toggle and next a Text */	
+	column = gtk_tree_view_column_new ();
+
+	cell = gtk_cell_renderer_toggle_new ();
+	gtk_tree_view_column_pack_start (column, cell, FALSE);
+	gtk_tree_view_column_set_attributes (column, cell, "active", 0, "visible", 2, NULL);
+
+	cell = gtk_cell_renderer_text_new();
+	gtk_tree_view_column_pack_start (column, cell, TRUE);
+	gtk_tree_view_column_set_attributes (column, cell, "text", 1, NULL);
+
+	cell = gtk_cell_renderer_text_new();
+	gtk_tree_view_column_pack_start (column, cell, FALSE);
+	gtk_cell_renderer_set_fixed_size (cell, 20, 20);
+	gtk_tree_view_column_set_attributes (column, cell, "background", 3, NULL);
+
 	gtk_tree_view_append_column(list, column);
+	gtk_tree_view_set_model(list, GTK_TREE_MODEL(tree_model));
 
 	gtk_object_set_data(GTK_OBJECT(window), "clist", list);
 
-	selection = gtk_tree_view_get_selection(list);
-	gtk_tree_selection_set_mode(selection, GTK_SELECTION_EXTENDED);
-
-	//gtk_widget_set_style (GTK_WIDGET (canvas), style);
-
 	gtk_widget_realize(GTK_WIDGET(window));
-//	icon = gdk_pixmap_create_from_xpm_d(window->window, &icon_mask, NULL, mini_icon_plot_xpm);
-//	set_small_icon (window->window, icon, icon_mask);
 	
 	gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (plot_plot_menu[1].widget), TRUE);
 
 	plot->combobox = glade_xml_get_widget (gui, "analysis_combo");
 	plot->window = window;
 	gtk_widget_show_all(window);
+
+	/* Init color pallette */
+	for (i=0; i<n_curve_colors; i++)
+		gtk_cairo_plot_item_set_pallette (i, plot_curve_colors_rgb[i]);
 
 	return window;
 }
@@ -669,8 +736,7 @@ plot_show (SimEngine *engine)
 
 	g_object_set (G_OBJECT (plot->plot_model), "title", plot->title, NULL);
 
-	g_signal_connect(G_OBJECT(list), "button_release_event",
-		G_CALLBACK(plot_selected), plot);
+	g_signal_connect(G_OBJECT(list), "row-activated", G_CALLBACK(plot_selected), plot);
 
 	g_free (s_current);
 
@@ -845,6 +911,60 @@ static void
 plot_toggle_cross (GtkWidget *widget, Plot *plot)
 {
 	plot->show_cursor = gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (widget));
+}
+
+static void
+add_function (GtkWidget *widget, Plot *plot)
+{
+	GtkTreeView *tree;
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	GList *lst;
+
+	plot_add_function_show (plot->sim, plot->current);
+
+	tree = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT (plot->window), "clist"));
+	model = gtk_tree_view_get_model (tree);
+
+	path = gtk_tree_path_new_from_string ("1");
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_path_free (path);
+	
+	gtk_tree_store_remove (GTK_TREE_STORE (model), &iter);
+
+	gtk_tree_store_append(GTK_TREE_STORE(model), &iter, NULL);
+	gtk_tree_store_set(GTK_TREE_STORE(model), &iter, 0, FALSE, 1, _("Functions"), 2, FALSE, 3, "white", -1);
+
+	lst = plot->current->functions;
+	while (lst)	{
+		GtkTreeIter child;
+		int i;
+		gchar *str, *name1, *name2;
+		SimulationFunction *func = (SimulationFunction *)lst->data;
+	
+		for (i = 1; i < plot->current->n_variables; i++) {
+			if (func->first == i) {
+				name1 = g_strdup (plot->current->var_names[i]);
+			}
+			if (func->second == i) {
+				name2 = g_strdup (plot->current->var_names[i]);
+			}
+		}
+		switch (func->type) {
+			case FUNCTION_MINUS:
+				str = g_strdup_printf ("%s - %s", name1, name2);
+			break;
+			case FUNCTION_TRANSFER:
+				str = g_strdup_printf ("%s(%s, %s)", _("TRANSFER"), name1, name2);
+		}
+		gtk_tree_store_append(GTK_TREE_STORE(model), &child, &iter);
+		gtk_tree_store_set(GTK_TREE_STORE(model), &child, 0, TRUE, 1, str, 2, TRUE, 3, "white", -1);
+
+		lst = lst->next;
+	}
+
+	show_plot (plot);
 }
 
 static void

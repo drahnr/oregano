@@ -58,6 +58,20 @@ typedef enum {
 	ANALYSIS_UNKNOWN
 } AnalysisType;
 
+
+#define INFINITE 1e50f
+
+typedef enum {
+	FUNCTION_MINUS = 0,
+	FUNCTION_TRANSFER
+} SimulationFunctionType;
+
+typedef struct _SimulationFunction {
+	SimulationFunctionType type;
+	guint first;
+	guint second;
+} SimulationFunction;
+
 struct _SimulationData {
 	AnalysisType type;
 	gboolean	 binary;
@@ -72,6 +86,9 @@ struct _SimulationData {
 	gint		 got_var;
 	gint		 got_points;
 	gint		 num_data;
+
+	/* Functions  typeof SimulationFunction */
+	GList *functions;
 };
 
 
@@ -170,5 +187,7 @@ gboolean sim_engine_get_op_value (SimEngine *engine,
 								  double    *value);
 
 gchar *sim_engine_analysis_name(SimulationData *);
+
+double sim_engine_do_function (SimulationFunctionType type, double first, double second);
 
 #endif

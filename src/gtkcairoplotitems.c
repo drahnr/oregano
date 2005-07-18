@@ -46,17 +46,7 @@ static void cr_clear(cairo_t *cr, guint w, guint h)
 }
 
 /* Buscar una manera de hacerlo mas "lindo" */
-typedef struct _rgb_ {
-	guint r, g, b;
-} RGB;
-
-RGB func_colors[] = {
-	{0, 0, 0},
-	{0,0,1},
-	{1,0,1},
-	{0.5,1,0.5},
-	{0,1,0}
-};
+RGB func_colors[6];
 
 #define NUMCOLORS (sizeof(func_colors)/sizeof(RGB))
 #define DEGREE_TO_RADIANS 0.017453293
@@ -244,21 +234,16 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 
 	get_order_of_magnitude((logx)?pow(10,xmax):xmax, &manx, &expx);
 	if (expx != 0.0) {
-		sx = pow(10.0, expx);
-		// Label para la unidad
-		//g_print ("%.1e\n", pow(10.0, expx));
+		sx = pow(10.0, expx-1);
 	} else {
 		sx = 1.0;
 	}
 	get_order_of_magnitude(ymax, &many, &expy);
 	if (expy != 0.0) {
-		sy = pow(10.0, expy);
-		// Label para la unidad
-		//g_print ("%.1e\n", pow(10.0, expx));
+		sy = pow(10.0, expy-1);
 	} else {
 		sy = 1.0;
 	}
-
 	cairo_save (cr);
 
 	/* Y Axis */
@@ -614,3 +599,11 @@ gtk_cairo_plot_item_rect_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	cairo_stroke (cr);
 }
 
+void  gtk_cairo_plot_item_set_pallette (guint index, RGB color)
+{
+	g_return_if_fail (index < NUMCOLORS);
+
+	func_colors[index].r = color.r;
+	func_colors[index].g = color.g;
+	func_colors[index].b = color.b;
+}

@@ -128,7 +128,9 @@ oregano_SOURCES = 	\
 	gtkcairoplotmodel.c \
 	gtkcairoplotmodel.h \
 	gtkcairoplotview.c \
-	gtkcairoplotview.h 
+	gtkcairoplotview.h \
+	plot-add-function.h \
+	plot-add-function.c
 
 oregano_LDADD = \
 	$(OREGANO_LIBS) 

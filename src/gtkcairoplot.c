@@ -302,7 +302,7 @@ rubberband_timeout_cb (GtkCairoPlot *plot)
 {
 	static guint old_x, old_y;
 	static guint old_area_x=0, old_area_y=0, old_area_w=500, old_area_h=500;
-	guint x, y;
+	gint x, y;
 	guint x1, y1, x2, y2;
 	GtkCairoPlotPriv *priv;
 	int swap;

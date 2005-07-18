@@ -38,6 +38,10 @@
 #define GTK_CAIRO_PLOT_ITEM_DRAW_CLASS(klass)  (G_TYPE_CHECK_CLASS_CAST(klass, GTK_CAIRO_PLOT_ITEM_DRAW_TYPE, GtkCairoPlotItemDrawClass))
 #define IS_GTK_CAIRO_PLOT_ITEM_DRAW(obj)       (G_TYPE_CHECK_INSTANCE_TYPE(obj, GTK_CAIRO_PLOT_ITEM_DRAW_TYPE))
 
+typedef struct _rgb_ {
+	guint r, g, b;
+} RGB;
+
 /* The View */
 typedef struct _GtkCairoPlotItemDraw GtkCairoPlotItemDraw;
 typedef struct _GtkCairoPlotItemDrawClass GtkCairoPlotItemDrawClass;
@@ -98,6 +102,8 @@ struct _GtkCairoPlotItemRectClass {
 };
 
 GType gtk_cairo_plot_item_rect_get_type (void);
+
+void  gtk_cairo_plot_item_set_pallette (guint index, RGB color);
 
 #endif
 
