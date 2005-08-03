@@ -51,17 +51,6 @@ static void nl_node_traverse (Node *node, GSList **);
 static GSList* nl_get_clamp_parts (NodeStore *store, Node *node);
 static void nl_node_traverse (Node *node, GSList **);
 
-
-GQuark
-oregano_simulate_error_quark (void) 
-{
-	static GQuark err = 0;
-	if (!err) {
-		err = g_quark_from_static_string ("oregano-simulate-error");
-	}
-	return err;
-}
-
 static void
 nl_wire_traverse (Wire *wire, GSList **lst)
 {
@@ -292,7 +281,7 @@ nl_generate (Schematic *sm, gchar *fn, GError **error)
 	/* Try to open the file.  Return NULL if it fails*/
 	if (open_nl_file(&name, &f) == FALSE ) {
 		g_set_error (error,
-			OREGANO_SIMULATE_ERROR,
+			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_IO_ERROR,
 				_("Possibly due an I/O error.")
 			);
@@ -321,7 +310,7 @@ nl_generate (Schematic *sm, gchar *fn, GError **error)
 		schematic_log_append (sm, _("No ground node. Aborting.\n"));
 		schematic_log_show (sm);
 		g_set_error (error,
-			OREGANO_SIMULATE_ERROR,
+			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_GND,
 				_("Possibly due to a faulty circuit schematic. Please check that\n"
 				"you have a Ground node and try again.")
@@ -341,7 +330,7 @@ nl_generate (Schematic *sm, gchar *fn, GError **error)
 		schematic_log_append (sm, _("No test clamps found. Aborting.\n"));
 		schematic_log_show (sm);
 		g_set_error (error,
-			OREGANO_SIMULATE_ERROR,
+			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_CLAMP,
 				_("Possibly due to a faulty circuit schematic. Please check that\n"
 					"you have one o more test clamps and try again.")

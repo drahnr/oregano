@@ -81,7 +81,6 @@ void	   schematic_set_filename (Schematic *schematic, const gchar *filename);
 char	  *schematic_get_netlist_filename (Schematic *schematic);
 void	   schematic_set_netlist_filename (Schematic *schematic, char *filename);
 int		   schematic_count (void);
-Schematic *schematic_read (char *fname);
 double	   schematic_get_zoom (Schematic *schematic);
 void	   schematic_set_zoom (Schematic *schematic, double zoom);
 void	   schematic_add_item (Schematic *sm, ItemData *data);
@@ -101,9 +100,10 @@ void	   schematic_log_append (Schematic *schematic, const char *message);
 void	   schematic_log_show (Schematic *schematic);
 GList	  *schematic_get_log_text (Schematic *schematic);
 int	   schematic_count (void);
-Schematic *schematic_read (char *fname);
 gboolean schematic_is_dirty(Schematic *sm);	
 void     schematic_set_dirty(Schematic *sm, gboolean b);
+gint schematic_save_file (Schematic *sm, GError **error);
+Schematic *schematic_read (char *fname, GError **error);
 
 #endif /* __SCHEMATIC_H__ */
 

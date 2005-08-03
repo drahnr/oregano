@@ -215,9 +215,9 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 	name = nl_generate (sm, NULL, &error);
 
 	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 			char *str;
 			str = g_strdup_printf (
 				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
@@ -433,9 +433,9 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 	name = nl_generate (sm, NULL, &error);
 	
 	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 			char *str;
 			str = g_strdup_printf (
 				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),

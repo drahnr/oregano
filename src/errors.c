@@ -1,9 +1,9 @@
 /*
- * simulate.h
+ * errors.c
  *
  *
  * Author:
- *  Andres de Barbara <adebarbara.fi.uba.ar>
+ *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *
  * Copyright (C) 2003  Andres de Barbara
  *
@@ -23,22 +23,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __SIMULATE_H
-#define __SIMULATE_H
-
-#include <config.h>
-#include <gnome.h>
-#include <glib.h>
-#include "schematic.h"
 #include "errors.h"
 
-/**
- * Please add a real comment. Describe:
- *
- * @param sm Schematic and
- * @param name gchar also
- * @return gchar*
- */
-gchar *nl_generate (Schematic *sm, gchar *name, GError **error);
+GQuark
+oregano_error_quark (void) 
+{
+	static GQuark err = 0;
+	if (!err) {
+		err = g_quark_from_static_string ("oregano-error");
+	}
+	return err;
+}
 
-#endif

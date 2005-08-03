@@ -1,11 +1,14 @@
 /*
- * simulate.h
+ * file-manager.h
  *
  *
- * Author:
- *  Andres de Barbara <adebarbara.fi.uba.ar>
+ * Authors:
+ *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Andres de Barbara <adebarbara@fi.uba.ar>
  *
- * Copyright (C) 2003  Andres de Barbara
+ * Web page: http://arrakis.lug.fi.uba.ar/
+ *
+ * Copyright (C) 2003,2005  LUGFI
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,22 +26,26 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __SIMULATE_H
-#define __SIMULATE_H
+#ifndef _FILE_MANAGER_H_
+#define _FILE_MANAGER_H_ 1
 
-#include <config.h>
-#include <gnome.h>
-#include <glib.h>
+#include <gtk/gtk.h>
 #include "schematic.h"
-#include "errors.h"
 
-/**
- * Please add a real comment. Describe:
- *
- * @param sm Schematic and
- * @param name gchar also
- * @return gchar*
- */
-gchar *nl_generate (Schematic *sm, gchar *name, GError **error);
+/* Oregano Files */
+#include "load-schematic.h"
+#include "save-schematic.h"
+
+#define FILE_TYPE(a,b,c,d) {a, b, c, d}
+
+typedef struct _file_manager_ext_ {
+	gchar *extension;
+	gchar *description;
+	int (*load_func)(Schematic *schematic, const gchar *filename);
+	int (*save_func)(Schematic *schematic);
+} FileType;
+
+FileType *file_manager_get_handler (const gchar *fname);
 
 #endif
+

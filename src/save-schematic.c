@@ -59,21 +59,6 @@ typedef struct {
 	xmlNodePtr node_textboxes;
 } parseXmlContext;
 
-static gint schematic_write_xml (Schematic *sm);
-
-gint
-schematic_save_file (Schematic *sm)
-{
-	g_return_val_if_fail (sm != NULL, FALSE);
-
-	if (schematic_write_xml (sm)) {
-		schematic_set_dirty (sm, FALSE);
-		return TRUE;
-	}
-
-	return FALSE; // Save fails!
-}
-
 static void
 write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 {
@@ -518,7 +503,8 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm)
  *
  * Save a Sheet to an XML file.
  */
-static gint
+
+gint
 schematic_write_xml (Schematic *sm)
 {
 	int ret = -1;

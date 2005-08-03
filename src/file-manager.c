@@ -1,16 +1,14 @@
 /*
- * save-schematic.h
+ * file-manager.c
  *
  *
  * Authors:
- *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
- * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2004  LUGFI
+ * Copyright (C) 2003,2005  LUGFI
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,12 +25,42 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef _SAVE_SCHEMATIC_H
-#define _SAVE_SCHEMATIC_H
 
-#include <glib.h>
-#include "schematic.h"
+#include "file-manager.h"
 
-gint schematic_write_xml (Schematic *sm);
+FileType file_types[] = {
+	FILE_TYPE("oregano", "Oregano Schematic File", schematic_parse_xml_file, schematic_write_xml)
+};
 
-#endif
+#define FILE_TYPES_COUNT (sizeof(file_types)/sizeof(FileType))
+
+
+FileType *file_manager_get_handler (const gchar *fname)
+{
+	int i;
+	gchar *ext, *ptr;
+	FileType *ft = NULL; 
+
+	g_return_val_if_fail (fname != NULL, NULL);
+
+	g_print ("File : (%s)\n", fname);
+
+	ptr = ext = (gchar *)fname;
+
+	/* Search for file extension */
+	while (*ptr != '\0') {
+		if (*ptr == '.') {
+			ext = ptr + 1;
+		}
+		ptr++;
+	}
+
+	for (i=0; i<FILE_TYPES_COUNT; i++)
+		if (!strcmp (file_types[i].extension, ext)) {
+			ft = &file_types[i];
+			break;
+		}
+
+	return ft;
+}
+

@@ -29,12 +29,15 @@
  */
 
 #include <gtk/gtk.h>
+#include <glib.h>
 #include "schematic.h"
 #include "node-store.h"
-#include "load-schematic.h"
+//#include "load-schematic.h"
+#include "file-manager.h"
 #include "settings.h"
 #include "sim-settings.h"
 #include "simulation.h"
+#include "errors.h"
 
 struct _SchematicPriv {
 	char *title;
@@ -540,12 +543,13 @@ schematic_count (void)
 }
 
 Schematic *
-schematic_read (char *name)
+schematic_read (char *name, GError **out_error)
 {
 	Schematic *new_sm;
 	int ret;
 	char *fname;
 	GError *error = NULL;
+	FileType *ft;
 
 	g_return_val_if_fail (name != NULL, NULL);
 
@@ -556,22 +560,53 @@ schematic_read (char *name)
 	}
 
 	if (!g_file_test (fname, G_FILE_TEST_EXISTS)) {
-		//new_sm = schematic_new ();
-		//schematic_set_filename (new_sm, fname);
-		g_print ("File (%s) couldn't be load!\n", fname);
+		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+			_("File (%s) does not exists."), fname);
+		return NULL;
+	}
+
+	/* Get File Handler */
+	ft = file_manager_get_handler (fname);
+	if (ft == NULL) {
+		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+			_("Unknown file format for (%s)."), fname);
 		return NULL;
 	}
 
 	new_sm = schematic_new ();
-	ret = schematic_parse_xml_file(new_sm, fname);
+
+	/* TODO : Add GError-like error reporting! */
+	ret = ft->load_func (new_sm, fname);
 
 	if (ret) {
 		g_object_unref(G_OBJECT(new_sm));
 		new_sm = NULL;
+		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+			_("Load fails!."), fname);
+	} else
+		schematic_set_dirty (new_sm, FALSE);
+
+	return new_sm;
+}
+
+gint
+schematic_save_file (Schematic *sm, GError **error)
+{
+	FileType *ft;
+
+	g_return_val_if_fail (sm != NULL, FALSE);
+
+	ft = file_manager_get_handler (schematic_get_filename (sm));
+
+	if (ft == NULL)
+		return;
+
+	if (ft->save_func (sm)) {
+		schematic_set_dirty (sm, FALSE);
+		return TRUE;
 	}
 
-	schematic_set_dirty (new_sm, FALSE);
-	return new_sm;
+	return FALSE; // Save fails!
 }
 
 void

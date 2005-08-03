@@ -87,6 +87,7 @@ dialog_save_as (SchematicView *sv)
 	GtkFileFilter *orefilter, *allfilter;
 	char *name;
 	Schematic *sm;
+	GError *error = NULL;
 
 	orefilter = gtk_file_filter_new ();
 	allfilter = gtk_file_filter_new ();
@@ -124,7 +125,7 @@ dialog_save_as (SchematicView *sv)
 			schematic_set_filename (sm, tmp);
 			// schematic_set_title (sm, (gchar *) g_basename (tmp));
 
-			if (!schematic_save_file (sm)){
+			if (!schematic_save_file (sm, &error)){
 				char *msg = g_strdup_printf (
 					"Could not save Schematic file %s\n",
 					tmp);

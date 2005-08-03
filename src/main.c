@@ -165,11 +165,13 @@ main (int argc, char **argv)
 
 	startup_files = (char **) poptGetArgs (ctx);
 	if (startup_files) {
+		GError *error = NULL;
+
 		for (i = 0; startup_files[i]; i++) {
 			Schematic *new_schematic;
 			char *fname = startup_files[i];
 
-			new_schematic = schematic_read (fname);
+			new_schematic = schematic_read (fname, &error);
 			if (new_schematic) {
 				schematic_view = schematic_view_new (new_schematic);
 

@@ -60,7 +60,7 @@
 #include "plot.h"
 #include "sheet-item-factory.h"
 #include "part-item.h"
-//#include "netlist-editor.h"
+#include "errors.h"
 #include "node-item.h"
 
 /* remove: */
@@ -355,6 +355,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 	SchematicView *new_sv;
 	char *fname;
 	GList *list;
+	GError *error = NULL;
 
 	fname = dialog_open_file (sv);
 	if (fname == NULL)
@@ -374,7 +375,16 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 	while (gtk_events_pending())
 		gtk_main_iteration();
 
-	new_sm = schematic_read(fname);
+	new_sm = schematic_read(fname, &error);
+
+	if (error != NULL) {
+		gchar *msg;
+		msg = g_strdup_printf (
+			_("<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n\n%s"),
+			(gchar *)error->message);
+		oregano_error (msg);
+		g_free (msg);
+	}
 
 	if (new_sm) {
 		if (!new_sv)
@@ -395,7 +405,7 @@ save_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
 	char *filename;
-
+	GError *error = NULL;
 	sm = sv->priv->schematic;
 	filename = schematic_get_filename (sm);
 
@@ -403,7 +413,7 @@ save_cmd (GtkWidget *widget, SchematicView *sv)
 		dialog_save_as (sv);
 		return;
 	} else {
-		if (!schematic_save_file (sm)){
+		if (!schematic_save_file (sm, &error)){
 			char *msg = g_strdup_printf (
 				_("<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n</span>%s\n"),
 				filename);
@@ -763,9 +773,9 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 	g_free (netlist_name);
 	
 	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 			char *str;
 			str = g_strdup_printf (
 				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
@@ -890,9 +900,9 @@ simulate_cmd (GtkWidget *widget, SchematicView *sv)
 	filename = nl_generate (sm, NULL, &error);
 
 	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_SIMULATE_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 			char *str;
 			str = g_strdup_printf (
 				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
@@ -1537,6 +1547,7 @@ can_close (SchematicView *sv)
 	GtkWidget *dialog, *lb;
 	gchar *text, *filename;
 	gint result;
+	GError *error = NULL;
 
 	if (!schematic_is_dirty (schematic_view_get_schematic (sv)))
 		return TRUE;
@@ -1568,7 +1579,7 @@ can_close (SchematicView *sv)
 
 	switch (result) {
 		case GTK_RESPONSE_YES:
-			schematic_save_file (schematic_view_get_schematic (sv));
+			schematic_save_file (schematic_view_get_schematic (sv), &error);
 		break;
 		case GTK_RESPONSE_NO:
 			schematic_set_dirty (schematic_view_get_schematic (sv), FALSE);
@@ -1825,6 +1836,7 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 	gchar **files;
 	GtkTargetEntry *array;
 	guint narray;
+	GError *error = NULL;
 
 	/*
 	 * Extract the filenames from the URI-list we recieved.
@@ -1852,7 +1864,7 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 
 					gchar *fname = files[i];
 
-					new_sm = schematic_read (fname);
+					new_sm = schematic_read (fname, &error);
 					if (new_sm) {
 							SchematicView *new_view;
 						new_view = schematic_view_new (new_sm);

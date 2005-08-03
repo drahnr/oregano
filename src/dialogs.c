@@ -85,7 +85,7 @@ void
 dialog_about (void)
 {
 	GdkPixbuf *logo;
-	GError *error;
+	GError *error = NULL;
 
 	const gchar *authors[] = {
 		"Margarita Manterola",
