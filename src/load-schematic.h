@@ -33,7 +33,7 @@
 #include <glib.h>
 #include "schematic.h"
 
-gint schematic_parse_xml_file (Schematic *sm, const gchar *filename);
+gint schematic_parse_xml_file (Schematic *sm, const gchar *filename, GError **);
 
 
 #endif

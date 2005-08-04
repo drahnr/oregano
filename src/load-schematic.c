@@ -41,6 +41,7 @@
 #include "part-label.h"
 #include "sim-settings.h"
 #include "textbox.h"
+#include "errors.h"
 
 typedef enum {
 	PARSE_START,
@@ -241,7 +242,7 @@ create_part (ParseState *state)
 }
 
 int
-schematic_parse_xml_file (Schematic *sm, const char *filename)
+schematic_parse_xml_file (Schematic *sm, const char *filename, GError **error)
 {
 	ParseState state;
 	int retval  = 0;
@@ -254,11 +255,24 @@ schematic_parse_xml_file (Schematic *sm, const char *filename)
 
 	if (oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename) < 0) {
 		g_warning ("Document not well formed!");
+		if (error != NULL) {
+			g_set_error (error,
+				OREGANO_ERROR,
+				OREGANO_SCHEMATIC_BAD_FILE_FORMAT,
+				_("Bad file format."));
+		}
 		retval = -1;
 	}
 
-	if (state.state == PARSE_ERROR)
+	if (state.state == PARSE_ERROR) {
+		if (error != NULL) {
+			g_set_error (error,
+				OREGANO_ERROR,
+				OREGANO_SCHEMATIC_BAD_FILE_FORMAT,
+				_("Unknown parser error."));
+		}
 		retval = -2;
+	}
 
 	schematic_set_author (sm, state.author);
 	schematic_set_title (sm, state.title);

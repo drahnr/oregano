@@ -557,6 +557,10 @@ schematic_read (char *name, GError **out_error)
 
 	if (!fname) {
 		fname = name;
+		if (error) {
+			g_error_free (error);
+			error = NULL;
+		}
 	}
 
 	if (!g_file_test (fname, G_FILE_TEST_EXISTS)) {
@@ -576,7 +580,13 @@ schematic_read (char *name, GError **out_error)
 	new_sm = schematic_new ();
 
 	/* TODO : Add GError-like error reporting! */
-	ret = ft->load_func (new_sm, fname);
+	ret = ft->load_func (new_sm, fname, &error);
+
+	if (error != NULL) {
+		g_propagate_error (out_error, error);
+		g_object_unref(G_OBJECT(new_sm));
+		return;
+	}
 
 	if (ret) {
 		g_object_unref(G_OBJECT(new_sm));

@@ -41,7 +41,7 @@
 typedef struct _file_manager_ext_ {
 	gchar *extension;
 	gchar *description;
-	int (*load_func)(Schematic *schematic, const gchar *filename);
+	int (*load_func)(Schematic *schematic, const gchar *filename, GError **error);
 	int (*save_func)(Schematic *schematic);
 } FileType;
 
