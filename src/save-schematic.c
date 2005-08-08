@@ -417,7 +417,7 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
  * Create an XML subtree of doc equivalent to the given Schematic.
  */
 static xmlNodePtr
-write_xml_schematic (parseXmlContext *ctxt, Schematic *sm)
+write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 {
 	xmlNodePtr cur;
 	xmlNodePtr grid;
@@ -505,11 +505,12 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm)
  */
 
 gint
-schematic_write_xml (Schematic *sm)
+schematic_write_xml (Schematic *sm, GError **error)
 {
 	int ret = -1;
 	xmlDocPtr xml;
 	parseXmlContext ctxt;
+	GError *internal_error = NULL;
 
 	g_return_val_if_fail (sm != NULL, FALSE);
 
@@ -524,7 +525,12 @@ schematic_write_xml (Schematic *sm)
 	ctxt.ns = NULL;
 	ctxt.doc = xml;
 
-	xmlDocSetRootElement(xml, write_xml_schematic(&ctxt, sm));
+	xmlDocSetRootElement(xml, write_xml_schematic(&ctxt, sm, &internal_error));
+
+	if (internal_error) {
+		g_propagate_error (error, internal_error);
+		return FALSE;
+	}
 
 	/*
 	 * Dump the tree.

@@ -33,6 +33,6 @@
 #include <glib.h>
 #include "schematic.h"
 
-gint schematic_write_xml (Schematic *sm);
+gint schematic_write_xml (Schematic *sm, GError **error);
 
 #endif

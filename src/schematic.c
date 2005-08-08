@@ -603,19 +603,26 @@ gint
 schematic_save_file (Schematic *sm, GError **error)
 {
 	FileType *ft;
+	GError *internal_error = NULL;
 
 	g_return_val_if_fail (sm != NULL, FALSE);
 
 	ft = file_manager_get_handler (schematic_get_filename (sm));
 
-	if (ft == NULL)
+	if (ft == NULL) {
+		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+			_("Unknown file format for (%s)."), schematic_get_filename (sm));
 		return;
+	}
 
-	if (ft->save_func (sm)) {
+	if (ft->save_func (sm, &internal_error)) {
 		schematic_set_dirty (sm, FALSE);
 		return TRUE;
 	}
 
+	g_propagate_error (error, internal_error);
+
+	g_error_free (internal_error);
 	return FALSE; // Save fails!
 }
 

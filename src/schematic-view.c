@@ -384,6 +384,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 			(gchar *)error->message);
 		oregano_error (msg);
 		g_free (msg);
+		g_error_free (error);
 	}
 
 	if (new_sm) {
@@ -416,9 +417,10 @@ save_cmd (GtkWidget *widget, SchematicView *sv)
 		if (!schematic_save_file (sm, &error)){
 			char *msg = g_strdup_printf (
 				_("<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n</span>%s\n"),
-				filename);
+				error->message);
 			oregano_error (msg);
 			g_free (msg);
+			g_error_free (error);
 		}
 	}
 }
@@ -909,7 +911,7 @@ simulate_cmd (GtkWidget *widget, SchematicView *sv)
 				error->message);
 			oregano_error (str);
 			g_free (str);
-			g_clear_error (&error);
+			g_error_free (error);
 		} else {
 			oregano_error (
 				_("<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"));
