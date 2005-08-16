@@ -341,7 +341,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 
 	if (plot->current == NULL) {
 		/* Simulation failed? */
-		g_warning (_("No data for the Simulation !!\n"));
+		g_warning (_("The simulation produced no data!!\n"));
 		return;
 	}
 
