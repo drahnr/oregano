@@ -11,12 +11,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: ../src/dialogs.c:109
-#, fuzzy
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 msgstr ""
-"Copyright © 2003-2004 LUGFI\n"
+"Copyright © 2003-2005 LUGFI\n"
 "1999-2001 Richard Hult"
 
 #: ../src/dialogs.c:124
@@ -238,9 +237,8 @@ msgid "Show crosshairs"
 msgstr ""
 
 #: ../src/plot.c:197
-#, fuzzy
 msgid "_Zoom"
-msgstr "Zoom"
+msgstr "_Zoom"
 
 #: ../src/plot.c:204
 #, fuzzy
@@ -263,21 +261,20 @@ msgstr ""
 #: ../src/plot.c:354 ../src/plot.c:733
 #, fuzzy, c-format
 msgid "Plot - %s"
-msgstr "Plot"
+msgstr "Plot - %s"
 
 #: ../src/plot.c:369
 msgid "Nodes"
 msgstr ""
 
 #: ../src/plot.c:372 ../src/plot.c:937
-#, fuzzy
 msgid "Functions"
-msgstr "Transient"
+msgstr ""
 
 #: ../src/plot.c:569
 #, fuzzy
 msgid "Oregano - Plot"
-msgstr "Oragano Logbuch Fenster"
+msgstr "Oregano - Plot"
 
 #: ../src/plot.c:588
 msgid "Could not create plot window."
@@ -753,7 +750,7 @@ msgstr ""
 #: ../src/sim-engine.c:84
 #, fuzzy
 msgid "Transfer Function"
-msgstr "Transient"
+msgstr ""
 
 #: ../src/sim-engine.c:85
 msgid "Distortion Analysis"
@@ -1071,21 +1068,19 @@ msgstr "_Datei"
 
 #: ../src/dialogs/settings.glade2.h:1
 msgid "\n"
-msgstr ""
+msgstr "\n"
 
 #: ../src/dialogs/settings.glade2.h:3
-#, fuzzy
 msgid "<b>Data Paths</b>"
-msgstr "Programme:"
+msgstr ""
 
 #: ../src/dialogs/settings.glade2.h:4
 msgid "<b>Engine</b>"
 msgstr ""
 
 #: ../src/dialogs/settings.glade2.h:5
-#, fuzzy
 msgid "<b>Executable Path</b>"
-msgstr "Programme:"
+msgstr ""
 
 #: ../src/dialogs/settings.glade2.h:6
 #, fuzzy
@@ -1108,7 +1103,7 @@ msgstr "Gespeicherte Dateien komprimieren"
 
 #: ../src/dialogs/settings.glade2.h:10
 msgid "GnuCap"
-msgstr ""
+msgstr "GnuCap"
 
 #: ../src/dialogs/settings.glade2.h:11
 msgid "Grid size[px]   "
@@ -1124,7 +1119,7 @@ msgstr ""
 
 #: ../src/dialogs/settings.glade2.h:14
 msgid "NgSpice"
-msgstr ""
+msgstr "NgSpice"
 
 #: ../src/dialogs/settings.glade2.h:15
 #, fuzzy
