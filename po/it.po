@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-17 12:44-0300\n"
+"POT-Creation-Date: 2005-08-16 12:25-0300\n"
 "PO-Revision-Date: 1999-11-05 12:30+0100\n"
 "Last-Translator: Elker Cavina <e.cavina@ra.nettuno.it>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -25,12 +25,12 @@ msgstr "(c) 1999,2000 Richard Hult"
 msgid "Schematic capture and circuit simulation.\n"
 msgstr ""
 
-#: ../src/file.c:54 ../src/file.c:93
+#: ../src/file.c:54 ../src/file.c:94
 #, fuzzy
 msgid "Oregano Files"
 msgstr "Apri file"
 
-#: ../src/file.c:56 ../src/file.c:95
+#: ../src/file.c:56 ../src/file.c:96
 msgid "All Files"
 msgstr ""
 
@@ -39,25 +39,25 @@ msgstr ""
 msgid "Open File"
 msgstr "Apri file"
 
-#: ../src/file.c:98
+#: ../src/file.c:99
 #, fuzzy
 msgid "Save File"
 msgstr "Salva"
 
-#: ../src/file.c:148
+#: ../src/file.c:149
 #, fuzzy
 msgid "Netlist File"
 msgstr "Nome del file Netlist"
 
-#: ../src/file.c:224
+#: ../src/file.c:225
 msgid "Open file"
 msgstr "Apri file"
 
-#: ../src/file.c:274
+#: ../src/file.c:275
 msgid "Save schematic as"
 msgstr "Salva lo schema come"
 
-#: ../src/file.c:339
+#: ../src/file.c:340
 msgid "Netlist filename"
 msgstr "Nome del file Netlist"
 
@@ -70,6 +70,14 @@ msgstr "Non posso trovare il simbolo richiesto: %s\n"
 #, c-format
 msgid "Could not find the requested part: %s\n"
 msgstr "Non posso trovare la parte richiesta: %s\n"
+
+#: ../src/load-schematic.c:262
+msgid "Bad file format."
+msgstr ""
+
+#: ../src/load-schematic.c:272
+msgid "Unknown parser error."
+msgstr ""
 
 #: ../src/main.c:101
 msgid "Enables some debugging functions"
@@ -103,7 +111,7 @@ msgstr ""
 "Questo e' probabilmente dovuto a una installazione errata\n"
 "di Oregano. Prova a controllare la tua installazione."
 
-#: ../src/main.c:204
+#: ../src/main.c:206
 msgid "Welcome to Oregano"
 msgstr ""
 
@@ -134,8 +142,8 @@ msgid ""
 msgstr ""
 
 #. gettext support
-#: ../src/part-browser.c:477 ../src/plot.c:510 ../src/plot.c:851
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2463
+#: ../src/part-browser.c:477 ../src/plot.c:579 ../src/plot.c:983
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2477
 #: ../src/netlist-editor.c:314 ../src/netlist-editor.c:396
 #, fuzzy, c-format
 msgid ""
@@ -175,102 +183,121 @@ msgstr ""
 msgid "Could not create part properties dialog."
 msgstr "Non posso creare il dialogo dei settaggi."
 
-#: ../src/plot.c:63 ../src/plot.c:64
+#: ../src/plot.c:64 ../src/plot.c:65
 msgid "Sans 10"
 msgstr ""
 
-#: ../src/plot.c:65
+#: ../src/plot.c:66
 msgid "Sans 8"
 msgstr ""
 
-#: ../src/plot.c:152 ../src/print.c:368 ../src/schematic-view-ui.h:56
+#: ../src/plot.c:164 ../src/print.c:368 ../src/schematic-view-ui.h:56
 #: ../src/netlist-editor.c:193
 #, fuzzy
 msgid "Print Preview"
 msgstr "Anteprima"
 
-#: ../src/plot.c:153
+#: ../src/plot.c:165
 #, fuzzy
 msgid "Preview the plot before printing"
 msgstr "Modifica del proprieta' di questa parte"
 
-#: ../src/plot.c:155
+#: ../src/plot.c:167
 msgid "Export plot"
 msgstr ""
 
-#: ../src/plot.c:156
+#: ../src/plot.c:168
 msgid "Show the export menu"
+msgstr ""
+
+#: ../src/plot.c:169
+msgid "Add Function"
+msgstr ""
+
+#: ../src/plot.c:170
+msgid "Add new function to the graph"
 msgstr ""
 
 #. GNOMEUIINFO_ITEM_NONE(N_("50%"),
 #. N_("Set the zoom factor to 50%"), plot_zoom_50_cmd),
 #. GNOMEUIINFO_ITEM_NONE(N_("75%"),
 #. N_("Set the zoom factor to 75%"), plot_zoom_75_cmd),
-#: ../src/plot.c:167 ../src/schematic-view-ui.h:182
+#: ../src/plot.c:181 ../src/schematic-view-ui.h:182
 msgid "100%"
 msgstr "100%"
 
-#: ../src/plot.c:168 ../src/schematic-view-ui.h:183
+#: ../src/plot.c:182 ../src/schematic-view-ui.h:183
 msgid "Set the zoom factor to 100%"
 msgstr "Imposta il fattore di zoom a 100%"
 
-#: ../src/plot.c:180
+#: ../src/plot.c:194
 msgid "_Preferences..."
 msgstr "_Preferenze..."
 
-#: ../src/plot.c:182
+#: ../src/plot.c:196
 msgid "Show crosshairs"
 msgstr ""
 
-#: ../src/plot.c:183
+#: ../src/plot.c:197
 #, fuzzy
 msgid "_Zoom"
 msgstr "Zoom"
 
-#: ../src/plot.c:190
+#: ../src/plot.c:204
 #, fuzzy
 msgid "Schematic Plot"
 msgstr "Proprieta'..."
 
-#: ../src/plot.c:196
+#: ../src/plot.c:210
 msgid "_File"
 msgstr "_File"
 
-#: ../src/plot.c:197
+#: ../src/plot.c:211
 msgid "_Plot"
 msgstr "_Disegna"
 
 #. Simulation failed?
-#. g_warning("No hay datos de la simulacion!!\n");
-#: ../src/plot.c:301
-msgid "No data for the Simulation !!\n"
+#: ../src/plot.c:344
+msgid "The simulation produced no data!!\n"
 msgstr ""
 
-#: ../src/plot.c:309 ../src/plot.c:654
+#: ../src/plot.c:354 ../src/plot.c:733
 #, fuzzy, c-format
 msgid "Plot - %s"
 msgstr "_Disegna"
 
-#: ../src/plot.c:500
+#: ../src/plot.c:369
+msgid "Nodes"
+msgstr ""
+
+#: ../src/plot.c:372 ../src/plot.c:937
+msgid "Functions"
+msgstr ""
+
+#: ../src/plot.c:569
 msgid "Oregano - Plot"
 msgstr ""
 
-#: ../src/plot.c:519
+#: ../src/plot.c:588
 #, fuzzy
 msgid "Could not create plot window."
 msgstr "Non posso creare il browser delle parti"
 
-#: ../src/plot.c:529
+#: ../src/plot.c:598
 #, fuzzy
 msgid "Plot"
 msgstr "_Disegna"
 
-#: ../src/plot.c:860
+#: ../src/plot.c:959
+msgid "TRANSFER"
+msgstr ""
+
+#: ../src/plot.c:992
 #, fuzzy
 msgid "Could not create plot export window."
 msgstr "Non posso creare il browser delle parti"
 
-#: ../src/plot.c:880
+#: ../src/plot.c:1012
 #, fuzzy
 msgid "Save PNG"
 msgstr "Salva"
@@ -298,6 +325,20 @@ msgstr "Non posso creare il browser delle parti"
 msgid "Printing failed."
 msgstr ""
 
+#: ../src/schematic.c:568
+#, c-format
+msgid "File (%s) does not exists."
+msgstr ""
+
+#: ../src/schematic.c:576 ../src/schematic.c:614
+#, c-format
+msgid "Unknown file format for (%s)."
+msgstr ""
+
+#: ../src/schematic.c:595
+msgid "Load fails!."
+msgstr ""
+
 #: ../src/schematic-view.c:252
 #, fuzzy, c-format
 msgid ""
@@ -308,19 +349,29 @@ msgstr ""
 "Non posso trovare il file richiesto:\n"
 "%s"
 
-#: ../src/schematic-view.c:402 ../src/schematic-view.c:1347
-#: ../src/schematic-view.c:1355
+#: ../src/schematic-view.c:383
+#, fuzzy, c-format
+msgid ""
+"<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
+"\n"
+"%s"
+msgstr ""
+"Non posso trovare il file richiesto:\n"
+"%s"
+
+#: ../src/schematic-view.c:413 ../src/schematic-view.c:1359
+#: ../src/schematic-view.c:1367
 msgid "Untitled.oregano"
 msgstr "Senzatitolo.oregano"
 
-#: ../src/schematic-view.c:408
+#: ../src/schematic-view.c:419
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n"
 "</span>%s\n"
 msgstr ""
 
-#: ../src/schematic-view.c:771 ../src/schematic-view.c:898
+#: ../src/schematic-view.c:783 ../src/schematic-view.c:910
 #: ../src/netlist-editor.c:223 ../src/netlist-editor.c:441
 #, fuzzy, c-format
 msgid ""
@@ -331,17 +382,17 @@ msgstr ""
 "Non posso trovare il file richiesto:\n"
 "%s"
 
-#: ../src/schematic-view.c:778 ../src/schematic-view.c:905
+#: ../src/schematic-view.c:790 ../src/schematic-view.c:917
 #: ../src/netlist-editor.c:230 ../src/netlist-editor.c:448
 msgid "<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"
 msgstr ""
 
-#: ../src/schematic-view.c:1356
+#: ../src/schematic-view.c:1368
 #, fuzzy
 msgid "Untitled.netlist"
 msgstr "Senzatitolo.oregano"
 
-#: ../src/schematic-view.c:1546
+#: ../src/schematic-view.c:1559
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"x-large\">Schematic %s has unsaved changes</"
@@ -350,7 +401,7 @@ msgid ""
 "Do you want to save them?"
 msgstr ""
 
-#: ../src/schematic-view.c:2477
+#: ../src/schematic-view.c:2491
 #, fuzzy
 msgid "<span weight=\"bold\">Could not create log window.</span>"
 msgstr "Non posso creare il browser delle parti"
@@ -734,7 +785,11 @@ msgid ""
 "\n"
 msgstr ""
 
-#: ../src/sim-settings.c:792
+#: ../src/sim-settings.c:239
+msgid "Add new option"
+msgstr ""
+
+#: ../src/sim-settings.c:825
 #, fuzzy
 msgid ""
 "<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
@@ -745,26 +800,20 @@ msgstr ""
 "\n"
 "L'istante iniziale deve essere minore di quello finale."
 
-#: ../src/sim-settings.c:832 ../src/sim-settings.c:844
+#: ../src/sim-settings.c:865 ../src/sim-settings.c:871
+#: ../src/sim-settings.c:877
 #, fuzzy
 msgid ""
 "<span size=\"x-large\" weight=\"bold\">Could not create simulation settings "
 "dialog.</span>"
 msgstr "Non posso creare il dialogo dei settaggi di simulazione "
 
-#: ../src/sim-settings.c:838
-#, fuzzy
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create simulation settings "
-"dialog.</sapn>"
-msgstr "Non posso creare il dialogo dei settaggi di simulazione "
-
-#: ../src/sim-settings.c:868
+#: ../src/sim-settings.c:901
 #, fuzzy
 msgid "Option"
 msgstr "Apri"
 
-#: ../src/sim-settings.c:870
+#: ../src/sim-settings.c:903
 msgid "Value"
 msgstr ""
 
@@ -876,57 +925,45 @@ msgstr ""
 "%s"
 
 #: ../src/dialogs/clamp-properties-dialog.glade2.h:1
-msgid "   "
-msgstr ""
-
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:2
-#: ../src/dialogs/page-properties.glade2.h:1
-#: ../src/dialogs/properties.glade2.h:1
-#: ../src/dialogs/textbox-properties-dialog.glade2.h:1
-#: ../src/dialogs/plot-export.glade2.h:1
-msgid "    "
-msgstr ""
-
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:3
 msgid "<b>AC Analysis Options</b>"
 msgstr ""
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:4
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:2
 msgid "<b>Type</b>"
 msgstr ""
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:5
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:3
 #, fuzzy
 msgid "Current"
 msgstr "Taglia"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:6
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:4
 #, fuzzy
 msgid "Edit Clamp properties"
 msgstr "Modifica le proprieta'"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:7
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:5
 msgid "Imaginary part"
 msgstr ""
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:8
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:6
 msgid "Magnitude"
 msgstr ""
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:9
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:7
 #, fuzzy
 msgid "Phase"
 msgstr "Incolla"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:10
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:8
 msgid "Real part"
 msgstr ""
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:11
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:9
 msgid "Use decibel scale"
 msgstr ""
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:12
+#: ../src/dialogs/clamp-properties-dialog.glade2.h:10
 msgid "Voltage"
 msgstr ""
 
@@ -938,23 +975,23 @@ msgstr ""
 msgid "Oregano Log Window"
 msgstr ""
 
-#: ../src/dialogs/page-properties.glade2.h:2
+#: ../src/dialogs/page-properties.glade2.h:1
 msgid "<b>Alignment</b>"
 msgstr ""
 
-#: ../src/dialogs/page-properties.glade2.h:3
+#: ../src/dialogs/page-properties.glade2.h:2
 msgid "Center Horizontally"
 msgstr ""
 
-#: ../src/dialogs/page-properties.glade2.h:4
+#: ../src/dialogs/page-properties.glade2.h:3
 msgid "Center Vertically"
 msgstr ""
 
-#: ../src/dialogs/page-properties.glade2.h:5
+#: ../src/dialogs/page-properties.glade2.h:4
 msgid "Fit to page"
 msgstr ""
 
-#: ../src/dialogs/page-properties.glade2.h:6
+#: ../src/dialogs/page-properties.glade2.h:5
 #, fuzzy
 msgid "Print Properties"
 msgstr "Proprieta'"
@@ -1000,22 +1037,24 @@ msgid "Value: "
 msgstr ""
 
 #: ../src/dialogs/plot-window.glade2.h:1
-msgid "(0, 0)"
-msgstr ""
-
-#: ../src/dialogs/plot-window.glade2.h:2
 #, fuzzy
 msgid "<b>Plot</b>"
 msgstr "Formato del file"
 
-#: ../src/dialogs/plot-window.glade2.h:3
+#: ../src/dialogs/plot-window.glade2.h:2
 msgid "<b>Variables</b>"
 msgstr ""
 
-#: ../src/dialogs/plot-window.glade2.h:4
+#: ../src/dialogs/plot-window.glade2.h:3
 #, fuzzy
 msgid "window"
 msgstr "Annulla"
+
+#: ../src/dialogs/properties.glade2.h:1
+#: ../src/dialogs/textbox-properties-dialog.glade2.h:1
+#: ../src/dialogs/plot-export.glade2.h:1
+msgid "    "
+msgstr ""
 
 #: ../src/dialogs/properties.glade2.h:2
 #, fuzzy
@@ -1138,70 +1177,74 @@ msgid "<b>Transient</b>"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:5
-msgid "Add to list"
+msgid "Add new options"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:6
-msgid "Analysis Options"
+msgid "Add to list"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:7
-msgid "Analysis Parameters"
+msgid "Analysis Options"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:8
-msgid "DEC"
+msgid "Analysis Parameters"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:9
-msgid "Frequency"
+msgid "DEC"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:10
-msgid "LIN"
+msgid "Frequency"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:11
-msgid "List of outputs"
+msgid "LIN"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:12
-msgid "OCT"
+msgid "List of outputs"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:13
+msgid "OCT"
+msgstr ""
+
+#: ../src/dialogs/sim-settings.glade2.h:14
 #, fuzzy
 msgid "Points"
 msgstr "_Disegna"
 
-#: ../src/dialogs/sim-settings.glade2.h:14
+#: ../src/dialogs/sim-settings.glade2.h:15
 #, fuzzy
 msgid "Simulation Settings"
 msgstr "Settaggi di Simulazione"
 
-#: ../src/dialogs/sim-settings.glade2.h:15
+#: ../src/dialogs/sim-settings.glade2.h:16
 msgid "Source"
 msgstr ""
 
-#: ../src/dialogs/sim-settings.glade2.h:16
+#: ../src/dialogs/sim-settings.glade2.h:17
 #, fuzzy
 msgid "Start"
 msgstr "Parti"
 
-#: ../src/dialogs/sim-settings.glade2.h:17
+#: ../src/dialogs/sim-settings.glade2.h:18
 #, fuzzy
 msgid "Step"
 msgstr "Incolla"
 
-#: ../src/dialogs/sim-settings.glade2.h:18
+#: ../src/dialogs/sim-settings.glade2.h:19
 msgid "Stop"
 msgstr ""
 
-#: ../src/dialogs/sim-settings.glade2.h:19
+#: ../src/dialogs/sim-settings.glade2.h:20
 msgid "Type"
 msgstr ""
 
-#: ../src/dialogs/sim-settings.glade2.h:20
+#: ../src/dialogs/sim-settings.glade2.h:21
 msgid "Use Initial Conditions"
 msgstr ""
 
@@ -1258,6 +1301,12 @@ msgstr ""
 #: ../src/dialogs/plot-export.glade2.h:8
 msgid "Width : "
 msgstr ""
+
+#, fuzzy
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create simulation "
+#~ "settings dialog.</sapn>"
+#~ msgstr "Non posso creare il dialogo dei settaggi di simulazione "
 
 #, fuzzy
 #~ msgid "Oregano"
