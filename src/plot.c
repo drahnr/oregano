@@ -167,7 +167,7 @@ static GnomeUIInfo plot_file_menu[] =
 	GNOMEUIINFO_ITEM_NONE(N_("Export plot"),
 		N_("Show the export menu"), plot_export),
 	GNOMEUIINFO_ITEM_NONE(N_("Add Function"),
-		N_("Add a new function to thegraphic"), add_function),
+		N_("Add new function to the graph"), add_function),
 	GNOMEUIINFO_SEPARATOR,
 	GNOMEUIINFO_MENU_CLOSE_ITEM(destroy_window,NULL),
 	GNOMEUIINFO_END
