@@ -750,7 +750,7 @@ msgid ""
 "dialog.</sapn>"
 msgstr ""
 "<span size=\"x-large\" weight=\"bold\">No se pudo crear el diálogo "
-"depropiedades.</sapn>"
+"de propiedades.</span>"
 
 #: ../src/sim-settings.c:868
 msgid "Option"
