@@ -16,12 +16,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: ../src/dialogs.c:109
-#, fuzzy
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 msgstr ""
-"(c) 2003-2004 LUGFi\n"
+"(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001, Richard Hult"
 
 #: ../src/dialogs.c:124
@@ -200,7 +199,7 @@ msgstr "Exportar gráfica"
 
 #: ../src/plot.c:156
 msgid "Show the export menu"
-msgstr ""
+msgstr "Mostrar el menú para exportar"
 
 #. GNOMEUIINFO_ITEM_NONE(N_("50%"),
 #. N_("Set the zoom factor to 50%"), plot_zoom_50_cmd),
@@ -220,7 +219,7 @@ msgstr "_Preferencias..."
 
 #: ../src/plot.c:182
 msgid "Show crosshairs"
-msgstr ""
+msgstr "Mostrar cruces"
 
 #: ../src/plot.c:183
 msgid "_Zoom"
@@ -242,7 +241,7 @@ msgstr "_Graficar"
 #. g_warning("No hay datos de la simulacion!!\n");
 #: ../src/plot.c:301
 msgid "No data for the Simulation !!\n"
-msgstr ""
+msgstr "¡¡No hay datos de la simulación!!\n"
 
 #: ../src/plot.c:309 ../src/plot.c:654
 #, c-format
@@ -279,7 +278,6 @@ msgid "Pages"
 msgstr "Páginas"
 
 #: ../src/print.c:340
-#, fuzzy
 msgid "Can't get paper info! .. getting default!"
 msgstr "No se pudo obtener información del papel .. Usando default!"
 
@@ -365,9 +363,8 @@ msgid "Create a new schematic"
 msgstr "Crear un nuevo esquemático"
 
 #: ../src/schematic-view-ui.h:47
-#, fuzzy
 msgid "Page Properties"
-msgstr "Propiedades del componente"
+msgstr "Propiedades de la página"
 
 #: ../src/schematic-view-ui.h:48
 msgid "Set print properties"
@@ -562,7 +559,6 @@ msgid "Paste"
 msgstr "Pegar"
 
 #: ../src/schematic-view-ui.h:306
-#, fuzzy
 msgid "Paste the clipboard"
 msgstr "Pegar el contenido del portapapeles"
 
@@ -1083,7 +1079,6 @@ msgid "Preferences"
 msgstr "Preferencias"
 
 #: ../src/dialogs/settings.glade2.h:18
-#, fuzzy
 msgid "Realtime update of selection (slow)"
 msgstr "Actualización en tiempo real de la selección (lento)"
 
