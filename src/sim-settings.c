@@ -868,7 +868,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	gui = glade_xml_new (OREGANO_GLADEDIR "/sim-settings.glade2", "toplevel", NULL);
 	if (!gui) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create simulation settings dialog.</sapn>"));
+		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create simulation settings dialog.</span>"));
 		return;
 	}
 
