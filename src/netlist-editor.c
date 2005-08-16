@@ -227,7 +227,7 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 			g_clear_error (&error);
 		} else {
 			oregano_error (
-				_("<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"));
+				_("<span weight=\"bold\" size=\"x-large\">Unexpected error!!!</span>"));
 		}
 		return;
 	}

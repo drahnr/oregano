@@ -787,7 +787,7 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 			g_clear_error (&error);
 		} else {
 			oregano_error (
-				_("<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"));
+				_("<span weight=\"bold\" size=\"x-large\">Unexpected error!!!</span>"));
 		}
 		return;
 	}
