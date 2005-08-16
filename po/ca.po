@@ -17,12 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 
 #: ../src/dialogs.c:109
-#, fuzzy
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 msgstr ""
-"© 2003-2004 LUGFi\n"
+"© 2003-2005 LUGFi\n"
 "© 1999-2001, Richard Hult"
 
 #: ../src/dialogs.c:124
@@ -212,7 +211,7 @@ msgstr ""
 #: ../src/plot.c:169
 #, fuzzy
 msgid "Add Function"
-msgstr "Funció de transferència"
+msgstr "Afegeix Funció"
 
 #: ../src/plot.c:170
 msgid "Add new function to the graph"
@@ -267,12 +266,12 @@ msgstr "Gràfic - %s"
 #: ../src/plot.c:369
 #, fuzzy
 msgid "Nodes"
-msgstr "Model"
+msgstr ""
 
 #: ../src/plot.c:372 ../src/plot.c:937
 #, fuzzy
 msgid "Functions"
-msgstr "Funció de transferència"
+msgstr "Funció"
 
 #: ../src/plot.c:569
 msgid "Oregano - Plot"
@@ -931,7 +930,6 @@ msgstr ""
 "%s\n"
 
 #: ../src/dialogs/clamp-properties-dialog.glade2.h:1
-#, fuzzy
 msgid "<b>AC Analysis Options</b>"
 msgstr "<b>Opcions de l'anàlisi de CA</b>"
 
