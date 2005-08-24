@@ -356,5 +356,7 @@ gtk_cairo_plot_model_clear (GtkCairoPlotModel *model)
 	model->priv->x_min = G_MAXDOUBLE;
 	model->priv->y_max = -G_MAXDOUBLE;
 	model->priv->y_min = G_MAXDOUBLE;
+
+	g_signal_emit_by_name (G_OBJECT (model), "changed");
 }
 
