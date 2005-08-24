@@ -272,46 +272,27 @@ show_plot (Plot *plot)
 	make_plot (plot, plot->selected);
 }
 
-static gboolean
-plot_selected (GtkTreeView *treeview, GtkTreePath *arg1, GtkTreeViewColumn *arg2, Plot *plot)
+static void
+on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 {
 	GtkTreeIter iter;
 	GtkTreeModel *model;
-	plot->selected = 0;
+	GtkTreeView *treeview;
 	gboolean activo;
 
-	/* Check if selected row is leaf or root */
-	if (gtk_tree_path_get_depth (arg1) == 1) {
-		if (!gtk_tree_view_row_expanded (treeview, arg1))
-			gtk_tree_view_expand_row (treeview, arg1, FALSE);
-		else
-			gtk_tree_view_collapse_row (treeview, arg1);
-		return TRUE;
-	}
+	treeview = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT(plot->window), "clist"));
 
 	model = gtk_tree_view_get_model (treeview);
-	if (!gtk_tree_model_get_iter (model , &iter, arg1))
-		return TRUE;
+	if (!gtk_tree_model_get_iter_from_string (model , &iter, path))
+		return;
 
 	gtk_tree_model_get (model, &iter, 0, &activo, -1);
 	activo = !activo;
 	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, activo, -1);
 
-	if (plot->xtitle) g_free (plot->xtitle);
-	plot->xtitle = get_variable_units (plot->current->var_units[0]);
-
-	if (plot->ytitle) g_free (plot->ytitle);
-	plot->ytitle = get_variable_units (plot->current->var_units[1]);
-
-	g_object_set (G_OBJECT (plot->plot_model),
-		"x-unit", plot->xtitle,
-		"y-unit", plot->ytitle,
-		NULL);
-
 	show_plot (plot);
-
-	return TRUE;
 }
+
 
 static void
 analysis_selected (GtkEditable *editable, Plot *plot)
@@ -639,6 +620,7 @@ plot_window_create (Plot *plot)
 	column = gtk_tree_view_column_new ();
 
 	cell = gtk_cell_renderer_toggle_new ();
+	g_signal_connect (G_OBJECT (cell), "toggled", G_CALLBACK (on_plot_selected), plot);
 	gtk_tree_view_column_pack_start (column, cell, FALSE);
 	gtk_tree_view_column_set_attributes (column, cell, "active", 0, "visible", 2, NULL);
 
@@ -735,8 +717,6 @@ plot_show (SimEngine *engine)
 	plot->ytitle = get_variable_units (first ? first->var_units[1] : "!!");
 
 	g_object_set (G_OBJECT (plot->plot_model), "title", plot->title, NULL);
-
-	g_signal_connect(G_OBJECT(list), "row-activated", G_CALLBACK(plot_selected), plot);
 
 	g_free (s_current);
 
