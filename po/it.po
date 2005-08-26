@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-16 12:25-0300\n"
+"POT-Creation-Date: 2005-08-26 13:35-0300\n"
 "PO-Revision-Date: 1999-11-05 12:30+0100\n"
 "Last-Translator: Elker Cavina <e.cavina@ra.nettuno.it>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -14,21 +14,22 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../src/dialogs.c:109
+#: ../src/dialogs.c:128
 #, fuzzy
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
-msgstr "(c) 1999,2000 Richard Hult"
+msgstr ""
+"(c) 2003,2005 LUGFi\n"
+"(c) 1999,2000 Richard Hult"
 
-#: ../src/dialogs.c:124
+#: ../src/dialogs.c:143
 msgid "Schematic capture and circuit simulation.\n"
 msgstr ""
 
 #: ../src/file.c:54 ../src/file.c:94
-#, fuzzy
 msgid "Oregano Files"
-msgstr "Apri file"
+msgstr ""
 
 #: ../src/file.c:56 ../src/file.c:96
 msgid "All Files"
@@ -122,16 +123,14 @@ msgstr ""
 
 #: ../src/oregano-config.c:170
 #, fuzzy, c-format
+msgid "Could not read the parts library: %s "
+msgstr "Non posso leggere la libreria di parti: %s "
+
+#: ../src/oregano-config.c:172
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not read the parts library:%s </"
-"span>\n"
-"\n"
 "The file is probably corrupt. Please reinstall the parts\n"
 "library or Oregano and try again."
 msgstr ""
-"Non posso leggere la libreria di parti:\n"
-"%s\n"
-"\n"
 "Il file probabilmente e' rovinato. Prova a reinstallare\n"
 "la libreria delle parti o Oregano e riprova."
 
@@ -141,25 +140,20 @@ msgid ""
 "Filtering disable!"
 msgstr ""
 
-#. gettext support
-#: ../src/part-browser.c:477 ../src/plot.c:579 ../src/plot.c:983
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2477
-#: ../src/netlist-editor.c:314 ../src/netlist-editor.c:396
-#, fuzzy, c-format
+#: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
+#: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
+#, c-format
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
-"</span>%s\n"
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this"
 msgstr ""
-"Non posso trovare il file richiesto:\n"
-"%s"
 
-#: ../src/part-browser.c:488
-msgid "Could not create part browser."
+#: ../src/part-browser.c:480 ../src/part-browser.c:488
+#, fuzzy
+msgid "Could not create part browser"
 msgstr "Non posso creare il browser delle parti"
-
-#: ../src/part-browser.c:569
-msgid " "
-msgstr " "
 
 #: ../src/part-item.c:151 ../src/dialogs/properties.glade2.h:4
 msgid "Properties"
@@ -169,16 +163,8 @@ msgstr "Proprieta'"
 msgid "Edit the part's properties"
 msgstr "Modifica le proprieta' della parte"
 
-#: ../src/part-item.c:646 ../src/part-item.c:802
-#, c-format
-msgid ""
-"Could not find the required file:\n"
-"%s"
-msgstr ""
-"Non posso trovare il file richiesto:\n"
-"%s"
-
-#: ../src/part-item.c:656 ../src/part-item.c:812
+#: ../src/part-item.c:648 ../src/part-item.c:656 ../src/part-item.c:804
+#: ../src/part-item.c:812
 #, fuzzy
 msgid "Could not create part properties dialog."
 msgstr "Non posso creare il dialogo dei settaggi."
@@ -239,14 +225,12 @@ msgid "Show crosshairs"
 msgstr ""
 
 #: ../src/plot.c:197
-#, fuzzy
 msgid "_Zoom"
-msgstr "Zoom"
+msgstr "_Zoom"
 
 #: ../src/plot.c:204
-#, fuzzy
 msgid "Schematic Plot"
-msgstr "Proprieta'..."
+msgstr ""
 
 #: ../src/plot.c:210
 msgid "_File"
@@ -257,50 +241,50 @@ msgid "_Plot"
 msgstr "_Disegna"
 
 #. Simulation failed?
-#: ../src/plot.c:344
+#: ../src/plot.c:325
 msgid "The simulation produced no data!!\n"
 msgstr ""
 
-#: ../src/plot.c:354 ../src/plot.c:733
+#: ../src/plot.c:335 ../src/plot.c:715
 #, fuzzy, c-format
 msgid "Plot - %s"
-msgstr "_Disegna"
+msgstr "Disegna - %s"
 
-#: ../src/plot.c:369
+#: ../src/plot.c:350
 msgid "Nodes"
 msgstr ""
 
-#: ../src/plot.c:372 ../src/plot.c:937
+#: ../src/plot.c:353 ../src/plot.c:917
 msgid "Functions"
 msgstr ""
 
-#: ../src/plot.c:569
+#: ../src/plot.c:550
 msgid "Oregano - Plot"
 msgstr ""
 
-#: ../src/plot.c:588
+#: ../src/plot.c:562 ../src/plot.c:569
 #, fuzzy
 msgid "Could not create plot window."
 msgstr "Non posso creare il browser delle parti"
 
-#: ../src/plot.c:598
+#: ../src/plot.c:579 ../src/dialogs/plot-window.glade2.h:3
 #, fuzzy
 msgid "Plot"
-msgstr "_Disegna"
+msgstr "Disegna"
 
-#: ../src/plot.c:959
+#: ../src/plot.c:939
 msgid "TRANSFER"
 msgstr ""
 
-#: ../src/plot.c:992
+#: ../src/plot.c:965 ../src/plot.c:972
 #, fuzzy
 msgid "Could not create plot export window."
 msgstr "Non posso creare il browser delle parti"
 
-#: ../src/plot.c:1012
+#: ../src/plot.c:992
 #, fuzzy
 msgid "Save PNG"
-msgstr "Salva"
+msgstr "Salva PNG"
 
 #: ../src/print.c:298
 #, fuzzy
@@ -327,84 +311,73 @@ msgstr ""
 
 #: ../src/schematic.c:568
 #, c-format
-msgid "File (%s) does not exists."
+msgid "File %s does not exists."
 msgstr ""
 
 #: ../src/schematic.c:576 ../src/schematic.c:614
 #, c-format
-msgid "Unknown file format for (%s)."
+msgid "Unknown file format for %s."
 msgstr ""
 
 #: ../src/schematic.c:595
 msgid "Load fails!."
 msgstr ""
 
-#: ../src/schematic-view.c:252
-#, fuzzy, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the required file:</"
-"span>\n"
-"%s"
-msgstr ""
-"Non posso trovare il file richiesto:\n"
-"%s"
+#: ../src/schematic-view.c:255
+#, fuzzy
+msgid "Could not create properties dialog"
+msgstr "Non posso creare il dialogo dei settaggi."
 
-#: ../src/schematic-view.c:383
-#, fuzzy, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
-"\n"
-"%s"
-msgstr ""
-"Non posso trovare il file richiesto:\n"
-"%s"
+#: ../src/schematic-view.c:321
+#, fuzzy
+msgid "Could not create the page properties dialog"
+msgstr "Non posso creare il dialogo dei settaggi."
 
-#: ../src/schematic-view.c:413 ../src/schematic-view.c:1359
-#: ../src/schematic-view.c:1367
+#: ../src/schematic-view.c:381
+#, fuzzy
+msgid "Could not load file"
+msgstr ""
+"Non posso caricare il file"
+
+#: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
+#: ../src/schematic-view.c:1346
 msgid "Untitled.oregano"
 msgstr "Senzatitolo.oregano"
 
-#: ../src/schematic-view.c:419
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n"
-"</span>%s\n"
+#: ../src/schematic-view.c:413
+#, fuzzy
+msgid "Could not save schematic file"
+msgstr "Non posso salvare il file di Schema"
+
+#: ../src/schematic-view.c:772 ../src/schematic-view.c:893
+#: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
+#, fuzzy
+msgid "Could not create a netlist"
+msgstr "Non posso creare il browser delle parti"
+
+#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
+#: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
+msgid "An unexpected error has occurred"
 msgstr ""
 
-#: ../src/schematic-view.c:783 ../src/schematic-view.c:910
-#: ../src/netlist-editor.c:223 ../src/netlist-editor.c:441
-#, fuzzy, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-"\n"
-"%s"
-msgstr ""
-"Non posso trovare il file richiesto:\n"
-"%s"
-
-#: ../src/schematic-view.c:790 ../src/schematic-view.c:917
-#: ../src/netlist-editor.c:230 ../src/netlist-editor.c:448
-msgid "<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"
-msgstr ""
-
-#: ../src/schematic-view.c:1368
+#: ../src/schematic-view.c:1347
 #, fuzzy
 msgid "Untitled.netlist"
 msgstr "Senzatitolo.oregano"
 
-#: ../src/schematic-view.c:1559
-#, c-format
+#: ../src/schematic-view.c:1538
+#, fuzzy, c-format
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Schematic %s has unsaved changes</"
+"<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
 "span>\n"
 "\n"
 "Do you want to save them?"
 msgstr ""
 
-#: ../src/schematic-view.c:2491
+#: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
 #, fuzzy
-msgid "<span weight=\"bold\">Could not create log window.</span>"
-msgstr "Non posso creare il browser delle parti"
+msgid "Could not create the log window"
+msgstr ""
 
 #: ../src/schematic-view-ui.h:38
 msgid "_New"
@@ -417,12 +390,12 @@ msgstr "Crea un nuovo schema"
 #: ../src/schematic-view-ui.h:47
 #, fuzzy
 msgid "Page Properties"
-msgstr "Modifica le proprieta' della parte"
+msgstr "Modifica le proprieta'"
 
 #: ../src/schematic-view-ui.h:48
 #, fuzzy
 msgid "Set print properties"
-msgstr "Modifica le proprieta' della parte"
+msgstr "Modifica le proprieta'"
 
 #: ../src/schematic-view-ui.h:57
 #, fuzzy
@@ -706,12 +679,10 @@ msgstr "Rimpicciolisci"
 msgid "Paste the contents of the clipboard to the sheet"
 msgstr "Taglia l'oggetto verso gli appunti"
 
-#: ../src/settings.c:157 ../src/settings.c:163 ../src/settings.c:169
+#: ../src/settings.c:161 ../src/settings.c:168 ../src/settings.c:174
 #, fuzzy
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</"
-"span>"
-msgstr "Non posso creare il dialogo dei settaggi."
+msgid "Could not create settings dialog"
+msgstr "Non posso creare il dialogo dei settaggi di simulazione "
 
 #: ../src/sheet-item.c:308
 msgid "Copy the object to the clipboard"
@@ -790,40 +761,36 @@ msgid "Add new option"
 msgstr ""
 
 #: ../src/sim-settings.c:825
-#, fuzzy
-msgid ""
-"<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
-"\n"
-"Start time must be less than stop time."
+msgid "Problem in transient analysis"
 msgstr ""
-"Analisi del transitorio:\n"
-"\n"
-"L'istante iniziale deve essere minore di quello finale."
 
-#: ../src/sim-settings.c:865 ../src/sim-settings.c:871
-#: ../src/sim-settings.c:877
+#: ../src/sim-settings.c:826
+msgid "Start time must be less than stop time."
+msgstr ""
+
+#: ../src/sim-settings.c:869 ../src/sim-settings.c:876
+#: ../src/sim-settings.c:882
 #, fuzzy
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create simulation settings "
-"dialog.</span>"
+msgid "Could not create simulation settings dialog"
 msgstr "Non posso creare il dialogo dei settaggi di simulazione "
 
-#: ../src/sim-settings.c:901
+#: ../src/sim-settings.c:906
 #, fuzzy
 msgid "Option"
 msgstr "Apri"
 
-#: ../src/sim-settings.c:903
+#: ../src/sim-settings.c:908
 msgid "Value"
 msgstr ""
 
 #: ../src/simulation.c:104
 #, fuzzy
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the simulation "
-"executable</span>\n"
-"\n"
-"This probably means that you have not configured Oregano properly."
+msgid "Could not find the simulation executable"
+msgstr "Non posso creare il dialogo dei settaggi di simulazione "
+
+#: ../src/simulation.c:105
+#, fuzzy
+msgid "This probably means that you have not configured Oregano properly."
 msgstr ""
 "Non posso trovare l'eseguibile per la simulazione:\n"
 "%s\n"
@@ -832,44 +799,37 @@ msgstr ""
 "Oregano correttamente. Seleziona Settaggi e specifica\n"
 "dove e' posizionato l'eseguibile (p.e. spice)."
 
-#: ../src/simulation.c:110
+#: ../src/simulation.c:111
+#, fuzzy
+msgid "You have not entered a simulation executable"
+msgstr "Non posso creare il dialogo dei settaggi di simulazione "
+
+#: ../src/simulation.c:112
 #, fuzzy
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">You have not entered a simulation "
-"executable.</span>\n"
-"\n"
-"Please choose Settings and specify whichprogram to use for simulations."
+"Please choose Settings and specify which program to use for simulations."
 msgstr ""
 "Non hai inserito l'eseguibile per la simulazione.\n"
 "Seleziona Settaggi e specifica quale\n"
 "programma usare per la simulazione."
 
-#: ../src/simulation.c:120
+#: ../src/simulation.c:123 ../src/simulation.c:130 ../src/simulation.c:136
 #, fuzzy
-msgid "Could not create simulation dialog."
+msgid "Could not create simulation dialog"
 msgstr "Non posso creare il dialogo dei settaggi di simulazione "
 
-#: ../src/simulation.c:127 ../src/simulation.c:133
+#: ../src/simulation.c:223
 #, fuzzy
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog.</"
-"span>"
-msgstr "Non posso creare il dialogo dei settaggi di simulazione "
-
-#: ../src/simulation.c:220
-#, fuzzy
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">The simulation was aborted due to an "
+"<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
 "error.</span>\n"
 "\n"
 "Would you like to view the error log?"
 msgstr "La simulazione e' stata interrotta da un'errore"
 
-#: ../src/simulation.c:234
+#: ../src/simulation.c:237
 #, fuzzy
-msgid ""
-"<span weight=\"bold\" size=\"x-large\"> The simulation was aborted due to an "
-"error.</span>\n"
+msgid "The simulation was aborted due to an error"
 msgstr "La simulazione e' stata interrotta da un'errore"
 
 #: ../src/textbox-item.c:101
@@ -886,18 +846,15 @@ msgid "Label"
 msgstr ""
 
 #: ../src/textbox-item.c:682
-#, fuzzy, c-format
+#, c-format
 msgid ""
-"<span weight=\"bold\">Could not find the required file:\n"
-"</span>%s\n"
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this."
 msgstr ""
-"Non posso trovare il file richiesto:\n"
-"%s"
 
-#: ../src/textbox-item.c:694
+#: ../src/textbox-item.c:684 ../src/textbox-item.c:693
 #, fuzzy
-msgid ""
-"<span weight=\"bold\">Could not create textbox properties dialog.</span>"
+msgid "Could not create textbox properties dialog"
 msgstr "Non posso creare il dialogo dei settaggi."
 
 #: ../src/netlist-editor.c:172
@@ -914,12 +871,30 @@ msgstr ""
 msgid "Page %N of %Q"
 msgstr ""
 
-#: ../src/netlist-editor.c:240 ../src/netlist-editor.c:278
-#, fuzzy, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist "
-"file:\n"
-"</span>%s\n"
+#: ../src/netlist-editor.c:234 ../src/netlist-editor.c:270
+#, c-format
+msgid "The file %s could not be saved"
+msgstr ""
+
+#: ../src/netlist-editor.c:235 ../src/netlist-editor.c:271
+#, fuzzy
+msgid "Could not save temporary netlist file"
+msgstr "Non posso salvare il file di Schema %s\n"
+
+#: ../src/netlist-editor.c:307
+#, fuzzy
+msgid "Could not create the netlist dialog"
+msgstr "Non posso creare il dialogo dei settaggi."
+
+#. gettext support
+#: ../src/netlist-editor.c:386
+#, c-format
+msgid "The file %s could not be found."
+msgstr ""
+
+#: ../src/netlist-editor.c:387
+#, fuzzy
+msgid "Could not find the required file"
 msgstr ""
 "Non posso trovare il file richiesto:\n"
 "%s"
@@ -1044,11 +1019,6 @@ msgstr "Formato del file"
 #: ../src/dialogs/plot-window.glade2.h:2
 msgid "<b>Variables</b>"
 msgstr ""
-
-#: ../src/dialogs/plot-window.glade2.h:3
-#, fuzzy
-msgid "window"
-msgstr "Annulla"
 
 #: ../src/dialogs/properties.glade2.h:1
 #: ../src/dialogs/textbox-properties-dialog.glade2.h:1
@@ -1304,6 +1274,102 @@ msgstr ""
 
 #, fuzzy
 #~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "Non posso trovare il file richiesto:\n"
+#~ "%s"
+
+#~ msgid " "
+#~ msgstr " "
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:</"
+#~ "span>\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Non posso trovare il file richiesto:\n"
+#~ "%s"
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Non posso trovare il file richiesto:\n"
+#~ "%s"
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Non posso trovare il file richiesto:\n"
+#~ "%s"
+
+#, fuzzy
+#~ msgid "<span weight=\"bold\">Could not create log window.</span>"
+#~ msgstr "Non posso creare il browser delle parti"
+
+#, fuzzy
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</"
+#~ "span>"
+#~ msgstr "Non posso creare il dialogo dei settaggi."
+
+#, fuzzy
+#~ msgid ""
+#~ "<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
+#~ "\n"
+#~ "Start time must be less than stop time."
+#~ msgstr ""
+#~ "Analisi del transitorio:\n"
+#~ "\n"
+#~ "L'istante iniziale deve essere minore di quello finale."
+
+#, fuzzy
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create simulation "
+#~ "settings dialog.</span>"
+#~ msgstr "Non posso creare il dialogo dei settaggi di simulazione "
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog."
+#~ "</span>"
+#~ msgstr "Non posso creare il dialogo dei settaggi di simulazione "
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\">Could not find the required file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "Non posso trovare il file richiesto:\n"
+#~ "%s"
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\">Could not create textbox properties dialog.</span>"
+#~ msgstr "Non posso creare il dialogo dei settaggi."
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist "
+#~ "file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "Non posso trovare il file richiesto:\n"
+#~ "%s"
+
+#, fuzzy
+#~ msgid "window"
+#~ msgstr "Annulla"
+
+#, fuzzy
+#~ msgid ""
 #~ "<span size=\"x-large\" weight=\"bold\">Could not create simulation "
 #~ "settings dialog.</sapn>"
 #~ msgstr "Non posso creare il dialogo dei settaggi di simulazione "
@@ -1388,9 +1454,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Paper Size"
 #~ msgstr "Proprieta'"
-
-#~ msgid "Could not save Schematic file %s\n"
-#~ msgstr "Non posso salvare il file di Schema %s\n"
 
 #~ msgid "Warning"
 #~ msgstr "Attenzione"
@@ -1478,13 +1541,6 @@ msgstr ""
 #~ "usato da Oregano. Prova ad usare lo script perl\n"
 #~ "oregano-convert per convertire al nuovo formato di\n"
 #~ "file. Scusa per l'inconveniente.\n"
-
-#~ msgid ""
-#~ "Could not load Schematic file:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Non posso caricare il file di Schema:\n"
-#~ "%s"
 
 #~ msgid "%P %% Done"
 #~ msgstr "%P %% Fatto"
