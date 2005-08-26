@@ -474,10 +474,10 @@ part_browser_create (SchematicView *schematic_view)
 	if (!g_file_test (OREGANO_GLADEDIR "/part-browser.glade2",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n</span>%s\n"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 			OREGANO_GLADEDIR "/part-browser.glade2");
 
-		oregano_error (msg);
+		oregano_error_with_title (_("Could not create part browser"), msg);
 		g_free (msg);
 		return NULL;
 	}
@@ -485,7 +485,7 @@ part_browser_create (SchematicView *schematic_view)
 	gui = glade_xml_new (OREGANO_GLADEDIR "/part-browser.glade2",
 		"part_browser_vbox", GETTEXT_PACKAGE);
 	if (!gui) {
-		oregano_error (_("Could not create part browser."));
+		oregano_error (_("Could not create part browser"));
 		return NULL;
 	}
 
@@ -566,7 +566,7 @@ part_browser_create (SchematicView *schematic_view)
 	br->real_model = GTK_TREE_MODEL (gtk_list_store_new (1, G_TYPE_STRING));
 	cell_text = gtk_cell_renderer_text_new ();
 	cell_column = gtk_tree_view_column_new_with_attributes (
-		_(" "), cell_text, "text", 0, NULL);
+		" ", cell_text, "text", 0, NULL);
 
 	/* Create the sort model for the items, this sort the real model */
 	br->sort_model = gtk_tree_model_sort_new_with_model (

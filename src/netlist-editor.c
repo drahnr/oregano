@@ -218,16 +218,11 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			char *str;
-			str = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
-				error->message);
-			oregano_error (str);
-			g_free (str);
+			oregano_error_with_title (_("Could not create a netlist"), error->message);
 			g_clear_error (&error);
 		} else {
 			oregano_error (
-				_("<span weight=\"bold\" size=\"x-large\">Unexpected error!!!</span>"));
+				_("An unexpected error has occurred"));
 		}
 		return;
 	}
@@ -236,10 +231,8 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 	fp = fopen (name, "wt");
 	if (!fp) {
 		gchar *msg;
-		msg = g_strdup_printf (
-			_("<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist file:\n</span>%s\n"), name);
-
-		oregano_error (msg);
+		msg = g_strdup_printf (_("The file %s could not be saved"), name);
+		oregano_error_with_title (_("Could not save temporary netlist file"), msg);
 		g_free (msg);
 		return;
 	}
@@ -274,10 +267,8 @@ netlist_editor_save (GtkWidget * widget, NetlistEditor * nle)
 		fp = fopen (name, "wt");
 		if (!fp) {
 			gchar *msg;
-			msg = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist file:\n</span>%s\n"), name);
-
-			oregano_error (msg);
+    		msg = g_strdup_printf (_("The file %s could not be saved"), name);
+    		oregano_error_with_title (_("Could not save temporary netlist file"), msg);
 			g_free (msg);
 			return;
 		}
@@ -310,11 +301,10 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 		
 	if (!g_file_test (OREGANO_GLADEDIR "/view-netlist.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
-		/* gettext support */
-		msg = g_strdup_printf (_("<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n</span>%s\n"),
+		msg = g_strdup_printf (
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 			OREGANO_GLADEDIR "/view-netlist.glade2");
-
-		oregano_error (msg);
+		oregano_error_with_title (_("Could not create the netlist dialog"), msg);
 		g_free (msg);
 		return NULL;
 	}
@@ -393,8 +383,8 @@ netlist_editor_new_from_file (gchar * filename)
 	if (!(g_file_test (filename, G_FILE_TEST_EXISTS))) {
 		gchar *msg;
 		/* gettext support */
-		msg = g_strdup_printf (_("<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n</span>%s\n"), filename);
-		oregano_error (msg);
+		msg = g_strdup_printf (_("The file %s could not be found."), filename);
+		oregano_error_with_title (_("Could not find the required file"), msg);
 		g_free (msg);
 		return NULL;
 	}
@@ -436,16 +426,10 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			char *str;
-			str = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
-				error->message);
-			oregano_error (str);
-			g_free (str);
+			oregano_error_with_title (_("Could not create a netlist"), error->message);
 			g_clear_error (&error);
 		} else {
-			oregano_error (
-				_("<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"));
+			oregano_error (_("An unexpected error has occurred"));
 		}
 		return;
 	}

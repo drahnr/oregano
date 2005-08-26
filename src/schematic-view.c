@@ -249,10 +249,10 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	if (!g_file_test (OREGANO_GLADEDIR "/properties.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
-			_("<span weight=\"bold\" size=\"x-large\">Could not find the required file:</span>\n%s"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 			OREGANO_GLADEDIR "/properties.glade2");
 
-		oregano_error (msg);
+		oregano_error_with_title (_("Could not create properties dialog"), msg);
 		g_free (msg);
 		return;
 	}
@@ -315,10 +315,10 @@ page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 	if (!g_file_test (OREGANO_GLADEDIR "/page-properties.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
-			_("<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n</span>%s\n"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 			OREGANO_GLADEDIR "/page-properties.glade2");
 
-		oregano_error (msg);
+		oregano_error_with_title (_("Could not create the page properties dialog"), msg);
 		g_free (msg);
 		return;
 	}
@@ -378,12 +378,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 	new_sm = schematic_read(fname, &error);
 
 	if (error != NULL) {
-		gchar *msg;
-		msg = g_strdup_printf (
-			_("<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n\n%s"),
-			(gchar *)error->message);
-		oregano_error (msg);
-		g_free (msg);
+		oregano_error_with_title (_("Could not load file"), error->message);
 		g_error_free (error);
 	}
 
@@ -415,11 +410,7 @@ save_cmd (GtkWidget *widget, SchematicView *sv)
 		return;
 	} else {
 		if (!schematic_save_file (sm, &error)){
-			char *msg = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n</span>%s\n"),
-				error->message);
-			oregano_error (msg);
-			g_free (msg);
+			oregano_error_with_title (_("Could not save schematic file"), error->message);
 			g_error_free (error);
 		}
 	}
@@ -778,16 +769,10 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			char *str;
-			str = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
-				error->message);
-			oregano_error (str);
-			g_free (str);
+			oregano_error_with_title (_("Could not create a netlist"), error->message);
 			g_clear_error (&error);
 		} else {
-			oregano_error (
-				_("<span weight=\"bold\" size=\"x-large\">Unexpected error!!!</span>"));
+			oregano_error (_("An unexpected error has occurred"));
 		}
 		return;
 	}
@@ -905,16 +890,10 @@ simulate_cmd (GtkWidget *widget, SchematicView *sv)
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			char *str;
-			str = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n\n%s"),
-				error->message);
-			oregano_error (str);
-			g_free (str);
+			oregano_error_with_title (_("Could not create a netlist"), error->message);
 			g_error_free (error);
 		} else {
-			oregano_error (
-				_("<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"));
+			oregano_error (_("An unexpected error has occurred"));
 		}
 		return;
 	}
@@ -1556,7 +1535,7 @@ can_close (SchematicView *sv)
 	
 	filename = schematic_get_filename (sv->priv->schematic);
 	text = g_strdup_printf (
-		_("<span weight=\"bold\" size=\"x-large\">Schematic %s has unsaved changes</span>\n\n"
+		_("<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</span>\n\n"
 			"Do you want to save them?"),
 			filename ?  g_basename (filename) : NULL );
 
@@ -2474,10 +2453,10 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 
 		if (!g_file_test (OREGANO_GLADEDIR "/log-window.glade2", G_FILE_TEST_EXISTS)) {
 			msg = g_strdup_printf (
-				_("<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n</span>%s\n"),
+				_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 				OREGANO_GLADEDIR "/log-window.glade2");
 
-			oregano_error (msg);
+			oregano_error_with_title ( _("Could not create the log window"), msg);
 			g_free (msg);
 			return;
 		}
@@ -2488,7 +2467,7 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 			NULL, NULL);
 
 		if (!sv->priv->log_gui) {
-			oregano_error (_("<span weight=\"bold\">Could not create log window.</span>"));
+			oregano_error (_("Could not create the log window"));
 			return;
 		}
 

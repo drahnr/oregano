@@ -822,8 +822,8 @@ response_callback(GtkDialog *dlg, gint id, Schematic *sm)
 	case GTK_RESPONSE_CANCEL:
 		if (s->priv->trans_enable) {
 			if (sim_settings_get_trans_start (s) >= sim_settings_get_trans_stop (s)) {
-				oregano_error (_("<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n\n"
-					"Start time must be less than stop time."));
+				oregano_error_with_title (_("Problem in transient analysis"),
+					_("Start time must be less than stop time."));
 				return;
 			}
 		}
@@ -862,19 +862,24 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 
 	if (!g_file_test (OREGANO_GLADEDIR "/sim-settings.glade2", G_FILE_TEST_EXISTS)) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create simulation settings dialog.</span>"));
+		gchar *msg;
+		msg = g_strdup_printf (
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			OREGANO_GLADEDIR "/sim-settings.glade2");
+		oregano_error_with_title (_("Could not create simulation settings dialog"), msg);
+		g_free (msg);
 		return;
 	}
 
 	gui = glade_xml_new (OREGANO_GLADEDIR "/sim-settings.glade2", "toplevel", NULL);
 	if (!gui) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create simulation settings dialog.</span>"));
+		oregano_error (_("Could not create simulation settings dialog"));
 		return;
 	}
 
 	toplevel = glade_xml_get_widget (gui, "toplevel");
 	if (!toplevel) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create simulation settings dialog.</span>"));
+		oregano_error (_("Could not create simulation settings dialog"));
 		return;
 	}
 

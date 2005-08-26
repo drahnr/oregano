@@ -679,9 +679,9 @@ edit_textbox (SheetItem *sheet_item)
 	if (!g_file_test (OREGANO_GLADEDIR "/textbox-properties-dialog.glade2",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("<span weight=\"bold\">Could not find the required file:\n</span>%s\n"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/textbox-properties-dialog.glade2");
-		oregano_error (msg);
+		oregano_error (_("Could not create textbox properties dialog"));
 		g_free (msg);
 		return;
 	}
@@ -690,8 +690,7 @@ edit_textbox (SheetItem *sheet_item)
 		OREGANO_GLADEDIR "/textbox-properties-dialog.glade2",
 		NULL, NULL);
 	if (!gui) {
-		oregano_error (
-			_("<span weight=\"bold\">Could not create textbox properties dialog.</span>"));
+		oregano_error (_("Could not create textbox properties dialog"));
 		return;
 	}
 

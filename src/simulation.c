@@ -83,7 +83,7 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	GladeXML *gui;
 	Simulation *s;
 	Schematic *sm;
-	gchar *msg;
+	gchar *title, *desc;
 	gchar *fullpath = NULL;
 
 	g_return_if_fail (sv != NULL);
@@ -101,15 +101,18 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 
 	fullpath = g_find_program_in_path (oregano.simexec);
 	if (oregano.simexec && !fullpath) {
-		msg = g_strdup_printf (_("<span weight=\"bold\" size=\"x-large\">Could not find the simulation executable</span>\n\n"
-			"This probably means that you have not configured Oregano properly."));
-		oregano_error (msg);
-		g_free (msg);
+		title = g_strdup_printf (_("Could not find the simulation executable"));
+		desc  = g_strdup_printf (_("This probably means that you have not configured Oregano properly."));
+		oregano_error_with_title (title, desc);
+		g_free (title);
+		g_free (desc);
 		return;
 	} else if (!oregano.simexec) {
-		oregano_error (_("<span weight=\"bold\" size=\"x-large\">You have not entered a simulation executable.</span>\n\n"
-			"Please choose Settings and specify which"
-			"program to use for simulations."));
+		title = g_strdup_printf (_("You have not entered a simulation executable"));
+		desc  = g_strdup_printf (_("Please choose Settings and specify which program to use for simulations."));
+		oregano_error_with_title (title, desc);
+		g_free (title);
+		g_free (desc);
 		if (fullpath != NULL) g_free (fullpath);
 		return;
 	}
@@ -117,20 +120,20 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	if (fullpath != NULL) g_free (fullpath);
 	if (!g_file_test (OREGANO_GLADEDIR "/simulation.glade2",
 		G_FILE_TEST_EXISTS)) {
-		oregano_error (_("Could not create simulation dialog."));
+		oregano_error (_("Could not create simulation dialog"));
 		return;
 	}
 
 	gui = glade_xml_new (OREGANO_GLADEDIR "/simulation.glade2", "toplevel", NULL);
 
 	if (!gui) {
-		oregano_error (_("<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog.</span>"));
+		oregano_error (_("Could not create simulation dialog"));
 		return;
 	}
 
 	w = glade_xml_get_widget (gui, "toplevel");
 	if (!w) {
-		oregano_error (_("<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog.</span>"));
+		oregano_error (_("Could not create simulation dialog"));
 		return;
 	}
 
@@ -217,7 +220,7 @@ input_aborted_callback (SimEngine *engine, Simulation *s)
 			GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 			GTK_MESSAGE_ERROR,
 			GTK_BUTTONS_YES_NO,
-			_("<span weight=\"bold\" size=\"x-large\">The simulation was aborted due to an error.</span>\n\n"
+			_("<span weight=\"bold\" size=\"large\">The simulation was aborted due to an error.</span>\n\n"
 				"Would you like to view the error log?"));
 
 
@@ -231,7 +234,7 @@ input_aborted_callback (SimEngine *engine, Simulation *s)
 			schematic_view_log_show (s->sv, TRUE);
 		}
 	} else {
-		oregano_error (_("<span weight=\"bold\" size=\"x-large\"> The simulation was aborted due to an error.</span>\n"));
+		oregano_error (_("The simulation was aborted due to an error"));
 
 		schematic_view_log_show (s->sv, FALSE);
 	}

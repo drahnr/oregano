@@ -643,9 +643,9 @@ edit_properties_punta (PartItem *item)
 		OREGANO_GLADEDIR "/clamp-properties-dialog.glade2",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("Could not find the required file:\n%s"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 			OREGANO_GLADEDIR "/clamp-properties-dialog.glade2");
-		oregano_error (msg);
+		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
 		return;
 	}
@@ -799,9 +799,9 @@ edit_properties (SheetItem *object)
 		OREGANO_GLADEDIR "/part-properties-dialog.glade2",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("Could not find the required file:\n%s"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
 			OREGANO_GLADEDIR "/part-properties-dialog.glade2");
-		oregano_error (msg);
+		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
 		return;
 	}

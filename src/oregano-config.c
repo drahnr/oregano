@@ -166,10 +166,12 @@ is_oregano_library_name (gchar *name)
 static void
 load_library_error (gchar *name)
 {
-	gchar *msg;
-		msg = g_strdup_printf (_("<span weight=\"bold\" size=\"x-large\">Could not read the parts library:%s </span>\n\n"
+	gchar *title, *desc;
+		title = g_strdup_printf (_("Could not read the parts library: %s "), name);
+		desc = g_strdup_printf (_(
 			 "The file is probably corrupt. Please reinstall the parts\n"
-			 "library or Oregano and try again."), name);
-	oregano_error (msg);
-	g_free (msg);
+			 "library or Oregano and try again."));
+	oregano_error_with_title (title, desc);
+	g_free (title);
+	g_free (desc);
 }

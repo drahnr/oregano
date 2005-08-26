@@ -313,7 +313,7 @@ nl_generate (Schematic *sm, gchar *fn, GError **error)
 			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_GND,
 				_("Possibly due to a faulty circuit schematic. Please check that\n"
-				"you have a Ground node and try again.")
+				"you have a ground node and try again.")
 			);
 
 		/* No file will be generated. */

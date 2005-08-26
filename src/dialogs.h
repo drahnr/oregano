@@ -34,6 +34,7 @@
 #include "schematic.h"
 
 void oregano_error (gchar *msg);
+void oregano_error_with_title (gchar *title, gchar *desc);
 gint oregano_question (gchar *msg);
 void dialog_about (void);
 

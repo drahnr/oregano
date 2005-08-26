@@ -154,19 +154,24 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 
 	if (!g_file_test (OREGANO_GLADEDIR "/settings.glade2", G_FILE_TEST_EXISTS)) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</span>"));
+		gchar *msg;
+		msg = g_strdup_printf (
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			OREGANO_GLADEDIR "/settings.glade2");
+		oregano_error_with_title (_("Could not create settings dialog"), msg);
+		g_free (msg);
 		return;
 	}
 
 	gui = glade_xml_new (OREGANO_GLADEDIR "/settings.glade2", NULL, "toplevel");
 	if (!gui) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</span>"));
+		oregano_error (_("Could not create settings dialog"));
 		return;
 	}
 
 	w = toplevel = glade_xml_get_widget (gui, "toplevel");
 	if (!w) {
-		oregano_error (_("<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</span>"));
+		oregano_error (_("Could not create settings dialog"));
 		return;
 	}
 

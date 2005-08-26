@@ -37,20 +37,39 @@ static GtkWidget *about = NULL;
 void
 oregano_error (gchar *msg)
 {
+    oregano_error_with_title(msg, "");
+}
+
+void
+oregano_error_with_title (gchar *title, gchar *desc)
+{
 	GtkWidget *dialog;
 	gint result;
+
+    GString* span_msg;
+
+    span_msg = g_string_new("<span weight=\"bold\" size=\"large\">");
+    span_msg = g_string_append(span_msg, title);
+    span_msg = g_string_append(span_msg,"</span>");
+
+    if (!g_str_equal(desc, ""))
+    {
+        span_msg = g_string_append(span_msg,"\n\n");
+        span_msg = g_string_append(span_msg, desc);
+    }
 
 	dialog = gtk_message_dialog_new_with_markup (
 		NULL,
 		GTK_DIALOG_MODAL,
 		GTK_MESSAGE_ERROR,
 		GTK_BUTTONS_OK,
-		msg);
+		span_msg->str);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 
+    g_string_free(span_msg, TRUE);
 	gtk_widget_destroy (dialog);
 }
 

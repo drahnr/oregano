@@ -565,7 +565,7 @@ schematic_read (char *name, GError **out_error)
 
 	if (!g_file_test (fname, G_FILE_TEST_EXISTS)) {
 		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
-			_("File (%s) does not exists."), fname);
+			_("File %s does not exists."), fname);
 		return NULL;
 	}
 
@@ -573,7 +573,7 @@ schematic_read (char *name, GError **out_error)
 	ft = file_manager_get_handler (fname);
 	if (ft == NULL) {
 		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
-			_("Unknown file format for (%s)."), fname);
+			_("Unknown file format for %s."), fname);
 		return NULL;
 	}
 
@@ -611,7 +611,7 @@ schematic_save_file (Schematic *sm, GError **error)
 
 	if (ft == NULL) {
 		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
-			_("Unknown file format for (%s)."), schematic_get_filename (sm));
+			_("Unknown file format for %s."), schematic_get_filename (sm));
 		return;
 	}
 
