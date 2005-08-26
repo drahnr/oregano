@@ -46,11 +46,11 @@ oregano_error_with_title (gchar *title, gchar *desc)
 	GtkWidget *dialog;
 	gint result;
 
-    GString* span_msg;
+	GString* span_msg;
 
-    span_msg = g_string_new("<span weight=\"bold\" size=\"large\">");
-    span_msg = g_string_append(span_msg, title);
-    span_msg = g_string_append(span_msg,"</span>");
+	span_msg = g_string_new("<span weight=\"bold\" size=\"large\">");
+	span_msg = g_string_append(span_msg, title);
+	span_msg = g_string_append(span_msg,"</span>");
 
 	if (desc && desc[0] != '\0') {
 		span_msg = g_string_append(span_msg,"\n\n");
@@ -68,7 +68,7 @@ oregano_error_with_title (gchar *title, gchar *desc)
 
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 
-    g_string_free(span_msg, TRUE);
+	g_string_free(span_msg, TRUE);
 	gtk_widget_destroy (dialog);
 }
 
