@@ -37,7 +37,7 @@ static GtkWidget *about = NULL;
 void
 oregano_error (gchar *msg)
 {
-    oregano_error_with_title(msg, "");
+    oregano_error_with_title(msg, NULL);
 }
 
 void
@@ -52,11 +52,10 @@ oregano_error_with_title (gchar *title, gchar *desc)
     span_msg = g_string_append(span_msg, title);
     span_msg = g_string_append(span_msg,"</span>");
 
-    if (!g_str_equal(desc, ""))
-    {
-        span_msg = g_string_append(span_msg,"\n\n");
-        span_msg = g_string_append(span_msg, desc);
-    }
+	if (desc && desc[0] != '\0') {
+		span_msg = g_string_append(span_msg,"\n\n");
+		span_msg = g_string_append(span_msg, desc);
+	}
 
 	dialog = gtk_message_dialog_new_with_markup (
 		NULL,
