@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-16 12:25-0300\n"
+"POT-Creation-Date: 2005-08-26 13:35-0300\n"
 "PO-Revision-Date: 2005-16-08 17:45-0300\n"
 "Last-Translator: Margarita Manterola <marga@marga.com.ar> \n"
 "Language-Team: Spanish\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../src/dialogs.c:109
+#: ../src/dialogs.c:128
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
@@ -23,7 +23,7 @@ msgstr ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001, Richard Hult"
 
-#: ../src/dialogs.c:124
+#: ../src/dialogs.c:143
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Preparación de esquemáticos y simulación de circuitos.\n"
 
@@ -120,17 +120,14 @@ msgstr "Cargando %s ..."
 
 #: ../src/oregano-config.c:170
 #, c-format
+msgid "Could not read the parts library: %s "
+msgstr "No se pudo abrir la biblioteca de componentes: %s"
+
+#: ../src/oregano-config.c:172
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not read the parts library:%s </"
-"span>\n"
-"\n"
 "The file is probably corrupt. Please reinstall the parts\n"
 "library or Oregano and try again."
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No pude leer la biblioteca de "
-"componentes:\n"
-"</span>%s\n"
-"\n"
 "Posiblemente el archivo esté corrupto. Reinstale la biblioteca\n"
 "de componentes de Oregano y pruebe de nuevo"
 
@@ -142,26 +139,20 @@ msgstr ""
 "Gtk versión 2.2 no soporta GtkTreeModelFilter...\n"
 "Filtrado de componentes desactivado!"
 
-#. gettext support
-#: ../src/part-browser.c:477 ../src/plot.c:579 ../src/plot.c:983
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2477
-#: ../src/netlist-editor.c:314 ../src/netlist-editor.c:396
+#: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
+#: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
 #, c-format
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
-"</span>%s\n"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No se pudo encontrar el archivo "
-"especificado:\n"
-"</span>%s\n"
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this"
+msgstr "No se pudo encontrar el archivo %s.  Puede ser que sea necesario "
+"reinstalar Oregano para solucionarlo"
 
-#: ../src/part-browser.c:488
-msgid "Could not create part browser."
+#: ../src/part-browser.c:480 ../src/part-browser.c:488
+msgid "Could not create part browser"
 msgstr "No se pudo crear el visor de componentes"
-
-#: ../src/part-browser.c:569
-msgid " "
-msgstr " "
 
 #: ../src/part-item.c:151 ../src/dialogs/properties.glade2.h:4
 msgid "Properties"
@@ -171,16 +162,8 @@ msgstr "Propiedades"
 msgid "Edit the part's properties"
 msgstr "Editar las propiedades del componente"
 
-#: ../src/part-item.c:646 ../src/part-item.c:802
-#, c-format
-msgid ""
-"Could not find the required file:\n"
-"%s"
-msgstr ""
-"No se pudo encontrar el archivo especificado:\n"
-"%s"
-
-#: ../src/part-item.c:656 ../src/part-item.c:812
+#: ../src/part-item.c:648 ../src/part-item.c:656 ../src/part-item.c:804
+#: ../src/part-item.c:812
 msgid "Could not create part properties dialog."
 msgstr "No se pudo crear el diálogo de propiedades del componente"
 
@@ -254,45 +237,45 @@ msgid "_Plot"
 msgstr "_Graficar"
 
 #. Simulation failed?
-#: ../src/plot.c:344
+#: ../src/plot.c:325
 msgid "The simulation produced no data!!\n"
 msgstr "¡¡No hay datos de la simulación!!\n"
 
-#: ../src/plot.c:354 ../src/plot.c:733
+#: ../src/plot.c:335 ../src/plot.c:715
 #, c-format
 msgid "Plot - %s"
 msgstr "Gráfica - %s"
 
-#: ../src/plot.c:369
+#: ../src/plot.c:350
 msgid "Nodes"
 msgstr "Nodos"
 
-#: ../src/plot.c:372 ../src/plot.c:937
+#: ../src/plot.c:353 ../src/plot.c:917
 msgid "Functions"
 msgstr "Funciones"
 
 #
-#: ../src/plot.c:569
+#: ../src/plot.c:550
 msgid "Oregano - Plot"
 msgstr "Oregano - Ventana de gráfico"
 
-#: ../src/plot.c:588
+#: ../src/plot.c:562 ../src/plot.c:569
 msgid "Could not create plot window."
 msgstr "No se pudo crear la ventana de gráfico de curvas."
 
-#: ../src/plot.c:598
+#: ../src/plot.c:579 ../src/dialogs/plot-window.glade2.h:3
 msgid "Plot"
 msgstr "Graficar"
 
-#: ../src/plot.c:959
+#: ../src/plot.c:939
 msgid "TRANSFER"
 msgstr "TRANSFERENCIA"
 
-#: ../src/plot.c:992
+#: ../src/plot.c:965 ../src/plot.c:972
 msgid "Could not create plot export window."
 msgstr "No se pudo crear la ventana de exportación."
 
-#: ../src/plot.c:1012
+#: ../src/plot.c:992
 msgid "Save PNG"
 msgstr "Guardar PNG"
 
@@ -318,94 +301,69 @@ msgstr "Fallo de impresión"
 
 #: ../src/schematic.c:568
 #, c-format
-msgid "File (%s) does not exists."
-msgstr "El archivo (%s) no existe."
+msgid "File %s does not exists."
+msgstr "El archivo %s no existe."
 
 #: ../src/schematic.c:576 ../src/schematic.c:614
 #, c-format
-msgid "Unknown file format for (%s)."
-msgstr "Formato desconocido para (%s)."
+msgid "Unknown file format for %s."
+msgstr "Formato desconocido para %s."
 
 #: ../src/schematic.c:595
 msgid "Load fails!."
 msgstr "¡Falló la carga!"
 
-#: ../src/schematic-view.c:252
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the required file:</"
-"span>\n"
-"%s"
-msgstr ""
-"<span weight=\"bold\" size=\"xlarge\">No se pudo encontrar el archivo "
-"especificado:</span>\n"
-"%s"
+#: ../src/schematic-view.c:255
+msgid "Could not create properties dialog"
+msgstr "No se pudo crear el diálogo de propiedade"
 
-#: ../src/schematic-view.c:383
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
-"\n"
-"%s"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No se pudo cargar el archivo</"
-"span>\n"
-"\n"
-"%s"
+#: ../src/schematic-view.c:321
+msgid "Could not create the page properties dialog"
+msgstr "No se pudo crear el diálogo de propiedade de la página"
 
-#: ../src/schematic-view.c:413 ../src/schematic-view.c:1359
-#: ../src/schematic-view.c:1367
+#: ../src/schematic-view.c:381
+msgid "Could not load file"
+msgstr "No se pudo cargar el archivo"
+
+#: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
+#: ../src/schematic-view.c:1346
 msgid "Untitled.oregano"
 msgstr "SinNombre.oregano"
 
-#: ../src/schematic-view.c:419
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n"
-"</span>%s\n"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No su pudo guardar el archivo del "
-"esquemático\n"
-"</span>%s\n"
+#: ../src/schematic-view.c:413
+msgid "Could not save schematic file"
+msgstr "No se pudo guardar el archivo del esquemátic"
 
-#: ../src/schematic-view.c:783 ../src/schematic-view.c:910
-#: ../src/netlist-editor.c:223 ../src/netlist-editor.c:441
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-"\n"
-"%s"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No se pudo generar la lista de nodos</"
-"span>\n"
-"\n"
-"%s"
+#: ../src/schematic-view.c:772 ../src/schematic-view.c:893
+#: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
+msgid "Could not create a netlist"
+msgstr "No se pudo crear la lista de nodos"
 
-#: ../src/schematic-view.c:790 ../src/schematic-view.c:917
-#: ../src/netlist-editor.c:230 ../src/netlist-editor.c:448
-msgid "<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"
-msgstr "<span weight=\"bold\" size=\"x-large\">Error no esperado!!!</span>"
+#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
+#: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
+msgid "An unexpected error has occurred"
+msgstr "Ha ocurrido un error inesperado"
 
-#: ../src/schematic-view.c:1368
+#: ../src/schematic-view.c:1347
 msgid "Untitled.netlist"
 msgstr "SinNombre.netlist"
 
-#: ../src/schematic-view.c:1559
+#: ../src/schematic-view.c:1538
 #, c-format
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Schematic %s has unsaved changes</"
+"<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
 "span>\n"
 "\n"
 "Do you want to save them?"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">El esquemático %s tiene cambios sin "
+"<span weight=\"bold\" size=\"large\">El esquemático %s tiene cambios sin "
 "guardar</span>\n"
 "\n"
 "¿Desea guardarlos ahora?"
 
-#: ../src/schematic-view.c:2491
-msgid "<span weight=\"bold\">Could not create log window.</span>"
-msgstr "<span weight=\"bold\">No puede crear una ventana de log.</span>"
+#: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
+msgid "Could not create the log window"
+msgstr "No se pudo crear la ventana de informes."
 
 #: ../src/schematic-view-ui.h:38
 msgid "_New"
@@ -695,13 +653,9 @@ msgstr "Encoger"
 msgid "Paste the contents of the clipboard to the sheet"
 msgstr "Pega los contenidos del portapapeles al esquemático en uso"
 
-#: ../src/settings.c:157 ../src/settings.c:163 ../src/settings.c:169
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</"
-"span>"
-msgstr ""
-"<span size=\"x-large\" weigth=\"bold\">No se pudo crear un diálogo de "
-"propiedades.</span>"
+#: ../src/settings.c:161 ../src/settings.c:168 ../src/settings.c:174
+msgid "Could not create settings dialog"
+msgstr "No se pudo crear el diálogo deconfiguración"
 
 #: ../src/sheet-item.c:308
 msgid "Copy the object to the clipboard"
@@ -776,7 +730,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"### Muchos o muy pocos análisis encontrados ###\n"
+"### No se recibieron resultados de la simulación ###\n"
 "\n"
 
 #: ../src/sim-settings.c:239
@@ -784,87 +738,63 @@ msgid "Add new option"
 msgstr "Agregar nueva opción"
 
 #: ../src/sim-settings.c:825
-msgid ""
-"<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
-"\n"
-"Start time must be less than stop time."
-msgstr ""
-"<span size=\"x-large\" weigth=\"bold\">Análisis en el tiempo</span>\n"
-"\n"
-"El tiempo de inicio debe ser menor que el tiempo final."
+msgid "Problem in transient analysis"
+msgstr "Problema en el análisis en el tiempo"
 
-#: ../src/sim-settings.c:865 ../src/sim-settings.c:871
-#: ../src/sim-settings.c:877
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create simulation settings "
-"dialog.</span>"
-msgstr ""
-"<span size=\"x-large\" weight=\"bold\">No se pudo crear el diálogo "
-"depropiedades.</span>"
+#: ../src/sim-settings.c:826
+msgid "Start time must be less than stop time."
+msgstr "El momento de inicio debe ser anterior que al de finalización"
 
-#: ../src/sim-settings.c:901
+#: ../src/sim-settings.c:869 ../src/sim-settings.c:876
+#: ../src/sim-settings.c:882
+msgid "Could not create simulation settings dialog"
+msgstr "No se pudo crear el diálogo de parámetros de la simulación"
+
+#: ../src/sim-settings.c:906
 msgid "Option"
 msgstr "Opción"
 
-#: ../src/sim-settings.c:903
+#: ../src/sim-settings.c:908
 msgid "Value"
 msgstr "Valor"
 
 #: ../src/simulation.c:104
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the simulation "
-"executable</span>\n"
-"\n"
-"This probably means that you have not configured Oregano properly."
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No se pudo encontrar el programa de "
-"simulación</span>\n"
-"\n"
-"Posiblemente sea debido a que no tiene bien configurado Oregano."
+msgid "Could not find the simulation executable"
+msgstr "No se pudo encontrar el programa de simulación"
 
-#: ../src/simulation.c:110
+#: ../src/simulation.c:105
+msgid "This probably means that you have not configured Oregano properly."
+msgstr "Posiblemente sea debido a que no tiene bien configurado Oregano."
+
+#: ../src/simulation.c:111
+msgid "You have not entered a simulation executable"
+msgstr "No se ha configurado un programa de simulación"
+
+#: ../src/simulation.c:112
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">You have not entered a simulation "
-"executable.</span>\n"
-"\n"
-"Please choose Settings and specify whichprogram to use for simulations."
+"Please choose Settings and specify which program to use for simulations."
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No ha especificado ningún programa de "
-"simulación.</span>\n"
-"\n"
-"Por favor vaya a propiedades y especifique el programa que se debe usar para "
+"Por favor vaya a Propiedades y especifique el programa que se debe usar para "
 "simular."
 
-#: ../src/simulation.c:120
-msgid "Could not create simulation dialog."
+#: ../src/simulation.c:123 ../src/simulation.c:130 ../src/simulation.c:136
+msgid "Could not create simulation dialog"
 msgstr "No se pudo crear el diálogo de simulación"
 
-#: ../src/simulation.c:127 ../src/simulation.c:133
+#: ../src/simulation.c:223
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog.</"
-"span>"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No se pudo crear el diálogo de "
-"simulación.</span>"
-
-#: ../src/simulation.c:220
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">The simulation was aborted due to an "
+"<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
 "error.</span>\n"
 "\n"
 "Would you like to view the error log?"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">La simulación ha finalizado debido a "
+"<span weight=\"bold\" size=\"large\">La simulación ha finalizado debido a "
 "un error.</span>\n"
 "¿Quiere ver el log de errores?"
 
-#: ../src/simulation.c:234
-msgid ""
-"<span weight=\"bold\" size=\"x-large\"> The simulation was aborted due to an "
-"error.</span>\n"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\"> La simulación ha finalizado debido a "
-"un error.</span>\n"
+#: ../src/simulation.c:237
+msgid "The simulation was aborted due to an error"
+msgstr "La simulación ha finalizado debido a un error"
 
 #: ../src/textbox-item.c:101
 msgid "Edit..."
@@ -881,19 +811,14 @@ msgstr "Etiqueta"
 #: ../src/textbox-item.c:682
 #, c-format
 msgid ""
-"<span weight=\"bold\">Could not find the required file:\n"
-"</span>%s\n"
-msgstr ""
-"<span weight=\"bold\">No se pudo encontrar el archivo especificado:\n"
-"</span>%s\n"
-"\n"
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this."
+msgstr "El archivo %s no se pudo encontrar. Es posible que haga falta"
+"reinstalar Oregano para solucionarlo."
 
-#: ../src/textbox-item.c:694
-msgid ""
-"<span weight=\"bold\">Could not create textbox properties dialog.</span>"
-msgstr ""
-"<span weight=\"bold\">No se pudo crear el diálogo de propiedades del cuadro "
-"de texto.</span>"
+#: ../src/textbox-item.c:684 ../src/textbox-item.c:693
+msgid "Could not create textbox properties dialog"
+msgstr "No se pudo crear el diálogo de propiedades d texto"
 
 #: ../src/netlist-editor.c:172
 #, c-format
@@ -909,16 +834,28 @@ msgstr "Autor : %s"
 msgid "Page %N of %Q"
 msgstr "Página %N de %Q"
 
-#: ../src/netlist-editor.c:240 ../src/netlist-editor.c:278
+#: ../src/netlist-editor.c:234 ../src/netlist-editor.c:270
 #, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist "
-"file:\n"
-"</span>%s\n"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No se pudo generar lista de "
-"nodotemporal:\n"
-"</span>%s\n"
+msgid "The file %s could not be saved"
+msgstr "No se pudo guardar el archivo %s"
+
+#: ../src/netlist-editor.c:235 ../src/netlist-editor.c:271
+msgid "Could not save temporary netlist file"
+msgstr "No se pudo guardar el archivo temporal con la lista de nodos"
+
+#: ../src/netlist-editor.c:307
+msgid "Could not create the netlist dialog"
+msgstr "No se pudo crear el diálogo dela lista de nodos"
+
+#. gettext support
+#: ../src/netlist-editor.c:386
+#, c-format
+msgid "The file %s could not be found."
+msgstr "No se puedo encontrar el archivo %s."
+
+#: ../src/netlist-editor.c:387
+msgid "Could not find the required file"
+msgstr "No se pudo encontrar el archivo especificado"
 
 #: ../src/dialogs/clamp-properties-dialog.glade2.h:1
 msgid "<b>AC Analysis Options</b>"
@@ -1032,10 +969,6 @@ msgstr "<b>Gráfica</b>"
 msgid "<b>Variables</b>"
 msgstr "<b>Variables</b>"
 
-#: ../src/dialogs/plot-window.glade2.h:3
-msgid "window"
-msgstr "ventana2"
-
 #: ../src/dialogs/properties.glade2.h:1
 #: ../src/dialogs/textbox-properties-dialog.glade2.h:1
 #: ../src/dialogs/plot-export.glade2.h:1
@@ -1064,7 +997,7 @@ msgstr "<b>Rutas a datos</b>"
 
 #: ../src/dialogs/settings.glade2.h:4
 msgid "<b>Engine</b>"
-msgstr "<b>Engine</b>"
+msgstr "<b>Motor</b>"
 
 #: ../src/dialogs/settings.glade2.h:5
 msgid "<b>Executable Path</b>"
@@ -1266,6 +1199,116 @@ msgstr "Postscript (ps)"
 msgid "Width : "
 msgstr "Ancho : "
 
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No se pudo encontrar el archivo "
+#~ "especificado:\n"
+#~ "</span>%s\n"
+
+#~ msgid " "
+#~ msgstr " "
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:</"
+#~ "span>\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"xlarge\">No se pudo encontrar el archivo "
+#~ "especificado:</span>\n"
+#~ "%s"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No se pudo cargar el archivo</"
+#~ "span>\n"
+#~ "\n"
+#~ "%s"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No su pudo guardar el archivo del "
+#~ "esquemático\n"
+#~ "</span>%s\n"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No se pudo generar la lista de "
+#~ "nodos</span>\n"
+#~ "\n"
+#~ "%s"
+
+#~ msgid "<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"
+#~ msgstr "<span weight=\"bold\" size=\"x-large\">Error no esperado!!!</span>"
+
+#~ msgid "<span weight=\"bold\">Could not create log window.</span>"
+#~ msgstr "<span weight=\"bold\">No puede crear una ventana de log.</span>"
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</"
+#~ "span>"
+#~ msgstr ""
+#~ "<span size=\"x-large\" weigth=\"bold\">No se pudo crear un diálogo de "
+#~ "propiedades.</span>"
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
+#~ "\n"
+#~ "Start time must be less than stop time."
+#~ msgstr ""
+#~ "<span size=\"x-large\" weigth=\"bold\">Análisis en el tiempo</span>\n"
+#~ "\n"
+#~ "El tiempo de inicio debe ser menor que el tiempo final."
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create simulation "
+#~ "settings dialog.</span>"
+#~ msgstr ""
+#~ "<span size=\"x-large\" weight=\"bold\">No se pudo crear el diálogo "
+#~ "depropiedades.</span>"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog."
+#~ "</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No se pudo crear el diálogo de "
+#~ "simulación.</span>"
+
+#~ msgid ""
+#~ "<span weight=\"bold\">Could not find the required file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\">No se pudo encontrar el archivo especificado:\n"
+#~ "</span>%s\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "<span weight=\"bold\">Could not create textbox properties dialog.</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\">No se pudo crear el diálogo de propiedades del "
+#~ "cuadro de texto.</span>"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist "
+#~ "file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No se pudo generar lista de "
+#~ "nodotemporal:\n"
+#~ "</span>%s\n"
+
+#~ msgid "window"
+#~ msgstr "ventana2"
+
 #~ msgid "No data for the Simulation !!\n"
 #~ msgstr "¡¡No hay datos de la simulación!!\n"
 
@@ -1415,9 +1458,6 @@ msgstr "Ancho : "
 
 #~ msgid "Paper Size"
 #~ msgstr "Tamaño del papel"
-
-#~ msgid "Could not save Schematic file %s\n"
-#~ msgstr "No se pudo guardar el archivo del esquemático %s\n"
 
 #~ msgid "Warning"
 #~ msgstr "Aviso"
