@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.40\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-16 12:25-0300\n"
+"POT-Creation-Date: 2005-08-26 13:35-0300\n"
 "PO-Revision-Date: 2005-01-03 13:10+0100\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team:  Catalan <tradgnome@softcatala.net>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../src/dialogs.c:109
+#: ../src/dialogs.c:128
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
@@ -24,7 +24,7 @@ msgstr ""
 "© 2003-2005 LUGFi\n"
 "© 1999-2001, Richard Hult"
 
-#: ../src/dialogs.c:124
+#: ../src/dialogs.c:143
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Captura d'esquemàtics i simulació de circuits.\n"
 
@@ -121,16 +121,14 @@ msgstr "S'està carregant %s..."
 
 #: ../src/oregano-config.c:170
 #, c-format
+msgid "Could not read the parts library: %s "
+msgstr "No s'ha pogut llegir la biblioteca de components: %s"
+
+#: ../src/oregano-config.c:172
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not read the parts library:%s </"
-"span>\n"
-"\n"
 "The file is probably corrupt. Please reinstall the parts\n"
 "library or Oregano and try again."
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha pogut llegir la biblioteca de "
-"components:%s</span>\n"
-"\n"
 "El fitxer està probablement corrupte. Si us plau, reinstal·leu\n"
 "la biblioteca de components o Oregano i intenteu-ho de nou."
 
@@ -142,25 +140,19 @@ msgstr ""
 "La versió 2.2 de GTK no té implementat GtkTreeModelFilter...\n"
 "S'ha inhabilitat el filtre!"
 
-#. gettext support
-#: ../src/part-browser.c:477 ../src/plot.c:579 ../src/plot.c:983
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2477
-#: ../src/netlist-editor.c:314 ../src/netlist-editor.c:396
+#: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
+#: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
 #, c-format
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
-"</span>%s\n"
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha trobat el fitxer requerit:\n"
-"</span>%s\n"
 
-#: ../src/part-browser.c:488
-msgid "Could not create part browser."
+#: ../src/part-browser.c:480 ../src/part-browser.c:488
+msgid "Could not create part browser"
 msgstr "No puc crear un navegador de components"
-
-#: ../src/part-browser.c:569
-msgid " "
-msgstr " "
 
 #: ../src/part-item.c:151 ../src/dialogs/properties.glade2.h:4
 msgid "Properties"
@@ -170,16 +162,8 @@ msgstr "Propietats"
 msgid "Edit the part's properties"
 msgstr "Edita les propietats del component"
 
-#: ../src/part-item.c:646 ../src/part-item.c:802
-#, c-format
-msgid ""
-"Could not find the required file:\n"
-"%s"
-msgstr ""
-"No s'ha trobat el fitxer demanat:\n"
-"%s"
-
-#: ../src/part-item.c:656 ../src/part-item.c:812
+#: ../src/part-item.c:648 ../src/part-item.c:656 ../src/part-item.c:804
+#: ../src/part-item.c:812
 msgid "Could not create part properties dialog."
 msgstr "No s'ha pogut crear el diàleg de propietats del component."
 
@@ -254,46 +238,45 @@ msgid "_Plot"
 msgstr "_Dibuixa"
 
 #. Simulation failed?
-#: ../src/plot.c:344
+#: ../src/plot.c:325
 msgid "The simulation produced no data!!\n"
 msgstr ""
 
-#: ../src/plot.c:354 ../src/plot.c:733
+#: ../src/plot.c:335 ../src/plot.c:715
 #, c-format
 msgid "Plot - %s"
 msgstr "Gràfic - %s"
 
-#: ../src/plot.c:369
-#, fuzzy
+#: ../src/plot.c:350
 msgid "Nodes"
 msgstr ""
 
-#: ../src/plot.c:372 ../src/plot.c:937
+#: ../src/plot.c:353 ../src/plot.c:917
 #, fuzzy
 msgid "Functions"
 msgstr "Funció"
 
-#: ../src/plot.c:569
+#: ../src/plot.c:550
 msgid "Oregano - Plot"
 msgstr "Oregano - Gràfic"
 
-#: ../src/plot.c:588
+#: ../src/plot.c:562 ../src/plot.c:569
 msgid "Could not create plot window."
 msgstr "No s'ha pogut crear la finestra del gràfic."
 
-#: ../src/plot.c:598
+#: ../src/plot.c:579 ../src/dialogs/plot-window.glade2.h:3
 msgid "Plot"
 msgstr "Gràfic"
 
-#: ../src/plot.c:959
+#: ../src/plot.c:939
 msgid "TRANSFER"
 msgstr ""
 
-#: ../src/plot.c:992
+#: ../src/plot.c:965 ../src/plot.c:972
 msgid "Could not create plot export window."
 msgstr "No s'ha pogut crear la finestra d'exportació del gràfic."
 
-#: ../src/plot.c:1012
+#: ../src/plot.c:992
 msgid "Save PNG"
 msgstr "Desa el PNG"
 
@@ -322,98 +305,71 @@ msgstr "Ha fallat la impressió."
 
 #: ../src/schematic.c:568
 #, c-format
-msgid "File (%s) does not exists."
+msgid "File %s does not exists."
 msgstr ""
 
 #: ../src/schematic.c:576 ../src/schematic.c:614
 #, c-format
-msgid "Unknown file format for (%s)."
+msgid "Unknown file format for %s."
 msgstr ""
 
 #: ../src/schematic.c:595
 msgid "Load fails!."
 msgstr ""
 
-#: ../src/schematic-view.c:252
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the required file:</"
-"span>\n"
-"%s"
-msgstr ""
-"<span weigh=\"bold\" size=\"x-large\">No s'ha trobat el fitxer requerit:</"
-"span>\n"
-"%s"
+#: ../src/schematic-view.c:255
+msgid "Could not create properties dialog"
+msgstr "No s'ha pogut crear el diàleg de propietat"
 
-#: ../src/schematic-view.c:383
-#, fuzzy, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
-"\n"
-"%s"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha pogut crear la llista de "
-"connexions</span>\n"
-"\n"
-"%s"
+#: ../src/schematic-view.c:321
+#, fuzzy
+msgid "Could not create the page properties dialog"
+msgstr "No s'ha pogut crear el diàleg de propietat"
 
-#: ../src/schematic-view.c:413 ../src/schematic-view.c:1359
-#: ../src/schematic-view.c:1367
+#: ../src/schematic-view.c:381
+msgid "Could not load file"
+msgstr ""
+
+#: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
+#: ../src/schematic-view.c:1346
 msgid "Untitled.oregano"
 msgstr "Sensetitol.oregano"
 
-#: ../src/schematic-view.c:419
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n"
-"</span>%s\n"
+#: ../src/schematic-view.c:413
+msgid "Could not save schematic file"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha pogut desar el fitxer "
-"d'esquemàtic</span>\n"
-"%s\n"
 
-#: ../src/schematic-view.c:783 ../src/schematic-view.c:910
-#: ../src/netlist-editor.c:223 ../src/netlist-editor.c:441
-#, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-"\n"
-"%s"
+#: ../src/schematic-view.c:772 ../src/schematic-view.c:893
+#: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
+msgid "Could not create a netlist"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha pogut crear la llista de "
-"connexions</span>\n"
-"\n"
-"%s"
 
-# FIXME typo
-#: ../src/schematic-view.c:790 ../src/schematic-view.c:917
-#: ../src/netlist-editor.c:230 ../src/netlist-editor.c:448
-msgid "<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">S'ha produït un error inesperat!</"
-"span>"
+#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
+#: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
+msgid "An unexpected error has occurred"
+msgstr "S'ha produït un error inesperat!"
 
-#: ../src/schematic-view.c:1368
+#: ../src/schematic-view.c:1347
 msgid "Untitled.netlist"
 msgstr "Sensetitol.netlist"
 
-#: ../src/schematic-view.c:1559
+#: ../src/schematic-view.c:1538
 #, c-format
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Schematic %s has unsaved changes</"
+"<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
 "span>\n"
 "\n"
 "Do you want to save them?"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">L'esquemàtic %s té canvis sense "
+"<span weight=\"bold\" size=\"large\">L'esquemàtic %s té canvis sense "
 "desar</span>\n"
 "\n"
 "Voleu desar-los?"
 
-#: ../src/schematic-view.c:2491
-msgid "<span weight=\"bold\">Could not create log window.</span>"
-msgstr ""
-"<span weight=\"bold\">No s'ha pogut crear la finestra del registre.</span>"
+#: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
+#, fuzzy
+msgid "Could not create the log window"
+msgstr "No s'ha pogut crear la finestra"
 
 #: ../src/schematic-view-ui.h:38
 msgid "_New"
@@ -703,13 +659,10 @@ msgstr "Allunya"
 msgid "Paste the contents of the clipboard to the sheet"
 msgstr "Enganxa els continguts del porta-retalls en la fulla"
 
-#: ../src/settings.c:157 ../src/settings.c:163 ../src/settings.c:169
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</"
-"span>"
-msgstr ""
-"<span size=\"x-large\" weight=\"bold\">No s'ha pogut crear el diàleg dels "
-"paràmetres</span>"
+#: ../src/settings.c:161 ../src/settings.c:168 ../src/settings.c:174
+#, fuzzy
+msgid "Could not create settings dialog"
+msgstr "No es pot crear el diàle"
 
 #: ../src/sheet-item.c:308
 msgid "Copy the object to the clipboard"
@@ -792,88 +745,69 @@ msgid "Add new option"
 msgstr ""
 
 #: ../src/sim-settings.c:825
-msgid ""
-"<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
-"\n"
-"Start time must be less than stop time."
-msgstr ""
-"<span size=\"x-large\" weigth=\"bold\">Anàlisi transitòria</span>\n"
-"\n"
-"El temps inicial deu ser menor que el final."
+#, fuzzy
+msgid "Problem in transient analysis"
+msgstr "Anàlisi transitòria"
 
-#: ../src/sim-settings.c:865 ../src/sim-settings.c:871
-#: ../src/sim-settings.c:877
-msgid ""
-"<span size=\"x-large\" weight=\"bold\">Could not create simulation settings "
-"dialog.</span>"
-msgstr ""
-"<span size=\"x-large\" weight=\"bold\">No s'ha pogut crear el diàleg dels "
-"paràmetres de la simulació.</span>"
+#: ../src/sim-settings.c:826
+msgid "Start time must be less than stop time."
+msgstr "El temps inicial deu ser menor que el final"
 
-#: ../src/sim-settings.c:901
+#: ../src/sim-settings.c:869 ../src/sim-settings.c:876
+#: ../src/sim-settings.c:882
+#, fuzzy
+msgid "Could not create simulation settings dialog"
+msgstr "No s'ha pogut crear el di�| leg dels par�| metres de la"
+"simulació."
+
+#: ../src/sim-settings.c:906
 msgid "Option"
 msgstr "Opció"
 
-#: ../src/sim-settings.c:903
+#: ../src/sim-settings.c:908
 msgid "Value"
 msgstr "Valor"
 
 #: ../src/simulation.c:104
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not find the simulation "
-"executable</span>\n"
-"\n"
-"This probably means that you have not configured Oregano properly."
+msgid "Could not find the simulation executable"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No es pot trobar l'executable de la "
-"simulació</span>\n"
-"\n"
-"Açò probablement vol dir que no heu configurat l'Oregano correctament."
+
+#: ../src/simulation.c:105
+#, fuzzy
+msgid "This probably means that you have not configured Oregano properly."
+msgstr "Açò probablement vol dir que no heu configurat l'Oregano"
+"correctament."
+
+#: ../src/simulation.c:111
+msgid "You have not entered a simulation executable"
+msgstr "No heu introduït l'executable del simulador."
 
 # FIXME: typo
-#: ../src/simulation.c:110
+#: ../src/simulation.c:112
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">You have not entered a simulation "
-"executable.</span>\n"
-"\n"
-"Please choose Settings and specify whichprogram to use for simulations."
+"Please choose Settings and specify which program to use for simulations."
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No heu introduït l'executable del "
-"simulador.</span>\n"
-"\n"
 "Si us plau, aneu als Paràmetres i especifiqueu quin programa usar per a les "
 "simulacions."
 
-#: ../src/simulation.c:120
-msgid "Could not create simulation dialog."
-msgstr "No es pot crear el diàleg de la simulació."
+#: ../src/simulation.c:123 ../src/simulation.c:130 ../src/simulation.c:136
+msgid "Could not create simulation dialog"
+msgstr "No es pot crear el diàleg de la simulació"
 
-#: ../src/simulation.c:127 ../src/simulation.c:133
+#: ../src/simulation.c:223
 msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog.</"
-"span>"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha pogut crear el diàleg de la "
-"simulació.</span>"
-
-#: ../src/simulation.c:220
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">The simulation was aborted due to an "
+"<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
 "error.</span>\n"
 "\n"
 "Would you like to view the error log?"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">S'ha avortat la simulació degut a un "
+"<span weight=\"bold\" size=\"large\">S'ha avortat la simulació degut a un "
 "error.</span>\n"
 "Voleu veure el registre d'errors?"
 
-#: ../src/simulation.c:234
-msgid ""
-"<span weight=\"bold\" size=\"x-large\"> The simulation was aborted due to an "
-"error.</span>\n"
-msgstr ""
-"<span weight=\"bold\" size=\"x-large\">S'ha avortat la simulació degut a un "
-"error.</span>\n"
+#: ../src/simulation.c:237
+msgid "The simulation was aborted due to an error"
+msgstr "S'ha avortat la simulació degut a un error"
 
 #: ../src/textbox-item.c:101
 msgid "Edit..."
@@ -887,22 +821,17 @@ msgstr "Edita el text"
 msgid "Label"
 msgstr "Etiqueta"
 
-# FIXME possible typo (newline)
 #: ../src/textbox-item.c:682
 #, c-format
 msgid ""
-"<span weight=\"bold\">Could not find the required file:\n"
-"</span>%s\n"
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this."
 msgstr ""
-"<span weight=\"bold\">No s'ha trobat el fitxer requerit:\n"
-"</span>%s\n"
 
-#: ../src/textbox-item.c:694
-msgid ""
-"<span weight=\"bold\">Could not create textbox properties dialog.</span>"
-msgstr ""
-"<span weight=\"bold\">No s'ha pogut crear el quadre de diàleg de les "
-"propietats.</span>"
+#: ../src/textbox-item.c:684 ../src/textbox-item.c:693
+#, fuzzy
+msgid "Could not create textbox properties dialog"
+msgstr "No s'ha pogut crear el quadre de di�| leg de les propietats."
 
 #: ../src/netlist-editor.c:172
 #, c-format
@@ -918,16 +847,30 @@ msgstr "Autor: %s"
 msgid "Page %N of %Q"
 msgstr "Pàgina %N de %Q"
 
-#: ../src/netlist-editor.c:240 ../src/netlist-editor.c:278
+#: ../src/netlist-editor.c:234 ../src/netlist-editor.c:270
 #, c-format
-msgid ""
-"<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist "
-"file:\n"
-"</span>%s\n"
+msgid "The file %s could not be saved"
 msgstr ""
-"<span weight=\"bold\" size=\"x-large\">No s'ha pogut desar el fitxer "
-"temporal de llista de connexions:</span>\n"
-"%s\n"
+
+#: ../src/netlist-editor.c:235 ../src/netlist-editor.c:271
+#, fuzzy
+msgid "Could not save temporary netlist file"
+msgstr "No s'ha pogut desar el fitxer temporal de llista de connexions"
+
+#: ../src/netlist-editor.c:307
+msgid "Could not create the netlist dialog"
+msgstr "No s'ha pogut crear el diàleg"
+
+#. gettext support
+#: ../src/netlist-editor.c:386
+#, c-format
+msgid "The file %s could not be found."
+msgstr ""
+
+#: ../src/netlist-editor.c:387
+#, fuzzy
+msgid "Could not find the required file"
+msgstr "No s'ha trobat el fitxer demanat"
 
 #: ../src/dialogs/clamp-properties-dialog.glade2.h:1
 msgid "<b>AC Analysis Options</b>"
@@ -1042,10 +985,6 @@ msgstr "<b>Gràfic</b>"
 #: ../src/dialogs/plot-window.glade2.h:2
 msgid "<b>Variables</b>"
 msgstr "<b>Variables</b>"
-
-#: ../src/dialogs/plot-window.glade2.h:3
-msgid "window"
-msgstr "finestra"
 
 #: ../src/dialogs/properties.glade2.h:1
 #: ../src/dialogs/textbox-properties-dialog.glade2.h:1
@@ -1280,6 +1219,121 @@ msgstr "Postscript (ps)"
 #: ../src/dialogs/plot-export.glade2.h:8
 msgid "Width : "
 msgstr "Amplada: "
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No s'ha trobat el fitxer "
+#~ "requerit:\n"
+#~ "</span>%s\n"
+
+#~ msgid " "
+#~ msgstr " "
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:</"
+#~ "span>\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<span weigh=\"bold\" size=\"x-large\">No s'ha trobat el fitxer requerit:</"
+#~ "span>\n"
+#~ "%s"
+
+#, fuzzy
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not load file.</span>\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No s'ha pogut crear la llista de "
+#~ "connexions</span>\n"
+#~ "\n"
+#~ "%s"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not save Schematic file\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No s'ha pogut desar el fitxer "
+#~ "d'esquemàtic</span>\n"
+#~ "%s\n"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
+#~ "\n"
+#~ "%s"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No s'ha pogut crear la llista de "
+#~ "connexions</span>\n"
+#~ "\n"
+#~ "%s"
+
+# FIXME typo
+#~ msgid "<span weight=\"bold\" size=\"x-large\">Unspected error!!!</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">S'ha produït un error inesperat!</"
+#~ "span>"
+
+#~ msgid "<span weight=\"bold\">Could not create log window.</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\">No s'ha pogut crear la finestra del registre.</span>"
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create settings dialog.</"
+#~ "span>"
+#~ msgstr ""
+#~ "<span size=\"x-large\" weight=\"bold\">No s'ha pogut crear el diàleg dels "
+#~ "paràmetres</span>"
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weigth=\"bold\">Transient analysis</span>\n"
+#~ "\n"
+#~ "Start time must be less than stop time."
+#~ msgstr ""
+#~ "<span size=\"x-large\" weigth=\"bold\">Anàlisi transitòria</span>\n"
+#~ "\n"
+#~ "El temps inicial deu ser menor que el final."
+
+#~ msgid ""
+#~ "<span size=\"x-large\" weight=\"bold\">Could not create simulation "
+#~ "settings dialog.</span>"
+#~ msgstr ""
+#~ "<span size=\"x-large\" weight=\"bold\">No s'ha pogut crear el diàleg dels "
+#~ "paràmetres de la simulació.</span>"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not create simulation dialog."
+#~ "</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No s'ha pogut crear el diàleg de "
+#~ "la simulació.</span>"
+
+# FIXME possible typo (newline)
+#~ msgid ""
+#~ "<span weight=\"bold\">Could not find the required file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\">No s'ha trobat el fitxer requerit:\n"
+#~ "</span>%s\n"
+
+#~ msgid ""
+#~ "<span weight=\"bold\">Could not create textbox properties dialog.</span>"
+#~ msgstr ""
+#~ "<span weight=\"bold\">No s'ha pogut crear el quadre de diàleg de les "
+#~ "propietats.</span>"
+
+#~ msgid ""
+#~ "<span weight=\"bold\" size=\"x-large\">Could not save temporary netlist "
+#~ "file:\n"
+#~ "</span>%s\n"
+#~ msgstr ""
+#~ "<span weight=\"bold\" size=\"x-large\">No s'ha pogut desar el fitxer "
+#~ "temporal de llista de connexions:</span>\n"
+#~ "%s\n"
+
+#~ msgid "window"
+#~ msgstr "finestra"
 
 # FIXME typo
 #~ msgid ""
