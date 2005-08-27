@@ -163,7 +163,7 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/settings.glade2", NULL, "toplevel");
+	gui = glade_xml_new (OREGANO_GLADEDIR "/settings.glade2", NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create settings dialog"));
 		return;
