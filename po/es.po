@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-26 13:35-0300\n"
+"POT-Creation-Date: 2005-08-27 14:40-0300\n"
 "PO-Revision-Date: 2005-16-08 17:45-0300\n"
 "Last-Translator: Margarita Manterola <marga@marga.com.ar> \n"
 "Language-Team: Spanish\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../src/dialogs.c:128
+#: ../src/dialogs.c:127
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
@@ -23,7 +23,7 @@ msgstr ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001, Richard Hult"
 
-#: ../src/dialogs.c:143
+#: ../src/dialogs.c:142
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Preparación de esquemáticos y simulación de circuitos.\n"
 
@@ -142,13 +142,15 @@ msgstr ""
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
 #: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
-#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
+#: ../src/netlist-editor.c:305
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
-"this"
-msgstr "No se pudo encontrar el archivo %s.  Puede ser que sea necesario "
-"reinstalar Oregano para solucionarlo"
+"this."
+msgstr ""
+"El archivo %s no se pudo encontrar. Es posible que haga falta reinstalar "
+"Oregano para solucionarlo."
 
 #: ../src/part-browser.c:480 ../src/part-browser.c:488
 msgid "Could not create part browser"
@@ -788,8 +790,8 @@ msgid ""
 "\n"
 "Would you like to view the error log?"
 msgstr ""
-"<span weight=\"bold\" size=\"large\">La simulación ha finalizado debido a "
-"un error.</span>\n"
+"<span weight=\"bold\" size=\"large\">La simulación ha finalizado debido a un "
+"error.</span>\n"
 "¿Quiere ver el log de errores?"
 
 #: ../src/simulation.c:237
@@ -807,14 +809,6 @@ msgstr "Editar el texto"
 #: ../src/textbox-item.c:598
 msgid "Label"
 msgstr "Etiqueta"
-
-#: ../src/textbox-item.c:682
-#, c-format
-msgid ""
-"The file %s could not be found. You might need to reinstall Oregano to fix "
-"this."
-msgstr "El archivo %s no se pudo encontrar. Es posible que haga falta"
-"reinstalar Oregano para solucionarlo."
 
 #: ../src/textbox-item.c:684 ../src/textbox-item.c:693
 msgid "Could not create textbox properties dialog"
@@ -1198,6 +1192,13 @@ msgstr "Postscript (ps)"
 #: ../src/dialogs/plot-export.glade2.h:8
 msgid "Width : "
 msgstr "Ancho : "
+
+#~ msgid ""
+#~ "The file %s could not be found. You might need to reinstall Oregano to "
+#~ "fix this"
+#~ msgstr ""
+#~ "No se pudo encontrar el archivo %s.  Puede ser que sea necesario "
+#~ "reinstalar Oregano para solucionarlo."
 
 #~ msgid ""
 #~ "<span weight=\"bold\" size=\"x-large\">Could not find the required file:\n"
