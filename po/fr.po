@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oregano 0.12\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-26 13:35-0300\n"
+"POT-Creation-Date: 2005-08-27 14:40-0300\n"
 "PO-Revision-Date: 2000-03-06 22:00+0100\n"
 "Last-Translator: David Monniaux <monniaux@arbouse.ens.fr>\n"
 "Language-Team: French <fr@li.org>\n"
@@ -14,16 +14,16 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/dialogs.c:128
+#: ../src/dialogs.c:127
 #, fuzzy
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 msgstr ""
-"Copyright © 2003, 2005 LUGFi"
+"Copyright © 2003, 2005 LUGFi\n"
 "Copyright © 1999, 2000 Richard Hult"
 
-#: ../src/dialogs.c:143
+#: ../src/dialogs.c:142
 msgid "Schematic capture and circuit simulation.\n"
 msgstr ""
 
@@ -46,7 +46,6 @@ msgid "Save File"
 msgstr "Enregistrer"
 
 #: ../src/file.c:149
-#, fuzzy
 msgid "Netlist File"
 msgstr ""
 
@@ -146,11 +145,12 @@ msgstr ""
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
 #: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
-#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
+#: ../src/netlist-editor.c:305
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
-"this"
+"this."
 msgstr ""
 
 #: ../src/part-browser.c:480 ../src/part-browser.c:488
@@ -186,7 +186,6 @@ msgid "Print Preview"
 msgstr "Aperçu"
 
 #: ../src/plot.c:165
-#, fuzzy
 msgid "Preview the plot before printing"
 msgstr ""
 
@@ -199,7 +198,6 @@ msgid "Show the export menu"
 msgstr ""
 
 #: ../src/plot.c:169
-#, fuzzy
 msgid "Add Function"
 msgstr ""
 
@@ -258,7 +256,6 @@ msgid "Nodes"
 msgstr ""
 
 #: ../src/plot.c:353 ../src/plot.c:917
-#, fuzzy
 msgid "Functions"
 msgstr ""
 
@@ -291,12 +288,10 @@ msgid "Save PNG"
 msgstr "Enregistrer PNG"
 
 #: ../src/print.c:298
-#, fuzzy
 msgid "Print"
 msgstr ""
 
 #: ../src/print.c:305
-#, fuzzy
 msgid "Pages"
 msgstr ""
 
@@ -353,7 +348,6 @@ msgstr "Je n'ai pu enregistrer le fichier de schéma"
 
 #: ../src/schematic-view.c:772 ../src/schematic-view.c:893
 #: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
-#, fuzzy
 msgid "Could not create a netlist"
 msgstr ""
 
@@ -368,14 +362,13 @@ msgid "Untitled.netlist"
 msgstr "SansTitre.oregano"
 
 #: ../src/schematic-view.c:1538
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
 "span>\n"
 "\n"
 "Do you want to save them?"
 msgstr ""
-""
 
 #: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
 #, fuzzy
@@ -459,7 +452,6 @@ msgid "Run a simulation"
 msgstr "Lancer une simulation Spice"
 
 #: ../src/schematic-view-ui.h:167
-#, fuzzy
 msgid "_View netlist"
 msgstr ""
 
@@ -467,8 +459,7 @@ msgstr ""
 #, fuzzy
 msgid "View a netlist"
 msgstr ""
-"Voir une description de circuit pour le simulateur (liste de "
-"connections)"
+"Voir une description de circuit pour le simulateur (liste de connections)"
 
 #: ../src/schematic-view-ui.h:170
 msgid "_Generate netlist"
@@ -477,8 +468,7 @@ msgstr "_Générer la liste de connections"
 #: ../src/schematic-view-ui.h:171
 msgid "Generate a netlist"
 msgstr ""
-"Génère une description de circuit pour le simulateur (liste de "
-"connections)"
+"Génère une description de circuit pour le simulateur (liste de connections)"
 
 #: ../src/schematic-view-ui.h:178
 msgid "50%"
@@ -521,7 +511,6 @@ msgid "_Log"
 msgstr ""
 
 #: ../src/schematic-view-ui.h:203
-#, fuzzy
 msgid "View the latest simulation log"
 msgstr ""
 
@@ -769,8 +758,7 @@ msgstr "Transitoire"
 
 #: ../src/sim-settings.c:826
 msgid "Start time must be less than stop time."
-msgstr "L'instant de départ doit être inférieur �|  l'instant "
-"d'arrivée."
+msgstr "L'instant de départ doit être inférieur �|  l'instant d'arrivée."
 
 #: ../src/sim-settings.c:869 ../src/sim-settings.c:876
 #: ../src/sim-settings.c:882
@@ -779,7 +767,6 @@ msgid "Could not create simulation settings dialog"
 msgstr "Je ne peux pas créer le dialogue de paramètres de simulation."
 
 #: ../src/sim-settings.c:906
-#, fuzzy
 msgid "Option"
 msgstr ""
 
@@ -808,7 +795,8 @@ msgstr "Vous n'avez pas entré un nom d'exécutable pour le simulateur"
 #, fuzzy
 msgid ""
 "Please choose Settings and specify which program to use for simulations."
-msgstr "Veuillez choisir Paramètres -> Préférences et\n"
+msgstr ""
+"Veuillez choisir Paramètres -> Préférences et\n"
 "spécifier quel programme utiliser pour les\n"
 "simulations (p.ex. /usr/local/bin/spice3)."
 
@@ -825,13 +813,12 @@ msgid ""
 "\n"
 "Would you like to view the error log?"
 msgstr ""
-"<span weight=\"bold\" size=\"large\">La simulation s'est terminée"
-"prématurément à la suite d'une erreur.</span>\n"
+"<span weight=\"bold\" size=\"large\">La simulation s'est "
+"terminéeprématurément à la suite d'une erreur.</span>\n"
 
 #: ../src/simulation.c:237
 msgid "The simulation was aborted due to an error"
-msgstr ""
-"La simulation s'est terminée prématurément à la suite d'une erreur"
+msgstr "La simulation s'est terminée prématurément à la suite d'une erreur"
 
 #: ../src/textbox-item.c:101
 msgid "Edit..."
@@ -844,13 +831,6 @@ msgstr "Éditer les propriétés du composant"
 
 #: ../src/textbox-item.c:598
 msgid "Label"
-msgstr ""
-
-#: ../src/textbox-item.c:682
-#, c-format
-msgid ""
-"The file %s could not be found. You might need to reinstall Oregano to fix "
-"this."
 msgstr ""
 
 #: ../src/textbox-item.c:684 ../src/textbox-item.c:693
@@ -905,7 +885,6 @@ msgid "<b>AC Analysis Options</b>"
 msgstr ""
 
 #: ../src/dialogs/clamp-properties-dialog.glade2.h:2
-#, fuzzy
 msgid "<b>Type</b>"
 msgstr ""
 
@@ -1025,7 +1004,6 @@ msgid "    "
 msgstr "    "
 
 #: ../src/dialogs/properties.glade2.h:2
-#, fuzzy
 msgid "<b>Comments</b>"
 msgstr ""
 
@@ -1034,7 +1012,6 @@ msgid "Author:"
 msgstr ""
 
 #: ../src/dialogs/properties.glade2.h:5
-#, fuzzy
 msgid "Title:"
 msgstr ""
 
@@ -1043,7 +1020,6 @@ msgid "\n"
 msgstr "\n"
 
 #: ../src/dialogs/settings.glade2.h:3
-#, fuzzy
 msgid "<b>Data Paths</b>"
 msgstr ""
 
@@ -1188,17 +1164,14 @@ msgid "Simulation Settings"
 msgstr "Paramètres de la simulation"
 
 #: ../src/dialogs/sim-settings.glade2.h:16
-#, fuzzy
 msgid "Source"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:17
-#, fuzzy
 msgid "Start"
 msgstr ""
 
 #: ../src/dialogs/sim-settings.glade2.h:18
-#, fuzzy
 msgid "Step"
 msgstr ""
 
