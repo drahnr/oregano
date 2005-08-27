@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.40\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-26 13:35-0300\n"
+"POT-Creation-Date: 2005-08-27 14:40-0300\n"
 "PO-Revision-Date: 2005-01-03 13:10+0100\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team:  Catalan <tradgnome@softcatala.net>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../src/dialogs.c:128
+#: ../src/dialogs.c:127
 msgid ""
 "(c) 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
@@ -24,7 +24,7 @@ msgstr ""
 "© 2003-2005 LUGFi\n"
 "© 1999-2001, Richard Hult"
 
-#: ../src/dialogs.c:143
+#: ../src/dialogs.c:142
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Captura d'esquemàtics i simulació de circuits.\n"
 
@@ -143,11 +143,12 @@ msgstr ""
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
 #: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
-#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
+#: ../src/netlist-editor.c:305
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
-"this"
+"this."
 msgstr ""
 
 #: ../src/part-browser.c:480 ../src/part-browser.c:488
@@ -757,8 +758,7 @@ msgstr "El temps inicial deu ser menor que el final"
 #: ../src/sim-settings.c:882
 #, fuzzy
 msgid "Could not create simulation settings dialog"
-msgstr "No s'ha pogut crear el diàleg dels paràmetres de la"
-"simulació."
+msgstr "No s'ha pogut crear el diàleg dels paràmetres de la simulació."
 
 #: ../src/sim-settings.c:906
 msgid "Option"
@@ -775,8 +775,7 @@ msgstr ""
 #: ../src/simulation.c:105
 #, fuzzy
 msgid "This probably means that you have not configured Oregano properly."
-msgstr "Açò probablement vol dir que no heu configurat l'Oregano"
-"correctament."
+msgstr "Açò probablement vol dir que no heu configurat l'Oregano correctament."
 
 #: ../src/simulation.c:111
 msgid "You have not entered a simulation executable"
@@ -820,13 +819,6 @@ msgstr "Edita el text"
 #: ../src/textbox-item.c:598
 msgid "Label"
 msgstr "Etiqueta"
-
-#: ../src/textbox-item.c:682
-#, c-format
-msgid ""
-"The file %s could not be found. You might need to reinstall Oregano to fix "
-"this."
-msgstr ""
 
 #: ../src/textbox-item.c:684 ../src/textbox-item.c:693
 #, fuzzy
