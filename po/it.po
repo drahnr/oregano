@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-26 13:35-0300\n"
+"POT-Creation-Date: 2005-08-27 14:40-0300\n"
 "PO-Revision-Date: 1999-11-05 12:30+0100\n"
 "Last-Translator: Elker Cavina <e.cavina@ra.nettuno.it>\n"
 "Language-Team: Italian <it@li.org>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: ../src/dialogs.c:128
+#: ../src/dialogs.c:127
 #, fuzzy
 msgid ""
 "(c) 2003-2005 LUGFi\n"
@@ -23,7 +23,7 @@ msgstr ""
 "(c) 2003,2005 LUGFi\n"
 "(c) 1999,2000 Richard Hult"
 
-#: ../src/dialogs.c:143
+#: ../src/dialogs.c:142
 msgid "Schematic capture and circuit simulation.\n"
 msgstr ""
 
@@ -143,11 +143,12 @@ msgstr ""
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
 #: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
-#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/netlist-editor.c:305
+#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
+#: ../src/netlist-editor.c:305
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
-"this"
+"this."
 msgstr ""
 
 #: ../src/part-browser.c:480 ../src/part-browser.c:488
@@ -336,8 +337,7 @@ msgstr "Non posso creare il dialogo dei settaggi."
 #: ../src/schematic-view.c:381
 #, fuzzy
 msgid "Could not load file"
-msgstr ""
-"Non posso caricare il file"
+msgstr "Non posso caricare il file"
 
 #: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
 #: ../src/schematic-view.c:1346
@@ -366,7 +366,7 @@ msgid "Untitled.netlist"
 msgstr "Senzatitolo.oregano"
 
 #: ../src/schematic-view.c:1538
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
 "span>\n"
@@ -375,7 +375,6 @@ msgid ""
 msgstr ""
 
 #: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
-#, fuzzy
 msgid "Could not create the log window"
 msgstr ""
 
@@ -843,13 +842,6 @@ msgstr "Modifica le proprieta' della parte"
 
 #: ../src/textbox-item.c:598
 msgid "Label"
-msgstr ""
-
-#: ../src/textbox-item.c:682
-#, c-format
-msgid ""
-"The file %s could not be found. You might need to reinstall Oregano to fix "
-"this."
 msgstr ""
 
 #: ../src/textbox-item.c:684 ../src/textbox-item.c:693
