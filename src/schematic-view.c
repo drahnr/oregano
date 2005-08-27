@@ -249,7 +249,7 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	if (!g_file_test (OREGANO_GLADEDIR "/properties.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/properties.glade2");
 
 		oregano_error_with_title (_("Could not create properties dialog"), msg);
@@ -315,7 +315,7 @@ page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 	if (!g_file_test (OREGANO_GLADEDIR "/page-properties.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/page-properties.glade2");
 
 		oregano_error_with_title (_("Could not create the page properties dialog"), msg);
@@ -2453,7 +2453,7 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 
 		if (!g_file_test (OREGANO_GLADEDIR "/log-window.glade2", G_FILE_TEST_EXISTS)) {
 			msg = g_strdup_printf (
-				_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+				_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 				OREGANO_GLADEDIR "/log-window.glade2");
 
 			oregano_error_with_title ( _("Could not create the log window"), msg);

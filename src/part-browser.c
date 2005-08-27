@@ -474,7 +474,7 @@ part_browser_create (SchematicView *schematic_view)
 	if (!g_file_test (OREGANO_GLADEDIR "/part-browser.glade2",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/part-browser.glade2");
 
 		oregano_error_with_title (_("Could not create part browser"), msg);

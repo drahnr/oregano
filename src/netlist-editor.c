@@ -302,7 +302,7 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	if (!g_file_test (OREGANO_GLADEDIR "/view-netlist.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/view-netlist.glade2");
 		oregano_error_with_title (_("Could not create the netlist dialog"), msg);
 		g_free (msg);

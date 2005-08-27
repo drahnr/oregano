@@ -557,7 +557,7 @@ plot_window_create (Plot *plot)
 	if (!g_file_test (OREGANO_GLADEDIR "/plot-window.glade2",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/plot-window.glade2");
 		oregano_error_with_title (_("Could not create plot window."), msg);
 		g_free (msg);
@@ -960,7 +960,7 @@ plot_export (GtkWidget *widget, Plot *plot)
 	
 	if (!g_file_test (OREGANO_GLADEDIR "/plot-export.glade2", G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 			OREGANO_GLADEDIR "/plot-export.glade2");
 		oregano_error_with_title (_("Could not create plot export window."), msg);
 		g_free (msg);
