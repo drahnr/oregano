@@ -757,7 +757,7 @@ msgstr "El temps inicial deu ser menor que el final"
 #: ../src/sim-settings.c:882
 #, fuzzy
 msgid "Could not create simulation settings dialog"
-msgstr "No s'ha pogut crear el di√| leg dels par√| metres de la"
+msgstr "No s'ha pogut crear el di√†leg dels par√†metres de la"
 "simulaci√≥."
 
 #: ../src/sim-settings.c:906
@@ -831,7 +831,7 @@ msgstr ""
 #: ../src/textbox-item.c:684 ../src/textbox-item.c:693
 #, fuzzy
 msgid "Could not create textbox properties dialog"
-msgstr "No s'ha pogut crear el quadre de di√| leg de les propietats."
+msgstr "No s'ha pogut crear el quadre de di√†leg de les propietats."
 
 #: ../src/netlist-editor.c:172
 #, c-format
