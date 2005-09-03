@@ -329,6 +329,8 @@ page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 	);
 
 	win = glade_xml_get_widget (xml, "page_properties");
+
+	// Set the checkboxes according to the options selected
 	fit = GTK_CHECK_BUTTON (glade_xml_get_widget (xml, "fit_page"));
 	center_h = GTK_CHECK_BUTTON (glade_xml_get_widget (xml, "center_h"));
 	center_v = GTK_CHECK_BUTTON (glade_xml_get_widget (xml, "center_v"));
@@ -339,6 +341,7 @@ page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 	
 	btn = gtk_dialog_run (GTK_DIALOG (win));
 
+	// Store the changes
 	if (btn == GTK_RESPONSE_OK) {
 		sv->priv->page.fit_to_page = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (fit));
 		sv->priv->page.center_h = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (center_h));
