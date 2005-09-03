@@ -150,7 +150,7 @@ open_nl_file (gchar **name, FILE **f)
 		tmp_filename = g_build_filename (g_get_tmp_dir(), "oregXXXXXX", NULL);
 		fd = mkstemp (tmp_filename);
 		if (fd == -1) {
-			g_warning(N_("Could't generate temp file!!\n"));
+			g_warning(N_("Could't generate temporary file.\n"));
 			g_free(tmp_filename);
 			return FALSE;
 		}
