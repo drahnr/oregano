@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: oregano 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-27 14:40-0300\n"
-"PO-Revision-Date: 2005-16-08 17:45-0300\n"
+"POT-Creation-Date: 2005-09-03 13:32-0300\n"
+"PO-Revision-Date: 2005-09-03 13:33-0300\n"
 "Last-Translator: Margarita Manterola <marga@marga.com.ar> \n"
 "Language-Team: Spanish\n"
 "MIME-Version: 1.0\n"
@@ -141,7 +141,7 @@ msgstr ""
 
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2459
 #: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
 #: ../src/netlist-editor.c:305
 #, c-format
@@ -323,34 +323,34 @@ msgstr "No se pudo crear el diálogo de propiedade"
 msgid "Could not create the page properties dialog"
 msgstr "No se pudo crear el diálogo de propiedade de la página"
 
-#: ../src/schematic-view.c:381
+#: ../src/schematic-view.c:384
 msgid "Could not load file"
 msgstr "No se pudo cargar el archivo"
 
-#: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
-#: ../src/schematic-view.c:1346
+#: ../src/schematic-view.c:411 ../src/schematic-view.c:1341
+#: ../src/schematic-view.c:1349
 msgid "Untitled.oregano"
 msgstr "SinNombre.oregano"
 
-#: ../src/schematic-view.c:413
+#: ../src/schematic-view.c:416
 msgid "Could not save schematic file"
 msgstr "No se pudo guardar el archivo del esquemátic"
 
-#: ../src/schematic-view.c:772 ../src/schematic-view.c:893
+#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
 #: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
 msgid "Could not create a netlist"
 msgstr "No se pudo crear la lista de nodos"
 
-#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
+#: ../src/schematic-view.c:778 ../src/schematic-view.c:899
 #: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
 msgid "An unexpected error has occurred"
 msgstr "Ha ocurrido un error inesperado"
 
-#: ../src/schematic-view.c:1347
+#: ../src/schematic-view.c:1350
 msgid "Untitled.netlist"
 msgstr "SinNombre.netlist"
 
-#: ../src/schematic-view.c:1538
+#: ../src/schematic-view.c:1541
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
@@ -363,7 +363,7 @@ msgstr ""
 "\n"
 "¿Desea guardarlos ahora?"
 
-#: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
+#: ../src/schematic-view.c:2462 ../src/schematic-view.c:2473
 msgid "Could not create the log window"
 msgstr "No se pudo crear la ventana de informes."
 
@@ -797,6 +797,38 @@ msgstr ""
 #: ../src/simulation.c:237
 msgid "The simulation was aborted due to an error"
 msgstr "La simulación ha finalizado debido a un error"
+
+#: ../src/simulate.c:153
+msgid "Could't generate temp file!!\n"
+msgstr "No se pudo generar el archivo temporal.\n"
+
+#: ../src/simulate.c:286
+msgid "Possibly due an I/O error."
+msgstr "Posiblemente debido a un error de entrada/salida."
+
+#: ../src/simulate.c:310
+msgid "No ground node. Aborting.\n"
+msgstr "No hay ningún nodo a tierra. Abortando.\n"
+
+#: ../src/simulate.c:315
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have a ground node and try again."
+msgstr ""
+"Posiblemente debido a un error en el esquemático. Compruebe que exista\n"
+"un nodo a tierra y vuelva a intentarlo."
+
+#: ../src/simulate.c:330
+msgid "No test clamps found. Aborting.\n"
+msgstr "No hay puntas de prueba. Abortando.\n"
+
+#: ../src/simulate.c:335
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have one o more test clamps and try again."
+msgstr ""
+"Posiblemente debido a un error en el esquemático. Compruebe que haya\n"
+"una o más puntas de prueba y vuelva a intentarlo."
 
 #: ../src/textbox-item.c:101
 msgid "Edit..."
@@ -1366,19 +1398,6 @@ msgstr "Ancho : "
 #~ msgid ""
 #~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
 #~ "\n"
-#~ "Possibly due to a faulty circuit schematic. Please check that\n"
-#~ "you have a Ground node and try again."
-#~ msgstr ""
-#~ "<span weight=\"bold\" size=\"x-large\">No se pudo crear el listado de "
-#~ "nodos</span>\n"
-#~ "\n"
-#~ "Posiblemente debidoc a un fallo en el esquemático. Comprueba que exista "
-#~ "algún\n"
-#~ "nodo a tierra y pruebe de nuevo."
-
-#~ msgid ""
-#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-#~ "\n"
 #~ "Possibly dueto a faulty circuit schematic. Please check that\n"
 #~ "you have one o more test clamps and try again."
 #~ msgstr ""
@@ -1398,19 +1417,6 @@ msgstr "Ancho : "
 #~ "span>\n"
 #~ "\n"
 #~ "Posible error de E/S."
-
-#~ msgid ""
-#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-#~ "\n"
-#~ "Possibly due to a faulty circuit schematic. Please check that\n"
-#~ "you have one o more test clamps and try again."
-#~ msgstr ""
-#~ "<span weight=\"bold\" size=\"x-large\">No se pudo crear el listado de "
-#~ "nodos</span>\n"
-#~ "\n"
-#~ "Posiblemente debido a un fallo en el esquemático. Comprueba que exista "
-#~ "alguna\n"
-#~ "punta de prueba y pruebe de nuevo."
 
 #~ msgid "Library:   "
 #~ msgstr "Biblioteca:"
@@ -1432,9 +1438,6 @@ msgstr "Ancho : "
 
 #~ msgid "label"
 #~ msgstr "etiqueta2"
-
-#~ msgid "No ground node. Aborting.\n"
-#~ msgstr "No hay ningún nodo a tierra. Abortando.\n"
 
 #~ msgid "-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*"
 #~ msgstr "-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*"
