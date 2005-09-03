@@ -40,6 +40,7 @@ src/sheet.c
 src/sim-engine.c
 src/sim-settings.c
 src/simulation.c
+src/simulate.c
 src/smallicon.c
 src/smallicon.h
 src/stock.c
