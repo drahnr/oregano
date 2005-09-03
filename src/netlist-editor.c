@@ -431,7 +431,7 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 		} else {
 			oregano_error (_("An unexpected error has occurred"));
 		}
-		return;
+		return NULL;
 	}
 
 	editor = netlist_editor_new_from_file (name);
