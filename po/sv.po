@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oregano 0.22\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-27 14:40-0300\n"
+"POT-Creation-Date: 2005-09-03 13:32-0300\n"
 "PO-Revision-Date: 2000-01-08 23:48+0200\n"
 "Last-Translator: Richard Hult <rhult@codefactory.se>\n"
 "Language-Team: Swedish <sv@li.org>\n"
@@ -143,7 +143,7 @@ msgstr ""
 
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2459
 #: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
 #: ../src/netlist-editor.c:305
 #, c-format
@@ -335,37 +335,37 @@ msgstr "Kunde inte skapa dialogen för komponentegenskaper."
 msgid "Could not create the page properties dialog"
 msgstr "Kunde inte skapa dialogen för komponentegenskaper."
 
-#: ../src/schematic-view.c:381
+#: ../src/schematic-view.c:384
 #, fuzzy
 msgid "Could not load file"
 msgstr "Kunde inte spara schemafil %s\n"
 
-#: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
-#: ../src/schematic-view.c:1346
+#: ../src/schematic-view.c:411 ../src/schematic-view.c:1341
+#: ../src/schematic-view.c:1349
 msgid "Untitled.oregano"
 msgstr "Namnlös.oregano"
 
-#: ../src/schematic-view.c:413
+#: ../src/schematic-view.c:416
 #, fuzzy
 msgid "Could not save schematic file"
 msgstr "Kunde inte spara schemafil %s\n"
 
-#: ../src/schematic-view.c:772 ../src/schematic-view.c:893
+#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
 #: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
 #, fuzzy
 msgid "Could not create a netlist"
 msgstr "Kunde inte skapa komponentväljaren."
 
-#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
+#: ../src/schematic-view.c:778 ../src/schematic-view.c:899
 #: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
 msgid "An unexpected error has occurred"
 msgstr ""
 
-#: ../src/schematic-view.c:1347
+#: ../src/schematic-view.c:1350
 msgid "Untitled.netlist"
 msgstr "Namnlös.netlist"
 
-#: ../src/schematic-view.c:1538
+#: ../src/schematic-view.c:1541
 #, fuzzy, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
@@ -376,7 +376,7 @@ msgstr ""
 "Simuleringen avbröts pga ett fel.\n"
 "Vill du visa loggen med felmeddelanden?"
 
-#: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
+#: ../src/schematic-view.c:2462 ../src/schematic-view.c:2473
 #, fuzzy
 msgid "Could not create the log window"
 msgstr "Kunde inte skapa graffönstret."
@@ -830,6 +830,39 @@ msgstr ""
 #, fuzzy
 msgid "The simulation was aborted due to an error"
 msgstr "Simuleringen avbröts pga ett fel."
+
+#: ../src/simulate.c:153
+msgid "Could't generate temp file!!\n"
+msgstr ""
+
+#: ../src/simulate.c:286
+msgid "Possibly due an I/O error."
+msgstr ""
+
+#: ../src/simulate.c:310
+msgid "No ground node. Aborting.\n"
+msgstr "Ingen jordnod. Avbryter.\n"
+
+#: ../src/simulate.c:315
+#, fuzzy
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have a ground node and try again."
+msgstr ""
+"Troligen pga en felaktig krets. Var vänlig kontrollera att\n"
+"det finns en jordnod och försök igen."
+
+#: ../src/simulate.c:330
+msgid "No test clamps found. Aborting.\n"
+msgstr ""
+
+#: ../src/simulate.c:335
+#, fuzzy
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have one o more test clamps and try again."
+msgstr ""
+"Troligen pga en felaktig krets. "
 
 #: ../src/textbox-item.c:101
 msgid "Edit..."
@@ -1403,29 +1436,7 @@ msgstr ""
 #~ msgid ""
 #~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
 #~ "\n"
-#~ "Possibly due to a faulty circuit schematic. Please check that\n"
-#~ "you have a Ground node and try again."
-#~ msgstr ""
-#~ "Kunde inte skapa en netlist, troligen pga\n"
-#~ "en felaktig krets. Var vänlig kontrollera att\n"
-#~ "det finns en jordnod och försök igen."
-
-#, fuzzy
-#~ msgid ""
-#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-#~ "\n"
 #~ "Possibly dueto a faulty circuit schematic. Please check that\n"
-#~ "you have one o more test clamps and try again."
-#~ msgstr ""
-#~ "Kunde inte skapa en netlist, troligen pga\n"
-#~ "en felaktig krets. Var vänlig kontrollera att\n"
-#~ "det finns en jordnod och försök igen."
-
-#, fuzzy
-#~ msgid ""
-#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-#~ "\n"
-#~ "Possibly due to a faulty circuit schematic. Please check that\n"
 #~ "you have one o more test clamps and try again."
 #~ msgstr ""
 #~ "Kunde inte skapa en netlist, troligen pga\n"
@@ -1457,9 +1468,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Hittade inte filen:\n"
 #~ "%s"
-
-#~ msgid "No ground node. Aborting.\n"
-#~ msgstr "Ingen jordnod. Avbryter.\n"
 
 #~ msgid "-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*"
 #~ msgstr "-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*"
