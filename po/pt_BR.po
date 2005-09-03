@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oregano 0.22\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-27 14:40-0300\n"
+"POT-Creation-Date: 2005-09-03 13:32-0300\n"
 "PO-Revision-Date: 2001-02-20 19:12Sao Paulo\n"
 "Last-Translator: Marcelo Elias Del Valle,63,,6945 7011,marceloelias@iname."
 "com <marceloelias@iname.com>\n"
@@ -143,7 +143,7 @@ msgstr ""
 
 #: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
 #: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2456
+#: ../src/schematic-view.c:318 ../src/schematic-view.c:2459
 #: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
 #: ../src/netlist-editor.c:305
 #, c-format
@@ -328,35 +328,35 @@ msgstr "Não foi possível criar a janela de diálogo de propriedades"
 msgid "Could not create the page properties dialog"
 msgstr "Não foi possível criar a janela de diálogo de propriedades"
 
-#: ../src/schematic-view.c:381
+#: ../src/schematic-view.c:384
 #, fuzzy
 msgid "Could not load file"
 msgstr "Não foi possível encontrar o arquivo requisitado"
 
-#: ../src/schematic-view.c:408 ../src/schematic-view.c:1338
-#: ../src/schematic-view.c:1346
+#: ../src/schematic-view.c:411 ../src/schematic-view.c:1341
+#: ../src/schematic-view.c:1349
 msgid "Untitled.oregano"
 msgstr "SemTítulo.oregano"
 
-#: ../src/schematic-view.c:413
+#: ../src/schematic-view.c:416
 msgid "Could not save schematic file"
 msgstr "Não foi possível salvar arquivo de esquema"
 
-#: ../src/schematic-view.c:772 ../src/schematic-view.c:893
+#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
 #: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
 msgid "Could not create a netlist"
 msgstr ""
 
-#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
+#: ../src/schematic-view.c:778 ../src/schematic-view.c:899
 #: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
 msgid "An unexpected error has occurred"
 msgstr ""
 
-#: ../src/schematic-view.c:1347
+#: ../src/schematic-view.c:1350
 msgid "Untitled.netlist"
 msgstr "SemTítulo.netlist"
 
-#: ../src/schematic-view.c:1538
+#: ../src/schematic-view.c:1541
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
@@ -365,7 +365,7 @@ msgid ""
 "Do you want to save them?"
 msgstr ""
 
-#: ../src/schematic-view.c:2459 ../src/schematic-view.c:2470
+#: ../src/schematic-view.c:2462 ../src/schematic-view.c:2473
 #, fuzzy
 msgid "Could not create the log window"
 msgstr "Não foi possível criar janela"
@@ -806,6 +806,40 @@ msgstr ""
 #: ../src/simulation.c:237
 msgid "The simulation was aborted due to an error"
 msgstr "A simulação foi abortada por um erro"
+
+#: ../src/simulate.c:153
+msgid "Could't generate temp file!!\n"
+msgstr ""
+
+#: ../src/simulate.c:286
+msgid "Possibly due an I/O error."
+msgstr ""
+
+#: ../src/simulate.c:310
+msgid "No ground node. Aborting.\n"
+msgstr "Sem nó terra. Abortando.\n"
+
+#: ../src/simulate.c:315
+#, fuzzy
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have a ground node and try again."
+msgstr ""
+"Possivelmente por causa de uma falha no esquema de circuito. Por favor \n"
+"verifique que você tem um nó terra e tente novamente."
+
+#: ../src/simulate.c:330
+#, fuzzy
+msgid "No test clamps found. Aborting.\n"
+msgstr ""
+
+#: ../src/simulate.c:335
+#, fuzzy
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have one o more test clamps and try again."
+msgstr ""
+"Possivelmente por causa de uma falha no esquema de circuito.\n"
 
 #: ../src/textbox-item.c:101
 msgid "Edit..."
@@ -1359,29 +1393,7 @@ msgstr ""
 #~ msgid ""
 #~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
 #~ "\n"
-#~ "Possibly due to a faulty circuit schematic. Please check that\n"
-#~ "you have a Ground node and try again."
-#~ msgstr ""
-#~ "Não foi possível criar uma lista de rede (netlist)\n"
-#~ "Possivelmente por causa de uma falha no esquema de circuito. Por favor \n"
-#~ "verifique que você tem um nó terra e tente novamente."
-
-#, fuzzy
-#~ msgid ""
-#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-#~ "\n"
 #~ "Possibly dueto a faulty circuit schematic. Please check that\n"
-#~ "you have one o more test clamps and try again."
-#~ msgstr ""
-#~ "Não foi possível criar uma lista de rede (netlist)\n"
-#~ "Possivelmente por causa de uma falha no esquema de circuito. Por favor \n"
-#~ "verifique que você tem um nó terra e tente novamente."
-
-#, fuzzy
-#~ msgid ""
-#~ "<span weight=\"bold\" size=\"x-large\">Could not create a netlist</span>\n"
-#~ "\n"
-#~ "Possibly due to a faulty circuit schematic. Please check that\n"
 #~ "you have one o more test clamps and try again."
 #~ msgstr ""
 #~ "Não foi possível criar uma lista de rede (netlist)\n"
@@ -1413,9 +1425,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Não foi possível encontrar o arquivo requisitado:\n"
 #~ "%s"
-
-#~ msgid "No ground node. Aborting.\n"
-#~ msgstr "Sem nó terra. Abortando.\n"
 
 #~ msgid "-adobe-helvetica-bold-r-normal-*-12-*-*-*-*-*-*-*"
 #~ msgstr "-adobe-helvetica-negrito-r-normal-*-12-*-*-*-*-*-*-*"
