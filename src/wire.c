@@ -163,6 +163,8 @@ wire_init (Wire *wire)
 
 	priv->nodes = NULL;
 	priv->visited = FALSE;
+	priv->direction = WIRE_DIR_NONE;
+
 	wire->priv = priv;
 }
 
@@ -283,6 +285,16 @@ wire_set_length (Wire *wire, SheetPos *length)
 	priv = wire->priv;
 
 	priv->length = *length;
+
+	if (wire->priv->direction == WIRE_DIR_NONE) {
+		if (length->x == 0) {
+			wire->priv->direction = WIRE_DIR_VERT;
+		} else if (length->y == 0) {
+			wire->priv->direction = WIRE_DIR_HORIZ;
+		} else {
+			wire->priv->direction = WIRE_DIR_DIAG;
+		}
+	}
 
 	g_signal_emit_by_name (G_OBJECT (wire), "changed");
 }

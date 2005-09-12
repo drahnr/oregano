@@ -1,3 +1,7 @@
+2005-08-30	Ricardo Markiewicz <rmarkie@fi.uba.ar>
+
+	* wire-item.c : Added the possibility of changing the wire's size.
+
 2004-10-11  Ricardo Markiewicz <rmarkie@fi.uba.ar>
 
 	* README:  little update

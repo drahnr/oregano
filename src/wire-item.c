@@ -37,10 +37,13 @@
 #include "wire-item.h"
 #include "node-store.h"
 #include "wire.h"
+#include "wire-private.h"
 
 #define NORMAL_COLOR "blue"
 #define SELECTED_COLOR "green"
 #define HIGHLIGHT_COLOR "yellow"
+
+#define RESIZER_SIZE 4.0f
 
 static void wire_item_class_init (WireItemClass *klass);
 static void wire_item_init (WireItem *item);
@@ -80,13 +83,21 @@ enum {
 	WIRE_ITEM_ARG_NAME
 };
 
+enum {
+	WIRE_RESIZER_NONE,
+	WIRE_RESIZER_1,
+	WIRE_RESIZER_2
+};
+
 struct _WireItemPriv {
 	guint cache_valid : 1;
-
+	guint resize_state;
 	guint highlight : 1;
 	WireDir direction;	   /* Direction of the wire. */
 
 	GnomeCanvasLine *line;
+	GnomeCanvasRect *resize1;
+	GnomeCanvasRect *resize2;
 
 	/*
 	 * Cached bounding box. This is used to make
@@ -267,6 +278,34 @@ wire_item_new (Sheet *sheet, Wire *wire)
 
 	priv = item->priv;
 
+	priv->resize1 = GNOME_CANVAS_RECT (gnome_canvas_item_new (
+		GNOME_CANVAS_GROUP (item),
+		gnome_canvas_rect_get_type (),
+		"x1", -RESIZER_SIZE,
+		"y1", -RESIZER_SIZE,
+		"x2", RESIZER_SIZE,
+		"y2", RESIZER_SIZE,
+		"fill_color", "red",
+		"fill_color_rgba", 0x3cb37180,
+		"outline_color", "blue",
+		"width_pixels", 1,
+		NULL));
+
+	priv->resize2 = GNOME_CANVAS_RECT (gnome_canvas_item_new (
+		GNOME_CANVAS_GROUP (item),
+		gnome_canvas_rect_get_type (),
+		"x1", length.x-RESIZER_SIZE,
+		"y1", length.y-RESIZER_SIZE,
+		"x2", length.x+RESIZER_SIZE,
+		"y2", length.y+RESIZER_SIZE,
+		"fill_color", "red",
+		"fill_color_rgba", 0x3cb37180,
+		"outline_color", "blue",
+		"width_pixels", 1,
+		NULL));
+	gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->resize1));
+	gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->resize2));
+
 	points = gnome_canvas_points_new (2);
 	points->coords[0] = 0;
 	points->coords[1] = 0;
@@ -297,13 +336,162 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	return item;
 }
 
+static
+int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *sv)
+{
+	SheetPos start_pos, length;
+	Wire *wire;
+	Sheet *sheet;
+	GnomeCanvas *canvas;
+	static double last_x, last_y;
+	double dx, dy, zoom;
+	/* The selected group's bounding box in window resp. canvas coordinates. */
+	double x1, y1, x2, y2;
+	static double bb_x1, bb_y1, bb_x2, bb_y2;
+	int cx1, cy1, cx2, cy2;
+	double snapped_x, snapped_y;
+	int sheet_width, sheet_height;
+	SheetPos pos;
+
+	sheet = schematic_view_get_sheet (sv);
+	canvas = GNOME_CANVAS (sheet);
+	g_object_get (G_OBJECT (wire_item), "data", &wire, NULL);
+
+	wire_get_pos_and_length (WIRE (wire), &start_pos, &length);
+	sheet_get_zoom (sheet, &zoom);
+
+	switch (event->type) {
+		case GDK_BUTTON_PRESS:
+			switch (event->button.button) {
+				case 1: {
+					g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
+					double x, y;
+					x = event->button.x - start_pos.x;
+					y = event->button.y - start_pos.y;
+					if ((x > -RESIZER_SIZE) && (x < RESIZER_SIZE) &&
+						 (y > -RESIZER_SIZE) && (y < RESIZER_SIZE)) {
+						gtk_widget_grab_focus (GTK_WIDGET (sheet));
+						sheet->state = SHEET_STATE_DRAG_START;
+						wire_item->priv->resize_state = WIRE_RESIZER_1;
+
+						last_x = event->button.x;
+						last_y = event->button.y;
+						item_data_unregister (ITEM_DATA (wire));
+						return TRUE;
+					}
+					if ((x > (length.x-RESIZER_SIZE)) && (x < (length.x+RESIZER_SIZE)) &&
+						 (y > (length.y-RESIZER_SIZE)) && (y < (length.y+RESIZER_SIZE))) {
+						gtk_widget_grab_focus (GTK_WIDGET (sheet));
+						sheet->state = SHEET_STATE_DRAG_START;
+						wire_item->priv->resize_state = WIRE_RESIZER_2;
+
+						last_x = event->button.x;
+						last_y = event->button.y;
+						item_data_unregister (ITEM_DATA (wire));
+						return TRUE;
+					}
+				}
+				break;
+			}
+		break;
+		case GDK_MOTION_NOTIFY:
+			if (sheet->state != SHEET_STATE_DRAG &&
+				sheet->state != SHEET_STATE_DRAG_START)
+				break;
+
+			if (wire_item->priv->resize_state == WIRE_RESIZER_NONE)
+				break;
+
+			if (sheet->state == SHEET_STATE_DRAG_START || sheet->state == SHEET_STATE_DRAG) {
+				sheet->state = SHEET_STATE_DRAG;
+		
+				snapped_x = event->motion.x;
+				snapped_y = event->motion.y;
+				snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
+		
+				dx = snapped_x - last_x;
+				dy = snapped_y - last_y;
+
+		
+				last_x = snapped_x;
+				last_y = snapped_y;
+
+				wire_get_pos_and_length (wire, &pos, &length);
+
+				if (wire_item->priv->resize_state == WIRE_RESIZER_1) {
+					switch (wire->priv->direction) {
+						case WIRE_DIR_VERT:
+							/* Vertical Wire */
+							pos.y = last_y;
+							length.y -= dy;
+						break;
+						case WIRE_DIR_HORIZ:
+							/* Horizontal Wire */
+							pos.x = last_x;
+							length.x -= dx;
+						break;
+						default:
+							pos.y = last_y;
+							length.y -= dy;
+							pos.x = last_x;
+							length.x -= dx;
+					}
+				} else {
+					switch (wire->priv->direction) {
+						case WIRE_DIR_VERT:
+							/* Vertical Wire */
+							length.y += dy;
+						break;
+						case WIRE_DIR_HORIZ:
+							/* Horizontal Wire */
+							length.x += dx;
+						break;
+						default:
+							length.y += dy;
+							length.x += dx;
+					}
+				}
+				snap_to_grid (sheet->grid, &length.x, &length.y);
+				item_data_set_pos (sheet_item_get_data (SHEET_ITEM (wire_item)), &pos);
+				wire_set_length (wire, &length);
+				return TRUE;
+			}
+		break;
+		case GDK_BUTTON_RELEASE:
+			switch (event->button.button) {
+			case 1:
+				if (sheet->state != SHEET_STATE_DRAG &&
+					sheet->state != SHEET_STATE_DRAG_START)
+					break;
+				if (wire_item->priv->resize_state == WIRE_RESIZER_NONE)
+					break;
+
+				g_signal_stop_emission_by_name (G_OBJECT (wire_item), "event");
+
+				//gtk_timeout_remove (priv->scroll_timeout_id); // Esto no esta bien.
+
+				sheet->state = SHEET_STATE_NONE;
+				gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (wire_item), event->button.time);
+
+				wire_item->priv->resize_state = WIRE_RESIZER_NONE;
+				sheet->state = SHEET_STATE_NONE;
+				item_data_register (ITEM_DATA (wire));
+				return TRUE;
+			}
+			break;
+		default:
+			return sheet_item_event (SHEET_ITEM (wire_item), event, sv);
+	}
+	return sheet_item_event (SHEET_ITEM (wire_item), event, sv);
+}
+
 void
 wire_item_signal_connect_placed (WireItem *wire, SchematicView *sv)
 {
 	g_signal_connect (
 		G_OBJECT (wire),
 		"event",
-		G_CALLBACK(sheet_item_event),
+		G_CALLBACK(wire_item_event),
 		sv);
 
 	g_signal_connect (
@@ -426,10 +614,15 @@ static void
 selection_changed(WireItem *item, gboolean select, gpointer user_data)
 {
 	g_object_ref(G_OBJECT(item));
-	if (select)
+	if (select) {
 		gtk_idle_add ((gpointer) select_idle_callback, item);
-	else
+		gnome_canvas_item_show (GNOME_CANVAS_ITEM (item->priv->resize1));
+		gnome_canvas_item_show (GNOME_CANVAS_ITEM (item->priv->resize2));
+	} else {
 		gtk_idle_add ((gpointer) deselect_idle_callback, item);
+		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (item->priv->resize1));
+		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (item->priv->resize2));
+	}
 }
 
 /**
@@ -697,6 +890,20 @@ wire_changed_callback (Wire *wire, WireItem *item)
 		"points", points,
 		NULL);
 	gnome_canvas_points_unref (points);
+
+	gnome_canvas_item_set (GNOME_CANVAS_ITEM (item->priv->resize1),
+		"x1", -RESIZER_SIZE,
+		"y1", -RESIZER_SIZE,
+		"x2", RESIZER_SIZE,
+		"y2", RESIZER_SIZE,
+		NULL);
+
+	gnome_canvas_item_set (GNOME_CANVAS_ITEM (item->priv->resize2),
+		"x1", length.x-RESIZER_SIZE,
+		"y1", length.y-RESIZER_SIZE,
+		"x2", length.x+RESIZER_SIZE,
+		"y2", length.y+RESIZER_SIZE,
+		NULL);
 }
 
 static void

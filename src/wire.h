@@ -48,6 +48,13 @@ typedef struct _WirePriv WirePriv;
 #include "node-store.h"
 #include "node.h"
 
+typedef enum {
+	WIRE_DIR_NONE = 0,
+	WIRE_DIR_HORIZ = 1,
+	WIRE_DIR_VERT = 2,
+	WIRE_DIR_DIAG = 3
+} WireDir;
+
 struct _Wire {
 	ItemData parent;
 	WirePriv *priv;
