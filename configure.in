@@ -71,6 +71,9 @@ src/dialogs/Makefile
 src/samples/Makefile
 src/stock/Makefile
 src/pixmaps/Makefile
+src/model/Makefile
+src/sheet/Makefile
+src/gtkcairoplot/Makefile
 po/Makefile.in
 help/Makefile
 help/C/Makefile

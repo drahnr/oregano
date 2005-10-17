@@ -41,8 +41,8 @@
 #include "part-label.h"
 #include "node-store.h"
 #include "load-common.h"
-#include "part-private.h"
 #include "load-library.h"
+#include "part-private.h"
 #include "print.h"
 
 static void part_class_init (PartClass *klass);
