@@ -150,7 +150,7 @@ open_nl_file (gchar **name, FILE **f)
 		tmp_filename = g_build_filename (g_get_tmp_dir(), "oregXXXXXX", NULL);
 		fd = mkstemp (tmp_filename);
 		if (fd == -1) {
-			g_warning(N_("Could't generate temporary file.\n"));
+			g_warning(N_("Couldn't generate temporary file.\n"));
 			g_free(tmp_filename);
 			return FALSE;
 		}
@@ -448,7 +448,7 @@ nl_generate (Schematic *sm, gchar *fn, GError **error)
 			node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data->pins,
 				&pins[pin_nr]));
 			if (!node_nr) {
-				g_warning ("Couln't find part, pin_nr %d.", pin_nr);
+				g_warning ("Couldn't find part, pin_nr %d.", pin_nr);
 			} else {
 				gchar *tmp;
 				gchar *_tmp;

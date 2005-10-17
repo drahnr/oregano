@@ -168,6 +168,7 @@ place_cmd (GtkWidget *widget, Browser *br)
 	library_part = library_get_part (br->library, part_name);
 	part = part_new_from_library_part (library_part);
 	if (!part) {
+		oregano_error(_("Unable to load required part"));
 		return;
 	}
 
@@ -380,8 +381,10 @@ part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 
 	library_part = library_get_part (data->br->library, data->part_name);
 	part = part_new_from_library_part (library_part);
-	if (!part)
+	if (!part) {
+		oregano_error(_("Unable to load required part"));
 		return;
+	}
 
 	item_data_set_pos (ITEM_DATA (part), &pos);
 
