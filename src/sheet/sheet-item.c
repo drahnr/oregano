@@ -780,6 +780,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 	SheetPriv *priv;
 	GList *list;
 	static SheetPos delta, tmp;
+	static int control_key_down = 0;
 //	GtkArg arg[2];
 
 	/* Remember the last position of the mouse cursor. */
@@ -828,11 +829,15 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 			return FALSE;
 
 		case 1:
-			/* Stick the part. */
-			sheet->state = SHEET_STATE_NONE;
-			g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
-			g_signal_handler_disconnect ( G_OBJECT (sheet), sheet->priv->float_handler_id);
-			sheet->priv->float_handler_id = 0;
+			control_key_down = event->button.state & GDK_CONTROL_MASK;
+
+			/* Continue adding if CTRL is pressed */
+			if (!control_key_down) {
+				sheet->state = SHEET_STATE_NONE;
+				g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
+				g_signal_handler_disconnect ( G_OBJECT (sheet), sheet->priv->float_handler_id);
+				sheet->priv->float_handler_id = 0;
+			}
 
 			g_object_get (G_OBJECT (sheet->priv->floating_group),
 				"x", &tmp.x,
@@ -849,7 +854,10 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 				 * Destroy the ghost item and place a real item.
 				 */
 				floating_item = list->data;
-				floating_data = sheet_item_get_data (floating_item);
+				if (!control_key_down)
+					floating_data = sheet_item_get_data (floating_item);
+				else
+					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 
 				g_object_ref (G_OBJECT (floating_data));
 
@@ -857,12 +865,21 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 				schematic_add_item (schematic_view_get_schematic (schematic_view),
 									floating_data);
 
-				/* It must be a destroy, because the father uses Destroy */
-				gtk_object_destroy (GTK_OBJECT(floating_item));
+				if (!control_key_down)
+					gtk_object_destroy (GTK_OBJECT(floating_item));
 			}
 
-			g_list_free (sheet->priv->floating_objects);
-			sheet->priv->floating_objects = NULL;
+			if (!control_key_down) {
+				g_list_free (sheet->priv->floating_objects);
+				sheet->priv->floating_objects = NULL;
+			} else {
+				gtk_object_set (GTK_OBJECT (sheet->priv->floating_group),
+						"x", tmp.x,
+						"y", tmp.y,
+						NULL);
+			}
+			delta.x = 0;
+			delta.y = 0;
 			break;
 
 		case 3:
