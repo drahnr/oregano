@@ -89,6 +89,7 @@ static void part_browser_setup_libs (Browser *br, GladeXML *gui);
 static void library_switch_cb (GtkWidget *item, Browser *br);
 static void preview_realized (GtkWidget *widget, Browser *br);
 static void wrap_string(char* str, int width);
+static void place_cmd (GtkWidget *widget, Browser *br);
 
 static gboolean
 part_list_filter_func (GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
@@ -139,6 +140,22 @@ part_search_change (GtkWidget *widget, Browser *br)
 	return TRUE;
 }
 
+static void
+part_search_activate (GtkWidget *widget, Browser *br)
+{
+	GtkTreeSelection *selection;
+	GtkTreePath *path;
+
+	path = gtk_tree_path_new_from_string ("0");
+	if (path) {
+		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
+
+		gtk_tree_selection_select_path (selection, path);
+
+		gtk_tree_path_free (path);
+		place_cmd (widget, br);
+	}
+}
 
 static void
 place_cmd (GtkWidget *widget, Browser *br)
@@ -552,6 +569,9 @@ part_browser_create (SchematicView *schematic_view)
 
 	g_signal_connect (G_OBJECT (br->filter_entry), "changed",
 		G_CALLBACK (part_search_change), br);
+	g_signal_connect (G_OBJECT (br->filter_entry), "activate",
+		G_CALLBACK (part_search_activate), br);
+
 	/* Buttons. */
 	w = glade_xml_get_widget (gui, "place_button");
 	g_signal_connect (G_OBJECT (w), "clicked",
