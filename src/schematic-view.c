@@ -1538,8 +1538,8 @@ can_close (SchematicView *sv)
 	
 	filename = schematic_get_filename (sv->priv->schematic);
 	text = g_strdup_printf (
-		_("<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</span>\n\n"
-			"Do you want to save them?"),
+		_("<span weight=\"bold\" size=\"large\">Save changes to schematic %s before closing?</span>\n\n"
+			"If you don't save, all changes since you last saved will be permanently lost."),
 			filename ?  g_basename (filename) : NULL );
 
 	dialog = gtk_message_dialog_new_with_markup (
@@ -1550,9 +1550,10 @@ can_close (SchematicView *sv)
 		_(text), NULL);
 
 	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+		_("Close _without Saving"),
+		GTK_RESPONSE_NO,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-		GTK_STOCK_NO, GTK_RESPONSE_NO,
-		GTK_STOCK_YES, GTK_RESPONSE_YES,
+		GTK_STOCK_SAVE, GTK_RESPONSE_YES,
 		NULL);
 
 	g_free (text);
