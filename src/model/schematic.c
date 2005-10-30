@@ -616,6 +616,7 @@ schematic_save_file (Schematic *sm, GError **error)
 	}
 
 	if (ft->save_func (sm, &internal_error)) {
+		schematic_set_title (sm, g_basename (sm->priv->filename));
 		schematic_set_dirty (sm, FALSE);
 		return TRUE;
 	}
