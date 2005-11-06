@@ -1,6 +1,8 @@
 
 lib_LTLIBRARIES=liboregano-sheet.la
 
+oreganodir = $(datadir)/oregano
+
 INCLUDES = 						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 	\
 	-I$(includedir) $(GNOME_INCLUDEDIR)		\
