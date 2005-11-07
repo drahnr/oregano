@@ -84,7 +84,8 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	Simulation *s;
 	Schematic *sm;
 	gchar *title, *desc;
-	gchar *fullpath = NULL;
+	gchar *fullpath_parser = NULL;
+	gchar *fullpath_engine = NULL;
 
 	g_return_if_fail (sv != NULL);
 
@@ -99,13 +100,17 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	fullpath = g_find_program_in_path (oregano.simexec);
-	if (oregano.simexec && !fullpath) {
+	fullpath_parser = g_find_program_in_path (oregano.simexec);
+	fullpath_engine = g_find_program_in_path (oregano.simtype);
+
+	if (oregano.simexec && (!fullpath_parser || !fullpath_engine)) {
 		title = g_strdup_printf (_("Could not find the simulation executable"));
 		desc  = g_strdup_printf (_("This probably means that you have not configured Oregano properly."));
 		oregano_error_with_title (title, desc);
 		g_free (title);
 		g_free (desc);
+		if (fullpath_parser != NULL) g_free (fullpath_parser);
+		if (fullpath_engine != NULL) g_free (fullpath_engine);
 		return;
 	} else if (!oregano.simexec) {
 		title = g_strdup_printf (_("You have not entered a simulation executable"));
@@ -113,11 +118,13 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 		oregano_error_with_title (title, desc);
 		g_free (title);
 		g_free (desc);
-		if (fullpath != NULL) g_free (fullpath);
+		if (fullpath_parser != NULL) g_free (fullpath_parser);
+		if (fullpath_engine != NULL) g_free (fullpath_engine);
 		return;
 	}
 
-	if (fullpath != NULL) g_free (fullpath);
+	if (fullpath_parser != NULL) g_free (fullpath_parser);
+	if (fullpath_engine != NULL) g_free (fullpath_engine);
 	if (!g_file_test (OREGANO_GLADEDIR "/simulation.glade2",
 		G_FILE_TEST_EXISTS)) {
 		oregano_error (_("Could not create simulation dialog"));
