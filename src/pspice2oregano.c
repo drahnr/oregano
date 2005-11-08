@@ -393,76 +393,76 @@ void tbl_buildTree(char *key, Symbol *symb, Tree *tree) {
 
 	if ( symb->connections || symb->objects ) {
 		GSList *list;
-		symbol = xmlNewChild(tree->symbols,NULL,"ogo:symbol",NULL);
-		xmlNewChild(symbol,NULL,"ogo:name"	,symb->name);
+		symbol = xmlNewChild(tree->symbols, NULL, BAD_CAST "ogo:symbol",NULL);
+		xmlNewChild(symbol, NULL, BAD_CAST "ogo:name", BAD_CAST symb->name);
 
 		if ( symb->objects ) {
-			dmy=xmlNewChild(symbol,NULL,"ogo:objects",NULL);
+			dmy=xmlNewChild(symbol,NULL,BAD_CAST "ogo:objects",NULL);
 			for (list = symb->objects;list;list=list->next) {
 				sscanf(list->data,"%s %n",word,&is);
 				sprintf(buf,"ogo:%s",word);
-				xmlNewChild(dmy,NULL,buf,list->data+is);
+				xmlNewChild(dmy,NULL,BAD_CAST buf,BAD_CAST list->data+is);
 			}
 		}
 
 		if ( symb->connections ) {
-			dmy=xmlNewChild(symbol,NULL,"ogo:connections",NULL);
+			dmy=xmlNewChild(symbol,NULL,BAD_CAST "ogo:connections",NULL);
 
 			for (list = symb->connections;list;list=list->next)
-				xmlNewChild(dmy,NULL,"ogo:connection",list->data);
+				xmlNewChild(dmy,NULL,BAD_CAST "ogo:connection",list->data);
 		}
 	}
 
-	part   = xmlNewChild(tree->parts  ,NULL,"ogo:part",NULL);
-	xmlNewChild(part  ,NULL,"ogo:name"	,symb->name);
-	xmlNewChild(part  ,NULL,"ogo:symbol",symb->ako ? symb->ako : symb->name);
-	xmlNewChild(part  ,NULL,"ogo:description",symb->desc);
+	part   = xmlNewChild(tree->parts, NULL, BAD_CAST "ogo:part", NULL);
+	xmlNewChild(part, NULL, BAD_CAST "ogo:name", BAD_CAST symb->name);
+	xmlNewChild(part, NULL, BAD_CAST "ogo:symbol", BAD_CAST (symb->ako ? symb->ako : symb->name));
+	xmlNewChild(part, NULL, BAD_CAST "ogo:description", BAD_CAST symb->desc);
 
 
-	prop =	xmlNewChild(part  ,NULL,"ogo:properties",NULL);
+	prop =	xmlNewChild(part, NULL, BAD_CAST "ogo:properties", NULL);
 	if ( symb->properties ) {
 		GSList *list;
 
 		for (list = symb->properties;list;list=list->next) {
 			Property *pp = (Property *)list->data;
-			dmy = xmlNewChild(prop,NULL,"ogo:property",NULL);
-			if (pp-> name) xmlNewChild(dmy,NULL,"ogo:name",pp->name);
-			if (pp->value) xmlNewChild(dmy,NULL,"ogo:value",pp->value);
+			dmy = xmlNewChild(prop,NULL,BAD_CAST "ogo:property",NULL);
+			if (pp-> name) xmlNewChild(dmy,NULL,BAD_CAST "ogo:name",BAD_CAST pp->name);
+			if (pp->value) xmlNewChild(dmy,NULL,BAD_CAST "ogo:value",BAD_CAST pp->value);
 		}
 	}
 	if (symb->template) {
-		dmy = xmlNewChild(prop,NULL,"ogo:property",NULL);
-		xmlNewChild(dmy,NULL,"ogo:name","Template");
-		xmlNewChild(dmy,NULL,"ogo:value",symb->template);
+		dmy = xmlNewChild(prop,NULL,BAD_CAST "ogo:property",NULL);
+		xmlNewChild(dmy,NULL,BAD_CAST "ogo:name",BAD_CAST "Template");
+		xmlNewChild(dmy,NULL,BAD_CAST "ogo:value",BAD_CAST symb->template);
 	}
 	if (symb->refdes) {
-		dmy = xmlNewChild(prop,NULL,"ogo:property",NULL);
-		xmlNewChild(dmy,NULL,"ogo:name","RefDes");
-		xmlNewChild(dmy,NULL,"ogo:value",symb->refdes);
+		dmy = xmlNewChild(prop,NULL,BAD_CAST "ogo:property",NULL);
+		xmlNewChild(dmy,NULL,BAD_CAST "ogo:name",BAD_CAST "RefDes");
+		xmlNewChild(dmy,NULL,BAD_CAST "ogo:value",BAD_CAST symb->refdes);
 	}
 	if (symb->model) {
-		dmy = xmlNewChild(prop,NULL,"ogo:property",NULL);
-		xmlNewChild(dmy,NULL,"ogo:name","Model");
-		xmlNewChild(dmy,NULL,"ogo:value",symb->model);
+		dmy = xmlNewChild(prop,NULL,BAD_CAST "ogo:property",NULL);
+		xmlNewChild(dmy,NULL,BAD_CAST "ogo:name",BAD_CAST "Model");
+		xmlNewChild(dmy,NULL,BAD_CAST "ogo:value",BAD_CAST symb->model);
 	}
 
 	if ( symb->labels ) {
 		GSList *list;
-		prop =	xmlNewChild(part  ,NULL,"ogo:labels",NULL);
+		prop =	xmlNewChild(part,NULL,BAD_CAST "ogo:labels",NULL);
 		for (list = symb->labels;list;list=list->next) {
 			sscanf(list->data,"%s %d %n",word,&editable,&is);
-			dmy = xmlNewChild(prop,NULL,"ogo:label",NULL);
-			xmlNewChild(dmy,NULL,"ogo:name",word);
-			xmlNewChild(dmy,NULL,"ogo:position",list->data+is);
+			dmy = xmlNewChild(prop,NULL,BAD_CAST "ogo:label",NULL);
+			xmlNewChild(dmy,NULL, BAD_CAST "ogo:name", BAD_CAST word);
+			xmlNewChild(dmy,NULL, BAD_CAST "ogo:position", BAD_CAST list->data+is);
 			if ( editable ) {
 				for (q=word;*q;q++) *q = tolower(*q);
 				sprintf(buf,"@%s",word);
-				xmlNewChild(dmy,NULL,"ogo:text",buf);
-				xmlNewChild(dmy,NULL,"ogo:modify","yes");
+				xmlNewChild(dmy,NULL, BAD_CAST "ogo:text", BAD_CAST buf);
+				xmlNewChild(dmy,NULL, BAD_CAST "ogo:modify", BAD_CAST "yes");
 			}
 			else {
-				xmlNewChild(dmy,NULL,"ogo:text",word);
-				xmlNewChild(dmy,NULL,"ogo:modify","no");
+				xmlNewChild(dmy,NULL, BAD_CAST "ogo:text", BAD_CAST word);
+				xmlNewChild(dmy,NULL, BAD_CAST "ogo:modify", BAD_CAST "no");
 			}
 		}
 	}
@@ -501,13 +501,13 @@ main (int argc, char **argv)
 	sprintf(oFile,"%s.oreglib",p);
 	printf("Output in %s\n",p);
 
-	doc = xmlNewDoc("1.0");
-	doc->children= xmlNewDocNode(doc, NULL, "ogo:library", NULL);
-	name = xmlNewChild(doc->children, NULL, "ogo:name",p);
-	xmlNewChild(doc->children, NULL, "ogo:description","PSpice eval library");
-	xmlNewChild(doc->children, NULL, "ogo:version","1.0");
-	tree.symbols = xmlNewChild(doc->children, NULL, "ogo:symbols",NULL);
-	tree.parts	 = xmlNewChild(doc->children, NULL, "ogo:parts",NULL);
+	doc = xmlNewDoc(BAD_CAST "1.0");
+	doc->children= xmlNewDocNode(doc, NULL, BAD_CAST "ogo:library", NULL);
+	name = xmlNewChild(doc->children, NULL, BAD_CAST "ogo:name", BAD_CAST p);
+	xmlNewChild(doc->children, NULL, BAD_CAST "ogo:description",BAD_CAST "PSpice eval library");
+	xmlNewChild(doc->children, NULL, BAD_CAST "ogo:version",BAD_CAST "1.0");
+	tree.symbols = xmlNewChild(doc->children, NULL, BAD_CAST "ogo:symbols",NULL);
+	tree.parts	 = xmlNewChild(doc->children, NULL, BAD_CAST "ogo:parts",NULL);
 
 	/*	Get the symbols */
 	sprintf(buf,"%s.slb",iFile);

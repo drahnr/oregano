@@ -77,24 +77,24 @@ xmlSetCoordinate (xmlNodePtr node, const char *name, double x, double y)
 {
 	xmlNodePtr child;
 	gchar *str;
-	const char *ret;
+	xmlChar *ret;
 
 	str = g_strdup_printf ("(%g %g)", x, y);
-	ret = xmlGetProp (node, name);
+	ret = xmlGetProp (node, BAD_CAST name);
 	if (ret != NULL){
-		xmlSetProp (node, name, str);
+		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		g_free (str);
 		return;
 	}
 	child = node->childs;
 	while (child != NULL){
-		if (!strcmp (child->name, name)){
-			xmlNodeSetContent (child, str);
+		if (!xmlStrcmp (child->name, BAD_CAST name)){
+			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
 		child = child->next;
 	}
-	xmlSetProp (node, name, str);
+	xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 	g_free (str);
 }
 
@@ -109,24 +109,24 @@ xmlSetCoordinates (xmlNodePtr node, const char *name,
 {
 	xmlNodePtr child;
 	gchar *str;
-	const char *ret;
+	xmlChar *ret;
 
 	str = g_strdup_printf ("(%g %g)(%g %g)", x1, y1, x2, y2);
-	ret = xmlGetProp (node, name);
+	ret = xmlGetProp (node, BAD_CAST name);
 	if (ret != NULL){
-		xmlSetProp (node, name, str);
+		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		g_free (str);
 		return;
 	}
 	child = node->childs;
 	while (child != NULL){
-		if (!strcmp (child->name, name)){
-			xmlNodeSetContent (child, str);
+		if (!xmlStrcmp (child->name, BAD_CAST name)){
+			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
 		child = child->next;
 	}
-	xmlSetProp (node, name, str);
+	xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 	g_free (str);
 }
 
@@ -157,15 +157,15 @@ xmlSetGnomeCanvasPoints (xmlNodePtr node, const char *name,
 
 	child = node->childs;
 	while (child != NULL){
-		if (!strcmp (child->name, name)){
-			xmlNodeSetContent (child, base);
+		if (!xmlStrcmp (child->name, BAD_CAST name)){
+			xmlNodeSetContent (child, BAD_CAST base);
 			free (base);
 			return;
 		}
 		child = child->next;
 	}
-	xmlNewChild (node, NULL, name,
-		xmlEncodeEntitiesReentrant(node->doc, base));
+	xmlNewChild (node, NULL, BAD_CAST name,
+		xmlEncodeEntitiesReentrant(node->doc, BAD_CAST base));
 	g_free (base);
 }
 
@@ -177,23 +177,23 @@ xmlSetGnomeCanvasPoints (xmlNodePtr node, const char *name,
 void
 xmlSetValue (xmlNodePtr node, const char *name, const char *val)
 {
-	const char *ret;
+	xmlChar *ret;
 	xmlNodePtr child;
 
-	ret = xmlGetProp (node, name);
+	ret = xmlGetProp (node, BAD_CAST name);
 	if (ret != NULL){
-		xmlSetProp (node, name, val);
+		xmlSetProp (node, BAD_CAST name, BAD_CAST val);
 		return;
 	}
 	child = node->childs;
 	while (child != NULL){
-		if (!strcmp (child->name, name)){
-			xmlNodeSetContent (child, val);
+		if (!xmlStrcmp (child->name, BAD_CAST name)){
+			xmlNodeSetContent (child, BAD_CAST val);
 			return;
 		}
 		child = child->next;
 	}
-	xmlSetProp (node, name, val);
+	xmlSetProp (node, BAD_CAST name, BAD_CAST val);
 }
 
 /**
@@ -203,25 +203,25 @@ xmlSetValue (xmlNodePtr node, const char *name, const char *val)
 void
 xmlSetIntValue (xmlNodePtr node, const char *name, int val)
 {
-	const char *ret;
+	xmlChar *ret;
 	xmlNodePtr child;
 	char str[101];
 
 	snprintf (str, 100, "%d", val);
-	ret = xmlGetProp (node, name);
+	ret = xmlGetProp (node,BAD_CAST name);
 	if (ret != NULL){
-		xmlSetProp (node, name, str);
+		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		return;
 	}
 	child = node->childs;
 	while (child != NULL){
-		if (!strcmp (child->name, name)){
-			xmlNodeSetContent (child, str);
+		if (!xmlStrcmp (child->name, BAD_CAST name)){
+			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
 		child = child->next;
 	}
-	xmlSetProp (node, name, str);
+	xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 }
 
 
@@ -232,26 +232,24 @@ xmlSetIntValue (xmlNodePtr node, const char *name, int val)
 void
 xmlSetDoubleValue (xmlNodePtr node, const char *name, double val)
 {
-	const char *ret;
+	xmlChar *ret;
 	xmlNodePtr child;
 	char str[101];
 
 	snprintf (str, 100, "%g", (float) val);
-	ret = xmlGetProp (node, name);
+	ret = xmlGetProp (node, BAD_CAST name);
 	if (ret != NULL){
-		xmlSetProp (node, name, str);
+		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		return;
 	}
 	child = node->childs;
 	while (child != NULL){
-		if (!strcmp (child->name, name)){
-			xmlNodeSetContent (child, str);
+		if (!xmlStrcmp (child->name, BAD_CAST name)){
+			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
 		child = child->next;
 	}
-	xmlSetProp (node, name, str);
+	xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 }
-
-
 
