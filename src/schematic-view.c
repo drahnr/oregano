@@ -1705,6 +1705,19 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 
 		break;
 
+	case GDK_SCROLL:
+		if (((GdkEventScroll *)event)->direction == GDK_SCROLL_UP) {
+			double zoom;
+			sheet_get_zoom (sv->priv->sheet, &zoom);
+			if (zoom < ZOOM_MAX)
+				zoom_in_cmd (widget, sv);
+		} else if (((GdkEventScroll *)event)->direction == GDK_SCROLL_DOWN) {
+			double zoom;
+			sheet_get_zoom (sv->priv->sheet, &zoom);
+			if (zoom > ZOOM_MIN)
+			zoom_out_cmd (widget, sv);
+		}
+		break;
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 		case GDK_R:
