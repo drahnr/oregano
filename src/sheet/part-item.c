@@ -911,47 +911,6 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 }
 
 static void
-canvas_text_affine (GnomeCanvasItem *canvas_item, double *affine)
-{
-	ArtPoint src, dst;
-
-	g_object_get (G_OBJECT (canvas_item),
-		"x", &src.x,
-		"y", &src.y,
-		NULL);
-
-	art_affine_point (&dst, &src, affine);
-
-	gnome_canvas_item_set (canvas_item, "x", dst.x,"y",dst.y, NULL);
-}
-
-static void
-canvas_line_affine (GnomeCanvasItem *canvas_item, double *affine)
-{
-	GnomeCanvasPoints *points;
-	ArtPoint src, dst;
-//	GtkArg arg[2];
-	int i;
-
-	g_object_get(G_OBJECT (canvas_item), "points", &points, NULL);
-
-	for (i = 0; i < points->num_points * 2; i += 2) {
-		src.x = points->coords[i];
-		src.y = points->coords[i + 1];
-		art_affine_point (&dst, &src, affine);
-		if (fabs (dst.x) < 1e-2)
-			dst.x = 0;
-		if (fabs (dst.y) < 1e-2)
-			dst.y = 0;
-		points->coords[i] = dst.x;
-		points->coords[i + 1] = dst.y;
-	}
-
-	gnome_canvas_item_set (canvas_item, "points", points, NULL);
-	gnome_canvas_points_unref (points);
-}
-
-static void
 part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
 	double affine[6];
@@ -981,47 +940,8 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	for (list = group->item_list; list; list = list->next) {
 		canvas_item = GNOME_CANVAS_ITEM (list->data);
-		if (GNOME_IS_CANVAS_LINE (canvas_item)) {
-			canvas_line_affine (canvas_item, affine);
-		} else if ( GNOME_IS_CANVAS_TEXT (canvas_item)) {
-			canvas_text_affine (canvas_item,affine);
-		} else if (GNOME_IS_CANVAS_ELLIPSE (canvas_item)) {
-			/*
-			 * Big great hack. Needed to rotate circles in the non
-			 * aa-canvas.
-			 */
-			g_object_get (G_OBJECT (list->data),
-				"x1", &x1,
-				"y1", &y1,
-				"x2", &x2,
-				"y2", &y2,
-				NULL);
 
-			left = MIN (x1, x2);
-			right = MAX (x1, x2);
-			top = MIN (y1, y2);
-			bottom = MAX (y1, y2);
-
-			old = g_object_get_data (G_OBJECT (canvas_item), "hack");
-			if (old  != NULL) {
-				x0 = src.x = old->x;
-				y0 = src.y = old->y;
-			} else {
-				x0 = src.x = left + (right - left) / 2;
-				y0 = src.y = top + (bottom - top) / 2;
-				old = g_new (ArtPoint, 1);
-				gtk_object_set_data (GTK_OBJECT (canvas_item), "hack", old);
-			}
-
-			art_affine_point (&dst, &src, affine);
-			old->x = dst.x;
-			old->y = dst.y;
-
-			dx = dst.x - x0;
-			dy = dst.y - y0;
-
-			gnome_canvas_item_move (canvas_item, dx, dy);
-		}
+		gnome_canvas_item_affine_relative (canvas_item, affine);
 	}
 
 	/*
@@ -1051,8 +971,6 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	for (label_items = priv->label_items; label_items;
 	     label_items = label_items->next) {
-		canvas_text_affine (label_items->data,affine);
-
 		gnome_canvas_item_set (
 			GNOME_CANVAS_ITEM (label_items->data),
 			"anchor", anchor,
@@ -1061,8 +979,6 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	for (label_items = priv->label_nodes; label_items;
 	     label_items = label_items->next) {
-		canvas_text_affine (label_items->data,affine);
-
 		gnome_canvas_item_set (
 			GNOME_CANVAS_ITEM (label_items->data),
 			"anchor", anchor,
@@ -1110,89 +1026,8 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 
 	for (list = group->item_list; list; list = list->next) {
 		canvas_item = GNOME_CANVAS_ITEM (list->data);
-		if (GNOME_IS_CANVAS_LINE (canvas_item)) {
-			/*
-			 * Flip the line.
-			 */
-			canvas_line_affine (canvas_item, affine);
-		} else if (GNOME_IS_CANVAS_ELLIPSE (canvas_item)) {
-			/*
-			 * Flip the ellipse.
-			 */
-			g_object_get (G_OBJECT (canvas_item),
-				"x1", &src.x,
-				"y1", &src.y,
-				NULL);
 
-			art_affine_point (&dst, &src, affine);
-			if (fabs (dst.x) < 1e-2)
-				dst.x = 0;
-			if (fabs (dst.y) < 1e-2)
-				dst.y = 0;
-			x1 = dst.x;
-			y1 = dst.y;
-
-			g_object_get (G_OBJECT (canvas_item),
-				"x2", &src.x,
-				"y2", &src.y,
-				NULL);
-			art_affine_point (&dst, &src, affine);
-			if (fabs (dst.x) < 1e-2)
-				dst.x = 0;
-			if (fabs (dst.y) < 1e-2)
-				dst.y = 0;
-			x2 = dst.x;
-			y2 = dst.y;
-
-			left = MIN (x1, x2);
-			right = MAX (x1, x2);
-			top = MIN (y1, y2);
-			bottom = MAX (y1, y2);
-
-			gnome_canvas_item_set (
-				canvas_item,
-				"x1", left,
-				"y1", top,
-				"x2", right,
-				"y2", bottom,
-				NULL);
-		}
-	}
-
-	/*
-	 * Flip the labels as well.
-	 */
-	for(label_items = priv->label_items; label_items;
-	    label_items = label_items->next) {
-		GnomeCanvasItem *label;
-
-		label = label_items->data;
-
-		g_object_get(G_OBJECT(label),
-			"x", &src.x,
-			"y", &src.y,
-			"text-width", &text_width,
-			"text-height", &text_heigth,
-			NULL);
-
-		art_affine_point (&dst, &src, affine);
-
-		if (fabs (dst.x) < 1e-2)
-			dst.x = 0;
-		if (fabs (dst.y) < 1e-2)
-			dst.y = 0;
-		if (horizontal) {
-			if (dst.x)
-				dst.x = dst.x - text_width;
-		} else if (dst.y)
-			dst.y = dst.y + text_heigth;
-
-		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label_items->data),
-			"x", dst.x,
-			"y", dst.y,
-			NULL);
-
+		gnome_canvas_item_affine_relative (canvas_item, affine);
 	}
 
 	/*

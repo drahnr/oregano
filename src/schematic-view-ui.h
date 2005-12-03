@@ -105,10 +105,6 @@ static GnomeUIInfo schematic_menu_edit [] = {
 	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE,
 	  'r', GDK_CONTROL_MASK, NULL },
 
-	/*					*
- 	*	The flip code is buggy 		*
- 	*					*
-	
 	{ GNOME_APP_UI_ITEM,
 	  N_("_Flip horizontally"),
 	  N_("Flip the selection horizontally"),
@@ -121,7 +117,7 @@ static GnomeUIInfo schematic_menu_edit [] = {
 	  N_("Flip the selection vertically"),
 	  flip_vertical_cmd, NULL, NULL,
 	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE,
-	  'f', GDK_CONTROL_MASK|GDK_SHIFT_MASK, NULL }, */
+	  'f', GDK_CONTROL_MASK|GDK_SHIFT_MASK, NULL },
 	GNOMEUIINFO_SEPARATOR,
 
 	{ GNOME_APP_UI_ITEM,
