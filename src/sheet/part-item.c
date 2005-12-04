@@ -129,11 +129,9 @@ struct _PartItemPriv {
 
 typedef struct {
 	GtkDialog *dialog;
-	GtkTreeView *list;
-	GtkWidget *name_entry;
-	GtkWidget *value_entry;
-	gint	   selected_row;
 	PartItem  *part_item;
+	/* List of GtkEntry's */
+	GList *widgets;
 } PartPropDialog;
 
 static PartPropDialog *prop_dialog = NULL;
@@ -509,117 +507,42 @@ prop_dialog_destroy (GtkWidget *widget, PartPropDialog *prop_dialog)
 }
 
 static void
-prop_dialog_response(GtkWidget *widget, gint response,
+prop_dialog_response(GtkWidget *dialog, gint response,
 	PartPropDialog *prop_dialog)
 {
-	GSList		 *properties;
+	GSList		 *props;
+	GList		   *widget;
 	Property	 *prop;
 	PartItem	 *item;
 	PartItemPriv *priv;
 	Part		 *part;
-	gint		  row;
-	gchar		 *value;
-	const gchar	 *tmp;
-	GtkTreeModel *model;
-	GtkTreeIter iter;
-	GtkTreeSelection *selection;
+	gchar *prop_name;
+	const gchar *prop_value;
+	GtkWidget *w;
 
 	item = prop_dialog->part_item;
 
 	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
-	selection = gtk_tree_view_get_selection(prop_dialog->list);
-	model = gtk_tree_view_get_model(prop_dialog->list);
+	for (widget = prop_dialog->widgets; widget;
+	     widget = widget->next) {
+		w = widget->data;
 
-	if (gtk_tree_selection_get_selected(selection, NULL, &iter)) {
-		tmp = gtk_entry_get_text(GTK_ENTRY(prop_dialog->value_entry));
-		value = g_strdup(tmp);
-		gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, value, -1);
-		g_free(value);
-	}
+		prop_name = gtk_object_get_user_data (GTK_OBJECT (w));
+		prop_value = gtk_entry_get_text (GTK_ENTRY (w));
 
-	row = 0;
-	for (properties = part_get_properties (part); properties;
-	     properties = properties->next) {
-		prop = properties->data;
-
-		if (!g_strcasecmp (prop->name, "internal")) {
-			continue;
+		for (props = part_get_properties (part); props; props = props->next) {
+			prop = props->data;
+			if (g_strcasecmp (prop->name, prop_name) == 0) {
+				if (prop->value) g_free (prop->value);
+				prop_value = g_strdup (prop_value);
+			}
 		}
-
-		if (gtk_tree_model_iter_nth_child(model, &iter, NULL, row)) {
-			gtk_tree_model_get(model, &iter, 1, &value, -1);
-			if (prop->value) g_free(prop->value);
-			prop->value = g_strdup(value);
-		}
-
-		row++;
+		g_free (prop_name);
 	}
 
 	update_canvas_labels (item);
-}
-
-static gboolean
-edit_properties_select_row (GtkWidget *list, GdkEventButton *event,
-	GladeXML *gui)
-{
-	char *value;
-	char *name;
-	GtkTreeModel *model;
-	GtkTreeIter iter;
-	GtkTreeSelection *selection;
-
-	if (event->button != 1) return TRUE;
-
-	/* Get the current selected row */
-	selection = gtk_tree_view_get_selection(prop_dialog->list);
-	model = gtk_tree_view_get_model(prop_dialog->list);
-
-	if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) {
-		return FALSE;
-	}
-
-	gtk_tree_model_get(model, &iter, 0, &name, 1, &value, -1);
-
-	if (name)
-		gtk_entry_set_text(GTK_ENTRY(prop_dialog->name_entry), name);
-	else
-		gtk_entry_set_text(GTK_ENTRY(prop_dialog->name_entry), "");
-	if (value)
-		gtk_entry_set_text(GTK_ENTRY(prop_dialog->value_entry), value);
-	else
-		gtk_entry_set_text(GTK_ENTRY(prop_dialog->value_entry), "");
-
-	return FALSE;
-}
-
-static gboolean
-edit_properties_unselect_row (GtkWidget *list, GdkEventButton *event,
-	GladeXML *gui)
-{
-	char *value;
-	GtkTreeModel *model;
-	GtkTreeIter iter;
-	GtkTreeSelection *selection;
-
-	if (event->button != 1) return TRUE;
-
-	/* Get the current selected row */
-	selection = gtk_tree_view_get_selection(prop_dialog->list);
-	model = gtk_tree_view_get_model(prop_dialog->list);
-
-	if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) {
-		/* If none, do nothing */
-		return FALSE;
-	}
-
-	value = gtk_editable_get_chars (GTK_EDITABLE(prop_dialog->value_entry),
-		0, -1);
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, value, -1);
-	g_free (value);
-
-	return FALSE;
 }
 
 static void
@@ -763,14 +686,8 @@ edit_properties (SheetItem *object)
 	Part *part;
 	char *internal, *msg, *value, *name;
 	GladeXML *gui;
-	GtkTreeIter iter;
-	GtkCellRenderer *cell_name, *cell_value;
-	GtkTreeViewColumn *cell_column_name, *cell_column_value;
-	GtkListStore *prop_list;
-	GtkTreeModel *model;
-	GtkTreePath *path;
-	GtkTreeSelection *selection;
-	gint response;
+	GtkTable *prop_table;
+	gint response, y = 0;
 	gboolean got_iter;
 
 	g_return_if_fail (object != NULL);
@@ -817,81 +734,55 @@ edit_properties (SheetItem *object)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (
-		glade_xml_get_widget (gui, "part-properties-dialog"));
-	gtk_dialog_set_has_separator (prop_dialog->dialog, FALSE);
+	prop_dialog->dialog = GTK_DIALOG ( glade_xml_get_widget (gui, "part-properties-dialog"));
 
-	prop_dialog->list = GTK_TREE_VIEW (glade_xml_get_widget (gui, "properties-list"));
-	/* Create the model */
-	prop_list = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-	/* Create the Cells and Columns */
-	cell_name = gtk_cell_renderer_text_new();
-	cell_value = gtk_cell_renderer_text_new();
-	cell_column_name = gtk_tree_view_column_new_with_attributes("Name",
-		cell_name, "text", 0, NULL);
-	cell_column_value = gtk_tree_view_column_new_with_attributes("Value",
-		cell_value, "text", 1, NULL);
-	/* Add to the tree */
-	gtk_tree_view_set_model(prop_dialog->list, GTK_TREE_MODEL(prop_list));
-	gtk_tree_view_append_column(prop_dialog->list, cell_column_name);
-	gtk_tree_view_append_column(prop_dialog->list, cell_column_value);
-
-	prop_dialog->value_entry = glade_xml_get_widget (gui, "value-entry");
-	prop_dialog->name_entry = glade_xml_get_widget (gui, "name-entry");
-
-/*	g_signal_connect (prop_dialog->dialog, "response",
-		(GCallback) prop_dialog_response,
-		prop_dialog
-	);*/
+	prop_table = GTK_TABLE ( glade_xml_get_widget (gui, "prop_table"));
 
 	g_signal_connect (prop_dialog->dialog, "destroy",
 		(GCallback) prop_dialog_destroy,
 		prop_dialog
 	);
 
+	prop_dialog->widgets = NULL;
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
 		prop = properties->data;
 		if (prop->name) {
+			GtkWidget *entry;
+			GtkWidget *label;
 			if (!g_strcasecmp (prop->name, "internal"))
 				continue;
 
-			gtk_list_store_append(prop_list, &iter);
-			gtk_list_store_set(prop_list, &iter, 0, prop->name, 1,
-				prop->value, -1);
+			label = gtk_label_new (prop->name);
+			entry = gtk_entry_new ();
+			gtk_entry_set_text (GTK_ENTRY (entry), prop->value);
+			gtk_object_set_user_data (GTK_OBJECT (entry), g_strdup (prop->name));
+
+			gtk_table_attach (
+				prop_table, label,
+				0, 1, y, y+1,
+				GTK_FILL|GTK_SHRINK,
+				GTK_FILL|GTK_SHRINK,
+				8, 8
+			);
+			gtk_table_attach (
+				prop_table, entry,
+				1, 2, y, y+1,
+				GTK_EXPAND|GTK_FILL,
+				GTK_FILL|GTK_SHRINK,
+				8, 8
+			);
+			y++;
+			gtk_widget_show (label);
+			gtk_widget_show (entry);
+
+			prop_dialog->widgets = g_list_prepend (prop_dialog->widgets, entry);
 		}
 	}
 
 	gtk_dialog_set_default_response (prop_dialog->dialog, 1);
 
-	gtk_widget_set_sensitive (prop_dialog->name_entry, FALSE);
-
-	g_signal_connect (G_OBJECT (prop_dialog->list), "button_press_event",
-		GTK_SIGNAL_FUNC (edit_properties_unselect_row), gui);
-
-	g_signal_connect (G_OBJECT (prop_dialog->list), "button_release_event",
-		GTK_SIGNAL_FUNC (edit_properties_select_row), gui);
-
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW (prop_dialog->list));
-	path = gtk_tree_path_new_first ();
-	gtk_tree_view_set_cursor (GTK_TREE_VIEW (prop_dialog->list),path, NULL, FALSE);
-	got_iter = gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
-	gtk_tree_path_free (path);
-	
-
-	if (got_iter) {
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter, 0, &name, 1, &value, -1);
-
-		if (name)
-			gtk_entry_set_text (GTK_ENTRY (prop_dialog->name_entry), name);
-		else
-			gtk_entry_set_text (GTK_ENTRY (prop_dialog->name_entry), "");
-		if (value)
-			gtk_entry_set_text (GTK_ENTRY (prop_dialog->value_entry), value);
-		else
-			gtk_entry_set_text (GTK_ENTRY (prop_dialog->value_entry), "");
-	}
 	response = gtk_dialog_run(prop_dialog->dialog);
 	if (response == GTK_RESPONSE_OK) {
 		prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
