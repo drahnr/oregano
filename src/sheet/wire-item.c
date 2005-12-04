@@ -537,6 +537,15 @@ wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 		"y", start_pos.y,
 		NULL);
 
+	gnome_canvas_item_set (
+		GNOME_CANVAS_ITEM (wire_item-> priv->resize2),
+		"x1", length.x-RESIZER_SIZE,
+		"y1", length.y-RESIZER_SIZE,
+		"x2", length.x+RESIZER_SIZE,
+		"y2", length.y+RESIZER_SIZE,
+		NULL
+	);
+
 	/*
 	 * Invalidate the bounding box cache.
 	 */

@@ -286,14 +286,12 @@ wire_set_length (Wire *wire, SheetPos *length)
 
 	priv->length = *length;
 
-	if (wire->priv->direction == WIRE_DIR_NONE) {
-		if (length->x == 0) {
-			wire->priv->direction = WIRE_DIR_VERT;
-		} else if (length->y == 0) {
-			wire->priv->direction = WIRE_DIR_HORIZ;
-		} else {
-			wire->priv->direction = WIRE_DIR_DIAG;
-		}
+	if (length->x == 0) {
+		wire->priv->direction = WIRE_DIR_VERT;
+	} else if (length->y == 0) {
+		wire->priv->direction = WIRE_DIR_HORIZ;
+	} else {
+		wire->priv->direction = WIRE_DIR_DIAG;
 	}
 
 	g_signal_emit_by_name (G_OBJECT (wire), "changed");
@@ -392,6 +390,12 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 	}
 
 	priv = wire->priv;
+
+	if (priv->direction == WIRE_DIR_VERT) {
+		priv->direction == WIRE_DIR_HORIZ;
+	} else if (priv->direction == WIRE_DIR_HORIZ) {
+		priv->direction == WIRE_DIR_VERT;
+	}
 
 	art_affine_rotate (affine, angle);
 
