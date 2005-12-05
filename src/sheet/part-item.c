@@ -888,15 +888,13 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 {
 	GList *list;
 	GSList *label_items;
-	/*
-	 * Unused variable
 	GtkAnchorType anchor;
-	*/
 	GnomeCanvasGroup *group;
 	GnomeCanvasItem *canvas_item;
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
+	IDFlip flip;
 	double affine[6], x1, y1, x2, y2, left, top, right, bottom;
 	ArtPoint src, dst;
 	gdouble text_heigth, text_width;
@@ -907,6 +905,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	item = PART_ITEM (sheet_item);
 	group = GNOME_CANVAS_GROUP (item);
 	part = PART (data);
+	flip = part_get_flip (part);
 
 	priv = item->priv;
 
@@ -921,6 +920,28 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 		gnome_canvas_item_affine_relative (canvas_item, affine);
 	}
 
+	if (horizontal) {
+		if (flip & ID_FLIP_HORIZ)
+			anchor = GTK_ANCHOR_SOUTH_EAST;
+		else
+			anchor = GTK_ANCHOR_SOUTH_WEST;
+	} else {
+		if (flip & ID_FLIP_VERT)
+			anchor = GTK_ANCHOR_NORTH_WEST;
+		else
+			anchor = GTK_ANCHOR_NORTH_EAST;
+	}
+	if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT)) {
+		anchor = GTK_ANCHOR_NORTH_EAST;
+	}
+
+	for (list= item->priv->label_items; list;
+	     list = list->next) {
+		gnome_canvas_item_set (
+			GNOME_CANVAS_ITEM (label_items->data),
+			"anchor", anchor,
+			NULL);
+	}
 	/*
 	 * Invalidate the bounding box cache.
 	 */
