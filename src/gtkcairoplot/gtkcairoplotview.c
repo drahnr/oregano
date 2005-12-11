@@ -249,7 +249,7 @@ gtk_cairo_plot_view_generic_draw (GtkCairoPlotView *view, GtkCairoPlotModel *mod
 	g_return_if_fail (IS_GTK_CAIRO_PLOT_MODEL (model));
 
 	cairo_save (cr);
-		cairo_set_source_rgb (cr, 1, 1, 1);
+		cairo_set_source_rgb (cr, 0, 0, 0);
 		cairo_rectangle (cr, 0, 0, view->priv->width, view->priv->height);
 		cairo_fill (cr);
 		cairo_stroke (cr);

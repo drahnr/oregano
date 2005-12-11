@@ -70,7 +70,7 @@ const gchar *UPSCRIPT_FONT = N_("Sans 8");
 
 static int n_curve_colors = 6;
 static char *plot_curve_colors[] = {
-	"black",
+	"white",
 	"blue",
 	"green",
 	"red",
@@ -80,7 +80,7 @@ static char *plot_curve_colors[] = {
 };
 
 static RGB plot_curve_colors_rgb[] = {
-	{0, 0, 0},
+	{1, 1, 1},
 	{0, 0, 1},
 	{0, 1, 0},
 	{1, 0, 0},
@@ -593,7 +593,7 @@ plot_window_create (Plot *plot)
 	plot->plot = gtk_cairo_plot_new ();
 	gtk_cairo_plot_set_model (GTK_CAIRO_PLOT (plot->plot), plot->plot_model);
 	gtk_cairo_plot_set_view (GTK_CAIRO_PLOT (plot->plot), plot->plot_view);
-	gtk_widget_set_size_request (plot->plot, 300, 300);
+	gtk_widget_set_size_request (plot->plot, 600, 400);
 	gtk_container_add (GTK_CONTAINER (plot_scrolled), plot->plot);
 
 	g_signal_connect(G_OBJECT (plot->plot),

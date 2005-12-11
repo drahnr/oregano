@@ -258,7 +258,7 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	cairo_move_to (cr, X(yaxis_x), Y(ymin));
 	cairo_line_to (cr, X(yaxis_x), Y(ymax));
 	cairo_stroke (cr);
-	cairo_set_source_rgb (cr, 0, 0, 0);
+	cairo_set_source_rgb (cr, 1, 1, 1);
 		
 	cairo_select_font_face (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 	cairo_set_font_size (cr, 10);
@@ -362,8 +362,9 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	/* Prevent infinite loop */
 	if (paso < 1e-8) paso = 1e-8;
 
-	cairo_set_source_rgb (cr, 0, 0, 0);
-	for (x=xmin; x <= xmax; x+=paso) {
+	cairo_set_source_rgb (cr, 1, 1, 1);
+	/* Draw postives values */
+	for(x=paso; x <= ceil(xmax); x+=paso) {
 		gdouble xreal;
 
 		xreal = (logx)?pow(10,x):(x);
@@ -387,6 +388,32 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 			cairo_stroke (cr);
 		cairo_restore (cr);
 	}
+	/* Draw negatives values */
+	for(x=0; x >= floor(xmin); x -= paso) {
+		gdouble xreal;
+
+		xreal = (logx)?pow(10,x):(x);
+		if (sx) xreal /= sx;
+
+		if (xreal < 9e3)
+			txt = g_strdup_printf ("%.3f", xreal);
+		else
+			txt = g_strdup_printf ("%.1e", xreal);
+		cairo_save (cr);
+			cairo_move_to (cr, X(x), Y(xaxis_y)+7);
+			cairo_rotate (cr, 45*DEGREE_TO_RADIANS);
+			cairo_show_text (cr, txt);
+		cairo_restore (cr);
+		g_free (txt);
+
+		cairo_save (cr);
+			cairo_set_line_width (cr, 0.5);
+			cairo_move_to (cr, X(x), Y(xaxis_y)-5);
+			cairo_line_to (cr, X(x), Y(xaxis_y)+5);
+			cairo_stroke (cr);
+		cairo_restore (cr);
+	}
+
 	g_object_get (G_OBJECT (model), "x-unit", &txt, NULL);
 	if (txt) {
 		char *x_title;
@@ -407,7 +434,7 @@ gtk_cairo_plot_item_draw_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 	}
 
 	cairo_save (cr); /* Draw Lines */
-	cairo_set_source_rgba (cr, 0, 0, 0, 1);
+	cairo_set_source_rgba (cr, 1, 1, 1, 1);
 
 	current_color = 0;
 	for (node = funcs; node; node = node->next) {
@@ -508,7 +535,7 @@ gtk_cairo_plot_item_title_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel 
 	g_object_get (G_OBJECT (model), "title", &title, NULL);
 	if (title) {
 		cairo_save (cr);
-			cairo_set_source_rgb (cr, 0, 0, 0);
+			cairo_set_source_rgb (cr, 1, 1, 1);
 			cairo_select_font_face (cr, "sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 			cairo_set_font_size (cr, 18);
 	
@@ -584,19 +611,18 @@ gtk_cairo_plot_item_rect_update (GtkCairoPlotViewItem *item, GtkCairoPlotModel *
 {
 	cairo_surface_t *surface;
 	guint w, h;
-	
+
 	g_object_get (G_OBJECT (item), "width", &w, "height", &h, "surface", &surface, NULL);
 
 	/* Redimensionar (es decir, eliminar y volver a crear) la surface para
 	 * este item no es util. Hay que reveer como hacerlo de mejor manera
 	 */
-	cairo_set_source_rgb (cr, 0, 0, 0);
-	cairo_rectangle (cr, 0, 0, w, h);
 	cairo_save (cr);
-		cairo_set_source_rgba (cr, 0.2, 0.7, 0.2, 0.2);
-		cairo_fill (cr);
+		cairo_set_source_rgb (cr, 1, 1, 1);
+		cairo_rectangle (cr, 0, 0, w, h);
+		cairo_set_source_rgba (cr, 1, 1, 1, 0.8);
+		cairo_stroke (cr);
 	cairo_restore (cr);
-	cairo_stroke (cr);
 }
 
 void  gtk_cairo_plot_item_set_pallette (guint index, RGB color)
