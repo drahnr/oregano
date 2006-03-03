@@ -153,6 +153,55 @@ static GnomeUIInfo part_popup_menu [] = {
 	GNOMEUIINFO_END
 };
 
+enum {
+	ANCHOR_NORTH,
+	ANCHOR_SOUTH,
+	ANCHOR_WEST,
+	ANCHOR_EAST
+};
+
+GtkAnchorType part_item_get_anchor_from_part (Part *part)
+{
+	int anchor_h, anchor_v;
+	int angle;
+	IDFlip flip;
+
+	flip = part_get_flip (part);
+	angle = part_get_rotation (part);
+
+	switch (angle) {
+		case 0:
+			anchor_h = ANCHOR_SOUTH;
+			anchor_v = ANCHOR_WEST;
+			break;
+		case 90:
+			anchor_h = ANCHOR_NORTH;
+			anchor_v = ANCHOR_WEST;
+			/* Invert Rotation */
+			if (flip & ID_FLIP_HORIZ)
+				flip = ID_FLIP_VERT;
+			else if (flip & ID_FLIP_VERT)
+				flip = ID_FLIP_HORIZ;
+			break;
+	}
+
+	if (flip & ID_FLIP_HORIZ) {
+		anchor_v = ANCHOR_EAST;
+	}
+	if (flip & ID_FLIP_VERT) {
+		anchor_h = ANCHOR_NORTH;
+	}
+
+	if ((anchor_v == ANCHOR_EAST) && (anchor_h == ANCHOR_NORTH))
+		return GTK_ANCHOR_NORTH_EAST;
+	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_NORTH))
+		return GTK_ANCHOR_NORTH_WEST;
+	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_SOUTH))
+		return GTK_ANCHOR_SOUTH_WEST;
+	if ((anchor_v == ANCHOR_EAST) && (anchor_h == ANCHOR_SOUTH))
+		return GTK_ANCHOR_SOUTH_EAST;
+}
+
 GType
 part_item_get_type ()
 {
@@ -920,7 +969,9 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 		gnome_canvas_item_affine_relative (canvas_item, affine);
 	}
 
-	if (horizontal) {
+	anchor = part_item_get_anchor_from_part (part);
+
+	/*if (horizontal) {
 		if (flip & ID_FLIP_HORIZ)
 			anchor = GTK_ANCHOR_SOUTH_EAST;
 		else
@@ -933,7 +984,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	}
 	if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT)) {
 		anchor = GTK_ANCHOR_NORTH_EAST;
-	}
+	}*/
 
 	for (list= item->priv->label_items; list;
 	     list = list->next) {
