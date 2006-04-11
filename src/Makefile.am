@@ -5,7 +5,7 @@ SUBDIRS = 		\
 	pixmaps \
 	model \
 	sheet \
-	gtkcairoplot
+	gplot
 
 oreganodir = $(datadir)/oregano
 
@@ -13,7 +13,7 @@ INCLUDES = 						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 	\
 	-I$(includedir) $(GNOME_INCLUDEDIR)		\
 	-I./model \
-	-I./gtkcairoplot \
+	-I./gplot \
 	-I./sheet \
   -DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"	\
   -DOREGANO_LIBRARYDIR=\""$(oreganodir)/libraries"\" \
@@ -100,7 +100,7 @@ oregano_SOURCES = 	\
 oregano_LDADD = \
 	model/liboregano-model.la \
 	sheet/liboregano-sheet.la \
-	gtkcairoplot/libgtkcairoplot.la \
+	gplot/liboregano-gplot.la \
 	$(OREGANO_LIBS) 
 
 pspice2oregano_SOURCES = \

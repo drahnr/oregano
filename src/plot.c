@@ -42,10 +42,9 @@
 #include "plot.h"
 #include "smallicon.h"
 
-#include "gtkcairoplot.h"
-#include "gtkcairoplotview.h"
-#include "gtkcairoplotitems.h"
-#include "gtkcairoplotmodel.h"
+#include "gplot.h"
+#include "gplotfunction.h"
+#include "gplotlines.h"
 #include "plot-add-function.h"
 
 #define PLOT_PADDING_X 50
@@ -79,14 +78,14 @@ static char *plot_curve_colors[] = {
 	0
 };
 
-static RGB plot_curve_colors_rgb[] = {
+/*static RGB plot_curve_colors_rgb[] = {
 	{1, 1, 1},
 	{0, 0, 1},
 	{0, 1, 0},
 	{1, 0, 0},
 	{1, 1, 0},
 	{0, 1, 1}
-};
+};*/
 
 static gdouble x_min, x_max;
 
@@ -102,9 +101,6 @@ typedef struct {
 	GtkWidget *combobox;
 
 	GtkWidget *plot;
-	GtkCairoPlotView *plot_view;
-	GtkCairoPlotViewItem *plot_draw;
-	GtkCairoPlotModel *plot_model;
 
 	gboolean show_cursor;
 
@@ -139,6 +135,9 @@ typedef enum {
 static GtkWidget *plot_window_create (Plot *plot);
 static void make_plot (Plot *plot, gint plot_number);
 static void destroy_window (GtkWidget *widget, Plot *plot);
+static void zoom_100 (GtkWidget *widget, Plot *plot);
+static void zoom_region (GtkWidget *widget, Plot *plot);
+static void zoom_pan (GtkWidget *widget, Plot *plot);
 static void destroy_plot (Plot *plot);
 static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot);
 static void getbins (gdouble, gdouble, gint, gdouble *, gdouble *, gint *,
@@ -146,12 +145,6 @@ static void getbins (gdouble, gdouble, gint, gdouble *, gdouble *, gint *,
 static void plot_canvas_movement(GtkWidget *, GdkEventMotion *, Plot *);
 static void plot_draw_axis (Plot *, AxisType, double, double);
 
-static void plot_zoom_50_cmd (GtkWidget *widget, Plot *plot);
-static void plot_zoom_75_cmd (GtkWidget *widget, Plot *plot);
-static void plot_zoom_100_cmd (GtkWidget *widget, Plot *plot);
-static void plot_zoom_125_cmd (GtkWidget *widget, Plot *plot);
-static void plot_zoom_150_cmd (GtkWidget *widget, Plot *plot);
-static void plot_zoom_200_cmd (GtkWidget *widget, Plot *plot);
 static void plot_toggle_cross (GtkWidget *widget, Plot *plot);
 static void plot_export (GtkWidget *widget, Plot *plot);
 static void add_function (GtkWidget *widget, Plot *plot);
@@ -179,7 +172,7 @@ static GnomeUIInfo plot_zoom_menu [] = {
 //	GNOMEUIINFO_ITEM_NONE(N_("75%"),
 //		N_("Set the zoom factor to 75%"), plot_zoom_75_cmd),
 	{ GNOME_APP_UI_ITEM, N_("100%"),
-	  N_("Set the zoom factor to 100%"), plot_zoom_100_cmd, NULL, NULL, 0,
+	  N_("Set the zoom factor to 100%"), NULL, NULL, NULL, 0,
 	  0, '2', 0 },
 //	GNOMEUIINFO_ITEM_NONE(N_("125%"),
 //		N_("Set the zoom factor to 125%"), plot_zoom_125_cmd),
@@ -263,18 +256,9 @@ destroy_window(GtkWidget *widget, Plot *plot)
 }
 
 static void
-show_plot (Plot *plot)
-{
-	if (plot) {
-		destroy_plot (plot);
-	}
-
-	make_plot (plot, plot->selected);
-}
-
-static void
 on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 {
+	GPlotFunction *f;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	GtkTreeView *treeview;
@@ -286,11 +270,40 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 	if (!gtk_tree_model_get_iter_from_string (model , &iter, path))
 		return;
 
-	gtk_tree_model_get (model, &iter, 0, &activo, -1);
+	gtk_tree_model_get (model, &iter, 0, &activo, 4, &f, -1);
 	activo = !activo;
 	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, activo, -1);
 
-	show_plot (plot);
+	g_object_set (G_OBJECT (f), "visible", activo, NULL);
+
+	gtk_widget_queue_draw (plot->plot);
+}
+
+static GPlotFunction*
+create_plot_function_from_simulation_data (guint i, SimulationData *current)
+{
+	GPlotFunction *f;
+	double *X;
+	double *Y;
+	double data;
+	guint len, j;
+
+	len = current->data[i]->len;
+	X = g_new0 (double, len);
+	Y = g_new0 (double, len);
+	
+	for (j = 0; j < len; j++) {
+		Y[j] = g_array_index (current->data[i], double, j);
+	
+		data = g_array_index (current->data[0], double, j);
+		
+		/*if (plot->logx)
+			data = log10 (data);
+		*/
+		X[j] = data;
+	}
+
+	return g_plot_lines_new (X, Y, len);
 }
 
 
@@ -310,7 +323,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	entry = GTK_COMBO (plot->combobox)->entry;
 
 	ca = gtk_entry_get_text( GTK_ENTRY (entry));
-	g_object_set (G_OBJECT (plot->plot_model), "title", ca, NULL);
+
 	plot->current = NULL;
 	for (analysis = plot->sim->analysis; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
@@ -334,12 +347,6 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	g_free (plot->title);
 	plot->title = g_strdup_printf(_("Plot - %s"),
 		sim_engine_analysis_name (plot->current));
-	g_object_set (G_OBJECT (plot->plot_model),
-		"title", plot->title,
-		"x-unit", plot->xtitle,
-		"y-unit", plot->ytitle,
-		NULL);
-
 
 	/*  Set the variable names in the list  */
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
@@ -352,10 +359,18 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	gtk_tree_store_append(GTK_TREE_STORE(model), &parent_functions, NULL);
 	gtk_tree_store_set(GTK_TREE_STORE(model), &parent_functions, 0, NULL, 1, _("Functions"), 2, FALSE, 3, "white", -1);
 
+	g_plot_clear (GPLOT (plot->plot));
+
 	for (i = 1; i < plot->current->n_variables; i++) {
 		GtkTreeIter iter;
+		GPlotFunction *f;
+
 		if (plot->current->type != DC_TRANSFER) {
 			if (strchr(plot->current->var_names[i], '#') == NULL) {
+				f = create_plot_function_from_simulation_data (i, plot->current);
+				g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
+				g_plot_add_function (GPLOT (plot->plot), f);
+
 				gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
 				gtk_tree_store_set (GTK_TREE_STORE (model),
 					&iter,
@@ -363,6 +378,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 					1, plot->current->var_names[i],
 				 	2, TRUE,
 					3, "white",
+					4, f,
 					-1);
 			}
 		} else {
@@ -372,24 +388,10 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 				1, plot->current->var_names[i],
 			 	2, TRUE,
 				3, "white",
+				4, f,
 			 	-1);
 		}
 	}
-}
-
-static void
-destroy_plot (Plot *plot)
-{
-	// FIXME
-	/* Aca va object_destroy porque el Canvas usa destroy!! */
-	//if (plot->axis_group) gtk_object_destroy (GTK_OBJECT (plot->axis_group));
-	//if (plot->plot_group) gtk_object_destroy (GTK_OBJECT (plot->plot_group));
-
-	//plot->axis_group = NULL;
-	//plot->plot_group = NULL;
-	/* Was destroyed with group */
-	//plot->x_cursor = NULL;
-	//plot->y_cursor = NULL;
 }
 
 static void
@@ -397,11 +399,12 @@ plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 {
 	gchar *coord;
 	gdouble x,y, x1, y1;
-	
+
+	return;
+
 	x = event->x;
 	y = event->y;
 
-	gtk_cairo_plot_view_get_point (plot->plot_view, plot->plot_model, x, y, &x1, &y1);
 	coord = g_strdup_printf ("(%g, %g)", x1, y1);
 
 	gtk_entry_set_text (GTK_ENTRY (plot->coord), coord);
@@ -439,47 +442,31 @@ make_plot (Plot *plot, gint plot_number)
 	/*
 	 * 2. Plot the curve, using the calculated scale factors.
 	 */
-	n_curve = 0;
-	gtk_cairo_plot_model_clear (plot->plot_model);
-	i = 0;
+	i = n_curve = 0;
+
 	path = gtk_tree_path_new_from_string ("0:0");
 	valid = gtk_tree_model_get_iter (model, &iter, path);
 	gtk_tree_path_free (path);
 	while (valid) {
+		GPlotFunction *f;
 		gdouble text_height;
 		gboolean active;
-		gtk_tree_model_get (model, &iter, 0, &active, -1);
-		if (active) {
-			plot_number = i+1;
-			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, plot_curve_colors[n_curve], -1);
 
-			for (j = 0; j < plot->current->data[plot_number]->len; j++) {
-				/* Loop while the step is positive in the X axis. */
-				Point p;
-				data = g_array_index (
-					plot->current->data[plot_number],
-					double, j);
-				p.y = data;
-	
-				data = g_array_index (plot->current->data[0], double, j);
-				/* TODO : que lo haga el plot view! */
-				if (plot->logx)
-					data = log10 (data);
-				p.x = data;
-				gtk_cairo_plot_model_add_point (plot->plot_model, plot->current->var_names[plot_number], p);
-			}
-	
-			g_object_set (G_OBJECT (plot->plot_model), "logx", plot->logx, NULL);
-			n_curve++;
-		} else {
-			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, NULL, -1);
-		}
+		plot_number = i+1;
+		gtk_tree_model_get (model, &iter, 0, &active, -1);
+
+		f = create_plot_function_from_simulation_data (i, plot->current);
+
+		gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, plot_curve_colors[n_curve], 4, f, -1);
+
+		g_plot_add_function (GPLOT (plot->plot), f);
+
 		valid = gtk_tree_model_iter_next (model, &iter);
 		i++;
 	}
 
 	/* Plot Functions */
-	l_iter = plot->current->functions;
+	/*l_iter = plot->current->functions;
 	path = gtk_tree_path_new_from_string ("1:0");
 	valid = gtk_tree_model_get_iter (model, &iter, path);
 	gtk_tree_path_free (path);
@@ -495,7 +482,6 @@ make_plot (Plot *plot, gint plot_number)
 			name = g_strdup_printf ("%s-%s", plot->current->var_names[func->first], plot->current->var_names[func->second]);
 
 			for (j = 0; j < plot->current->data[func->first]->len; j++) {
-				/* Loop while the step is positive in the X axis. */
 				Point p;
 				data = g_array_index (
 					plot->current->data[func->first],
@@ -508,7 +494,6 @@ make_plot (Plot *plot, gint plot_number)
 				p.y = sim_engine_do_function (func->type, p.y, data);
 		
 				data = g_array_index (plot->current->data[0], double, j);
-				/* TODO : que lo haga el plot view! */
 				if (plot->logx)
 					data = log10 (data);
 				p.x = data;
@@ -521,13 +506,9 @@ make_plot (Plot *plot, gint plot_number)
 		}
 		valid = gtk_tree_model_iter_next (model, &iter);
 		l_iter = l_iter->next;
-	}
+	} */
 
-	gtk_cairo_plot_model_get_x_minmax (plot->plot_model, &xmin, &xmax);
-	gtk_cairo_plot_model_get_y_minmax (plot->plot_model, &ymin, &ymax);
-	gtk_cairo_plot_item_draw_set_scroll_region (
-		GTK_CAIRO_PLOT_ITEM_DRAW (plot->plot_draw),
-		xmin, xmax, ymin, ymax);
+	gtk_widget_queue_draw (plot->plot);
 }
 
 static GtkWidget *
@@ -545,7 +526,6 @@ plot_window_create (Plot *plot)
 	GdkColormap *colormap;
 	GladeXML *gui;
 	gchar *msg;
-	GtkCairoPlotViewItem *plot_title;
 
 	window = gnome_app_new("plot", _("Oregano - Plot"));
 
@@ -574,25 +554,8 @@ plot_window_create (Plot *plot)
 	plot_scrolled = plot->canvas = glade_xml_get_widget (gui, "plot_scrolled");
 	plot->coord  = glade_xml_get_widget(gui, "pos_label");
 
-	/* Create the Plot view */
-	plot->plot_model = gtk_cairo_plot_model_new ();
-	g_object_set (G_OBJECT (plot->plot_model), "title", _("Plot"), NULL);
+	plot->plot = g_plot_new ();
 
-	plot->plot_view = gtk_cairo_plot_view_new ();
-	plot->plot_draw = gtk_cairo_plot_view_item_new (GTK_CAIRO_PLOT_ITEM_DRAW_TYPE, 0, 0, 100, 100);
-	plot_title = gtk_cairo_plot_view_item_new (GTK_CAIRO_PLOT_ITEM_TITLE_TYPE, 5, 5, 300, 25);
-	
-	gtk_cairo_plot_view_add_item (plot->plot_view, plot->plot_draw, ITEM_POS_FRONT);
-	
-	/* TODO : Is useful a title in plot area?, is not already in combobox??
-	 * gtk_cairo_plot_view_add_item (plot->plot_view, plot_title, ITEM_POS_FRONT);
-	 */
-
-	gtk_cairo_plot_view_attach (plot->plot_view, plot->plot_draw);
-
-	plot->plot = gtk_cairo_plot_new ();
-	gtk_cairo_plot_set_model (GTK_CAIRO_PLOT (plot->plot), plot->plot_model);
-	gtk_cairo_plot_set_view (GTK_CAIRO_PLOT (plot->plot), plot->plot_view);
 	gtk_widget_set_size_request (plot->plot, 600, 400);
 	gtk_container_add (GTK_CONTAINER (plot_scrolled), plot->plot);
 
@@ -600,6 +563,7 @@ plot_window_create (Plot *plot)
 		"motion_notify_event",
 		G_CALLBACK(plot_canvas_movement), plot
 	);
+
 	g_object_ref(outer_table);
 	gtk_widget_unparent(outer_table);
 	gnome_app_set_contents(GNOME_APP(window), outer_table);
@@ -613,10 +577,26 @@ plot_window_create (Plot *plot)
 	g_signal_connect(G_OBJECT(button), "clicked",
 		G_CALLBACK(destroy_window), plot);
 
-	list = GTK_TREE_VIEW(glade_xml_get_widget (gui, "variable_list"));
-	tree_model = gtk_tree_store_new (4, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING);
+	button = glade_xml_get_widget (gui, "close");
+	g_signal_connect(G_OBJECT(button), "clicked",
+		G_CALLBACK(destroy_window), plot);
 
-	/* One Column with 2 CellRenderer. First the Toggle and next a Text */	
+	button = glade_xml_get_widget (gui, "zoom_panning");
+	g_signal_connect(G_OBJECT(button), "clicked",
+		G_CALLBACK(zoom_pan), plot);
+
+	button = glade_xml_get_widget (gui, "zoom_region");
+	g_signal_connect(G_OBJECT(button), "clicked",
+		G_CALLBACK(zoom_region), plot);
+
+	button = glade_xml_get_widget (gui, "zoom_normal");
+	g_signal_connect(G_OBJECT(button), "clicked",
+		G_CALLBACK(zoom_100), plot);
+
+	list = GTK_TREE_VIEW(glade_xml_get_widget (gui, "variable_list"));
+	tree_model = gtk_tree_store_new (5, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_POINTER);
+
+	/* One Column with 2 CellRenderer. First the Toggle and next a Text */
 	column = gtk_tree_view_column_new ();
 
 	cell = gtk_cell_renderer_toggle_new ();
@@ -646,10 +626,6 @@ plot_window_create (Plot *plot)
 	plot->window = window;
 	gtk_widget_show_all(window);
 
-	/* Init color pallette */
-	for (i=0; i<n_curve_colors; i++)
-		gtk_cairo_plot_item_set_pallette (i, plot_curve_colors_rgb[i]);
-
 	return window;
 }
 
@@ -658,10 +634,6 @@ plot_show (SimEngine *engine)
 {
 	GtkEntry *entry;
 	GtkTreeView *list;
-	/*
-	 * Unused variable
-	GtkTreeSelection *selection;
-	*/
 	GList *analysis = NULL;
 	GList *combo_items = NULL;
 	Plot *plot;
@@ -715,8 +687,6 @@ plot_show (SimEngine *engine)
 	plot->title = g_strdup_printf (_("Plot - %s"), s_current);
 	plot->xtitle = get_variable_units (first ? first->var_units[0] : "##");
 	plot->ytitle = get_variable_units (first ? first->var_units[1] : "!!");
-
-	g_object_set (G_OBJECT (plot->plot_model), "title", plot->title, NULL);
 
 	g_free (s_current);
 
@@ -843,54 +813,34 @@ getbins (gdouble Wmin, gdouble Wmax, gint Nold,
 
 
 static void
-plot_zoom_50_cmd (GtkWidget *widget, Plot *plot)
-{
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS(plot->canvas), 0.5);
-	gtk_widget_queue_draw (plot->canvas);
-}
-
-static void
-plot_zoom_75_cmd (GtkWidget *widget, Plot *plot)
-{
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS (plot->canvas), 0.75);
-	gtk_widget_queue_draw (plot->canvas);
-}
-
-static void 
-plot_zoom_100_cmd (GtkWidget *widget, Plot *plot)
-{
-	gdouble a, b, c, d;
-	gtk_cairo_plot_model_get_x_minmax (plot->plot_model, &a, &b);
-	gtk_cairo_plot_model_get_y_minmax (plot->plot_model, &c, &d);
-	gtk_cairo_plot_view_set_scroll_region (plot->plot_view, a, b, c, d);
-	gtk_widget_queue_draw (plot->canvas);
-}
-
-static void 
-plot_zoom_125_cmd (GtkWidget *widget, Plot *plot)
-{
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS (plot->canvas), 1.25);
-	gtk_widget_queue_draw (plot->canvas);
-}
-
-static void 
-plot_zoom_150_cmd (GtkWidget *widget, Plot *plot)
-{
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS (plot->canvas), 1.5);
-	gtk_widget_queue_draw (plot->canvas);
-}
-
-static void 
-plot_zoom_200_cmd (GtkWidget *widget, Plot *plot)
-{
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS (plot->canvas), 2.0);
-	gtk_widget_queue_draw (plot->canvas);
-}
-
-static void
 plot_toggle_cross (GtkWidget *widget, Plot *plot)
 {
 	plot->show_cursor = gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (widget));
+}
+
+static GPlotFunction*
+create_plot_function_from_data (SimulationFunction *func, SimulationData *current)
+{
+	GPlotFunction *f;
+	double *X;
+	double *Y;
+	double data;
+	guint j, len;
+
+	len = current->data[func->first]->len;
+	X = g_new0 (double, len);
+	Y = g_new0 (double, len);
+
+	for (j = 0; j < len; j++) {
+		Y[j] = g_array_index (current->data[func->first], double, j);
+	
+		data = g_array_index (current->data[func->second], double, j);
+		Y[j] = sim_engine_do_function (func->type, Y[j], data);
+		
+		X[j] = g_array_index (current->data[0], double, j);
+	}
+
+	return g_plot_lines_new (X, Y, len);
 }
 
 static void
@@ -918,6 +868,7 @@ add_function (GtkWidget *widget, Plot *plot)
 
 	lst = plot->current->functions;
 	while (lst)	{
+		GPlotFunction *f;
 		GtkTreeIter child;
 		int i;
 		gchar *str, *name1, *name2;
@@ -938,13 +889,19 @@ add_function (GtkWidget *widget, Plot *plot)
 			case FUNCTION_TRANSFER:
 				str = g_strdup_printf ("%s(%s, %s)", _("TRANSFER"), name1, name2);
 		}
+
+		f = create_plot_function_from_data (func, plot->current);
+
+		g_plot_add_function (GPLOT (plot->plot), f);
+
 		gtk_tree_store_append(GTK_TREE_STORE(model), &child, &iter);
-		gtk_tree_store_set(GTK_TREE_STORE(model), &child, 0, TRUE, 1, str, 2, TRUE, 3, "white", -1);
+		gtk_tree_store_set(GTK_TREE_STORE(model), &child, 0, TRUE, 1, str, 2, TRUE, 3, "white", 4, f, -1);
 
 		lst = lst->next;
 	}
 
-	show_plot (plot);
+
+	gtk_widget_queue_draw (plot->plot);
 }
 
 static void
@@ -984,10 +941,11 @@ plot_export (GtkWidget *widget, Plot *plot)
 		return;
 	}
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (export_png)))
+	format = 0;
+	/*if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (export_png)))
 		format = GTK_CAIRO_PLOT_VIEW_SAVE_PNG;
 	else
-		format = GTK_CAIRO_PLOT_VIEW_SAVE_PS;
+		format = GTK_CAIRO_PLOT_VIEW_SAVE_PS;*/
 
 	fn = dialog_file_open (_("Save PNG"));
 	if (fn == NULL) {
@@ -998,8 +956,24 @@ plot_export (GtkWidget *widget, Plot *plot)
 	w = gtk_spin_button_get_value_as_int (width);
 	h = gtk_spin_button_get_value_as_int (height);
 
-	gtk_cairo_plot_view_save (plot->plot_view,
-		plot->plot_model, w, h, fn, format);
-
 	gtk_widget_destroy (window);
 }
+
+static void
+zoom_100 (GtkWidget *widget, Plot *plot)
+{
+	g_plot_reset_zoom (GPLOT (plot->plot));
+}
+
+static void
+zoom_region (GtkWidget *widget, Plot *plot)
+{
+	g_plot_set_zoom_mode (GPLOT (plot->plot), GPLOT_ZOOM_REGION);
+}
+
+static void
+zoom_pan (GtkWidget *widget, Plot *plot)
+{
+	g_plot_set_zoom_mode (GPLOT (plot->plot), GPLOT_ZOOM_INOUT);
+}
+

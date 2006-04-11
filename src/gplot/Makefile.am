@@ -1,5 +1,7 @@
 
-lib_LTLIBRARIES=libgtkcairoplot.la
+lib_LTLIBRARIES=liboregano-gplot.la
+
+oreganodir = $(datadir)/oregano
 
 INCLUDES = 						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 	\
@@ -10,16 +12,14 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\" \
 	$(OREGANO_CFLAGS)
 
-libgtkcairoplot_la_SOURCES= \
-	gtkcairoplot.c \
-	gtkcairoplot.h \
-	gtkcairoplotitems.c \
-	gtkcairoplotitems.h \
-	gtkcairoplotmodel.c \
-	gtkcairoplotmodel.h \
-	gtkcairoplotview.c \
-	gtkcairoplotview.h
+liboregano_gplot_la_SOURCES= \
+	gplot.c \
+	gplotfunction.c \
+	gplotfunction.h \
+	gplot.h \
+	gplotlines.c \
+	gplotlines.h
 
-libgtkcairoplot_la_LIBADD= \
+liboregano_gplot_la_LIBADD= \
 	$(OREGANO_LIBS)
 
