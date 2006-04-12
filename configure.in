@@ -42,13 +42,14 @@ fi
 
 # Change to support gnomeprint2.0 and 2.2
 PKG_CHECK_MODULES(OREGANO,
+	gtk+-2.0 >= 2.8.0 \
 	libglade-2.0 >= 1.99.4 \
 	libgnomeui-2.0 >= 1.107.0 \
 	libgnomeprint-2.2 >= 1.106.0 \
 	libxml-2.0 >= 0.14.0 \
 	libgnomecanvas-2.0 >= 2.2 \
 	gtksourceview-1.0 >= 1.0 \
-	cairo >= 0.5.0 \
+	cairo >= 1.0.0 \
 	libgnomeprintui-2.2 >= 1.106.0)
 
 
