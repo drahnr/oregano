@@ -431,6 +431,9 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 		if (IS_EQ (x1, x2) && ((ipoint->pos.y == y1) || (ipoint->pos.y == y2))) {
 			SheetPos w_pos, w_length;
+			gboolean can_join;
+			GSList *nodes;
+
 			wire_get_pos_and_length (ipoint->wire, &w_pos, &w_length);
 			gdouble _x1, _x2, _y1, _y2;
 
@@ -439,7 +442,27 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			_x2 = x1 + w_length.x;
 			_y2 = y1 + w_length.y;
 
-			if (IS_EQ(_x1, _x2)) {
+			can_join = TRUE;
+			nodes = wire_get_nodes (wire);
+			for (; nodes; nodes = nodes->next) {
+				SheetPos p1;
+				Node *node = (Node *)nodes->data;
+
+				p1.x = _x1;
+				p1.y = _y1;
+				if ((node->key.x == p1.x) && (node->key.y == p1.y)) {
+					can_join = FALSE;
+					break;
+				}
+				p1.x = _x2;
+				p1.y = _y2;
+				if ((node->key.x == p1.x) && (node->key.y == p1.y)) {
+					can_join = FALSE;
+					break;
+				}
+			}
+
+			if (IS_EQ(_x1, _x2) && can_join) {
 				if (w_pos.x < pos.x) pos.x = w_pos.x;
 				if (w_pos.y < pos.y) pos.y = w_pos.y;
 				length.x += w_length.x;
@@ -457,6 +480,9 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			}
 		} else if (IS_EQ (y1, y2) && ((ipoint->pos.x == x1) || (ipoint->pos.x == x2))) {
 			SheetPos w_pos, w_length;
+			gboolean can_join;
+			GSList *nodes;
+
 			wire_get_pos_and_length (ipoint->wire, &w_pos, &w_length);
 			gdouble _x1, _x2, _y1, _y2;
 
@@ -465,7 +491,27 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			_x2 = x1 + w_length.x;
 			_y2 = y1 + w_length.y;
 
-			if (IS_EQ(_y1, _y2)) {
+			can_join = TRUE;
+			nodes = wire_get_nodes (wire);
+			for (; nodes; nodes = nodes->next) {
+				SheetPos p;
+				Node *node = (Node *)nodes->data;
+
+				p.x = _x1;
+				p.y = _y1;
+				if ((node->key.x == p.x) && (node->key.y == p.y)) {
+					can_join = FALSE;
+					break;
+				}
+				p.x = _x2;
+				p.y = _y2;
+				if ((node->key.x == p.x) && (node->key.y == p.y)) {
+					can_join = FALSE;
+					break;
+				}
+			}
+
+			if (IS_EQ(_y1, _y2) && can_join) {
 				if (w_pos.x < pos.x) pos.x = w_pos.x;
 				if (w_pos.y < pos.y) pos.y = w_pos.y;
 				length.x += w_length.x;
