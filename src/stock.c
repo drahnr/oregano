@@ -51,6 +51,8 @@
 #include "stock/wire.xpm"
 #include "stock/voltmeter.xpm"
 #include "stock/vclamp.xpm"
+#include "stock/zoom_pan.xpm"
+#include "stock/zoom_region.xpm"
 
 static void
 add_stock_entry (const gchar *stock_id, char **xpm_data)
@@ -86,4 +88,6 @@ stock_init (void)
 	add_stock_entry (STOCK_PIXMAP_WIRE, wire_xpm);
 	add_stock_entry (STOCK_PIXMAP_VOLTMETER, voltmeter_xpm);
 	add_stock_entry (STOCK_PIXMAP_V_CLAMP, vclamp_xpm);
+	add_stock_entry (STOCK_PIXMAP_ZOOM_PAN, zoom_pan_xpm);
+	add_stock_entry (STOCK_PIXMAP_ZOOM_REGION, zoom_region_xpm);
 }

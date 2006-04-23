@@ -315,9 +315,9 @@
 	  <child>
 	    <widget class="GtkRadioToolButton" id="zoom_panning">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">Panning</property>
+	      <property name="label" translatable="yes">Shift</property>
 	      <property name="use_underline">True</property>
-	      <property name="stock_id">gtk-zoom-in</property>
+	      <property name="stock_id">OREGANO_stock_zoom_pan</property>
 	      <property name="visible_horizontal">True</property>
 	      <property name="visible_vertical">True</property>
 	      <property name="is_important">False</property>
@@ -334,7 +334,7 @@
 	      <property name="visible">True</property>
 	      <property name="label" translatable="yes">Region</property>
 	      <property name="use_underline">True</property>
-	      <property name="stock_id">gtk-index</property>
+	      <property name="stock_id">OREGANO_stock_zoom_region</property>
 	      <property name="visible_horizontal">True</property>
 	      <property name="visible_vertical">True</property>
 	      <property name="is_important">False</property>

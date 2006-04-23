@@ -45,6 +45,8 @@
 #define STOCK_PIXMAP_WIRE "OREGANO_stock_wire"
 #define STOCK_PIXMAP_VOLTMETER "OREGANO_stock_voltmeter"
 #define STOCK_PIXMAP_V_CLAMP "OREGANO_stock_v_clamp"
+#define STOCK_PIXMAP_ZOOM_PAN "OREGANO_stock_zoom_pan"
+#define STOCK_PIXMAP_ZOOM_REGION "OREGANO_stock_zoom_region"
 
 void stock_init (void);
 
