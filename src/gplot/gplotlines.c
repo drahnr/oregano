@@ -73,9 +73,7 @@ g_plot_lines_function_init (GPlotFunctionClass *iface)
 static void
 g_plot_lines_dispose(GObject *object)
 {
-	g_print ("--- gplot_lines_dispose begin ---\n");
 	G_OBJECT_CLASS(parent_class)->dispose(object);
-	g_print ("--- gplot_lines_dispose end ---\n");
 }
 
 static void
@@ -83,7 +81,6 @@ g_plot_lines_finalize(GObject *object)
 {
 	GPlotLines *lines;
 
-	g_print ("--- gplot_lines_finalize begin ---\n");
 	lines = GPLOT_LINES (object);
 
 	if (lines->priv) {
@@ -93,7 +90,6 @@ g_plot_lines_finalize(GObject *object)
 	}
 
 	G_OBJECT_CLASS(parent_class)->finalize(object);
-	g_print ("--- gplot_lines_finalize end ---\n");
 }
 
 static void

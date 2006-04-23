@@ -133,7 +133,6 @@ g_plot_finalize (GObject *object)
 {
 	GPlot *p = GPLOT (object);
 
-	g_print ("--- gplot_finalize begin ---\n");
 	if (p->priv->xlabel)
 		g_free (p->priv->xlabel);
 
@@ -141,7 +140,6 @@ g_plot_finalize (GObject *object)
 		g_free (p->priv->ylabel);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
-	g_print ("--- gplot_finalize end---\n");
 }
 
 static void
@@ -150,24 +148,18 @@ g_plot_dispose (GObject *object)
 	GList *lst;
 	GPlot *plot;
 
-	g_print ("--- gplot_dispose begin ---\n");
 	plot = GPLOT (object);
 
 	lst = plot->priv->functions;
 	while (lst) {
 		GPlotFunction *f = (GPlotFunction *)lst->data;
-		g_print ("  --- unref begin ---\n");
 		g_object_unref (G_OBJECT (f));
-		g_print ("  --- unref end ---\n");
 		lst = lst->next;
 	}
 	g_slist_free (plot->priv->functions);
 	plot->priv->functions = NULL;
 
-	g_print ("  --- parent dispose begin ---\n");
 	G_OBJECT_CLASS (parent_class)->dispose (object);
-	g_print ("  --- parent dispose end ---\n");
-	g_print ("--- gplot_dispose end ---\n");
 }
 
 static gint 
