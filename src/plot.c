@@ -400,12 +400,12 @@ plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 	gchar *coord;
 	gdouble x,y, x1, y1;
 
-	return;
-
 	x = event->x;
 	y = event->y;
 
-	coord = g_strdup_printf ("(%g, %g)", x1, y1);
+	g_plot_window_to_device (plot->plot, &x, &y);
+
+	coord = g_strdup_printf ("(%g, %g)", x, y);
 
 	gtk_entry_set_text (GTK_ENTRY (plot->coord), coord);
 
