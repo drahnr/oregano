@@ -505,7 +505,7 @@ g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 			}
 	}
 
-	return TRUE;
+	return FALSE;
 }
 
 static gboolean
