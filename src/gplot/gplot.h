@@ -64,6 +64,7 @@ void       g_plot_set_zoom_mode (GPlot *, guint);
 guint      g_plot_get_zoom_mode (GPlot *);
 void       g_plot_reset_zoom (GPlot *);
 void       g_plot_set_axis_labels (GPlot *, gchar *, gchar *);
+void       g_plot_window_to_device (GPlot *, double *x, double *y);
 
 #endif
 

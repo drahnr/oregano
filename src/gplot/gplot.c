@@ -719,3 +719,18 @@ g_plot_clear (GPlot *plot)
 		lst = lst->next;
 	}
 }
+
+void
+g_plot_window_to_device (GPlot *plot, double *x, double *y)
+{
+	cairo_t *cr;
+
+	g_return_if_fail (plot != NULL);
+	g_return_if_fail (IS_GPLOT (plot));
+
+	cr = g_plot_create_cairo (plot);
+	cairo_set_matrix (cr, &plot->priv->matrix);
+	cairo_device_to_user (cr, x, y);
+	cairo_destroy (cr);
+}
+
