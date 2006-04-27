@@ -30,7 +30,6 @@
 #ifndef __NETLIST_H
 #define __NETLIST_H
 
-#include <config.h>
 #include <gnome.h>
 #include "schematic.h"
 

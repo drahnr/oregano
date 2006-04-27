@@ -30,7 +30,6 @@
 #ifndef __TEXTBOX_ITEM_H
 #define __TEXTBOX_ITEM_H
 
-#include <config.h>
 #include <gtk/gtk.h>
 #include "schematic-view.h"
 #include "sheet-item.h"

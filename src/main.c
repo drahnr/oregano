@@ -31,7 +31,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <glade/glade.h>
 #include <libbonobo-2.0/libbonobo.h>

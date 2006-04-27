@@ -1,0 +1,73 @@
+import os
+Import ('CEnv')
+
+SrcEnv = CEnv.Copy ()
+
+LocaleDir         = '-DGNOMELOCALEDIR=\\""'+SrcEnv['DATADIR']+'/locale"\\"'
+OreganoGladeDir   = '-DOREGANO_GLADEDIR=\\""'+SrcEnv['OREGANODIR']+'/dialogs"\\"'
+OreganoLibraryDir = '-DOREGANO_LIBRARYDIR=\\""'+SrcEnv['OREGANODIR']+'/libraries"\\"'
+OreganoModelDir   = '-DOREGANO_MODELDIR=\\""'+SrcEnv['OREGANODIR']+'/models"\\"'
+VersionFlag       = '-DVERSION=\\"'+SrcEnv['VERSION']+'\\"'
+DataDir           = '-DDATADIR=\\"'+SrcEnv['DATADIR']+'\\"'
+Package           = '-DPACKAGE=\\"Oregano\\"'
+GetText           = '-DGETTEXT_PACKAGE=\\"oregano\\"'
+
+SrcEnv.Append (CCFLAGS = [
+	Package,
+	GetText,
+	DataDir,
+	VersionFlag,
+	LocaleDir,
+	OreganoGladeDir,
+	OreganoLibraryDir,
+	OreganoModelDir
+	])
+
+Export ('SrcEnv')
+
+# Files to build oregano binary #
+files = Split ("""clipboard.c
+	create-wire.c
+	cursors.c
+	dialogs.c
+	errors.c
+	file-manager.c
+	file.c
+	load-library.c
+	load-schematic.c
+	main.c
+	netlist-editor.c
+	netlist.c
+	oregano-config.c
+	oregano-utils.c
+	part-browser.c
+	plot-add-function.c
+	plot.c
+	print.c
+	save-schematic.c
+	schematic-view.c
+	settings.c
+	sim-engine.c
+	sim-settings.c
+	simulate.c
+	simulation.c
+	smallicon.c
+	splash.c
+	stock.c
+	xml-helper.c
+	gplot/liboregano-gplot.a
+	model/liboregano-model.a
+	sheet/liboregano-sheet.a""")
+
+SConscript ('gplot/SConscript')
+SConscript ('model/SConscript')
+SConscript ('sheet/SConscript')
+SConscript ('dialogs/SConscript')
+
+SrcEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet -I./src/gplot"))
+
+oregano = SrcEnv.Program ('oregano', files)
+
+# Install alias #
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['PREFIX'], 'bin'), oregano))
+

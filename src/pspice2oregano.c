@@ -2,7 +2,6 @@
 
 /* TODO: We need to ask Carlos Lacasta to add an implicit GPLv2 notice here. */
 
-#include <config.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

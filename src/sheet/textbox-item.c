@@ -36,7 +36,6 @@
  * (C) 1999, 2000 Richard Hult, http://www.dtek.chalmers.se/~d4hult/oregano/
  */
 
-#include <config.h>
 #include <math.h>
 #include <gnome.h>
 #include <glade/glade.h>

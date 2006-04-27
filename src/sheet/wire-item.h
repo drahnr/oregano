@@ -30,7 +30,6 @@
 #ifndef __WIRE_ITEM_H
 #define __WIRE_ITEM_H
 
-#include <config.h>
 #include <gnome.h>
 
 #include "schematic-view.h"

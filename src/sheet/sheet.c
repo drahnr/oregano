@@ -28,7 +28,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
 #include <gdk/gdkprivate.h>
 #include "sheet-private.h"
 #include "sheet-item.h"

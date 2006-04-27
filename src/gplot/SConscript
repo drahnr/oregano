@@ -1,0 +1,13 @@
+
+Import ('SrcEnv')
+
+localEnv = SrcEnv.Copy ();
+
+files = Split("""
+	gplot.c
+	gplotfunction.c
+	gplotlines.c
+	""")
+
+libgplot = localEnv.StaticLibrary('liboregano-gplot', files)
+

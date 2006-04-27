@@ -30,7 +30,6 @@
 #ifndef __CREATE_WIRE_H
 #define __CREATE_WIRE_H
 
-#include <config.h>
 #include <gnome.h>
 
 #include "sheet.h"

@@ -36,7 +36,6 @@
  * Author: Federico Mena-Quintero <federico@gimp.org>
  */
 
-#include <config.h>
 #include <gnome.h>
 #include "stock.h"
 #include "stock/sim-settings.xpm"

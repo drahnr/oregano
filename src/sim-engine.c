@@ -31,7 +31,6 @@
  * Simulate engine class, interface to SPICE.
  */
 
-#include <config.h>
 #include <gnome.h>
 #include <stdlib.h>
 #include <string.h>

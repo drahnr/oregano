@@ -1,0 +1,19 @@
+import os
+Import ('CEnv')
+
+resources = Split ("""
+	cmos.oreglib
+	cpu.oreglib
+	default.oreglib
+	interface.oreglib
+	linear.oreglib
+	memory.oreglib
+	miscellaneous.oreglib
+	opamplib.oreglib
+	peripheral.oreglib
+	power.oreglib
+	ttl.oreglib
+	""")
+
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['PREFIX'], 'share/oregano/libraries'), resources))
+

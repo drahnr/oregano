@@ -31,7 +31,6 @@
 #define __FILE_H
 
 #include <libgnome/gnome-i18n.h>
-#include <config.h>
 #include "schematic-view.h"
 
 /* FIXME : unificar API!! */

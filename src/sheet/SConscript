@@ -1,0 +1,20 @@
+
+Import ('SrcEnv')
+
+localEnv = SrcEnv.Copy ();
+
+localEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet"))
+
+files = Split("""
+	grid.c
+	node-item.c
+	part-item.c
+	sheet-item-factory.c
+	sheet-item.c
+	sheet.c
+	textbox-item.c
+	wire-item.c
+	""")
+
+libgplot = localEnv.StaticLibrary('liboregano-sheet', files)
+

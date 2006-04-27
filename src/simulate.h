@@ -26,7 +26,6 @@
 #ifndef __SIMULATE_H
 #define __SIMULATE_H
 
-#include <config.h>
 #include <gnome.h>
 #include <glib.h>
 #include "schematic.h"

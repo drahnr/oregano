@@ -1,0 +1,22 @@
+import os
+Import ('CEnv')
+
+resources = Split ("""
+	clamp-properties-dialog.glade2
+	log-window.glade2
+	page-properties.glade2
+	part-browser.glade2
+	part-properties-dialog.glade2
+	plot-add-function.glade2
+	plot-export.glade2
+	plot-window.glade2
+	properties.glade2
+	settings.glade2
+	sim-settings.glade2
+	simulation.glade2
+	splash.glade2
+	textbox-properties-dialog.glade2
+	view-netlist.glade2""")
+
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['PREFIX'], 'share/oregano/dialogs'), resources))
+

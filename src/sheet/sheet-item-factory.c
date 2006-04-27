@@ -28,7 +28,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
 #include "schematic-view.h"
 #include "sheet-item-factory.h"
 #include "wire-item.h"

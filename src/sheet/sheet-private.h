@@ -30,7 +30,6 @@
 #ifndef __SHEET_PRIVATE_H
 #define __SHEET_PRIVATE_H
 
-#include <config.h>
 #include "sheet.h"
 
 struct _SheetPriv {

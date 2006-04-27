@@ -29,7 +29,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
 #include <math.h>
 #include <gnome.h>
 #include "item-data.h"

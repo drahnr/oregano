@@ -28,7 +28,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
 #include <unistd.h>
 #include <glib.h>
 #include <gnome.h>
