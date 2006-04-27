@@ -16,7 +16,8 @@ resources = Split ("""
 	simulation.glade2
 	splash.glade2
 	textbox-properties-dialog.glade2
-	view-netlist.glade2""")
+	view-netlist.glade2
+	splash.xpm""")
 
 CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['PREFIX'], 'share/oregano/dialogs'), resources))
 

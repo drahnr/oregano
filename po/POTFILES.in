@@ -13,10 +13,6 @@ src/dialogs/textbox-properties-dialog.glade2
 src/dialogs/view-netlist.glade2
 
 src/xml-helper.c
-src/gtkcairoplot/gtkcairoplot.c
-src/gtkcairoplot/gtkcairoplotitems.c
-src/gtkcairoplot/gtkcairoplotmodel.c
-src/gtkcairoplot/gtkcairoplotview.c
 src/sheet/grid.c
 src/sheet/node-item.c
 src/sheet/part-item.c
