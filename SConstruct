@@ -57,7 +57,8 @@ def po_helper(po,pot):
 # second source: .pot file
 #
 def mo_builder(target,source,env):
-	po_helper (source[0].get_path(), source[1].get_path())
+	# Do not update .po files, just compile it
+	# po_helper (source[0].get_path(), source[1].get_path())
 	args = [ 'msgfmt',
 		'-c',
 		'-o',
