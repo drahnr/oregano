@@ -69,7 +69,7 @@ def mo_builder(target,source,env):
 
 mo_bld = Builder (action = mo_builder)
 
-CEnv.Append(BUILDERS = {'MoBuild' : mo_bld})
+CEnv.Append (BUILDERS = {'MoBuild' : mo_bld})
 CEnv.Append (CCFLAGS = Split ('-Wall'));
 
 # Check dependencies #
@@ -100,4 +100,12 @@ Export ('CEnv')
 SConscript ('src/SConscript');
 SConscript ('data/SConscript');
 SConscript ('po/SConscript');
+
+# Install Target #
+CEnv.Alias ('install', CEnv.Command ('oregano.keys', 'oregano.keys.in', "cp $SOURCE $TARGET"))
+CEnv.Alias ('install', CEnv.Command ('oregano.xml', 'oregano.xml.in', "cp $SOURCE $TARGET"))
+CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime/packages'), Split('oregano.xml')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime-info'), Split('oregano.mime')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime-info'), Split('oregano.keys')))
 
