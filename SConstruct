@@ -12,14 +12,14 @@ opts.Add (PathOption ('DESTDIR', 'System base installation path', '/'));
 # Dependencies #
 deps = []
 deps.append ({'lib': 'gtk+-2.0',            'ver': '2.8.0'})
-deps.append ({'lib': 'libglade-2.0',        'ver': '1.99.4'})
-deps.append ({'lib': 'libgnomeui-2.0',      'ver': '1.107.0'})
-deps.append ({'lib': 'libgnomeprint-2.2',   'ver': '1.106.0'})
-deps.append ({'lib': 'libxml-2.0',          'ver': '0.14.0'})
-deps.append ({'lib': 'libgnomecanvas-2.0',  'ver': '2.2'})
+deps.append ({'lib': 'libglade-2.0',        'ver': '2.5.0'})
+deps.append ({'lib': 'libgnomeui-2.0',      'ver': '2.12.0'})
+deps.append ({'lib': 'libgnomeprint-2.2',   'ver': '2.12.0'})
+deps.append ({'lib': 'libxml-2.0',          'ver': '2.6.0'})
+deps.append ({'lib': 'libgnomecanvas-2.0',  'ver': '2.12.0'})
 deps.append ({'lib': 'gtksourceview-1.0',   'ver': '1.0'})
 deps.append ({'lib': 'cairo',               'ver': '1.0.0'})
-deps.append ({'lib': 'libgnomeprintui-2.2', 'ver':'1.106.0'})
+deps.append ({'lib': 'libgnomeprintui-2.2', 'ver': '2.12.0'})
 
 # CUSTOM CHECK FUNC #
 def CheckPkg (context, pkg, version):
