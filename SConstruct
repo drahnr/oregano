@@ -102,10 +102,12 @@ SConscript ('data/SConscript');
 SConscript ('po/SConscript');
 
 # Install Target #
-CEnv.Alias ('install', CEnv.Command ('oregano.keys', 'oregano.keys.in', "cp $SOURCE $TARGET"))
+CEnv.Alias ('install', CEnv.Command ('oregano.keys', 'oregano.keys.in', "sed 's/@icondir@/"+os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'],"mine-info").replace ("/", "\\/")+"/' < $SOURCE > $TARGET"))
 CEnv.Alias ('install', CEnv.Command ('oregano.xml', 'oregano.xml.in', "cp $SOURCE $TARGET"))
-CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime')))
 CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime/packages'), Split('oregano.xml')))
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime-info'), Split('oregano.mime')))
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime-info'), Split('oregano.keys')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime-info'), Split('oregano.mime oregano.keys')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'gnome/apps/Applications'), Split('oregano.desktop')))
+
+# Update mime database #
+CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime')))
 
