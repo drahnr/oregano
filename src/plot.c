@@ -357,6 +357,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	gtk_tree_store_append (GTK_TREE_STORE (model), &parent_functions, NULL);
 	gtk_tree_store_set (GTK_TREE_STORE (model), &parent_functions, 0, NULL, 1, _("Functions"), 2, FALSE, 3, "white", -1);
 
+	g_plot_set_axis_labels (GPLOT (plot->plot), plot->xtitle, plot->ytitle);
 	g_plot_clear (GPLOT (plot->plot));
 
 	for (i = 1; i < plot->current->n_variables; i++) {
