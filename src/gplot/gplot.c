@@ -724,6 +724,9 @@ g_plot_clear (GPlot *plot)
 		g_object_unref (G_OBJECT (lst->data));
 		lst = lst->next;
 	}
+	g_list_free (plot->priv->functions);
+	plot->priv->functions = NULL;
+	plot->priv->window_valid = FALSE;
 }
 
 void
