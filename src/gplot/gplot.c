@@ -643,7 +643,13 @@ g_plot_update_bbox (GPlot *p)
 		priv->window_bbox.ymin = MIN (priv->window_bbox.ymin, bbox.ymin);
 		lst = lst->next;
 	}
-		
+
+	if (priv->window_bbox.xmin == priv->window_bbox.xmax)
+		priv->window_bbox.xmax += 1;
+
+	if (priv->window_bbox.ymin == priv->window_bbox.ymax)
+		priv->window_bbox.ymax += 1;
+
 	priv->window_bbox.ymin *= 1.1;
 	priv->window_bbox.ymax *= 1.1;
 
