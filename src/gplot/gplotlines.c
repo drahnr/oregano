@@ -215,16 +215,17 @@ g_plot_lines_get_bbox (GPlotFunction *f, GPlotFunctionBBox *bbox)
 		points = plot->priv->points;
 		x = plot->priv->x;
 		y = plot->priv->y;
-		plot->priv->bbox.xmin = 99999;
-		plot->priv->bbox.xmax = -99999;
-		plot->priv->bbox.ymin = 99999;
-		plot->priv->bbox.ymax = -99999;
+		plot->priv->bbox.xmin = 99999999;
+		plot->priv->bbox.xmax = -99999999;
+		plot->priv->bbox.ymin = 99999999;
+		plot->priv->bbox.ymax = -99999999;
 		for (point = 0; point < points; point++) {
 			plot->priv->bbox.xmin = MIN(plot->priv->bbox.xmin, x[point]);
 			plot->priv->bbox.ymin = MIN(plot->priv->bbox.ymin, y[point]);
 			plot->priv->bbox.xmax = MAX(plot->priv->bbox.xmax, x[point]);
 			plot->priv->bbox.ymax = MAX(plot->priv->bbox.ymax, y[point]);
 		}
+		plot->priv->bbox_valid = TRUE;
 	}
 
 	(*bbox) = plot->priv->bbox;

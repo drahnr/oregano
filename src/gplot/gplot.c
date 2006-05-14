@@ -629,10 +629,10 @@ g_plot_update_bbox (GPlot *p)
 	priv = p->priv;
 
 	/* Get functions bbox */
-	priv->window_bbox.xmax = -9999;
-	priv->window_bbox.xmin = 9999;
-	priv->window_bbox.ymax = -9999;
-	priv->window_bbox.ymin = 9999;
+	priv->window_bbox.xmax = -9999999;
+	priv->window_bbox.xmin = 9999999;
+	priv->window_bbox.ymax = -9999999;
+	priv->window_bbox.ymin = 9999999;
 	lst = priv->functions;
 	while (lst) {
 		f = (GPlotFunction *)lst->data;

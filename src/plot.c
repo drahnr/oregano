@@ -305,7 +305,6 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 	return g_plot_lines_new (X, Y, len);
 }
 
-
 static void
 analysis_selected (GtkEditable *editable, Plot *plot)
 {
@@ -318,10 +317,10 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	GList *analysis;
 	SimulationData *sdat;
 
-	list = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT (plot->window), "clist"));
+	list = GTK_TREE_VIEW (gtk_object_get_data (GTK_OBJECT (plot->window), "clist"));
 	entry = GTK_COMBO (plot->combobox)->entry;
 
-	ca = gtk_entry_get_text( GTK_ENTRY (entry));
+	ca = gtk_entry_get_text (GTK_ENTRY (entry));
 
 	plot->current = NULL;
 	for (analysis = plot->sim->analysis; analysis; analysis = analysis->next) {
@@ -344,7 +343,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	plot->ytitle = get_variable_units (plot->current->var_units[1]);
 
 	g_free (plot->title);
-	plot->title = g_strdup_printf(_("Plot - %s"),
+	plot->title = g_strdup_printf (_("Plot - %s"),
 		sim_engine_analysis_name (plot->current));
 
 	/*  Set the variable names in the list  */
@@ -355,8 +354,8 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	gtk_tree_store_append (GTK_TREE_STORE (model), &parent_nodes, NULL);
 	gtk_tree_store_set (GTK_TREE_STORE (model), &parent_nodes, 0, FALSE, 1, _("Nodes"), 2, FALSE, 3, "white", -1);
 
-	gtk_tree_store_append(GTK_TREE_STORE(model), &parent_functions, NULL);
-	gtk_tree_store_set(GTK_TREE_STORE(model), &parent_functions, 0, NULL, 1, _("Functions"), 2, FALSE, 3, "white", -1);
+	gtk_tree_store_append (GTK_TREE_STORE (model), &parent_functions, NULL);
+	gtk_tree_store_set (GTK_TREE_STORE (model), &parent_functions, 0, NULL, 1, _("Functions"), 2, FALSE, 3, "white", -1);
 
 	g_plot_clear (GPLOT (plot->plot));
 
@@ -369,7 +368,6 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 				f = create_plot_function_from_simulation_data (i, plot->current);
 				g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
 				g_plot_add_function (GPLOT (plot->plot), f);
-
 				gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
 				gtk_tree_store_set (GTK_TREE_STORE (model),
 					&iter,
@@ -381,6 +379,9 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 					-1);
 			}
 		} else {
+			f = create_plot_function_from_simulation_data (i, plot->current);
+			g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
+			g_plot_add_function (GPLOT (plot->plot), f);
 			gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
 			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 
 				0, FALSE, 
@@ -391,6 +392,8 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 			 	-1);
 		}
 	}
+
+	gtk_widget_queue_draw (plot->plot);
 }
 
 static void
@@ -662,26 +665,25 @@ plot_show (SimEngine *engine)
 		SimulationData *sdat = SIM_DATA (analysis->data);
 		gchar *str = sim_engine_analysis_name (sdat);
 		if (sdat->type == OP_POINT) {
-			free(str);
+			free (str);
 			continue;
 		}
 		if (s_current == NULL) {
 			s_current = str;
 			first = sdat;
 		}
-		combo_items = g_list_append(combo_items, str);
+		combo_items = g_list_append (combo_items, str);
 	}
 
-	gtk_combo_set_popdown_strings(GTK_COMBO (plot->combobox), combo_items);
+	gtk_combo_set_popdown_strings (GTK_COMBO (plot->combobox), combo_items);
 
-	entry = GTK_ENTRY(GTK_COMBO(plot->combobox)->entry);
-	g_signal_connect(G_OBJECT (entry), "changed",
-		G_CALLBACK(analysis_selected), plot);
+	entry = GTK_ENTRY (GTK_COMBO (plot->combobox)->entry);
+	g_signal_connect (G_OBJECT (entry), "changed",
+		G_CALLBACK (analysis_selected), plot);
 
 	gtk_entry_set_text (GTK_ENTRY (entry), s_current ? s_current : "?");
 
-	list = GTK_TREE_VIEW(
-		gtk_object_get_data ( GTK_OBJECT (plot->window), "clist"));
+	list = GTK_TREE_VIEW (gtk_object_get_data (GTK_OBJECT (plot->window), "clist"));
 
 	plot->title = g_strdup_printf (_("Plot - %s"), s_current);
 	plot->xtitle = get_variable_units (first ? first->var_units[0] : "##");
