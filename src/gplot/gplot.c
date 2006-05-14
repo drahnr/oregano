@@ -156,7 +156,7 @@ g_plot_dispose (GObject *object)
 		g_object_unref (G_OBJECT (f));
 		lst = lst->next;
 	}
-	g_slist_free (plot->priv->functions);
+	g_list_free (plot->priv->functions);
 	plot->priv->functions = NULL;
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
