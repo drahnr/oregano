@@ -191,6 +191,10 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	plot = GPLOT (widget);
 	priv = plot->priv;
 
+	if (!priv->window_valid) {
+		g_plot_update_bbox (plot);
+	}
+
 	width = widget->allocation.width;
 	height = widget->allocation.height;
 
@@ -241,10 +245,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			cairo_show_text (cr, priv->ylabel);
 			cairo_stroke (cr);
 		cairo_restore (cr);
-	}
-
-	if (!priv->window_valid) {
-		g_plot_update_bbox (plot);
 	}
 
 	/* TODO : Move this to SizeAllocation functions */
