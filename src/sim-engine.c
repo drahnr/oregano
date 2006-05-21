@@ -101,7 +101,11 @@ static char *analisys_tags[] = {
 
 #define GNUCAP_TITLE "#"
 
-typedef struct _gnucap_variable_ {
+//typedef struct _gnucap_variable_ {
+//	gchar *name;
+	//gchar *unit;
+//} GCap_Variable;
+typedef struct {
 	gchar *name;
 	//gchar *unit;
 } GCap_Variable;
@@ -269,19 +273,18 @@ sim_engine_start_with_file (SimEngine *engine, const gchar *netlist)
 		gchar *simexec = oregano.simexec;
         /* !!!!!!!!!!! "-s" "-n" */
 		gchar *args[4] = { simexec, oregano.simtype, (gchar *)netlist, NULL };
-
-
+	
 		/* The child executes here. */
-		/*netlist_fd = open (netlist, O_RDONLY);
+		netlist_fd = open (netlist, O_RDONLY);
 		if (netlist_fd == -1)
-			g_error ("Error opening netlist.");*/
+			g_error ("Error opening netlist.");
 
 		close (engine->to_child[WRITE]);
 		close (engine->to_parent[READ]);
 		close (engine->to_parent_error[READ]);
 
-/*		dup2 (netlist_fd, STDIN_FILENO);
-		close (netlist_fd);*/
+		dup2 (netlist_fd, STDIN_FILENO);
+		close (netlist_fd);
 		close (engine->to_child[READ]);
 
 		/* Map stderr and stdout to their pipes. */
@@ -448,7 +451,7 @@ void _free_variables(GCap_Variable *v, gint count)
 GCap_Variable *_get_variables(gchar *str, gint *count)
 {
 	GCap_Variable *out;
-	/* FIXME hacer mas bonito esto */
+	/* FIXME Improve the code */
 	gchar *tmp[100];
 	gchar *ini, *fin;
 	gint i = 0;
@@ -604,22 +607,22 @@ data_input_cb (SimEngine *engine, gint source, GdkInputCondition condition)
 			switch (sdata->type) {
 			case TRANSIENT:
 				if (i==0)
-					sdata->var_units[i] = g_strdup("time");
+					sdata->var_units[i] = g_strdup(_("time"));
 				else {
 					if (strstr (sdata->var_names[i], "db") != NULL) {
 						sdata->var_units[i] = g_strdup("db");
 					} else
-						sdata->var_units[i] = g_strdup("voltage");
+						sdata->var_units[i] = g_strdup(_("voltage"));
 				}
 				break;
 			case AC:
 				if (i==0)
-					sdata->var_units[i] = g_strdup("frequency");
+					sdata->var_units[i] = g_strdup(_("frequency"));
 				else {
 					if (strstr (sdata->var_names[i], "db") != NULL) {
 						sdata->var_units[i] = g_strdup("db");
 					} else
-						sdata->var_units[i] = g_strdup("voltage");
+						sdata->var_units[i] = g_strdup(_("voltage"));
 				}
 				break;
 			default:
@@ -675,7 +678,7 @@ data_input_cb (SimEngine *engine, gint source, GdkInputCondition condition)
 		case SENSITIVITY:
 			break;
 		case ANALYSIS_UNKNOWN:
-			g_error("Unknown analysis: %s",analysis);
+			g_error(_("Unknown analysis: %s"),analysis);
 			break;
 		}
 	} else {
@@ -724,7 +727,7 @@ data_input_cb (SimEngine *engine, gint source, GdkInputCondition condition)
 			break;
 		default:
 			if (strlen (buf) > 1) {
-				if (strstr (buf,"abort"))
+				if (strstr (buf, _("abort")))
 					sdata->state = STATE_ABORT;
 				schematic_log_append (engine->sm, buf);
 			}
@@ -757,4 +760,3 @@ sim_engine_do_function (SimulationFunctionType type, double first, double second
 	}
 	return outval;
 }
-
