@@ -10,7 +10,7 @@
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2005  LUGFI
+ * Copyright (C) 2003,2006  LUGFI
  *
  * 
  *  http://www.dtek.chalmers.se/~d4hult/oregano/ 

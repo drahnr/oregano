@@ -7,7 +7,7 @@
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
- * Copyright (C) 2004-2005  Andres de Barbara
+ * Copyright (C) 2004-2006  Andres de Barbara
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

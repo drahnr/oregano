@@ -4,7 +4,7 @@
  * @author Ricardo Markiewicz <rmarkie@fi.uba.ar>
  * @author Andres de Barbara <adebarbara@fi.uba.ar>
  *
- * @date   1999-2001,2003-2005
+ * @date   1999-2001,2003-2006
  *
  * @brief Oregano, a tool for schematic capture and simulation of electrical
  * circuits.
@@ -13,7 +13,7 @@
  */
 /*
  * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2005  LUGFI
+ * Copyright (C) 2003,2006  LUGFI
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
