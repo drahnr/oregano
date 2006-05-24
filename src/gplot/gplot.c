@@ -40,6 +40,8 @@ static void g_plot_update_bbox (GPlot *);
 static void g_plot_finalize (GObject *object);
 static void g_plot_dispose (GObject *object);
 
+static void get_order_of_magnitude (gdouble val, gdouble *man, gdouble *pw);
+
 enum {
 	ACTION_NONE,
 	ACTION_STARTING_PAN,
@@ -54,7 +56,9 @@ struct _GPlotPriv {
 	GList *functions;
 
 	gchar *xlabel;
+	gchar *xlabel_unit;
 	gchar *ylabel;
+	gchar *ylabel_unit;
 
 	gdouble left_border;
 	gdouble right_border;
@@ -183,7 +187,7 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	GList *lst;
 	GPlotFunctionBBox bbox;
 	gdouble aX, bX, aY, bY;
-	gdouble v, x, y, step;
+	gdouble v, x, y, step, divisor;
 	int i = 0;
 	cairo_text_extents_t extents;
 	gchar *label;
@@ -222,30 +226,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 		cairo_rectangle (cr, priv->left_border, priv->right_border, graph_width, graph_height);
 		cairo_stroke (cr);
 	cairo_restore (cr);
-
-	/* Axis Labels */
-	if (priv->xlabel) {
-		cairo_save (cr);
-			cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-			cairo_set_font_size (cr, 14);
-			cairo_text_extents (cr, priv->xlabel, &extents);
-			cairo_move_to (cr, width/2.0 - extents.width/2.0, height-extents.height/2.0);
-			cairo_show_text (cr, priv->xlabel);
-			cairo_stroke (cr);
-		cairo_restore (cr);
-	}
-
-	if (priv->ylabel) {
-		cairo_save (cr);
-			cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-			cairo_set_font_size (cr, 14);
-			cairo_text_extents (cr, priv->ylabel, &extents);
-			cairo_move_to (cr, extents.height, height/2.0 + extents.width/2.0);
-			cairo_rotate (cr, 4.7124);
-			cairo_show_text (cr, priv->ylabel);
-			cairo_stroke (cr);
-		cairo_restore (cr);
-	}
 
 	/* TODO : Move this to SizeAllocation functions */
 	priv->viewport_bbox.xmax = widget->allocation.width - priv->right_border;
@@ -310,6 +290,22 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 		i = 0;
 		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 		cairo_set_line_width (cr, 0.3);
+
+		{ // Div factor for X Axis
+			gint div;
+			gdouble man1, pw1, man2, pw2;
+			get_order_of_magnitude (priv->window_bbox.xmin, &man1, &pw1);
+			get_order_of_magnitude (priv->window_bbox.xmax, &man2, &pw2);
+			div = (pw2+pw1) / 2.0 + 0.5;
+			if (div == 0) div = 1;
+			divisor = pow(10, div);
+			if (priv->xlabel_unit) {
+				g_free (priv->xlabel_unit);
+				priv->xlabel_unit = NULL;
+			}
+			if (div != 1)
+				priv->xlabel_unit = g_strdup_printf ("10e%d ", div);
+		}
 		_calculate_step (priv->window_bbox.xmin, priv->window_bbox.xmax, &step);
 		for (v=priv->window_bbox.xmin; v <= priv->window_bbox.xmax; v += step) {
 			x = v;
@@ -320,7 +316,7 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			cairo_stroke (cr);
 		
 			cairo_save (cr);
-				label = g_strdup_printf ("%.2f", v);
+				label = g_strdup_printf ("%.2f", v/divisor);
 				cairo_text_extents (cr, label, &extents);
 				cairo_move_to (cr, x, y+extents.height);
 				cairo_rotate (cr, 0.404);
@@ -337,6 +333,21 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			cairo_stroke (cr);
 			i++;
 		}
+		{	// Div factor for Y axis
+			gint div;
+			gdouble man1, pw1, man2, pw2;
+			get_order_of_magnitude (priv->window_bbox.ymin, &man1, &pw1);
+			get_order_of_magnitude (priv->window_bbox.ymax, &man2, &pw2);
+			div = (pw2+pw1) / 2.0 + 0.5;
+			if (div == 0) div = 1;
+			divisor = pow(10, div);
+			if (priv->ylabel_unit) {
+				g_free (priv->ylabel_unit);
+				priv->ylabel_unit = NULL;
+			}
+			if (div != 1)
+				priv->ylabel_unit = g_strdup_printf ("10e%d ", div);
+		}
 		_calculate_step (priv->window_bbox.ymin, priv->window_bbox.ymax, &step);
 		for (v=priv->window_bbox.ymin; v <= priv->window_bbox.ymax; v += step) {
 			x = priv->window_bbox.xmin;
@@ -347,7 +358,7 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			cairo_stroke (cr);
 			
 			cairo_save (cr);
-				label = g_strdup_printf ("%.2f", v);
+				label = g_strdup_printf ("%.2f", v / divisor);
 				cairo_text_extents (cr, label, &extents);
 				cairo_move_to (cr, x-extents.width-5, y);
 				cairo_show_text (cr, label);
@@ -364,6 +375,43 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			i++;
 		}
 	cairo_restore (cr);
+
+	/* Axis Labels */
+	if (priv->xlabel) {
+		char *txt;
+		if (priv->xlabel_unit == NULL)
+			txt = g_strdup (priv->xlabel);
+		else
+			txt = g_strdup_printf ("%s %s", priv->xlabel_unit, priv->xlabel);
+
+		cairo_save (cr);
+			cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+			cairo_set_font_size (cr, 14);
+			cairo_text_extents (cr, txt, &extents);
+			cairo_move_to (cr, width/2.0 - extents.width/2.0, height-extents.height/2.0);
+			cairo_show_text (cr, txt);
+			cairo_stroke (cr);
+		cairo_restore (cr);
+		g_free (txt);
+	}
+
+	if (priv->ylabel) {
+		char *txt;
+		if (priv->ylabel_unit == NULL)
+			txt = g_strdup (priv->ylabel);
+		else
+			txt = g_strdup_printf ("%s %s", priv->ylabel_unit, priv->ylabel);
+
+		cairo_save (cr);
+			cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+			cairo_set_font_size (cr, 14);
+			cairo_text_extents (cr, txt, &extents);
+			cairo_move_to (cr, extents.height, height/2.0 + extents.width/2.0);
+			cairo_rotate (cr, 4.7124);
+			cairo_show_text (cr, txt);
+			cairo_stroke (cr);
+		cairo_restore (cr);
+	}
 
 	if (priv->action == ACTION_REGION) {
 		gdouble x, y, w, h;
@@ -403,7 +451,9 @@ g_plot_init (GPlot* plot)
 	plot->priv->top_border = BORDER_SIZE;
 	plot->priv->bottom_border = BORDER_SIZE;
 	plot->priv->xlabel = NULL;
+	plot->priv->xlabel_unit = NULL;
 	plot->priv->ylabel = NULL;
+	plot->priv->ylabel_unit = NULL;
 }
 
 GtkWidget*
@@ -742,4 +792,18 @@ g_plot_window_to_device (GPlot *plot, double *x, double *y)
 	cairo_device_to_user (cr, x, y);
 	cairo_destroy (cr);
 }
+
+static void
+get_order_of_magnitude (gdouble val, gdouble *man, gdouble *pw)
+{
+	gdouble b;
+	gdouble sx;
+
+	b = (val != 0.0 ? log10 (fabs (val)) / 3.0 : 0.0);
+	b  = 3.0 * rint (b);
+	sx = (b != 0.0 ? pow (10.0, b) : 1.0);
+	*man = val / sx;
+	*pw  = b;
+}
+
 
