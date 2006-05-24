@@ -86,8 +86,6 @@ static char *plot_curve_colors[] = {
 	{0, 1, 1}
 };*/
 
-static gdouble x_min, x_max;
-
 /* Hack! */
 #ifndef G_FUNC
 #define G_FUNC(x) (x)
@@ -138,8 +136,6 @@ static void zoom_region (GtkWidget *widget, Plot *plot);
 static void zoom_pan (GtkWidget *widget, Plot *plot);
 static void destroy_plot (Plot *plot);
 static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot);
-static void getbins (gdouble, gdouble, gint, gdouble *, gdouble *, gint *,
-	gdouble *);
 static void plot_canvas_movement(GtkWidget *, GdkEventMotion *, Plot *);
 static void plot_draw_axis (Plot *, AxisType, double, double);
 
@@ -280,7 +276,6 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 static GPlotFunction*
 create_plot_function_from_simulation_data (guint i, SimulationData *current)
 {
-	GPlotFunction *f;
 	double *X;
 	double *Y;
 	double data;
@@ -400,12 +395,12 @@ static void
 plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 {
 	gchar *coord;
-	gdouble x,y, x1, y1;
+	gdouble x,y;
 
 	x = event->x;
 	y = event->y;
 
-	g_plot_window_to_device (plot->plot, &x, &y);
+	g_plot_window_to_device (GPLOT (plot->plot), &x, &y);
 
 	coord = g_strdup_printf ("(%g, %g)", x, y);
 
@@ -417,16 +412,12 @@ plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 static GtkWidget *
 plot_window_create (Plot *plot)
 {
-	int i;
 	GtkTreeView *list;
 	GtkTreeStore *tree_model;
 	GtkCellRenderer *cell;
 	GtkTreeViewColumn *column;
-	GtkTreeSelection *selection;
 
 	GtkWidget *outer_table, *window, *button, *plot_scrolled;
-	GtkStyle *style;
-	GdkColormap *colormap;
 	GladeXML *gui;
 	gchar *msg;
 
@@ -597,123 +588,6 @@ plot_show (SimEngine *engine)
 	return TRUE;
 }
 
-
-/*
- * GetBins
- *
- *   Author: Carlos
- *   Purpose: Finds out the binning for the scale of the control
- *            Wmin,Wmax       : range of the scale
- *            Nold            : wanted number of bins
- *            BinLow, BinHigh : Optimized low and hig bins for which
- *                              a label is to be drawn
- *            Nbins           : number of bins
- *            Bwidth          : bin width between ticks
- *
- */
-static void
-getbins (gdouble Wmin, gdouble Wmax, gint Nold,
-	 gdouble *BinLow, gdouble *BinHigh, gint *Nbins, gdouble *Bwidth)
-{
-	gint lwid, kwid;
-	gint ntemp = 0;
-	gint jlog  = 0;
-	gdouble siground = 0;
-	gdouble alb, awidth, sigfig,atest;
-
-	gdouble AL = MIN (Wmin, Wmax);
-	gdouble AH = MAX (Wmin, Wmax);
-	if (AL == AH)
-		AH = AL + 1;
-
-/*
- * If Nold  ==  -1, program uses binwidth input from calling routine.
- */
-	if (Nold == -1 && (*Bwidth) > 0)
-		goto L90;
-
-	ntemp = MAX (Nold, 2);
-	if (ntemp < 1)
-		ntemp = 1;
-
-/*
- * Get nominal bin width in exponential form.
- */
-
- L20:
-	awidth = (AH - AL) / ((gdouble)ntemp);
-	if (awidth > 1.e30)
-		goto LOK;
-
-	jlog   = (gint)(log10 (awidth));
-	if (awidth <= 1)
-		jlog--;
-
-	sigfig = awidth * ((gdouble)pow (10, -jlog));
-
-/*
- * Round mantissa up to 1, 2, 2.5, 5, or 10.
- */
-
-	if (sigfig <= 1)
-		siground = 1;
-	else if (sigfig <= 2)
-		siground = 2;
-/*   else if (sigfig <= 2.5)  siground = 2.5;*/
-	else if (sigfig <= 5)
-		siground = 5;
-	else {
-		siground = 1;
-		jlog++;
-	}
-
-	(*Bwidth) = siground * pow (10, jlog);
-
-/*
- * Get new bounds from new width Bwidth.
- */
-
- L90:
-	alb = AL / (*Bwidth);
-	lwid = (gint) (alb);
-	if (alb < 0)
-		lwid--;
-	(*BinLow) = siground*((gdouble)lwid)*pow(10,jlog);
-	alb = AH / (*Bwidth) + 1.00001f;
-	kwid = (gint) alb;
-	if (alb < 0)
-		kwid--;
-	(*BinHigh) = siground * ((gdouble) kwid) * pow (10, jlog);
-	(*Nbins) = kwid - lwid;
-	if (Nold == -1)
-		goto LOK;
-	if (Nold <= 5) { /* Request for one bin is difficult case. */
-		if (Nold > 1 || (*Nbins) == 1)
-			goto LOK;
-
-		(*Bwidth) = (*Bwidth) * 2;
-		(*Nbins) = 1;
-		goto LOK;
-	}
-	if (2 * (*Nbins) == Nold) {
-		ntemp++;
-		goto L20;
-	}
-
- LOK:
-	atest = (*Bwidth) * 0.0001f;
-	if (fabs ((*BinLow) - Wmin)  >= atest) {
-		(*BinLow) += (*Bwidth);
-		(*Nbins)--;
-	}
-
-	if (fabs ((*BinHigh) - Wmax) >= atest) {
-		(*BinHigh) -= (*Bwidth);
-		(*Nbins)--;
-	}
-}
-
-
 static void
 plot_toggle_cross (GtkWidget *widget, Plot *plot)
 {
@@ -723,7 +597,6 @@ plot_toggle_cross (GtkWidget *widget, Plot *plot)
 static GPlotFunction*
 create_plot_function_from_data (SimulationFunction *func, SimulationData *current)
 {
-	GPlotFunction *f;
 	double *X;
 	double *Y;
 	double data;
