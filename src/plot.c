@@ -132,7 +132,6 @@ typedef enum {
 } AxisType;
 
 static GtkWidget *plot_window_create (Plot *plot);
-static void make_plot (Plot *plot, gint plot_number);
 static void destroy_window (GtkWidget *widget, Plot *plot);
 static void zoom_100 (GtkWidget *widget, Plot *plot);
 static void zoom_region (GtkWidget *widget, Plot *plot);
@@ -413,105 +412,6 @@ plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 	gtk_entry_set_text (GTK_ENTRY (plot->coord), coord);
 
 	g_free (coord);
-}
-
-static void
-make_plot (Plot *plot, gint plot_number)
-{
-	GtkTreeView *clist;
-	GtkTreeModel *model;
-	gboolean valid;
-	gchar *xtitle, *ytitle, *title;
-	GtkTreePath *path;
-	GtkTreeIter iter;
-
-	double plot_title_width, plot_title_height;
-	double y_factor, y;
-	double x_factor;
-	gint   i, j, k, npts, n_curve;
-	double data, data1;
-	char   *ysc=0,*xsc=0;
-	gdouble sx,sy,ex,ey;
-	gdouble xmin, xmax;
-	gdouble ymin, ymax;
-
-	GList *l_iter;
-
-	clist = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT(plot->window), "clist"));
-	y = 0.0;
-
-	model = gtk_tree_view_get_model(GTK_TREE_VIEW(clist));
-
-	/*
-	 * 2. Plot the curve, using the calculated scale factors.
-	 */
-	i = n_curve = 0;
-
-	path = gtk_tree_path_new_from_string ("0:0");
-	valid = gtk_tree_model_get_iter (model, &iter, path);
-	gtk_tree_path_free (path);
-	while (valid) {
-		GPlotFunction *f;
-		gdouble text_height;
-		gboolean active;
-
-		plot_number = i+1;
-		gtk_tree_model_get (model, &iter, 0, &active, -1);
-
-		f = create_plot_function_from_simulation_data (i, plot->current);
-
-		gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, plot_curve_colors[n_curve], 4, f, -1);
-
-		g_plot_add_function (GPLOT (plot->plot), f);
-
-		valid = gtk_tree_model_iter_next (model, &iter);
-		i++;
-	}
-
-	/* Plot Functions */
-	/*l_iter = plot->current->functions;
-	path = gtk_tree_path_new_from_string ("1:0");
-	valid = gtk_tree_model_get_iter (model, &iter, path);
-	gtk_tree_path_free (path);
-	while (l_iter) {
-		gchar *name;
-		SimulationFunction *func = (SimulationFunction *)l_iter->data;
-
-		gdouble text_height;
-		gboolean active;
-		gtk_tree_model_get (model, &iter, 0, &active, -1);
-		if (active) {
-			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, plot_curve_colors[n_curve], -1);
-			name = g_strdup_printf ("%s-%s", plot->current->var_names[func->first], plot->current->var_names[func->second]);
-
-			for (j = 0; j < plot->current->data[func->first]->len; j++) {
-				Point p;
-				data = g_array_index (
-					plot->current->data[func->first],
-					double, j);
-				p.y = data;
-	
-				data = g_array_index (
-					plot->current->data[func->second],
-					double, j);
-				p.y = sim_engine_do_function (func->type, p.y, data);
-		
-				data = g_array_index (plot->current->data[0], double, j);
-				if (plot->logx)
-					data = log10 (data);
-				p.x = data;
-			
-				gtk_cairo_plot_model_add_point (plot->plot_model, name, p);
-			}
-			n_curve++;
-		} else {
-			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 3, NULL, -1);
-		}
-		valid = gtk_tree_model_iter_next (model, &iter);
-		l_iter = l_iter->next;
-	} */
-
-	gtk_widget_queue_draw (plot->plot);
 }
 
 static GtkWidget *
