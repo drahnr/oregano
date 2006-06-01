@@ -6,8 +6,8 @@ VERSION = '0.50.0'
 
 # Command line options #
 opts = Options ('oregano.conf');
-opts.Add (PathOption ('PREFIX', 'System base prefix path', '/usr'));
-opts.Add (PathOption ('DESTDIR', 'System base installation path', '/'));
+opts.Add (PathOption ('PREFIX', 'System base prefix path', '/usr/local'));
+opts.Add (PackageOption ('DESTDIR', 'System base installation path', '/'));
 
 # Dependencies #
 deps = []
@@ -34,6 +34,7 @@ def CheckPkg (context, pkg, version):
 	return result;
 
 CEnv = Environment (options = opts);
+CEnv.SourceSignatures('timestamp')
 
 # po_helper
 # #
