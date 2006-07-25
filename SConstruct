@@ -4,7 +4,7 @@ import SCons;
 SConsignFile ('.sconsdb')
  
 # APP Version #
-VERSION = '0.50.0'
+VERSION = '0.50.1'
 
 # Command line options #
 opts = Options ('oregano.conf');
@@ -115,5 +115,4 @@ CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/mi
 CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/gnome/apps/Applications'), Split('oregano.desktop')))
 
 # Update mime database #
-CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['DESTDIR'], 'share/mime')))
-
+CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['INSTALL_DIR'], 'share/mime')))
