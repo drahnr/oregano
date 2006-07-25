@@ -1,6 +1,8 @@
 import os;
 import SCons;
 
+SConsignFile ('.sconsdb')
+ 
 # APP Version #
 VERSION = '0.50.0'
 
@@ -97,7 +99,7 @@ CEnv['DOMAIN'] = "oregano"
 CEnv['POTFILE'] = "oregano.pot"
 CEnv['INSTALL_DIR'] = CEnv['PREFIX']
 if CEnv['DESTDIR'] != "":
-	CEnv['INSTALL_DIR'] = CEnv['INSTALL_DIR'] + CEnv['PREFIX']
+	CEnv['INSTALL_DIR'] = CEnv['DESTDIR'] + CEnv['INSTALL_DIR'][1:]
 
 Export ('CEnv')
 
@@ -108,10 +110,10 @@ SConscript ('po/SConscript');
 # Install Target #
 CEnv.Alias ('install', CEnv.Command ('oregano.keys', 'oregano.keys.in', "sed 's/@icondir@/"+os.path.join (CEnv['PREFIX'], CEnv['DATADIR'],"mine-info").replace ("/", "\\/")+"/' < $SOURCE > $TARGET"))
 CEnv.Alias ('install', CEnv.Command ('oregano.xml', 'oregano.xml.in', "cp $SOURCE $TARGET"))
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], CEnv['DATADIR'], 'mime/packages'), Split('oregano.xml')))
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], CEnv['DATADIR'], 'mime-info'), Split('oregano.mime oregano.keys')))
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], CEnv['DATADIR'], 'gnome/apps/Applications'), Split('oregano.desktop')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/mime/packages'), Split('oregano.xml')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/mime-info'), Split('oregano.mime oregano.keys')))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/gnome/apps/Applications'), Split('oregano.desktop')))
 
 # Update mime database #
-CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['DESTDIR'], CEnv['DATADIR'], 'mime')))
+CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['DESTDIR'], 'share/mime')))
 
