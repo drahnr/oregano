@@ -19,5 +19,5 @@ resources = Split ("""
 	view-netlist.glade2
 	splash.xpm""")
 
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['PREFIX'], 'share/oregano/dialogs'), resources))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/oregano/dialogs'), resources))
 

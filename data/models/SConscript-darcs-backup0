@@ -22,6 +22,5 @@ resources = Split ("""
 	textbox-properties-dialog.glade2
 	view-netlist.glade2""")
 
-# TODO : Hacer que esto este en ['DESTDIR']
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['PREFIX'], 'share/oregano/dialogs'), resources))
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['DESTDIR'], CEnv['PREFIX'], 'share/oregano/dialogs'), resources))
 
