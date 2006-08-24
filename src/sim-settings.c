@@ -41,15 +41,6 @@
 #include "dialogs.h"
 #include "oregano-utils.h"
 
-typedef enum {
-	TRANSIENT_PAGE,
-	FOURIER_PAGE,
-	DC_SWEEP_PAGE,
-	AC_PAGE,
-//        TEMPERATURE_PAGE,
-	OPTIONS_PAGE,
-} SettingPages;
-
 struct _SimSettingsPriv {
 	/* Transient analysis. */
 	GtkWidget *w_main;
@@ -683,154 +674,72 @@ response_callback(GtkDialog *dlg, gint id, Schematic *sm)
 
 	g_object_get(s->notebook, "page", &page, NULL);
 
-	switch (id) {
-	case GTK_RESPONSE_OK:
-		/* Save opt to struct */
-		s->priv->trans_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
+	/* Trans */
+	s->priv->trans_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
 
-		if (s->priv->trans_start) g_free (s->priv->trans_start);
-		s->priv->trans_start = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_start), 0, -1);
+	if (s->priv->trans_start) g_free (s->priv->trans_start);
+	s->priv->trans_start = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_start), 0, -1);
 
-		if (s->priv->trans_stop) g_free (s->priv->trans_stop);
-		s->priv->trans_stop = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_stop), 0, -1);
+	if (s->priv->trans_stop) g_free (s->priv->trans_stop);
+	s->priv->trans_stop = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_stop), 0, -1);
 
-		if (s->priv->trans_step) g_free (s->priv->trans_step);
-		s->priv->trans_step = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_step), 0, -1);
+	if (s->priv->trans_step) g_free (s->priv->trans_step);
+	s->priv->trans_step = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_step), 0, -1);
 
-		s->priv->trans_step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_step_enable));
+	s->priv->trans_step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_step_enable));
 
-		s->priv->trans_init_cond = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_init_cond));
+	s->priv->trans_init_cond = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_init_cond));
 
-/* DC */
-		s->priv->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
-		if (s->priv->dc_vin1) g_free (s->priv->dc_vin1);
-		s->priv->dc_vin1 = g_strdup (gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin1)->entry)));
+	/* DC */
+	s->priv->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
+	if (s->priv->dc_vin1) g_free (s->priv->dc_vin1);
+	s->priv->dc_vin1 = g_strdup (gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin1)->entry)));
 
-		if (s->priv->dc_start1) g_free (s->priv->dc_start1);
-		s->priv->dc_start1 = g_strdup (gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_start1)));
+	if (s->priv->dc_start1) g_free (s->priv->dc_start1);
+	s->priv->dc_start1 = g_strdup (gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_start1)));
 
-		if (s->priv->dc_stop1) g_free(s->priv->dc_stop1);
-		s->priv->dc_stop1 = g_strdup(gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_stop1)));
+	if (s->priv->dc_stop1) g_free(s->priv->dc_stop1);
+	s->priv->dc_stop1 = g_strdup(gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_stop1)));
 
-		if (s->priv->dc_step1) g_free(s->priv->dc_step1);
-		s->priv->dc_step1 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step1)));
+	if (s->priv->dc_step1) g_free(s->priv->dc_step1);
+	s->priv->dc_step1 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step1)));
 
-		if (s->priv->dc_vin2) g_free(s->priv->dc_vin2);
-		s->priv->dc_vin2 = g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin2)->entry)));
+	if (s->priv->dc_vin2) g_free(s->priv->dc_vin2);
+	s->priv->dc_vin2 = g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin2)->entry)));
 
-		if (s->priv->dc_start2) g_free(s->priv->dc_start2);
-		s->priv->dc_start2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_start2)));
+	if (s->priv->dc_start2) g_free(s->priv->dc_start2);
+	s->priv->dc_start2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_start2)));
 
-		if (s->priv->dc_stop2) g_free(s->priv->dc_stop2);
-		s->priv->dc_stop2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_stop2)));
+	if (s->priv->dc_stop2) g_free(s->priv->dc_stop2);
+	s->priv->dc_stop2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_stop2)));
 
-		if (s->priv->dc_step2) g_free(s->priv->dc_step2);
-		s->priv->dc_step2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step2)));
+	if (s->priv->dc_step2) g_free(s->priv->dc_step2);
+	s->priv->dc_step2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step2)));
 
-/* AC */
-		s->priv->ac_enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (s->priv->w_ac_enable));
+	/* AC */
+	s->priv->ac_enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (s->priv->w_ac_enable));
 
-		if (s->priv->ac_type) g_free(s->priv->ac_type);
-		s->priv->ac_type = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_type)));
+	if (s->priv->ac_type) g_free(s->priv->ac_type);
+	s->priv->ac_type = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_type)));
 
-		if (s->priv->ac_npoints) g_free (s->priv->ac_npoints);
-		s->priv->ac_npoints = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_npoints)));
+	if (s->priv->ac_npoints) g_free (s->priv->ac_npoints);
+	s->priv->ac_npoints = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_npoints)));
 
-		if (s->priv->ac_start) g_free (s->priv->ac_start);
-		s->priv->ac_start = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_start)));
+	if (s->priv->ac_start) g_free (s->priv->ac_start);
+	s->priv->ac_start = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_start)));
 
-		if (s->priv->ac_stop) g_free (s->priv->ac_stop);
-		s->priv->ac_stop = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_stop)));
-/* Options */
-		get_options_from_list (s);
-		gtk_widget_hide(GTK_WIDGET(dlg));
-		gtk_widget_destroy(GTK_WIDGET(dlg));
-		s->pbox = NULL;
-		s->notebook = NULL;
+	if (s->priv->ac_stop) g_free (s->priv->ac_stop);
+	s->priv->ac_stop = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_stop)));
 
-		/* Schematic is dirty now ;-) */
-		schematic_set_dirty (sm, TRUE);
-		break;
-	case GTK_RESPONSE_APPLY:
-		switch (page) {
-		case TRANSIENT_PAGE:
-			s->priv->trans_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
+	/* Options */
+	get_options_from_list (s);
+	gtk_widget_hide(GTK_WIDGET(dlg));
+	gtk_widget_destroy(GTK_WIDGET(dlg));
+	s->pbox = NULL;
+	s->notebook = NULL;
 
-			if (s->priv->trans_start) g_free (s->priv->trans_start);
-			s->priv->trans_start = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_start), 0, -1);
-
-			if (s->priv->trans_stop) g_free (s->priv->trans_stop);
-			s->priv->trans_stop = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_stop), 0, -1);
-
-			if (s->priv->trans_step) g_free (s->priv->trans_step);
-			s->priv->trans_step = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_step), 0, -1);
-
-			s->priv->trans_step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_step_enable));
-			break;
-		case FOURIER_PAGE:
-			break;
-		case DC_SWEEP_PAGE:
-			s->priv->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
-			if ( s->priv->dc_vin1 ) g_free (s->priv->dc_vin1);
-			s->priv->dc_vin1 = g_strdup (gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin1)->entry)));
-
-			if ( s->priv->dc_start1 ) g_free (s->priv->dc_start1);
-			s->priv->dc_start1 = g_strdup (gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_start1)));
-
-			if ( s->priv->dc_stop1 ) g_free(s->priv->dc_stop1);
-			s->priv->dc_stop1 = g_strdup(gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_stop1)));
-
-			if ( s->priv->dc_step1 ) g_free(s->priv->dc_step1);
-			s->priv->dc_step1 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step1)));
-
-			s->priv->dc_vin2 = g_strdup(gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin2)->entry)));
-
-			if ( s->priv->dc_start2 ) g_free (s->priv->dc_start2);
-			s->priv->dc_start2 = g_strdup (gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_start2)));
-
-			if ( s->priv->dc_stop2 ) g_free (s->priv->dc_stop2);
-			s->priv->dc_stop2 = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_stop2)));
-
-			if ( s->priv->dc_step2 ) g_free (s->priv->dc_step2);
-			s->priv->dc_step2 = g_strdup (gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step2)));
-			break;
-		case AC_PAGE:
-			s->priv->ac_enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (s->priv->w_ac_enable));
-
-			if (s->priv->ac_type ) g_free (s->priv->ac_type);
-			s->priv->ac_type = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_type)));
-
-			if ( s->priv->ac_npoints ) g_free (s->priv->ac_npoints);
-			s->priv->ac_npoints = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_npoints)));
-
-			if ( s->priv->ac_start ) g_free (s->priv->ac_start);
-			s->priv->ac_start = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_start)));
-
-			if ( s->priv->ac_stop ) g_free (s->priv->ac_stop);
-			s->priv->ac_stop = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_stop)));
-			break;
-/*        case TEMPERATURE_PAGE:
-		  break;
-*/
-		case OPTIONS_PAGE:
-/* get the options */
-			get_options_from_list(s);
-		}
-		schematic_set_dirty (sm, TRUE);
-		break;
-	case GTK_RESPONSE_CANCEL:
-		if (s->priv->trans_enable) {
-			if (sim_settings_get_trans_start (s) >= sim_settings_get_trans_stop (s)) {
-				oregano_error_with_title (_("Problem in transient analysis"),
-					_("Start time must be less than stop time."));
-				return;
-			}
-		}
-
-		gtk_widget_hide(GTK_WIDGET(dlg));
-		gtk_widget_destroy(GTK_WIDGET(dlg));
-		s->pbox = NULL;
-	}
+	/* Schematic is dirty now ;-) */
+	schematic_set_dirty (sm, TRUE);
 }
 
 void
