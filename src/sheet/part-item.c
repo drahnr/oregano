@@ -681,42 +681,41 @@ edit_properties_punta (PartItem *item)
 	}
 
 	response = gtk_dialog_run(prop_dialog->dialog);
-	if (response == GTK_RESPONSE_OK) {
-		/* Save properties from GUI */
-		for (properties = part_get_properties (part); properties;
-			properties = properties->next) {
-			Property *prop;
-			prop = properties->data;
 
-			if (prop->name) {
-				if (!g_strcasecmp (prop->name, "internal"))
-					continue;
+	/* Save properties from GUI */
+	for (properties = part_get_properties (part); properties;
+		properties = properties->next) {
+		Property *prop;
+		prop = properties->data;
+
+		if (prop->name) {
+			if (!g_strcasecmp (prop->name, "internal"))
+				continue;
 	
-				if (!g_strcasecmp (prop->name, "type")) {
-					g_free (prop->value);
-					if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio_v))) {
-						prop->value = g_strdup ("v");
-					} else {
-						prop->value = g_strdup ("i");
-					}
-				} else if (!g_strcasecmp (prop->name, "ac_type")) {
-					g_free (prop->value);
-					if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_m))) {
-						prop->value = g_strdup ("m");
-					} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_i))) {
-						prop->value = g_strdup ("i");
-					} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_p))) {
-						prop->value = g_strdup ("p");
-					} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_r))) {
-						prop->value = g_strdup ("r");
-					}
-				} else if (!g_strcasecmp (prop->name, "ac_db")) {
-					g_free (prop->value);
-					if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (chk_db)))
-						prop->value = g_strdup ("true");
-					else
-						prop->value = g_strdup ("false");
+			if (!g_strcasecmp (prop->name, "type")) {
+				g_free (prop->value);
+				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio_v))) {
+					prop->value = g_strdup ("v");
+				} else {
+					prop->value = g_strdup ("i");
 				}
+			} else if (!g_strcasecmp (prop->name, "ac_type")) {
+				g_free (prop->value);
+				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_m))) {
+					prop->value = g_strdup ("m");
+				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_i))) {
+					prop->value = g_strdup ("i");
+				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_p))) {
+					prop->value = g_strdup ("p");
+				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_r))) {
+					prop->value = g_strdup ("r");
+				}
+			} else if (!g_strcasecmp (prop->name, "ac_db")) {
+				g_free (prop->value);
+				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (chk_db)))
+					prop->value = g_strdup ("true");
+				else
+					prop->value = g_strdup ("false");
 			}
 		}
 	}
@@ -832,9 +831,8 @@ edit_properties (SheetItem *object)
 	gtk_dialog_set_default_response (prop_dialog->dialog, 1);
 
 	response = gtk_dialog_run(prop_dialog->dialog);
-	if (response == GTK_RESPONSE_OK) {
-		prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
-	}
+
+	prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
 
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }

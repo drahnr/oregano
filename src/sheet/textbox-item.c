@@ -665,7 +665,6 @@ edit_textbox (SheetItem *sheet_item)
 	TextboxItemPriv *priv;
 	Textbox *textbox;
 	char *msg, *value;
-	gint response;
 	GladeXML *gui;
 
 	g_return_if_fail (sheet_item != NULL);
@@ -713,10 +712,9 @@ edit_textbox (SheetItem *sheet_item)
 	gtk_dialog_set_default_response (
 		GTK_DIALOG (prop_dialog->dialog), GTK_RESPONSE_OK);
 
-	response = gtk_dialog_run( GTK_DIALOG (prop_dialog->dialog));
-	if (response == GTK_RESPONSE_OK) {
-		edit_dialog_ok(item);
-	}
+	gtk_dialog_run( GTK_DIALOG (prop_dialog->dialog));
+
+	edit_dialog_ok(item);
 
 	/* Clean the dialog */
 	gtk_widget_destroy(GTK_WIDGET(prop_dialog->dialog));
