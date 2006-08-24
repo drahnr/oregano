@@ -87,7 +87,7 @@ static void
 apply_callback (GtkWidget *w, Settings *s)
 {
 	oregano.simtype = g_strdup ((gchar*) gtk_widget_get_name ( GTK_WIDGET( s->w_engine )));
-	oregano.simexec = gtk_file_chooser_get_filename (s->w_engine_path);
+	oregano.simexec = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (s->w_engine_path));
 	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
 	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log ));
 	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash ));
