@@ -46,9 +46,6 @@ typedef struct {
 	Schematic *sm;
 	GtkWidget *pbox; /* Property box */
 
-	GtkWidget *ok_bt;
-	GtkWidget *cancel_bt;
-
 	GtkWidget *w_show_splash;
 	GtkWidget *w_show_log;
 
@@ -101,24 +98,7 @@ apply_callback (GtkWidget *w, Settings *s)
 static void
 set_engine_name( GtkWidget *w, Settings *s)
 {
-	const gchar * type = g_strdup (gtk_widget_get_name (GTK_WIDGET (w)));
 	s->w_engine = w;
-	oregano_config_save ();
-}
-
-static gint
-close_callback (GtkWidget *widget, Settings *s)
-{
-	gtk_widget_destroy (s->pbox);
-	s->pbox = NULL;
-
-	return FALSE;
-}
-
-static gint
-cancel_event_cb (GtkWidget *widget, GdkEvent *event, gpointer data)
-{
-	return FALSE;
 }
 
 gpointer
@@ -177,13 +157,9 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	pbox = toplevel;
 	s->pbox = GTK_WIDGET (pbox);
 
-	w = glade_xml_get_widget (gui, "ok_bt");
+	w = glade_xml_get_widget (gui, "close_bt");
 	g_signal_connect (G_OBJECT (w), "clicked",
 		G_CALLBACK (apply_callback), s);
-
-	w = glade_xml_get_widget (gui, "cancel_bt");
-	g_signal_connect (G_OBJECT (w), "clicked",
-		G_CALLBACK (close_callback), s);
 
 	/* Setup callbacks. */
 	w = glade_xml_get_widget (gui, "engine-path-entry");
