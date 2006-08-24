@@ -31,7 +31,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <libgnome/gnome-i18n.h>
+#define ENABLE_NLS 1
+#define HAVE_BIND_TEXTDOMAIN_CODESET 1
+#define HAVE_GETTEXT 1
+#define HAVE_LC_MESSAGES 1
+
+#include <gtk/gtk.h>
+#include <glib/gi18n.h>
 #include <glade/glade.h>
 #include <libbonobo-2.0/libbonobo.h>
 #include <locale.h>
@@ -50,6 +56,7 @@
 #include "main.h"
 #include "splash.h"
 
+#include <libintl.h>
 OreganoApp oregano;
 static char **startup_files = NULL;
 int oregano_debugging;
@@ -105,7 +112,7 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	setlocale (LC_MESSAGES, "");
+	setlocale (LC_ALL, "");
 
 	OreProgram = gnome_program_init(PACKAGE, VERSION, LIBGNOMEUI_MODULE,
 		argc, argv, GNOME_PARAM_POPT_TABLE, options,
