@@ -7,7 +7,8 @@ SConsignFile ('.sconsdb')
 VERSION = '0.50.1'
 
 # Command line options #
-opts = Options ('oregano.conf');
+opts = Options ('oregano.py');
+opts.Add (BoolOption ('RunUpdateMimeDatabase', 'Set to no if you don\'t want to run update-mime-database', 1));
 opts.Add (PathOption ('PREFIX', 'System base prefix path', '/usr/local'));
 opts.Add (PackageOption ('DESTDIR', 'System base installation path', '/'));
 
@@ -36,6 +37,9 @@ def CheckPkg (context, pkg, version):
 	return result;
 
 CEnv = Environment (options = opts);
+
+Help (opts.GenerateHelpText (CEnv))
+
 CEnv.SourceSignatures('timestamp')
 
 # po_helper
@@ -115,4 +119,5 @@ CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/mi
 CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/gnome/apps/Applications'), Split('oregano.desktop')))
 
 # Update mime database #
-CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['INSTALL_DIR'], 'share/mime')))
+if CEnv['RunUpdateMimeDatabase']:
+	CEnv.Alias ('install', CEnv.Command ('update-mime-database', 'oregano.xml', "update-mime-database "+os.path.join (CEnv['INSTALL_DIR'], 'share/mime')))
