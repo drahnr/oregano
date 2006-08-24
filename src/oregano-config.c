@@ -66,7 +66,7 @@ oregano_config_load (void)
 	/* Let's deal with first use -I don't like this- */
 
 	if (!oregano.simexec)
-		oregano.simexec = g_strdup ("oregano_parser.pl");
+		oregano.simexec = g_strdup (PREFIX "/bin/oregano_parser.pl");
 	if (!oregano.simtype)
 		oregano.simtype = g_strdup ("gnucap");
 }

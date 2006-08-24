@@ -10,9 +10,11 @@ OreganoModelDir   = '-DOREGANO_MODELDIR=\\""'+SrcEnv['OREGANODIR']+'/models"\\"'
 VersionFlag       = '-DVERSION=\\"'+SrcEnv['VERSION']+'\\"'
 DataDir           = '-DDATADIR=\\"'+SrcEnv['DATADIR']+'\\"'
 Package           = '-DPACKAGE=\\"Oregano\\"'
+Prefix            = '-DPREFIX=\\"'+SrcEnv['PREFIX']+'\\"'
 GetText           = '-DGETTEXT_PACKAGE=\\"oregano\\"'
 
 SrcEnv.Append (CCFLAGS = [
+	Prefix,
 	Package,
 	GetText,
 	DataDir,

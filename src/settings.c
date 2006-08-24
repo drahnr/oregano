@@ -87,7 +87,7 @@ static void
 apply_callback (GtkWidget *w, Settings *s)
 {
 	oregano.simtype = g_strdup ((gchar*) gtk_widget_get_name ( GTK_WIDGET( s->w_engine )));
-	oregano.simexec = gtk_editable_get_chars (									 			GTK_EDITABLE (gnome_file_entry_gtk_entry (GNOME_FILE_ENTRY (s->w_engine_path))), 0, -1);
+	oregano.simexec = gtk_file_chooser_get_filename (s->w_engine_path);
 	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
 	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log ));
 	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash ));
@@ -186,16 +186,8 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		G_CALLBACK (close_callback), s);
 
 	/* Setup callbacks. */
-#if (GTK_MINOR_VERSION >= 4)
-	//w = gnome_file_entry_new ("EnginePath", "Engine path");
 	w = glade_xml_get_widget (gui, "engine-path-entry");
-	gtk_entry_set_text (GTK_ENTRY (gnome_file_entry_gtk_entry (GNOME_FILE_ENTRY (w))), oregano.simexec);
-#else
-	w = glade_xml_get_widget (gui, "engine-path-entry");
-	gnome_file_entry_set_title (GNOME_FILE_ENTRY (w),
-								"Path to simulation engine executable");
-	gtk_entry_set_text (GTK_ENTRY (gnome_file_entry_gtk_entry (GNOME_FILE_ENTRY (w))),oregano.simexec);
-#endif
+	gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (w), oregano.simexec);
 	s->w_engine_path = w;
 
 	w = glade_xml_get_widget (gui, "splash-enable");
@@ -216,33 +208,14 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	w = glade_xml_get_widget (gui, "realtime-enable");
 	gtk_widget_set_sensitive (w, FALSE);
 
-#if (GTK_MINOR_VERSION >= 4)
 	w = glade_xml_get_widget (gui, "library-path-entry");
-//	w = gnome_file_entry_new ("LibrariesPath", "Library path");
-	w0 = gnome_file_entry_gtk_entry (GNOME_FILE_ENTRY (w));
-#else
-	w = glade_xml_get_widget (gui, "library-path-entry");
-	gnome_file_entry_gtk_entry (GNOME_FILE_ENTRY (w));
-	w0 = gnome_file_entry_gnome_entry (GNOME_FILE_ENTRY (w));
-	gnome_entry_set_history_id (GNOME_FILE_ENTRY (w0),"LibrariesPath");
-	gnome_entry_set_max_saved (GNOME_FILE_ENTRY (w0), 100 );
-#endif
 	gtk_widget_set_sensitive (w, FALSE);
 
 	w = glade_xml_get_widget (gui, "btn_remove_lib_path");
 	gtk_widget_set_sensitive (w, FALSE);
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (remove_item_cb), w0);
 
-#if (GTK_MINOR_VERSION >= 4)
 	w = glade_xml_get_widget (gui, "model-path-entry");
-//	w = gnome_file_entry_new ("ModelsPath", "Model path");
-	w0 = gnome_file_entry_gtk_entry (GNOME_FILE_ENTRY (w));
-#else
-	w = glade_xml_get_widget (gui, "model-path-entry");
-	w0 = gnome_file_entry_gnome_entry (GNOME_FILE_ENTRY (w));
-	gnome_entry_set_history_id(GNOME_FILE_ENTRY (w0),"Models Path");
-	gnome_entry_set_max_saved (GNOME_FILE_ENTRY (w0), 100 );
-#endif
 	gtk_widget_set_sensitive (w, FALSE);
 
 	w = glade_xml_get_widget (gui, "btn_remove_model_path");
