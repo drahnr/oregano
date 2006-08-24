@@ -584,7 +584,7 @@ prop_dialog_response(GtkWidget *dialog, gint response,
 			prop = props->data;
 			if (g_strcasecmp (prop->name, prop_name) == 0) {
 				if (prop->value) g_free (prop->value);
-				prop_value = g_strdup (prop_value);
+				prop->value = g_strdup (prop_value);
 			}
 		}
 		g_free (prop_name);
