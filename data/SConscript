@@ -1,7 +1,4 @@
 Import ('CEnv')
 
-gplotEnv = CEnv.Copy ()
-
-Export ('gplotEnv')
-
 SConscript ('libraries/SConscript');
+SConscript ('dialogs/SConscript')

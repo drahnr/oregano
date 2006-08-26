@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <glade/glade.h>
 #include "splash.h"
-#include "dialogs/splash.xpm"
+#include "splash.xpm"
 
 
 /* TODO : If we support this, we need to know how to stop the g_timeout :-/ */
