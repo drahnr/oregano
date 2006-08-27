@@ -28,7 +28,7 @@
 #ifndef __PLOT_ADD__H
 #define __PLOT_ADD_H
 
-#include "simulate.h"
+#include "simulation.h"
 #include "engine.h"
 #include "dialogs.h"
 

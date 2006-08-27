@@ -37,7 +37,6 @@
 #include <libbonobo-2.0/libbonobo.h>
 #include <sys/time.h>
 
-#include "simulate.h"
 #include "sheet-private.h"
 #include "schematic-view.h"
 #include "schematic.h"

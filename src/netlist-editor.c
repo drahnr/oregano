@@ -27,7 +27,7 @@
 
 #include "netlist-editor.h"
 #include "netlist.h"
-#include "simulate.h"
+#include "simulation.h"
 #include "file.h"
 #include <glade/glade.h>
 #include <stdio.h>

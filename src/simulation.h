@@ -34,6 +34,98 @@
 #include "schematic.h"
 #include "schematic-view.h"
 
+typedef struct _SimulationData SimulationData;
+
+typedef enum {
+	OP_POINT	,
+	TRANSIENT	,
+	DC_TRANSFER ,
+	AC			,
+	TRANSFER	,
+	DISTORTION	,
+	NOISE		,
+	POLE_ZERO	,
+	SENSITIVITY ,
+	ANALYSIS_UNKNOWN
+} AnalysisType;
+
+
+#define INFINITE 1e50f
+
+typedef enum {
+	FUNCTION_MINUS = 0,
+	FUNCTION_TRANSFER
+} SimulationFunctionType;
+
+typedef struct _SimulationFunction {
+	SimulationFunctionType type;
+	guint first;
+	guint second;
+} SimulationFunction;
+
+struct _SimulationData {
+	AnalysisType type;
+	gboolean	 binary;
+	gint		 state;
+	gint		 n_variables;
+	gint		 n_points;
+	gchar	   **var_names;
+	gchar	   **var_units;
+	GArray	   **data;
+	gdouble		*min_data;
+	gdouble		*max_data;
+	gint		 got_var;
+	gint		 got_points;
+	gint		 num_data;
+
+	/* Functions  typeof SimulationFunction */
+	GList *functions;
+};
+
+
+typedef struct {
+	SimulationData sim_data;
+	int		 state;
+} SimOp;
+
+/* Placeholder for something real later. */
+typedef struct {
+	SimulationData sim_data;
+	double		   freq;
+	GList		  *out_var;
+} SimFourier;
+
+typedef struct {
+	SimulationData sim_data;
+	int		 state;
+	double	 sim_length;
+	double	 step_size;
+} SimTransient;
+
+typedef struct {
+	SimulationData sim_data;
+	int		 state;
+	double	 sim_length;
+	double	 start,stop;
+} SimAC;
+
+typedef struct {
+	SimulationData sim_data;
+	int		 state;
+	double	 sim_length;
+	double	 start1,stop1,step1;
+	double	 start2,stop2,step2;
+} SimDC;
+
+
+typedef union {
+	SimOp		 op;
+	SimTransient transient;
+	SimFourier	 fourier;
+	SimAC		 ac;
+	SimDC		 dc;
+} Analysis;
+
 void simulation_show (GtkWidget *widget, SchematicView *sv);
 gpointer simulation_new (Schematic *sm);
 
