@@ -33,6 +33,9 @@
 
 struct _OreganoGnuCapPriv {
 	GPid child;
+	gint child_out;
+	GIOChannel *child_io;
+	gint child_io_watch;
 	Schematic *schematic;
 };
 
@@ -211,8 +214,32 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
+		g_io_channel_shutdown (gnucap->priv->child_io, TRUE, NULL);
+		g_source_remove (gnucap->priv->child_io_watch);
+		g_spawn_close_pid (gnucap->priv->child);
+		close (gnucap->priv->child_out);
 		g_signal_emit_by_name (G_OBJECT (gnucap), "done");
 	}
+}
+
+static gboolean
+gnucap_child_stdout (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap)
+{
+	gchar *line;
+	gsize len, terminator;
+	GIOStatus status;
+	GError *error = NULL;
+
+	g_print ("STDOUT READ\n");
+
+	status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
+	while ((status | G_IO_STATUS_NORMAL) && (len > 0)) {
+		g_print ("Leido: %s\n", line);
+		g_free (line);
+
+		status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
+	}
+	return TRUE;
 }
 
 static void
@@ -220,7 +247,7 @@ gnucap_start (OreganoEngine *self)
 {
 	OreganoGnuCap *gnucap;
 	GError *error = NULL;
-	char *argv[] = {"gnucap", "-b", "/tmp/netlist.tmp"};
+	char *argv[] = {"gnucap", "-b", "/tmp/netlist.tmp", NULL};
 
 	gnucap = OREGANO_GNUCAP (self);
 
@@ -235,12 +262,16 @@ gnucap_start (OreganoEngine *self)
 			NULL,
 			&gnucap->priv->child,
 			NULL, /* STDIN */
-			NULL, /* STDOUT */
+			&gnucap->priv->child_out, /* STDOUT */
 			NULL, /* STDERR*/
 			&error
 		)) {
-		/* Add a watch */
+		/* Add a watch for process status */
 		g_child_watch_add (gnucap->priv->child, (GChildWatchFunc)gnucap_watch_cb, gnucap);
+		/* Add a GIOChannel to read from process stdout */
+		gnucap->priv->child_io = g_io_channel_unix_new (gnucap->priv->child_out);
+		/* Watch the I/O Channel to read child strout */
+		gnucap->priv->child_io_watch = g_io_add_watch (gnucap->priv->child_io, G_IO_IN|G_IO_PRI, gnucap_child_stdout, gnucap);
 	} else {
 		g_print ("Imposible lanzar el proceso hijo.");
 	}
