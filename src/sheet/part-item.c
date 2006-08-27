@@ -40,7 +40,6 @@
 #include "part-property.h"
 #include "load-library.h"
 #include "load-common.h"
-#include "netlist.h"
 #include "part-label.h"
 #include "stock.h"
 #include "dialogs.h"

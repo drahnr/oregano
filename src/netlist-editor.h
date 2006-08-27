@@ -33,6 +33,7 @@
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksourcelanguagesmanager.h>
 #include "schematic-view.h"
+#include "errors.h"
 
 #define TYPE_NETLIST_EDITOR				(netlist_editor_get_type ())
 #define NETLIST_EDITOR(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NETLIST_EDITOR, NetlistEditor))
