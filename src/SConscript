@@ -64,6 +64,7 @@ files = Split ("""clipboard.c
 SConscript ('gplot/SConscript')
 SConscript ('model/SConscript')
 SConscript ('sheet/SConscript')
+SConscript ('engines/SConscript')
 
 SrcEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet -I./src/gplot -I./data/dialogs"))
 SrcEnv.Execute ('chmod +x oregano_parser.pl')

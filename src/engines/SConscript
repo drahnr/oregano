@@ -1,0 +1,16 @@
+
+Import ('SrcEnv')
+
+localEnv = SrcEnv.Copy ();
+
+localEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet"))
+
+files = Split("""
+	engine.c
+	engine.h
+	gnucap.c
+	gnucap.h
+	""")
+
+libgplot = localEnv.StaticLibrary('liboregano-engines', files)
+
