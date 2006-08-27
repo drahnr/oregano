@@ -144,6 +144,7 @@ netlist_helper_init_data (NetlistData *data)
 	data->models = g_hash_table_new (g_str_hash, g_str_equal);
 	data->node_nr = 1;
 	data->gnd_list = NULL;
+	data->clamp_list = NULL;
 	data->mark_list = NULL;
 	data->node_and_number_list = NULL;
 }
