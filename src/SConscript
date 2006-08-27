@@ -65,11 +65,9 @@ SConscript ('sheet/SConscript')
 SConscript ('engines/SConscript')
 
 SrcEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet -I./src/gplot -I./data/dialogs -I./src/engines"))
-SrcEnv.Execute ('chmod +x oregano_parser.pl')
 
 oregano = SrcEnv.Program ('oregano', files)
 
 # Install alias #
 CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'bin'), oregano))
-CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'bin'), Split('oregano_parser.pl')))
 
