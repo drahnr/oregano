@@ -86,3 +86,22 @@ oregano_engine_stop (OreganoEngine *self)
 {
 	OREGANO_ENGINE_GET_CLASS (self)->stop (self);
 }
+
+gboolean
+oregano_engine_has_warnings (OreganoEngine *self)
+{
+	return OREGANO_ENGINE_GET_CLASS (self)->has_warnings (self);
+}
+
+void
+oregano_engine_get_progress (OreganoEngine *self, double *p)
+{
+	OREGANO_ENGINE_GET_CLASS (self)->progress (self, p);
+}
+
+void
+oregano_engine_generate_netlist (OreganoEngine *self, const gchar *file, GError **error)
+{
+	OREGANO_ENGINE_GET_CLASS (self)->get_netlist (self, file, error);
+}
+

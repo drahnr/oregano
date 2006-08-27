@@ -32,7 +32,7 @@
 
 #include "plot-add-function.h"
 
-int plot_add_function_show (SimEngine *engine, SimulationData *current)
+int plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 {
 	GladeXML *gui;
 	GtkDialog *dialog;

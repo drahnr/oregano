@@ -7,9 +7,8 @@ localEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet"))
 
 files = Split("""
 	engine.c
-	engine.h
 	gnucap.c
-	gnucap.h
+	netlist.c
 	""")
 
 libgplot = localEnv.StaticLibrary('liboregano-engines', files)

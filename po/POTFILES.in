@@ -25,9 +25,7 @@ src/stock.c
 src/splash.c
 src/smallicon.c
 src/simulation.c
-src/simulate.c
 src/sim-settings.c
-src/sim-engine.c
 src/settings.c
 src/schematic-view.c
 src/save-schematic.c
@@ -38,7 +36,7 @@ src/part-browser.c
 src/oregano-utils.c
 src/oregano-impl.c
 src/oregano-config.c
-src/netlist.c
+src/engines/netlist.c
 src/netlist-editor.c
 src/main.c
 src/load-schematic.c

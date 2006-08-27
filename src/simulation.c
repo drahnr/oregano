@@ -24,8 +24,8 @@
  *
  * You should have received a copy of the GNU General Public
  * License along with this program; if not, write to the
-	 * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-	 * Boston, MA 02111-1307, USA.
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
  */
 
 #include <gtk/gtk.h>
@@ -39,30 +39,31 @@
 #include "dialogs.h"
 #include "oregano-utils.h"
 #include "oregano-config.h"
-#include "sim-engine.h"
 #include "plot.h"
+#include "gnucap.h"
 
 typedef struct {
 	Schematic *sm;
 	SchematicView *sv;
 	GtkDialog *dialog;
-	SimEngine *engine;
+	OreganoEngine *engine;
 	GtkProgressBar *progress;
-	int				progress_timeout_id;
+	int progress_timeout_id;
 } Simulation;
 
-static int progress_bar_timeout_callback (Simulation *s);
-static void cancel_callback (GtkWidget *widget, gint arg1, Simulation *s);
-static void input_done_callback (SimEngine *engine, Simulation *s);
-static void input_aborted_callback (SimEngine *engine, Simulation *s);
+static int progress_bar_timeout_cb (Simulation *s);
+static void cancel_cb (GtkWidget *widget, gint arg1, Simulation *s);
+static void engine_done_cb (OreganoEngine *engine, Simulation *s);
+static void engine_aborted_cb (OreganoEngine *engine, Simulation *s);
 static gboolean simulate_cmd (Simulation *s);
 
 static int
-delete_event_callback (GtkWidget *widget, GdkEvent *event, gpointer data)
+delete_event_cb (GtkWidget *widget, GdkEvent *event, gpointer data)
 {
 	return FALSE;
 }
 
+/* TODO : This gpointer sucks */
 gpointer
 simulation_new (Schematic *sm)
 {
@@ -82,24 +83,20 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	GladeXML *gui;
 	Simulation *s;
 	Schematic *sm;
-	gchar *title, *desc;
-	gchar *fullpath_parser = NULL;
-	gchar *fullpath_engine = NULL;
 
 	g_return_if_fail (sv != NULL);
 
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_simulation (sm);
 
-/*
- * Only allow one instance of the dialog box per schematic.
- */
+	/* Only allow one instance of the dialog box per schematic.  */
 	if (s->dialog){
 		gdk_window_raise (GTK_WIDGET (s->dialog)->window);
 		return;
 	}
 
-	fullpath_parser = g_find_program_in_path (oregano.simexec);
+	/* TODO : Move engine check to proper modules */
+	/*fullpath_parser = g_find_program_in_path (oregano.simexec);
 	fullpath_engine = g_find_program_in_path (oregano.simtype);
 
 	if (oregano.simexec && (!fullpath_parser || !fullpath_engine)) {
@@ -120,10 +117,8 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 		if (fullpath_parser != NULL) g_free (fullpath_parser);
 		if (fullpath_engine != NULL) g_free (fullpath_engine);
 		return;
-	}
+	}*/
 
-	if (fullpath_parser != NULL) g_free (fullpath_parser);
-	if (fullpath_engine != NULL) g_free (fullpath_engine);
 	if (!g_file_test (OREGANO_GLADEDIR "/simulation.glade2",
 		G_FILE_TEST_EXISTS)) {
 		oregano_error (_("Could not create simulation dialog"));
@@ -144,19 +139,13 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	}
 
 	s->dialog = GTK_DIALOG (w);
-	g_signal_connect (G_OBJECT (w),
-		"delete_event",
-		G_CALLBACK (delete_event_callback),
-		s);
+	g_signal_connect (G_OBJECT (w), "delete_event", G_CALLBACK (delete_event_cb), s);
 
 	w = glade_xml_get_widget (gui, "progressbar");
 	s->progress = GTK_PROGRESS_BAR (w);
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 0.0);
 
-	g_signal_connect (G_OBJECT (s->dialog),
-		"response",
-		G_CALLBACK (cancel_callback),
-		s);
+	g_signal_connect (G_OBJECT (s->dialog), "response", G_CALLBACK (cancel_cb), s);
 
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
 
@@ -165,54 +154,51 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 }
 
 static int
-progress_bar_timeout_callback (Simulation *s)
+progress_bar_timeout_cb (Simulation *s)
 {
+	double p;
 	g_return_val_if_fail (s != NULL, FALSE);
 
-	if (s->engine->progress >= 1)
-		s->engine->progress = 0;
+	oregano_engine_get_progress (s->engine, &p);
 
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress),
-		s->engine->progress);
+	if (p >= 1) p = 0;
 
-	s->engine->progress += 0.1;
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), p);
 
 	return TRUE;
 }
 
 static void
-input_done_callback (SimEngine *engine, Simulation *s)
+engine_done_cb (OreganoEngine *engine, Simulation *s)
 {
 	if (s->progress_timeout_id != 0) {
-		gtk_timeout_remove (s->progress_timeout_id); // No existe la version de g_* Uhmmm.
+		g_source_remove (s->progress_timeout_id);
 		s->progress_timeout_id = 0;
 
-/* Make sure that the progress bar is completed, just for good looks. */
+		/* Make sure that the progress bar is completed, just for good looks. */
 		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 1.0);
-//	gtk_widget_draw (GTK_WIDGET (s->progress), NULL); // Como arriba
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 
-	plot_show (s->engine);
+	//plot_show (s->engine);
 
-	if (s->engine->has_warnings) {
+	if (oregano_engine_has_warnings (s->engine))
 		schematic_view_log_show (s->sv, FALSE);
-	}
 
 	schematic_view_clear_op_values (s->sv);
 	schematic_view_show_op_values (s->sv, s->engine);
 }
 
 static void
-input_aborted_callback (SimEngine *engine, Simulation *s)
+engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 {
 	GtkWidget *dialog;
 	int answer;
 
 	if (s->progress_timeout_id != 0) {
-		gtk_timeout_remove (s->progress_timeout_id);
+		g_source_remove (s->progress_timeout_id);
 		s->progress_timeout_id = 0;
 	}
 
@@ -220,7 +206,6 @@ input_aborted_callback (SimEngine *engine, Simulation *s)
 	s->dialog = NULL;
 
 	if (!schematic_view_log_window_exists (s->sv)) {
-
 		dialog = gtk_message_dialog_new_with_markup (
 			GTK_WINDOW (s->sv->toplevel),
 			GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -229,14 +214,10 @@ input_aborted_callback (SimEngine *engine, Simulation *s)
 			_("<span weight=\"bold\" size=\"large\">The simulation was aborted due to an error.</span>\n\n"
 				"Would you like to view the error log?"));
 
-
 		answer = gtk_dialog_run (GTK_DIALOG (dialog));
 		gtk_widget_destroy (dialog);
 
 		if (answer == GTK_RESPONSE_YES) {
-			/*
-			 * Show logs.
-			 */
 			schematic_view_log_show (s->sv, TRUE);
 		}
 	} else {
@@ -247,18 +228,17 @@ input_aborted_callback (SimEngine *engine, Simulation *s)
 }
 
 static void
-cancel_callback (GtkWidget *widget, gint arg1, Simulation *s)
+cancel_cb (GtkWidget *widget, gint arg1, Simulation *s)
 {
 	g_return_if_fail (s != NULL);
 
 	if (s->progress_timeout_id != 0) {
-	/* Watchout, the timer is destroyed when returns FALSE - Remove! */
-		gtk_timeout_remove (s->progress_timeout_id);
+		g_source_remove (s->progress_timeout_id);
 		s->progress_timeout_id = 0;
 	}
 
 	if (s->engine)
-		sim_engine_stop (s->engine);
+		oregano_engine_stop (s->engine);
 
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
@@ -268,37 +248,22 @@ cancel_callback (GtkWidget *widget, gint arg1, Simulation *s)
 static gboolean
 simulate_cmd (Simulation *s)
 {
-	SimEngine *engine;
-	char *netlist_filename;
+	OreganoEngine *engine;
 
 	if (s->engine != NULL) {
-		g_object_unref(G_OBJECT(s->engine));
+		g_object_unref (G_OBJECT (s->engine));
 		s->engine = NULL;
 	}
 
-	netlist_filename = schematic_get_netlist_filename (s->sm);
-	if (netlist_filename == NULL) {
-		return FALSE;
-	}
-
-	engine = sim_engine_new (s->sm);
+	engine = oregano_gnucap_new (s->sm);
 	s->engine = engine;
 
-	s->progress_timeout_id = g_timeout_add (
-		100,
-		(gpointer) progress_bar_timeout_callback,
-		(gpointer) s);
+	s->progress_timeout_id = g_timeout_add (100, (GSourceFunc)progress_bar_timeout_cb, s);
 
-	g_signal_connect (G_OBJECT (engine),
-		"done",
-		G_CALLBACK (input_done_callback),
-		s);
-	g_signal_connect (G_OBJECT (engine),
-		"aborted",
-		G_CALLBACK (input_aborted_callback),
-		s);
+	g_signal_connect (G_OBJECT (engine), "done", G_CALLBACK (engine_done_cb), s);
 
-	sim_engine_start_with_file (engine, netlist_filename);
+	/*TODO: separar generate list del start */
+	oregano_engine_start (engine);
 
 	return TRUE;
 }

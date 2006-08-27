@@ -39,7 +39,6 @@ files = Split ("""clipboard.c
 	load-schematic.c
 	main.c
 	netlist-editor.c
-	netlist.c
 	oregano-config.c
 	oregano-utils.c
 	part-browser.c
@@ -49,14 +48,13 @@ files = Split ("""clipboard.c
 	save-schematic.c
 	schematic-view.c
 	settings.c
-	sim-engine.c
 	sim-settings.c
-	simulate.c
 	simulation.c
 	smallicon.c
 	splash.c
 	stock.c
 	xml-helper.c
+	engines/liboregano-engines.a
 	gplot/liboregano-gplot.a
 	model/liboregano-model.a
 	sheet/liboregano-sheet.a""")
@@ -66,7 +64,7 @@ SConscript ('model/SConscript')
 SConscript ('sheet/SConscript')
 SConscript ('engines/SConscript')
 
-SrcEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet -I./src/gplot -I./data/dialogs"))
+SrcEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet -I./src/gplot -I./data/dialogs -I./src/engines"))
 SrcEnv.Execute ('chmod +x oregano_parser.pl')
 
 oregano = SrcEnv.Program ('oregano', files)

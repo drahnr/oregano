@@ -36,7 +36,6 @@
 #include "file.h"
 #include "main.h"
 #include "schematic.h"
-#include "sim-engine.h"
 #include "dialogs.h"
 #include "plot.h"
 #include "smallicon.h"
@@ -101,7 +100,7 @@ typedef struct {
 
 	gboolean show_cursor;
 
-	SimEngine *sim;
+	OreganoEngine *sim;
 	SimulationData *current;
 
 	gboolean logx;
@@ -524,7 +523,7 @@ plot_window_create (Plot *plot)
 }
 
 int
-plot_show (SimEngine *engine)
+plot_show (OreganoEngine *engine)
 {
 	GtkEntry *entry;
 	GtkTreeView *list;
@@ -535,11 +534,10 @@ plot_show (SimEngine *engine)
 	SimulationData *first = NULL;
 
 	g_return_val_if_fail (engine != NULL, FALSE);
-	g_return_val_if_fail (IS_SIM_ENGINE (engine), FALSE);
 
 	plot = g_new0(Plot, 1);
 
-	g_object_ref(engine);
+	g_object_ref (engine);
 	plot->sim = engine;
 	plot->window = plot_window_create(plot);
 

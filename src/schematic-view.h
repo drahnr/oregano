@@ -49,8 +49,6 @@ typedef struct _SchematicView	   SchematicView;
 typedef struct _SchematicViewClass SchematicViewClass;
 typedef struct _SchematicViewPriv  SchematicViewPriv;
 
-#include "sim-engine.h"
-
 typedef struct {
 	gboolean fit_to_page;
 	gboolean center_h;

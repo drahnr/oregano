@@ -28,9 +28,11 @@
 #ifndef __PLOT_ADD__H
 #define __PLOT_ADD_H
 
-#include "sim-engine.h"
+#include "simulate.h"
+#include "engine.h"
+#include "dialogs.h"
 
-int plot_add_function_show (SimEngine *engine, SimulationData *current);
+int plot_add_function_show (OreganoEngine *engine, SimulationData *current);
 
 #endif
 

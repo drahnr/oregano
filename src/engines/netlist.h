@@ -30,45 +30,41 @@
 #ifndef __NETLIST_H
 #define __NETLIST_H
 
-#include <gnome.h>
+#include <glib.h>
 #include "schematic.h"
-
+#include "sim-settings.h"
 
 typedef struct {
-		gint	   node_nr;
-		GHashTable *pins;
-		GHashTable *models;
-		GSList	   *gnd_list;
-		GSList     *clamp_list;
-		GSList	   *mark_list;
-		GList	   *node_and_number_list;
-		NodeStore  *store;
+	gint node_nr; ///< Node number
+	GHashTable *pins;
+	GHashTable *models;
+	GSList	   *gnd_list;   ///< Ground parts on the schematic
+	GSList     *clamp_list; ///< Test clamps on the schematic
+	GSList	   *mark_list;
+	GList	     *node_and_number_list;
+	NodeStore  *store;
 } NetlistData;
 
 typedef struct {
-		gint node_nr;
-		gchar *name;
+	gchar *cmd;
+	gchar *title;
+	GString *template;
+	SimSettings *settings;
+	NodeStore *store;
+} Netlist;
+
+typedef struct {
+	gint node_nr;
+	gchar *name;
 } Marker;
 
 typedef struct {
-		gint	   node_nr;
-		Node	  *node;
+	gint  node_nr;
+	Node *node;
 } NodeAndNumber;
 
-void node_foreach_reset (gpointer key, gpointer value, gpointer user_data);
-
-void wire_traverse (Wire *wire, NetlistData *data);
-
-void node_traverse (Node *node, NetlistData *data);
-
-void node_foreach_traverse (gpointer key, gpointer value, NetlistData *data);
-
-gint compare_marker (gconstpointer a, gconstpointer b);
-
-void foreach_model_write (char *model, gpointer user_data, FILE *f);
-
-void foreach_model_free (gpointer key, char *model, gpointer user_data);
-
-char *linebreak (char *str);
+void  netlist_helper_init_data (NetlistData *data);
+void  netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
+char *netlist_helper_create_analisys_string (NodeStore *store, gboolean do_ac);
 
 #endif

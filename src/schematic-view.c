@@ -874,33 +874,10 @@ static void
 simulate_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
-	char *filename;
 	GError *error = 0;
-
-	NodeStore *store;
-	GList *parts;
 
 	sm = sv->priv->schematic;
 
-	store = schematic_get_store (sm);
-	parts = node_store_get_parts (store);
-
-	
-	filename = nl_generate (sm, NULL, &error);
-
-	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			oregano_error_with_title (_("Could not create a netlist"), error->message);
-			g_error_free (error);
-		} else {
-			oregano_error (_("An unexpected error has occurred"));
-		}
-		return;
-	}
-
-	schematic_set_netlist_filename (sm, filename);
 	simulation_show (NULL, sv);
 
 	schematic_view_update_parts (sv);
@@ -2601,7 +2578,7 @@ dot_equal (gconstpointer a, gconstpointer b)
  * FIXME: solve similar to the connection dots.
  */
 void
-schematic_view_show_op_values (SchematicView *sv, SimEngine *engine)
+schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 {
 	GList *nodes, *list;
 	NodeStore *store;
@@ -2614,7 +2591,6 @@ schematic_view_show_op_values (SchematicView *sv, SimEngine *engine)
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 	g_return_if_fail (engine != NULL);
-	g_return_if_fail (IS_SIM_ENGINE (engine));
 
 	store = schematic_get_store (sv->priv->schematic);
 
@@ -2635,9 +2611,7 @@ schematic_view_show_op_values (SchematicView *sv, SimEngine *engine)
 			tmp = g_strdup (node->netlist_node_name);
 
 		if (got) {
-			/*
 			 * Don't have more than one meter per node.
-			 */
 			if (g_hash_table_lookup (sv->priv->voltmeter_nodes,
 				    tmp) != NULL)
 				continue;
@@ -2688,7 +2662,7 @@ schematic_view_show_op_values (SchematicView *sv, SimEngine *engine)
 
 	g_list_free (nodes);
 
-	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);
+	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);*/
 }
 
 void

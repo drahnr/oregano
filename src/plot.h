@@ -30,8 +30,8 @@
 #ifndef __PLOT_H
 #define __PLOT_H
 
-#include "sim-engine.h"
+#include "engine.h"
 
-int plot_show (SimEngine *engine);
+int plot_show (OreganoEngine *engine);
 
 #endif
