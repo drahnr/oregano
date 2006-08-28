@@ -215,9 +215,6 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
-		/* Leo todo lo que quede */
-		// gnucap_child_stdout (gnucap->priv->child_iochannel, 0, gnucap);
-
 		/* Free stuff */
 		g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
 		g_source_remove (gnucap->priv->child_iochannel_watch);
@@ -235,14 +232,10 @@ gnucap_child_stdout (GIOChannel *source, GIOCondition condition, OreganoGnuCap *
 	GIOStatus status;
 	GError *error = NULL;
 
-	g_print ("STDOUT READ\n");
-
-	status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
-	while ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
-		g_print ("Leido: %s\n", line);
+	status = g_io_channel_read_to_end (source, &line, &len, &error);
+	if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
+		schematic_log_append (gnucap->priv->schematic, line);
 		g_free (line);
-
-		status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
 	}
 	return TRUE;
 }
@@ -277,7 +270,7 @@ gnucap_start (OreganoEngine *self)
 		gnucap->priv->child_iochannel = g_io_channel_unix_new (gnucap->priv->child_stdout);
 		/* Watch the I/O Channel to read child strout */
 		gnucap->priv->child_iochannel_watch = g_io_add_watch (gnucap->priv->child_iochannel,
-			G_IO_IN|G_IO_PRI, (GIOFunc)gnucap_child_stdout, gnucap);
+			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)gnucap_child_stdout, gnucap);
 	} else {
 		g_print ("Imposible lanzar el proceso hijo.");
 	}
