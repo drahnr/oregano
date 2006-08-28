@@ -32,15 +32,16 @@
 #include "netlist.h"
 
 struct _OreganoGnuCapPriv {
-	GPid child;
-	gint child_out;
-	GIOChannel *child_io;
-	gint child_io_watch;
+	GPid child_pid;
+	gint child_stdout;
+	GIOChannel *child_iochannel;
+	gint child_iochannel_watch;
 	Schematic *schematic;
 };
 
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
+static gboolean gnucap_child_stdout (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap);
 
 GType 
 oregano_gnucap_get_type (void)
@@ -214,10 +215,14 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
-		g_io_channel_shutdown (gnucap->priv->child_io, TRUE, NULL);
-		g_source_remove (gnucap->priv->child_io_watch);
-		g_spawn_close_pid (gnucap->priv->child);
-		close (gnucap->priv->child_out);
+		/* Leo todo lo que quede */
+		// gnucap_child_stdout (gnucap->priv->child_iochannel, 0, gnucap);
+
+		/* Free stuff */
+		g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
+		g_source_remove (gnucap->priv->child_iochannel_watch);
+		g_spawn_close_pid (gnucap->priv->child_pid);
+		close (gnucap->priv->child_stdout);
 		g_signal_emit_by_name (G_OBJECT (gnucap), "done");
 	}
 }
@@ -233,7 +238,7 @@ gnucap_child_stdout (GIOChannel *source, GIOCondition condition, OreganoGnuCap *
 	g_print ("STDOUT READ\n");
 
 	status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
-	while ((status | G_IO_STATUS_NORMAL) && (len > 0)) {
+	while ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
 		g_print ("Leido: %s\n", line);
 		g_free (line);
 
@@ -260,18 +265,19 @@ gnucap_start (OreganoEngine *self)
 			G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
 			NULL,
 			NULL,
-			&gnucap->priv->child,
+			&gnucap->priv->child_pid,
 			NULL, /* STDIN */
-			&gnucap->priv->child_out, /* STDOUT */
+			&gnucap->priv->child_stdout, /* STDOUT */
 			NULL, /* STDERR*/
 			&error
 		)) {
 		/* Add a watch for process status */
-		g_child_watch_add (gnucap->priv->child, (GChildWatchFunc)gnucap_watch_cb, gnucap);
+		g_child_watch_add (gnucap->priv->child_pid, (GChildWatchFunc)gnucap_watch_cb, gnucap);
 		/* Add a GIOChannel to read from process stdout */
-		gnucap->priv->child_io = g_io_channel_unix_new (gnucap->priv->child_out);
+		gnucap->priv->child_iochannel = g_io_channel_unix_new (gnucap->priv->child_stdout);
 		/* Watch the I/O Channel to read child strout */
-		gnucap->priv->child_io_watch = g_io_add_watch (gnucap->priv->child_io, G_IO_IN|G_IO_PRI, gnucap_child_stdout, gnucap);
+		gnucap->priv->child_iochannel_watch = g_io_add_watch (gnucap->priv->child_iochannel,
+			G_IO_IN|G_IO_PRI, (GIOFunc)gnucap_child_stdout, gnucap);
 	} else {
 		g_print ("Imposible lanzar el proceso hijo.");
 	}
