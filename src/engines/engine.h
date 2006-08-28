@@ -48,6 +48,7 @@ struct _OreganoEngineClass {
 	void (*stop) (OreganoEngine *engine);
 	void (*progress) (OreganoEngine *engine, double *p);
 	void (*get_netlist) (OreganoEngine *engine, const gchar *sm, GError **error);
+	GList* (*get_results) (OreganoEngine *engine);
 	gboolean (*has_warnings) (OreganoEngine *engine);
 
 	/* Signals */
@@ -60,5 +61,6 @@ void     oregano_engine_stop (OreganoEngine *engine);
 gboolean oregano_engine_has_warnings (OreganoEngine *engine);
 void     oregano_engine_get_progress (OreganoEngine *engine, double *p);
 void     oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
+GList   *oregano_engine_get_results (OreganoEngine *engine);
 
 #endif

@@ -105,3 +105,9 @@ oregano_engine_generate_netlist (OreganoEngine *self, const gchar *file, GError 
 	OREGANO_ENGINE_GET_CLASS (self)->get_netlist (self, file, error);
 }
 
+GList*
+oregano_engine_get_results (OreganoEngine *self)
+{
+	return OREGANO_ENGINE_GET_CLASS (self)->get_results (self);
+}
+
