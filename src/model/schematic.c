@@ -498,7 +498,7 @@ schematic_log_append (Schematic *schematic, const char *message)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	schematic->priv->log = g_list_prepend (schematic->priv->log,
+	schematic->priv->log = g_list_append (schematic->priv->log,
 		g_strdup (message));
 }
 
