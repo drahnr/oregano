@@ -42,6 +42,20 @@
 #include "plot.h"
 #include "gnucap.h"
 
+static gchar *analysis_names[] = {
+	N_("Operating Point"),
+	N_("Transient Analysis"),
+	N_("DC transfer characteristic"),
+	N_("AC Analysis"),
+	N_("Transfer Function"),
+	N_("Distortion Analysis"),
+	N_("Noise Analysis"),
+	N_("Pole-Zero Analysis"),
+	N_("Sensitivity Analysis"),
+	N_("Unknown Analysis"),
+	NULL
+};
+
 typedef struct {
 	Schematic *sm;
 	SchematicView *sv;
@@ -266,4 +280,13 @@ simulate_cmd (Simulation *s)
 	oregano_engine_start (engine);
 
 	return TRUE;
+}
+
+gchar *
+sim_engine_analysis_name (SimulationData *sdat)
+{
+	if (sdat == NULL)
+		return g_strdup (_(analysis_names[ANALYSIS_UNKNOWN]));
+
+	return g_strdup (_(analysis_names[sdat->type]));
 }

@@ -128,5 +128,9 @@ typedef union {
 
 void simulation_show (GtkWidget *widget, SchematicView *sv);
 gpointer simulation_new (Schematic *sm);
+gchar *sim_engine_analysis_name(SimulationData *);
+
+#define SIM_DATA(obj)			   ((SimulationData *)(obj))
+#define ANALYSIS(obj)			   ((Analysis *)(obj))
 
 #endif /* __SIMULATION_H */
