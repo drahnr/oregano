@@ -41,7 +41,7 @@ struct _OreganoGnuCapPriv {
 
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
-static gboolean gnucap_child_stdout (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap);
+static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap);
 
 GType 
 oregano_gnucap_get_type (void)
@@ -225,7 +225,7 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 }
 
 static gboolean
-gnucap_child_stdout (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap)
+gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap)
 {
 	gchar *line;
 	gsize len, terminator;
@@ -270,7 +270,7 @@ gnucap_start (OreganoEngine *self)
 		gnucap->priv->child_iochannel = g_io_channel_unix_new (gnucap->priv->child_stdout);
 		/* Watch the I/O Channel to read child strout */
 		gnucap->priv->child_iochannel_watch = g_io_add_watch (gnucap->priv->child_iochannel,
-			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)gnucap_child_stdout, gnucap);
+			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)gnucap_child_stdout_cb, gnucap);
 	} else {
 		g_print ("Imposible lanzar el proceso hijo.");
 	}
