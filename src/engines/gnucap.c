@@ -28,20 +28,58 @@
 #include <glib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <ctype.h>
 #include "gnucap.h"
 #include "netlist.h"
 
+// TODO Move analisys data and result to another file
+#include "simulation.h"
+
+typedef enum {
+	STATE_IDLE,
+	IN_VARIABLES,
+	IN_VALUES,
+	STATE_ABORT
+} ParseDataState;
+
+struct analisys_tag {
+	gchar *name;
+	guint len;
+};
+
+static struct analisys_tag analisys_tags[] = {
+	{"#", 1},     /* OP */
+	{"#Time", 5}, /* Transient */
+	{"#DC", 3},   /* DC */
+	{"#Freq", 5}, /* AC */
+};
+
+#define IS_THIS_ITEM(str,item)  (!strncmp(str,item.name,item.len))
+#define GNUCAP_TITLE '#'
+#define TAGS_COUNT (sizeof (analisys_tags) / sizeof (struct analisys_tag))
+
+/* Parser STATUS */
 struct _OreganoGnuCapPriv {
 	GPid child_pid;
 	gint child_stdout;
 	GIOChannel *child_iochannel;
 	gint child_iochannel_watch;
 	Schematic *schematic;
+
+	GList *analysis;
+	gint num_analysis;
+
+	double progress;
+	gboolean char_last_newline;
+	guint status;
+	guint buf_count;
+	gchar buf[256]; // FIXME later
 };
 
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap);
+static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap);
 
 GType 
 oregano_gnucap_get_type (void)
@@ -202,7 +240,10 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 static void
 gnucap_progress (OreganoEngine *self, double *d)
 {
-	(*d) = 0;
+	OreganoGnuCap *gnucap = OREGANO_GNUCAP (self);
+
+	gnucap->priv->progress += 0.1;
+	(*d) = gnucap->priv->progress;
 }
 
 static void
@@ -234,7 +275,7 @@ gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCa
 
 	status = g_io_channel_read_to_end (source, &line, &len, &error);
 	if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
-		schematic_log_append (gnucap->priv->schematic, line);
+		gnucap_parse (line, len, gnucap);
 		g_free (line);
 	}
 	return TRUE;
@@ -248,7 +289,6 @@ gnucap_start (OreganoEngine *self)
 	char *argv[] = {"gnucap", "-b", "/tmp/netlist.tmp", NULL};
 
 	gnucap = OREGANO_GNUCAP (self);
-
 	oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &error);
 
 	if (g_spawn_async_with_pipes (
@@ -276,6 +316,12 @@ gnucap_start (OreganoEngine *self)
 	}
 }
 
+static GList*
+gnucap_get_results (OreganoEngine *self)
+{
+	return OREGANO_GNUCAP (self)->priv->analysis;
+}
+
 static void
 gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 {
@@ -285,6 +331,7 @@ gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 	klass->progress = gnucap_progress;
 	klass->get_netlist = gnucap_generate_netlist;
 	klass->has_warnings = gnucap_has_warnings;
+	klass->get_results = gnucap_get_results;
 }
 
 static void
@@ -293,6 +340,12 @@ gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 	OreganoGnuCap *self = OREGANO_GNUCAP (instance);
 
 	self->priv = g_new0 (OreganoGnuCapPriv, 1);
+	self->priv->progress = 0.0;
+	self->priv->char_last_newline = TRUE;
+	self->priv->status = 0;
+	self->priv->buf_count = 0;
+	self->priv->num_analysis = 0;
+	self->priv->analysis = NULL;
 }
 
 OreganoEngine*
@@ -304,5 +357,278 @@ oregano_gnucap_new (Schematic *sc)
 	gnucap->priv->schematic = sc;
 
 	return OREGANO_ENGINE (gnucap);
+}
+
+typedef struct {
+	gchar *name;
+	//gchar *unit;
+} GCap_Variable;
+
+GCap_Variable *_get_variables(gchar *str, gint *count)
+{
+	GCap_Variable *out;
+	/* FIXME Improve the code */
+	gchar *tmp[100];
+	gchar *ini, *fin;
+	gint i = 0;
+
+	// Don't USE!. Is not smarty !!
+	// It generate empty strings that really sucks all!!!
+	//arr = g_strsplit_set (str, " ", -1);
+
+	i = 0;
+	ini = str;
+	/* saco espacios adelante */
+	while (isspace(*ini)) ini++;
+	fin = ini;
+	while (*fin != '\0') {
+		if (isspace(*fin)) {
+			*fin = '\0';
+			tmp[i] = g_strdup(ini);
+			*fin = ' ';
+			i++;
+			ini = fin;
+			while (isspace(*ini)) ini++;
+			fin = ini;
+		} else fin++;
+	}
+
+	if (i == 0) {
+		g_warning ("NO COLUMNS FOUND\n");
+		return NULL;
+	}
+
+	out = g_new0 (GCap_Variable, i);
+	(*count) = i;
+	for ( i=0; i<(*count); i++ ) {
+		out[i].name = tmp[i];
+	}
+
+	return out;
+}
+
+void
+_free_variables(GCap_Variable *v, gint count)
+{
+	int i;
+	for(i=0; i<count; i++)
+		g_free(v[i].name);
+	g_free(v);
+}
+
+gdouble
+strtofloat (char *s) {
+	gdouble val;
+	char *error;
+
+	val = strtod(s, &error);
+	/* If the value looks like : 100.u, adjust it */
+	/* We need this because GNU Cap's or ngSpice float notation */
+	switch (error[0]) {
+		case 'u':
+			val /= 1000000;
+		break;
+		case 'n':
+			val /= 1000000;
+			val /= 1000;
+		break;
+		case 'p':
+			val /= 1000000;
+			val /= 1000000;
+		break;
+		case 'f':
+			val /= 100;
+		break;
+		case 'K':
+			val *= 1000;
+		break;
+		default:
+			if (strcmp(error, "Meg") == 0) val *= 1000000;
+	}
+
+	return val;
+}
+
+/* Main method. Here we'll transform GnuCap output
+ * into SimulationResults!
+ */
+static void
+gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
+{
+	static SimulationData *sdata;
+	static Analysis *data;
+	GCap_Variable *variables;
+	OreganoGnuCapPriv *priv = gnucap->priv;
+	gint i, j, n;
+	gdouble val;
+	gchar *s;
+
+	for (j=0; j < len; j++) {
+		if (raw[j] != '\n') {
+			priv->buf[priv->buf_count++] = raw[j];
+			continue;
+		}
+		priv->buf[priv->buf_count] = '\0';
+
+		//Got a complete line
+		s = priv->buf;
+		if (s[0] == GNUCAP_TITLE) {
+			SimSettings *sim_settings;
+			gdouble np1, np2;
+
+			sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
+
+			data = g_new0 (Analysis, 1);
+			sdata = SIM_DATA (data);
+			priv->analysis = g_list_append (priv->analysis, sdata);
+			priv->num_analysis++;
+			sdata->state = STATE_IDLE;
+			sdata->type  = ANALYSIS_UNKNOWN;
+			sdata->functions = NULL;
+
+			/* Calculates the quantity of variables */
+			variables = _get_variables(s, &n);
+
+			for (i = 0; i < TAGS_COUNT; i++)
+				if (IS_THIS_ITEM (variables[0].name, analisys_tags[i]))
+					sdata->type = i;
+
+			sdata->state = IN_VALUES;
+			sdata->n_variables = n;
+			sdata->got_points  = 0;
+			sdata->got_var	   = 0;
+			sdata->var_names   = (char**) g_new0 (gpointer, n);
+			sdata->var_units   = (char**) g_new0 (gpointer, n);
+			sdata->data        = (GArray**) g_new0 (gpointer, n);
+
+			for (i = 0; i < n; i++)
+				sdata->data[i] = g_array_new (TRUE, TRUE, sizeof (double));
+			sdata->min_data = g_new (double, n);
+			sdata->max_data = g_new (double, n);
+
+			for (i = 0; i < n; i++) {
+				sdata->min_data[i] =  G_MAXDOUBLE;
+				sdata->max_data[i] = -G_MAXDOUBLE;
+			}
+			for (i = 0; i < n; i++) {
+				sdata->var_names[i] = g_strdup (variables[i].name);
+				switch (sdata->type) {
+					case TRANSIENT:
+						if (i==0)
+							sdata->var_units[i] = g_strdup (_("time"));
+						else {
+							if (strstr (sdata->var_names[i], "db") != NULL) {
+								sdata->var_units[i] = g_strdup ("db");
+							} else
+								sdata->var_units[i] = g_strdup (_("voltage"));
+						}
+					break;
+					case AC:
+						if (i == 0)
+							sdata->var_units[i] = g_strdup (_("frequency"));
+						else {
+							if (strstr (sdata->var_names[i], "db") != NULL) {
+								sdata->var_units[i] = g_strdup ("db");
+							} else
+								sdata->var_units[i] = g_strdup (_("voltage"));
+						}
+					break;
+					default:
+						sdata->var_units[i] = g_strdup ("");
+				}
+			}
+			sdata->n_variables = n;
+
+			switch (sdata->type) {
+				case TRANSIENT:
+					data->transient.sim_length =
+						sim_settings_get_trans_stop  (sim_settings) -
+						sim_settings_get_trans_start (sim_settings);
+					data->transient.step_size =
+						sim_settings_get_trans_step (sim_settings);
+				break;
+				case AC:
+					data->ac.start = sim_settings_get_ac_start (sim_settings);
+					data->ac.stop  = sim_settings_get_ac_stop  (sim_settings);
+					data->ac.sim_length = sim_settings_get_ac_npoints (sim_settings);
+				break;
+				case OP_POINT:
+				case DC_TRANSFER:
+					np1 = np2 = 1.;
+					data->dc.start1 = sim_settings_get_dc_start (sim_settings,0);
+					data->dc.stop1  = sim_settings_get_dc_stop  (sim_settings,0);
+					data->dc.step1  = sim_settings_get_dc_step  (sim_settings,0);
+					data->dc.start2 = sim_settings_get_dc_start (sim_settings,1);
+					data->dc.stop2  = sim_settings_get_dc_stop  (sim_settings,1);
+					data->dc.step2  = sim_settings_get_dc_step  (sim_settings,1);
+					np1 = (data->dc.stop1 - data->dc.start1) / data->dc.step1;
+					if (data->dc.step2 != 0.0) {
+						np2 = (data->dc.stop2 - data->dc.start2) / data->dc.step2;
+					}
+					data->dc.sim_length = np1 * np2;
+				break;
+				case TRANSFER:
+				case DISTORTION:
+				case NOISE:
+				case POLE_ZERO:
+				case SENSITIVITY:
+				break;
+				case ANALYSIS_UNKNOWN:
+					g_error (_("Unknown analysis"));
+				break;
+			}
+		} else {
+			if ((priv->analysis == NULL) || (isalpha (s[0]))) {
+				if (priv->buf_count > 1) {
+					schematic_log_append (priv->schematic, s);
+					schematic_log_append (priv->schematic, "\n");
+				}
+				priv->buf_count = 0;
+				continue;
+			}
+
+			switch (sdata->state) {
+				case IN_VALUES:
+					val = strtofloat (s);
+					switch (sdata->type) {
+						case TRANSIENT:
+							priv->progress = val / data->transient.sim_length;
+						break;
+						case AC:
+							priv->progress = (val - data->ac.start) / data->ac.sim_length;
+						break;
+						case DC_TRANSFER:
+							priv->progress = val / data->ac.sim_length;
+					}
+					if (priv->progress > 1.0)
+						priv->progress = 1.0;
+
+					variables = _get_variables (s, &n);
+					for (i = 0; i < n; i++) {
+						val = strtofloat (variables[i].name);
+
+						sdata->data[i] = g_array_append_val (sdata->data[i], val);
+
+						/* Update the minimal and maximal values so far. */
+						if (val < sdata->min_data[i])
+							sdata->min_data[i] = val;
+						if (val > sdata->max_data[i])
+							sdata->max_data[i] = val;
+					}
+
+					_free_variables(variables, n);
+					sdata->got_points++;
+					sdata->got_var = n;
+					break;
+				default:
+					if (priv->buf_count > 1) {
+						if (strstr (s, _("abort")))
+							sdata->state = STATE_ABORT;
+						schematic_log_append (priv->schematic, s);
+					}
+			}
+		}
+		priv->buf_count = 0;
+	}
 }
 
