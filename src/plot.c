@@ -316,7 +316,8 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	ca = gtk_entry_get_text (GTK_ENTRY (entry));
 
 	plot->current = NULL;
-	for (analysis = plot->sim->analysis; analysis; analysis = analysis->next) {
+	analysis = oregano_engine_get_results (plot->sim);
+	for (; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
 		if (!strcmp (ca, sim_engine_analysis_name (sdat))) {
 			plot->current = sdat;
@@ -550,7 +551,7 @@ plot_show (OreganoEngine *engine)
 	plot->show_cursor = TRUE;
 
 	/*  Get the analysis we have */
-	analysis = engine->analysis;
+	analysis = oregano_engine_get_results (engine);
 	for (; analysis ; analysis = analysis->next) {
 		SimulationData *sdat = SIM_DATA (analysis->data);
 		gchar *str = sim_engine_analysis_name (sdat);
@@ -608,7 +609,7 @@ create_plot_function_from_data (SimulationFunction *func, SimulationData *curren
 		Y[j] = g_array_index (current->data[func->first], double, j);
 	
 		data = g_array_index (current->data[func->second], double, j);
-		Y[j] = sim_engine_do_function (func->type, Y[j], data);
+		// TODO Y[j] = sim_engine_do_function (func->type, Y[j], data);
 		
 		X[j] = g_array_index (current->data[0], double, j);
 	}

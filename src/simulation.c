@@ -196,7 +196,7 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 
-	//plot_show (s->engine);
+	plot_show (s->engine);
 
 	if (oregano_engine_has_warnings (s->engine))
 		schematic_view_log_show (s->sv, FALSE);
