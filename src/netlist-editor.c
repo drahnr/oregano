@@ -204,6 +204,10 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 	GtkTextIter start, end;
 	FILE *fp;
 	GError *error = 0;
+	OreganoEngine *engine;
+
+	// FIXME: OreganoEngine now override the netlist when start!
+	return;
 
 	tview = nle->priv->view;
 	buffer = gtk_text_view_get_buffer (tview);
@@ -212,7 +216,7 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 	gtk_text_buffer_get_end_iter (buffer, &end);
 
 	sm = schematic_view_get_schematic (nle->priv->sv);
-	name = nl_generate (sm, NULL, &error);
+	//name = nl_generate (sm, NULL, &error);
 
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
@@ -414,14 +418,17 @@ NetlistEditor *
 netlist_editor_new_from_schematic_view (SchematicView *sv)
 {
 	NetlistEditor *editor;
-	gchar *name;
+	gchar *name = "/tmp/oregano.netlist"; // FIXME
 	GError *error = 0;
 	Schematic *sm;
+	OreganoEngine *engine;
 
 	sm = schematic_view_get_schematic (sv);
 
-	name = nl_generate (sm, NULL, &error);
-	
+	engine = oregano_gnucap_new (sm);
+	oregano_engine_generate_netlist (engine, name, &error);
+	g_object_unref (engine);
+
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
 				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
@@ -438,7 +445,6 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 	if (editor) {
 		editor->priv->sv = sv;
 	}
-	g_free (name);
 
 	return editor;
 }

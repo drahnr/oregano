@@ -60,6 +60,7 @@
 #include "part-item.h"
 #include "errors.h"
 #include "node-item.h"
+#include "gnucap.h"
 
 /* remove: */
 #include "create-wire.h"
@@ -658,7 +659,6 @@ static void
 v_clamp_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	LibraryPart *library_part;
-	char *part_name;
 	SheetPos pos;
 	Sheet *sheet;
 	Part *part;
@@ -749,8 +749,8 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
 	gchar *netlist_name;
-	gchar *netlist_result;
 	GError *error = 0;
+	OreganoEngine *engine;
 
 	g_return_if_fail (sv != NULL);
 
@@ -761,10 +761,12 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 		return;
 
 	schematic_set_netlist_filename (sm, netlist_name);
-	netlist_result = nl_generate (sm, netlist_name, &error);
+	engine = oregano_gnucap_new (sm);
+	oregano_engine_generate_netlist (engine, netlist_name, &error);
 	schematic_view_update_parts (sv);
 
 	g_free (netlist_name);
+	g_object_unref (engine);
 	
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
@@ -777,8 +779,6 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 		}
 		return;
 	}
-
-/*	g_free (netlist_result); */
 }
 
 static void
@@ -873,7 +873,6 @@ static void
 simulate_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
-	GError *error = 0;
 
 	sm = sv->priv->schematic;
 
@@ -1091,7 +1090,6 @@ schematic_view_new (Schematic *schematic)
 {
 	SchematicView *sv;
 	SchematicViewPriv *priv;
-	GList *list;
 	GtkAdjustment *vadj, *hadj;
 	GtkWidget *w, *hbox;
 	GtkWidget *toolbar;
@@ -1503,10 +1501,10 @@ delete_event(GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 static int
 can_close (SchematicView *sv)
 {
-	GtkWidget *dialog, *lb;
+	GtkWidget *dialog;
 	gchar *text, *filename;
-	gint result;
 	GError *error = NULL;
+	gint result;
 
 	if (!schematic_is_dirty (schematic_view_get_schematic (sv)))
 		return TRUE;
@@ -1807,8 +1805,6 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 	   SchematicView *sv)
 {
 	gchar **files;
-	GtkTargetEntry *array;
-	guint narray;
 	GError *error = NULL;
 
 	/*
@@ -2028,9 +2024,6 @@ rubberband_timeout_cb (SchematicView *sv)
 	dx = fabs ((x1 - x2) - (x1_old - x2_old));
 	dy = fabs ((y1 - y2) - (y1_old - y2_old));
 	if (dx > 1.0 || dy > 1.0) {
-		/* Adjust points for the selection */
-		double tx, ty;
-
 		/* Save old state */
 		x1_old = x1;
 		y1_old = y1;
@@ -2555,8 +2548,8 @@ dot_equal (gconstpointer a, gconstpointer b)
 {
 	SheetPos *spa, *spb;
 
-	g_return_if_fail(a!=NULL);
-	g_return_if_fail(b!=NULL);
+	g_return_val_if_fail (a!=NULL, 0);
+	g_return_val_if_fail (b!=NULL, 0);
 
 	spa = (SheetPos *) a;
 	spb = (SheetPos *) b;
@@ -2600,17 +2593,16 @@ schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 	for (list = nodes; list; list = list->next) {
 		node = list->data;
 
-		got = sim_engine_get_op_value (engine,
-			node->netlist_node_name, &value);
+		//got = sim_engine_get_op_value (engine, node->netlist_node_name, &value);
 		if (!got) {
 			tmp = g_strdup_printf ("V(%s)",
 				node->netlist_node_name);
-			got = sim_engine_get_op_value (engine, tmp, &value);
+			//got = sim_engine_get_op_value (engine, tmp, &value);
 		} else
 			tmp = g_strdup (node->netlist_node_name);
 
 		if (got) {
-			 * Don't have more than one meter per node.
+			/* Don't have more than one meter per node. */
 			if (g_hash_table_lookup (sv->priv->voltmeter_nodes,
 				    tmp) != NULL)
 				continue;
@@ -2661,7 +2653,7 @@ schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 
 	g_list_free (nodes);
 
-	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);*/
+	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);
 }
 
 void
