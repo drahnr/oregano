@@ -256,6 +256,13 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
+		gchar *line;
+		gint status, len;
+		g_io_channel_read_to_end (gnucap->priv->child_iochannel, &line, &len, NULL);
+		if (len > 0)
+			gnucap_parse (line, len, gnucap);
+		g_free (line);
+
 		/* Free stuff */
 		g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
 		g_source_remove (gnucap->priv->child_iochannel_watch);
@@ -275,11 +282,14 @@ gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCa
 	GIOStatus status;
 	GError *error = NULL;
 
-	status = g_io_channel_read_to_end (source, &line, &len, &error);
+	status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
 	if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
 		gnucap_parse (line, len, gnucap);
 		g_free (line);
 	}
+
+	/* Let UI update */
+	g_main_context_iteration (NULL, FALSE);
 	return TRUE;
 }
 
