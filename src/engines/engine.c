@@ -111,3 +111,19 @@ oregano_engine_get_results (OreganoEngine *self)
 	return OREGANO_ENGINE_GET_CLASS (self)->get_results (self);
 }
 
+OreganoEngine*
+oregano_engine_factory_create_engine (gint type, Schematic *sm)
+{
+	OreganoEngine *engine;
+
+	switch (type) {
+		case OREGANO_ENGINE_GNUCAP:
+			engine = oregano_gnucap_new (sm);
+		break;
+		default:
+			engine = NULL;
+	}
+
+	return engine;
+}
+

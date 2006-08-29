@@ -55,6 +55,12 @@ struct _OreganoEngineClass {
 	void (*done) ();
 };
 
+enum {
+	OREGANO_ENGINE_GNUCAP=0,
+};
+
+OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);
+
 GType    oregano_engine_get_type (void);
 void     oregano_engine_start (OreganoEngine *engine);
 void     oregano_engine_stop (OreganoEngine *engine);
