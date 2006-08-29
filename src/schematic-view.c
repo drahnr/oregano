@@ -60,7 +60,7 @@
 #include "part-item.h"
 #include "errors.h"
 #include "node-item.h"
-#include "gnucap.h"
+#include "engine.h"
 
 /* remove: */
 #include "create-wire.h"
@@ -761,7 +761,7 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 		return;
 
 	schematic_set_netlist_filename (sm, netlist_name);
-	engine = oregano_gnucap_new (sm);
+	engine = oregano_engine_factory_create_engine (OREGANO_ENGINE_GNUCAP, sm);
 	oregano_engine_generate_netlist (engine, netlist_name, &error);
 	schematic_view_update_parts (sv);
 

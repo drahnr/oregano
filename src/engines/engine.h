@@ -25,7 +25,7 @@
  * Boston, MA 02111-1307, USA.
  */
 #ifndef __ENGINE_H
-#define __ENGINE_H
+#define __ENGINE_H 1
 
 #include <gtk/gtk.h>
 #include "sim-settings.h"
@@ -55,8 +55,16 @@ struct _OreganoEngineClass {
 	void (*done) ();
 };
 
+/* Engines IDs */
 enum {
 	OREGANO_ENGINE_GNUCAP=0,
+	OREGANO_ENGINE_COUNT
+};
+
+/* Engines Titles */
+static const gchar*
+engines[] = {
+	"GnuCap"
 };
 
 OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);

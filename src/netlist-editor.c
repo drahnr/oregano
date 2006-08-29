@@ -425,7 +425,7 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 
 	sm = schematic_view_get_schematic (sv);
 
-	engine = oregano_gnucap_new (sm);
+	engine = oregano_engine_factory_create_engine (OREGANO_ENGINE_GNUCAP, sm);
 	oregano_engine_generate_netlist (engine, name, &error);
 	g_object_unref (engine);
 

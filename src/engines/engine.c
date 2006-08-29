@@ -26,6 +26,7 @@
  */
 
 #include "engine.h"
+#include "gnucap.h"
 
 /* Signals */
 enum {
