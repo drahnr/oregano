@@ -34,6 +34,7 @@
 #include <gtk/gtk.h>
 #include "schematic.h"
 #include "schematic-view.h"
+#include "engine.h"
 
 void settings_show (GtkWidget *widget, SchematicView *sv);
 gpointer settings_new (Schematic *sm);

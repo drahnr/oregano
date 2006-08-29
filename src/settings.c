@@ -49,7 +49,6 @@ typedef struct {
 	GtkWidget *w_show_splash;
 	GtkWidget *w_show_log;
 
-	GtkWidget *w_engine_path;
 	GtkWidget *w_compress_files;
 	GtkWidget *w_engine;
 } Settings;
@@ -83,8 +82,7 @@ remove_item_cb ( GtkWidget *widget, GnomeFileEntry *entry) {
 static void
 apply_callback (GtkWidget *w, Settings *s)
 {
-	oregano.simtype = g_strdup ((gchar*) gtk_widget_get_name ( GTK_WIDGET( s->w_engine )));
-	oregano.simexec = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (s->w_engine_path));
+	oregano.engine = 0; // TODO Set engine type from s->w_engine 
 	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
 	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log ));
 	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash ));
@@ -96,7 +94,7 @@ apply_callback (GtkWidget *w, Settings *s)
 }
 
 static void
-set_engine_name( GtkWidget *w, Settings *s)
+set_engine_name (GtkWidget *w, Settings *s)
 {
 	s->w_engine = w;
 }
@@ -115,6 +113,8 @@ settings_new (Schematic *sm)
 void
 settings_show (GtkWidget *widget, SchematicView *sv)
 {
+	gint i;
+	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
 	GtkWidget *w0;
 	GladeXML *gui = NULL;
@@ -161,11 +161,6 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "clicked",
 		G_CALLBACK (apply_callback), s);
 
-	/* Setup callbacks. */
-	w = glade_xml_get_widget (gui, "engine-path-entry");
-	gtk_file_chooser_set_filename (GTK_FILE_CHOOSER (w), oregano.simexec);
-	s->w_engine_path = w;
-
 	w = glade_xml_get_widget (gui, "splash-enable");
 	s->w_show_splash = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_splash);
@@ -198,21 +193,17 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_set_sensitive (w, FALSE);
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (remove_item_cb), w0);
 
-	w = glade_xml_get_widget (gui, "gnucap");
-	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (set_engine_name), s);
-
-	if (!strcmp (oregano.simtype,"gnucap")) {
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), TRUE);
-		s->w_engine = w;
-	}
-
-	w = glade_xml_get_widget (gui, "ngspice");
-	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (set_engine_name), s);
-
-	if (!strcmp (oregano.simtype,"ngspice")) {
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), TRUE);
-		s->w_engine = w;
-	}
+	w = glade_xml_get_widget (gui, "engine_vbox");
+	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+		GtkWidget *button;
+		if (engine_group)
+			button = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engines[i]);
+		else
+			button = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engines[i]);
 	
+		gtk_box_pack_start (GTK_BOX (w), button, FALSE, TRUE, 8);
+		g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (set_engine_name), s);
+	}
+
 	gtk_widget_show_all (toplevel);
 }

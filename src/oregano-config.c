@@ -37,6 +37,7 @@
 #include "oregano-config.h"
 #include "load-library.h"
 #include "dialogs.h"
+#include "engine.h"
 
 #define OREGLIB_EXT	"oreglib"
 
@@ -50,9 +51,7 @@ oregano_config_load (void)
 
 	gconf = gconf_client_get_default ();
 
-	oregano.simexec = gconf_client_get_string (gconf, "/apps/oregano/sim_exec",
-		NULL);
-	oregano.simtype = gconf_client_get_string (gconf, "/apps/oregano/sim_type",
+	oregano.engine = gconf_client_get_int (gconf, "/apps/oregano/engine",
 		NULL);
 	oregano.compress_files = gconf_client_get_bool (gconf, "/apps/oregano/compress_files",
 		NULL);
@@ -65,10 +64,8 @@ oregano_config_load (void)
 
 	/* Let's deal with first use -I don't like this- */
 
-	if (!oregano.simexec)
-		oregano.simexec = g_strdup (PREFIX "/bin/oregano_parser.pl");
-	if (!oregano.simtype)
-		oregano.simtype = g_strdup ("gnucap");
+	if ((oregano.engine < 0) || (oregano.engine >= OREGANO_ENGINE_COUNT))
+		oregano.engine = 0;
 }
 
 void
@@ -78,9 +75,7 @@ oregano_config_save (void)
 
 	gconf = gconf_client_get_default ();
 
-	gconf_client_set_string (gconf, "/apps/oregano/sim_exec", oregano.simexec,
-		NULL);
-	gconf_client_set_string (gconf, "/apps/oregano/sim_type", oregano.simtype,
+	gconf_client_set_int (gconf, "/apps/oregano/engine", oregano.engine,
 		NULL);
 	gconf_client_set_bool (gconf, "/apps/oregano/compress_files", oregano.compress_files,
 		NULL);

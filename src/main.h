@@ -53,8 +53,7 @@ typedef struct {
 	 */
 	GHashTable *models;
 
-	gchar *simexec;
-	gchar *simtype;
+	gint engine;
 	gboolean compress_files;
 	gboolean show_log;
 	gboolean show_splash;
