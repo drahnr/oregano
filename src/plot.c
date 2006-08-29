@@ -319,7 +319,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	analysis = oregano_engine_get_results (plot->sim);
 	for (; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
-		if (!strcmp (ca, sim_engine_analysis_name (sdat))) {
+		if (!strcmp (ca, oregano_engine_get_analysis_name (sdat))) {
 			plot->current = sdat;
 			break;
 		}
@@ -338,7 +338,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 
 	g_free (plot->title);
 	plot->title = g_strdup_printf (_("Plot - %s"),
-		sim_engine_analysis_name (plot->current));
+		oregano_engine_get_analysis_name (plot->current));
 
 	/*  Set the variable names in the list  */
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
@@ -554,9 +554,8 @@ plot_show (OreganoEngine *engine)
 	analysis = oregano_engine_get_results (engine);
 	for (; analysis ; analysis = analysis->next) {
 		SimulationData *sdat = SIM_DATA (analysis->data);
-		gchar *str = sim_engine_analysis_name (sdat);
+		gchar *str = oregano_engine_get_analysis_name (sdat);
 		if (sdat->type == OP_POINT) {
-			free (str);
 			continue;
 		}
 		if (s_current == NULL) {

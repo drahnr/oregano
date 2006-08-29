@@ -42,19 +42,6 @@
 #include "plot.h"
 #include "gnucap.h"
 
-static gchar *analysis_names[] = {
-	N_("Operating Point"),
-	N_("Transient Analysis"),
-	N_("DC transfer characteristic"),
-	N_("AC Analysis"),
-	N_("Transfer Function"),
-	N_("Distortion Analysis"),
-	N_("Noise Analysis"),
-	N_("Pole-Zero Analysis"),
-	N_("Sensitivity Analysis"),
-	N_("Unknown Analysis"),
-	NULL
-};
 
 typedef struct {
 	Schematic *sm;
@@ -62,6 +49,7 @@ typedef struct {
 	GtkDialog *dialog;
 	OreganoEngine *engine;
 	GtkProgressBar *progress;
+	GtkLabel *progress_label;
 	int progress_timeout_id;
 } Simulation;
 
@@ -159,6 +147,9 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	s->progress = GTK_PROGRESS_BAR (w);
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 0.0);
 
+	w = glade_xml_get_widget (gui, "progress_label");
+	s->progress_label = GTK_LABEL (w);
+
 	g_signal_connect (G_OBJECT (s->dialog), "response", G_CALLBACK (cancel_cb), s);
 
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
@@ -170,6 +161,7 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 static int
 progress_bar_timeout_cb (Simulation *s)
 {
+	gchar *str;
 	double p;
 	g_return_val_if_fail (s != NULL, FALSE);
 
@@ -178,6 +170,11 @@ progress_bar_timeout_cb (Simulation *s)
 	if (p >= 1) p = 0;
 
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), p);
+
+	str = g_strdup_printf (_("Progress: <b>%s</b>"),
+		oregano_engine_get_current_operation (s->engine));
+	gtk_label_set_markup (s->progress_label, str);
+	g_free (str);
 
 	return TRUE;
 }
@@ -282,11 +279,3 @@ simulate_cmd (Simulation *s)
 	return TRUE;
 }
 
-gchar *
-sim_engine_analysis_name (SimulationData *sdat)
-{
-	if (sdat == NULL)
-		return g_strdup (_(analysis_names[ANALYSIS_UNKNOWN]));
-
-	return g_strdup (_(analysis_names[sdat->type]));
-}

@@ -68,7 +68,7 @@ struct _OreganoGnuCapPriv {
 
 	GList *analysis;
 	gint num_analysis;
-
+	SimulationData *current;
 	double progress;
 	gboolean char_last_newline;
 	guint status;
@@ -261,6 +261,8 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 		g_source_remove (gnucap->priv->child_iochannel_watch);
 		g_spawn_close_pid (gnucap->priv->child_pid);
 		close (gnucap->priv->child_stdout);
+
+		gnucap->priv->current = NULL;
 		g_signal_emit_by_name (G_OBJECT (gnucap), "done");
 	}
 }
@@ -322,6 +324,17 @@ gnucap_get_results (OreganoEngine *self)
 	return OREGANO_GNUCAP (self)->priv->analysis;
 }
 
+const gchar*
+gnucap_get_operation (OreganoEngine *self)
+{
+	OreganoGnuCapPriv *priv = OREGANO_GNUCAP (self)->priv;
+
+	if (priv->current == NULL)
+		return _("None");
+
+	return oregano_engine_get_analysis_name (priv->current);
+}
+
 static void
 gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 {
@@ -332,6 +345,7 @@ gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 	klass->get_netlist = gnucap_generate_netlist;
 	klass->has_warnings = gnucap_has_warnings;
 	klass->get_results = gnucap_get_results;
+	klass->get_operation = gnucap_get_operation;
 }
 
 static void
@@ -346,6 +360,7 @@ gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 	self->priv->buf_count = 0;
 	self->priv->num_analysis = 0;
 	self->priv->analysis = NULL;
+	self->priv->current = NULL;
 }
 
 OreganoEngine*
@@ -479,7 +494,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 
 			data = g_new0 (Analysis, 1);
-			sdata = SIM_DATA (data);
+			priv->current = sdata = SIM_DATA (data);
 			priv->analysis = g_list_append (priv->analysis, sdata);
 			priv->num_analysis++;
 			sdata->state = STATE_IDLE;

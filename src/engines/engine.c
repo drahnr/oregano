@@ -28,6 +28,20 @@
 #include "engine.h"
 #include "gnucap.h"
 
+static gchar *analysis_names[] = {
+	N_("Operating Point"),
+	N_("Transient Analysis"),
+	N_("DC transfer characteristic"),
+	N_("AC Analysis"),
+	N_("Transfer Function"),
+	N_("Distortion Analysis"),
+	N_("Noise Analysis"),
+	N_("Pole-Zero Analysis"),
+	N_("Sensitivity Analysis"),
+	N_("Unknown Analysis"),
+	NULL
+};
+
 /* Signals */
 enum {
 	DONE,
@@ -112,6 +126,11 @@ oregano_engine_get_results (OreganoEngine *self)
 	return OREGANO_ENGINE_GET_CLASS (self)->get_results (self);
 }
 
+gchar*
+oregano_engine_get_current_operation (OreganoEngine *self)
+{
+	return OREGANO_ENGINE_GET_CLASS (self)->get_operation (self);
+}
 OreganoEngine*
 oregano_engine_factory_create_engine (gint type, Schematic *sm)
 {
@@ -128,3 +147,11 @@ oregano_engine_factory_create_engine (gint type, Schematic *sm)
 	return engine;
 }
 
+gchar *
+oregano_engine_get_analysis_name (SimulationData *sdat)
+{
+	if (sdat == NULL)
+		return g_strdup (_(analysis_names[ANALYSIS_UNKNOWN]));
+
+	return g_strdup (_(analysis_names[sdat->type]));
+}

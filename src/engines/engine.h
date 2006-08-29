@@ -30,6 +30,7 @@
 #include <gtk/gtk.h>
 #include "sim-settings.h"
 #include "schematic.h"
+#include "simulation.h"
 
 #define OREGANO_TYPE_ENGINE             (oregano_engine_get_type ())
 #define OREGANO_ENGINE(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), OREGANO_TYPE_ENGINE, OreganoEngine))
@@ -49,6 +50,7 @@ struct _OreganoEngineClass {
 	void (*progress) (OreganoEngine *engine, double *p);
 	void (*get_netlist) (OreganoEngine *engine, const gchar *sm, GError **error);
 	GList* (*get_results) (OreganoEngine *engine);
+	gchar* (*get_operation) (OreganoEngine *engine);
 	gboolean (*has_warnings) (OreganoEngine *engine);
 
 	/* Signals */
@@ -76,5 +78,7 @@ gboolean oregano_engine_has_warnings (OreganoEngine *engine);
 void     oregano_engine_get_progress (OreganoEngine *engine, double *p);
 void     oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
 GList   *oregano_engine_get_results (OreganoEngine *engine);
+gchar   *oregano_engine_get_current_operation (OreganoEngine *);
+gchar   *oregano_engine_get_analysis_name (SimulationData *id);
 
 #endif
