@@ -53,7 +53,7 @@ struct _OreganoGnuCapClass {
 };
 
 GType          oregano_gnucap_get_type (void);
-OreganoEngine *oregano_gnucap_new ();
+OreganoEngine *oregano_gnucap_new (Schematic *sm);
 
 #endif
 
