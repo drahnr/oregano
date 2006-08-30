@@ -251,6 +251,11 @@ gnucap_progress (OreganoEngine *self, double *d)
 static void
 gnucap_stop (OreganoEngine *self)
 {
+	OreganoGnuCap *gnucap = OREGANO_GNUCAP (self);
+	g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
+	g_source_remove (gnucap->priv->child_iochannel_watch);
+	g_spawn_close_pid (gnucap->priv->child_pid);
+	close (gnucap->priv->child_stdout);
 }
 
 static void
