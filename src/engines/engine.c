@@ -45,6 +45,7 @@ static gchar *analysis_names[] = {
 /* Signals */
 enum {
 	DONE,
+	ABORTED,
 	LAST_SIGNAL
 };
 static guint engine_signals[LAST_SIGNAL] = { 0 };
@@ -64,6 +65,16 @@ oregano_engine_base_init (gpointer g_class)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE,
 			0);
+
+		engine_signals[ABORTED] = g_signal_new ("aborted", G_TYPE_FROM_CLASS (g_class),
+			G_SIGNAL_RUN_FIRST,
+			G_STRUCT_OFFSET (OreganoEngineClass, abort),
+			NULL,
+			NULL,
+			g_cclosure_marshal_VOID__VOID,
+			G_TYPE_NONE,
+			0);
+
 		initialized = TRUE;
 	}
 }

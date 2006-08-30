@@ -272,6 +272,7 @@ simulate_cmd (Simulation *s)
 	s->progress_timeout_id = g_timeout_add (100, (GSourceFunc)progress_bar_timeout_cb, s);
 
 	g_signal_connect (G_OBJECT (engine), "done", G_CALLBACK (engine_done_cb), s);
+	g_signal_connect (G_OBJECT (engine), "aborted", G_CALLBACK (engine_aborted_cb), s);
 
 	/*TODO: separar generate list del start */
 	oregano_engine_start (engine);

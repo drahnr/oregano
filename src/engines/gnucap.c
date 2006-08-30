@@ -66,6 +66,8 @@ struct _OreganoGnuCapPriv {
 	gint child_iochannel_watch;
 	Schematic *schematic;
 
+	gboolean aborted;
+
 	GList *analysis;
 	gint num_analysis;
 	SimulationData *current;
@@ -324,7 +326,9 @@ gnucap_start (OreganoEngine *self)
 		gnucap->priv->child_iochannel_watch = g_io_add_watch (gnucap->priv->child_iochannel,
 			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)gnucap_child_stdout_cb, gnucap);
 	} else {
-		g_print ("Imposible lanzar el proceso hijo.");
+		gnucap->priv->aborted = TRUE;
+		schematic_log_append (gnucap->priv->schematic, _("Unable to execute GnuCap."));
+		g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
 	}
 }
 
@@ -371,6 +375,7 @@ gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 	self->priv->num_analysis = 0;
 	self->priv->analysis = NULL;
 	self->priv->current = NULL;
+	self->priv->aborted = FALSE;
 }
 
 OreganoEngine*

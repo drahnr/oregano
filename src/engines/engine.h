@@ -55,6 +55,7 @@ struct _OreganoEngineClass {
 
 	/* Signals */
 	void (*done) ();
+	void (*abort) ();
 };
 
 /* Engines IDs */
