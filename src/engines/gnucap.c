@@ -277,7 +277,13 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 		close (gnucap->priv->child_stdout);
 
 		gnucap->priv->current = NULL;
-		g_signal_emit_by_name (G_OBJECT (gnucap), "done");
+
+		if (gnucap->priv->num_analysis == 0) {
+			schematic_log_append (gnucap->priv->schematic, _("### Too few or none analysis found ###\n"));
+			gnucap->priv->aborted = TRUE;
+			g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
+		} else
+			g_signal_emit_by_name (G_OBJECT (gnucap), "done");
 	}
 }
 
