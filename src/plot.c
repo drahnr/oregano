@@ -471,10 +471,6 @@ plot_window_create (Plot *plot)
 	g_signal_connect(G_OBJECT(button), "clicked",
 		G_CALLBACK(destroy_window), plot);
 
-	button = glade_xml_get_widget (gui, "close");
-	g_signal_connect(G_OBJECT(button), "clicked",
-		G_CALLBACK(destroy_window), plot);
-
 	button = glade_xml_get_widget (gui, "zoom_panning");
 	g_signal_connect(G_OBJECT(button), "clicked",
 		G_CALLBACK(zoom_pan), plot);
