@@ -8376,7 +8376,11 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>D_@refdes %1 %2 %3 %4 M_@refdes \n.model M_@refdes (IS=1.0PA, RS=2 CJO=20PF TT=1200N BV=700 IBV=1.0PA)</ogo:value>
+					<ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DiodeBridge</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
