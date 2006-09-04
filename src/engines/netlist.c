@@ -46,7 +46,8 @@ static void netlist_helper_node_foreach_reset (gpointer key, gpointer value, gpo
 static void netlist_helper_wire_traverse (Wire *wire, NetlistData *data);
 static void netlist_helper_node_traverse (Node *node, NetlistData *data);
 static void netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData *data);
-static void foreach_model_free (gpointer key, char *model, gpointer user_data);
+static gboolean foreach_model_free (gpointer key, gpointer model, gpointer user_data);
+static gboolean foreach_model_save (gpointer key, gpointer model, gpointer user_data);
 static char *linebreak (char *str);
 static void nl_node_traverse (Node *node, GSList **lst);
 
@@ -348,10 +349,22 @@ compare_marker (gconstpointer a, gconstpointer b)
 		return 1;
 }
 
-void
-foreach_model_free (gpointer key, char *model, gpointer user_data)
+gboolean
+foreach_model_save (gpointer key, gpointer model, gpointer user_data)
+{
+	GList **l = (GList **)user_data;
+
+	(*l) = g_list_prepend (*l, g_strdup ((gchar *)key));
+
+	return TRUE;
+}
+
+gboolean
+foreach_model_free (gpointer key, gpointer model, gpointer user_data)
 {
 	g_free (key);
+
+	return FALSE;
 }
 
 char *
@@ -399,6 +412,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 	schematic_log_clear (sm);
 
+	out->models = NULL;
 	out->title = schematic_get_filename (sm);
 	out->settings = schematic_get_sim_settings (sm);
 	store = schematic_get_store (sm);
@@ -592,6 +606,8 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		g_free (node2real[i]);
 	}
 	g_free (node2real);
+
+	g_hash_table_foreach (data.models, (GHFunc)foreach_model_save, &out->models);
 
 	return;
 

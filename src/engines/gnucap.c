@@ -161,13 +161,17 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	}
 	fputc ('\n',file);
 
-	/* Prints template parts */
-
-	/* Inclusion of complex part */
-	/* TODO : add GNU Cap model inclusion */
-	/* g_hash_table_foreach (data->models, (GHFunc) foreach_model_write_gnucap, file); */
-
-	fputs ("*----------------------------------------------\n",file);
+	/* Include of subckt models */
+	fputs ("*------------- Models -------------------------\n",file);
+	list = output.models;
+	while (list) {
+		gchar *model;
+		model = (gchar *)list->data;
+		fprintf (file,".include %s/%s.model\n", OREGANO_MODELDIR, model);
+		list = list->next;
+	}
+	
+	fputs ("*------------- Circuit Description-------------\n",file);
 	fputs (output.template->str,file);
 	fputs ("\n*----------------------------------------------\n",file);
 

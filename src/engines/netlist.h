@@ -51,6 +51,7 @@ typedef struct {
 	GString *template;
 	SimSettings *settings;
 	NodeStore *store;
+	GList *models;
 } Netlist;
 
 typedef struct {
