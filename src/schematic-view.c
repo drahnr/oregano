@@ -734,16 +734,6 @@ voltmeter_cmd (GtkWidget *widget, SchematicView *sv)
 	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);
 }
 
-#if 0
-static void
-plot_cmd (GtkWidget *widget, SchematicView *sm)
-{
-	g_return_if_fail (sm != NULL);
-
-	plot_show (sv->priv->simulation_data);
-}
-#endif
-
 static void
 netlist_cmd (GtkWidget *widget, SchematicView *sv)
 {

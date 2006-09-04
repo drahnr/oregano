@@ -355,12 +355,13 @@ static GnomeUIInfo schematic_simulation_toolbar [] = {
 		sim_settings_show,
 		GTK_STOCK_PROPERTIES),
 
+	/* By now, this can't be done 
 	GNOMEUIINFO_ITEM_STOCK (
 		N_("View plot"),
 		N_("View plot "),
-		NULL,
+		plot_whow,
 		STOCK_PIXMAP_PLOT),
-
+	*/
 	GNOMEUIINFO_END
 };
 
