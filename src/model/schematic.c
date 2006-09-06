@@ -630,7 +630,7 @@ schematic_save_file (Schematic *sm, GError **error)
 	if (ft == NULL) {
 		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
 			_("Unknown file format for %s."), schematic_get_filename (sm));
-		return;
+		return NULL;
 	}
 
 	if (ft->save_func (sm, &internal_error)) {
