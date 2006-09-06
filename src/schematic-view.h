@@ -49,12 +49,6 @@ typedef struct _SchematicView	   SchematicView;
 typedef struct _SchematicViewClass SchematicViewClass;
 typedef struct _SchematicViewPriv  SchematicViewPriv;
 
-typedef struct {
-	gboolean fit_to_page;
-	gboolean center_h;
-	gboolean center_v;
-} PageProperties;
-
 struct _SchematicView
 {
 	GObject parent;
@@ -128,6 +122,6 @@ void schematic_view_show_op_values (SchematicView *sv,
 */
 
 void		   schematic_view_clear_op_values (SchematicView *sv);
-PageProperties *schematic_view_get_page_properties (SchematicView *sv);
+
 #endif /* __SCHEMATIC_VIEW_H */
 

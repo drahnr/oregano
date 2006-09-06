@@ -33,10 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gnome.h>
-#include <libgnomeprint/gnome-print.h>
-#include <libgnomeprintui/gnome-print-dialog.h>
-#include <libgnomeprintui/gnome-print-job-preview.h>
-#include <libgnomeprint/gnome-print-job.h>
 #include <gtksourceview/gtksourceprintjob.h>
 
 static void netlist_editor_finalize (GObject *object);
@@ -159,7 +155,7 @@ netlist_editor_set_config (NetlistEditor * nle)
 void
 netlist_editor_print (GtkWidget * widget, NetlistEditor * nle)
 {
-	GnomePrintJob *print_job;
+/*	GnomePrintJob *print_job;
 	GtkSourcePrintJob *job;
 	GtkWidget *preview_widget;
 	char *header_left, *header_right;
@@ -192,6 +188,7 @@ netlist_editor_print (GtkWidget * widget, NetlistEditor * nle)
 
 	preview_widget = gnome_print_job_preview_new (print_job, _("Print Preview"));
 	gtk_widget_show (GTK_WIDGET (preview_widget));
+	*/
 }
 
 void

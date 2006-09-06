@@ -33,7 +33,6 @@
 #include <gnome.h>
 #include "item-data.h"
 #include "node-store.h"
-#include "print.h"
 
 static void item_data_class_init(ItemDataClass *klass);
 static void item_data_init(ItemData *item_data);
@@ -542,17 +541,17 @@ item_data_has_properties (ItemData *data)
 }
 
 void
-item_data_print (ItemData *data, OreganoPrintContext *ctxt)
+item_data_print (ItemData *data, cairo_t *cr)
 {
 	ItemDataClass *id_class;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
-	g_return_if_fail (ctxt != NULL);
+	g_return_if_fail (cr != NULL);
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->print) {
-		id_class->print (data, ctxt);
+		id_class->print (data, cr);
 	}
 }
 

@@ -42,7 +42,6 @@
 #include "load-common.h"
 #include "load-library.h"
 #include "part-private.h"
-#include "print.h"
 
 static void part_class_init (PartClass *klass);
 
@@ -76,7 +75,7 @@ static int part_register (ItemData *data);
 static void part_set_property (ItemData *data, char *property, char *value);
 
 static char *part_get_refdes_prefix (ItemData *data);
-static void part_print (ItemData *data, OreganoPrintContext *opc);
+static void part_print (ItemData *data, cairo_t *cr);
 
 enum {
 	ARG_0,
@@ -961,20 +960,18 @@ part_set_property (ItemData *data, char *property, char *value)
 }
 
 static void
-part_print (ItemData *data, OreganoPrintContext *opc)
+part_print (ItemData *data, cairo_t *cr)
 {
 	GSList *objects, *labels;
 	SymbolObject *object;
 	LibrarySymbol *symbol;
-	GnomeCanvasPoints *line;
 	double x0, y0;
-	ArtPoint dst, src;
-	double affine[6];
 	int i, rotation;
 	Part *part;
 	PartPriv *priv;
 	SheetPos pos;
 	IDFlip flip;
+	GnomeCanvasPoints *line;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_PART (data));
@@ -982,26 +979,28 @@ part_print (ItemData *data, OreganoPrintContext *opc)
 	part = PART (data);
 	priv = part->priv;
 
+	symbol = library_get_symbol (priv->symbol_name);
+	if (symbol == NULL) {
+		return;
+	}
+
 	item_data_get_pos (ITEM_DATA (part), &pos);
 	x0 = pos.x;
 	y0 = pos.y;
 
-	art_affine_identity (affine);
+	cairo_save (cr);
 
+	cairo_set_source_rgb (cr, 0, 0.7, 0);
 	rotation = part_get_rotation (part);
 	if (rotation != 0) {
-		art_affine_rotate (affine, rotation);
+		cairo_translate (cr, x0, y0);
+		cairo_rotate (cr, rotation*M_PI/180);
+		cairo_translate (cr, -x0, -y0);
 	}
 
 	flip = part_get_flip (part);
 	if (flip) {
-		art_affine_flip (affine, affine,
-			flip & ID_FLIP_HORIZ, flip & ID_FLIP_VERT);
-	}
-
-	symbol = library_get_symbol (priv->symbol_name);
-	if (symbol == NULL) {
-		return;
+		cairo_scale (cr, flip & ID_FLIP_HORIZ, flip & ID_FLIP_VERT);
 	}
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
@@ -1009,7 +1008,6 @@ part_print (ItemData *data, OreganoPrintContext *opc)
 
 		switch (object->type) {
 			case SYMBOL_OBJECT_LINE:
-				gnome_print_setlinewidth (opc->ctx, 0);
 				line = object->u.uline.line;
 				for (i = 0; i < line->num_points; i++) {
 					double x, y;
@@ -1017,18 +1015,10 @@ part_print (ItemData *data, OreganoPrintContext *opc)
 					x = line->coords[i * 2];
 					y = line->coords[i * 2 + 1];
 
-					if (rotation != 0 || flip != ID_FLIP_NONE) {
-						src.x = x;
-						src.y = y;
-						art_affine_point (&dst, &src, affine);
-						x = dst.x;
-						y = dst.y;
-					}
-
 					if (i == 0)
-						gnome_print_moveto (opc->ctx, x0 + x, y0 + y);
+						cairo_move_to (cr, x0 + x, y0 + y);
 					else
-						gnome_print_lineto (opc->ctx, x0 + x, y0 + y);
+						cairo_line_to (cr, x0 + x, y0 + y);
 				}
 			break;
 			case SYMBOL_OBJECT_ARC: {
@@ -1036,20 +1026,18 @@ part_print (ItemData *data, OreganoPrintContext *opc)
 				gdouble y1 = object->u.arc.y1;
 				gdouble x2 = object->u.arc.x2;
 				gdouble y2 = object->u.arc.y2;
-				gdouble width, height;
-				ArtPoint center;
+				gdouble width, height, x, y;
 
-				src.x = (x2 - x1) / 2 + x1;
-				src.y = (y2 - y1) / 2 + y1;
+				x = (x2 - x1) / 2 + x1;
+				y = (y2 - y1) / 2 + y1;
 				width = x2 - x1;
 				height = y2 - y1;
 
-				art_affine_point (&center, &src, affine);
-				center.x += x0;
-				center.y += y0;
-
-				gnome_print_setlinewidth (opc->ctx, 0);
-				print_draw_ellipse (opc->ctx, &center, width, height);
+				cairo_save (cr);
+					cairo_translate (cr, x0 + x, y0 + y);
+					cairo_scale (cr, width / 2.0, height / 2.0);
+					cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
+				cairo_restore (cr);
 			}
 			break;
 			default:
@@ -1060,63 +1048,44 @@ part_print (ItemData *data, OreganoPrintContext *opc)
 			continue;
 		}
 
-		gnome_print_stroke (opc->ctx);
+		cairo_stroke (cr);
+	}
 
-		for (labels = part_get_labels (part); labels; labels = labels->next) {
-			PartLabel *label = labels->data;
-			ArtPoint label_pos;
-			gchar *text;
-			gint text_width, text_height;
+	/* We don't want to rotate labels text, only the (x,y)
+	 * coordinate
+	 */
+	for (labels = part_get_labels (part); labels; labels = labels->next) {
+		gdouble x, y;
+		PartLabel *label = (PartLabel *)labels->data;
+		gchar *text;
+		/* gint text_width, text_height; */
 
-			label_pos.x = label->pos.x;
-			label_pos.y = label->pos.y;
+		x = label->pos.x + x0;
+		y = label->pos.y + y0;
 
-			if (rotation != 0 || flip != ID_FLIP_NONE) {
-				src.x = label_pos.x;
-				src.y = label_pos.y;
-				art_affine_point (&dst, &src, affine);
-				label_pos.x = dst.x;
-				label_pos.y = dst.y;
-			}
-			
-			label_pos.x += x0;
-			label_pos.y += y0;
-
-			text = part_property_expand_macros (part, label->text);
-
-			text_height =
-				gnome_font_face_get_ascender(opc->label_font) +
-				gnome_font_face_get_descender(opc->label_font);
-			text_width = 5*strlen(text);
-			//gnome_font_get_width_string (opc->label_font, text);
-
-			/* Align the label. */
-			switch (rotation) {
+		text = part_property_expand_macros (part, label->text);
+		/* Align the label.
+		switch (rotation) {
 			case 90:
-				/* North west */
-				label_pos.y += text_height*opc->scale;
+				y += text_height*opc->scale;
 			break;
 			case 180:
-				/* West */
 			break;
 			case 270:
-				/* South east */
-				label_pos.x -= text_width*opc->scale;
+				x -= text_width*opc->scale;
 			break;
 			case 0:
 			default:
-				/* South west */
 			break;
-			}
+		} */
 
-			gnome_print_setfont(opc->ctx,
-				gnome_font_face_get_font_default(
-				opc->label_font, 6)
-			);
-			print_draw_text (opc->ctx, text, &label_pos);
-			g_free (text);
-		}
+		cairo_save (cr);
+			cairo_move_to (cr, x, y);
+			cairo_show_text (cr, text);
+		cairo_restore (cr);
+		g_free (text);
 	}
+	cairo_restore (cr);
 }
 
 

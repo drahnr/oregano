@@ -4,7 +4,6 @@ Import ('CEnv')
 resources = Split ("""
 	clamp-properties-dialog.glade2
 	log-window.glade2
-	page-properties.glade2
 	part-browser.glade2
 	part-properties-dialog.glade2
 	plot-add-function.glade2

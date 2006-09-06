@@ -37,6 +37,7 @@
 #include "wire.h"
 #include "wire-private.h"
 #include "clipboard.h"
+#include "print.h"
 
 static void      wire_class_init (WireClass *klass);
 static void      wire_init (Wire *wire);
@@ -47,6 +48,7 @@ static void      wire_flip (ItemData *data, gboolean horizontal,
 	SheetPos *center);
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
+static gboolean  wire_has_properties (ItemData *data);
 static void	 wire_print (ItemData *data, OreganoPrintContext *opc);
 
 enum {
@@ -608,7 +610,7 @@ wire_register (ItemData *data)
 }
 
 static void
-wire_print (ItemData *data, cairo_t *cr)
+wire_print (ItemData *data, OreganoPrintContext *opc)
 {
 	SheetPos start_pos, end_pos;
 	Wire *wire;
@@ -621,12 +623,10 @@ wire_print (ItemData *data, cairo_t *cr)
 	wire_get_start_pos (wire, &start_pos);
 	wire_get_end_pos (wire, &end_pos);
 
-	cairo_save (cr);
-		cairo_set_source_rgb (cr, 0, 0, 1);
-		cairo_move_to (cr, start_pos.x, start_pos.y);
-		cairo_line_to (cr, end_pos.x, end_pos.y);
-		cairo_stroke (cr);
-	cairo_restore (cr);
+	gnome_print_setlinewidth (opc->ctx, 0);
+	gnome_print_moveto (opc->ctx, start_pos.x, start_pos.y);
+	gnome_print_lineto (opc->ctx, end_pos.x, end_pos.y);
+	gnome_print_stroke (opc->ctx);
 }
 
 void wire_delete (Wire *wire)

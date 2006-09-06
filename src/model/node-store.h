@@ -33,7 +33,6 @@
 #include <glib.h>
 #include <glib-object.h>
 #include "sheet-pos.h"
-#include "print.h"
 
 #define TYPE_NODE_STORE			  node_store_get_type ()
 #define NODE_STORE(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE_STORE, NodeStore))
@@ -91,10 +90,9 @@ GList	*node_store_get_nodes (NodeStore *store);
 void	 node_store_dump_wires (NodeStore *store);
 void	 node_store_get_bounds (NodeStore *store, ArtDRect *rect);
 gint	 node_store_count_items (NodeStore *store, ArtDRect *rect);
-void	 node_store_print_items (NodeStore *store,
-	OreganoPrintContext *opc, ArtDRect *rect);
+void	 node_store_print_items (NodeStore *store, cairo_t *opc, ArtDRect *rect);
 void	 node_store_print_labels (NodeStore *store,
-	OreganoPrintContext *opc, ArtDRect *rect);
+	cairo_t *opc, ArtDRect *rect);
 Node	 *node_store_get_or_create_node (NodeStore *store, SheetPos pos);
 
 #endif

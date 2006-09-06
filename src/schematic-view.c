@@ -54,7 +54,6 @@
 #include "sim-settings.h"
 #include "simulation.h"
 #include "smallicon.h"
-#include "print.h"
 #include "plot.h"
 #include "sheet-item-factory.h"
 #include "part-item.h"
@@ -113,7 +112,8 @@ struct _SchematicViewPriv {
 	GHashTable *dots;
 
 	RubberbandInfo *rubberband;
-	PageProperties page;
+	GtkPageSetup *page_setup;
+	GtkPrintSettings *print_settings;
 
 	GList *preserve_selection_items;
 
@@ -309,45 +309,9 @@ page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 	GtkCheckButton *fit, *center_h, *center_v;
 	gint btn;
 
-	s = schematic_view_get_schematic (sv);
-		
-	if (!g_file_test (OREGANO_GLADEDIR "/page-properties.glade2", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
-		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/page-properties.glade2");
-
-		oregano_error_with_title (_("Could not create the page properties dialog"), msg);
-		g_free (msg);
-		return;
-	}
-
-	xml = glade_xml_new (
-		OREGANO_GLADEDIR "/page-properties.glade2",
-		"page_properties", NULL
-	);
-
-	win = glade_xml_get_widget (xml, "page_properties");
-
-	// Set the checkboxes according to the options selected
-	fit = GTK_CHECK_BUTTON (glade_xml_get_widget (xml, "fit_page"));
-	center_h = GTK_CHECK_BUTTON (glade_xml_get_widget (xml, "center_h"));
-	center_v = GTK_CHECK_BUTTON (glade_xml_get_widget (xml, "center_v"));
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (fit), sv->priv->page.fit_to_page);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (center_h), sv->priv->page.center_h);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (center_v), sv->priv->page.center_v);
-	
-	btn = gtk_dialog_run (GTK_DIALOG (win));
-
-	// Store the changes
-	if (btn == GTK_RESPONSE_OK) {
-		sv->priv->page.fit_to_page = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (fit));
-		sv->priv->page.center_h = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (center_h));
-		sv->priv->page.center_v = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (center_v));
-	}
-
-	gtk_widget_destroy (win);
+  sv->priv->page_setup = gtk_print_run_page_setup_dialog (NULL,
+			sv->priv->page_setup,
+			sv->priv->print_settings);
 }
 
 static void
@@ -607,13 +571,17 @@ show_label_cmd (GtkCheckMenuItem *toggle, SchematicView *sv)
 static void
 print_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	print_schematic (G_OBJECT (sv), FALSE);
+	schematic_print (schematic_view_get_schematic (sv),
+		sv->priv->page_setup,
+		sv->priv->print_settings, FALSE);
 }
 
 static void
 print_preview_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	print_schematic (G_OBJECT (sv), TRUE);
+	schematic_print (schematic_view_get_schematic (sv),
+		sv->priv->page_setup,
+		sv->priv->print_settings, TRUE);
 }
 
 static void
@@ -935,6 +903,8 @@ schematic_view_init (SchematicView *sv)
 	sv->priv->items = NULL;
 	sv->priv->empty = TRUE;
 	sv->priv->schematic = NULL;
+	sv->priv->page_setup = NULL;
+	sv->priv->print_settings = gtk_print_settings_new ();
 
 	sv->priv->show_voltmeters = FALSE;
 	sv->priv->voltmeter_items = NULL;
@@ -2687,8 +2657,3 @@ schematic_view_update_parts (SchematicView *sv)
 	}
 }
 
-PageProperties *
-schematic_view_get_page_properties (SchematicView *sv)
-{
-	return &(sv->priv->page);
-}

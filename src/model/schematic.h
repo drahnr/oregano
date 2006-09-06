@@ -105,6 +105,7 @@ gboolean schematic_is_dirty(Schematic *sm);
 void     schematic_set_dirty(Schematic *sm, gboolean b);
 gint schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
+void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
 
 #endif /* __SCHEMATIC_H__ */
 

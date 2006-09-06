@@ -33,7 +33,6 @@
 #include "item-data.h"
 #include "textbox.h"
 #include "clipboard.h"
-#include "print.h"
 #include "node-store.h"
 
 /*
@@ -50,7 +49,7 @@ static void textbox_init (Textbox *textbox);
 static void textbox_copy (ItemData *dest, ItemData *src);
 static ItemData *textbox_clone (ItemData *src);
 static void textbox_rotate (ItemData *data, int angle, SheetPos *center);
-static void textbox_print (ItemData *data, OreganoPrintContext *opc);
+static void textbox_print (ItemData *data, cairo_t *cr);
 static int textbox_register (ItemData *data);
 static void textbox_unregister (ItemData *data);
 static gboolean textbox_has_properties (ItemData *data);
@@ -413,9 +412,9 @@ textbox_get_font (Textbox *textbox)
 }
 
 static void
-textbox_print (ItemData *data, OreganoPrintContext *opc)
+textbox_print (ItemData *data, cairo_t *cr)
 {
-	GnomeCanvasPoints *line;
+/*	GnomeCanvasPoints *line;
 	double x0, y0;
 	ArtPoint dst, src;
 	double affine[6];
@@ -441,6 +440,7 @@ textbox_print (ItemData *data, OreganoPrintContext *opc)
 		opc->label_font, 6)
 	);
 	print_draw_text (opc->ctx, priv->text, &src);
+	*/
 }
 
 static void

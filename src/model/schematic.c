@@ -603,7 +603,7 @@ schematic_read (char *name, GError **out_error)
 	if (error != NULL) {
 		g_propagate_error (out_error, error);
 		g_object_unref(G_OBJECT(new_sm));
-		return;
+		return NULL;
 	}
 
 	if (ret) {
@@ -864,3 +864,76 @@ schematic_get_lowest_available_refdes2 (Schematic *schematic, char *prefix)
 }
 */
 
+static void
+draw_page (GtkPrintOperation *operation,
+	GtkPrintContext *context, int page_nr, Schematic *sm)
+{
+	NodeStore *store;
+	ArtDRect bbox;
+	gdouble page_w, page_h;
+	gdouble circuit_w, circuit_h;
+	gdouble scale, scalew, scaleh;
+	
+	page_w = gtk_print_context_get_width (context);
+	page_h = gtk_print_context_get_height (context);
+
+	circuit_w = page_w - 10;
+	circuit_h = page_h - 10;
+
+	cairo_t *cr = gtk_print_context_get_cairo_context (context);
+
+	/* Draw a red rectangle, as wide as the paper (inside the margins) */
+	cairo_set_source_rgb (cr, 1.0, 0, 0);
+	cairo_rectangle (cr, 0, 0, page_w, page_h);
+	cairo_stroke (cr);
+
+	store = schematic_get_store (sm);
+
+	node_store_get_bounds (store, &bbox);
+
+	scalew = circuit_w / (bbox.x1 - bbox.x0);
+	scaleh = circuit_h / (bbox.y1 - bbox.y0);
+	if (scalew < scaleh)
+		scale = scalew;
+	else
+		scale = scaleh;
+
+	cairo_save (cr);
+		cairo_set_line_width (cr, 0.5);
+		/* TODO : Add colors! */
+		cairo_set_source_rgb (cr, 0, 0, 0);
+		cairo_translate (cr, 5, 5);
+		cairo_scale (cr, scale, scale);	
+		cairo_translate (cr, -bbox.x0, -bbox.y0);
+		node_store_print_items (store, cr, NULL);
+		node_store_print_labels (store, cr, NULL);
+	cairo_restore (cr);
+}
+
+void
+schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, gboolean preview)
+{
+	GtkPrintOperation *op;
+	GtkPrintOperationResult res;
+
+	op = gtk_print_operation_new ();
+
+	gtk_print_operation_set_print_settings (op, settings);
+	gtk_print_operation_set_default_page_setup (op, page);
+	gtk_print_operation_set_n_pages (op, 1);
+	gtk_print_operation_set_unit (op, GTK_UNIT_MM);
+
+	g_signal_connect (op, "draw_page", G_CALLBACK (draw_page), sm);
+
+	if (preview)
+		res = gtk_print_operation_run (op, GTK_PRINT_OPERATION_ACTION_PREVIEW,
+		NULL, NULL);
+	else
+		res = gtk_print_operation_run (op, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
+		NULL, NULL);
+
+	if (res == GTK_PRINT_OPERATION_RESULT_APPLY) {
+	//  settings = gtk_print_operation_get_print_settings (op);
+	//save_print_settings (settings);
+	}
+}

@@ -38,7 +38,6 @@
 #include "wire.h"
 #include "wire-private.h"
 #include "item-data.h"
-#include "print.h"
 
 /*
  * NODE_EPSILON is used to check for intersection.
@@ -1141,7 +1140,7 @@ node_store_count_items (NodeStore *store, ArtDRect *rect)
 }
 
 void
-node_store_print_items (NodeStore *store, OreganoPrintContext *opc, ArtDRect *rect)
+node_store_print_items (NodeStore *store, cairo_t *cr, ArtDRect *rect)
 {
 	GList *list;
 	SheetPos p1, p2;
@@ -1149,23 +1148,18 @@ node_store_print_items (NodeStore *store, OreganoPrintContext *opc, ArtDRect *re
 
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
-	g_return_if_fail (rect != NULL);
 
+	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 	for (list = store->items; list; list = list->next) {
 		data = ITEM_DATA (list->data);
-		item_data_get_absolute_bbox (data, &p1, &p2);
-//		if (p1.x >= rect->x0 && p1.y >= rect->y0 && p2.x <= rect->x1 && p2.y <= rect->y1) {
-		if ((p1.x <= rect->x1) && (p1.y <= rect->y1) &&
-			(p2.x >= rect->x0) && (p2.y >= rect->y0)) {
-			item_data_print (data, opc);
-		}
+		item_data_print (data, cr);
 	}
 }
 
 void
-node_store_print_labels (NodeStore *store, OreganoPrintContext *opc, ArtDRect *rect)
+node_store_print_labels (NodeStore *store, cairo_t *opc, ArtDRect *rect)
 {
-	GList *list;
+/*	GList *list;
 	SheetPos p1, p2;
 	ItemData *data;
 
@@ -1182,6 +1176,7 @@ node_store_print_labels (NodeStore *store, OreganoPrintContext *opc, ArtDRect *r
 			item_data_print (data, opc);
 		}
 	}
+*/
 }
 
 int

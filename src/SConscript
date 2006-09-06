@@ -44,7 +44,6 @@ files = Split ("""clipboard.c
 	part-browser.c
 	plot-add-function.c
 	plot.c
-	print.c
 	save-schematic.c
 	schematic-view.c
 	settings.c
