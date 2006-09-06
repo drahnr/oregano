@@ -865,6 +865,52 @@ schematic_get_lowest_available_refdes2 (Schematic *schematic, char *prefix)
 */
 
 static void
+schematic_render (Schematic *sm, cairo_t *cr)
+{
+	NodeStore *store;
+
+	store = schematic_get_store (sm);
+
+	node_store_print_items (store, cr, NULL);
+	node_store_print_labels (store, cr, NULL);
+}
+
+void
+schematic_export (Schematic *sm, void *format)
+{
+	ArtDRect bbox;
+	NodeStore *store;
+	cairo_surface_t *surface;
+	cairo_t *cr;
+	gdouble w, h;
+	gdouble img_w, img_h;
+
+	store = schematic_get_store (sm);
+	node_store_get_bounds (store, &bbox);
+
+	w = bbox.x1 - bbox.x0;
+	h = bbox.y1 - bbox.y0;
+
+	img_w = w*1.2;
+	img_h = h*1.2;
+
+	surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, img_w, img_h);
+
+	cr = cairo_create (surface);
+
+	/* Preparing ...*/
+	cairo_translate (cr, -bbox.x0 + (img_w-w)/2.0, -bbox.y0 + (img_h-h)/2.0);
+	cairo_set_line_width (cr, 0.5);
+
+	/* Render ... */
+	schematic_render (sm, cr);
+
+	/* Saving ... */
+	cairo_surface_write_to_png (surface, "ver.png");
+	cairo_destroy (cr);
+}
+
+static void
 draw_page (GtkPrintOperation *operation,
 	GtkPrintContext *context, int page_nr, Schematic *sm)
 {
@@ -877,8 +923,8 @@ draw_page (GtkPrintOperation *operation,
 	page_w = gtk_print_context_get_width (context);
 	page_h = gtk_print_context_get_height (context);
 
-	circuit_w = page_w - 10;
-	circuit_h = page_h - 10;
+	circuit_w = page_w * 0.8;
+	circuit_h = page_h * 0.8;
 
 	cairo_t *cr = gtk_print_context_get_cairo_context (context);
 
@@ -900,13 +946,11 @@ draw_page (GtkPrintOperation *operation,
 
 	cairo_save (cr);
 		cairo_set_line_width (cr, 0.5);
-		/* TODO : Add colors! */
 		cairo_set_source_rgb (cr, 0, 0, 0);
-		cairo_translate (cr, 5, 5);
+		cairo_translate (cr, page_w * 0.1, page_h * 0.1);
 		cairo_scale (cr, scale, scale);	
 		cairo_translate (cr, -bbox.x0, -bbox.y0);
-		node_store_print_items (store, cr, NULL);
-		node_store_print_labels (store, cr, NULL);
+		schematic_render (sm, cr);
 	cairo_restore (cr);
 }
 

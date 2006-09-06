@@ -32,6 +32,7 @@
 #define __SCHEMATIC_H__
 
 #include <gtk/gtk.h>
+#include <cairo/cairo.h>
 #include "item-data.h"
 #include "part.h"
 #include "wire.h"
@@ -106,6 +107,7 @@ void     schematic_set_dirty(Schematic *sm, gboolean b);
 gint schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
 void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
+void       schematic_export (Schematic *sm, void *format);
 
 #endif /* __SCHEMATIC_H__ */
 
