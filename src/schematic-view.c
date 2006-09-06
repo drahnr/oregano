@@ -365,7 +365,8 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 		schematic_export (s,
 			gtk_file_chooser_get_filename (file),
 			gtk_spin_button_get_value_as_int (spinw),
-			gtk_spin_button_get_value_as_int (spinh), i);
+			gtk_spin_button_get_value_as_int (spinh),
+			formats[i]);
 	}
 
 	gtk_widget_destroy (win);
