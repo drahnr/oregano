@@ -36,6 +36,7 @@
 #include <libgnomeui/gnome-app.h>
 #include <libbonobo-2.0/libbonobo.h>
 #include <sys/time.h>
+#include <cairo/cairo-features.h>
 
 #include "sheet-private.h"
 #include "schematic-view.h"
@@ -295,6 +296,76 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 		schematic_set_comments (s, s_comments);
 
 		g_free (s_comments);
+	}
+
+	gtk_widget_destroy (win);
+}
+
+static void
+export_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	Schematic *s;
+	GladeXML *xml;
+	GtkWidget *win;
+	GtkComboBox *combo;
+	gint btn;
+	gint formats[5], fc;
+
+	s = schematic_view_get_schematic (sv);
+		
+	if (!g_file_test (OREGANO_GLADEDIR "/export.glade2", G_FILE_TEST_EXISTS)) {
+		gchar *msg;
+		msg = g_strdup_printf (
+			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+			OREGANO_GLADEDIR "/export.glade2");
+
+		oregano_error_with_title (_("Could not create properties dialog"), msg);
+		g_free (msg);
+		return;
+	}
+
+	xml = glade_xml_new (
+		OREGANO_GLADEDIR "/export.glade2",
+		"export", NULL
+	);
+
+	win = glade_xml_get_widget (xml, "export");
+	combo = GTK_COMBO_BOX (glade_xml_get_widget (xml, "format"));
+
+	gtk_list_store_clear (GTK_LIST_STORE (gtk_combo_box_get_model (combo)));
+	fc = 0;
+#ifdef CAIRO_HAS_SVG_SURFACE
+	gtk_combo_box_append_text (combo, "Scalar Vector Graphics (SVG)");
+	formats[fc++] = 0;
+#endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+	gtk_combo_box_append_text (combo, "Portable Document Format (PDF)");
+	formats[fc++] = 1;
+#endif
+#ifdef CAIRO_HAS_PS_SURFACE
+	gtk_combo_box_append_text (combo, "Postscript (PS)");
+	formats[fc++] = 2;
+#endif
+#ifdef CAIRO_HAS_PNG_FUNCTIONS
+	gtk_combo_box_append_text (combo, "Portable Network Graphics (PNG)");
+	formats[fc++] = 3;
+#endif
+
+	btn = gtk_dialog_run (GTK_DIALOG (win));
+
+	if (btn == GTK_RESPONSE_OK) {
+		GtkFileChooser *file;
+		GtkSpinButton *spinw, *spinh;
+		int i = gtk_combo_box_get_active (combo);
+
+		file = GTK_FILE_CHOOSER (glade_xml_get_widget (xml, "file"));
+		spinw = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_width"));
+		spinh = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_height"));
+
+		schematic_export (s,
+			gtk_file_chooser_get_filename (file),
+			gtk_spin_button_get_value_as_int (spinw),
+			gtk_spin_button_get_value_as_int (spinh), i);
 	}
 
 	gtk_widget_destroy (win);

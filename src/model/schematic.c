@@ -876,14 +876,16 @@ schematic_render (Schematic *sm, cairo_t *cr)
 }
 
 void
-schematic_export (Schematic *sm, void *format)
+schematic_export (Schematic *sm, const gchar *filename,
+	guint img_w, guint img_h, int format)
 {
 	ArtDRect bbox;
 	NodeStore *store;
 	cairo_surface_t *surface;
 	cairo_t *cr;
 	gdouble w, h;
-	gdouble img_w, img_h;
+	gdouble graph_w, graph_h;
+	gdouble scale, scalew, scaleh;
 
 	store = schematic_get_store (sm);
 	node_store_get_bounds (store, &bbox);
@@ -891,23 +893,51 @@ schematic_export (Schematic *sm, void *format)
 	w = bbox.x1 - bbox.x0;
 	h = bbox.y1 - bbox.y0;
 
-	img_w = w*1.2;
-	img_h = h*1.2;
-
-	surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, img_w, img_h);
-
+	switch (format) {
+#ifdef CAIRO_HAS_SVG_SURFACE
+		case 0:
+			surface = cairo_svg_surface_create (filename, img_w, img_h);
+		break;
+#endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+		case 1:
+			surface = cairo_pdf_surface_create (filename, img_w, img_h);
+		break;
+#endif
+#ifdef CAIRO_HAS_PS_SURFACE
+		case 2:
+			surface = cairo_ps_surface_create (filename, img_w, img_h);
+		break;
+#endif
+		default:
+			surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, img_w, img_h);
+	}
 	cr = cairo_create (surface);
 
+	graph_w = img_w * 0.8;
+	graph_h = img_h * 0.8;
+	scalew = graph_w / (bbox.x1 - bbox.x0);
+	scaleh = graph_h / (bbox.y1 - bbox.y0);
+	if (scalew < scaleh)
+		scale = scalew;
+	else
+		scale = scaleh;
+
 	/* Preparing ...*/
-	cairo_translate (cr, -bbox.x0 + (img_w-w)/2.0, -bbox.y0 + (img_h-h)/2.0);
+	cairo_translate (cr, (img_w - graph_w)/2.0, (img_h - graph_h) / 2.0);
+	cairo_scale (cr, scale, scale);	
+	cairo_translate (cr, -bbox.x0, -bbox.y0);
 	cairo_set_line_width (cr, 0.5);
 
 	/* Render ... */
 	schematic_render (sm, cr);
 
 	/* Saving ... */
-	cairo_surface_write_to_png (surface, "ver.png");
+	if (format >= 3)
+		cairo_surface_write_to_png (surface, filename);
+	cairo_show_page (cr);
 	cairo_destroy (cr);
+	cairo_surface_destroy (surface);
 }
 
 static void

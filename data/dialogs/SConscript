@@ -7,7 +7,7 @@ resources = Split ("""
 	part-browser.glade2
 	part-properties-dialog.glade2
 	plot-add-function.glade2
-	plot-export.glade2
+	export.glade2
 	plot-window.glade2
 	properties.glade2
 	settings.glade2

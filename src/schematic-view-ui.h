@@ -68,6 +68,12 @@ static GnomeUIInfo schematic_menu_file [] = {
 	  GNOME_APP_PIXMAP_STOCK, GTK_STOCK_PROPERTIES,
 	  0, 0, NULL },
 
+	{ GNOME_APP_UI_ITEM,
+	  N_("_Export ..."),
+	  N_("Export schematic"),
+	  export_cmd, NULL, NULL,
+	  0, 0, 0, 0, NULL },
+
 	GNOMEUIINFO_SEPARATOR,
 
 	GNOMEUIINFO_MENU_CLOSE_ITEM(close_cmd, NULL),

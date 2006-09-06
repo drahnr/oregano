@@ -107,7 +107,7 @@ void     schematic_set_dirty(Schematic *sm, gboolean b);
 gint schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
 void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
-void       schematic_export (Schematic *sm, void *format);
+void schematic_export (Schematic *sm, const gchar *filename, guint img_w, guint img_h, int format);
 
 #endif /* __SCHEMATIC_H__ */
 
