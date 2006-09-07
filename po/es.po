@@ -1207,7 +1207,7 @@ msgstr "<b>Tamaño</b>"
 
 #: ../src/dialogs/plot-export.glade2.h:4
 msgid "Height : "
-msgstr "Ancho : "
+msgstr "Alto : "
 
 #: ../src/dialogs/plot-export.glade2.h:5
 msgid "Plot Export"
