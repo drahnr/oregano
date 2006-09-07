@@ -302,11 +302,37 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 }
 
 static void
+find_file (GtkButton *btn, GtkEntry *text)
+{
+	GtkWidget *dialog;
+
+	dialog = gtk_file_chooser_dialog_new (
+		_("Export to..."),
+		NULL,
+		GTK_FILE_CHOOSER_ACTION_SAVE,
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+		GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+		NULL);
+
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
+		char *filename;
+
+		filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		gtk_entry_set_text (text, filename);
+		g_free (filename);
+	}
+
+	gtk_widget_destroy (dialog);
+}
+
+static void
 export_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
 	GladeXML *xml;
 	GtkWidget *win;
+	GtkWidget *w;
+	GtkEntry *file;
 	GtkComboBox *combo;
 	gint btn;
 	gint formats[5], fc;
@@ -351,19 +377,23 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	formats[fc++] = 3;
 #endif
 
+	file = GTK_ENTRY (glade_xml_get_widget (xml, "file"));
+
+	w = glade_xml_get_widget (xml, "find");
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file), file);
+
+	gtk_combo_box_set_active (combo, 0);
 	btn = gtk_dialog_run (GTK_DIALOG (win));
 
 	if (btn == GTK_RESPONSE_OK) {
-		GtkFileChooser *file;
 		GtkSpinButton *spinw, *spinh;
 		int i = gtk_combo_box_get_active (combo);
 
-		file = GTK_FILE_CHOOSER (glade_xml_get_widget (xml, "file"));
 		spinw = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_width"));
 		spinh = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_height"));
 
 		schematic_export (s,
-			gtk_file_chooser_get_filename (file),
+			gtk_entry_get_text (file),
 			gtk_spin_button_get_value_as_int (spinw),
 			gtk_spin_button_get_value_as_int (spinh),
 			formats[i]);
@@ -375,12 +405,6 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 static void
 page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	Schematic *s;
-	GladeXML *xml;
-	GtkWidget *win;
-	GtkCheckButton *fit, *center_h, *center_v;
-	gint btn;
-
   sv->priv->page_setup = gtk_print_run_page_setup_dialog (NULL,
 			sv->priv->page_setup,
 			sv->priv->print_settings);
