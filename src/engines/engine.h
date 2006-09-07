@@ -52,6 +52,7 @@ struct _OreganoEngineClass {
 	GList* (*get_results) (OreganoEngine *engine);
 	gchar* (*get_operation) (OreganoEngine *engine);
 	gboolean (*has_warnings) (OreganoEngine *engine);
+	gboolean (*is_available) (OreganoEngine *engine);
 
 	/* Signals */
 	void (*done) ();
@@ -80,6 +81,7 @@ void     oregano_engine_get_progress (OreganoEngine *engine, double *p);
 void     oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
 GList   *oregano_engine_get_results (OreganoEngine *engine);
 gchar   *oregano_engine_get_current_operation (OreganoEngine *);
+gboolean oregano_engine_is_available (OreganoEngine *);
 gchar   *oregano_engine_get_analysis_name (SimulationData *id);
 
 #endif

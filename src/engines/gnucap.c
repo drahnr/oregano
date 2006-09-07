@@ -118,6 +118,18 @@ gnucap_has_warnings (OreganoEngine *self)
 	return FALSE;
 }
 
+static gboolean
+gnucap_is_available (OreganoEngine *self)
+{
+	gchar *exe;
+	exe = g_find_program_in_path ("gnucap");
+
+	if (!exe) return FALSE; // gnucap not found
+
+	g_free (exe);
+	return TRUE;
+}
+
 static void
 gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **error)
 {
@@ -375,6 +387,7 @@ gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 	klass->has_warnings = gnucap_has_warnings;
 	klass->get_results = gnucap_get_results;
 	klass->get_operation = gnucap_get_operation;
+	klass->is_available = gnucap_is_available;
 }
 
 static void

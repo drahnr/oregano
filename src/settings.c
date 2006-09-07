@@ -120,6 +120,7 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	GladeXML *gui = NULL;
 	Settings *s;
 	Schematic *sm;
+	GtkTooltips *image_tooltips;
 
 	g_return_if_fail (sv != NULL);
 
@@ -193,17 +194,37 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_set_sensitive (w, FALSE);
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (remove_item_cb), w0);
 
-	w = glade_xml_get_widget (gui, "engine_vbox");
+	w = glade_xml_get_widget (gui, "engine_table");
+	image_tooltips = gtk_tooltips_new ();
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
 		GtkWidget *button;
+		GtkWidget *image = NULL;
+		GtkWidget *event = NULL;
+		OreganoEngine *engine;
+
 		if (engine_group)
 			button = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engines[i]);
 		else
 			button = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engines[i]);
-	
-		gtk_box_pack_start (GTK_BOX (w), button, FALSE, TRUE, 8);
+
+		/* Check if the engine is available */
+		engine = oregano_engine_factory_create_engine (i, NULL);
+		if (!oregano_engine_is_available (engine)) {
+			event = gtk_event_box_new ();
+			image = gtk_image_new_from_stock ("gtk-dialog-warning", GTK_ICON_SIZE_BUTTON);
+			gtk_tooltips_set_tip (image_tooltips, event, _("Engine executable not found"),
+				_("The engine is unable to locate the external program."));
+			gtk_container_add (GTK_CONTAINER (event), image);
+		}
+		g_object_unref (G_OBJECT (engine));
+
+		gtk_table_attach (GTK_TABLE (w), button, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_SHRINK, 6, 6);
+		if (image) {
+			gtk_table_attach (GTK_TABLE (w), event, 1, 2, i, i+1, GTK_SHRINK, GTK_SHRINK, 6, 6);
+		}
 		g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (set_engine_name), s);
 	}
+	gtk_tooltips_enable (image_tooltips);
 
 	gtk_widget_show_all (toplevel);
 }

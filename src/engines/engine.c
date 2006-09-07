@@ -119,6 +119,12 @@ oregano_engine_has_warnings (OreganoEngine *self)
 	return OREGANO_ENGINE_GET_CLASS (self)->has_warnings (self);
 }
 
+gboolean
+oregano_engine_is_available (OreganoEngine *self)
+{
+	return OREGANO_ENGINE_GET_CLASS (self)->is_available (self);
+}
+
 void
 oregano_engine_get_progress (OreganoEngine *self, double *p)
 {
