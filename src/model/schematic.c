@@ -630,7 +630,7 @@ schematic_save_file (Schematic *sm, GError **error)
 	if (ft == NULL) {
 		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
 			_("Unknown file format for %s."), schematic_get_filename (sm));
-		return NULL;
+		return FALSE;
 	}
 
 	if (ft->save_func (sm, &internal_error)) {
@@ -877,7 +877,7 @@ schematic_render (Schematic *sm, cairo_t *cr)
 
 void
 schematic_export (Schematic *sm, const gchar *filename,
-	guint img_w, guint img_h, int format)
+	gint img_w, gint img_h, int format)
 {
 	ArtDRect bbox;
 	NodeStore *store;
@@ -924,6 +924,7 @@ schematic_export (Schematic *sm, const gchar *filename,
 		scale = scaleh;
 
 	/* Preparing ...*/
+	cairo_save (cr);
 	cairo_translate (cr, (img_w - graph_w)/2.0, (img_h - graph_h) / 2.0);
 	cairo_scale (cr, scale, scale);	
 	cairo_translate (cr, -bbox.x0, -bbox.y0);
@@ -932,10 +933,12 @@ schematic_export (Schematic *sm, const gchar *filename,
 	/* Render ... */
 	schematic_render (sm, cr);
 
+	cairo_restore (cr);
+	cairo_show_page (cr);
+
 	/* Saving ... */
 	if (format >= 3)
 		cairo_surface_write_to_png (surface, filename);
-	cairo_show_page (cr);
 	cairo_destroy (cr);
 	cairo_surface_destroy (surface);
 }

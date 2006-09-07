@@ -33,6 +33,17 @@
 
 #include <gtk/gtk.h>
 #include <cairo/cairo.h>
+#include <cairo/cairo-features.h>
+#ifdef CAIRO_HAS_SVG_SURFACE
+#include <cairo/cairo-svg.h>
+#endif
+#ifdef CAIRO_HAS_PDF_SURFACE
+#include <cairo/cairo-pdf.h>
+#endif
+#ifdef CAIRO_HAS_PS_SURFACE
+#include <cairo/cairo-ps.h>
+#endif
+
 #include "item-data.h"
 #include "part.h"
 #include "wire.h"
@@ -107,7 +118,7 @@ void     schematic_set_dirty(Schematic *sm, gboolean b);
 gint schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
 void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
-void schematic_export (Schematic *sm, const gchar *filename, guint img_w, guint img_h, int format);
+void schematic_export (Schematic *sm, const gchar *filename, gint img_w, gint img_h, int format);
 
 #endif /* __SCHEMATIC_H__ */
 
