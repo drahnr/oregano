@@ -4727,6 +4727,54 @@
     </ogo:part>
 
     <ogo:part>
+      <ogo:name>VAC</ogo:name>
+      <ogo:symbol>VSIN</ogo:symbol>
+      <ogo:description>AC voltage source, sinusoidal</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>AC Leyend</ogo:name>
+          <ogo:text>AC</ogo:text>
+          <ogo:position>(15 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Offset</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Amplitude</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>V_@refdes %+ %- dc @dc ac 1.0 sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
       <ogo:name>CCVS</ogo:name>
       <ogo:symbol>CCVS</ogo:symbol>
       <ogo:description>Current Controlled Voltage source</ogo:description>
