@@ -106,14 +106,14 @@ static GnomeUIInfo schematic_menu_edit [] = {
 	  'r', GDK_CONTROL_MASK, NULL },
 
 	{ GNOME_APP_UI_ITEM,
-	  N_("_Flip horizontally"),
+	  N_("Flip _horizontally"),
 	  N_("Flip the selection horizontally"),
 	  flip_horizontal_cmd, NULL, NULL,
 	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE,
 	  'f', GDK_CONTROL_MASK, NULL },
 
 	{ GNOME_APP_UI_ITEM,
-	  N_("_Flip vertically"),
+	  N_("Flip _vertically"),
 	  N_("Flip the selection vertically"),
 	  flip_vertical_cmd, NULL, NULL,
 	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE,
