@@ -47,8 +47,7 @@
 #include "dialogs.h"
 
 #define NORMAL_COLOR "black"
-#define SELECTED_COLOR "red"
-#define HIGHLIGHT_COLOR "green"
+#define SELECTED_COLOR "green"
 //#define TEXTBOX_FONT "-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*"
 #define TEXTBOX_FONT "Arial 10"
 
