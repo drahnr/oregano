@@ -160,9 +160,6 @@ static GnomeUIInfo schematic_menu_tools [] = {
 
 	GNOMEUIINFO_SEPARATOR,
 
-	{ GNOME_APP_UI_ITEM, N_("_View netlist"),
-	  N_("View a netlist"), netlist_view_cmd, NULL,
-	  NULL, 0, 0, 0, 0 },
 	{ GNOME_APP_UI_ITEM, N_("_Generate netlist"),
 	  N_("Generate a netlist"), netlist_cmd, NULL,
 	  NULL, 0, 0, 0, 0 },
@@ -199,8 +196,11 @@ static GnomeUIInfo schematic_menu_view [] = {
 	GNOMEUIINFO_ITEM (N_("_Log"), N_("View the latest simulation log"),
 		log_cmd, log_xpm),
 
-	GNOMEUIINFO_TOGGLEITEM (N_("_Show node labels"), N_("Show or hide node labels"), show_label_cmd, NULL),
+	GNOMEUIINFO_TOGGLEITEM (N_("_Node labels"), N_("Show or hide node labels"), show_label_cmd, NULL),
 
+	{ GNOME_APP_UI_ITEM, N_("N_etlist"),
+	  N_("View the circuit netlist"), netlist_view_cmd, NULL,
+	  NULL, 0, 0, 0, 0 },
 /*
 	GNOMEUIINFO_ITEM (N_("_Log"), N_("View the latest simulation log"),
 		log_cmd, log_xpm),
