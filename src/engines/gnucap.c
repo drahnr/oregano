@@ -295,7 +295,7 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 		gnucap->priv->current = NULL;
 
 		if (gnucap->priv->num_analysis == 0) {
-			schematic_log_append (gnucap->priv->schematic, _("### Too few or none analysis found ###\n"));
+			schematic_log_append_error (gnucap->priv->schematic, _("### Too few or none analysis found ###\n"));
 			gnucap->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
 		} else
@@ -331,7 +331,15 @@ gnucap_start (OreganoEngine *self)
 
 	gnucap = OREGANO_GNUCAP (self);
 	oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &error);
+	if (error != NULL) {
+		gnucap->priv->aborted = TRUE;
+		schematic_log_append_error (gnucap->priv->schematic, error->message);
+		g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
+		g_error_free (error);
+		return;
+	}
 
+	error = NULL;
 	if (g_spawn_async_with_pipes (
 			NULL, /* Working directory */
 			argv,
@@ -354,7 +362,7 @@ gnucap_start (OreganoEngine *self)
 			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)gnucap_child_stdout_cb, gnucap);
 	} else {
 		gnucap->priv->aborted = TRUE;
-		schematic_log_append (gnucap->priv->schematic, _("Unable to execute GnuCap."));
+		schematic_log_append_error (gnucap->priv->schematic, _("Unable to execute GnuCap."));
 		g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
 	}
 }
@@ -682,7 +690,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 					if (priv->buf_count > 1) {
 						if (strstr (s, _("abort")))
 							sdata->state = STATE_ABORT;
-						schematic_log_append (priv->schematic, s);
+						schematic_log_append_error (priv->schematic, s);
 					}
 			}
 		}

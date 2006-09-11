@@ -64,8 +64,8 @@ struct _SchematicPriv {
 
 	gboolean dirty;
 
-	/* FIXME: Make an object. */
-	GList *log;
+	GtkTextBuffer *log;
+	GtkTextTag *tag_error;
 };
 
 typedef enum {
@@ -228,6 +228,9 @@ schematic_init(Schematic *schematic)
 	priv->refdes_values = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->store = node_store_new ();
 	priv->dirty = FALSE;
+	priv->log = gtk_text_buffer_new (NULL);
+	priv->tag_error = gtk_text_buffer_create_tag (priv->log, "error",
+		"foreground", "red", "weight", PANGO_WEIGHT_BOLD, NULL);
 
 	g_signal_connect_object (
 		G_OBJECT (priv->store),
@@ -278,6 +281,8 @@ schematic_dispose (GObject *object)
 	for(list=schematic->priv->items; list; list=list->next)
 		g_object_weak_unref(G_OBJECT(list->data),
 			item_data_destroy_callback, G_OBJECT(schematic));
+
+	g_object_unref (G_OBJECT (schematic->priv->log));
 
 	schematic_count_--;
 	schematic_list = g_list_remove (schematic_list, schematic);
@@ -488,18 +493,31 @@ schematic_get_simulation (Schematic *schematic)
 	return schematic->priv->simulation;
 }
 
-/**
- * Actually prepends but that doesn't matter here.
- * This is an internal storage only.
- */
 void
 schematic_log_append (Schematic *schematic, const char *message)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	schematic->priv->log = g_list_append (schematic->priv->log,
-		g_strdup (message));
+  gtk_text_buffer_insert_at_cursor (
+		schematic->priv->log,
+		message, strlen (message));
+}
+
+void
+schematic_log_append_error (Schematic *schematic, const char *message)
+{
+	GtkTextIter iter;
+	SchematicPriv *priv;
+
+	g_return_if_fail (schematic != NULL);
+	g_return_if_fail (IS_SCHEMATIC (schematic));
+
+	priv = schematic->priv;
+
+	gtk_text_buffer_get_end_iter (priv->log, &iter);
+	gtk_text_buffer_insert_with_tags (priv->log, &iter, message,
+		-1, priv->tag_error, NULL);
 }
 
 void
@@ -520,14 +538,12 @@ schematic_log_clear (Schematic *schematic)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	for (log = schematic->priv->log; log; log = log->next)
-		g_free (log->data);
-
-	g_list_free (schematic->priv->log);
-	schematic->priv->log = NULL;
+	gtk_text_buffer_set_text (
+		schematic->priv->log,
+		"", -1);
 }
 
-GList *
+GtkTextBuffer*
 schematic_get_log_text (Schematic *schematic)
 {
 	g_return_val_if_fail (schematic != NULL, NULL);

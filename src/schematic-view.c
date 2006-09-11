@@ -2481,29 +2481,11 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 		gdk_window_raise (sv->priv->log_window->window);
 	}
 
-	buffer = gtk_text_view_get_buffer (sv->priv->log_text);
+	gtk_text_view_set_buffer (
+		sv->priv->log_text,
+		schematic_get_log_text (sm)
+	);
 
-	/*
-	 * Clear the log before filling it.
-	 */
-	gtk_text_buffer_set_text (buffer, "", -1);
-
-	gtk_text_buffer_get_iter_at_line (buffer, &iter, 0);
-
-	for (log = schematic_get_log_text (sm); log; log = log->next) {
-		/*
-		 * Put the oldest messages at the top.
-		 */
-
-		gtk_text_buffer_insert (buffer, &iter, log->data, -1);
-
-		/*
-		 * Guard against too many messages. Note that
-		 * we always get the 500 latest this way.
-		 */
-		if (i++ > 500)
-			break;
-	}
 
 	gtk_widget_show_all (sv->priv->log_window);
 }
