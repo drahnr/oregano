@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-03 13:32-0300\n"
+"POT-Creation-Date: 2006-09-11 02:36-0300\n"
 "PO-Revision-Date: 2005-08-31 00:40+0200\n"
 "Last-Translator: Orestes Mas <orestes@tsc.upc.edu>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
@@ -19,135 +19,344 @@ msgstr ""
 "Content-Transfer-Encoding: 8-bit\n"
 "X-Generator: KBabel 1.9.1\n"
 
-#: ../src/dialogs.c:127
-msgid ""
-"(c) 2003-2005 LUGFi\n"
-"(c) 1999-2001 Richard Hult"
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:1
+msgid "<b>AC Analysis Options</b>"
+msgstr "<b>Opcions de l'anàlisi d'AC</b>"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:2
+msgid "<b>Type</b>"
+msgstr "<b>Tipus</b>"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:3
+msgid "Current"
+msgstr "Corrent"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:4
+msgid "Edit Clamp properties"
+msgstr "Edita les propietats de la sonda"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:5
+msgid "Imaginary part"
+msgstr "Part imaginària"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:6
+msgid "Magnitude"
+msgstr "Magnitud"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:7
+msgid "Phase"
+msgstr "Fase"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:8
+msgid "Real part"
+msgstr "Part real"
+
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:9
+msgid "Use decibel scale"
+msgstr "Utilitza una escala en decibels"
+
+# FIXME: typo
+#: ../data/dialogs/clamp-properties-dialog.glade2.h:10
+msgid "Voltage"
+msgstr "Tensió"
+
+#: ../data/dialogs/log-window.glade2.h:1
+msgid "Clear"
+msgstr "Neteja"
+
+#: ../data/dialogs/log-window.glade2.h:2
+msgid "Oregano Log Window"
+msgstr "Finestra de registre de l'Oregano"
+
+#: ../data/dialogs/page-properties.glade2.h:1
+msgid "<b>Alignment</b>"
+msgstr "<b>Alineament</b>"
+
+#: ../data/dialogs/page-properties.glade2.h:2
+msgid "Center Horizontally"
+msgstr "Centra horitzontalment"
+
+#: ../data/dialogs/page-properties.glade2.h:3
+msgid "Center Vertically"
+msgstr "Centra verticalment"
+
+#: ../data/dialogs/page-properties.glade2.h:4
+msgid "Fit to page"
+msgstr "Ajusta a la pàgina"
+
+#: ../data/dialogs/page-properties.glade2.h:5
+msgid "Print Properties"
+msgstr "Propietats d'impressió"
+
+#: ../data/dialogs/part-browser.glade2.h:1
+msgid "<b>Preview</b>"
+msgstr "<b>Previsualitza</b>"
+
+#: ../data/dialogs/part-browser.glade2.h:2
+msgid "Library:"
+msgstr "Biblioteca:"
+
+#: ../data/dialogs/part-browser.glade2.h:3 ../src/schematic-view-ui.h:360
+msgid "Parts"
+msgstr "Components"
+
+#: ../data/dialogs/part-browser.glade2.h:4
+msgid "Place"
+msgstr "Col·loca"
+
+#: ../data/dialogs/part-browser.glade2.h:5
+msgid "Press this button to place the selected part"
+msgstr "Premeu aquest botó per a col·locar el component seleccionat"
+
+#: ../data/dialogs/part-browser.glade2.h:6
+msgid "Search:"
+msgstr "Cerca:"
+
+#: ../data/dialogs/part-browser.glade2.h:7
+msgid "Select which library to use"
+msgstr "Selecciona la biblioteca a usar"
+
+#: ../data/dialogs/part-properties-dialog.glade2.h:1
+msgid "Part Properties"
+msgstr "Propietats del component"
+
+#: ../data/dialogs/plot-window.glade2.h:1
+msgid "<b>Plot</b>"
+msgstr "<b>Gràfic</b>"
+
+#: ../data/dialogs/plot-window.glade2.h:2
+msgid "<b>Variables</b>"
+msgstr "<b>Variables</b>"
+
+#: ../data/dialogs/plot-window.glade2.h:3
+msgid "Plot"
+msgstr "Gràfic"
+
+#: ../data/dialogs/plot-window.glade2.h:4
+msgid "Region"
 msgstr ""
-"(c) 2003-2005 LUGFi\n"
-"(c) 1999-2001 Richard Hult"
 
-#: ../src/dialogs.c:142
-msgid "Schematic capture and circuit simulation.\n"
-msgstr "Captura d'esquemàtics i simulació de circuits.\n"
-
-#: ../src/file.c:54 ../src/file.c:94
-msgid "Oregano Files"
-msgstr "Fitxers d'Oregano"
-
-#: ../src/file.c:56 ../src/file.c:96
-msgid "All Files"
-msgstr "Tots els fitxers"
-
-#: ../src/file.c:59
-msgid "Open File"
-msgstr "Obre un fitxer"
-
-#: ../src/file.c:99
-msgid "Save File"
-msgstr "Desa el fitxer"
-
-#: ../src/file.c:149
-msgid "Netlist File"
-msgstr "Fitxer de llista de connexions"
-
-#: ../src/file.c:225
-msgid "Open file"
-msgstr "Obre un fitxer"
-
-#: ../src/file.c:275
-msgid "Save schematic as"
-msgstr "Anomena i desa l'esquemàtic"
-
-#: ../src/file.c:340
-msgid "Netlist filename"
-msgstr "Nom del fitxer de la llista de connexions"
-
-#: ../src/load-library.c:150
-#, c-format
-msgid "Could not find the requested symbol: %s\n"
-msgstr "No s'ha trobat el símbol sol·licitat: %s\n"
-
-#: ../src/load-library.c:166
-#, c-format
-msgid "Could not find the requested part: %s\n"
-msgstr "No s'ha trobat el component sol·licitat: %s\n"
-
-#: ../src/load-schematic.c:262
-msgid "Bad file format."
-msgstr "Format de fitxer erroni."
-
-#: ../src/load-schematic.c:272
-msgid "Unknown parser error."
-msgstr "Error desconegut de l'analitzador."
-
-#: ../src/main.c:101
-msgid "Enables some debugging functions"
-msgstr "Activa algunes funcions de depurat"
-
-#: ../src/main.c:101
-msgid "LEVEL"
-msgstr "NIVELL"
-
-#: ../src/main.c:126
-msgid ""
-"You seem to be running Oregano without\n"
-"having it installed properly on your system.\n"
-"\n"
-"Please install Oregano and try again."
+#: ../data/dialogs/plot-window.glade2.h:5
+msgid "Shift"
 msgstr ""
-"Sembla que esteu executant Oregano sense\n"
-"que estiga instal·lat correctament al vostre sistema.\n"
-"\n"
-"Si us plau, instal·leu Oregano i torneu-ho a provar."
 
-#: ../src/main.c:149
-msgid ""
-"Could not find a parts library.\n"
-"\n"
-"This is probably due to a faulty installation\n"
-"of Oregano. Please check your installation."
+#: ../data/dialogs/properties.glade2.h:1
+#: ../data/dialogs/textbox-properties-dialog.glade2.h:1
+msgid "    "
+msgstr "    "
+
+#: ../data/dialogs/properties.glade2.h:2
+msgid "<b>Comments</b>"
+msgstr "<b>Comentaris</b>"
+
+#: ../data/dialogs/properties.glade2.h:3
+msgid "Author:"
+msgstr "Autor:"
+
+#: ../data/dialogs/properties.glade2.h:4 ../src/sheet/part-item.c:147
+msgid "Properties"
+msgstr "Propietats"
+
+#: ../data/dialogs/properties.glade2.h:5
+msgid "Title:"
+msgstr "Títol:"
+
+#: ../data/dialogs/settings.glade2.h:1
+msgid "\n"
+msgstr "\n"
+
+#: ../data/dialogs/settings.glade2.h:3
+msgid "<b>Data Paths</b>"
+msgstr "<b>Camins de dades</b>"
+
+#: ../data/dialogs/settings.glade2.h:4
+msgid "<b>Engine</b>"
+msgstr "<b>Motor</b>"
+
+#: ../data/dialogs/settings.glade2.h:5
+msgid "<b>Executable Path</b>"
+msgstr "<b>Camí dels executables</b>"
+
+#: ../data/dialogs/settings.glade2.h:6
+msgid "<b>File Format</b>"
+msgstr "<b>Format del fitxer</b>"
+
+#: ../data/dialogs/settings.glade2.h:7
+msgid "<b>User Interface</b>"
+msgstr "<b>Interfície d'usuari</b>"
+
+#: ../data/dialogs/settings.glade2.h:8
+msgid "Automatically show log windows after simulation"
+msgstr "Mostra automàticament la finestra de registre després de la simulació"
+
+#: ../data/dialogs/settings.glade2.h:9
+msgid "Compress saved files"
+msgstr "Compacta els fitxers desats"
+
+#: ../data/dialogs/settings.glade2.h:10
+msgid "Grid size[px]   "
+msgstr "Mida de la quadrícula [px]   "
+
+#: ../data/dialogs/settings.glade2.h:11
+msgid "Library"
+msgstr "Biblioteca"
+
+#: ../data/dialogs/settings.glade2.h:12
+msgid "Model"
+msgstr "Model"
+
+#: ../data/dialogs/settings.glade2.h:13
+msgid "Paths"
+msgstr "Camins"
+
+#: ../data/dialogs/settings.glade2.h:14
+msgid "Preferences"
+msgstr "Preferències"
+
+# FIXME: typo
+#: ../data/dialogs/settings.glade2.h:15
+msgid "Realtime update of selection (slow)"
+msgstr "Actualització en temps real de la selecció (lent)"
+
+#: ../data/dialogs/settings.glade2.h:16
+msgid "Remove"
+msgstr "Elimina"
+
+#: ../data/dialogs/settings.glade2.h:17
+#, fuzzy
+msgid "Select A File"
+msgstr "_Selecciona-ho tot"
+
+#: ../data/dialogs/settings.glade2.h:18
+msgid "Show the splash screen at application startup"
+msgstr "Mostra la pantalla de benvinguda quan s'inicia l'aplicació"
+
+#: ../data/dialogs/settings.glade2.h:19
+msgid "TODO : Add FINDPATH for Engines"
 msgstr ""
-"No es pot trobar una biblioteca de components.\n"
-"\n"
-"Açò probablement és degut a una mala instal·lació\n"
-"d'Oregano. Si us plau, comproveu la vostra instal·lació."
 
-#: ../src/main.c:206
-msgid "Welcome to Oregano"
-msgstr "Benvingut a Oregano"
+#: ../data/dialogs/settings.glade2.h:20
+msgid "User Interface"
+msgstr "Interfície d'usuari"
 
-#: ../src/oregano-config.c:129
-#, c-format
-msgid "Loading %s ..."
-msgstr "S'està carregant %s..."
+#: ../data/dialogs/sim-settings.glade2.h:1
+msgid "<b>AC</b>"
+msgstr "<b>AC</b>"
 
-#: ../src/oregano-config.c:170
-#, c-format
-msgid "Could not read the parts library: %s "
-msgstr "No s'ha pogut llegir la biblioteca de components: %s"
+#: ../data/dialogs/sim-settings.glade2.h:2
+msgid "<b>DC Sweep</b>"
+msgstr "<b>Escombrat DC</b>"
 
-#: ../src/oregano-config.c:172
-msgid ""
-"The file is probably corrupt. Please reinstall the parts\n"
-"library or Oregano and try again."
-msgstr ""
-"El fitxer està probablement corrupte. Si us plau, reinstal·leu\n"
-"la biblioteca de components o l'Oregano i intenteu-ho de nou."
+#: ../data/dialogs/sim-settings.glade2.h:3
+msgid "<b>Fourier</b>"
+msgstr "<b>Fourier</b>"
 
-#: ../src/part-browser.c:135 ../src/part-browser.c:592
-msgid ""
-"Gtk version 2.2 does not support GtkTreeModelFilter...\n"
-"Filtering disable!"
-msgstr ""
-"La versió 2.2 de GTK no té implementat GtkTreeModelFilter...\n"
-"S'ha inhabilitat el filtre!"
+#: ../data/dialogs/sim-settings.glade2.h:4
+msgid "<b>Transient</b>"
+msgstr "<b>Transitòria</b>"
 
-#: ../src/part-browser.c:477 ../src/part-item.c:646 ../src/part-item.c:802
-#: ../src/plot.c:560 ../src/plot.c:963 ../src/schematic-view.c:252
-#: ../src/schematic-view.c:318 ../src/schematic-view.c:2459
-#: ../src/settings.c:159 ../src/sim-settings.c:867 ../src/textbox-item.c:682
-#: ../src/netlist-editor.c:305
+#: ../data/dialogs/sim-settings.glade2.h:5
+msgid "Add new options"
+msgstr "Afegeix noves opcions"
+
+#: ../data/dialogs/sim-settings.glade2.h:6
+msgid "Add to list"
+msgstr "Afegeix a la llista"
+
+#: ../data/dialogs/sim-settings.glade2.h:7
+msgid "Analysis Options"
+msgstr "Opcions d'anàlisi"
+
+#: ../data/dialogs/sim-settings.glade2.h:8
+msgid "Analysis Parameters"
+msgstr "Paràmetres de l'anàlisi"
+
+#: ../data/dialogs/sim-settings.glade2.h:9
+msgid "DEC"
+msgstr "DEC"
+
+#: ../data/dialogs/sim-settings.glade2.h:10
+msgid "Frequency"
+msgstr "Frequència"
+
+#: ../data/dialogs/sim-settings.glade2.h:11
+msgid "LIN"
+msgstr "LIN"
+
+#: ../data/dialogs/sim-settings.glade2.h:12
+msgid "List of outputs"
+msgstr "Llista de sortides"
+
+#: ../data/dialogs/sim-settings.glade2.h:13
+msgid "OCT"
+msgstr "OCT"
+
+#: ../data/dialogs/sim-settings.glade2.h:14
+msgid "Points"
+msgstr "Punts"
+
+#: ../data/dialogs/sim-settings.glade2.h:15
+msgid "Simulation Settings"
+msgstr "Paràmetres de la simulació"
+
+#: ../data/dialogs/sim-settings.glade2.h:16
+msgid "Source"
+msgstr "Font"
+
+#: ../data/dialogs/sim-settings.glade2.h:17
+msgid "Start"
+msgstr "Iniciar"
+
+#: ../data/dialogs/sim-settings.glade2.h:18
+msgid "Step"
+msgstr "Pas"
+
+#: ../data/dialogs/sim-settings.glade2.h:19
+msgid "Stop"
+msgstr "Atura"
+
+#: ../data/dialogs/sim-settings.glade2.h:20
+msgid "Type"
+msgstr "Tipus"
+
+#: ../data/dialogs/sim-settings.glade2.h:21
+msgid "Use Initial Conditions"
+msgstr "Utilitza les condicions inicials"
+
+#: ../data/dialogs/simulation.glade2.h:1
+#, fuzzy
+msgid "Progress: None"
+msgstr "Progrés:"
+
+#: ../data/dialogs/simulation.glade2.h:2
+msgid "Simulation"
+msgstr "Simulació"
+
+#: ../data/dialogs/textbox-properties-dialog.glade2.h:2
+msgid "<b>Text</b>"
+msgstr "<b>Text</b>"
+
+#: ../data/dialogs/textbox-properties-dialog.glade2.h:3
+msgid "Text Properties"
+msgstr "Propietats del text"
+
+#: ../data/dialogs/view-netlist.glade2.h:1
+msgid "Netlist View"
+msgstr "Vista de llista d'interconnexions"
+
+#: ../data/dialogs/view-netlist.glade2.h:2 ../src/schematic-view-ui.h:161
+msgid "_Simulate"
+msgstr "_Simula"
+
+#: ../src/sheet/part-item.c:147
+msgid "Edit the part's properties"
+msgstr "Edita les propietats del component"
+
+#: ../src/sheet/part-item.c:616 ../src/sheet/part-item.c:765
+#: ../src/sheet/textbox-item.c:679 ../src/sim-settings.c:775
+#: ../src/settings.c:139 ../src/schematic-view.c:251
+#: ../src/schematic-view.c:317 ../src/schematic-view.c:2431 ../src/plot.c:434
+#: ../src/plot.c:689 ../src/part-browser.c:496 ../src/netlist-editor.c:309
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -156,219 +365,165 @@ msgstr ""
 "No s'ha pogut trobar el fitxer %s. Potser hauríeu de reinstal·lar l'Oregano "
 "per arreglar-ho."
 
-#: ../src/part-browser.c:480 ../src/part-browser.c:488
-msgid "Could not create part browser"
-msgstr "No puc crear un navegador de components"
-
-#: ../src/part-item.c:151 ../src/dialogs/properties.glade2.h:4
-msgid "Properties"
-msgstr "Propietats"
-
-#: ../src/part-item.c:151
-msgid "Edit the part's properties"
-msgstr "Edita les propietats del component"
-
-#: ../src/part-item.c:648 ../src/part-item.c:656 ../src/part-item.c:804
-#: ../src/part-item.c:812
+#: ../src/sheet/part-item.c:618 ../src/sheet/part-item.c:626
+#: ../src/sheet/part-item.c:767 ../src/sheet/part-item.c:775
 msgid "Could not create part properties dialog."
 msgstr "No s'ha pogut crear el diàleg de propietats del component."
 
-#: ../src/plot.c:64 ../src/plot.c:65
-msgid "Sans 10"
-msgstr "Sans 10"
+#: ../src/sheet/sheet-item.c:307 ../src/schematic-view-ui.h:288
+msgid "Copy"
+msgstr "Copia"
 
-#: ../src/plot.c:66
-msgid "Sans 8"
-msgstr "Sans 8"
+#: ../src/sheet/sheet-item.c:307
+msgid "Copy the object to the clipboard"
+msgstr "Copia l'objecte al porta-retalls"
 
-#: ../src/plot.c:164 ../src/print.c:368 ../src/schematic-view-ui.h:56
-#: ../src/netlist-editor.c:193
-msgid "Print Preview"
-msgstr "Previsualització de la impressió"
+#: ../src/sheet/sheet-item.c:310 ../src/schematic-view-ui.h:285
+msgid "Cut"
+msgstr "Retalla"
 
-#: ../src/plot.c:165
-msgid "Preview the plot before printing"
-msgstr "Previsualitza el gràfic abans d'imprimir"
+#: ../src/sheet/sheet-item.c:310
+msgid "Cut the object to the clipboard"
+msgstr "Retalla l'objecte al porta-retalls"
 
-#: ../src/plot.c:167
-msgid "Export plot"
-msgstr "Exporta el gràfic"
+#: ../src/sheet/sheet-item.c:313
+msgid "Delete"
+msgstr "Suprimeix"
 
-#: ../src/plot.c:168
-msgid "Show the export menu"
-msgstr "Mostra el menú d'exportar"
+#: ../src/sheet/sheet-item.c:313
+msgid "Delete the object"
+msgstr "Suprimeix l'objecte"
 
-#: ../src/plot.c:169
-msgid "Add Function"
-msgstr "Afegeix Funció"
+#: ../src/sheet/sheet-item.c:319
+msgid "Rotate"
+msgstr "Capgira"
 
-#: ../src/plot.c:170
-msgid "Add new function to the graph"
-msgstr "Afegeix una nova funció al gràfic"
+#: ../src/sheet/sheet-item.c:320
+msgid "Rotate the selected objects 90 degrees clockwise"
+msgstr "Capgira 90 graus cap a la dreta l'objecte seleccionat"
 
-#. GNOMEUIINFO_ITEM_NONE(N_("50%"),
-#. N_("Set the zoom factor to 50%"), plot_zoom_50_cmd),
-#. GNOMEUIINFO_ITEM_NONE(N_("75%"),
-#. N_("Set the zoom factor to 75%"), plot_zoom_75_cmd),
-#: ../src/plot.c:181 ../src/schematic-view-ui.h:182
-msgid "100%"
-msgstr "100%"
+#: ../src/sheet/textbox-item.c:99
+msgid "Edit..."
+msgstr "Edita..."
 
-#: ../src/plot.c:182 ../src/schematic-view-ui.h:183
-msgid "Set the zoom factor to 100%"
-msgstr "Estableix el factor de zoom al 100%"
+#: ../src/sheet/textbox-item.c:99
+msgid "Edit the text"
+msgstr "Edita el text"
 
-#: ../src/plot.c:194
-msgid "_Preferences..."
-msgstr "_Preferències..."
+#: ../src/sheet/textbox-item.c:596
+msgid "Label"
+msgstr "Etiqueta"
 
-#: ../src/plot.c:196
-msgid "Show crosshairs"
-msgstr "Mostra els cursors"
+#: ../src/sheet/textbox-item.c:681 ../src/sheet/textbox-item.c:690
+msgid "Could not create textbox properties dialog"
+msgstr "No s'ha pogut crear el quadre de diàleg de les propietats del text."
 
-#: ../src/plot.c:197
-msgid "_Zoom"
-msgstr "_Zoom"
+#: ../src/simulation.c:102 ../src/simulation.c:109 ../src/simulation.c:115
+msgid "Could not create simulation dialog"
+msgstr "No es pot crear el diàleg de la simulació"
 
-#: ../src/plot.c:204
-msgid "Schematic Plot"
-msgstr "Gràfic de l'esquemàtic"
+#: ../src/simulation.c:150
+#, fuzzy, c-format
+msgid "Progress: <b>%s</b>"
+msgstr "Progrés:"
 
-#: ../src/plot.c:210
-msgid "_File"
-msgstr "_Fitxer"
-
-#: ../src/plot.c:211
-msgid "_Plot"
-msgstr "_Dibuixa"
-
-#. Simulation failed?
-#: ../src/plot.c:325
-msgid "The simulation produced no data!!\n"
-msgstr "La simulació no ha produït cap dada!!\n"
-
-#: ../src/plot.c:335 ../src/plot.c:715
-#, c-format
-msgid "Plot - %s"
-msgstr "Gràfic - %s"
-
-#: ../src/plot.c:350
-msgid "Nodes"
-msgstr "Nodes"
-
-#: ../src/plot.c:353 ../src/plot.c:917
-msgid "Functions"
-msgstr "Funcions"
-
-#: ../src/plot.c:550
-msgid "Oregano - Plot"
-msgstr "Oregano - Gràfic"
-
-#: ../src/plot.c:562 ../src/plot.c:569
-msgid "Could not create plot window."
-msgstr "No s'ha pogut crear la finestra del gràfic."
-
-#: ../src/plot.c:579 ../src/dialogs/plot-window.glade2.h:3
-msgid "Plot"
-msgstr "Gràfic"
-
-#: ../src/plot.c:939
-msgid "TRANSFER"
-msgstr "TRANSFERÈNCIA"
-
-#: ../src/plot.c:965 ../src/plot.c:972
-msgid "Could not create plot export window."
-msgstr "No s'ha pogut crear la finestra d'exportació del gràfic."
-
-#: ../src/plot.c:992
-msgid "Save PNG"
-msgstr "Desa un PNG"
-
-#: ../src/print.c:298
-msgid "Print"
-msgstr "Imprimeix"
-
-#: ../src/print.c:305
-msgid "Pages"
-msgstr "Pàgines"
-
-#: ../src/print.c:340
-msgid "Can't get paper info! .. getting default!"
+#: ../src/simulation.c:201
+msgid ""
+"<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
+"error.</span>\n"
+"\n"
+"Would you like to view the error log?"
 msgstr ""
-"No s'ha pogut obtenir informació sobre el paper, s'està prenent el valor per "
-"defecte."
+"<span weight=\"bold\" size=\"large\">S'ha avortat la simulació a causa d'un "
+"error.</span>\n"
+"Voleu veure el registre d'errors?"
 
-#: ../src/print.c:354
-msgid "Could not create font for printing."
-msgstr "No s'ha pogut crear el tipus de lletra per a imprimir."
+#: ../src/simulation.c:211
+msgid "The simulation was aborted due to an error"
+msgstr "S'ha avortat la simulació a causa d'un error"
 
-#: ../src/print.c:373
-msgid "Printing failed."
-msgstr "Ha fallat la impressió."
+#: ../src/sim-settings.c:229
+msgid "Add new option"
+msgstr "Afegeix una nova opció"
 
-#: ../src/schematic.c:568
-#, c-format
-msgid "File %s does not exists."
-msgstr "El fitxer %s no existeix."
+#: ../src/sim-settings.c:777 ../src/sim-settings.c:784
+#: ../src/sim-settings.c:790
+msgid "Could not create simulation settings dialog"
+msgstr "No s'ha pogut crear el diàleg dels paràmetres de la simulació."
 
-#: ../src/schematic.c:576 ../src/schematic.c:614
-#, c-format
-msgid "Unknown file format for %s."
-msgstr "El format del fitxer %s és desconegut."
+#: ../src/sim-settings.c:814
+msgid "Option"
+msgstr "Opció"
 
-#: ../src/schematic.c:595
-msgid "Load fails!."
-msgstr "Ha fallat la càrrega!."
+#: ../src/sim-settings.c:816
+msgid "Value"
+msgstr "Valor"
 
-#: ../src/schematic-view.c:255
+#: ../src/settings.c:141 ../src/settings.c:148 ../src/settings.c:154
+msgid "Could not create settings dialog"
+msgstr "No es pot crear el diàleg de preferències"
+
+#: ../src/settings.c:215
+msgid "Engine executable not found"
+msgstr ""
+
+#: ../src/settings.c:216
+msgid "The engine is unable to locate the external program."
+msgstr ""
+
+#: ../src/schematic-view.c:254
 msgid "Could not create properties dialog"
 msgstr "No s'ha pogut crear el diàleg de propietats"
 
-#: ../src/schematic-view.c:321
+#: ../src/schematic-view.c:320
 msgid "Could not create the page properties dialog"
 msgstr "No s'ha pogut crear el diàleg de propietats de pàgina"
 
-#: ../src/schematic-view.c:384
+#: ../src/schematic-view.c:383
 msgid "Could not load file"
 msgstr "No s'ha pogut carregar el fitxer"
 
-#: ../src/schematic-view.c:411 ../src/schematic-view.c:1341
-#: ../src/schematic-view.c:1349
+#: ../src/schematic-view.c:410 ../src/schematic-view.c:1304
+#: ../src/schematic-view.c:1312
 msgid "Untitled.oregano"
 msgstr "Sensetitol.oregano"
 
-#: ../src/schematic-view.c:416
+#: ../src/schematic-view.c:415
 msgid "Could not save schematic file"
 msgstr "No s'ha pogut desar el fitxer d'esquemàtic."
 
-#: ../src/schematic-view.c:775 ../src/schematic-view.c:896
-#: ../src/netlist-editor.c:221 ../src/netlist-editor.c:429
+#: ../src/schematic-view.c:765 ../src/netlist-editor.c:225
+#: ../src/netlist-editor.c:436
 msgid "Could not create a netlist"
 msgstr "No s'ha pogut crear la llista d'interconnexions"
 
-#: ../src/schematic-view.c:778 ../src/schematic-view.c:899
-#: ../src/netlist-editor.c:225 ../src/netlist-editor.c:432
+#: ../src/schematic-view.c:768 ../src/netlist-editor.c:229
+#: ../src/netlist-editor.c:439
 msgid "An unexpected error has occurred"
 msgstr "S'ha produït un error inesperat"
 
-#: ../src/schematic-view.c:1350
+#: ../src/schematic-view.c:1313
 msgid "Untitled.netlist"
 msgstr "Sensetitol.netlist"
 
-#: ../src/schematic-view.c:1541
-#, c-format
+#: ../src/schematic-view.c:1504
+#, fuzzy, c-format
 msgid ""
-"<span weight=\"bold\" size=\"large\">Schematic %s has unsaved changes</"
-"span>\n"
+"<span weight=\"bold\" size=\"large\">Save changes to schematic %s before "
+"closing?</span>\n"
 "\n"
-"Do you want to save them?"
+"If you don't save, all changes since you last saved will be permanently lost."
 msgstr ""
-"<span weight=\"bold\" size=\"large\">L'esquemàtic %s té canvis sense desar"
-"</span>\n"
+"<span weight=\"bold\" size=\"large\">L'esquemàtic %s té canvis sense desar</"
+"span>\n"
 "\n"
 "Voleu desar-los?"
 
-#: ../src/schematic-view.c:2462 ../src/schematic-view.c:2473
+#: ../src/schematic-view.c:1516
+msgid "Close _without Saving"
+msgstr ""
+
+#: ../src/schematic-view.c:2434 ../src/schematic-view.c:2445
 msgid "Could not create the log window"
 msgstr "No s'ha pogut crear la finestra del registre"
 
@@ -376,7 +531,7 @@ msgstr "No s'ha pogut crear la finestra del registre"
 msgid "_New"
 msgstr "_Nou"
 
-#: ../src/schematic-view-ui.h:38 ../src/schematic-view-ui.h:279
+#: ../src/schematic-view-ui.h:38 ../src/schematic-view-ui.h:264
 msgid "Create a new schematic"
 msgstr "Crea un nou esquemàtic"
 
@@ -387,6 +542,11 @@ msgstr "Propietats de la pàgina"
 #: ../src/schematic-view-ui.h:48
 msgid "Set print properties"
 msgstr "Estableix les propietats de la impressió"
+
+#: ../src/schematic-view-ui.h:56 ../src/print.c:367 ../src/plot.c:150
+#: ../src/netlist-editor.c:193
+msgid "Print Preview"
+msgstr "Previsualització de la impressió"
 
 #: ../src/schematic-view-ui.h:57
 msgid "Preview the schematic before printing"
@@ -416,437 +576,516 @@ msgstr "Cap_gira"
 msgid "Rotate the selection clockwise"
 msgstr "Capgira en el sentit de les manetes del rellotge"
 
-#: ../src/schematic-view-ui.h:128
-msgid "Select _all"
-msgstr "_Selecciona-ho tot"
+#: ../src/schematic-view-ui.h:109
+#, fuzzy
+msgid "Flip _horizontally"
+msgstr "Centra horitzontalment"
 
-#: ../src/schematic-view-ui.h:129
+#: ../src/schematic-view-ui.h:110
+#, fuzzy
+msgid "Flip the selection horizontally"
+msgstr "Copia la selecció al porta-retalls"
+
+#: ../src/schematic-view-ui.h:116
+#, fuzzy
+msgid "Flip _vertically"
+msgstr "Centra verticalment"
+
+#: ../src/schematic-view-ui.h:117
+#, fuzzy
+msgid "Flip the selection vertically"
+msgstr "Suprimeix la selecció"
+
+#: ../src/schematic-view-ui.h:124
+#, fuzzy
+msgid "Select _all"
+msgstr "_Deselecciona-ho tot"
+
+#: ../src/schematic-view-ui.h:125
 msgid "Select all objects on the sheet"
 msgstr "Selecciona tots els objectes de la fulla"
 
-#: ../src/schematic-view-ui.h:135
-msgid "_Deselect all"
+#: ../src/schematic-view-ui.h:131
+#, fuzzy
+msgid "Deselect a_ll"
 msgstr "_Deselecciona-ho tot"
 
-#: ../src/schematic-view-ui.h:136
+#: ../src/schematic-view-ui.h:132
 msgid "Deselect the selected objects"
 msgstr "Deselecciona els objectes seleccionats"
 
-#: ../src/schematic-view-ui.h:144
-msgid "Object _Properties..."
+#: ../src/schematic-view-ui.h:140
+#, fuzzy
+msgid "_Object Properties..."
 msgstr "_Propietats de l'objecte..."
 
-#: ../src/schematic-view-ui.h:145
+#: ../src/schematic-view-ui.h:141
 msgid "Modify the object's properties"
 msgstr "Modifica les propietats de l'objecte"
 
-#: ../src/schematic-view-ui.h:159 ../src/dialogs/view-netlist.glade2.h:2
-msgid "_Simulate"
-msgstr "_Simula"
-
-#: ../src/schematic-view-ui.h:160
-msgid "Run a simulation"
-msgstr "Llança una simulació"
-
-#: ../src/schematic-view-ui.h:167
-msgid "_View netlist"
-msgstr "_Visualitza la llista d'interconnexions"
-
-#: ../src/schematic-view-ui.h:168
-msgid "View a netlist"
-msgstr "Visualitza una llista d'interconnexions"
-
-#: ../src/schematic-view-ui.h:170
-msgid "_Generate netlist"
-msgstr "_Genera la llista d'interconnexions"
-
-#: ../src/schematic-view-ui.h:171
-msgid "Generate a netlist"
-msgstr "Genera una llista d'interconnexions"
-
-#: ../src/schematic-view-ui.h:178
-msgid "50%"
-msgstr "50%"
-
-#: ../src/schematic-view-ui.h:179
-msgid "Set the zoom factor to 50%"
-msgstr "Estableix el factor de zoom al 50%"
-
-#: ../src/schematic-view-ui.h:180
-msgid "75%"
-msgstr "75%"
-
-#: ../src/schematic-view-ui.h:181
-msgid "Set the zoom factor to 75%"
-msgstr "Estableix el factor de zoom al 75%"
-
-#: ../src/schematic-view-ui.h:185
-msgid "125%"
-msgstr "125%"
-
-#: ../src/schematic-view-ui.h:186
-msgid "Set the zoom factor to 125%"
-msgstr "Estableix el factor de zoom al 125%"
-
-#: ../src/schematic-view-ui.h:187
-msgid "150%"
-msgstr "150%"
-
-#: ../src/schematic-view-ui.h:188
-msgid "Set the zoom factor to 150%"
-msgstr "Estableix el factor de zoom al 150%"
-
-#: ../src/schematic-view-ui.h:197
-msgid "Zoom"
-msgstr "Zoom"
-
-#: ../src/schematic-view-ui.h:203
-msgid "_Log"
-msgstr "_Registre"
-
-#: ../src/schematic-view-ui.h:203
-msgid "View the latest simulation log"
-msgstr "Mostra el registre de l'última simulació"
-
-#: ../src/schematic-view-ui.h:206
-msgid "_Show node labels"
-msgstr "_Mostra les etiquetes del nus"
-
-#: ../src/schematic-view-ui.h:206
-msgid "Show or hide node labels"
-msgstr "Mostra o amaga les etiquetes dels nusos"
-
-#: ../src/schematic-view-ui.h:230
+#: ../src/schematic-view-ui.h:146
 msgid "Simulation S_ettings..."
 msgstr "_Paràmetres de la simulació"
 
-#: ../src/schematic-view-ui.h:231
+#: ../src/schematic-view-ui.h:147
 msgid "Edit the simulation settings"
 msgstr "Edita els paràmetres de la simulació"
 
-#: ../src/schematic-view-ui.h:254
+#: ../src/schematic-view-ui.h:162
+msgid "Run a simulation"
+msgstr "Llança una simulació"
+
+#: ../src/schematic-view-ui.h:169
+msgid "_Generate netlist"
+msgstr "_Genera la llista d'interconnexions"
+
+#: ../src/schematic-view-ui.h:170
+msgid "Generate a netlist"
+msgstr "Genera una llista d'interconnexions"
+
+#: ../src/schematic-view-ui.h:177
+msgid "50%"
+msgstr "50%"
+
+#: ../src/schematic-view-ui.h:178
+msgid "Set the zoom factor to 50%"
+msgstr "Estableix el factor de zoom al 50%"
+
+#: ../src/schematic-view-ui.h:179
+msgid "75%"
+msgstr "75%"
+
+#: ../src/schematic-view-ui.h:180
+msgid "Set the zoom factor to 75%"
+msgstr "Estableix el factor de zoom al 75%"
+
+#. GNOMEUIINFO_ITEM_NONE(N_("50%"),
+#. N_("Set the zoom factor to 50%"), plot_zoom_50_cmd),
+#. GNOMEUIINFO_ITEM_NONE(N_("75%"),
+#. N_("Set the zoom factor to 75%"), plot_zoom_75_cmd),
+#: ../src/schematic-view-ui.h:181 ../src/plot.c:167
+msgid "100%"
+msgstr "100%"
+
+#: ../src/schematic-view-ui.h:182 ../src/plot.c:168
+msgid "Set the zoom factor to 100%"
+msgstr "Estableix el factor de zoom al 100%"
+
+#: ../src/schematic-view-ui.h:184
+msgid "125%"
+msgstr "125%"
+
+#: ../src/schematic-view-ui.h:185
+msgid "Set the zoom factor to 125%"
+msgstr "Estableix el factor de zoom al 125%"
+
+#: ../src/schematic-view-ui.h:186
+msgid "150%"
+msgstr "150%"
+
+#: ../src/schematic-view-ui.h:187
+msgid "Set the zoom factor to 150%"
+msgstr "Estableix el factor de zoom al 150%"
+
+#: ../src/schematic-view-ui.h:196
+msgid "Zoom"
+msgstr "Zoom"
+
+#: ../src/schematic-view-ui.h:202
+msgid "_Log"
+msgstr "_Registre"
+
+#: ../src/schematic-view-ui.h:202
+msgid "View the latest simulation log"
+msgstr "Mostra el registre de l'última simulació"
+
+#: ../src/schematic-view-ui.h:205
+#, fuzzy
+msgid "_Node labels"
+msgstr "_Mostra les etiquetes del nus"
+
+#: ../src/schematic-view-ui.h:205
+msgid "Show or hide node labels"
+msgstr "Mostra o amaga les etiquetes dels nusos"
+
+#: ../src/schematic-view-ui.h:207
+#, fuzzy
+msgid "N_etlist"
+msgstr "Fitxer de llista de connexions"
+
+#: ../src/schematic-view-ui.h:208
+#, fuzzy
+msgid "View the circuit netlist"
+msgstr "Visualitza una llista d'interconnexions"
+
+#: ../src/schematic-view-ui.h:240
 msgid "_Contents"
 msgstr "_Continguts"
 
-#: ../src/schematic-view-ui.h:254
+#: ../src/schematic-view-ui.h:240
 msgid "Show program help"
 msgstr "Mostra l'ajuda del programa"
 
-#: ../src/schematic-view-ui.h:268
+#: ../src/schematic-view-ui.h:254
 msgid "_Tools"
 msgstr "E_ines"
 
-#: ../src/schematic-view-ui.h:279
+#: ../src/schematic-view-ui.h:264
 msgid "New"
 msgstr "Nou"
 
-#: ../src/schematic-view-ui.h:282
+#: ../src/schematic-view-ui.h:267
 msgid "Open"
 msgstr "Obre"
 
-#: ../src/schematic-view-ui.h:282
+#: ../src/schematic-view-ui.h:267
 msgid "Open an existing schematic"
 msgstr "Obre un esquemàtic existent"
 
-#: ../src/schematic-view-ui.h:285
+#: ../src/schematic-view-ui.h:270
 msgid "Save"
 msgstr "Desa"
 
-#: ../src/schematic-view-ui.h:285
+#: ../src/schematic-view-ui.h:270
 msgid "Save the schematic"
 msgstr "Desa l'esquemàtic"
 
-#: ../src/schematic-view-ui.h:300 ../src/sheet-item.c:311
-msgid "Cut"
-msgstr "Retalla"
-
-#: ../src/schematic-view-ui.h:300
+#: ../src/schematic-view-ui.h:285
 msgid "Cut the selection to the clipboard"
 msgstr "Retalla la selecció al porta-retalls"
 
-#: ../src/schematic-view-ui.h:303 ../src/sheet-item.c:308
-msgid "Copy"
-msgstr "Copia"
-
-#: ../src/schematic-view-ui.h:303
+#: ../src/schematic-view-ui.h:288
 msgid "Copy the selection to the clipboard"
 msgstr "Copia la selecció al porta-retalls"
 
-#: ../src/schematic-view-ui.h:306 ../src/schematic-view-ui.h:418
+#: ../src/schematic-view-ui.h:291 ../src/schematic-view-ui.h:404
 msgid "Paste"
 msgstr "Enganxa"
 
-#: ../src/schematic-view-ui.h:306
+#: ../src/schematic-view-ui.h:291
 msgid "Paste the clipboard"
 msgstr "Enganxa el contingut del porta-retalls"
 
-#: ../src/schematic-view-ui.h:316
+#: ../src/schematic-view-ui.h:301
 msgid "Arrow"
 msgstr "Punter"
 
-#: ../src/schematic-view-ui.h:317
+#: ../src/schematic-view-ui.h:302
 msgid "Select, move and modify objects"
 msgstr "Selecciona, mou i modifica objectes"
 
-#: ../src/schematic-view-ui.h:322
+#: ../src/schematic-view-ui.h:307
 msgid "Text"
 msgstr "Text"
 
-#: ../src/schematic-view-ui.h:323
+#: ../src/schematic-view-ui.h:308
 msgid "Put text on the schematic"
 msgstr "Posa text en l'esquemàtic"
 
-#: ../src/schematic-view-ui.h:328
+#: ../src/schematic-view-ui.h:313
 msgid "Wires"
 msgstr "Connexions"
 
-#: ../src/schematic-view-ui.h:329
+#: ../src/schematic-view-ui.h:314
 msgid "Draw wires"
 msgstr "Dibuixa les connexions"
 
-#: ../src/schematic-view-ui.h:345
+#: ../src/schematic-view-ui.h:330
 msgid "Add Voltage Clamp"
 msgstr "Afegeix una sonda de tensió"
 
-#: ../src/schematic-view-ui.h:346
+#: ../src/schematic-view-ui.h:331
 msgid "Add a Voltage test clamp"
 msgstr "Afegeix una sonda de mesura de tensió"
 
-#: ../src/schematic-view-ui.h:351
+#: ../src/schematic-view-ui.h:336
 msgid "Simulate"
 msgstr "Simula"
 
-#: ../src/schematic-view-ui.h:352
+#: ../src/schematic-view-ui.h:337
 msgid "Run a simulation for the current schematic"
 msgstr "Llança la simulació per a l'esquemàtic actual"
 
-#: ../src/schematic-view-ui.h:357 ../src/schematic-view-ui.h:358
+#: ../src/schematic-view-ui.h:342 ../src/schematic-view-ui.h:343
 msgid "Simulation settings"
 msgstr "Paràmetres de la simulació"
 
-#: ../src/schematic-view-ui.h:363
-msgid "View plot"
-msgstr "Visualitza el gràfic"
-
-#: ../src/schematic-view-ui.h:364
-msgid "View plot "
-msgstr "Visualitza el gràfic "
-
-#: ../src/schematic-view-ui.h:374 ../src/dialogs/part-browser.glade2.h:3
-msgid "Parts"
-msgstr "Components"
-
-#: ../src/schematic-view-ui.h:375
+#: ../src/schematic-view-ui.h:361
 msgid "Show or hide the part browser"
 msgstr "Mostra o amaga el navegador de components"
 
-#: ../src/schematic-view-ui.h:380
+#: ../src/schematic-view-ui.h:366
 msgid "Grid"
 msgstr "Quadrícula"
 
-#: ../src/schematic-view-ui.h:381
+#: ../src/schematic-view-ui.h:367
 msgid "Turn on/off the grid"
 msgstr "Activa/desactiva la quadrícula"
 
-#: ../src/schematic-view-ui.h:386 ../src/schematic-view-ui.h:387
+#: ../src/schematic-view-ui.h:372 ../src/schematic-view-ui.h:373
 msgid "Zoom in"
 msgstr "Apropa"
 
-#: ../src/schematic-view-ui.h:392 ../src/schematic-view-ui.h:393
+#: ../src/schematic-view-ui.h:378 ../src/schematic-view-ui.h:379
 msgid "Zoom out"
 msgstr "Allunya"
 
-#: ../src/schematic-view-ui.h:419
+#: ../src/schematic-view-ui.h:405
 msgid "Paste the contents of the clipboard to the sheet"
 msgstr "Enganxa els continguts del porta-retalls en la fulla"
 
-#: ../src/settings.c:161 ../src/settings.c:168 ../src/settings.c:174
-msgid "Could not create settings dialog"
-msgstr "No es pot crear el diàleg de preferències"
+#: ../src/print.c:297
+msgid "Print"
+msgstr "Imprimeix"
 
-#: ../src/sheet-item.c:308
-msgid "Copy the object to the clipboard"
-msgstr "Copia l'objecte al porta-retalls"
+#: ../src/print.c:304
+msgid "Pages"
+msgstr "Pàgines"
 
-#: ../src/sheet-item.c:311
-msgid "Cut the object to the clipboard"
-msgstr "Retalla l'objecte al porta-retalls"
+#: ../src/print.c:339
+msgid "Can't get paper info! .. getting default!"
+msgstr ""
+"No s'ha pogut obtenir informació sobre el paper, s'està prenent el valor per "
+"defecte."
 
-#: ../src/sheet-item.c:314
-msgid "Delete"
-msgstr "Suprimeix"
+#: ../src/print.c:353
+msgid "Could not create font for printing."
+msgstr "No s'ha pogut crear el tipus de lletra per a imprimir."
 
-#: ../src/sheet-item.c:314
-msgid "Delete the object"
-msgstr "Suprimeix l'objecte"
+#: ../src/print.c:372
+msgid "Printing failed."
+msgstr "Ha fallat la impressió."
 
-#: ../src/sheet-item.c:320
-msgid "Rotate"
-msgstr "Capgira"
+#: ../src/plot.c:61 ../src/plot.c:62
+msgid "Sans 10"
+msgstr "Sans 10"
 
-#: ../src/sheet-item.c:321
-msgid "Rotate the selected objects 90 degrees clockwise"
-msgstr "Capgira 90 graus cap a la dreta l'objecte seleccionat"
+#: ../src/plot.c:63
+msgid "Sans 8"
+msgstr "Sans 8"
 
-#: ../src/sim-engine.c:80
-msgid "Operating Point"
-msgstr "Punt de Treball"
+#: ../src/plot.c:151
+msgid "Preview the plot before printing"
+msgstr "Previsualitza el gràfic abans d'imprimir"
 
-#: ../src/sim-engine.c:81
-msgid "Transient Analysis"
-msgstr "Anàlisi transitòria"
+#: ../src/plot.c:153
+msgid "Export plot"
+msgstr "Exporta el gràfic"
 
-#: ../src/sim-engine.c:82
-msgid "DC transfer characteristic"
-msgstr "Característica de transferència en DC"
+#: ../src/plot.c:154
+msgid "Show the export menu"
+msgstr "Mostra el menú d'exportar"
 
-#: ../src/sim-engine.c:83
-msgid "AC Analysis"
-msgstr "Anàlisi en AC"
+#: ../src/plot.c:155
+msgid "Add Function"
+msgstr "Afegeix Funció"
 
-#: ../src/sim-engine.c:84
-msgid "Transfer Function"
-msgstr "Funció de transferència"
+#: ../src/plot.c:156
+msgid "Add new function to the graph"
+msgstr "Afegeix una nova funció al gràfic"
 
-#: ../src/sim-engine.c:85
-msgid "Distortion Analysis"
-msgstr "Anàlisi de distorsió"
+#: ../src/plot.c:180
+msgid "_Preferences..."
+msgstr "_Preferències..."
 
-#: ../src/sim-engine.c:86
-msgid "Noise Analysis"
-msgstr "Anàlisi de soroll"
+#: ../src/plot.c:182
+msgid "Show crosshairs"
+msgstr "Mostra els cursors"
 
-#: ../src/sim-engine.c:87
-msgid "Pole-Zero Analysis"
-msgstr "Anàlisi de Pols-Zeros"
+#: ../src/plot.c:183
+msgid "_Zoom"
+msgstr "_Zoom"
 
-#: ../src/sim-engine.c:88
-msgid "Sensitivity Analysis"
-msgstr "Anàlisi de sensibilitat"
+#: ../src/plot.c:190
+msgid "Schematic Plot"
+msgstr "Gràfic de l'esquemàtic"
 
-#: ../src/sim-engine.c:89
-msgid "Unknown Analysis"
-msgstr "Anàlisi desconeguda"
+#: ../src/plot.c:196
+msgid "_File"
+msgstr "_Fitxer"
 
-#: ../src/sim-engine.c:556
+#: ../src/plot.c:197
+msgid "_Plot"
+msgstr "_Dibuixa"
+
+#. Simulation failed?
+#: ../src/plot.c:330
+msgid "The simulation produced no data!!\n"
+msgstr "La simulació no ha produït cap dada!!\n"
+
+#: ../src/plot.c:340 ../src/plot.c:574
+#, c-format
+msgid "Plot - %s"
+msgstr "Gràfic - %s"
+
+#: ../src/plot.c:349
+msgid "Nodes"
+msgstr "Nodes"
+
+#: ../src/plot.c:352 ../src/plot.c:636
+msgid "Functions"
+msgstr "Funcions"
+
+#: ../src/plot.c:424
+msgid "Oregano - Plot"
+msgstr "Oregano - Gràfic"
+
+#: ../src/plot.c:436 ../src/plot.c:443
+msgid "Could not create plot window."
+msgstr "No s'ha pogut crear la finestra del gràfic."
+
+#: ../src/plot.c:659
+msgid "TRANSFER"
+msgstr "TRANSFERÈNCIA"
+
+#: ../src/plot.c:691 ../src/plot.c:698
+msgid "Could not create plot export window."
+msgstr "No s'ha pogut crear la finestra d'exportació del gràfic."
+
+#. if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (export_png)))
+#. format = GTK_CAIRO_PLOT_VIEW_SAVE_PNG;
+#. else
+#. format = GTK_CAIRO_PLOT_VIEW_SAVE_PS;
+#: ../src/plot.c:719
+msgid "Save PNG"
+msgstr "Desa un PNG"
+
+#: ../src/part-browser.c:135 ../src/part-browser.c:614
 msgid ""
-"\n"
-"\n"
-"### Too few or none analysis found ###\n"
-"\n"
+"Gtk version 2.2 does not support GtkTreeModelFilter...\n"
+"Filtering disable!"
+msgstr ""
+"La versió 2.2 de GTK no té implementat GtkTreeModelFilter...\n"
+"S'ha inhabilitat el filtre!"
+
+#: ../src/part-browser.c:187 ../src/part-browser.c:401
+msgid "Unable to load required part"
+msgstr ""
+
+#: ../src/part-browser.c:499 ../src/part-browser.c:507
+msgid "Could not create part browser"
+msgstr "No puc crear un navegador de components"
+
+#: ../src/oregano-config.c:123
+#, c-format
+msgid "Loading %s ..."
+msgstr "S'està carregant %s..."
+
+#: ../src/oregano-config.c:164
+#, c-format
+msgid "Could not read the parts library: %s "
+msgstr "No s'ha pogut llegir la biblioteca de components: %s"
+
+#: ../src/oregano-config.c:166
+msgid ""
+"The file is probably corrupt. Please reinstall the parts\n"
+"library or Oregano and try again."
+msgstr ""
+"El fitxer està probablement corrupte. Si us plau, reinstal·leu\n"
+"la biblioteca de components o l'Oregano i intenteu-ho de nou."
+
+#: ../src/engines/netlist.c:436
+msgid "No ground node. Aborting.\n"
+msgstr "Cap  nus a terra. Abortant.\n"
+
+#: ../src/engines/netlist.c:441
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have a ground node and try again."
+msgstr ""
+
+#: ../src/engines/netlist.c:450
+msgid "No test clamps found. Aborting.\n"
+msgstr ""
+
+#: ../src/engines/netlist.c:455
+msgid ""
+"Possibly due to a faulty circuit schematic. Please check that\n"
+"you have one o more test clamps and try again."
+msgstr ""
+
+#: ../src/engines/gnucap.c:299
+#, fuzzy
+msgid "### Too few or none analysis found ###\n"
 msgstr ""
 "\n"
 "\n"
 "### S'han trobat massa poques o cap anàlisi ###\n"
 "\n"
 
-#: ../src/sim-settings.c:239
-msgid "Add new option"
-msgstr "Afegeix una nova opció"
+#: ../src/engines/gnucap.c:366
+msgid "Unable to execute GnuCap."
+msgstr ""
 
-#: ../src/sim-settings.c:825
-msgid "Problem in transient analysis"
-msgstr "Hi ha hagut un problema en l'anàlisi transitòria"
+#: ../src/engines/gnucap.c:383
+#, fuzzy
+msgid "None"
+msgstr "Nodes"
 
-#: ../src/sim-settings.c:826
-msgid "Start time must be less than stop time."
-msgstr "El temps inicial ha de ser menor que el final"
-
-#: ../src/sim-settings.c:869 ../src/sim-settings.c:876
-#: ../src/sim-settings.c:882
-msgid "Could not create simulation settings dialog"
-msgstr "No s'ha pogut crear el diàleg dels paràmetres de la simulació."
-
-#: ../src/sim-settings.c:906
-msgid "Option"
-msgstr "Opció"
-
-#: ../src/sim-settings.c:908
-msgid "Value"
-msgstr "Valor"
-
-#: ../src/simulation.c:104
-msgid "Could not find the simulation executable"
-msgstr "No s'ha pogut trobar l'executable del simulador"
-
-#: ../src/simulation.c:105
-msgid "This probably means that you have not configured Oregano properly."
-msgstr "Açò probablement vol dir que no heu configurat l'Oregano correctament."
-
-#: ../src/simulation.c:111
-msgid "You have not entered a simulation executable"
-msgstr "No heu introduït cap executable del simulador."
+#: ../src/engines/gnucap.c:586
+msgid "time"
+msgstr ""
 
 # FIXME: typo
-#: ../src/simulation.c:112
-msgid ""
-"Please choose Settings and specify which program to use for simulations."
-msgstr ""
-"Si us plau, aneu als Paràmetres i especifiqueu quin programa cal usar per a "
-"les simulacions."
+#: ../src/engines/gnucap.c:591 ../src/engines/gnucap.c:601
+#, fuzzy
+msgid "voltage"
+msgstr "Tensió"
 
-#: ../src/simulation.c:123 ../src/simulation.c:130 ../src/simulation.c:136
-msgid "Could not create simulation dialog"
-msgstr "No es pot crear el diàleg de la simulació"
+#: ../src/engines/gnucap.c:596
+#, fuzzy
+msgid "frequency"
+msgstr "Frequència"
 
-#: ../src/simulation.c:223
-msgid ""
-"<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
-"error.</span>\n"
-"\n"
-"Would you like to view the error log?"
-msgstr ""
-"<span weight=\"bold\" size=\"large\">S'ha avortat la simulació a causa d'un "
-"error.</span>\n"
-"Voleu veure el registre d'errors?"
+#: ../src/engines/gnucap.c:645
+#, fuzzy
+msgid "Unknown analysis"
+msgstr "Anàlisi desconeguda"
 
-#: ../src/simulation.c:237
-msgid "The simulation was aborted due to an error"
-msgstr "S'ha avortat la simulació a causa d'un error"
+#: ../src/engines/gnucap.c:693
+#, fuzzy
+msgid "abort"
+msgstr "Iniciar"
 
-#: ../src/simulate.c:153
-msgid "Could't generate temp file!!\n"
-msgstr ""
+#: ../src/engines/engine.c:32
+msgid "Operating Point"
+msgstr "Punt de Treball"
 
-#: ../src/simulate.c:286
-msgid "Possibly due an I/O error."
-msgstr ""
+#: ../src/engines/engine.c:33
+msgid "Transient Analysis"
+msgstr "Anàlisi transitòria"
 
-#: ../src/simulate.c:310
-msgid "No ground node. Aborting.\n"
-msgstr "Cap  nus a terra. Abortant.\n"
+#: ../src/engines/engine.c:34
+msgid "DC transfer characteristic"
+msgstr "Característica de transferència en DC"
 
-#: ../src/simulate.c:315
-msgid ""
-"Possibly due to a faulty circuit schematic. Please check that\n"
-"you have a ground node and try again."
-msgstr ""
+#: ../src/engines/engine.c:35
+msgid "AC Analysis"
+msgstr "Anàlisi en AC"
 
-#: ../src/simulate.c:330
-msgid "No test clamps found. Aborting.\n"
-msgstr ""
+#: ../src/engines/engine.c:36
+msgid "Transfer Function"
+msgstr "Funció de transferència"
 
-#: ../src/simulate.c:335
-msgid ""
-"Possibly due to a faulty circuit schematic. Please check that\n"
-"you have one o more test clamps and try again."
-msgstr ""
+#: ../src/engines/engine.c:37
+msgid "Distortion Analysis"
+msgstr "Anàlisi de distorsió"
 
-#: ../src/textbox-item.c:101
-msgid "Edit..."
-msgstr "Edita..."
+#: ../src/engines/engine.c:38
+msgid "Noise Analysis"
+msgstr "Anàlisi de soroll"
 
-#: ../src/textbox-item.c:101
-msgid "Edit the text"
-msgstr "Edita el text"
+#: ../src/engines/engine.c:39
+msgid "Pole-Zero Analysis"
+msgstr "Anàlisi de Pols-Zeros"
 
-#: ../src/textbox-item.c:598
-msgid "Label"
-msgstr "Etiqueta"
+#: ../src/engines/engine.c:40
+msgid "Sensitivity Analysis"
+msgstr "Anàlisi de sensibilitat"
 
-#: ../src/textbox-item.c:684 ../src/textbox-item.c:693
-msgid "Could not create textbox properties dialog"
-msgstr "No s'ha pogut crear el quadre de diàleg de les propietats del text."
+#: ../src/engines/engine.c:41
+msgid "Unknown Analysis"
+msgstr "Anàlisi desconeguda"
 
 #: ../src/netlist-editor.c:172
 #, c-format
@@ -862,370 +1101,220 @@ msgstr "Autor: %s"
 msgid "Page %N of %Q"
 msgstr "Pàgina %N de %Q"
 
-#: ../src/netlist-editor.c:234 ../src/netlist-editor.c:270
+#: ../src/netlist-editor.c:238 ../src/netlist-editor.c:274
 #, c-format
 msgid "The file %s could not be saved"
 msgstr "El fitxer %s no s'ha pogut desar"
 
-#: ../src/netlist-editor.c:235 ../src/netlist-editor.c:271
+#: ../src/netlist-editor.c:239 ../src/netlist-editor.c:275
 msgid "Could not save temporary netlist file"
 msgstr "No s'ha pogut desar el fitxer temporal de la llista d'interconnexions"
 
-#: ../src/netlist-editor.c:307
+#: ../src/netlist-editor.c:311
 msgid "Could not create the netlist dialog"
 msgstr "No s'ha pogut crear el diàleg de la llista d'interconnexions"
 
 #. gettext support
-#: ../src/netlist-editor.c:386
+#: ../src/netlist-editor.c:390
 #, c-format
 msgid "The file %s could not be found."
 msgstr "No s'ha pogut trobar el fitxer %s."
 
-#: ../src/netlist-editor.c:387
+#: ../src/netlist-editor.c:391
 msgid "Could not find the required file"
 msgstr "No s'ha trobat el fitxer requerit"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:1
-msgid "<b>AC Analysis Options</b>"
-msgstr "<b>Opcions de l'anàlisi d'AC</b>"
+#: ../src/main.c:107
+msgid "Enables some debugging functions"
+msgstr "Activa algunes funcions de depurat"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:2
-msgid "<b>Type</b>"
-msgstr "<b>Tipus</b>"
+#: ../src/main.c:107
+msgid "LEVEL"
+msgstr "NIVELL"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:3
-msgid "Current"
-msgstr "Corrent"
+#: ../src/main.c:132
+msgid ""
+"You seem to be running Oregano without\n"
+"having it installed properly on your system.\n"
+"\n"
+"Please install Oregano and try again."
+msgstr ""
+"Sembla que esteu executant Oregano sense\n"
+"que estiga instal·lat correctament al vostre sistema.\n"
+"\n"
+"Si us plau, instal·leu Oregano i torneu-ho a provar."
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:4
-msgid "Edit Clamp properties"
-msgstr "Edita les propietats de la sonda"
+#: ../src/main.c:155
+msgid ""
+"Could not find a parts library.\n"
+"\n"
+"This is probably due to a faulty installation\n"
+"of Oregano. Please check your installation."
+msgstr ""
+"No es pot trobar una biblioteca de components.\n"
+"\n"
+"Açò probablement és degut a una mala instal·lació\n"
+"d'Oregano. Si us plau, comproveu la vostra instal·lació."
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:5
-msgid "Imaginary part"
-msgstr "Part imaginària"
+#: ../src/main.c:212
+msgid "Welcome to Oregano"
+msgstr "Benvingut a Oregano"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:6
-msgid "Magnitude"
-msgstr "Magnitud"
+#: ../src/load-schematic.c:261
+msgid "Bad file format."
+msgstr "Format de fitxer erroni."
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:7
-msgid "Phase"
-msgstr "Fase"
+#: ../src/load-schematic.c:271
+msgid "Unknown parser error."
+msgstr "Error desconegut de l'analitzador."
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:8
-msgid "Real part"
-msgstr "Part real"
+#: ../src/load-library.c:149
+#, c-format
+msgid "Could not find the requested symbol: %s\n"
+msgstr "No s'ha trobat el símbol sol·licitat: %s\n"
 
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:9
-msgid "Use decibel scale"
-msgstr "Utilitza una escala en decibels"
+#: ../src/load-library.c:165
+#, c-format
+msgid "Could not find the requested part: %s\n"
+msgstr "No s'ha trobat el component sol·licitat: %s\n"
 
-# FIXME: typo
-#: ../src/dialogs/clamp-properties-dialog.glade2.h:10
-msgid "Voltage"
-msgstr "Tensió"
+#: ../src/file.c:50 ../src/file.c:90
+msgid "Oregano Files"
+msgstr "Fitxers d'Oregano"
 
-#: ../src/dialogs/log-window.glade2.h:1
-msgid "Clear"
-msgstr "Neteja"
+#: ../src/file.c:52 ../src/file.c:92
+msgid "All Files"
+msgstr "Tots els fitxers"
 
-#: ../src/dialogs/log-window.glade2.h:2
-msgid "Oregano Log Window"
-msgstr "Finestra de registre de l'Oregano"
+#: ../src/file.c:55
+msgid "Open File"
+msgstr "Obre un fitxer"
 
-#: ../src/dialogs/page-properties.glade2.h:1
-msgid "<b>Alignment</b>"
-msgstr "<b>Alineament</b>"
+#: ../src/file.c:95
+msgid "Save File"
+msgstr "Desa el fitxer"
 
-#: ../src/dialogs/page-properties.glade2.h:2
-msgid "Center Horizontally"
-msgstr "Centra horitzontalment"
+#: ../src/file.c:145
+msgid "Netlist File"
+msgstr "Fitxer de llista de connexions"
 
-#: ../src/dialogs/page-properties.glade2.h:3
-msgid "Center Vertically"
-msgstr "Centra verticalment"
+#: ../src/file.c:221
+msgid "Open file"
+msgstr "Obre un fitxer"
 
-#: ../src/dialogs/page-properties.glade2.h:4
-msgid "Fit to page"
-msgstr "Ajusta a la pàgina"
+#: ../src/file.c:271
+msgid "Save schematic as"
+msgstr "Anomena i desa l'esquemàtic"
 
-#: ../src/dialogs/page-properties.glade2.h:5
-msgid "Print Properties"
-msgstr "Propietats d'impressió"
+#: ../src/file.c:336
+msgid "Netlist filename"
+msgstr "Nom del fitxer de la llista de connexions"
 
-#: ../src/dialogs/part-browser.glade2.h:1
-msgid "<b>Preview</b>"
-msgstr "<b>Previsualitza</b>"
+#: ../src/dialogs.c:126
+#, fuzzy
+msgid ""
+"(c) 2003-2006 LUGFi\n"
+"(c) 1999-2001 Richard Hult"
+msgstr ""
+"(c) 2003-2005 LUGFi\n"
+"(c) 1999-2001 Richard Hult"
 
-#: ../src/dialogs/part-browser.glade2.h:2
-msgid "Library:"
-msgstr "Biblioteca:"
+#: ../src/dialogs.c:141
+msgid "Schematic capture and circuit simulation.\n"
+msgstr "Captura d'esquemàtics i simulació de circuits.\n"
 
-#: ../src/dialogs/part-browser.glade2.h:4
-msgid "Place"
-msgstr "Col·loca"
+#: ../src/model/schematic.c:584
+#, c-format
+msgid "File %s does not exists."
+msgstr "El fitxer %s no existeix."
 
-#: ../src/dialogs/part-browser.glade2.h:5
-msgid "Press this button to place the selected part"
-msgstr "Premeu aquest botó per a col·locar el component seleccionat"
+#: ../src/model/schematic.c:592 ../src/model/schematic.c:630
+#, c-format
+msgid "Unknown file format for %s."
+msgstr "El format del fitxer %s és desconegut."
 
-#: ../src/dialogs/part-browser.glade2.h:6
-msgid "Search:"
-msgstr "Cerca:"
+#: ../src/model/schematic.c:611
+msgid "Load fails!."
+msgstr "Ha fallat la càrrega!."
 
-#: ../src/dialogs/part-browser.glade2.h:7
-msgid "Select which library to use"
-msgstr "Selecciona la biblioteca a usar"
+#: ../src/plot-add-function.c:48
+#, fuzzy, c-format
+msgid ""
+"The file %s could not be found. You might need to reinstall Oregano to fix "
+"this"
+msgstr ""
+"No s'ha pogut trobar el fitxer %s. Potser hauríeu de reinstal·lar l'Oregano "
+"per arreglar-ho."
 
-#: ../src/dialogs/part-properties-dialog.glade2.h:1
-msgid "Name: "
-msgstr "Nom: "
+#: ../src/plot-add-function.c:50 ../src/plot-add-function.c:57
+#, fuzzy
+msgid "Could not create plot window"
+msgstr "No s'ha pogut crear la finestra del gràfic."
 
-#: ../src/dialogs/part-properties-dialog.glade2.h:2
-msgid "Part Properties"
-msgstr "Propietats del component"
+#~ msgid "_View netlist"
+#~ msgstr "_Visualitza la llista d'interconnexions"
 
-#: ../src/dialogs/part-properties-dialog.glade2.h:3
-msgid "Value: "
-msgstr "Valor: "
+#~ msgid "View plot"
+#~ msgstr "Visualitza el gràfic"
 
-#: ../src/dialogs/plot-window.glade2.h:1
-msgid "<b>Plot</b>"
-msgstr "<b>Gràfic</b>"
+#~ msgid "View plot "
+#~ msgstr "Visualitza el gràfic "
 
-#: ../src/dialogs/plot-window.glade2.h:2
-msgid "<b>Variables</b>"
-msgstr "<b>Variables</b>"
+#~ msgid "Problem in transient analysis"
+#~ msgstr "Hi ha hagut un problema en l'anàlisi transitòria"
 
-#: ../src/dialogs/properties.glade2.h:1
-#: ../src/dialogs/textbox-properties-dialog.glade2.h:1
-#: ../src/dialogs/plot-export.glade2.h:1
-msgid "    "
-msgstr "    "
+#~ msgid "Start time must be less than stop time."
+#~ msgstr "El temps inicial ha de ser menor que el final"
 
-#: ../src/dialogs/properties.glade2.h:2
-msgid "<b>Comments</b>"
-msgstr "<b>Comentaris</b>"
+#~ msgid "Could not find the simulation executable"
+#~ msgstr "No s'ha pogut trobar l'executable del simulador"
 
-#: ../src/dialogs/properties.glade2.h:3
-msgid "Author:"
-msgstr "Autor:"
+#~ msgid "This probably means that you have not configured Oregano properly."
+#~ msgstr ""
+#~ "Açò probablement vol dir que no heu configurat l'Oregano correctament."
 
-#: ../src/dialogs/properties.glade2.h:5
-msgid "Title:"
-msgstr "Títol:"
-
-#: ../src/dialogs/settings.glade2.h:1
-msgid "\n"
-msgstr "\n"
-
-#: ../src/dialogs/settings.glade2.h:3
-msgid "<b>Data Paths</b>"
-msgstr "<b>Camins de dades</b>"
-
-#: ../src/dialogs/settings.glade2.h:4
-msgid "<b>Engine</b>"
-msgstr "<b>Motor</b>"
-
-#: ../src/dialogs/settings.glade2.h:5
-msgid "<b>Executable Path</b>"
-msgstr "<b>Camí dels executables</b>"
-
-#: ../src/dialogs/settings.glade2.h:6
-msgid "<b>File Format</b>"
-msgstr "<b>Format del fitxer</b>"
-
-#: ../src/dialogs/settings.glade2.h:7
-msgid "<b>User Interface</b>"
-msgstr "<b>Interfície d'usuari</b>"
-
-#: ../src/dialogs/settings.glade2.h:8
-msgid "Automatically show log windows after simulation"
-msgstr "Mostra automàticament la finestra de registre després de la simulació"
-
-#: ../src/dialogs/settings.glade2.h:9
-msgid "Compress saved files"
-msgstr "Compacta els fitxers desats"
-
-#: ../src/dialogs/settings.glade2.h:10
-msgid "GnuCap"
-msgstr "GnuCap"
-
-#: ../src/dialogs/settings.glade2.h:11
-msgid "Grid size[px]   "
-msgstr "Mida de la quadrícula [px]   "
-
-#: ../src/dialogs/settings.glade2.h:12
-msgid "Library"
-msgstr "Biblioteca"
-
-#: ../src/dialogs/settings.glade2.h:13
-msgid "Model"
-msgstr "Model"
-
-#: ../src/dialogs/settings.glade2.h:14
-msgid "NgSpice"
-msgstr "NgSpice"
-
-#: ../src/dialogs/settings.glade2.h:15
-msgid "Parser"
-msgstr "Analitzador"
-
-#: ../src/dialogs/settings.glade2.h:16
-msgid "Paths"
-msgstr "Camins"
-
-#: ../src/dialogs/settings.glade2.h:17
-msgid "Preferences"
-msgstr "Preferències"
+#~ msgid "You have not entered a simulation executable"
+#~ msgstr "No heu introduït cap executable del simulador."
 
 # FIXME: typo
-#: ../src/dialogs/settings.glade2.h:18
-msgid "Realtime update of selection (slow)"
-msgstr "Actualització en temps real de la selecció (lent)"
+#~ msgid ""
+#~ "Please choose Settings and specify which program to use for simulations."
+#~ msgstr ""
+#~ "Si us plau, aneu als Paràmetres i especifiqueu quin programa cal usar per "
+#~ "a les simulacions."
 
-#: ../src/dialogs/settings.glade2.h:19
-msgid "Remove"
-msgstr "Elimina"
+#~ msgid "Name: "
+#~ msgstr "Nom: "
 
-#: ../src/dialogs/settings.glade2.h:20
-msgid "Show the splash screen at application startup"
-msgstr "Mostra la pantalla de benvinguda quan s'inicia l'aplicació"
+#~ msgid "Value: "
+#~ msgstr "Valor: "
 
-#: ../src/dialogs/settings.glade2.h:21
-msgid "User Interface"
-msgstr "Interfície d'usuari"
+#~ msgid "GnuCap"
+#~ msgstr "GnuCap"
 
-#: ../src/dialogs/sim-settings.glade2.h:1
-msgid "<b>AC</b>"
-msgstr "<b>AC</b>"
+#~ msgid "NgSpice"
+#~ msgstr "NgSpice"
 
-#: ../src/dialogs/sim-settings.glade2.h:2
-msgid "<b>DC Sweep</b>"
-msgstr "<b>Escombrat DC</b>"
+#~ msgid "Parser"
+#~ msgstr "Analitzador"
 
-#: ../src/dialogs/sim-settings.glade2.h:3
-msgid "<b>Fourier</b>"
-msgstr "<b>Fourier</b>"
+#~ msgid "<b>Format</b>"
+#~ msgstr "<b>Format</b>"
 
-#: ../src/dialogs/sim-settings.glade2.h:4
-msgid "<b>Transient</b>"
-msgstr "<b>Transitòria</b>"
+#~ msgid "<b>Size</b>"
+#~ msgstr "<b>Mida</b>"
 
-#: ../src/dialogs/sim-settings.glade2.h:5
-msgid "Add new options"
-msgstr "Afegeix noves opcions"
+#~ msgid "Height : "
+#~ msgstr "Alçada: "
 
-#: ../src/dialogs/sim-settings.glade2.h:6
-msgid "Add to list"
-msgstr "Afegeix a la llista"
+#~ msgid "Plot Export"
+#~ msgstr "Exportació de gràfics"
 
-#: ../src/dialogs/sim-settings.glade2.h:7
-msgid "Analysis Options"
-msgstr "Opcions d'anàlisi"
+#~ msgid "Portable Network Graphics (png)"
+#~ msgstr "Portable Network Graphics (png)"
 
-#: ../src/dialogs/sim-settings.glade2.h:8
-msgid "Analysis Parameters"
-msgstr "Paràmetres de l'anàlisi"
+#~ msgid "Postscript (ps)"
+#~ msgstr "Postscript (ps)"
 
-#: ../src/dialogs/sim-settings.glade2.h:9
-msgid "DEC"
-msgstr "DEC"
-
-#: ../src/dialogs/sim-settings.glade2.h:10
-msgid "Frequency"
-msgstr "Frequència"
-
-#: ../src/dialogs/sim-settings.glade2.h:11
-msgid "LIN"
-msgstr "LIN"
-
-#: ../src/dialogs/sim-settings.glade2.h:12
-msgid "List of outputs"
-msgstr "Llista de sortides"
-
-#: ../src/dialogs/sim-settings.glade2.h:13
-msgid "OCT"
-msgstr "OCT"
-
-#: ../src/dialogs/sim-settings.glade2.h:14
-msgid "Points"
-msgstr "Punts"
-
-#: ../src/dialogs/sim-settings.glade2.h:15
-msgid "Simulation Settings"
-msgstr "Paràmetres de la simulació"
-
-#: ../src/dialogs/sim-settings.glade2.h:16
-msgid "Source"
-msgstr "Font"
-
-#: ../src/dialogs/sim-settings.glade2.h:17
-msgid "Start"
-msgstr "Iniciar"
-
-#: ../src/dialogs/sim-settings.glade2.h:18
-msgid "Step"
-msgstr "Pas"
-
-#: ../src/dialogs/sim-settings.glade2.h:19
-msgid "Stop"
-msgstr "Atura"
-
-#: ../src/dialogs/sim-settings.glade2.h:20
-msgid "Type"
-msgstr "Tipus"
-
-#: ../src/dialogs/sim-settings.glade2.h:21
-msgid "Use Initial Conditions"
-msgstr "Utilitza les condicions inicials"
-
-#: ../src/dialogs/simulation.glade2.h:1
-msgid "Progress:"
-msgstr "Progrés:"
-
-#: ../src/dialogs/simulation.glade2.h:2
-msgid "Simulation"
-msgstr "Simulació"
-
-#: ../src/dialogs/textbox-properties-dialog.glade2.h:2
-msgid "<b>Text</b>"
-msgstr "<b>Text</b>"
-
-#: ../src/dialogs/textbox-properties-dialog.glade2.h:3
-msgid "Text Properties"
-msgstr "Propietats del text"
-
-#: ../src/dialogs/view-netlist.glade2.h:1
-msgid "Netlist View"
-msgstr "Vista de llista d'interconnexions"
-
-#: ../src/dialogs/plot-export.glade2.h:2
-msgid "<b>Format</b>"
-msgstr "<b>Format</b>"
-
-#: ../src/dialogs/plot-export.glade2.h:3
-msgid "<b>Size</b>"
-msgstr "<b>Mida</b>"
-
-#: ../src/dialogs/plot-export.glade2.h:4
-msgid "Height : "
-msgstr "Alçada: "
-
-#: ../src/dialogs/plot-export.glade2.h:5
-msgid "Plot Export"
-msgstr "Exportació de gràfics"
-
-#: ../src/dialogs/plot-export.glade2.h:6
-msgid "Portable Network Graphics (png)"
-msgstr "Portable Network Graphics (png)"
-
-#: ../src/dialogs/plot-export.glade2.h:7
-msgid "Postscript (ps)"
-msgstr "Postscript (ps)"
-
-#: ../src/dialogs/plot-export.glade2.h:8
-msgid "Width : "
-msgstr "Amplada: "
-
+#~ msgid "Width : "
+#~ msgstr "Amplada: "
