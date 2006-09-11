@@ -128,7 +128,7 @@ static GnomeUIInfo schematic_menu_edit [] = {
 	  'a', GDK_CONTROL_MASK, NULL },
 
 	{ GNOME_APP_UI_ITEM,
-	  N_("_Deselect all"),
+	  N_("Deselect a_ll"),
 	  N_("Deselect the selected objects"),
 	  deselect_all_cmd, NULL, NULL,
 	  GNOME_APP_PIXMAP_NONE, NULL,
@@ -137,11 +137,17 @@ static GnomeUIInfo schematic_menu_edit [] = {
 	GNOMEUIINFO_SEPARATOR,
 
 	{ GNOME_APP_UI_ITEM,
-	  N_("Object _Properties..."),
+	  N_("_Object Properties..."),
 	  N_("Modify the object's properties"),
 	  object_properties_cmd, NULL, NULL,
 	  GNOME_APP_PIXMAP_STOCK, GTK_STOCK_PROPERTIES,
 	  'e', GDK_CONTROL_MASK, NULL },
+
+	{ GNOME_APP_UI_ITEM, N_("Simulation S_ettings..."),
+	  N_("Edit the simulation settings"), sim_settings_show, NULL,
+	  GTK_STOCK_PROPERTIES, 0, 0, 0, 0 },
+
+	GNOMEUIINFO_MENU_PREFERENCES_ITEM (settings_show, NULL),
 
 	GNOMEUIINFO_END
 };
@@ -215,22 +221,6 @@ static GnomeUIInfo schematic_menu_view [] = {
 	GNOMEUIINFO_END
 };
 
-/*
- * Settings menu.
- */
-static GnomeUIInfo schematic_menu_settings [] = {
-	GNOMEUIINFO_MENU_PREFERENCES_ITEM (settings_show, NULL),
-
-	GNOMEUIINFO_SEPARATOR,
-
-	{ GNOME_APP_UI_ITEM, N_("Simulation S_ettings..."),
-	  N_("Edit the simulation settings"), sim_settings_show, NULL,
-	  GTK_STOCK_PROPERTIES, 0, 0, 0, 0 },
-
-	GNOMEUIINFO_END
-};
-
-
 void show_help (GtkWidget *widget, SchematicView *sv)
 {
 	GError *error = NULL;
@@ -262,7 +252,6 @@ static GnomeUIInfo schematic_menu [] = {
 	GNOMEUIINFO_MENU_EDIT_TREE(schematic_menu_edit),
 	GNOMEUIINFO_MENU_VIEW_TREE(schematic_menu_view),
 	GNOMEUIINFO_SUBTREE(N_("_Tools"), schematic_menu_tools),
-	GNOMEUIINFO_MENU_SETTINGS_TREE(schematic_menu_settings),
 	GNOMEUIINFO_MENU_HELP_TREE(schematic_menu_help),
 	GNOMEUIINFO_END
 };
