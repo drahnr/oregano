@@ -28,6 +28,7 @@ src/simulation.c
 src/sim-settings.c
 src/settings.c
 src/schematic-view.c
+src/schematic-view-ui.h
 src/save-schematic.c
 src/pspice2oregano.c
 src/print.c
@@ -37,6 +38,8 @@ src/oregano-utils.c
 src/oregano-impl.c
 src/oregano-config.c
 src/engines/netlist.c
+src/engines/gnucap.c
+src/engines/engine.c
 src/netlist-editor.c
 src/main.c
 src/load-schematic.c
