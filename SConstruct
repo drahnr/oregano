@@ -9,6 +9,7 @@ VERSION = '0.50.1'
 # Command line options #
 opts = Options ('oregano.py');
 opts.Add (BoolOption ('RunUpdateMimeDatabase', 'Set to no if you don\'t want to run update-mime-database', 1));
+opts.Add (BoolOption ('Debug', 'Set to yes you want to compile with debug symbolse', 0));
 opts.Add (PathOption ('PREFIX', 'System base prefix path', '/usr/local'));
 opts.Add (PackageOption ('DESTDIR', 'System base installation path', '/'));
 
@@ -78,6 +79,8 @@ mo_bld = Builder (action = mo_builder)
 
 CEnv.Append (BUILDERS = {'MoBuild' : mo_bld})
 CEnv.Append (CCFLAGS = Split ('-Wall'));
+if CEnv['Debug']:
+	CEnv.Append (CCFLAGS = Split ('-g'));
 
 # Check dependencies #
 if not CEnv.GetOption ('clean'):
