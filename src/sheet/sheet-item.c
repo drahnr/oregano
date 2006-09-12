@@ -594,7 +594,6 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 				ItemData *item_data;
 
 				item_data = SHEET_ITEM (list->data)->priv->data;
-				item_data_unregister (item_data);
 				item_data_move (item_data, &delta);
 				item_data_register (item_data);
 			}
@@ -670,6 +669,10 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 			 * move them efficiently.
 			 */
 			for (list = priv->selected_objects; list; list = list->next){
+				ItemData *item_data;
+
+				item_data = SHEET_ITEM (list->data)->priv->data;
+				item_data_unregister (item_data);
 				sheet_item_reparent (SHEET_ITEM (list->data), priv->selected_group);
 			}
 
