@@ -1139,6 +1139,20 @@ node_store_count_items (NodeStore *store, ArtDRect *rect)
 	return n;
 }
 
+static void
+draw_dot (SheetPos *key, Node *value, cairo_t *cr)
+{
+	if (node_needs_dot (value)) {
+		cairo_save (cr);
+			cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+			cairo_translate (cr, key->x, key->y);
+			cairo_scale (cr, 1.0, 1.0);
+			cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
+			cairo_fill (cr);
+		cairo_restore (cr);
+	}
+}
+
 void
 node_store_print_items (NodeStore *store, cairo_t *cr, ArtDRect *rect)
 {
@@ -1154,6 +1168,8 @@ node_store_print_items (NodeStore *store, cairo_t *cr, ArtDRect *rect)
 		data = ITEM_DATA (list->data);
 		item_data_print (data, cr);
 	}
+
+	g_hash_table_foreach (store->nodes, (GHFunc)draw_dot, cr);
 }
 
 void
