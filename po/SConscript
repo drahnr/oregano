@@ -26,9 +26,9 @@ print "Updating pot file: "
 domain = CEnv['DOMAIN']
 potfile = CEnv['POTFILE']
 
-poaction = Action('intltool-update -p -g=' + domain)
-
-Execute(poaction)
+if 'update-pot' in COMMAND_LINE_TARGETS:
+	poaction = Action('intltool-update -p -g=' + domain)
+	Execute(poaction)
 
 # this should probably be merged with the i18n builder somehow
 
