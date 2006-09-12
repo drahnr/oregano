@@ -960,11 +960,12 @@ static void
 draw_page (GtkPrintOperation *operation,
 	GtkPrintContext *context, int page_nr, Schematic *sm)
 {
+	PangoLayout *layout;
+	PangoFontDescription *desc;
 	NodeStore *store;
 	ArtDRect bbox;
 	gdouble page_w, page_h;
 	gdouble circuit_w, circuit_h;
-	gdouble scale, scalew, scaleh;
 	
 	page_w = gtk_print_context_get_width (context);
 	page_h = gtk_print_context_get_height (context);
@@ -975,26 +976,49 @@ draw_page (GtkPrintOperation *operation,
 	cairo_t *cr = gtk_print_context_get_cairo_context (context);
 
 	/* Draw a red rectangle, as wide as the paper (inside the margins) */
-	cairo_set_source_rgb (cr, 1.0, 0, 0);
-	cairo_rectangle (cr, 0, 0, page_w, page_h);
-	cairo_stroke (cr);
+	cairo_save (cr);
+		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+		cairo_set_line_width (cr, 0.5);
+		cairo_rectangle (cr, 20, 10, page_w-30, page_h-20);
+		cairo_stroke (cr);
+
+		cairo_rectangle (cr, page_w-190, page_h-20, 180, 10);
+		cairo_rectangle (cr, page_w-190, page_h-40, 180, 20);
+		cairo_stroke (cr);
+	cairo_restore (cr);
+
+	/* Rotule texts */
+	layout = gtk_print_context_create_pango_layout (context);
+	desc = pango_font_description_from_string ("times 10");
+	pango_layout_set_font_description (layout, desc);
+	pango_font_description_free (desc);
+
+	cairo_move_to (cr, page_w-190, page_h-25);
+	pango_layout_set_text (layout, "Title", -1);
+	pango_cairo_layout_path (cr, layout);
+	cairo_fill (cr);
+
+	desc = pango_font_description_from_string ("times 20");
+	pango_layout_set_font_description (layout, desc);
+	pango_font_description_free (desc);
+
+	cairo_move_to (cr, page_w-160, page_h-35);
+	pango_layout_set_text (layout, schematic_get_title (sm), -1);
+	pango_cairo_layout_path (cr, layout);
+	cairo_fill (cr);
 
 	store = schematic_get_store (sm);
 
 	node_store_get_bounds (store, &bbox);
 
-	scalew = circuit_w / (bbox.x1 - bbox.x0);
-	scaleh = circuit_h / (bbox.y1 - bbox.y0);
-	if (scalew < scaleh)
-		scale = scalew;
-	else
-		scale = scaleh;
-
 	cairo_save (cr);
 		cairo_set_line_width (cr, 0.5);
 		cairo_set_source_rgb (cr, 0, 0, 0);
 		cairo_translate (cr, page_w * 0.1, page_h * 0.1);
-		cairo_scale (cr, scale, scale);	
+		/* 0.4 is the convert factor between Model unit and
+		 * milimeters, unit used in printing
+		 */
+		cairo_scale (cr, 0.4, 0.4);	
 		cairo_translate (cr, -bbox.x0, -bbox.y0);
 		schematic_render (sm, cr);
 	cairo_restore (cr);
@@ -1012,6 +1036,7 @@ schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, 
 	gtk_print_operation_set_default_page_setup (op, page);
 	gtk_print_operation_set_n_pages (op, 1);
 	gtk_print_operation_set_unit (op, GTK_UNIT_MM);
+	gtk_print_operation_set_use_full_page (op, TRUE);
 
 	g_signal_connect (op, "draw_page", G_CALLBACK (draw_page), sm);
 
