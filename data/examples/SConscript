@@ -1,0 +1,17 @@
+import os
+Import ('CEnv')
+
+# Install only working examples
+resources = Split ("""
+	carga_capacitor.oregano
+	opamp.oregano
+	opamp_ideal.oregano
+	pasa_altos.oregano
+	simple.oregano
+	simple2.oregano
+	""")
+
+# This have problems with Split
+resources.append ('Full-wave bridge rectifier.oregano')
+
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/oregano/examples'), resources))

@@ -3,3 +3,4 @@ Import ('CEnv')
 SConscript ('libraries/SConscript');
 SConscript ('dialogs/SConscript')
 SConscript ('models/SConscript')
+SConscript ('examples/SConscript')
