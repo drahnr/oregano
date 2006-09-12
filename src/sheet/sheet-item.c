@@ -299,6 +299,24 @@ rotate_cmd (GtkWidget *widget, SchematicView *sv)
 	schematic_view_rotate_selection (sv);
 }
 
+static void
+flip_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	schematic_view_flip_selection (sv, TRUE);
+}
+
+static void
+flip_vertical_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	schematic_view_flip_selection (sv, FALSE);
+}
+
 /*
  * This is the upper part of the object popup menu. It contains actions
  * that are the same for all objects, e.g. parts and wires.
@@ -319,6 +337,16 @@ static const GnomeUIInfo object_popup_menu [] = {
 	{ GNOME_APP_UI_ITEM, N_("Rotate"),
 	  N_("Rotate the selected objects 90 degrees clockwise"),
 	  rotate_cmd, NULL, NULL,
+	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE, 0, 0 },
+
+	{ GNOME_APP_UI_ITEM, N_("Flip _horizontally"),
+	  N_("Flip the selection horizontally"),
+	  flip_horizontal_cmd, NULL, NULL,
+	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE, 0, 0 },
+
+	{ GNOME_APP_UI_ITEM, N_("Flip _vertically"),
+	  N_("Flip the selection vertically"),
+	  flip_vertical_cmd, NULL, NULL,
 	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE, 0, 0 },
 
 	GNOMEUIINFO_END
