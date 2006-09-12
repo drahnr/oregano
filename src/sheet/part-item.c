@@ -932,7 +932,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	SheetItem *sheet_item)
 {
 	GList *list;
-	GSList *label_items;
+	GSList *label;
 	GtkAnchorType anchor;
 	GnomeCanvasGroup *group;
 	GnomeCanvasItem *canvas_item;
@@ -982,13 +982,13 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 		anchor = GTK_ANCHOR_NORTH_EAST;
 	}*/
 
-	for (list= item->priv->label_items; list;
-	     list = list->next) {
+	for (label = item->priv->label_items; label; label = label->next) {
 		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label_items->data),
+			GNOME_CANVAS_ITEM (label->data),
 			"anchor", anchor,
 			NULL);
 	}
+
 	/*
 	 * Invalidate the bounding box cache.
 	 */
