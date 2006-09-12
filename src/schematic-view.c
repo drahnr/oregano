@@ -386,8 +386,17 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	btn = gtk_dialog_run (GTK_DIALOG (win));
 
 	if (btn == GTK_RESPONSE_OK) {
+		int bg = 0;
 		GtkSpinButton *spinw, *spinh;
+		GtkWidget *w;
 		int i = gtk_combo_box_get_active (combo);
+
+		w = glade_xml_get_widget (xml, "bgwhite");
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
+			bg = 1;
+		w = glade_xml_get_widget (xml, "bgblack");
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
+			bg = 2;
 
 		spinw = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_width"));
 		spinh = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_height"));
@@ -396,6 +405,7 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 			gtk_entry_get_text (file),
 			gtk_spin_button_get_value_as_int (spinw),
 			gtk_spin_button_get_value_as_int (spinh),
+			bg,
 			formats[i]);
 	}
 

@@ -877,7 +877,7 @@ schematic_render (Schematic *sm, cairo_t *cr)
 
 void
 schematic_export (Schematic *sm, const gchar *filename,
-	gint img_w, gint img_h, int format)
+	gint img_w, gint img_h, int bg, int format)
 {
 	ArtDRect bbox;
 	NodeStore *store;
@@ -913,6 +913,19 @@ schematic_export (Schematic *sm, const gchar *filename,
 			surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, img_w, img_h);
 	}
 	cr = cairo_create (surface);
+
+	/* Background */
+	switch (bg) {
+		case 1: /* White */
+			cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
+			cairo_rectangle (cr, 0, 0, img_w, img_h);
+			cairo_fill (cr);
+			break;
+		case 2: /* Black */
+			cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+			cairo_rectangle (cr, 0, 0, img_w, img_h);
+			cairo_fill (cr);
+	}
 
 	graph_w = img_w * 0.8;
 	graph_h = img_h * 0.8;
