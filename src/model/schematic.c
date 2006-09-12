@@ -957,6 +957,18 @@ schematic_export (Schematic *sm, const gchar *filename,
 }
 
 static void
+draw_rotule (Schematic *sm, cairo_t *cr)
+{
+	cairo_save (cr);
+		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+		cairo_set_line_width (cr, 0.5);
+		cairo_rectangle (cr, 0, 0, 180, 20);
+		cairo_rectangle (cr, 0, 20, 180, 10);
+		cairo_stroke (cr);
+	cairo_restore (cr);
+}
+
+static void
 draw_page (GtkPrintOperation *operation,
 	GtkPrintContext *context, int page_nr, Schematic *sm)
 {
@@ -981,31 +993,12 @@ draw_page (GtkPrintOperation *operation,
 		cairo_set_line_width (cr, 0.5);
 		cairo_rectangle (cr, 20, 10, page_w-30, page_h-20);
 		cairo_stroke (cr);
-
-		cairo_rectangle (cr, page_w-190, page_h-20, 180, 10);
-		cairo_rectangle (cr, page_w-190, page_h-40, 180, 20);
-		cairo_stroke (cr);
 	cairo_restore (cr);
 
-	/* Rotule texts */
-	layout = gtk_print_context_create_pango_layout (context);
-	desc = pango_font_description_from_string ("times 10");
-	pango_layout_set_font_description (layout, desc);
-	pango_font_description_free (desc);
-
-	cairo_move_to (cr, page_w-190, page_h-25);
-	pango_layout_set_text (layout, "Title", -1);
-	pango_cairo_layout_path (cr, layout);
-	cairo_fill (cr);
-
-	desc = pango_font_description_from_string ("times 20");
-	pango_layout_set_font_description (layout, desc);
-	pango_font_description_free (desc);
-
-	cairo_move_to (cr, page_w-160, page_h-35);
-	pango_layout_set_text (layout, schematic_get_title (sm), -1);
-	pango_cairo_layout_path (cr, layout);
-	cairo_fill (cr);
+	cairo_save (cr);
+		cairo_translate (cr, page_w-190, page_h-40);
+		draw_rotule (sm, cr);
+	cairo_restore (cr);
 
 	store = schematic_get_store (sm);
 
