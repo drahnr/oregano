@@ -611,7 +611,20 @@ create_plot_function_from_data (SimulationFunction *func, SimulationData *curren
 		Y[j] = g_array_index (current->data[func->first], double, j);
 	
 		data = g_array_index (current->data[func->second], double, j);
-		// TODO Y[j] = sim_engine_do_function (func->type, Y[j], data);
+		switch (func->type) {
+			case FUNCTION_MINUS:
+				Y[j] -= data;
+			break;
+			case FUNCTION_TRANSFER:
+				if (data < 0.000001f) {
+					if (Y[j] < 0)
+						Y[j] = -G_MAXDOUBLE;
+					else
+						Y[j] = G_MAXDOUBLE;
+				} else {
+					Y[j] /= data;
+				}
+		}
 		
 		X[j] = g_array_index (current->data[0], double, j);
 	}
