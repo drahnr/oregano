@@ -550,6 +550,8 @@ plot_show (OreganoEngine *engine)
 
 	plot->show_cursor = TRUE;
 
+	next_color = 0;
+
 	/*  Get the analysis we have */
 	analysis = oregano_engine_get_results (engine);
 	for (; analysis ; analysis = analysis->next) {
