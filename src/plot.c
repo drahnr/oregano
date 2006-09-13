@@ -65,25 +65,18 @@ const gchar *UPSCRIPT_FONT = N_("Sans 8");
 #define PLOT_AXIS_COLOR "black"
 #define PLOT_CURVE_COLOR "medium sea green"
 
-static int n_curve_colors = 6;
+static guint next_color = 0;
+static guint n_curve_colors = 7;
 static char *plot_curve_colors[] = {
 	"white",
-	"blue",
 	"green",
 	"red",
 	"yellow",
 	"cyan",
+	"pink",
+	"orange1",
 	0
 };
-
-/*static RGB plot_curve_colors_rgb[] = {
-	{1, 1, 1},
-	{0, 0, 1},
-	{0, 1, 0},
-	{1, 0, 0},
-	{1, 1, 0},
-	{0, 1, 1}
-};*/
 
 /* Hack! */
 #ifndef G_FUNC
@@ -136,7 +129,6 @@ static void zoom_pan (GtkWidget *widget, Plot *plot);
 static void destroy_plot (Plot *plot);
 static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot);
 static void plot_canvas_movement(GtkWidget *, GdkEventMotion *, Plot *);
-static void plot_draw_axis (Plot *, AxisType, double, double);
 
 static void plot_toggle_cross (GtkWidget *widget, Plot *plot);
 static void plot_export (GtkWidget *widget, Plot *plot);
@@ -275,6 +267,7 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 static GPlotFunction*
 create_plot_function_from_simulation_data (guint i, SimulationData *current)
 {
+	GPlotFunction *f;
 	double *X;
 	double *Y;
 	double data;
@@ -295,7 +288,10 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 		X[j] = data;
 	}
 
-	return g_plot_lines_new (X, Y, len);
+	f = g_plot_lines_new (X, Y, len);
+	g_object_set (G_OBJECT (f), "color", plot_curve_colors[(next_color++)%n_curve_colors], NULL);
+
+	return f;
 }
 
 static void
@@ -360,8 +356,12 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 
 		if (plot->current->type != DC_TRANSFER) {
 			if (strchr(plot->current->var_names[i], '#') == NULL) {
+				gchar *color;
+
 				f = create_plot_function_from_simulation_data (i, plot->current);
 				g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
+				g_object_get (G_OBJECT (f), "color", &color, NULL);
+
 				g_plot_add_function (GPLOT (plot->plot), f);
 				gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
 				gtk_tree_store_set (GTK_TREE_STORE (model),
@@ -369,20 +369,24 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 				 	0, FALSE, 
 					1, plot->current->var_names[i],
 				 	2, TRUE,
-					3, "white",
+					3, color,
 					4, f,
 					-1);
 			}
 		} else {
+			gchar *color;
+
 			f = create_plot_function_from_simulation_data (i, plot->current);
 			g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
+			g_object_get (G_OBJECT (f), "color", &color, NULL);
+
 			g_plot_add_function (GPLOT (plot->plot), f);
 			gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
 			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 
 				0, FALSE, 
 				1, plot->current->var_names[i],
 			 	2, TRUE,
-				3, "white",
+				3, color,
 				4, f,
 			 	-1);
 		}
@@ -591,6 +595,7 @@ plot_toggle_cross (GtkWidget *widget, Plot *plot)
 static GPlotFunction*
 create_plot_function_from_data (SimulationFunction *func, SimulationData *current)
 {
+	GPlotFunction *f;
 	double *X;
 	double *Y;
 	double data;
@@ -609,7 +614,10 @@ create_plot_function_from_data (SimulationFunction *func, SimulationData *curren
 		X[j] = g_array_index (current->data[0], double, j);
 	}
 
-	return g_plot_lines_new (X, Y, len);
+	f = g_plot_lines_new (X, Y, len);
+	g_object_set (G_OBJECT (f), "color", plot_curve_colors[(next_color++)%n_curve_colors], NULL);
+
+	return f;
 }
 
 static void
@@ -620,6 +628,7 @@ add_function (GtkWidget *widget, Plot *plot)
 	GtkTreeIter iter;
 	GtkTreePath *path;
 	GList *lst;
+	gchar *color;
 
 	plot_add_function_show (plot->sim, plot->current);
 
@@ -660,11 +669,12 @@ add_function (GtkWidget *widget, Plot *plot)
 		}
 
 		f = create_plot_function_from_data (func, plot->current);
+		g_object_get (G_OBJECT (f), "color", &color, NULL);
 
 		g_plot_add_function (GPLOT (plot->plot), f);
 
 		gtk_tree_store_append(GTK_TREE_STORE(model), &child, &iter);
-		gtk_tree_store_set(GTK_TREE_STORE(model), &child, 0, TRUE, 1, str, 2, TRUE, 3, "white", 4, f, -1);
+		gtk_tree_store_set(GTK_TREE_STORE(model), &child, 0, TRUE, 1, str, 2, TRUE, 3, color, 4, f, -1);
 
 		lst = lst->next;
 	}

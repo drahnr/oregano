@@ -56,6 +56,7 @@ struct _GPlotLinesPriv {
 	gdouble width;
 
 	/** Line Color */
+	gchar *color_string;
 	GdkColor color;
 };
 
@@ -86,6 +87,7 @@ g_plot_lines_finalize(GObject *object)
 	if (lines->priv) {
 		g_free (lines->priv->x);
 		g_free (lines->priv->y);
+		g_free (lines->priv->color_string);
 		g_free (lines->priv);
 	}
 
@@ -137,6 +139,7 @@ g_plot_lines_init (GPlotLines* plot)
 
 	priv->width = 1.0;
 	priv->visible = TRUE;
+	priv->color_string = g_strdup ("white");
 	memset (&priv->color, 0xFF, sizeof (GdkColor));
 }
 
@@ -154,7 +157,9 @@ g_plot_lines_set_property(GObject *object, guint prop_id, const GValue *value,
 			plot->priv->width = g_value_get_double (value);
 			break;
 		case ARG_COLOR:
-			gdk_color_parse (g_value_get_string (value), &plot->priv->color);
+			g_free (plot->priv->color_string);
+			plot->priv->color_string = g_strdup (g_value_get_string (value));
+			gdk_color_parse (plot->priv->color_string, &plot->priv->color);
 			break;
 		case ARG_COLOR_GDKCOLOR:
 			//s = g_value_get_string (value)
@@ -178,6 +183,9 @@ g_plot_lines_get_property(GObject *object, guint prop_id, GValue *value,
 		break;
 	case ARG_VISIBLE:
 		g_value_set_boolean (value, plot->priv->visible);
+		break;
+	case ARG_COLOR:
+		g_value_set_string (value, plot->priv->color_string);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (plot, prop_id, spec);
