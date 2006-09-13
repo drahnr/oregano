@@ -138,10 +138,15 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	SimOption *so;
 	GList *list;
 	FILE *file;
+	GError *local_error = NULL;
 
 	gnucap = OREGANO_GNUCAP (engine);
 
-	netlist_helper_create (gnucap->priv->schematic, &output, error); //TODO: usar bien error
+	netlist_helper_create (gnucap->priv->schematic, &output, &local_error);
+	if (local_error != NULL) {
+		g_propagate_error (error, local_error);
+		return;
+	}
 
 	file = fopen (filename, "w");
 	if (!file) {
@@ -189,7 +194,10 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 
 	/* Prints Transient Analisis */
 	if (sim_settings_get_trans (output.settings)) {
-		fprintf(file, ".print tran %s\n", netlist_helper_create_analisys_string (output.store, FALSE));
+		gchar *tmp_str = netlist_helper_create_analisys_string (output.store, FALSE);
+		fprintf(file, ".print tran %s\n", tmp_str);
+		g_free (tmp_str);
+
 		fprintf (file, ".tran %g %g ",
 			sim_settings_get_trans_start(output.settings),
 			sim_settings_get_trans_stop(output.settings));

@@ -305,6 +305,8 @@ schematic_finalize(GObject *object)
 		g_free(sm->priv->simulation);
 		g_hash_table_destroy(sm->priv->symbols);
 		g_hash_table_destroy(sm->priv->refdes_values);
+		if (sm->priv->netlist_filename)
+			g_free (sm->priv->netlist_filename);
 
 		g_free(sm->priv);
 		sm->priv = NULL;

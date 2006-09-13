@@ -2556,6 +2556,8 @@ schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 	g_return_if_fail (engine != NULL);
 
+	return;
+
 	store = schematic_get_store (sv->priv->schematic);
 
 	/*
@@ -2565,7 +2567,7 @@ schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 	for (list = nodes; list; list = list->next) {
 		node = list->data;
 
-		//got = sim_engine_get_op_value (engine, node->netlist_node_name, &value);
+		got = 0; //sim_engine_get_op_value (engine, node->netlist_node_name, &value);
 		if (!got) {
 			tmp = g_strdup_printf ("V(%s)",
 				node->netlist_node_name);

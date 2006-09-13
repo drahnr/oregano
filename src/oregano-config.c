@@ -98,10 +98,12 @@ oregano_lookup_libraries (Splash *sp)
 	oregano.libraries = NULL;
 	libdir = opendir (OREGANO_LIBRARYDIR);
 
-	/* FIXME: Either handle this in a correct way or (like this) don't allow
-	   changes during run-time... */
-	if (oregano.libraries != NULL)
+	if (libdir == NULL) return;
+
+	if (oregano.libraries != NULL) {
+		closedir (libdir);
 		return;
+	}
 
 	fname = g_build_filename (OREGANO_LIBRARYDIR, "default.oreglib", NULL);
 
@@ -109,13 +111,12 @@ oregano_lookup_libraries (Splash *sp)
 		library = library_parse_xml_file (fname);
 		oregano.libraries = g_list_append (oregano.libraries, library);
 	}
+	g_free (fname);
 
-	if (libdir == NULL) return;
 	while ((libentry=readdir (libdir)) != NULL) {
 		if (is_oregano_library_name (libentry->d_name) &&
 			strcmp (libentry->d_name,"default.oreglib")) {
-			fname = g_build_filename (OREGANO_LIBRARYDIR, libentry->d_name,
-				NULL);
+			fname = g_build_filename (OREGANO_LIBRARYDIR, libentry->d_name, NULL);
 
 			/* do the following only if splash is enabled */
 			if (sp) {
@@ -135,6 +136,7 @@ oregano_lookup_libraries (Splash *sp)
 			g_free(fname);
 		}
 	}
+	closedir (libdir);
 }
 
 /*

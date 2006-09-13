@@ -241,10 +241,10 @@ destroy_window(GtkWidget *widget, Plot *plot)
 {
 	/* TODO - chequear si no hay que destruir el combo box */
 	gtk_widget_destroy (plot->window);
-	g_object_unref(plot->sim);
+	g_object_unref (plot->sim);
 	plot->window = NULL;
-	if (plot->ytitle) g_free(plot->ytitle);
-	g_free(plot);
+	if (plot->title) g_free (plot->title);
+	g_free (plot);
 	plot = NULL;
 }
 
