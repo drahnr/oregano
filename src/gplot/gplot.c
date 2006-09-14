@@ -32,7 +32,6 @@ static void g_plot_class_init (GPlotClass* class);
 static void g_plot_init (GPlot* plot);
 static gint g_plot_expose (GtkWidget* widget, GdkEventExpose* event);
 static cairo_t* g_plot_create_cairo (GPlot *);
-static void _calculate_step (gdouble min, gdouble max, gdouble *step);
 static gboolean g_plot_motion_cb (GtkWidget *, GdkEventMotion *, GPlot *);
 static gboolean g_plot_button_press_cb (GtkWidget *, GdkEventButton *, GPlot *);
 static gboolean g_plot_button_release_cb (GtkWidget *, GdkEventButton *, GPlot *);
@@ -166,6 +165,58 @@ g_plot_dispose (GObject *object)
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
+void
+draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gboolean vertical, gint *div)
+{
+	gchar *label;
+	cairo_text_extents_t extents;
+	gdouble i, j;
+	gdouble x1, y1, x2, y2, x3, y3;
+	gdouble step = (max - min) / 10.0;
+	gdouble s;
+	gdouble divisor;
+	gdouble man1, pw1, man2, pw2;
+
+	get_order_of_magnitude (min, &man1, &pw1);
+	get_order_of_magnitude (max, &man2, &pw2);
+	(*div) = (pw2+pw1) / 2.0 + 0.5;
+	if ((*div) == 0) (*div) = 1;
+	divisor = pow(10, *div);
+
+	if (vertical)
+		s = (bbox->ymax - bbox->ymin) / 10.0;
+	else
+		s = (bbox->xmax - bbox->xmin) / 10.0;
+
+	for (i = (vertical?bbox->ymin:bbox->xmin), j = max; i <= (vertical?bbox->ymax:bbox->xmax) + 0.5; i += s, j -= step) {
+		label = g_strdup_printf ("%.2f", j / divisor);
+		cairo_text_extents (cr, label, &extents);
+
+		if (vertical) {
+			x1 = bbox->xmin - 4;
+			y1 = i;
+			x2 = bbox->xmin + 4;
+			y2 = i;
+			x3 = bbox->xmin - extents.width * 1.5;
+			y3 = i + extents.height / 2.0;
+		} else {
+			x1 = i;
+			y1 = bbox->ymax - 4;
+			x2 = i;
+			y2 = bbox->ymax + 4;
+			x3 = i;
+			y3 = bbox->ymax + extents.height * 1.5;
+		}
+
+		cairo_move_to (cr, x1, y1);
+		cairo_line_to (cr, x2, y2);
+		cairo_move_to (cr, x3, y3);
+		cairo_show_text (cr, label);
+		g_free (label);
+	}
+	cairo_stroke (cr);
+}
+
 static gint 
 g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 {
@@ -187,10 +238,9 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	GList *lst;
 	GPlotFunctionBBox bbox;
 	gdouble aX, bX, aY, bY;
-	gdouble v, x, y, step, divisor;
+	gint div;
 	int i = 0;
 	cairo_text_extents_t extents;
-	gchar *label;
 
 	plot = GPLOT (widget);
 	priv = plot->priv;
@@ -289,91 +339,22 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	cairo_save (cr);
 		i = 0;
 		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
-		cairo_set_line_width (cr, 0.3);
+		cairo_set_line_width (cr, 1);
 
-		{ // Div factor for X Axis
-			gint div;
-			gdouble man1, pw1, man2, pw2;
-			get_order_of_magnitude (priv->window_bbox.xmin, &man1, &pw1);
-			get_order_of_magnitude (priv->window_bbox.xmax, &man2, &pw2);
-			div = (pw2+pw1) / 2.0 + 0.5;
-			if (div == 0) div = 1;
-			divisor = pow(10, div);
-			if (priv->xlabel_unit) {
-				g_free (priv->xlabel_unit);
-				priv->xlabel_unit = NULL;
-			}
-			if (div != 1)
-				priv->xlabel_unit = g_strdup_printf ("10e%d ", div);
+		draw_axis (cr, &priv->viewport_bbox, priv->window_bbox.ymin, priv->window_bbox.ymax, TRUE, &div);
+		if (priv->ylabel_unit) {
+			g_free (priv->ylabel_unit);
+			priv->ylabel_unit = NULL;
 		}
-		_calculate_step (priv->window_bbox.xmin, priv->window_bbox.xmax, &step);
-		for (v=priv->window_bbox.xmin; v <= priv->window_bbox.xmax; v += step) {
-			x = v;
-			y = priv->window_bbox.ymin;
-			cairo_matrix_transform_point (&priv->matrix, &x, &y);
-			cairo_move_to (cr, x, y-5);
-			cairo_line_to (cr, x, y);
-			cairo_stroke (cr);
-		
-			cairo_save (cr);
-				label = g_strdup_printf ("%.2f", v/divisor);
-				cairo_text_extents (cr, label, &extents);
-				cairo_move_to (cr, x, y+extents.height);
-				cairo_rotate (cr, 0.404);
-				cairo_show_text (cr, label);
-				cairo_stroke (cr);
-				g_free (label);
-			cairo_restore (cr);
-
-			x = v;
-			y = priv->window_bbox.ymax;
-			cairo_matrix_transform_point (&priv->matrix, &x, &y);
-			cairo_move_to (cr, x, y+5);
-			cairo_line_to (cr, x, y);
-			cairo_stroke (cr);
-			i++;
+		if (div != 1)
+			priv->ylabel_unit = g_strdup_printf ("10e%d ", div);
+		draw_axis (cr, &priv->viewport_bbox, priv->window_bbox.xmax, priv->window_bbox.xmin, FALSE, &div);
+		if (priv->xlabel_unit) {
+			g_free (priv->xlabel_unit);
+			priv->xlabel_unit = NULL;
 		}
-		{	// Div factor for Y axis
-			gint div;
-			gdouble man1, pw1, man2, pw2;
-			get_order_of_magnitude (priv->window_bbox.ymin, &man1, &pw1);
-			get_order_of_magnitude (priv->window_bbox.ymax, &man2, &pw2);
-			div = (pw2+pw1) / 2.0 + 0.5;
-			if (div == 0) div = 1;
-			divisor = pow(10, div);
-			if (priv->ylabel_unit) {
-				g_free (priv->ylabel_unit);
-				priv->ylabel_unit = NULL;
-			}
-			if (div != 1)
-				priv->ylabel_unit = g_strdup_printf ("10e%d ", div);
-		}
-		_calculate_step (priv->window_bbox.ymin, priv->window_bbox.ymax, &step);
-		for (v=priv->window_bbox.ymin; v <= priv->window_bbox.ymax; v += step) {
-			x = priv->window_bbox.xmin;
-			y = v;
-			cairo_matrix_transform_point (&priv->matrix, &x, &y);
-			cairo_move_to (cr, x+5, y);
-			cairo_line_to (cr, x, y);
-			cairo_stroke (cr);
-			
-			cairo_save (cr);
-				label = g_strdup_printf ("%.2f", v / divisor);
-				cairo_text_extents (cr, label, &extents);
-				cairo_move_to (cr, x-extents.width-5, y);
-				cairo_show_text (cr, label);
-				cairo_stroke (cr);
-				g_free (label);
-			cairo_restore (cr);
-
-			x = priv->window_bbox.xmax;
-			y = v;
-			cairo_matrix_transform_point (&priv->matrix, &x, &y);
-			cairo_move_to (cr, x, y);
-			cairo_line_to (cr, x-5, y);
-			cairo_stroke (cr);
-			i++;
-		}
+		if (div != 1)
+			priv->xlabel_unit = g_strdup_printf ("10e%d ", div);
 	cairo_restore (cr);
 
 	/* Axis Labels */
@@ -484,17 +465,6 @@ g_plot_add_function (GPlot *plot, GPlotFunction *func)
 	plot->priv->functions = g_list_append (plot->priv->functions, func);
 	plot->priv->window_valid = FALSE;
 	return 0;
-}
-
-static void
-_calculate_step (gdouble min, gdouble max, gdouble *step)
-{
-	max = ceil (max);
-
-	(*step) = (max - min) / 10;
-
-	if ((*step) < 1e-2)
-		(*step) = 1e-2;
 }
 
 static gboolean
