@@ -137,13 +137,13 @@ static void add_function (GtkWidget *widget, Plot *plot);
 
 static GnomeUIInfo plot_file_menu[] =
 {
-	GNOMEUIINFO_MENU_PRINT_ITEM(NULL,NULL),
+	/*GNOMEUIINFO_MENU_PRINT_ITEM(NULL,NULL),
 	GNOMEUIINFO_MENU_PRINT_SETUP_ITEM(NULL,NULL),
 	GNOMEUIINFO_ITEM_NONE(N_("Print Preview"),
 		N_("Preview the plot before printing"), NULL),
 	GNOMEUIINFO_SEPARATOR,
 	GNOMEUIINFO_ITEM_NONE(N_("Export plot"),
-		N_("Show the export menu"), plot_export),
+		N_("Show the export menu"), plot_export),*/
 	GNOMEUIINFO_ITEM_NONE(N_("Add Function"),
 		N_("Add new function to the graph"), add_function),
 	GNOMEUIINFO_SEPARATOR,
@@ -186,8 +186,8 @@ static GnomeUIInfo plot_help_menu[] =
 
 GnomeUIInfo plot_main_menu[] = {
 	GNOMEUIINFO_SUBTREE(N_("_File"), plot_file_menu),
-	GNOMEUIINFO_SUBTREE(N_("_Plot"), plot_plot_menu),
-	GNOMEUIINFO_MENU_HELP_TREE (plot_help_menu),
+	/*GNOMEUIINFO_SUBTREE(N_("_Plot"), plot_plot_menu),*/
+	/*GNOMEUIINFO_MENU_HELP_TREE (plot_help_menu),*/
 	GNOMEUIINFO_END
 };
 
@@ -514,7 +514,7 @@ plot_window_create (Plot *plot)
 
 	gtk_widget_realize(GTK_WIDGET(window));
 	
-	gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (plot_plot_menu[1].widget), TRUE);
+	//gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (plot_plot_menu[1].widget), TRUE);
 
 	plot->combobox = glade_xml_get_widget (gui, "analysis_combo");
 	plot->window = window;
