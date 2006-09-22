@@ -53,6 +53,7 @@ static void textbox_rotate (ItemData *data, int angle, SheetPos *center);
 static void textbox_print (ItemData *data, OreganoPrintContext *opc);
 static int textbox_register (ItemData *data);
 static void textbox_unregister (ItemData *data);
+static gboolean textbox_has_properties (ItemData *data);
 
 static void textbox_flip (ItemData *data, gboolean horizontal,
 	SheetPos *center);
@@ -154,6 +155,7 @@ textbox_class_init (TextboxClass *klass)
 	item_data_class->flip = textbox_flip;
 	item_data_class->unreg = textbox_unregister;
 	item_data_class->reg = textbox_register;
+	item_data_class->has_properties = textbox_has_properties;
 	item_data_class->print = textbox_print;
 }
 
@@ -352,6 +354,12 @@ textbox_update_bbox (Textbox *textbox)
 
 	item_data_set_relative_bbox (ITEM_DATA (textbox), &b1, &b2);
 	pango_font_description_free(font);
+}
+
+static gboolean
+textbox_has_properties (ItemData *data)
+{
+	return TRUE;
 }
 
 void

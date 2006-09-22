@@ -48,6 +48,7 @@ static void      wire_flip (ItemData *data, gboolean horizontal,
 	SheetPos *center);
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
+static gboolean  wire_has_properties (ItemData *data);
 static void	 wire_print (ItemData *data, OreganoPrintContext *opc);
 
 enum {
@@ -146,6 +147,7 @@ wire_class_init (WireClass *klass)
 	item_data_class->flip = wire_flip;
 	item_data_class->unreg = wire_unregister;
 	item_data_class->reg = wire_register;
+	item_data_class->has_properties = wire_has_properties;
 	item_data_class->print = wire_print;
 }
 
@@ -577,6 +579,12 @@ wire_update_bbox (Wire *wire)
 	b2 = length;
 
 	item_data_set_relative_bbox (ITEM_DATA (wire), &b1, &b2);
+}
+
+static gboolean
+wire_has_properties (ItemData *data)
+{
+	return FALSE;
 }
 
 static void

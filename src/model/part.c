@@ -55,6 +55,7 @@ static void part_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	GParamSpec *spec);
 
 static int part_set_properties (Part *part, GSList *properties);
+static gboolean part_has_properties (ItemData *part);
 
 static int part_set_labels (Part *part, GSList *labels);
 
@@ -194,6 +195,7 @@ part_class_init (PartClass *klass)
 
 	item_data_class->get_refdes_prefix = part_get_refdes_prefix;
 	item_data_class->set_property = part_set_property;
+	item_data_class->has_properties = part_has_properties;
 	item_data_class->print = part_print;
 
 	part_signals[CHANGED] =
@@ -356,6 +358,14 @@ part_get_pins (Part *part)
 
 	priv = part->priv;
 	return priv->pins;
+}
+
+static gboolean
+part_has_properties (ItemData *item)
+{
+	Part *part = PART (item);
+
+	return part->priv->properties != NULL;
 }
 
 static int

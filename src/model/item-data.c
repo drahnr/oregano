@@ -526,6 +526,21 @@ item_data_set_property (ItemData *data, char *property, char *value)
 	}
 }
 
+gboolean
+item_data_has_properties (ItemData *data)
+{
+	ItemDataClass *id_class;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+
+	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
+	if (id_class->has_properties) {
+		return id_class->has_properties (data);
+	}
+	return FALSE;
+}
+
 void
 item_data_print (ItemData *data, OreganoPrintContext *ctxt)
 {

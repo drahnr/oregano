@@ -78,6 +78,7 @@ struct _ItemDataClass
 
 	char* (*get_refdes_prefix) (ItemData *data);
 	void (*set_property) (ItemData *data, char *property, char *value);
+	gboolean (*has_properties) (ItemData *data);
 
 	void (*print) (ItemData *data, OreganoPrintContext *ctxt);
 };
@@ -134,6 +135,7 @@ void item_data_unregister (ItemData *data);
 int item_data_register (ItemData *data);
 /** Tell us what it does :-D FIXME */
 char *item_data_get_refdes_prefix (ItemData *data);
+gboolean item_data_has_properties (ItemData *date);
 /** Set property */
 void item_data_set_property (ItemData *data, char *property, char *value);
 /** Print Item data
