@@ -91,9 +91,7 @@ main (int argc, char **argv)
 {
 	GnomeProgram *OreProgram = NULL;
 	GnomeClient *client = NULL;
-
-	poptContext ctx;
-	GValue value = { 0, };
+	GOptionContext *context;
 
 	Schematic *schematic = NULL ;
 	SchematicView *schematic_view = NULL;
@@ -102,27 +100,20 @@ main (int argc, char **argv)
 	gint i;
 	Splash *splash=NULL;
 
-	const struct poptOption options [] = {
-		{ "debug", '\0', POPT_ARG_INT, &oregano_debugging, 0,
-		  N_("Enables some debugging functions"), N_("LEVEL") },
-		{ NULL, '\0', 0, NULL, 0 }
-	};
-
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
 	setlocale (LC_ALL, "");
 
-	OreProgram = gnome_program_init(PACKAGE, VERSION, LIBGNOMEUI_MODULE,
-		argc, argv, GNOME_PARAM_POPT_TABLE, options,
+	context = g_option_context_new ("oregano");
+
+	OreProgram = gnome_program_init (PACKAGE, VERSION, LIBGNOMEUI_MODULE,
+		argc, argv, GNOME_PARAM_GOPTION_CONTEXT, context,
 		GNOME_PARAM_APP_DATADIR, DATADIR, GNOME_PARAM_NONE);
 
 	cursors_init ();
 	stock_init ();
-
-	/* Disable the stupid crash dialog for now. */
-	signal (SIGSEGV, SIG_DFL);
 
 	oregano_config_load ();
 
@@ -162,18 +153,11 @@ main (int argc, char **argv)
 
 	schematic = NULL;
 
-	g_value_init (&value, G_TYPE_POINTER);
-	g_object_get_property (G_OBJECT (OreProgram), GNOME_PARAM_POPT_CONTEXT,
-		&value);
-
-	ctx = g_value_get_pointer (&value);
-	g_value_unset (&value);
-
-	startup_files = (char **) poptGetArgs (ctx);
+	startup_files = argv;
 	if (startup_files) {
 		GError *error = NULL;
 
-		for (i = 0; startup_files[i]; i++) {
+		for (i = 1; i < argc; i++) {
 			Schematic *new_schematic;
 			char *fname = startup_files[i];
 
@@ -193,7 +177,7 @@ main (int argc, char **argv)
 		}
 	}
 
-	poptFreeContext (ctx);
+	g_option_context_free (context);
 
 	if (schematic == NULL){
 		schematic = schematic_new ();

@@ -60,8 +60,6 @@ typedef struct {
 } OreganoApp;
 
 extern OreganoApp oregano;
-extern const struct poptOption oregano_popt_options [];
-extern poptContext ctx;
 extern int oregano_debugging;
 
 #endif
