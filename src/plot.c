@@ -126,7 +126,6 @@ static void destroy_window (GtkWidget *widget, Plot *plot);
 static void zoom_100 (GtkWidget *widget, Plot *plot);
 static void zoom_region (GtkWidget *widget, Plot *plot);
 static void zoom_pan (GtkWidget *widget, Plot *plot);
-static void destroy_plot (Plot *plot);
 static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot);
 static void plot_canvas_movement(GtkWidget *, GdkEventMotion *, Plot *);
 

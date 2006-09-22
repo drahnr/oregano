@@ -2405,12 +2405,8 @@ log_updated_callback (Schematic *sm, SchematicView *sv)
 void
 schematic_view_log_show (SchematicView *sv, gboolean explicit)
 {
-	GList *log;
-	GtkTextBuffer *buffer;
-	GtkTextIter iter;
 	GtkWidget *w;
 	gchar *msg;
-	gint i = 0;
 	Schematic *sm;
 
 	g_return_if_fail (sv != NULL);
