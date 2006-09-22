@@ -176,6 +176,12 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 
 	schematic_view_clear_op_values (s->sv);
 	schematic_view_show_op_values (s->sv, s->engine);
+
+	/* I don't need the engine anymore. The plot
+	 * window own his reference to the engine */
+	g_object_unref (s->engine);
+	s->engine = NULL;
+
 }
 
 static void

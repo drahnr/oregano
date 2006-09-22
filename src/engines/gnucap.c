@@ -78,10 +78,15 @@ struct _OreganoGnuCapPriv {
 	gchar buf[256]; // FIXME later
 };
 
+static void gnucap_class_init (OreganoGnuCapClass *klass);
+static void gnucap_finalize (GObject *object);
+static void gnucap_dispose (GObject *object);
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap);
 static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap);
+
+static GObjectClass *parent_class = NULL;
 
 GType 
 oregano_gnucap_get_type (void)
@@ -92,7 +97,7 @@ oregano_gnucap_get_type (void)
 			sizeof (OreganoGnuCapClass),
 			NULL,   /* base_init */
 			NULL,   /* base_finalize */
-			NULL,   /* class_init */
+			gnucap_class_init,   /* class_init */
 			NULL,   /* class_finalize */
 			NULL,   /* class_data */
 			sizeof (OreganoGnuCap),
@@ -110,6 +115,60 @@ oregano_gnucap_get_type (void)
 		g_type_add_interface_static (type, OREGANO_TYPE_ENGINE, &gnucap_info);
 	}
 	return type;
+}
+
+static void
+gnucap_class_init (OreganoGnuCapClass *klass)
+{
+	GObjectClass *object_class;
+
+	parent_class = g_type_class_peek_parent (klass);
+
+	object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = gnucap_dispose;
+	object_class->finalize = gnucap_finalize;
+}
+
+static void
+gnucap_finalize (GObject *object)
+{
+	SimulationData *data;
+	OreganoGnuCap *gnucap;
+	GList *lst;
+	int i;
+
+	gnucap = OREGANO_GNUCAP (object);
+
+	g_print ("GNUCAP Finalize\n");
+	lst = gnucap->priv->analysis;
+	while (lst) {
+		data = SIM_DATA (lst->data);
+		for (i=0; i<data->n_variables; i++) {
+			g_free (data->var_names[i]);
+			g_free (data->var_units[i]);
+		}
+		g_free (data->var_names);
+		g_free (data->var_units);
+		for (i=0; i<data->n_points; i++)
+			g_array_free (data->data[i], TRUE);
+		g_free (data->min_data);
+		g_free (data->max_data);
+
+		g_free (lst->data);
+		lst = lst->next;
+	}
+	g_list_free (gnucap->priv->analysis);
+	gnucap->priv->analysis = NULL;
+
+	parent_class->finalize (object);
+}
+
+static void
+gnucap_dispose (GObject *object)
+{
+	g_print ("GNUCAP Dispose\n");
+	parent_class->dispose (object);
 }
 
 static gboolean

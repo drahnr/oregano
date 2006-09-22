@@ -218,9 +218,8 @@ gchar *tmp;
 static gint
 delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot)
 {
-	g_object_unref(plot->sim);
 	plot->window = NULL;
-	g_object_unref(plot->sim);
+	g_object_unref (plot->sim);
 	if (plot->ytitle) g_free(plot->ytitle);
 	g_free(plot);
 	plot = NULL;
