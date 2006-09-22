@@ -1186,7 +1186,7 @@ schematic_view_new (Schematic *schematic)
 	priv->menu_item_cut = schematic_menu_edit[3].widget;
 	priv->menu_item_copy = schematic_menu_edit[4].widget;
 	priv->menu_item_paste = schematic_menu_edit[5].widget;
-	priv->menu_item_properties = schematic_menu_edit[13].widget;
+	priv->menu_item_properties = schematic_menu_edit[12].widget;
 
 /*	priv->toolbar_item_undo = schematic_standard_toolbar[4].widget;
 	priv->toolbar_item_redo = schematic_standard_toolbar[5].widget;*/
@@ -1204,6 +1204,7 @@ schematic_view_new (Schematic *schematic)
 	priv->toolbar_item_grid = schematic_view_toolbar[1].widget;
 	priv->toolbar_item_part_browser = schematic_view_toolbar[0].widget;
 	
+	gtk_widget_set_sensitive (priv->menu_item_properties, FALSE);
 	/*
 	 * FIXME: remove this when the functions are implemented.
 	 
@@ -1386,6 +1387,7 @@ static void
 item_selection_changed_callback (SheetItem *item, gboolean selected,
 	SchematicView *sv)
 {
+	/* FIXME! : don't touch sheet->priv directly!!! */
 	if (selected) {
 		sv->priv->sheet->priv->selected_objects =
 			g_list_prepend ( sv->priv->sheet->priv->selected_objects, item);
@@ -1393,6 +1395,12 @@ item_selection_changed_callback (SheetItem *item, gboolean selected,
 		sv->priv->sheet->priv->selected_objects =
 			g_list_remove ( sv->priv->sheet->priv->selected_objects, item);
 	}
+
+	if ((g_list_length (sv->priv->sheet->priv->selected_objects) == 1) &&
+		item_data_has_properties (sheet_item_get_data (item)))
+		gtk_widget_set_sensitive (sv->priv->menu_item_properties, TRUE);
+	else
+		gtk_widget_set_sensitive (sv->priv->menu_item_properties, FALSE);
 }
 
 /**
