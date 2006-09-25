@@ -442,8 +442,8 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 			_x1 = w_pos.x;
 			_y1 = w_pos.y;
-			_x2 = x1 + w_length.x;
-			_y2 = y1 + w_length.y;
+			_x2 = _x1 + w_length.x;
+			_y2 = _y1 + w_length.y;
 
 			can_join = TRUE;
 			nodes = wire_get_nodes (wire);
@@ -491,8 +491,8 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 			_x1 = w_pos.x;
 			_y1 = w_pos.y;
-			_x2 = x1 + w_length.x;
-			_y2 = y1 + w_length.y;
+			_x2 = _x1 + w_length.x;
+			_y2 = _y1 + w_length.y;
 
 			can_join = TRUE;
 			nodes = wire_get_nodes (wire);
