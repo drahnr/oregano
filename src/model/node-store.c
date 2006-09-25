@@ -376,12 +376,16 @@ node_store_add_textbox (NodeStore *self, Textbox *text)
 {
 	g_object_set (G_OBJECT (text), "store", self, NULL);
 	self->textbox = g_list_prepend (self->textbox, text);
+
+	return TRUE;
 }
 
 int
 node_store_remove_textbox (NodeStore *self, Textbox *text)
 {
 	self->textbox = g_list_remove (self->textbox, text);
+
+	return TRUE;
 }
 
 int

@@ -1,12 +1,8 @@
 TODO list for Oregano.
 ---------------------
-* Bugs (#13) must be close (See project page)
-
 * Documentation : User manual, quick reference, doc for developers ,etc
 
 * Add a BUGs file that describe bugs by #.
-
-* Fix components rotation.
 
 * Autorefdes, find highest N and go from there?
 
@@ -26,8 +22,6 @@ TODO list for Oregano.
 
 * Draw more symbols (JFETs, real zener diode, more opamps)
 
-* Add comments, notes, author, copyright etc info to schematics (with glade).
-
 <property>
   label: Period  <--- add this?
   name : per
@@ -41,8 +35,6 @@ TODO list for Oregano.
 * Finish printing code 
 
 * Voltage/current meters at nodes
-
-* Handle SIGCHLD in case spice dies
 
 * New Sheet widget (resizable). (Gazer: Maybe fixed page model like Orcad)
 
@@ -69,27 +61,9 @@ CRITICAL:
 
 
 TODO:
- 
-  select wire -> handles to drag/resize the wire
 
   split node->count into wires adn parts (to get connection dots...)
 
-
-Ideas for part/wire store
--------------------------
-
-	Electrical circuits are represented as canvas items on a Sheet,
-	connected with wires.
-
-	The user can place parts on the sheet and draw wires. Thus, we
-	need to represent the parts and wires in a way that is closely
-	bound to the canvas, or the graphical layout of the circuit.
-
-	Since we must also be able to generate netlists for SPICE, and do
-	things like showing voltages in different circuit nodes, there
-	has be a way to treat the circuit "as a circuit", where a node is
-	a number of pins connected with wires. This has little to do with
-	the representation of the circuit as a graphical layout.
 
 Structures
 ----------
@@ -139,30 +113,6 @@ Moving/Removing/Adding
 	Wires
 	Groups of parts/wires
 
-
-
-Wires hmmm
-----------
-
-	Performace issues:
-
-		sheet_node_store_is_wire_at ()
-		sheet_node_store_wires_intersect ()
-
-	Perfomance testing shows that it will not really be a bottleneck even
-	if many wires are used. Checking for intersection between one test wire
-	and 100 000 random wires takes 3 seconds on a P-166, less than 1 second
-	on a PII-350.
-
-	Other stuff:
-
-	Do we store wires in the SheetNode? Could be nice to know where wires
-	start/end, to use for resizing them.
-
-	Make sure we can have "connection dots": small filled circles placed on
-	wires where connections are made.
-
-
 REMEMBER
 --------
 
@@ -170,8 +120,6 @@ REMEMBER
 	through all the parts/wires and makes sure that things that are on the
 	same node are connected and so on. This means we cannot depend on any
 	canvas helper stuff, like signals from items etc.
-
-
 
 	When loading schematic files from disk, we need to read the node structure
 	and not build it on the fly. Unless it will be efficient enough...

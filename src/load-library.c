@@ -217,8 +217,10 @@ end_document (ParseState *state)
 }
 
 static void
-start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
+start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs)
 {
+	const char *name = (const char *)xml_name;
+
 	switch (state->state) {
 	case PARSE_START:
 		if (strcmp (name, "ogo:library")) {
