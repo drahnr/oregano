@@ -627,8 +627,8 @@ quit_cmd (GtkWidget *widget, SchematicView *sv)
 	copy = g_list_copy (schematic_view_list);
 
 	for (list = copy; list; list = list->next){
-		/* if (schematic_can_close (list->data)) */
-			g_object_unref(list->data);
+		if (can_close (list->data))
+			g_object_unref (list->data);
 	}
 
 	g_list_free (copy);
