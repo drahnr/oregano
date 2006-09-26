@@ -140,7 +140,6 @@ gnucap_finalize (GObject *object)
 
 	gnucap = OREGANO_GNUCAP (object);
 
-	g_print ("GNUCAP Finalize\n");
 	lst = gnucap->priv->analysis;
 	while (lst) {
 		data = SIM_DATA (lst->data);
@@ -167,7 +166,6 @@ gnucap_finalize (GObject *object)
 static void
 gnucap_dispose (GObject *object)
 {
-	g_print ("GNUCAP Dispose\n");
 	parent_class->dispose (object);
 }
 

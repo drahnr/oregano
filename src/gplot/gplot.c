@@ -165,6 +165,38 @@ g_plot_dispose (GObject *object)
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
+static int
+get_best_exponent (int div)
+{
+	/* http://en.wikipedia.org/wiki/Micro */
+	switch (div) {
+		case -24:
+		case -21:
+		case -18:
+		case -15:
+		case -12:
+		case -9:
+		case -6:
+		case -3:
+		case -2:
+		case -1:
+		case 1:
+		case 2:
+		case 3:
+		case 6:
+		case 9:
+		case 12:
+		case 15:
+		case 18:
+		case 21:
+		case 24:
+			return div;
+	}
+	if ((div - 1) % 3 == 0)
+		return div - 1;
+	return div + 1;
+}
+
 void
 draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gboolean vertical, gint *div)
 {
@@ -179,7 +211,7 @@ draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gbool
 
 	get_order_of_magnitude (min, &man1, &pw1);
 	get_order_of_magnitude (max, &man2, &pw2);
-	(*div) = (pw2+pw1) / 2.0 + 0.5;
+	(*div) = get_best_exponent ((pw2+pw1) / 2.0 + 0.5);
 	if ((*div) == 0) (*div) = 1;
 	divisor = pow(10, *div);
 
@@ -215,6 +247,35 @@ draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gbool
 		g_free (label);
 	}
 	cairo_stroke (cr);
+}
+
+static gchar*
+get_unit_text (int div)
+{
+	/* http://en.wikipedia.org/wiki/Micro */
+	switch (div) {
+		case -24: return g_strdup ("y");
+		case -21: return g_strdup ("z");
+		case -18: return g_strdup ("a");
+		case -15: return g_strdup ("f");
+		case -12: return g_strdup ("p");
+		case -9: return g_strdup ("n");
+		case -6: return g_strdup ("\302\265");
+		case -3: return g_strdup ("m");
+		case -2: return g_strdup ("c");
+		case -1: return g_strdup ("d");
+		case 1: return g_strdup ("");
+		case 2: return g_strdup ("da");
+		case 3: return g_strdup ("k");
+		case 6: return g_strdup ("M");
+		case 9: return g_strdup ("G");
+		case 12: return g_strdup ("T");
+		case 15: return g_strdup ("P");
+		case 18: return g_strdup ("E");
+		case 21: return g_strdup ("Z");
+		case 24: return g_strdup ("Y");
+	}
+	return g_strdup ("");
 }
 
 static gint 
@@ -347,14 +408,14 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			priv->ylabel_unit = NULL;
 		}
 		if (div != 1)
-			priv->ylabel_unit = g_strdup_printf ("10e%d ", div);
+			priv->ylabel_unit = get_unit_text (div);
 		draw_axis (cr, &priv->viewport_bbox, priv->window_bbox.xmax, priv->window_bbox.xmin, FALSE, &div);
 		if (priv->xlabel_unit) {
 			g_free (priv->xlabel_unit);
 			priv->xlabel_unit = NULL;
 		}
 		if (div != 1)
-			priv->xlabel_unit = g_strdup_printf ("10e%d ", div);
+			priv->xlabel_unit = get_unit_text (div);
 	cairo_restore (cr);
 
 	/* Axis Labels */
