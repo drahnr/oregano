@@ -43,8 +43,6 @@ FileType *file_manager_get_handler (const gchar *fname)
 
 	g_return_val_if_fail (fname != NULL, NULL);
 
-	g_print ("File : (%s)\n", fname);
-
 	ptr = ext = (gchar *)fname;
 
 	/* Search for file extension */

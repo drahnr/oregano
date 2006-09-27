@@ -164,9 +164,14 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 			st = (sim_settings_get_trans_stop (output.settings) -
 				sim_settings_get_trans_start (output.settings)) / 50;
 
-		fprintf (file, ".tran %g %g %g\n", st,
+		fprintf (file, ".tran %g %g %g", st,
 			sim_settings_get_trans_stop (output.settings),
 			sim_settings_get_trans_start (output.settings));
+		if (sim_settings_get_trans_init_cond (output.settings)) {
+			fputs(" UIC\n", file);
+		} else {
+			fputs("\n", file);
+		}
 	}
 
 	/*	Print dc Analysis */
@@ -206,7 +211,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 static void
 ngspice_progress (OreganoEngine *self, double *d)
 {
-	(*d) = 0;
+	(*d) = OREGANO_NGSPICE (self)->priv->progress;
 }
 
 static void
@@ -221,25 +226,31 @@ ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
-		gchar *content;
+		gchar *content, *buf;
 		gsize size;
 		g_spawn_close_pid (ngspice->priv->child_pid);
 
 		/* Parse data */
 		if (g_file_get_contents ("/tmp/netlist.raw", &content, &size, NULL)) {
-			char buf[2256];
-			int c, i;
-			for (c=0, i=0; i<size; i++) {
+			int i, c;
+			buf = content;
+			for (i=0, c=0; i<size; i++) {
+				/* Let UI update */
+				g_main_context_iteration (NULL, FALSE);
 				if (content[i] != '\n') {
-					buf[c++] = content[i];
+					c++;
 					continue;
 				}
 				buf[c] = '\0';
 				ngspice_parse (buf, c, ngspice);
+				if (!strncmp (buf, "Binary", 6)) {
+					buf += c + 1;
+					break;
+				}
+				buf += c + 1;
 				c = 0;
 			}
 			if (c > 0) {
-				buf[c] = '\0';
 				ngspice_parse (buf, c, ngspice);
 			}
 		}
@@ -307,7 +318,7 @@ ngspice_get_operation (OreganoEngine *self)
 	OreganoNgSpicePriv *priv = OREGANO_NGSPICE (self)->priv;
 
 	if (priv->current == NULL)
-		return _("None");
+		return _("Waiting NgSpice backend");
 
 	return oregano_engine_get_analysis_name (priv->current);
 }
@@ -409,8 +420,6 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 		gint   i;
 		gchar *analysis = buf+strlen(SP_PLOT_NAME)+1;
 
-		g_print ("Name : %s\n", analysis);
-
 		sdata->state = STATE_IDLE;
 		sdata->type  = ANALYSIS_UNKNOWN;
 		for (i = 0; analysis_names[i]; i++)
@@ -458,6 +467,7 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 				g_error ("Unknown analysis: %s", analysis);
 				break;
 		}
+		ngspice->priv->current = sdata;
 	} else if (IS_THIS_ITEM(buf, SP_FLAGS) ) {
 		/* pass*/
 	} else if (IS_THIS_ITEM (buf, SP_COMMAND)) {
@@ -465,7 +475,6 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 	} else if (IS_THIS_ITEM (buf, SP_N_VAR)) { 
 		gint i, n = atoi (buf + strlen (SP_N_VAR));
 
-		g_print ("N var = %d\n", n);
 		sdata->state = STATE_IDLE;
 		sdata->n_variables = n;
 		sdata->got_points  = 0;
@@ -484,7 +493,6 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 	} else if (IS_THIS_ITEM (buf, SP_N_POINTS)) { 
 		sdata->state = STATE_IDLE;
 		sdata->n_points = atoi (buf + strlen (SP_N_POINTS));
-		g_print ("N points = %d\n", sdata->n_points);
 	} else if (IS_THIS_ITEM (buf, SP_VARIABLES)) { 
 		sdata->state = IN_VARIABLES;
 	} else if (IS_THIS_ITEM (buf, SP_BINARY)) { 
@@ -509,7 +517,6 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 				tmp = g_strsplit (buf, "\t", 0);
 				sdata->var_names[sdata->got_var] = g_strdup (tmp[2]);
 				sdata->var_units[sdata->got_var] = g_strdup (tmp[3]);
-				g_print ("Got variable : %s unit %s\n", tmp[2], tmp[3]);
 				send = strchr (sdata->var_units[sdata->got_var], '\n');
 				if (send)
 					*send = 0;
@@ -519,40 +526,73 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 					sdata->got_var++;
 				break;
 			case IN_VALUES:
-				if (sdata->got_var) 
-					sscanf(buf, "\t%lf", &val);
-				else
-					sscanf(buf, "%d\t\t%lf", &iter, &val);
-				if (sdata->got_var == 0) {
-					switch (sdata->type) {
-						case TRANSIENT:
-							ngspice->priv->progress = val /	ANALYSIS(sdata)->transient.sim_length;					
-							break;
-						case AC:
-							ngspice->priv->progress = (val - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
-							break;
-						case DC_TRANSFER:
-							ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
-					}
-					if (ngspice->priv->progress > 1.0)
-						ngspice->priv->progress = 1.0;
-				}
+				if (sdata->binary) {
+					int i, j;
+					double *d = (double *)buf;
+					for (i=0; i<sdata->n_points; i++) {
+						for (j=0; j<sdata->n_variables; j++) {
+							if (j == 0) {
+								switch (sdata->type) {
+									case TRANSIENT:
+										ngspice->priv->progress = (*d) / ANALYSIS(sdata)->transient.sim_length;
+										break;
+									case AC:
+										ngspice->priv->progress = ((*d) - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
+										break;
+									case DC_TRANSFER:
+										ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
+								}
+								if (ngspice->priv->progress > 1.0)
+									ngspice->priv->progress = 1.0;
+								if (ngspice->priv->progress < 0.0)
+									ngspice->priv->progress = 0.0;
+								g_main_context_iteration (NULL, FALSE);
+							}
+							sdata->data[j] = g_array_append_val (sdata->data[j], *d);
 
-				g_print ("Value : var %d append %g\n", sdata->got_var, val);
-				sdata->data[sdata->got_var] = g_array_append_val (sdata->data[sdata->got_var], val);
-			
-				/* Update the minimal and maximal values so far. */
-				if (val < sdata->min_data[sdata->got_var])
-					sdata->min_data[sdata->got_var] = val;
-				if (val > sdata->max_data[sdata->got_var])
-					sdata->max_data[sdata->got_var] = val;
-		
-				/* Check for the end of the point. */
-				if (sdata->got_var + 1 == sdata->n_variables) {
-					sdata->got_var = 0;
-					sdata->got_points++;
-				} else
-					sdata->got_var++;
+							/* Update the minimal and maximal values so far. */
+							if ((*d) < sdata->min_data[j])
+								sdata->min_data[j] = *d;
+							if ((*d) > sdata->max_data[j])
+								sdata->max_data[j] = *d;
+							d++;
+						}
+					}
+				} else {
+					if (sdata->got_var) 
+						sscanf(buf, "\t%lf", &val);
+					else
+						sscanf(buf, "%d\t\t%lf", &iter, &val);
+					if (sdata->got_var == 0) {
+						switch (sdata->type) {
+							case TRANSIENT:
+								ngspice->priv->progress = val /	ANALYSIS(sdata)->transient.sim_length;					
+								break;
+							case AC:
+								ngspice->priv->progress = (val - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
+								break;
+							case DC_TRANSFER:
+								ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
+						}
+						if (ngspice->priv->progress > 1.0)
+							ngspice->priv->progress = 1.0;
+					}
+
+					sdata->data[sdata->got_var] = g_array_append_val (sdata->data[sdata->got_var], val);
+
+					/* Update the minimal and maximal values so far. */
+					if (val < sdata->min_data[sdata->got_var])
+						sdata->min_data[sdata->got_var] = val;
+					if (val > sdata->max_data[sdata->got_var])
+						sdata->max_data[sdata->got_var] = val;
+
+					/* Check for the end of the point. */
+					if (sdata->got_var + 1 == sdata->n_variables) {
+						sdata->got_var = 0;
+						sdata->got_points++;
+					} else
+						sdata->got_var++;
+				}
 				break;
 			default:
 				if (len > 1) {
