@@ -1187,7 +1187,6 @@ node_store_print_labels (NodeStore *store, OreganoPrintContext *opc, ArtDRect *r
 int
 node_store_is_pin_at_pos (NodeStore *store, SheetPos pos)
 {
-	int ret = 0;
 	int num_pins;
 	SheetPos part_pos;
 	GList *p;
@@ -1209,12 +1208,9 @@ node_store_is_pin_at_pos (NodeStore *store, SheetPos pos)
 			y = part_pos.y + pins[i].offset.y;
 
 			if ((x == pos.x) && (y == pos.y)) {
-				ret = 1;
-				/* Fast exit ;-) */
-				goto fast_exit;
+				return 1;
 			}
 		}
 	}
-fast_exit:
-	return ret;
+	return 0;
 }
