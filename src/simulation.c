@@ -248,7 +248,7 @@ simulate_cmd (Simulation *s)
 		s->engine = NULL;
 	}
 
-	engine = oregano_gnucap_new (s->sm);
+	engine = oregano_engine_factory_create_engine (oregano.engine, s->sm);
 	s->engine = engine;
 
 	s->progress_timeout_id = g_timeout_add (100, (GSourceFunc)progress_bar_timeout_cb, s);

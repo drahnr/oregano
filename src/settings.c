@@ -82,7 +82,8 @@ remove_item_cb ( GtkWidget *widget, GnomeFileEntry *entry) {
 static void
 apply_callback (GtkWidget *w, Settings *s)
 {
-	oregano.engine = 0; // TODO Set engine type from s->w_engine 
+	g_print ("Engine = %d\n", GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id")));
+	oregano.engine = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
 	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
 	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log ));
 	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash ));
@@ -218,11 +219,16 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		}
 		g_object_unref (G_OBJECT (engine));
 
+		g_object_set_data (G_OBJECT (button), "id", GUINT_TO_POINTER (i));
+
 		gtk_table_attach (GTK_TABLE (w), button, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_SHRINK, 6, 6);
 		if (image) {
 			gtk_table_attach (GTK_TABLE (w), event, 1, 2, i, i+1, GTK_SHRINK, GTK_SHRINK, 6, 6);
 		}
 		g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (set_engine_name), s);
+
+		if (oregano.engine == i)
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
 	}
 	gtk_tooltips_enable (image_tooltips);
 

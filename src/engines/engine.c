@@ -27,6 +27,7 @@
 
 #include "engine.h"
 #include "gnucap.h"
+#include "ngspice.h"
 
 static gchar *analysis_names[] = {
 	N_("Operating Point"),
@@ -156,6 +157,9 @@ oregano_engine_factory_create_engine (gint type, Schematic *sm)
 	switch (type) {
 		case OREGANO_ENGINE_GNUCAP:
 			engine = oregano_gnucap_new (sm);
+		break;
+		case OREGANO_ENGINE_NGSPICE:
+			engine = oregano_ngspice_new (sm);
 		break;
 		default:
 			engine = NULL;

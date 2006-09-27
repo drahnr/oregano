@@ -751,7 +751,7 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 		return;
 
 	schematic_set_netlist_filename (sm, netlist_name);
-	engine = oregano_engine_factory_create_engine (OREGANO_ENGINE_GNUCAP, sm);
+	engine = oregano_engine_factory_create_engine (oregano.engine, sm);
 	oregano_engine_generate_netlist (engine, netlist_name, &error);
 	schematic_view_update_parts (sv);
 

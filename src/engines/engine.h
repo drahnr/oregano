@@ -62,13 +62,15 @@ struct _OreganoEngineClass {
 /* Engines IDs */
 enum {
 	OREGANO_ENGINE_GNUCAP=0,
+	OREGANO_ENGINE_NGSPICE,
 	OREGANO_ENGINE_COUNT
 };
 
 /* Engines Titles */
 static const gchar*
 engines[] = {
-	"GnuCap"
+	"GnuCap",
+	"NgSpice"
 };
 
 OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);

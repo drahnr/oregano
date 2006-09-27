@@ -8,6 +8,7 @@ localEnv.Append (CCFLAGS = Split ("-I./src -I./src/model -I./src/sheet"))
 files = Split("""
 	engine.c
 	gnucap.c
+	ngspice.c
 	netlist.c
 	""")
 
