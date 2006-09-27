@@ -148,9 +148,19 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 				fprintf (file,"+ %s=%s\n", so->name, so->value);
 		list = list->next;
 	}
+	fputc ('\n',file);
+
+	/* Include of subckt models */
+	fputs ("*------------- Models -------------------------\n",file);
+	list = output.models;
+	while (list) {
+		gchar *model;
+		model = (gchar *)list->data;
+		fprintf (file,".include %s/%s.model\n", OREGANO_MODELDIR, model);
+		list = list->next;
+	}
 
 	/* Prints template parts */ 
-
 	fputs ("\n*----------------------------------------------\n\n",file);
 	fputs (output.template->str, file);
 	fputs ("\n*----------------------------------------------\n\n",file);
