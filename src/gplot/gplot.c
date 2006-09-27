@@ -178,10 +178,7 @@ get_best_exponent (int div)
 		case -9:
 		case -6:
 		case -3:
-		case -2:
-		case -1:
-		case 1:
-		case 2:
+		case 0:
 		case 3:
 		case 6:
 		case 9:
@@ -192,6 +189,8 @@ get_best_exponent (int div)
 		case 24:
 			return div;
 	}
+	if (div == -1) return -3;
+
 	if ((div - 1) % 3 == 0)
 		return div - 1;
 	return div + 1;
@@ -212,8 +211,10 @@ draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gbool
 	get_order_of_magnitude (min, &man1, &pw1);
 	get_order_of_magnitude (max, &man2, &pw2);
 	(*div) = get_best_exponent ((pw2+pw1) / 2.0 + 0.5);
-	if ((*div) == 0) (*div) = 1;
-	divisor = pow(10, *div);
+	if ((*div) == 0)
+		divisor = 1;
+	else
+		divisor = pow (10, *div);
 
 	if (vertical)
 		s = (bbox->ymax - bbox->ymin) / 10.0;
@@ -262,10 +263,7 @@ get_unit_text (int div)
 		case -9: return g_strdup ("n");
 		case -6: return g_strdup ("\302\265");
 		case -3: return g_strdup ("m");
-		case -2: return g_strdup ("c");
-		case -1: return g_strdup ("d");
-		case 1: return g_strdup ("");
-		case 2: return g_strdup ("da");
+		case 0: return g_strdup ("");
 		case 3: return g_strdup ("k");
 		case 6: return g_strdup ("M");
 		case 9: return g_strdup ("G");
@@ -275,7 +273,8 @@ get_unit_text (int div)
 		case 21: return g_strdup ("Z");
 		case 24: return g_strdup ("Y");
 	}
-	return g_strdup ("");
+
+	return g_strdup_printf ("10e%02d", div);
 }
 
 static gint 
