@@ -238,6 +238,10 @@ ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 				ngspice_parse (buf, c, ngspice);
 				c = 0;
 			}
+			if (c > 0) {
+				buf[c] = '\0';
+				ngspice_parse (buf, c, ngspice);
+			}
 		}
 
 		ngspice->priv->current = NULL;
@@ -405,77 +409,63 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 		gint   i;
 		gchar *analysis = buf+strlen(SP_PLOT_NAME)+1;
 
+		g_print ("Name : %s\n", analysis);
+
 		sdata->state = STATE_IDLE;
 		sdata->type  = ANALYSIS_UNKNOWN;
-		for (i = 0; analysis_names[i]; i++) 
+		for (i = 0; analysis_names[i]; i++)
 			if (IS_THIS_ITEM (analysis, analysis_names[i])) {
 				sdata->type = i;
 				break;
-		}
+			}
 
 		switch ( sdata->type ) {
-		case TRANSIENT:
-			ANALYSIS(sdata)->transient.sim_length =
-				sim_settings_get_trans_stop  (sim_settings) -
-				sim_settings_get_trans_start (sim_settings);
-			ANALYSIS(sdata)->transient.step_size = 
-				sim_settings_get_trans_step (sim_settings);
-			break;
-		case AC:
-			ANALYSIS(sdata)->ac.start = 
-				sim_settings_get_ac_start (sim_settings);
-			ANALYSIS(sdata)->ac.stop  = 
-				sim_settings_get_ac_stop  (sim_settings);
-			ANALYSIS(sdata)->ac.sim_length = 
-				sim_settings_get_ac_npoints (sim_settings);
-			break;
-		case OP_POINT:
-		case DC_TRANSFER:
-			np1 = np2 = 1.;
-			ANALYSIS(sdata)->dc.start1 = 
-				sim_settings_get_dc_start (sim_settings,0);
-			ANALYSIS(sdata)->dc.stop1  = 
-				sim_settings_get_dc_stop  (sim_settings,0);
-			ANALYSIS(sdata)->dc.step1  = 
-				sim_settings_get_dc_step  (sim_settings,0);
-			ANALYSIS(sdata)->dc.start2 = 
-				sim_settings_get_dc_start (sim_settings,1);
-			ANALYSIS(sdata)->dc.stop2  = 
-				sim_settings_get_dc_stop  (sim_settings,1);
-			ANALYSIS(sdata)->dc.step2  = 
-				sim_settings_get_dc_step  (sim_settings,1);
+			case TRANSIENT:
+				ANALYSIS(sdata)->transient.sim_length =
+					sim_settings_get_trans_stop  (sim_settings) -
+					sim_settings_get_trans_start (sim_settings);
+				ANALYSIS(sdata)->transient.step_size = 
+					sim_settings_get_trans_step (sim_settings);
+				break;
+			case AC:
+				ANALYSIS(sdata)->ac.start = sim_settings_get_ac_start (sim_settings);
+				ANALYSIS(sdata)->ac.stop  = sim_settings_get_ac_stop  (sim_settings);
+				ANALYSIS(sdata)->ac.sim_length = sim_settings_get_ac_npoints (sim_settings);
+				break;
+			case OP_POINT:
+			case DC_TRANSFER:
+				np1 = np2 = 1.;
+				ANALYSIS(sdata)->dc.start1 = sim_settings_get_dc_start (sim_settings, 0);
+				ANALYSIS(sdata)->dc.stop1  = sim_settings_get_dc_stop  (sim_settings, 0);
+				ANALYSIS(sdata)->dc.step1  = sim_settings_get_dc_step  (sim_settings, 0);
+				ANALYSIS(sdata)->dc.start2 = sim_settings_get_dc_start (sim_settings, 1);
+				ANALYSIS(sdata)->dc.stop2  = sim_settings_get_dc_stop  (sim_settings, 1);
+				ANALYSIS(sdata)->dc.step2  = sim_settings_get_dc_step  (sim_settings, 1);
 
-			np1 = (ANALYSIS(sdata)->dc.stop1-ANALYSIS(sdata)->dc.start1) /
-				ANALYSIS(sdata)->dc.step1;
-			if ( ANALYSIS(sdata)->dc.step2 != 0. ) {
-				np2 = (ANALYSIS(sdata)->dc.stop2-ANALYSIS(sdata)->dc.start2) /
-					ANALYSIS(sdata)->dc.step2;
-			}	
-			ANALYSIS(sdata)->dc.sim_length = np1 * np2; 
-			break;
-		case TRANSFER:
-		case DISTORTION:
-		case NOISE:
-		case POLE_ZERO:
-		case SENSITIVITY:
-			break;
-		case ANALYSIS_UNKNOWN:
-			g_error("Unknown analysis: %s",analysis);
-			break;
+				np1 = (ANALYSIS(sdata)->dc.stop1-ANALYSIS(sdata)->dc.start1) / ANALYSIS(sdata)->dc.step1;
+				if (ANALYSIS(sdata)->dc.step2 != 0.) {
+					np2 = (ANALYSIS(sdata)->dc.stop2-ANALYSIS(sdata)->dc.start2) / ANALYSIS(sdata)->dc.step2;
+				}	
+				ANALYSIS(sdata)->dc.sim_length = np1 * np2; 
+				break;
+			case TRANSFER:
+			case DISTORTION:
+			case NOISE:
+			case POLE_ZERO:
+			case SENSITIVITY:
+				break;
+			case ANALYSIS_UNKNOWN:
+				g_error ("Unknown analysis: %s", analysis);
+				break;
 		}
-	}
-	/* Flags */
-	else if (IS_THIS_ITEM(buf, SP_FLAGS) ) {
-		
-	}
-	/* Command */
-	else if (IS_THIS_ITEM (buf, SP_COMMAND)) {
-
-	}
-	/* Number of variables  */
-	else if (IS_THIS_ITEM (buf, SP_N_VAR)) { 
+	} else if (IS_THIS_ITEM(buf, SP_FLAGS) ) {
+		/* pass*/
+	} else if (IS_THIS_ITEM (buf, SP_COMMAND)) {
+		/* pass */
+	} else if (IS_THIS_ITEM (buf, SP_N_VAR)) { 
 		gint i, n = atoi (buf + strlen (SP_N_VAR));
 
+		g_print ("N var = %d\n", n);
 		sdata->state = STATE_IDLE;
 		sdata->n_variables = n;
 		sdata->got_points  = 0;
@@ -484,44 +474,30 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 		sdata->var_units   = (char**) g_new0 (gpointer, n);
 		sdata->data        = (GArray**) g_new0 (gpointer, n);
 		for (i = 0; i < n; i++) 
-			sdata->data[i] = 
-				g_array_new (TRUE, TRUE, sizeof (double));
+			sdata->data[i] = g_array_new (TRUE, TRUE, sizeof (double));
 		sdata->min_data = g_new (double, n);
 		sdata->max_data = g_new (double, n);
 		for (i = 0; i < n; i++) {
 			sdata->min_data[i] =  G_MAXDOUBLE;
 			sdata->max_data[i] = -G_MAXDOUBLE;
 		}
-	}
-
-	/*  
-	    Number of points
-	    For some reason is 0 when the simulation engine runs in server mode...
-	*/
-	else if (IS_THIS_ITEM (buf, SP_N_POINTS)) { 
+	} else if (IS_THIS_ITEM (buf, SP_N_POINTS)) { 
 		sdata->state = STATE_IDLE;
 		sdata->n_points = atoi (buf + strlen (SP_N_POINTS));
-	}
-	/*  List with the name of the variables and their units */
-	else if (IS_THIS_ITEM (buf, SP_VARIABLES)) { 
-		sdata->state = IN_VARIABLES;		
-	} 
-	/* Data in binary format. */
-	else if (IS_THIS_ITEM (buf, SP_BINARY)) { 
+		g_print ("N points = %d\n", sdata->n_points);
+	} else if (IS_THIS_ITEM (buf, SP_VARIABLES)) { 
+		sdata->state = IN_VARIABLES;
+	} else if (IS_THIS_ITEM (buf, SP_BINARY)) { 
 		sdata->state = IN_VALUES;
 		sdata->binary = TRUE;
 		sdata->got_var = 0;
 		sdata->got_points = 0;
-	} 
-	/*  Data in ascii */
-	else if (IS_THIS_ITEM (buf, SP_VALUES)) { 
+	} else if (IS_THIS_ITEM (buf, SP_VALUES)) { 
 		sdata->state = IN_VALUES;
 		sdata->binary = FALSE;
 		sdata->got_var = 0;
 		sdata->got_points = 0;
-	} 
-	/*  We should be either getting the varible names or the data */
-	else {
+	} else {
 		if (ngspice->priv->analysis == NULL) {
 			if (len > 1)
 				schematic_log_append (ngspice->priv->schematic, buf);
@@ -529,74 +505,63 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 		}
 
 		switch (sdata->state) {
-		case IN_VARIABLES:
-		tmp = g_strsplit (buf, "\t", 0);
-			sdata->var_names[sdata->got_var] = g_strdup (tmp[2]);
-			sdata->var_units[sdata->got_var] = g_strdup (tmp[3]);
-			send = strchr(sdata->var_units[sdata->got_var], '\n');
-			if (send)
-				*send = 0;
-			g_strfreev (tmp);
+			case IN_VARIABLES:
+				tmp = g_strsplit (buf, "\t", 0);
+				sdata->var_names[sdata->got_var] = g_strdup (tmp[2]);
+				sdata->var_units[sdata->got_var] = g_strdup (tmp[3]);
+				g_print ("Got variable : %s unit %s\n", tmp[2], tmp[3]);
+				send = strchr (sdata->var_units[sdata->got_var], '\n');
+				if (send)
+					*send = 0;
+				g_strfreev (tmp);
 			
-			if ((sdata->got_var + 1) < sdata->n_variables)
-				sdata->got_var++;
-			break;
-
-		case IN_VALUES:
-			if (sdata->got_var) 
-				sscanf(buf, "\t%lf", &val);
-			else
-				sscanf(buf, "%d\t\t%lf", &iter, &val);
-
-			if (sdata->got_var == 0) {
-				switch (sdata->type) {
-				case TRANSIENT:
-					ngspice->priv->progress = val /
-						ANALYSIS(sdata)->transient.sim_length;
-					
-					break;
-				case AC:
-					ngspice->priv->progress = (val - ANALYSIS(sdata)->ac.start) /
-						ANALYSIS(sdata)->ac.sim_length;
-					break;
-				case DC_TRANSFER:
-					ngspice->priv->progress = ((gdouble) iter) /
-						ANALYSIS(sdata)->ac.sim_length;
-				default:
-					break;
+				if ((sdata->got_var + 1) < sdata->n_variables)
+					sdata->got_var++;
+				break;
+			case IN_VALUES:
+				if (sdata->got_var) 
+					sscanf(buf, "\t%lf", &val);
+				else
+					sscanf(buf, "%d\t\t%lf", &iter, &val);
+				if (sdata->got_var == 0) {
+					switch (sdata->type) {
+						case TRANSIENT:
+							ngspice->priv->progress = val /	ANALYSIS(sdata)->transient.sim_length;					
+							break;
+						case AC:
+							ngspice->priv->progress = (val - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
+							break;
+						case DC_TRANSFER:
+							ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
+					}
+					if (ngspice->priv->progress > 1.0)
+						ngspice->priv->progress = 1.0;
 				}
-				if (ngspice->priv->progress > 1.0)
-					ngspice->priv->progress = 1.0;
-			}
 
-			sdata->data[sdata->got_var] =
-				g_array_append_val (
-					sdata->data[sdata->got_var],
-					val);
+				g_print ("Value : var %d append %g\n", sdata->got_var, val);
+				sdata->data[sdata->got_var] = g_array_append_val (sdata->data[sdata->got_var], val);
 			
-			/* Update the minimal and maximal values so far. */
-			if (val < sdata->min_data[sdata->got_var])
-				sdata->min_data[sdata->got_var] = val;
-			if (val > sdata->max_data[sdata->got_var])
-				sdata->max_data[sdata->got_var] = val;
+				/* Update the minimal and maximal values so far. */
+				if (val < sdata->min_data[sdata->got_var])
+					sdata->min_data[sdata->got_var] = val;
+				if (val > sdata->max_data[sdata->got_var])
+					sdata->max_data[sdata->got_var] = val;
 		
-			/* Check for the end of the point. */
-			if (sdata->got_var + 1 == sdata->n_variables) {
-				sdata->got_var = 0;
-				sdata->got_points++;
-			}
-			else
-				sdata->got_var++;
-
-			break;
-		default:
-			if (strlen (buf) > 1) {
-				if (strstr (buf,"abort"))
-					sdata->state = STATE_ABORT;
-				schematic_log_append (ngspice->priv->schematic, buf); 
-		}
-			break;
-			
+				/* Check for the end of the point. */
+				if (sdata->got_var + 1 == sdata->n_variables) {
+					sdata->got_var = 0;
+					sdata->got_points++;
+				} else
+					sdata->got_var++;
+				break;
+			default:
+				if (len > 1) {
+					if (strstr (buf,"abort"))
+						sdata->state = STATE_ABORT;
+					schematic_log_append (ngspice->priv->schematic, buf); 
+				}
+				break;
 		}
 	}
 }
+
