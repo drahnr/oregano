@@ -82,7 +82,6 @@ remove_item_cb ( GtkWidget *widget, GnomeFileEntry *entry) {
 static void
 apply_callback (GtkWidget *w, Settings *s)
 {
-	g_print ("Engine = %d\n", GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id")));
 	oregano.engine = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
 	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
 	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log ));

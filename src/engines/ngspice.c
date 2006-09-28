@@ -55,7 +55,7 @@ struct _OreganoNgSpicePriv {
 static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class);
 static void ngspice_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoNgSpice *ngspice);
-static void ngspice_parse (gchar *w, gint len, OreganoNgSpice *ngspice);
+static void ngspice_parse (FILE *, OreganoNgSpice *ngspice);
 
 GType 
 oregano_ngspice_get_type (void)
@@ -236,33 +236,15 @@ ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
-		gchar *content, *buf;
-		gsize size;
+		FILE *fp;
+
 		g_spawn_close_pid (ngspice->priv->child_pid);
 
 		/* Parse data */
-		if (g_file_get_contents ("/tmp/netlist.raw", &content, &size, NULL)) {
-			int i, c;
-			buf = content;
-			for (i=0, c=0; i<size; i++) {
-				/* Let UI update */
-				g_main_context_iteration (NULL, FALSE);
-				if (content[i] != '\n') {
-					c++;
-					continue;
-				}
-				buf[c] = '\0';
-				ngspice_parse (buf, c, ngspice);
-				if (!strncmp (buf, "Binary", 6)) {
-					buf += c + 1;
-					break;
-				}
-				buf += c + 1;
-				c = 0;
-			}
-			if (c > 0) {
-				ngspice_parse (buf, c, ngspice);
-			}
+		if ((fp = fopen ("/tmp/netlist.raw", "r")) != NULL) {
+			g_print ("File Open\n");
+			while (!feof (fp))
+				ngspice_parse (fp, ngspice);
 		}
 
 		ngspice->priv->current = NULL;
@@ -405,10 +387,15 @@ static gchar *analysis_names[] = {
 	NULL
 };
 
+#define NG_DEBUG(s) g_print ("NG: %s\n", s)
+
 static void
-ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
+ngspice_parse (FILE *fp, OreganoNgSpice *ngspice)
 {
 	static SimulationData *sdata = NULL;
+	static char buf[1024];
+	static int len;
+	static is_complex = FALSE;
 	SimSettings *sim_settings;
 	gint status, iter;
 	gdouble val, np1, np2;
@@ -416,20 +403,32 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 	gchar *send;
 	int i, c;
 
-
 	sim_settings = (SimSettings *)schematic_get_sim_settings (ngspice->priv->schematic);
+
+	if (!sdata || sdata->state != IN_VALUES) {
+		/* Read a line */
+		len = fscanf (fp, "%[^\n]", buf);
+		fgetc (fp);
+		if (len == 0) return;
+		NG_DEBUG (g_strdup_printf ("(%s)", buf));
+	} else {
+		buf[0] = '\0';
+		len = 0;
+	}
 
 	/* We are getting the simulation title */
 	if (IS_THIS_ITEM (buf, SP_TITLE)) {
 		sdata = SIM_DATA (g_new0 (Analysis, 1));		
 		ngspice->priv->analysis = g_list_append (ngspice->priv->analysis, sdata);
 		ngspice->priv->num_analysis++;
+		NG_DEBUG ("Nuevo Analisis");
 	} else if (IS_THIS_ITEM (buf, SP_DATE)) {
 		sdata->state = STATE_IDLE;
 	} else if (IS_THIS_ITEM (buf,SP_PLOT_NAME)) {
 		gint   i;
 		gchar *analysis = buf+strlen(SP_PLOT_NAME)+1;
 
+		NG_DEBUG ("Analisis Type");
 		sdata->state = STATE_IDLE;
 		sdata->type  = ANALYSIS_UNKNOWN;
 		for (i = 0; analysis_names[i]; i++)
@@ -479,12 +478,17 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 		}
 		ngspice->priv->current = sdata;
 	} else if (IS_THIS_ITEM(buf, SP_FLAGS) ) {
-		/* pass*/
+		char *f = buf + strlen (SP_FLAGS) + 1;
+		if (strncmp (f, "complex", 7) == 0)
+			is_complex = TRUE;
+		else
+			is_complex = FALSE;
 	} else if (IS_THIS_ITEM (buf, SP_COMMAND)) {
 		/* pass */
 	} else if (IS_THIS_ITEM (buf, SP_N_VAR)) { 
 		gint i, n = atoi (buf + strlen (SP_N_VAR));
 
+		NG_DEBUG (g_strdup_printf ("NVAR %d", n));
 		sdata->state = STATE_IDLE;
 		sdata->n_variables = n;
 		sdata->got_points  = 0;
@@ -503,9 +507,12 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 	} else if (IS_THIS_ITEM (buf, SP_N_POINTS)) { 
 		sdata->state = STATE_IDLE;
 		sdata->n_points = atoi (buf + strlen (SP_N_POINTS));
+		NG_DEBUG (g_strdup_printf ("NPOINTS %d", sdata->n_points));
 	} else if (IS_THIS_ITEM (buf, SP_VARIABLES)) { 
+		NG_DEBUG ("In variables");
 		sdata->state = IN_VARIABLES;
 	} else if (IS_THIS_ITEM (buf, SP_BINARY)) { 
+		NG_DEBUG ("Data Bynari");
 		sdata->state = IN_VALUES;
 		sdata->binary = TRUE;
 		sdata->got_var = 0;
@@ -538,16 +545,24 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 			case IN_VALUES:
 				if (sdata->binary) {
 					int i, j;
-					double *d = (double *)buf;
+					double d, dimg;
+					NG_DEBUG ("Reading Binary");
 					for (i=0; i<sdata->n_points; i++) {
 						for (j=0; j<sdata->n_variables; j++) {
+							/* TODO : This show always the real part only. We need to detect
+							 * the probe settings for this node, and show the correct
+							 * value : real, imaginary, module or phase, of the complex number.
+							 */
+							fread (&d, sizeof (double), 1, fp);
+							if (is_complex)
+								fread (&dimg, sizeof (double), 1, fp);
 							if (j == 0) {
 								switch (sdata->type) {
 									case TRANSIENT:
-										ngspice->priv->progress = (*d) / ANALYSIS(sdata)->transient.sim_length;
+										ngspice->priv->progress = d / ANALYSIS(sdata)->transient.sim_length;
 										break;
 									case AC:
-										ngspice->priv->progress = ((*d) - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
+										ngspice->priv->progress = (d - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
 										break;
 									case DC_TRANSFER:
 										ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
@@ -558,16 +573,17 @@ ngspice_parse (gchar *buf, gint len, OreganoNgSpice *ngspice)
 									ngspice->priv->progress = 0.0;
 								g_main_context_iteration (NULL, FALSE);
 							}
-							sdata->data[j] = g_array_append_val (sdata->data[j], *d);
+							sdata->data[j] = g_array_append_val (sdata->data[j], d);
 
 							/* Update the minimal and maximal values so far. */
-							if ((*d) < sdata->min_data[j])
-								sdata->min_data[j] = *d;
-							if ((*d) > sdata->max_data[j])
-								sdata->max_data[j] = *d;
-							d++;
+							if (d < sdata->min_data[j])
+								sdata->min_data[j] = d;
+							if (d > sdata->max_data[j])
+								sdata->max_data[j] = d;
 						}
 					}
+					sdata->state = STATE_IDLE;
+					NG_DEBUG ("Reading Binary Done");
 				} else {
 					if (sdata->got_var) 
 						sscanf(buf, "\t%lf", &val);
