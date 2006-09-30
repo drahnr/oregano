@@ -47,7 +47,8 @@ static void      wire_flip (ItemData *data, gboolean horizontal,
 	SheetPos *center);
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
-static void	 wire_print (ItemData *data, OreganoPrintContext *opc);
+static gboolean  wire_has_properties (ItemData *data);
+static void      wire_print (ItemData *data, cairo_t *cr);
 
 enum {
 	CHANGED,
