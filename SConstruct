@@ -115,8 +115,9 @@ SConscript ('data/SConscript');
 SConscript ('po/SConscript');
 
 # Install Target #
-CEnv.Alias ('install', CEnv.Command ('oregano.keys', 'oregano.keys.in', "sed 's/@icondir@/"+os.path.join (CEnv['PREFIX'], CEnv['DATADIR'],"mine-info").replace ("/", "\\/")+"/' < $SOURCE > $TARGET"))
+CEnv.Alias ('install', CEnv.Command ('oregano.keys', 'oregano.keys.in', "sed 's/@icondir@/"+os.path.join (CEnv['DATADIR'], "pixmaps").replace ("/", "\\/")+"/' < $SOURCE > $TARGET"))
 CEnv.Alias ('install', CEnv.Command ('oregano.xml', 'oregano.xml.in', "cp $SOURCE $TARGET"))
+CEnv.Alias ('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/pixmaps'), Split('gnome-oregano.svg')))
 CEnv.Alias ('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/mime/packages'), Split('oregano.xml')))
 CEnv.Alias ('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/mime-info'), Split('oregano.mime oregano.keys')))
 CEnv.Alias ('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/applications'), Split('oregano.desktop')))
