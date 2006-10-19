@@ -6,7 +6,7 @@
  *
  * @date   1999-2001,2003-2006
  *
- * @brief Oregano, a tool for schematic capture and simulation of electrical
+ * @brief Oregano, a tool for schematic capture and simulation of electronic
  * circuits.
  *
  * @link Web page: http://arrakis.lug.fi.uba.ar/

@@ -2,7 +2,7 @@
       Oregano - An electrical engineering tool for GNOME
 
 Oregano is an application for schematic capture and simulation of
-electrical circuits. The actual simulation is performed by Berkeley
+electronic circuits. The actual simulation is performed by Berkeley
 Spice, or GNUcap or the new generation ngspice.
 
 Oregano is licensed under the terms of the GNU GPL included in the

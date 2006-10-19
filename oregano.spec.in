@@ -20,7 +20,7 @@ Requires: libglade2 >= 2.0
 Requires: libgnomeprint >= 2.2
 
 %description
-Oregano, schematic capture and simulation of electrical circuits.
+Oregano, schematic capture and simulation of electronic circuits.
 
 %prep
 %setup -q
