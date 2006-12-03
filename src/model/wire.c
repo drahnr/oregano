@@ -392,9 +392,9 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 	priv = wire->priv;
 
 	if (priv->direction == WIRE_DIR_VERT) {
-		priv->direction == WIRE_DIR_HORIZ;
+		priv->direction = WIRE_DIR_HORIZ;
 	} else if (priv->direction == WIRE_DIR_HORIZ) {
-		priv->direction == WIRE_DIR_VERT;
+		priv->direction = WIRE_DIR_VERT;
 	}
 
 	art_affine_rotate (affine, angle);
