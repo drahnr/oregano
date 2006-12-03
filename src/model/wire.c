@@ -37,6 +37,7 @@
 #include "wire.h"
 #include "wire-private.h"
 #include "clipboard.h"
+#include "schematic-print-context.h"
 
 static void      wire_class_init (WireClass *klass);
 static void      wire_init (Wire *wire);
@@ -48,7 +49,7 @@ static void      wire_flip (ItemData *data, gboolean horizontal,
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
-static void      wire_print (ItemData *data, cairo_t *cr);
+static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 
 enum {
 	CHANGED,
@@ -609,7 +610,7 @@ wire_register (ItemData *data)
 }
 
 static void
-wire_print (ItemData *data, cairo_t *cr)
+wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	SheetPos start_pos, end_pos;
 	Wire *wire;
@@ -623,7 +624,7 @@ wire_print (ItemData *data, cairo_t *cr)
 	wire_get_end_pos (wire, &end_pos);
 
 	cairo_save (cr);
-		cairo_set_source_rgb (cr, 0, 0, 1);
+		gdk_cairo_set_source_color (cr, &ctx->colors.wires);
 		cairo_move_to (cr, start_pos.x, start_pos.y);
 		cairo_line_to (cr, end_pos.x, end_pos.y);
 		cairo_stroke (cr);

@@ -39,6 +39,7 @@
 #include <gnome.h>
 #include <cairo/cairo.h>
 #include "sheet-pos.h"
+#include "schematic-print-context.h"
 
 #define TYPE_ITEM_DATA			  (item_data_get_type())
 #define ITEM_DATA(obj)			  (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_ITEM_DATA, ItemData))
@@ -80,7 +81,7 @@ struct _ItemDataClass
 	void (*set_property) (ItemData *data, char *property, char *value);
 	gboolean (*has_properties) (ItemData *data);
 
-	void (*print) (ItemData *data, cairo_t *cr);
+	void (*print) (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 };
 
 GType	  item_data_get_type (void);
@@ -143,7 +144,7 @@ void item_data_set_property (ItemData *data, char *property, char *value);
  * This method implement the GnomePrint stuff for schematic print of
  * an item.
  */
-void item_data_print (ItemData *data, cairo_t *cr);
+void item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 
 
 #endif

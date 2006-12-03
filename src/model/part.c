@@ -42,6 +42,7 @@
 #include "load-common.h"
 #include "load-library.h"
 #include "part-private.h"
+#include "schematic-print-context.h"
 
 static void part_class_init (PartClass *klass);
 
@@ -75,7 +76,7 @@ static int part_register (ItemData *data);
 static void part_set_property (ItemData *data, char *property, char *value);
 
 static char *part_get_refdes_prefix (ItemData *data);
-static void part_print (ItemData *data, cairo_t *cr);
+static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 
 enum {
 	ARG_0,
@@ -960,7 +961,7 @@ part_set_property (ItemData *data, char *property, char *value)
 }
 
 static void
-part_print (ItemData *data, cairo_t *cr)
+part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	GSList *objects, *labels;
 	SymbolObject *object;
@@ -990,7 +991,7 @@ part_print (ItemData *data, cairo_t *cr)
 
 	cairo_save (cr);
 
-	cairo_set_source_rgb (cr, 0, 0.7, 0);
+	gdk_cairo_set_source_color (cr, &ctx->colors.components);
 	rotation = part_get_rotation (part);
 	if (rotation != 0) {
 		cairo_translate (cr, x0, y0);

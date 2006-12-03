@@ -34,6 +34,7 @@
 #include "textbox.h"
 #include "clipboard.h"
 #include "node-store.h"
+#include "schematic-print-context.h"
 
 /*
 #define TEXTBOX_DEFAULT_FONT "-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*"
@@ -49,7 +50,7 @@ static void textbox_init (Textbox *textbox);
 static void textbox_copy (ItemData *dest, ItemData *src);
 static ItemData *textbox_clone (ItemData *src);
 static void textbox_rotate (ItemData *data, int angle, SheetPos *center);
-static void textbox_print (ItemData *data, cairo_t *cr);
+static void textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 static int textbox_register (ItemData *data);
 static void textbox_unregister (ItemData *data);
 static gboolean textbox_has_properties (ItemData *data);
@@ -412,7 +413,7 @@ textbox_get_font (Textbox *textbox)
 }
 
 static void
-textbox_print (ItemData *data, cairo_t *cr)
+textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 /*	GnomeCanvasPoints *line;
 	double x0, y0;

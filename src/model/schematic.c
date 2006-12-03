@@ -30,6 +30,7 @@
 
 #include <gtk/gtk.h>
 #include <glib.h>
+#include <glade/glade.h>
 #include "schematic.h"
 #include "node-store.h"
 //#include "load-schematic.h"
@@ -38,6 +39,15 @@
 #include "sim-settings.h"
 #include "simulation.h"
 #include "errors.h"
+#include "schematic-print-context.h"
+
+typedef struct _SchematicsPrintOptions {
+	GtkColorButton *components;
+	GtkColorButton *labels;
+	GtkColorButton *wires;
+	GtkColorButton *text;
+	GtkColorButton *background;
+} SchematicPrintOptions;
 
 struct _SchematicPriv {
 	char *title;
@@ -45,6 +55,9 @@ struct _SchematicPriv {
 	char *author;
 	char *comments;
 	char *netlist_filename;
+
+	SchematicColors colors;
+	SchematicPrintOptions *printoptions;
 
 	/*
 	 * Data for various dialogs.
@@ -222,6 +235,21 @@ schematic_init(Schematic *schematic)
 	SchematicPriv *priv;
 
 	priv = schematic->priv = g_new0 (SchematicPriv, 1);
+
+	priv->printoptions = NULL;
+	/* Colors */
+	priv->colors.components.red = 0;
+	priv->colors.components.green = 45874;
+	priv->colors.components.blue = 45874;
+	priv->colors.labels.red = 0;
+	priv->colors.labels.green = 0;
+	priv->colors.labels.blue = 0;
+	priv->colors.wires.red = 0;
+	priv->colors.wires.green = 0;
+	priv->colors.wires.blue = 65535;
+	priv->colors.text.red = 0;
+	priv->colors.text.green = 0;
+	priv->colors.text.blue = 0;
 
 	priv->symbols = g_hash_table_new (g_str_hash, g_str_equal);
 	/* FIXME: use own str_equal (lib::sym)*/
@@ -871,7 +899,7 @@ schematic_render (Schematic *sm, cairo_t *cr)
 
 	store = schematic_get_store (sm);
 
-	node_store_print_items (store, cr, NULL);
+	node_store_print_items (store, cr, &sm->priv->colors);
 	node_store_print_labels (store, cr, NULL);
 }
 
@@ -1017,6 +1045,61 @@ draw_page (GtkPrintOperation *operation,
 	cairo_restore (cr);
 }
 
+static GObject*
+print_options (GtkPrintOperation *operation, Schematic *sm)
+{
+	GladeXML *gui;
+
+	if (!g_file_test (OREGANO_GLADEDIR "/print-options.glade2", G_FILE_TEST_EXISTS)) {
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade2")));
+	}
+
+	gui = glade_xml_new (OREGANO_GLADEDIR "/print-options.glade2",
+		"widget", GETTEXT_PACKAGE);
+	if (!gui) {
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade2")));
+	}
+
+	if (sm->priv->printoptions)
+		g_free (sm->priv->printoptions);
+	sm->priv->printoptions = g_new0(SchematicPrintOptions, 1);
+
+	sm->priv->printoptions->components = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_components"));
+	sm->priv->printoptions->labels = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_labels"));
+	sm->priv->printoptions->wires = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_wires"));
+	sm->priv->printoptions->text = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_text"));
+	sm->priv->printoptions->background = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_background"));
+
+	/* Set default colors */
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_components")),
+		&sm->priv->colors.components);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_labels")),
+		&sm->priv->colors.labels);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_wires")),
+		&sm->priv->colors.wires);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_text")),
+		&sm->priv->colors.text);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_background")),
+		&sm->priv->colors.background);
+
+	return glade_xml_get_widget (gui, "widget");
+}
+
+static void
+read_print_options(GtkPrintOperation *operation, GtkWidget *widget, Schematic *sm)
+{
+	SchematicPrintOptions *colors = sm->priv->printoptions;
+
+	gtk_color_button_get_color (colors->components, &sm->priv->colors.components);
+	gtk_color_button_get_color (colors->labels, &sm->priv->colors.labels);
+	gtk_color_button_get_color (colors->wires, &sm->priv->colors.wires);
+	gtk_color_button_get_color (colors->text, &sm->priv->colors.text);
+	gtk_color_button_get_color (colors->background, &sm->priv->colors.background);
+
+	g_free (sm->priv->printoptions);
+	sm->priv->printoptions = NULL;
+}
+
 void
 schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, gboolean preview)
 {
@@ -1031,7 +1114,11 @@ schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, 
 	gtk_print_operation_set_unit (op, GTK_UNIT_MM);
 	gtk_print_operation_set_use_full_page (op, TRUE);
 
+	g_signal_connect (op, "create-custom-widget", G_CALLBACK (print_options), sm);
+	g_signal_connect (op, "custom-widget-apply", G_CALLBACK (read_print_options), sm);
 	g_signal_connect (op, "draw_page", G_CALLBACK (draw_page), sm);
+
+	gtk_print_operation_set_custom_tab_label (op, _("Schematic"));
 
 	if (preview)
 		res = gtk_print_operation_run (op, GTK_PRINT_OPERATION_ACTION_PREVIEW,
@@ -1040,8 +1127,6 @@ schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, 
 		res = gtk_print_operation_run (op, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
 		NULL, NULL);
 
-	if (res == GTK_PRINT_OPERATION_RESULT_APPLY) {
-	//  settings = gtk_print_operation_get_print_settings (op);
-	//save_print_settings (settings);
+	if (res == GTK_PRINT_OPERATION_RESULT_CANCEL) {
 	}
 }

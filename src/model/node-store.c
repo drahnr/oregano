@@ -1154,7 +1154,7 @@ draw_dot (SheetPos *key, Node *value, cairo_t *cr)
 }
 
 void
-node_store_print_items (NodeStore *store, cairo_t *cr, ArtDRect *rect)
+node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	GList *list;
 	SheetPos p1, p2;
@@ -1166,7 +1166,7 @@ node_store_print_items (NodeStore *store, cairo_t *cr, ArtDRect *rect)
 	cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
 	for (list = store->items; list; list = list->next) {
 		data = ITEM_DATA (list->data);
-		item_data_print (data, cr);
+		item_data_print (data, cr, ctx);
 	}
 
 	g_hash_table_foreach (store->nodes, (GHFunc)draw_dot, cr);

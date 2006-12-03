@@ -15,6 +15,7 @@ resources = Split ("""
 	simulation.glade2
 	splash.glade2
 	textbox-properties-dialog.glade2
+	print-options.glade2
 	view-netlist.glade2
 	splash.xpm""")
 

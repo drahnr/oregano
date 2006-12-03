@@ -44,6 +44,7 @@
 typedef struct _NodeStore NodeStore;
 typedef struct _NodeStoreClass NodeStoreClass;
 
+#include "schematic-print-context.h"
 #include "node.h"
 #include "wire.h"
 #include "part.h"
@@ -90,7 +91,7 @@ GList	*node_store_get_nodes (NodeStore *store);
 void	 node_store_dump_wires (NodeStore *store);
 void	 node_store_get_bounds (NodeStore *store, ArtDRect *rect);
 gint	 node_store_count_items (NodeStore *store, ArtDRect *rect);
-void	 node_store_print_items (NodeStore *store, cairo_t *opc, ArtDRect *rect);
+void	 node_store_print_items (NodeStore *store, cairo_t *opc, SchematicPrintContext *ctx);
 void	 node_store_print_labels (NodeStore *store,
 	cairo_t *opc, ArtDRect *rect);
 Node	 *node_store_get_or_create_node (NodeStore *store, SheetPos pos);

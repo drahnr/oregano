@@ -541,7 +541,7 @@ item_data_has_properties (ItemData *data)
 }
 
 void
-item_data_print (ItemData *data, cairo_t *cr)
+item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	ItemDataClass *id_class;
 
@@ -551,7 +551,7 @@ item_data_print (ItemData *data, cairo_t *cr)
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->print) {
-		id_class->print (data, cr);
+		id_class->print (data, cr, ctx);
 	}
 }
 
