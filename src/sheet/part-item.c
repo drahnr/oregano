@@ -727,8 +727,10 @@ edit_properties (SheetItem *object)
 	char *internal, *msg, *value, *name;
 	GladeXML *gui;
 	GtkTable *prop_table;
+	GtkNotebook *notebook;
 	gint response, y = 0;
-	gboolean got_iter;
+	gboolean got_iter, has_model;
+	gchar *model_name = NULL;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (IS_PART_ITEM (object));
@@ -776,7 +778,8 @@ edit_properties (SheetItem *object)
 
 	prop_dialog->dialog = GTK_DIALOG ( glade_xml_get_widget (gui, "part-properties-dialog"));
 
-	prop_table = GTK_TABLE ( glade_xml_get_widget (gui, "prop_table"));
+	prop_table = GTK_TABLE (glade_xml_get_widget (gui, "prop_table"));
+	notebook  = GTK_NOTEBOOK (glade_xml_get_widget (gui, "notebook"));
 
 	g_signal_connect (prop_dialog->dialog, "destroy",
 		(GCallback) prop_dialog_destroy,
@@ -784,6 +787,7 @@ edit_properties (SheetItem *object)
 	);
 
 	prop_dialog->widgets = NULL;
+	has_model = FALSE;
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
@@ -793,6 +797,11 @@ edit_properties (SheetItem *object)
 			GtkWidget *label;
 			if (!g_strcasecmp (prop->name, "internal"))
 				continue;
+
+			if (!g_strcasecmp (prop->name, "model")) {
+				has_model = TRUE;
+				model_name = g_strdup (prop->value);
+			}
 
 			label = gtk_label_new (prop->name);
 			entry = gtk_entry_new ();
@@ -819,6 +828,33 @@ edit_properties (SheetItem *object)
 
 			prop_dialog->widgets = g_list_prepend (prop_dialog->widgets, entry);
 		}
+	}
+
+	if (!has_model) {
+		gtk_notebook_remove_page (notebook, 1); 
+	} else {
+		GtkTextBuffer *txtbuffer;
+		GtkTextView *txtmodel;
+		gchar *filename, *str;
+		GError *read_error = NULL;
+
+		txtmodel = GTK_TEXT_VIEW (glade_xml_get_widget (gui, "txtmodel"));
+		txtbuffer = gtk_text_buffer_new (NULL);
+
+		filename = g_strdup_printf ("%s/%s.model", OREGANO_MODELDIR, model_name);
+		if (g_file_get_contents (filename, &str, NULL, &read_error)) {
+			gtk_text_buffer_set_text (txtbuffer, str, -1);
+			g_free (str);
+		} else {
+			gtk_text_buffer_set_text (txtbuffer, read_error->message, -1);
+			g_print ("%s\n", read_error->message);
+			g_error_free (read_error);
+		}
+
+		g_free (filename);
+		g_free (model_name);
+
+		gtk_text_view_set_buffer (txtmodel, txtbuffer);
 	}
 
 	gtk_dialog_set_default_response (prop_dialog->dialog, 1);
