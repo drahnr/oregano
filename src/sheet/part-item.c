@@ -57,12 +57,6 @@ static void part_item_moved(SheetItem *sheet_item);
 
 static void edit_properties (SheetItem *object);
 static void properties_cmd (GtkWidget *widget, SchematicView *sv);
-static gboolean edit_properties_unselect_row (GtkWidget *list,
-	GdkEventButton *event, GladeXML *gui);
-static gboolean edit_properties_select_row (GtkWidget *list,
-	GdkEventButton *event, GladeXML *gui);
-/*static void edit_properties_select_row (GtkTreeView *list, GtkTreePath *path,
-  GtkTreeViewColumn *column, GladeXML *gui);*/
 
 static void selection_changed (PartItem *item, gboolean select,
 	gpointer user_data);
