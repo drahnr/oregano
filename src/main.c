@@ -86,6 +86,18 @@ session_die (void)
 	quit ();
 }
 
+static gchar* convert_all = NULL;
+static gint convert_width  = 300;
+static gint convert_height = 300;
+
+static GOptionEntry options[] = {
+	{"convert", 'e', 0, G_OPTION_ARG_STRING, &convert_all, "Convert schematic to [PNG|SVG|PDF|PS] format", "[PNG|SVG|PDF|PS]"},
+	{"width", 'w', 0, G_OPTION_ARG_INT, &convert_width, "Set output width to W for converted schematic. Default 300", "W"},
+	{"height", 'h', 0, G_OPTION_ARG_INT, &convert_height, "Set output height to H for converted schematic. Default 300", "h"},
+	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &startup_files, "Special option that collects any remaining arguments for us"},
+	{NULL}
+};
+
 int
 main (int argc, char **argv)
 {
@@ -106,7 +118,8 @@ main (int argc, char **argv)
 
 	setlocale (LC_ALL, "");
 
-	context = g_option_context_new ("oregano");
+	context = g_option_context_new (_("[FILES]"));
+	g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
 
 	OreProgram = gnome_program_init (PACKAGE, VERSION, LIBGNOMEUI_MODULE,
 		argc, argv, GNOME_PARAM_GOPTION_CONTEXT, context,
@@ -153,31 +166,68 @@ main (int argc, char **argv)
 
 	schematic = NULL;
 
-	startup_files = argv;
 	if (startup_files) {
 		GError *error = NULL;
+		gint numfiles;
 
-		for (i = 1; i < argc; i++) {
+		numfiles = g_strv_length (startup_files);
+		for (i = 0; i < numfiles; i++) {
 			Schematic *new_schematic;
 			char *fname = startup_files[i];
 
 			new_schematic = schematic_read (fname, &error);
 			if (new_schematic) {
-				schematic_view = schematic_view_new (new_schematic);
+				if (!convert_all) {
+					schematic_view = schematic_view_new (new_schematic);
 
-				gtk_widget_show_all (schematic_view->toplevel);
-				schematic_set_filename (new_schematic, fname);
-				schematic_set_title (new_schematic, g_path_get_basename(fname));
+					gtk_widget_show_all (schematic_view->toplevel);
+					schematic_set_filename (new_schematic, fname);
+					schematic_set_title (new_schematic, g_path_get_basename(fname));
 
-				 /* Show something */
-				while (gtk_events_pending ())
-					gtk_main_iteration ();
-				schematic = new_schematic;
+					 /* Show something */
+					while (gtk_events_pending ())
+						gtk_main_iteration ();
+					schematic = new_schematic;
+				} else {
+					gchar *filename, *ext, *tmp;
+					int format = -1;
+
+					if (!g_ascii_strcasecmp (convert_all, "PDF")) {
+						format = 1;
+						ext = "pdf";
+					} else if (!g_ascii_strcasecmp (convert_all, "PS")) {
+						format = 2;
+						ext = "ps";
+					} else if (!g_ascii_strcasecmp (convert_all, "SVG")) {
+						format = 0;
+						ext = "svg";
+					} else if (!g_ascii_strcasecmp (convert_all, "PNG")) {
+						format = 3;
+						ext = "png";
+					} else {
+						g_print (_("Format %s not supported."));
+						exit (1);
+					}
+					tmp = g_filename_display_basename (startup_files[i]);
+					filename = g_strdup_printf ("%s.%s", tmp, ext);
+					g_print ("Converting %s to %s ...\n", startup_files[i], filename);
+					schematic_export (new_schematic, filename, convert_width, convert_height, 0, format);
+					g_object_unref (G_OBJECT (new_schematic));
+					g_free (filename);
+					g_free (tmp);
+				}
 			}
 		}
+		g_strfreev (startup_files);
+		startup_files = NULL;
 	}
 
 	g_option_context_free (context);
+
+	if (convert_all != NULL) {
+		g_print (_("Done.\n"));
+		return 0;
+	}
 
 	if (schematic == NULL){
 		schematic = schematic_new ();
