@@ -205,7 +205,7 @@ main (int argc, char **argv)
 						format = 3;
 						ext = "png";
 					} else {
-						g_print (_("Format %s not supported."));
+						g_print (_("Format '%s' not supported."), convert_all);
 						exit (1);
 					}
 					tmp = g_filename_display_basename (startup_files[i]);
