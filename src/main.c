@@ -91,7 +91,7 @@ static gint convert_width  = 300;
 static gint convert_height = 300;
 
 static GOptionEntry options[] = {
-	{"convert", 'e', 0, G_OPTION_ARG_STRING, &convert_all, "Convert schematic to [PNG|SVG|PDF|PS] format", "[PNG|SVG|PDF|PS]"},
+	{"convert", 'c', 0, G_OPTION_ARG_STRING, &convert_all, "Convert schematic to [PNG|SVG|PDF|PS] format", "[PNG|SVG|PDF|PS]"},
 	{"width", 'w', 0, G_OPTION_ARG_INT, &convert_width, "Set output width to W for converted schematic. Default 300", "W"},
 	{"height", 'h', 0, G_OPTION_ARG_INT, &convert_height, "Set output height to H for converted schematic. Default 300", "h"},
 	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &startup_files, "Special option that collects any remaining arguments for us"},
