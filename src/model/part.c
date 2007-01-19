@@ -1055,6 +1055,7 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	/* We don't want to rotate labels text, only the (x,y)
 	 * coordinate
 	 */
+	gdk_cairo_set_source_color (cr, &ctx->colors.labels);
 	for (labels = part_get_labels (part); labels; labels = labels->next) {
 		gdouble x, y;
 		PartLabel *label = (PartLabel *)labels->data;

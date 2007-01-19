@@ -238,12 +238,12 @@ schematic_init(Schematic *schematic)
 
 	priv->printoptions = NULL;
 	/* Colors */
-	priv->colors.components.red = 0;
-	priv->colors.components.green = 45874;
-	priv->colors.components.blue = 45874;
+	priv->colors.components.red = 65535;
+	priv->colors.components.green = 0;
+	priv->colors.components.blue = 0;
 	priv->colors.labels.red = 0;
-	priv->colors.labels.green = 0;
-	priv->colors.labels.blue = 0;
+	priv->colors.labels.green = 35723;
+	priv->colors.labels.blue = 35723;
 	priv->colors.wires.red = 0;
 	priv->colors.wires.green = 0;
 	priv->colors.wires.blue = 65535;
