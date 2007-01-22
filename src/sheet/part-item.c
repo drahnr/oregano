@@ -847,7 +847,6 @@ edit_properties (SheetItem *object)
 			g_free (str);
 		} else {
 			gtk_text_buffer_set_text (txtbuffer, read_error->message, -1);
-			g_print ("%s\n", read_error->message);
 			g_error_free (read_error);
 		}
 

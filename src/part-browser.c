@@ -364,7 +364,6 @@ part_browser_toggle_show (SchematicView *schematic_view)
 		
 	if (browser == NULL){
 		part_browser_create (schematic_view);
-		g_print ("La primera ves creo el part browser\n");
 	} else {
 		browser->hidden = !(browser->hidden);
 		if (browser->hidden){

@@ -635,7 +635,6 @@ void wire_delete (Wire *wire)
 {
 	g_return_if_fail (IS_WIRE (wire));
 
-	g_print ("Listo\n");
 	g_signal_emit_by_name (G_OBJECT (wire), "delete");
 }
 
