@@ -3,6 +3,7 @@ Import ('CEnv')
 
 resources = Split ("""
 	12AX7A.model
+	1N4148.model
 	1N750.model
 	DiodeBridge.model
 	NPN.model
