@@ -26,7 +26,7 @@
 #include <math.h>
 #include "gplot.h"
 
-#define BORDER_SIZE 35
+#define BORDER_SIZE 50
 
 static void g_plot_class_init (GPlotClass* class);
 static void g_plot_init (GPlot* plot);
