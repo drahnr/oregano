@@ -234,8 +234,10 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		}
 		g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (set_engine_name), s);
 
-		if (oregano.engine == i)
+		if (oregano.engine == i) {
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
+			set_engine_name(G_OBJECT (button), s);
+		}
 	}
 	gtk_tooltips_enable (image_tooltips);
 
