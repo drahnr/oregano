@@ -93,6 +93,12 @@ apply_callback (GtkWidget *w, Settings *s)
 	s->pbox = NULL;
 }
 
+static gboolean
+delete_event_callback (GtkWidget *w, GdkEvent *event, Settings *s)
+{
+    apply_callback(w, s);
+}
+
 static void
 set_engine_name (GtkWidget *w, Settings *s)
 {
@@ -154,6 +160,8 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		oregano_error (_("Could not create settings dialog"));
 		return;
 	}
+	g_signal_connect (G_OBJECT (w), "delete_event",
+			  G_CALLBACK (delete_event_callback), s);
 
 	pbox = toplevel;
 	s->pbox = GTK_WIDGET (pbox);
