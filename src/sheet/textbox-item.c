@@ -613,6 +613,20 @@ create_textbox_event (Sheet *sheet, GdkEvent *event, SchematicView *sv)
 	return TRUE;
 }
 
+	void
+textbox_item_cancel_listen (SchematicView *sv)
+{
+	Sheet *sheet;
+
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	sheet = schematic_view_get_sheet (sv);
+
+	sheet->state = SHEET_STATE_NONE;
+	g_signal_handlers_disconnect_by_func (G_OBJECT (sheet), G_CALLBACK(create_textbox_event), sv);
+}
+
 void
 textbox_item_listen (SchematicView *sv)
 {

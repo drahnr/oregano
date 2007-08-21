@@ -59,8 +59,9 @@ typedef struct {
 
 GType        textbox_item_get_type (void);
 TextboxItem *textbox_item_new (Sheet *sheet, Textbox *textbox);
-void         textbox_item_signal_connect_placed (TextboxItem *textbox_item,
-	SchematicView *sv);
+void         textbox_item_signal_connect_placed (TextboxItem *textbox_item, SchematicView *sv);
+void         textbox_item_cancel_listen (SchematicView *sv);
+void         textbox_item_listen (SchematicView *sv);
 
 
 #endif

@@ -2140,6 +2140,8 @@ set_tool (SchematicView *sv, SchematicTool tool)
 		}
 		break;
 	case SCHEMATIC_TOOL_TEXT:
+		textbox_item_cancel_listen (sv);
+		break;
 	default:
 		break;
 	}
