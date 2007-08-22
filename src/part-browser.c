@@ -484,7 +484,7 @@ part_browser_create (SchematicView *schematic_view)
 	br = g_new0 (Browser, 1);
 	br->preview = NULL;
 	br->schematic_view = schematic_view;
-	br->hidden = TRUE;
+	br->hidden = FALSE;
 
 	schematic_view_set_browser(schematic_view, br);
 
