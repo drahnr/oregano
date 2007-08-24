@@ -56,7 +56,6 @@ static void part_item_destroy(GtkObject *object);
 static void part_item_moved(SheetItem *sheet_item);
 
 static void edit_properties (SheetItem *object);
-static void properties_cmd (GtkWidget *widget, SchematicView *sv);
 
 static void selection_changed (PartItem *item, gboolean select,
 	gpointer user_data);
@@ -122,6 +121,7 @@ struct _PartItemPriv {
 typedef struct {
 	GtkDialog *dialog;
 	PartItem  *part_item;
+
 	/* List of GtkEntry's */
 	GList *widgets;
 } PartPropDialog;
@@ -183,6 +183,8 @@ GtkAnchorType part_item_get_anchor_from_part (Part *part)
 		return GTK_ANCHOR_SOUTH_WEST;
 	if ((anchor_v == ANCHOR_EAST) && (anchor_h == ANCHOR_SOUTH))
 		return GTK_ANCHOR_SOUTH_EAST;
+
+	return GTK_ANCHOR_SOUTH_EAST;
 }
 
 GType
@@ -212,7 +214,6 @@ part_item_get_type ()
 static void
 part_item_class_init (PartItemClass *part_item_class)
 {
-	GError *error = NULL;
 	GObjectClass *object_class;
 	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
@@ -498,7 +499,7 @@ part_item_update_node_label (PartItem *item)
 {
 	PartItemPriv *priv;
 	Part *part;
-	GSList *labels, *label_items;
+	GSList *labels;
 	GnomeCanvasItem *canvas_item;
 	Pin *pins;
 	gint num_pins, i;
@@ -578,10 +579,9 @@ static void
 edit_properties_punta (PartItem *item)
 {
 	GSList *properties;
-	Sheet *sheet;
 	PartItemPriv *priv;
 	Part *part;
-	char *msg, *value, *name;
+	char *msg;
 	GladeXML *gui;
 	GtkRadioButton *radio_v, *radio_c;
 	GtkRadioButton *ac_r, *ac_m, *ac_i, *ac_p;
@@ -708,16 +708,15 @@ static void
 edit_properties (SheetItem *object)
 {
 	GSList *properties;
-	Sheet *sheet;
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
-	char *internal, *msg, *value, *name;
+	char *internal, *msg;
 	GladeXML *gui;
 	GtkTable *prop_table;
 	GtkNotebook *notebook;
 	gint response, y = 0;
-	gboolean got_iter, has_model;
+	gboolean has_model;
 	gchar *model_name = NULL;
 
 	g_return_if_fail (object != NULL);
@@ -854,28 +853,14 @@ edit_properties (SheetItem *object)
 }
 
 static void
-properties_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	GList *list;
-
-	list = schematic_view_get_selection (sv);
-	if ((list != NULL) && IS_PART_ITEM (list->data))
-		edit_properties (list->data);
-}
-
-static void
 part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
 	double affine[6];
-	double x1, y1, x2, y2, x0, y0;
-	double left, top, right, bottom, dx, dy;
 	GList *list;
 	GSList *label_items;
 	GtkAnchorType anchor;
-	ArtPoint src, dst;
 	GnomeCanvasGroup *group;
 	GnomeCanvasItem *canvas_item;
-	ArtPoint *old = NULL;
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
@@ -957,9 +942,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	PartItemPriv *priv;
 	Part *part;
 	IDFlip flip;
-	double affine[6], x1, y1, x2, y2, left, top, right, bottom;
-	ArtPoint src, dst;
-	gdouble text_heigth, text_width;
+	double affine[6];
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_PART_ITEM (sheet_item));

@@ -233,7 +233,6 @@ sheet_item_set_property (GObject *object, guint prop_id, const GValue *value,
 {
 	SheetItem *sheet_item;
 	SheetPos pos;
-	GError *error = NULL;
 
 	sheet_item = SHEET_ITEM (object);
 
@@ -304,60 +303,6 @@ sheet_item_destroy (GtkObject *object)
 }
 
 static void
-copy_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	schematic_view_copy_selection (sv);
-}
-
-static void
-cut_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	schematic_view_cut_selection (sv);
-}
-
-static void
-delete_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	schematic_view_delete_selection (sv);
-}
-
-static void
-rotate_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	schematic_view_rotate_selection (sv);
-}
-
-static void
-flip_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	schematic_view_flip_selection (sv, TRUE);
-}
-
-static void
-flip_vertical_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	schematic_view_flip_selection (sv, FALSE);
-}
-
-static void
 sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event)
 {
 	GtkWidget *menu;
@@ -422,7 +367,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 	static double bb_x1, bb_y1, bb_x2, bb_y2;
 	int cx1, cy1, cx2, cy2;
 	/* The sheet's width and the its viewport's width. */
-	int sheet_width, sheet_height;
+	guint sheet_width, sheet_height;
 
 	g_return_val_if_fail (sheet_item != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET_ITEM (sheet_item), FALSE);
@@ -798,7 +743,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 	int cx1, cy1, cx2, cy2;
 
 	/* The sheet's width and the its viewport's width. */
-	int sheet_width, sheet_height;
+	guint sheet_width, sheet_height;
 
 	g_return_val_if_fail (sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
@@ -1109,10 +1054,7 @@ sheet_item_reparent (SheetItem *object, GnomeCanvasGroup *group)
 
 	gnome_canvas_item_reparent (GNOME_CANVAS_ITEM (object), group);
 
-	g_object_get (G_OBJECT (object),
-				  "x", &x2,
-				  "y", &y2,
-				  NULL);
+	g_object_get (G_OBJECT (object), "x", &x2, "y", &y2, NULL);
 
 	gnome_canvas_item_i2w (GNOME_CANVAS_ITEM (object), &x2, &y2);
 
