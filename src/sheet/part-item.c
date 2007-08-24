@@ -129,21 +129,12 @@ typedef struct {
 static PartPropDialog *prop_dialog = NULL;
 static SheetItemClass *parent_class = NULL;
 
-/*
- * This is the lower part of the object popup menu. It contains actions
- * that are specific for parts.
- */
-static GnomeUIInfo part_popup_menu [] = {
-	GNOMEUIINFO_SEPARATOR,
-
-	{
-		GNOME_APP_UI_ITEM,
-		N_("Properties"), N_("Edit the part's properties"),
-		properties_cmd, NULL, NULL, GNOME_APP_PIXMAP_STOCK,
-		GTK_STOCK_PROPERTIES, 0, 0
-	},
-	GNOMEUIINFO_END
-};
+static const char *part_item_context_menu =
+"<ui>"
+"  <popup name='ItemMenu'>"
+"    <menuitem action='ObjectProperties'/>"
+"  </popup>"
+"</ui>";
 
 enum {
 	ANCHOR_NORTH,
@@ -221,6 +212,7 @@ part_item_get_type ()
 static void
 part_item_class_init (PartItemClass *part_item_class)
 {
+	GError *error = NULL;
 	GObjectClass *object_class;
 	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
@@ -229,7 +221,6 @@ part_item_class_init (PartItemClass *part_item_class)
 	gtk_object_class = GTK_OBJECT_CLASS(part_item_class);
 	sheet_item_class = SHEET_ITEM_CLASS(part_item_class);
 	parent_class = g_type_class_peek_parent(part_item_class);
-
 
 	object_class->set_property = part_item_set_property;
 	object_class->get_property = part_item_get_property;
@@ -291,11 +282,6 @@ part_item_class_init (PartItemClass *part_item_class)
 
 	sheet_item_class->place = part_item_place;
 	sheet_item_class->place_ghost = part_item_place_ghost;
-
-	sheet_item_class->context_menu = g_new0 (SheetItemMenu, 1);
-	sheet_item_class->context_menu->menu = part_popup_menu;
-	sheet_item_class->context_menu->size =
-		sizeof (part_popup_menu) / sizeof (part_popup_menu[0]);
 }
 
 static void
@@ -309,6 +295,8 @@ part_item_init (PartItem *item)
 	priv->cache_valid = FALSE;
 
 	item->priv = priv;
+
+	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu);
 }
 
 static void

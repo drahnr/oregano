@@ -93,13 +93,13 @@ typedef struct {
 static TextboxPropDialog *prop_dialog = NULL;
 static SheetItemClass *textbox_item_parent_class = NULL;
 
-static GnomeUIInfo textbox_popup_menu [] = {
-	GNOMEUIINFO_SEPARATOR,
-
-	{ GNOME_APP_UI_ITEM, N_("Edit..."), N_("Edit the text"), edit_cmd,
-	  NULL, NULL, GNOME_APP_PIXMAP_STOCK, GTK_STOCK_PROPERTIES, 0, 0 },
-
-	GNOMEUIINFO_END };
+/* Use EDIT!! */
+static const char *textbox_item_context_menu =
+"<ui>"
+"  <popup name='ItemMenu'>"
+"    <menuitem action='EditText'/>"
+"  </popup>"
+"</ui>";
 
 enum {
 	TEXTBOX_ITEM_ARG_0,
@@ -173,11 +173,6 @@ textbox_item_class_init (TextboxItemClass *textbox_item_class)
 	sheet_item_class->edit_properties = edit_textbox;
 	sheet_item_class->place = textbox_item_place;
 	sheet_item_class->place_ghost = textbox_item_place_ghost;
-
-	sheet_item_class->context_menu = g_new0 (SheetItemMenu, 1);
-	sheet_item_class->context_menu->menu = textbox_popup_menu;
-	sheet_item_class->context_menu->size =
-		sizeof (textbox_popup_menu) / sizeof (textbox_popup_menu[0]);
 }
 
 static void
@@ -190,6 +185,8 @@ textbox_item_init (TextboxItem *item)
 
 	priv->highlight = FALSE;
 	priv->cache_valid = FALSE;
+
+	sheet_item_add_menu (SHEET_ITEM (item), textbox_item_context_menu);
 }
 
 /*static void

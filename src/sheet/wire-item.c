@@ -156,8 +156,6 @@ wire_item_class_init (WireItemClass *wire_item_class)
 	sheet_item_class->selection_changed = (gpointer) selection_changed;
 	sheet_item_class->place = wire_item_place;
 	sheet_item_class->place_ghost = wire_item_place_ghost;
-
-	sheet_item_class->context_menu = NULL;
 }
 
 static void

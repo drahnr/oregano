@@ -120,6 +120,7 @@ struct _SchematicViewPriv {
 
 	gboolean empty;
 
+	GtkActionGroup *action_group;
 	GtkUIManager *ui_manager;
 
 	GtkWidget *floating_part_browser;
@@ -1176,7 +1177,7 @@ schematic_view_new (Schematic *schematic)
 
 	gtk_box_pack_start (GTK_BOX (hbox), part_browser_create (sv), FALSE, FALSE, 0);
 
-	action_group = gtk_action_group_new ("MenuActions");
+	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
 	gtk_action_group_add_actions (action_group, sc_menu_file, G_N_ELEMENTS (sc_menu_file), sv);
 	gtk_action_group_add_actions (action_group, sc_menu_edit, G_N_ELEMENTS (sc_menu_edit), sv);
 	gtk_action_group_add_actions (action_group, sc_menu_tools, G_N_ELEMENTS (sc_menu_tools), sv);
@@ -1372,6 +1373,7 @@ item_data_added_callback (Schematic *schematic, ItemData *data,
 	if (item != NULL) {
 			sheet_item_place (item, sv);
 
+			g_object_set (G_OBJECT (item), "action_group", sv->priv->action_group, NULL);
 			/*
 			 * Hook onto the destroy signal so that we can perform some
 			 * cleaning magic before destroying the item (remove it from
@@ -1391,7 +1393,8 @@ item_data_added_callback (Schematic *schematic, ItemData *data,
 
 			sv->priv->items = g_list_prepend (sv->priv->items, item);
 			sv->priv->empty = FALSE;
-			schematic_view_reset_tool (sv);
+			if (sv->priv->tool == SCHEMATIC_TOOL_PART)
+				schematic_view_reset_tool (sv);
 	}
 }
 

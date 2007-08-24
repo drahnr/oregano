@@ -48,9 +48,7 @@ static void sheet_item_get_property (GObject *object, guint prop_id,
 
 static void sheet_item_destroy (GtkObject *object);
 
-static void sheet_item_run_menu (SheetItem *item, SchematicView *sv,
-	GdkEventButton *event,
-	SheetItemMenu *context_menu);
+static void sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event);
 
 static GnomeCanvasGroupClass *sheet_item_parent_class = NULL;
 extern GObject *clipboard_data_get_item_data ();
@@ -60,12 +58,15 @@ struct _SheetItemPriv {
 	guint selected : 1;
 	guint preserve_selection : 1;
 	ItemData *data;
+	GtkActionGroup *action_group;
+	GtkUIManager *ui_manager;
 };
 
 enum {
 	ARG_0,
 	ARG_DATA,
-	ARG_SHEET
+	ARG_SHEET,
+	ARG_ACTION_GROUP
 };
 
 enum {
@@ -79,6 +80,23 @@ enum {
 };
 
 static guint so_signals[LAST_SIGNAL] = { 0 };
+/*
+ * This is the upper part of the object popup menu. It contains actions
+ * that are the same for all objects, e.g. parts and wires.
+ */
+static const char *sheet_item_context_menu =
+"<ui>"
+"  <popup name='ItemMenu'>"
+"    <menuitem action='Copy'/>"
+"    <menuitem action='Cut'/>"
+"    <menuitem action='Delete'/>"
+"    <separator/>"
+"    <menuitem action='Rotate'/>"
+"    <menuitem action='FlipHorizontally'/>"
+"    <menuitem action='FlipVertically'/>"
+"    <separator/>"
+"  </popup>"
+"</ui>";
 
 GType
 sheet_item_get_type ()
@@ -130,8 +148,12 @@ sheet_item_class_init (SheetItemClass *sheet_item_class)
 				g_param_spec_pointer("sheet", "SheetItem::sheet", "the sheet",
 									 G_PARAM_READABLE)
 	);
-
-	sheet_item_class->context_menu = NULL;
+	g_object_class_install_property(
+				object_class,
+				ARG_ACTION_GROUP,
+				g_param_spec_pointer("action_group", "SheetItem::action_group", "action group",
+									 G_PARAM_READWRITE)
+	);
 
 	gtk_object_class->destroy = sheet_item_destroy;
 
@@ -188,10 +210,21 @@ sheet_item_class_init (SheetItemClass *sheet_item_class)
 static void
 sheet_item_init (SheetItem *item)
 {
+	GError *error = NULL;
+
 	item->priv = g_new0 (SheetItemPriv, 1);
 	item->priv->selected = FALSE;
 	item->priv->preserve_selection = FALSE;
 	item->priv->data = NULL;
+	item->priv->ui_manager = NULL;
+	item->priv->action_group = NULL;
+
+	item->priv->ui_manager = gtk_ui_manager_new ();
+	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, sheet_item_context_menu, -1, &error)) {
+		g_message ("building menus failed: %s", error->message);
+		g_error_free (error);
+		exit (EXIT_FAILURE);
+	}
 }
 
 static void
@@ -200,6 +233,7 @@ sheet_item_set_property (GObject *object, guint prop_id, const GValue *value,
 {
 	SheetItem *sheet_item;
 	SheetPos pos;
+	GError *error = NULL;
 
 	sheet_item = SHEET_ITEM (object);
 
@@ -216,6 +250,9 @@ sheet_item_set_property (GObject *object, guint prop_id, const GValue *value,
 			"y", pos.y,
 			NULL);
 		break;
+	case ARG_ACTION_GROUP:
+		sheet_item->priv->action_group = g_value_get_pointer (value);
+		gtk_ui_manager_insert_action_group (sheet_item->priv->ui_manager, sheet_item->priv->action_group, 0);
 	default:
 		break;
 	}
@@ -235,6 +272,9 @@ sheet_item_get_property (GObject *object, guint prop_id, GValue *value,
 		break;
 	case ARG_SHEET:
 		g_value_set_pointer (value, sheet_item_get_sheet (sheet_item));
+		break;
+	case ARG_ACTION_GROUP:
+		g_value_set_pointer (value, sheet_item->priv->action_group);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(sheet_item, prop_id, spec);
@@ -317,83 +357,14 @@ flip_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 	schematic_view_flip_selection (sv, FALSE);
 }
 
-/*
- * This is the upper part of the object popup menu. It contains actions
- * that are the same for all objects, e.g. parts and wires.
- */
-static const GnomeUIInfo object_popup_menu [] = {
-	{ GNOME_APP_UI_ITEM, N_("Copy"), N_("Copy the object to the clipboard"),
-	  copy_cmd, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, GTK_STOCK_COPY, 0, 0 },
-	{ GNOME_APP_UI_ITEM, N_("Cut"), N_("Cut the object to the clipboard"),
-	  cut_cmd, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, GTK_STOCK_CUT, 0, 0 },
-	{ GNOME_APP_UI_ITEM, N_("Delete"), N_("Delete the object"),
-	  delete_cmd, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, GTK_STOCK_DELETE, 0, 0 },
-
-	GNOMEUIINFO_SEPARATOR,
-
-	{ GNOME_APP_UI_ITEM, N_("Rotate"),
-	  N_("Rotate the selected objects 90 degrees clockwise"),
-	  rotate_cmd, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE, 0, 0 },
-
-	{ GNOME_APP_UI_ITEM, N_("Flip _horizontally"),
-	  N_("Flip the selection horizontally"),
-	  flip_horizontal_cmd, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE, 0, 0 },
-
-	{ GNOME_APP_UI_ITEM, N_("Flip _vertically"),
-	  N_("Flip the selection vertically"),
-	  flip_vertical_cmd, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, STOCK_PIXMAP_ROTATE, 0, 0 },
-
-	GNOMEUIINFO_END
-};
-
 static void
-sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event,
-					 SheetItemMenu *context_menu)
+sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event)
 {
 	GtkWidget *menu;
-	int i, top_size, bottom_size;
-	GnomeUIInfo *popup_menu = NULL;
 
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	menu = gtk_ui_manager_get_widget (item->priv->ui_manager, "/ItemMenu");
 
-	/*
-	 * Calculate the number of menu items in the general top part of the
-	 * menu. Don't count the GNOMEUIINFO_END.
-	 */
-	top_size = sizeof (object_popup_menu) / sizeof (object_popup_menu[0]) - 1;
-
-	if (context_menu)
-		bottom_size = context_menu->size;
-	else
-		bottom_size = 1;
-
-	popup_menu = g_malloc0 (sizeof (GnomeUIInfo) * (top_size + bottom_size));
-
-	for (i = 0; i < top_size; i++)
-		popup_menu[i] = object_popup_menu[i];
-
-	if (context_menu) {
-		for (i = 0; i < bottom_size; i++)
-			popup_menu[top_size + i] = context_menu->menu[i];
-	} else {
-		/*
-		 * Fill in the uiinfo_end element.
-		 */
-		popup_menu[top_size] = object_popup_menu[top_size];
-	}
-
-	menu = GTK_WIDGET (gnome_popup_menu_new (popup_menu));
-	gnome_popup_menu_do_popup_modal (menu, NULL, NULL, event, sv, GTK_WIDGET(sv->toplevel));
-	g_free (popup_menu);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button, event->time);
 }
 
 static int
@@ -500,11 +471,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 				sheet_item_select (sheet_item, TRUE);
 
 			class = SHEET_ITEM_CLASS (GTK_OBJECT_GET_CLASS(sheet_item));
-			sheet_item_run_menu (
-				sheet_item,
-				sv,
-				(GdkEventButton *) event,
-				class->context_menu);
+			sheet_item_run_menu ( sheet_item, sv, (GdkEventButton *) event);
 			break;
 		default:
 			return FALSE;
@@ -1278,3 +1245,13 @@ sheet_item_place_ghost (SheetItem *item, SchematicView *sv)
 		si_class->place_ghost (item, sv);
 }
 
+void
+sheet_item_add_menu (SheetItem *item, const char *menu)
+{
+	GError *error = NULL;
+	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, menu, -1, &error)) {
+		g_message ("building menus failed: %s", error->message);
+		g_error_free (error);
+		exit (EXIT_FAILURE);
+	}
+}

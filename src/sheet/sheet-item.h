@@ -45,7 +45,6 @@
 typedef struct _SheetItem SheetItem;
 typedef struct _SheetItemClass SheetItemClass;
 typedef struct _SheetItemPriv SheetItemPriv;
-typedef struct _SheetItemMenu SheetItemMenu;
 
 #include "schematic-view.h"
 #include "sheet.h"
@@ -71,21 +70,11 @@ struct _SheetItemClass {
 	void	 (*place_ghost)		 (SheetItem *item, SchematicView *sv);
 
 	/*
-	 * Class variables.
-	 */
-	SheetItemMenu *context_menu;
-
-	/*
 	 * Signal handlers.
 	 */
 	void	 (*moved)			 (SheetItem *item);
 	void	 (*selection_changed)(SheetItem *item);
 	void	 (*mouse_over)		 (SheetItem *item);
-};
-
-struct _SheetItemMenu {
-	GnomeUIInfo *menu;
-	int			 size;
 };
 
 GType sheet_item_get_type (void);
@@ -132,10 +121,8 @@ void sheet_item_select_in_area (SheetItem *item,
 								SheetPos  *p1,
 								SheetPos  *p2);
 
-void sheet_item_place (SheetItem	  *item,
-					   SchematicView  *sv);
-
-void sheet_item_place_ghost (SheetItem		*item,
-							 SchematicView	*sv);
+void sheet_item_place (SheetItem *item, SchematicView *sv);
+void sheet_item_place_ghost (SheetItem *item, SchematicView *sv);
+void sheet_item_add_menu (SheetItem *item, const char *menu); 
 
 #endif
