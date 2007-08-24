@@ -1205,6 +1205,7 @@ schematic_view_new (Schematic *schematic)
 	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
 
 	toolbar = gtk_ui_manager_get_widget (ui_manager, "/StandartToolbar");
+	gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 0);
 
 	// Fill the window
