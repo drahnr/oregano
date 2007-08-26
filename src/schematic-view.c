@@ -552,9 +552,9 @@ copy_cmd (GtkWidget *widget, SchematicView *sv)
 	}
 
 	if (clipboard_is_empty ())
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/EditMenu/Paste"), FALSE);
+		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
 	else
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/EditMenu/Paste"), TRUE);
+		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
 }
 
 void
@@ -577,9 +577,9 @@ cut_cmd (GtkWidget *widget, SchematicView *sv)
 	schematic_view_delete_selection (sv);
 
 	if (clipboard_is_empty ())
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/EditMenu/Paste"), FALSE);
+		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
 	else
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/EditMenu/Paste"), TRUE);
+		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
 }
 
 void
@@ -854,47 +854,27 @@ zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 }
 
 static void
-zoom_50_cmd (GtkWidget *widget, SchematicView *sv)
+zoom_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
 {
-	g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 0.50, NULL);
+	switch (gtk_radio_action_get_current_value (current)) {
+		case 0:
+			g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 0.50, NULL);
+			break;
+		case 1:
+			g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 0.75, NULL);
+			break;
+		case 2:
+			g_object_set(G_OBJECT (sv->priv->sheet), "zoom", 1.0, NULL);
+			break;
+		case 3:
+			g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 1.25, NULL);
+			break;
+		case 4:
+			g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 1.5, NULL);
+		break;
+	}
 	zoom_check (sv);
 }
-
-static void
-zoom_75_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 0.75, NULL);
-	zoom_check (sv);
-}
-
-static void
-zoom_100_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_object_set(G_OBJECT (sv->priv->sheet), "zoom", 1.0, NULL);
-	zoom_check (sv);
-}
-
-static void
-zoom_125_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 1.25, NULL);
-	zoom_check (sv);
-}
-
-static void
-zoom_150_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	g_object_set(G_OBJECT(sv->priv->sheet), "zoom", 1.5, NULL);
-	zoom_check (sv);
-}
-
-#if 0
-static void
-zoom_custom_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	return;
-}
-#endif
 
 static void
 simulate_cmd (GtkWidget *widget, SchematicView *sv)
@@ -1178,15 +1158,10 @@ schematic_view_new (Schematic *schematic)
 	gtk_box_pack_start (GTK_BOX (hbox), part_browser_create (sv), FALSE, FALSE, 0);
 
 	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
-	gtk_action_group_add_actions (action_group, sc_menu_file, G_N_ELEMENTS (sc_menu_file), sv);
-	gtk_action_group_add_actions (action_group, sc_menu_edit, G_N_ELEMENTS (sc_menu_edit), sv);
-	gtk_action_group_add_actions (action_group, sc_menu_tools, G_N_ELEMENTS (sc_menu_tools), sv);
-	gtk_action_group_add_actions (action_group, sc_menu_zoom, G_N_ELEMENTS (sc_menu_zoom), sv);
-	gtk_action_group_add_actions (action_group, sc_menu_view, G_N_ELEMENTS (sc_menu_view), sv);
-	gtk_action_group_add_actions (action_group, sc_menu_help, G_N_ELEMENTS (sc_menu_help), sv);
-	gtk_action_group_add_actions (action_group, sc_actions_view, G_N_ELEMENTS (sc_actions_view), sv);
-	gtk_action_group_add_radio_actions (action_group, sc_actions_tools, G_N_ELEMENTS (sc_actions_tools), 0, G_CALLBACK (tool_cmd), sv);
-	gtk_action_group_add_toggle_actions (action_group, sc_menu_toggle, G_N_ELEMENTS (sc_menu_toggle), sv);
+	gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), sv);
+	gtk_action_group_add_radio_actions (action_group, zoom_entries, G_N_ELEMENTS (zoom_entries), 2, G_CALLBACK (zoom_cmd), sv);
+	gtk_action_group_add_radio_actions (action_group, tools_entries, G_N_ELEMENTS (tools_entries), 0, G_CALLBACK (tool_cmd), sv);
+	gtk_action_group_add_toggle_actions (action_group, toggle_entries, G_N_ELEMENTS (toggle_entries), sv);
 
 	priv->ui_manager = ui_manager = gtk_ui_manager_new ();
 	gtk_ui_manager_insert_action_group (ui_manager, action_group, 0);
@@ -1195,7 +1170,7 @@ schematic_view_new (Schematic *schematic)
 	gtk_window_add_accel_group (GTK_WINDOW (sv->toplevel), accel_group);
 
 	error = NULL;
-	if (!gtk_ui_manager_add_ui_from_string (ui_manager, sc_menu_file_description, -1, &error)) {
+	if (!gtk_ui_manager_add_ui_from_string (ui_manager, ui_description, -1, &error)) {
 			g_message ("building menus failed: %s", error->message);
 			g_error_free (error);
 			exit (EXIT_FAILURE);
@@ -1222,8 +1197,8 @@ schematic_view_new (Schematic *schematic)
 	setup_dnd (sv);
 
 	/* Set default sensitive for items */
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/EditMenu/ObjectProperties"), FALSE);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/EditMenu/Paste"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
 
 	/*
 	 * Set the window size to something reasonable. Stolen from Gnumeric.
@@ -1351,9 +1326,9 @@ item_selection_changed_callback (SheetItem *item, gboolean selected,
 
 	length = g_list_length (sv->priv->sheet->priv->selected_objects);
 	if (length && item_data_has_properties (sheet_item_get_data (item)))
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/EditMenu/ObjectProperties"), TRUE);
+		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), TRUE);
 	else
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/EditMenu/ObjectProperties"), FALSE);
+		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
 }
 
 /**
@@ -2055,7 +2030,7 @@ reset_tool_cb (Sheet *sheet, SchematicView *sv)
 {
 	set_tool (sv, SCHEMATIC_TOOL_ARROW);
 
-	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandartToolbar/ArrowTool")), 0);
+	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandartToolbar/Arrow")), 0);
 }
 
 gpointer

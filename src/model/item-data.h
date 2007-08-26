@@ -36,7 +36,6 @@
  *
  */
 
-#include <gnome.h>
 #include <cairo/cairo.h>
 #include "sheet-pos.h"
 #include "schematic-print-context.h"
@@ -141,8 +140,7 @@ gboolean item_data_has_properties (ItemData *date);
 void item_data_set_property (ItemData *data, char *property, char *value);
 /** Print Item data
  *
- * This method implement the GnomePrint stuff for schematic print of
- * an item.
+ * This method implement the Cairo stuff for schematic print of an item.
  */
 void item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 

@@ -92,8 +92,8 @@ static const char *sheet_item_context_menu =
 "    <menuitem action='Delete'/>"
 "    <separator/>"
 "    <menuitem action='Rotate'/>"
-"    <menuitem action='FlipHorizontally'/>"
-"    <menuitem action='FlipVertically'/>"
+"    <menuitem action='FlipH'/>"
+"    <menuitem action='FlipV'/>"
 "    <separator/>"
 "  </popup>"
 "</ui>";
