@@ -17,7 +17,6 @@ Docdir: 	%{prefix}/doc
 Requires: libgnome2 >= 2.0.0
 Requires: libxml2 >= 2.0.0
 Requires: libglade2 >= 2.0
-Requires: libgnomeprint >= 2.2
 
 %description
 Oregano, schematic capture and simulation of electronic circuits.

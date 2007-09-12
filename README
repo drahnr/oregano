@@ -8,7 +8,7 @@ Spice, or GNUcap or the new generation ngspice.
 Oregano is licensed under the terms of the GNU GPL included in the
 file COPYING.
 
-You need libgnome2, libglade2, libgnomeprintui2, libgnomeui2, libgtksourceview1.0
+You need libgnome2, libglade2, libgnomeui2, libgtksourceview1.0
 and libxml2 to run Oregano. 
 They can be found at ftp.gnome.org or mirrors. You must do 'scons install' 
 before running Oregano. 
