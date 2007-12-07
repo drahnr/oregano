@@ -756,6 +756,7 @@ part_copy (ItemData *dest, ItemData *src)
 	src_part = PART (src);
 
 	dest_part->priv->rotation = src_part->priv->rotation;
+	dest_part->priv->flip = src_part->priv->flip;
 	dest_part->priv->num_pins = src_part->priv->num_pins;
 	dest_part->priv->library = src_part->priv->library;
 	dest_part->priv->name = g_strdup (src_part->priv->name);
@@ -994,14 +995,32 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	gdk_cairo_set_source_color (cr, &ctx->colors.components);
 	rotation = part_get_rotation (part);
 	if (rotation != 0) {
-		cairo_translate (cr, x0, y0);
-		cairo_rotate (cr, rotation*M_PI/180);
-		cairo_translate (cr, -x0, -y0);
-	}
+	  cairo_translate (cr, x0, y0);
 
-	flip = part_get_flip (part);
-	if (flip) {
-		cairo_scale (cr, flip & ID_FLIP_HORIZ, flip & ID_FLIP_VERT);
+	  flip = part_get_flip (part);
+	  if (flip) {
+	    if ((flip & ID_FLIP_HORIZ) && !(flip & ID_FLIP_VERT))
+	      cairo_scale (cr, -1, 1);
+	    if (!(flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
+	      cairo_scale (cr, 1, -1);
+	    if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
+	      rotation+=180;
+	  }
+
+	  cairo_rotate (cr, rotation*M_PI/180);
+	  cairo_translate (cr, -x0, -y0);
+	} else {
+	  flip = part_get_flip (part);
+	  if (flip) {
+	    cairo_translate (cr, x0, y0);	  
+	    if ((flip & ID_FLIP_HORIZ) && !(flip & ID_FLIP_VERT))
+	      cairo_scale (cr, -1, 1);
+	    if (!(flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
+	      cairo_scale (cr, 1, -1);
+	    if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
+	      cairo_scale(cr,-1,-1);
+	    cairo_translate (cr, -x0, -y0);
+	  }
 	}
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {

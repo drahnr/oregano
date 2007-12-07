@@ -852,10 +852,22 @@ edit_properties (SheetItem *object)
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
+/* Matrix Multiplication
+   Tried art_affine_multiply, but that didn't work */
+static void matrix_mult(double* a,double* b,double* c){
+  c[0]=a[0]*b[0]+a[1]*b[2];
+  c[2]=a[2]*b[0]+a[3]*b[2];
+  c[1]=a[0]*b[1]+a[1]*b[3];
+  c[3]=a[2]*b[1]+a[3]*b[3];
+}
+
 static void
 part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
 	double affine[6];
+	double affine_scale[6];
+	double affine_rotate[6];
+
 	GList *list;
 	GSList *label_items;
 	GtkAnchorType anchor;
@@ -874,7 +886,28 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	priv = item->priv;
 
-	art_affine_rotate (affine, angle);
+	if (angle!=0) {
+	// check if the part is flipped
+	  if ((part->priv->flip & 1) && (part->priv->flip & 2)) {
+	    // Nothing to do in this case
+	    art_affine_rotate (affine, angle);
+	  } else {
+	    if ((part->priv->flip & 1) || (part->priv->flip & 2)) {
+	      // mirror over point (0,0)
+	      art_affine_scale(affine_scale,-1,-1);
+	      art_affine_rotate(affine_rotate,angle);
+	      /* Matrix multiplication */
+	      /* Don't use art_affine_multiply() here !*/
+	      matrix_mult(affine_rotate,affine_scale,affine);
+	      affine[4]=affine_rotate[4];
+	      affine[5]=affine_rotate[5];
+	    } else
+	      art_affine_rotate (affine, angle);
+	  }
+	} else {
+	  // angle==0: Nothing has changed, therefore do nothing
+	  art_affine_scale(affine,1,1);
+	}
 
 	for (list = group->item_list; list; list = list->next) {
 		canvas_item = GNOME_CANVAS_ITEM (list->data);
@@ -943,6 +976,9 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	Part *part;
 	IDFlip flip;
 	double affine[6];
+	double affine_rotate[6];
+	double affine_scale[6];
+	int angle;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_PART_ITEM (sheet_item));
@@ -958,6 +994,27 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 		art_affine_scale (affine, -1, 1);
 	else
 		art_affine_scale (affine, 1, -1);
+
+	angle=part_get_rotation(part);
+	if (angle!=0) {
+	  switch (angle){
+	  case 90: art_affine_rotate(affine_rotate,180);
+	    memcpy(affine_scale,affine,6*sizeof(double));
+	    break;
+	  case 180: //don't do a thing
+	    art_affine_rotate(affine_rotate,0);
+	    memcpy(affine_scale,affine,6*sizeof(double));
+	    break;
+	  case 270: art_affine_rotate(affine_rotate,0);
+	    // only to reset the memory of affine_scale, just a hack
+	    memcpy(affine_scale,affine,6*sizeof(double));
+	    // switch the flipping from horizontal to vertical and vice versa
+	    affine_scale[0]=affine[3];
+	    affine_scale[3]=affine[0];
+	  }
+	  matrix_mult(affine_scale,affine_rotate,affine);
+	}
+
 
 	for (list = group->item_list; list; list = list->next) {
 		canvas_item = GNOME_CANVAS_ITEM (list->data);
@@ -985,6 +1042,123 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	for (label = item->priv->label_items; label; label = label->next) {
 		gnome_canvas_item_set (
 			GNOME_CANVAS_ITEM (label->data),
+			"anchor", anchor,
+			NULL);
+	}
+
+	/*
+	 * Invalidate the bounding box cache.
+	 */
+	priv->cache_valid = FALSE;
+}
+
+/*
+  Wherefore this function?
+  Formerly, the above defined callback functions were called after
+  reading data from file or from clipboard, in both cases there was neither
+  a change in flip nor rotate, but the above functions only work for
+  data which has changed. The "Not Changed, Just Redraw" was missing here.
+ */
+static void
+part_arrange_canvas_item (ItemData *data, SheetItem *sheet_item)
+{
+  double affine[6];
+	double affine_scale[6];
+	double affine_rotate[6];
+	GList *list;
+	GSList *label_items;
+	GtkAnchorType anchor;
+	GnomeCanvasGroup *group;
+	GnomeCanvasItem *canvas_item;
+	PartItem *item;
+	PartItemPriv *priv;
+	Part *part;
+	int angle;
+
+	g_return_if_fail (sheet_item != NULL);
+	g_return_if_fail (IS_PART_ITEM (sheet_item));
+
+	item = PART_ITEM (sheet_item);
+	group = GNOME_CANVAS_GROUP (item);
+	part = PART(data);
+
+	priv = item->priv;
+	
+	angle=part_get_rotation(part);
+
+	if (angle!=0) {
+	  if ((part->priv->flip & ID_FLIP_HORIZ)
+	      && (part->priv->flip & ID_FLIP_VERT)) {
+	    art_affine_rotate(affine,angle+180);
+	  } else { if ((part->priv->flip & ID_FLIP_HORIZ)
+		       || (part->priv->flip & ID_FLIP_VERT)) {
+	      if (part->priv->flip & ID_FLIP_HORIZ)
+		art_affine_scale(affine_scale,-1,1);
+	      else
+		art_affine_scale(affine_scale,1,-1);
+
+	      art_affine_rotate(affine_rotate,angle);
+
+	      matrix_mult(affine_rotate,affine_scale,affine);
+	      affine[4]=affine_rotate[4];
+	      affine[5]=affine_rotate[5];
+	    } else
+	      art_affine_rotate (affine, angle);
+	  }
+	} else {
+	  art_affine_scale(affine,1,1); //default
+	  if ((part->priv->flip & ID_FLIP_HORIZ)
+	      && (part->priv->flip & ID_FLIP_VERT))
+	    art_affine_scale(affine,-1,-1);
+	  if ((part->priv->flip & ID_FLIP_HORIZ)
+	      && !(part->priv->flip & ID_FLIP_VERT))
+	    art_affine_scale(affine,-1,1);
+	  if (!(part->priv->flip & ID_FLIP_HORIZ)
+	      && (part->priv->flip & ID_FLIP_VERT))
+	    art_affine_scale(affine,1,-1);
+	}
+
+	for (list = group->item_list; list; list = list->next) {
+		canvas_item = GNOME_CANVAS_ITEM (list->data);
+		gnome_canvas_item_affine_relative (canvas_item, affine);
+	}
+
+	/*
+	 * Get the right anchor for the labels. This is needed since the
+	 * canvas don't know how to rotate text and since we rotate the
+	 * label_group instead of the labels directly.
+	 */
+	switch (part_get_rotation (part)) {
+	case 0:
+		anchor = GTK_ANCHOR_SOUTH_WEST;
+		break;
+	case 90:
+		anchor = GTK_ANCHOR_NORTH_WEST;
+		break;
+	case 180:
+		anchor = GTK_ANCHOR_NORTH_EAST;
+		break;
+	case 270:
+		anchor = GTK_ANCHOR_SOUTH_EAST;
+		break;
+	default:
+		anchor = GTK_ANCHOR_SOUTH_WEST;
+		break;
+	}
+
+
+	for (label_items = priv->label_items; label_items;
+	     label_items = label_items->next) {
+		gnome_canvas_item_set (
+			GNOME_CANVAS_ITEM (label_items->data),
+			"anchor", anchor,
+			NULL);
+	}
+
+	for (label_items = priv->label_nodes; label_items;
+	     label_items = label_items->next) {
+		gnome_canvas_item_set (
+			GNOME_CANVAS_ITEM (label_items->data),
 			"anchor", anchor,
 			NULL);
 	}
@@ -1199,8 +1373,6 @@ part_item_new_from_part (Sheet *sheet, Part *part)
 	LibraryPart *library_part;
 	PartPriv *priv;
 	PartItem *item;
-	int angle;
-	IDFlip flip;
 
 	priv = part->priv;
 
@@ -1216,18 +1388,7 @@ part_item_new_from_part (Sheet *sheet, Part *part)
 	create_canvas_labels (item, part);
 	create_canvas_label_nodes(item, part);
 
-	angle = part_get_rotation (part);
-	part_rotated_callback (ITEM_DATA (part), angle, SHEET_ITEM (item));
-
-	flip = part_get_flip (part);
-	if (flip & ID_FLIP_HORIZ)
-		part_flipped_callback (ITEM_DATA (part),
-			TRUE, SHEET_ITEM (item));
-
-	if (flip & ID_FLIP_VERT)
-		part_flipped_callback (ITEM_DATA (part),
-			FALSE, SHEET_ITEM (item));
-
+	part_arrange_canvas_item(ITEM_DATA (part), SHEET_ITEM (item));
 	return item;
 }
 
