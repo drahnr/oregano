@@ -5,7 +5,7 @@
  * Author:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *
- * Copyright (C) 2003  Andres de Barbara
+ * Copyright (C) 2003-2008  Ricardo Markiewicz
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

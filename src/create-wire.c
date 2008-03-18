@@ -14,7 +14,7 @@
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2006  LUGFI
+ * Copyright (C) 2003,2006  Ricardo Markiewicz
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
