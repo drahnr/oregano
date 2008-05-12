@@ -40,6 +40,7 @@ typedef struct {
 	GHashTable *models;
 	GSList	   *gnd_list;   ///< Ground parts on the schematic
 	GSList     *clamp_list; ///< Test clamps on the schematic
+	GSList     *clamp_name; ///< Test clamps names on the schematic
 	GSList	   *mark_list;
 	GList	     *node_and_number_list;
 	NodeStore  *store;
@@ -52,6 +53,7 @@ typedef struct {
 	SimSettings *settings;
 	NodeStore *store;
 	GList *models;
+	GSList *clamps;
 } Netlist;
 
 typedef struct {

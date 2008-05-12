@@ -146,6 +146,7 @@ netlist_helper_init_data (NetlistData *data)
 	data->node_nr = 1;
 	data->gnd_list = NULL;
 	data->clamp_list = NULL;
+	data->clamp_name = NULL;
 	data->mark_list = NULL;
 	data->node_and_number_list = NULL;
 }
@@ -231,7 +232,9 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 			} else if (!g_strcasecmp (prop, "ground")) {
 				data->gnd_list = g_slist_prepend (data->gnd_list, GINT_TO_POINTER (data->node_nr));
 			} else if (!g_strcasecmp (prop, "punta")) {
+				gchar * name = part_get_property (pin->part, "name");
 				data->clamp_list = g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
+				data->clamp_name = g_slist_prepend (data->clamp_name, g_strdup (name));
 			} else if (!g_strncasecmp (prop, "jumper", 5)) {
 				/* Either jumper2 or jumper4. */
 				Node *opposite_node;
@@ -606,8 +609,17 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		g_free (node2real[i]);
 	}
 	g_free (node2real);
-
 	g_hash_table_foreach (data.models, (GHFunc)foreach_model_save, &out->models);
+
+	out->clamps = g_slist_copy (data.clamp_name);
+	/*{
+		GSList *l = data.clamp_name;
+		while (l) {
+			g_print("Data = %p\n", (gchar *)l->data);
+			out->clamps = g_slist_append (out->clamps, g_strdup((char *)l->data));
+			l = l->next;
+		}
+	}*/
 
 	return;
 

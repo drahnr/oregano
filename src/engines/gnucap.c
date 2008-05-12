@@ -76,6 +76,8 @@ struct _OreganoGnuCapPriv {
 	guint status;
 	guint buf_count;
 	gchar buf[256]; // FIXME later
+	gchar **clamp_names;
+	int clamp_names_count;
 };
 
 static void gnucap_class_init (OreganoGnuCapClass *klass);
@@ -139,6 +141,10 @@ gnucap_finalize (GObject *object)
 	int i;
 
 	gnucap = OREGANO_GNUCAP (object);
+	for (i=0; i<gnucap->priv->clamp_names_count; i++) {
+		g_free (gnucap->priv->clamp_names[i]);
+	}
+	g_free (gnucap->priv->clamp_names);
 
 	lst = gnucap->priv->analysis;
 	while (lst) {
@@ -196,6 +202,7 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	GList *list;
 	FILE *file;
 	GError *local_error = NULL;
+	int i;
 
 	gnucap = OREGANO_GNUCAP (engine);
 
@@ -204,6 +211,21 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 		g_propagate_error (error, local_error);
 		return;
 	}
+	
+	/* Copy clamps names into Engine */
+	list = output.clamps;
+	gnucap->priv->clamp_names_count = g_slist_length (output.clamps);
+	gnucap->priv->clamp_names = (char**) g_new0 (gpointer, gnucap->priv->clamp_names_count);
+	i = 0;
+	while (list) {
+		g_print("Name (%s) at pos %d\n", (char *)g_slist_nth_data (output.clamps, i), i);
+		gnucap->priv->clamp_names[i] = g_slist_nth_data (output.clamps, i);
+
+		list = list->next;
+		++i;
+	}
+	/* This only free the list, the data is now pointed by clamp_names */
+	g_slist_free (output.clamps);
 
 	file = fopen (filename, "w");
 	if (!file) {
@@ -590,7 +612,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 	static Analysis *data;
 	GCap_Variable *variables;
 	OreganoGnuCapPriv *priv = gnucap->priv;
-	gint i, j, n;
+	gint i, j, n, i_name;
 	gdouble val;
 	gchar *s;
 
@@ -641,8 +663,18 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				sdata->min_data[i] =  G_MAXDOUBLE;
 				sdata->max_data[i] = -G_MAXDOUBLE;
 			}
-			for (i = 0; i < n; i++) {
-				sdata->var_names[i] = g_strdup (variables[i].name);
+			for (i = 0, i_name=0; i < n; i++) {
+				if (variables[i].name[0] == 'v') {
+					if (i_name < priv->clamp_names_count) {
+						sdata->var_names[i] = g_strdup (priv->clamp_names[i_name]);
+						g_print ("Using %s insted of %s\n", sdata->var_names[i_name], variables[i].name);
+					} else {
+						g_print ("%d out of names. Got %d spected %d\n", i_name, n,  priv->clamp_names_count);
+						sdata->var_names[i] = g_strdup (variables[i].name);
+					}
+					++i_name;
+				}
+
 				switch (sdata->type) {
 					case TRANSIENT:
 						if (i==0)

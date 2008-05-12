@@ -586,6 +586,7 @@ edit_properties_punta (PartItem *item)
 	GtkRadioButton *radio_v, *radio_c;
 	GtkRadioButton *ac_r, *ac_m, *ac_i, *ac_p;
 	GtkCheckButton *chk_db;
+	GtkEntry *name;
 	gint response;
 
 	priv = item->priv;
@@ -618,6 +619,7 @@ edit_properties_punta (PartItem *item)
 
 	radio_v = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_v"));
 	radio_c = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_c"));
+	name = GTK_ENTRY (glade_xml_get_widget (gui, "name"));
 
 	/* FIXME : Desactivada mientras se trabaja en el backend */
 	gtk_widget_set_sensitive (GTK_WIDGET (radio_c), FALSE);
@@ -657,6 +659,8 @@ edit_properties_punta (PartItem *item)
 			} else if (!g_strcasecmp (prop->name, "ac_db")) {
 				if (!g_strcasecmp (prop->value, "true"))
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (chk_db), TRUE);
+			} else if (!g_strcasecmp (prop->name, "name")) {
+				gtk_entry_set_text (name, prop->value);
 			}
 		}
 	}
@@ -697,6 +701,9 @@ edit_properties_punta (PartItem *item)
 					prop->value = g_strdup ("true");
 				else
 					prop->value = g_strdup ("false");
+			} else if (!g_strcasecmp (prop->name, "name")) {
+				g_free (prop->value);
+				prop->value = g_strdup (gtk_entry_get_text (name));
 			}
 		}
 	}
