@@ -903,9 +903,23 @@ schematic_render (Schematic *sm, cairo_t *cr)
 	node_store_print_labels (store, cr, NULL);
 }
 
+GdkColor
+convert_to_grayscale(GdkColor *source)
+{
+	GdkColor color;
+	int factor;
+
+	factor = (source->red + source->green + source->blue)/3;
+	color.red = factor;
+	color.green = factor;
+	color.blue = factor;
+
+	return color;
+}
+
 void
 schematic_export (Schematic *sm, const gchar *filename,
-	gint img_w, gint img_h, int bg, int format)
+	gint img_w, gint img_h, int bg, int color, int format)
 {
 	ArtDRect bbox;
 	NodeStore *store;
@@ -914,6 +928,16 @@ schematic_export (Schematic *sm, const gchar *filename,
 	gdouble w, h;
 	gdouble graph_w, graph_h;
 	gdouble scale, scalew, scaleh;
+	SchematicColors colors;
+
+	if (!color) {
+		colors = sm->priv->colors;
+		sm->priv->colors.components = convert_to_grayscale (&sm->priv->colors.components);
+		sm->priv->colors.labels = convert_to_grayscale (&sm->priv->colors.labels);
+		sm->priv->colors.wires = convert_to_grayscale (&sm->priv->colors.wires);
+		sm->priv->colors.text = convert_to_grayscale (&sm->priv->colors.text);
+		sm->priv->colors.background = convert_to_grayscale (&sm->priv->colors.background);
+	}
 
 	store = schematic_get_store (sm);
 	node_store_get_bounds (store, &bbox);
@@ -982,6 +1006,11 @@ schematic_export (Schematic *sm, const gchar *filename,
 		cairo_surface_write_to_png (surface, filename);
 	cairo_destroy (cr);
 	cairo_surface_destroy (surface);
+
+	// Restore color information
+	if (!color) {
+		sm->priv->colors = colors;
+	}
 }
 
 static void

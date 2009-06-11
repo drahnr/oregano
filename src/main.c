@@ -211,7 +211,7 @@ main (int argc, char **argv)
 					tmp = g_filename_display_basename (startup_files[i]);
 					filename = g_strdup_printf ("%s.%s", tmp, ext);
 					g_print ("Converting %s to %s ...\n", startup_files[i], filename);
-					schematic_export (new_schematic, filename, convert_width, convert_height, 0, format);
+					schematic_export (new_schematic, filename, convert_width, convert_height, 0, 1, format);
 					g_object_unref (G_OBJECT (new_schematic));
 					g_free (filename);
 					g_free (tmp);
