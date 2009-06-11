@@ -938,7 +938,7 @@ schematic_export (Schematic *sm, const gchar *filename,
 		break;
 #endif
 		default:
-			surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, img_w, img_h);
+			surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, img_w, img_h);
 	}
 	cr = cairo_create (surface);
 
