@@ -20,7 +20,7 @@ deps.append ({'lib': 'libglade-2.0',        'ver': '2.5.0'})
 deps.append ({'lib': 'libgnomeui-2.0',      'ver': '2.12.0'})
 deps.append ({'lib': 'libxml-2.0',          'ver': '2.6.0'})
 deps.append ({'lib': 'libgnomecanvas-2.0',  'ver': '2.12.0'})
-deps.append ({'lib': 'gtksourceview-1.0',   'ver': '1.0'})
+deps.append ({'lib': 'gtksourceview-2.0',   'ver': '2.0'})
 deps.append ({'lib': 'cairo',               'ver': '1.2.0'})
 
 # CUSTOM CHECK FUNC #

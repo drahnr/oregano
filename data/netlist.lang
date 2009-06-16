@@ -1,54 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE language SYSTEM "language.dtd">
-<language _name="Netlist" version="1.0" _section="Markup" mimetypes="text/xml">
-	<block-comment _name="Block Comment" style="Comment">
-		<start-regex>^\*</start-regex>
-		<end-regex>\n</end-regex>
-	</block-comment>
-	
-	<pattern-item _name = "Decimal" style = "Decimal">
-		<regex>\b([1-9][0-9]*|0)([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</regex>
-	</pattern-item>
-	
-	<pattern-item _name = "Floating Point Number" style = "Floating Point">
-		<regex>\b([0-9]+[Ee][-]?[0-9]+|([0-9]*\.[0-9]+|[0-9]+\.)([Ee][-]?[0-9]+)?)[fFlL]?</regex>
-	</pattern-item>
+<language id="netlist" _name="Netlist" version="2.0" _section="Markup">
+  <metadata>
+    <property name="mimetypes">application/x-oregano</property>
+    <property name="globs">*.netlist</property>
+  </metadata>
 
-	<keyword-list _name = "Keywords" style = "Keyword" case-sensitive="TRUE">
-		<keyword>print</keyword>
-		<keyword>tran</keyword>
-		<keyword>op</keyword>
-		<keyword>dc</keyword>
-		<keyword>options</keyword>
-		<keyword>end</keyword>
-		<keyword>ac</keyword>
-		<keyword>fourier</keyword>
- 	</keyword-list>	
+  <styles>
+    <style id="comment" _name="Comment" map-to="def:comment"/>
+    <style id="floating-point" _name="Floating Point" map-to="def:floating-point"/>
+    <style id="decimal" _name="Decimal" map-to="def:decimal"/>
+    <style id="preprocessor" _name="Preprocessor" map-to="def:identifier"/>
+    <style id="keyword" _name="Keyword" map-to="def:keyword"/>
+    <style id="values" _name="Values" map-to="def:special-char"/>
+  </styles>
 
-	<pattern-item _name="Entity" style="Preprocessor">
-		<regex>(v|i)(\(.\))</regex>
-	</pattern-item>
-
-	<keyword-list _name = "Common Macro" style = "Preprocessor" case-sensitive="TRUE">
-		<keyword>UIC</keyword>
-		<keyword>OUT</keyword>
-		<keyword>TEMP</keyword>
-		<keyword>GMIN</keyword>
-		<keyword>ABSTOL</keyword>
-		<keyword>CHGTOL</keyword>
-		<keyword>RELTOL</keyword>
-		<keyword>VNTOL</keyword>
-		<keyword>ITL1</keyword>
-		<keyword>ITL2</keyword>
-		<keyword>ITL4</keyword>
-		<keyword>PIVREL</keyword>
-		<keyword>PIVTOL</keyword>
-		<keyword>TNOM</keyword>
-		<keyword>TRTOL</keyword>
-		<keyword>DEFAD</keyword>
-		<keyword>DEFAS</keyword>
-		<keyword>DEFL</keyword>
-		<keyword>DEFW</keyword>
-	</keyword-list>
+  <definitions>
+    <context id="block-comment" style-ref="comment" end-at-line-end="true">
+      <start>\*</start>
+    </context>
+    <context id="decimal" style-ref="decimal">
+      <match>\b([1-9][0-9]*|0)([Uu]([Ll]|LL|ll)?|([Ll]|LL|ll)[Uu]?)?\b</match>
+    </context>
+    <context id="floating-point-number" style-ref="floating-point">
+      <match>\b([0-9]+[Ee][-]?[0-9]+|([0-9]*\.[0-9]+|[0-9]+\.)([Ee][-]?[0-9]+)?)[fFlL]?</match>
+    </context>
+    <context id="keywords" style-ref="keyword">
+      <keyword>print</keyword>
+      <keyword>tran</keyword>
+      <keyword>op</keyword>
+      <keyword>dc</keyword>
+      <keyword>options</keyword>
+      <keyword>end</keyword>
+      <keyword>ac</keyword>
+      <keyword>fourier</keyword>
+    </context>
+    <context id="entity" style-ref="values">
+      <match>(v|i)(\(.*\))</match>
+    </context>
+    <context id="common-macro" style-ref="preprocessor">
+      <keyword>UIC</keyword>
+      <keyword>OUT</keyword>
+      <keyword>TEMP</keyword>
+      <keyword>GMIN</keyword>
+      <keyword>ABSTOL</keyword>
+      <keyword>CHGTOL</keyword>
+      <keyword>RELTOL</keyword>
+      <keyword>VNTOL</keyword>
+      <keyword>ITL1</keyword>
+      <keyword>ITL2</keyword>
+      <keyword>ITL4</keyword>
+      <keyword>PIVREL</keyword>
+      <keyword>PIVTOL</keyword>
+      <keyword>TNOM</keyword>
+      <keyword>TRTOL</keyword>
+      <keyword>DEFAD</keyword>
+      <keyword>DEFAS</keyword>
+      <keyword>DEFL</keyword>
+      <keyword>DEFW</keyword>
+    </context>
+    <context id="netlist">
+      <include>
+        <context ref="block-comment"/>
+        <context ref="decimal"/>
+        <context ref="floating-point-number"/>
+        <context ref="keywords"/>
+        <context ref="entity"/>
+        <context ref="common-macro"/>
+      </include>
+    </context>
+  </definitions>
 </language>
-

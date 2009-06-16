@@ -1,4 +1,11 @@
+import os
 Import ('CEnv')
+
+resources = Split ("""
+	netlist.lang
+	""")
+
+CEnv.Alias('install', CEnv.Install (os.path.join (CEnv['INSTALL_DIR'], 'share/oregano/language-specs'), resources))
 
 SConscript ('libraries/SConscript');
 SConscript ('dialogs/SConscript')

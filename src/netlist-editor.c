@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gnome.h>
-#include <gtksourceview/gtksourceprintjob.h>
+#include <gtksourceview/gtksourceprintcompositor.h>
 
 static void netlist_editor_finalize (GObject *object);
 static void netlist_editor_dispose (GObject *object);
@@ -47,7 +47,7 @@ struct _NetlistEditorPriv {
 	SchematicView *sv;
 	gchar * font;
 	GdkColor bgcolor, selectcolor, textcolor;
-	GtkSourceLanguagesManager *lm;
+	GtkSourceLanguageManager *lm;
 	GtkTextView *view;
 	GtkSourceBuffer *buffer;
 	GtkWindow *toplevel;
@@ -283,12 +283,13 @@ netlist_editor_save (GtkWidget * widget, NetlistEditor * nle)
 
 NetlistEditor *
 netlist_editor_new (GtkSourceBuffer * textbuffer) {
+	gchar* lang_files[3];
 	NetlistEditor * nle;
 	GladeXML * gui;
 	GtkWidget * toplevel;
 	GtkScrolledWindow * scroll;
 	GtkSourceView * source_view;
-	GtkSourceLanguagesManager * lm;
+	GtkSourceLanguageManager * lm;
 	GtkButton * save, * sim, * close, * print;
 	GtkSourceLanguage *lang=NULL;
 	const GSList *list;
@@ -319,24 +320,26 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	scroll = GTK_SCROLLED_WINDOW (glade_xml_get_widget (gui, "netlist-scrolled-window"));
 	
 	source_view = GTK_SOURCE_VIEW (gtk_source_view_new ());
-	lm = GTK_SOURCE_LANGUAGES_MANAGER (gtk_source_languages_manager_new ());
+	lm = GTK_SOURCE_LANGUAGE_MANAGER (gtk_source_language_manager_new ());
+
+ 	lang_files[0] = OREGANO_LANGDIR;
+	/* FIXME : This is needed because RealxNG files are required. */
+ 	lang_files[1] = "/usr/share/gtksourceview-2.0/language-specs/";
+	lang_files[2] = NULL;
+
+	gtk_source_language_manager_set_search_path (lm, lang_files);
 	
-	g_object_set_data_full (G_OBJECT (source_view), "languages-manager",
+	g_object_set_data_full (G_OBJECT (source_view), "language-manager",
 		lm, (GDestroyNotify) g_object_unref);
 
-	list = gtk_source_languages_manager_get_available_languages (lm);
-	while (list) {
-		GtkSourceLanguage *l = (GtkSourceLanguage *)list->data;
-		if (!g_strcasecmp(gtk_source_language_get_name (l), "netlist")) {
-			lang = l;
-			break;
-		}
-		list = list->next;
-	}
+	lang = gtk_source_language_manager_get_language (lm, "netlist");
 
 	if (lang) {
 		gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (textbuffer), lang);
-		gtk_source_buffer_set_highlight (GTK_SOURCE_BUFFER (textbuffer), TRUE);
+		gtk_source_buffer_set_highlight_syntax (GTK_SOURCE_BUFFER (textbuffer), TRUE);
+		gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER (textbuffer), TRUE);
+	} else {
+		g_warning ("Can't load netlist.lang in %s", OREGANO_LANGDIR "/netlist.lang");
 	}
 
 	gtk_text_view_set_editable (GTK_TEXT_VIEW (source_view), TRUE);

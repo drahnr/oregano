@@ -7,6 +7,7 @@ LocaleDir         = '-DGNOMELOCALEDIR=\\""'+SrcEnv['DATADIR']+'/locale"\\"'
 OreganoGladeDir   = '-DOREGANO_GLADEDIR=\\""'+SrcEnv['OREGANODIR']+'/dialogs"\\"'
 OreganoLibraryDir = '-DOREGANO_LIBRARYDIR=\\""'+SrcEnv['OREGANODIR']+'/libraries"\\"'
 OreganoModelDir   = '-DOREGANO_MODELDIR=\\""'+SrcEnv['OREGANODIR']+'/models"\\"'
+OreganoLangDir    = '-DOREGANO_LANGDIR=\\""'+SrcEnv['OREGANODIR']+'"/language-specs\\"'
 VersionFlag       = '-DVERSION=\\"'+SrcEnv['VERSION']+'\\"'
 DataDir           = '-DDATADIR=\\"'+SrcEnv['DATADIR']+'\\"'
 Package           = '-DPACKAGE=\\"oregano\\"'
@@ -22,7 +23,8 @@ SrcEnv.Append (CCFLAGS = [
 	LocaleDir,
 	OreganoGladeDir,
 	OreganoLibraryDir,
-	OreganoModelDir
+	OreganoModelDir,
+	OreganoLangDir
 	])
 
 Export ('SrcEnv')
