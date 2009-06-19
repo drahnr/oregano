@@ -281,9 +281,35 @@ netlist_editor_save (GtkWidget * widget, NetlistEditor * nle)
 	}
 }
 
+/* This method append OREGANO_LANGDIR directory where the netlist.lang file
+ * is located to the search path of GtkSourceLanguageManager.
+ */
+void
+setup_language_manager_path(GtkSourceLanguageManager *lm)
+{
+	gchar **lang_files;
+	int i, lang_files_count;
+	char **new_langs;
+
+	lang_files = g_strdupv (gtk_source_language_manager_get_search_path (lm));
+
+	lang_files_count = g_strv_length (lang_files);
+	new_langs = g_new (char*, lang_files_count + 2);
+
+	for (i = 0; lang_files[i]; i++)
+		new_langs[i] = lang_files[i];
+
+	new_langs[lang_files_count] = g_strdup (OREGANO_LANGDIR);
+	new_langs[lang_files_count+1] = NULL;
+
+	g_free (lang_files);
+
+	gtk_source_language_manager_set_search_path (lm, new_langs);
+}
+
 NetlistEditor *
 netlist_editor_new (GtkSourceBuffer * textbuffer) {
-	gchar* lang_files[3];
+	gchar** lang_files;
 	NetlistEditor * nle;
 	GladeXML * gui;
 	GtkWidget * toplevel;
@@ -322,13 +348,8 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	source_view = GTK_SOURCE_VIEW (gtk_source_view_new ());
 	lm = GTK_SOURCE_LANGUAGE_MANAGER (gtk_source_language_manager_new ());
 
- 	lang_files[0] = OREGANO_LANGDIR;
-	/* FIXME : This is needed because RealxNG files are required. */
- 	lang_files[1] = "/usr/share/gtksourceview-2.0/language-specs/";
-	lang_files[2] = NULL;
+	setup_language_manager_path (lm);
 
-	gtk_source_language_manager_set_search_path (lm, lang_files);
-	
 	g_object_set_data_full (G_OBJECT (source_view), "language-manager",
 		lm, (GDestroyNotify) g_object_unref);
 
