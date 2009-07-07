@@ -4,7 +4,7 @@ import SCons;
 SConsignFile ('.sconsdb')
  
 # APP Version #
-VERSION = '0.69.0'
+VERSION = '0.69.1'
 
 # Command line options #
 opts = Options ('oregano.py');
