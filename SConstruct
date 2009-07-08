@@ -76,9 +76,14 @@ def mo_builder(target,source,env):
 mo_bld = Builder (action = mo_builder)
 
 CEnv.Append (BUILDERS = {'MoBuild' : mo_bld})
-CEnv.Append (CCFLAGS = Split ('-Wall'));
-if CEnv['Debug']:
-	CEnv.Append (CCFLAGS = Split ('-g'));
+if ( os.environ.has_key('CFLAGS') ):
+	CEnv.Append (CCFLAGS = Split (os.environ['CFLAGS']));
+else:
+	CEnv.Append (CCFLAGS = Split ('-Wall'));
+	if CEnv['Debug']:
+		CEnv.Append (CCFLAGS = Split ('-g'));
+if ( os.environ.has_key('LDFLAGS') ):
+	CEnv.Append (LINKFLAGS = Split (os.environ['LDFLAGS']));
 
 # Check dependencies #
 if not CEnv.GetOption ('clean'):
