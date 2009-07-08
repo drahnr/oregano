@@ -17,5 +17,5 @@ Icon=gnome-oregano.svg
 StartupNotify=true
 Terminal=false
 Type=Application
-Categories=GNOME;GTK;Science;Education;Physics;
+Categories=GNOME;GTK;Science;Education;Electronics;
 MimeType=application/x-oregano;
