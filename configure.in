@@ -75,7 +75,7 @@ help/C/Makefile
 help/es/Makefile
 help/fr/Makefile
 data/Makefile
-data/dialogs/Makefile
+data/glade/Makefile
 data/models/Makefile
 data/libraries/Makefile
 data/examples/Makefile
