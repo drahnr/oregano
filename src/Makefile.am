@@ -27,7 +27,7 @@ INCLUDES = 	\
 	-I. \
 	$(OREGANO_CFLAGS)
 
-bin_PROGRAMS = oregano pspice2oregano
+bin_PROGRAMS = oregano
 
 OREGANO_LIBS += gplot/libgplot.a \
 		engines/libengines.a \
@@ -99,10 +99,4 @@ oregano_SOURCES = 	\
 	xml-helper.h
 
 oregano_LDADD = \
-	$(OREGANO_LIBS) 
-
-pspice2oregano_SOURCES = \
-	pspice2oregano.c
-
-pspice2oregano_LDADD = \
 	$(OREGANO_LIBS) 
