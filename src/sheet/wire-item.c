@@ -143,11 +143,6 @@ wire_item_class_init (WireItemClass *wire_item_class)
 	sheet_item_class = SHEET_ITEM_CLASS(wire_item_class);
 	wire_item_parent_class = g_type_class_peek(TYPE_SHEET_ITEM);
 
-	/*gtk_object_add_arg_type ("WireItem::name",
-	 * GTK_TYPE_POINTER, GTK_ARG_READWRITE, WIRE_ITEM_ARG_NAME);*/
-
-/*	object_class->set_arg = wire_item_set_arg;
-	object_class->get_arg = wire_item_get_arg;*/
 	gtk_object_class->destroy = wire_item_destroy;
 
 	sheet_item_class->moved = wire_item_moved;

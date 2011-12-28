@@ -133,16 +133,17 @@ static void plot_toggle_cross (GtkWidget *widget, Plot *plot);
 static void plot_export (GtkWidget *widget, Plot *plot);
 static void add_function (GtkWidget *widget, Plot *plot);
 
+static const char *_plot_file_menu =
+"<ui>"
+"  <popup name='plotMenu'>"
+"    <menuitem action='Add-Function'/>"
+"    <separator/>"
+"    <menuitem action='Close'/>"
+"  </popup>"
+"</ui>";
 
 static GnomeUIInfo plot_file_menu[] =
 {
-	/*GNOMEUIINFO_MENU_PRINT_ITEM(NULL,NULL),
-	GNOMEUIINFO_MENU_PRINT_SETUP_ITEM(NULL,NULL),
-	GNOMEUIINFO_ITEM_NONE(N_("Print Preview"),
-		N_("Preview the plot before printing"), NULL),
-	GNOMEUIINFO_SEPARATOR,
-	GNOMEUIINFO_ITEM_NONE(N_("Export plot"),
-		N_("Show the export menu"), plot_export),*/
 	GNOMEUIINFO_ITEM_NONE(N_("Add Function"),
 		N_("Add new function to the graph"), add_function),
 	GNOMEUIINFO_SEPARATOR,
@@ -151,42 +152,28 @@ static GnomeUIInfo plot_file_menu[] =
 };
 
 static GnomeUIInfo plot_zoom_menu [] = {
-//	GNOMEUIINFO_ITEM_NONE(N_("50%"),
-//		N_("Set the zoom factor to 50%"), plot_zoom_50_cmd),
-//	GNOMEUIINFO_ITEM_NONE(N_("75%"),
-//		N_("Set the zoom factor to 75%"), plot_zoom_75_cmd),
 	{ GNOME_APP_UI_ITEM, N_("100%"),
 	  N_("Set the zoom factor to 100%"), NULL, NULL, NULL, 0,
 	  0, '2', 0 },
-//	GNOMEUIINFO_ITEM_NONE(N_("125%"),
-//		N_("Set the zoom factor to 125%"), plot_zoom_125_cmd),
-//	GNOMEUIINFO_ITEM_NONE(N_("150%"),
-//		N_("Set the zoom factor to 150%"), plot_zoom_150_cmd),
-//	GNOMEUIINFO_ITEM_NONE(N_("200%"),
-//		N_("Set the zoom factor to 200%"), plot_zoom_200_cmd),
 	GNOMEUIINFO_END
 };
 
 static GnomeUIInfo plot_plot_menu [] = {
-	{ GNOME_APP_UI_ITEM, N_("_Preferences..."), NULL, NULL, NULL, NULL,
-	  GNOME_APP_PIXMAP_STOCK, GTK_STOCK_PREFERENCES, 0, 0 },
-	GNOMEUIINFO_TOGGLEITEM (N_("Show crosshairs"), "show or hide crosshairs", plot_toggle_cross, NULL),
-	GNOMEUIINFO_SUBTREE(N_("_Zoom"), plot_zoom_menu),
-	GNOMEUIINFO_END
+	{GNOME_APP_UI_ITEM, N_("_Preferences..."), NULL, NULL, NULL, NULL,
+	  		GNOME_APP_PIXMAP_STOCK, GTK_STOCK_PREFERENCES, 0, 0 },
+	  GNOMEUIINFO_TOGGLEITEM (N_("Show crosshairs"), "show or hide crosshairs", plot_toggle_cross, NULL),
+	  GNOMEUIINFO_SUBTREE(N_("_Zoom"), plot_zoom_menu),
+	  GNOMEUIINFO_END
 };
-
 
 static GnomeUIInfo plot_help_menu[] =
 {
 	GNOMEUIINFO_HELP(N_("Schematic Plot")),
-/*	GNOMEUIINFO_MENU_ABOUT_ITEM(NULL, NULL), */
 	GNOMEUIINFO_END
 };
 
 GnomeUIInfo plot_main_menu[] = {
 	GNOMEUIINFO_SUBTREE(N_("_File"), plot_file_menu),
-	/*GNOMEUIINFO_SUBTREE(N_("_Plot"), plot_plot_menu),*/
-	/*GNOMEUIINFO_MENU_HELP_TREE (plot_help_menu),*/
 	GNOMEUIINFO_END
 };
 
@@ -247,7 +234,7 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 	GtkTreeView *treeview;
 	gboolean activo;
 
-	treeview = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT(plot->window), "clist"));
+	treeview = GTK_TREE_VIEW(g_object_get_data(G_OBJECT(plot->window), "clist"));
 
 	model = gtk_tree_view_get_model (treeview);
 	if (!gtk_tree_model_get_iter_from_string (model , &iter, path))
@@ -304,7 +291,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	GList *analysis;
 	SimulationData *sdat;
 
-	list = GTK_TREE_VIEW (gtk_object_get_data (GTK_OBJECT (plot->window), "clist"));
+	list = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), "clist"));
 	entry = GTK_COMBO (plot->combobox)->entry;
 
 	ca = gtk_entry_get_text (GTK_ENTRY (entry));
@@ -430,17 +417,17 @@ plot_window_create (Plot *plot)
 	g_signal_connect (G_OBJECT (window), "delete_event",
 		G_CALLBACK (delete_event_cb), plot);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/plot-window.glade2",
+	if (!g_file_test (OREGANO_GLADEDIR "/plot-window.glade",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/plot-window.glade2");
+			OREGANO_GLADEDIR "/plot-window.glade");
 		oregano_error_with_title (_("Could not create plot window."), msg);
 		g_free (msg);
 		return NULL;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-window.glade2", NULL, NULL);
+	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-window.glade", NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create plot window."));
 		return NULL;
@@ -463,11 +450,6 @@ plot_window_create (Plot *plot)
 	g_object_ref(outer_table);
 	gtk_widget_unparent(outer_table);
 	gnome_app_set_contents(GNOME_APP(window), outer_table);
-	/* XXX Sin desreferenciar el objeto anda sin problemas.
-	 * * Se liberara la menoria de todos modos ?
-	 * * gnome_app_set_contents referencia al objeto que se le pasa?
-	 */
-	//g_object_unref(outer_table);
 
 	button = glade_xml_get_widget (gui, "close_button");
 	g_signal_connect(G_OBJECT(button), "clicked",
@@ -508,11 +490,9 @@ plot_window_create (Plot *plot)
 	gtk_tree_view_append_column(list, column);
 	gtk_tree_view_set_model(list, GTK_TREE_MODEL(tree_model));
 
-	gtk_object_set_data(GTK_OBJECT(window), "clist", list);
+	g_object_set_data (G_OBJECT(window), "clist", list);
 
 	gtk_widget_realize(GTK_WIDGET(window));
-	
-	//gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (plot_plot_menu[1].widget), TRUE);
 
 	plot->combobox = glade_xml_get_widget (gui, "analysis_combo");
 	plot->window = window;
@@ -573,7 +553,7 @@ plot_show (OreganoEngine *engine)
 
 	gtk_entry_set_text (GTK_ENTRY (entry), s_current ? s_current : "?");
 
-	list = GTK_TREE_VIEW (gtk_object_get_data (GTK_OBJECT (plot->window), "clist"));
+	list = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), "clist"));
 
 	plot->title = g_strdup_printf (_("Plot - %s"), s_current);
 	plot->xtitle = get_variable_units (first ? first->var_units[0] : "##");
@@ -645,7 +625,7 @@ add_function (GtkWidget *widget, Plot *plot)
 
 	plot_add_function_show (plot->sim, plot->current);
 
-	tree = GTK_TREE_VIEW(gtk_object_get_data(GTK_OBJECT (plot->window), "clist"));
+	tree = GTK_TREE_VIEW(g_object_get_data(G_OBJECT (plot->window), "clist"));
 	model = gtk_tree_view_get_model (tree);
 
 	path = gtk_tree_path_new_from_string ("1");
@@ -706,17 +686,19 @@ plot_export (GtkWidget *widget, Plot *plot)
 	GtkWidget *window;
 	GtkRadioButton *export_png, *export_ps;
 	GtkSpinButton *width, *height;
+	GError *gerror=NULL;
+	guint error;
 	
-	if (!g_file_test (OREGANO_GLADEDIR "/plot-export.glade2", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_GLADEDIR "/plot-export.glade", G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/plot-export.glade2");
+			OREGANO_GLADEDIR "/plot-export.glade");
 		oregano_error_with_title (_("Could not create plot export window."), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-export.glade2", NULL, NULL);
+	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-export.glade", NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create plot export window."));
 		return;

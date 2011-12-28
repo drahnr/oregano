@@ -97,13 +97,13 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	if (!g_file_test (OREGANO_GLADEDIR "/simulation.glade2",
+	if (!g_file_test (OREGANO_GLADEDIR "/simulation.glade",
 		G_FILE_TEST_EXISTS)) {
 		oregano_error (_("Could not create simulation dialog"));
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/simulation.glade2", "toplevel", NULL);
+	gui = glade_xml_new (OREGANO_GLADEDIR "/simulation.glade", "toplevel", NULL);
 
 	if (!gui) {
 		oregano_error (_("Could not create simulation dialog"));

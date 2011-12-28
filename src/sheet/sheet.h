@@ -74,19 +74,19 @@ struct _SheetClass {
 	void (*reset_tool)			(Sheet *sheet);
 };
 
-GType	  sheet_get_type (void);
+GType	   sheet_get_type (void);
 GtkWidget *sheet_new (int width, int height);
-void	  sheet_scroll (const Sheet *sheet, int dx, int dy);
-void	  sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
-int		  sheet_get_num_selected_items (const Sheet *sheet);
+void	   sheet_scroll (const Sheet *sheet, int dx, int dy);
+void	   sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
+int		   sheet_get_num_selected_items (const Sheet *sheet);
 gpointer   sheet_get_first_selected_item (const Sheet *sheet);
-GSList *sheet_get_selected_items (const Sheet *sheet);
-void	  sheet_change_zoom (const Sheet *sheet, double rate);
-void	  sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
-void	  sheet_dialog_set_parent (const Sheet *sheet, GtkDialog *dialog);
-void	  sheet_delete_selected_items (const Sheet *sheet);
-void	  sheet_rotate_selected_items (const Sheet *sheet);
-void	  sheet_rotate_floating_items (const Sheet *sheet);
-void	  sheet_reset_floating_items (const Sheet *sheet);
+GSList 	  *sheet_get_selected_items (const Sheet *sheet);
+void	   sheet_change_zoom (const Sheet *sheet, double rate);
+void	   sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
+void	   sheet_dialog_set_parent (const Sheet *sheet, GtkDialog *dialog);
+void	   sheet_delete_selected_items (const Sheet *sheet);
+void	   sheet_rotate_selected_items (const Sheet *sheet);
+void	   sheet_rotate_floating_items (const Sheet *sheet);
+void	   sheet_reset_floating_items (const Sheet *sheet);
 
 #endif
