@@ -9,8 +9,7 @@ oreganodoc_DATA = \
 	AUTHORS\
 	INSTALL\
 	NEWS\
-	TODO\
-	TODO.tasks
+	TODO
 
 oregano_datadir = $(datadir)/oregano
 
