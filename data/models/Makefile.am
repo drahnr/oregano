@@ -7,7 +7,6 @@ oreganomodel_DATA = \
 	DiodeBridge.model\
 	TLC555.model 	\
 	UA741.model 	\
-	1N750.model	\
 	PNP.model 	\
 	NPN.model
 
