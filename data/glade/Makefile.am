@@ -4,11 +4,9 @@ glade_DATA = 			\
 	clamp-properties-dialog.glade \
 	export.glade		\
 	log-window.glade	\
-	page-properties.glade 	\
 	part-browser.glade 	\
 	part-properties-dialog.glade \
 	plot-add-function.glade \
-	plot-export.glade	\
 	plot-window.glade	\
 	print-options.glade	\
 	properties.glade 	\
