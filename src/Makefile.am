@@ -17,6 +17,7 @@ INCLUDES = 	\
 	-DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"	\
 	-DOREGANO_LIBRARYDIR=\""$(oreganodir)/libraries"\" \
 	-DOREGANO_MODELDIR=\""$(oreganodir)/models"\" \
+	-DOREGANO_LANGDIR=\""$(oreganodir)/language-specs"\" \
 	-DDATADIR=\""$(datadir)"\" \
 	-I./sheet \
 	-I./gplot \
