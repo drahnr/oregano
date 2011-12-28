@@ -1,23 +1,21 @@
 
-      Oregano - An electrical engineering tool for GNOME
+      oregano - An electrical engineering tool for GNOME
 
-Oregano is an application for schematic capture and simulation of
+oregano is an application for schematic capture and simulation of
 electronic circuits. The actual simulation is performed by Berkeley
 Spice, or GNUcap or the new generation ngspice.
 
-Oregano is licensed under the terms of the GNU GPL included in the
+oregano is licensed under the terms of the GNU GPL included in the
 file COPYING.
 
 You need libgnome2, libglade2, libgnomeui2, libgtksourceview1.0
-and libxml2 to run Oregano. 
-They can be found at ftp.gnome.org or mirrors. You must do 'scons install' 
-before running Oregano. 
+and libxml2 to run oregano. 
+They can be found at ftp.gnome.org or mirrors. 
+To have an executable running you mey either:
+1) do 'scons install' 
+2) do 'sh autogen.sh && ./configure && make && make install'œ
 
-Oregano still lacks many features. If you want to help out, please
+oregano still lacks many features. If you want to help out, please
 send an email to the project.
 
-Mailing List: arrakis-devel@lists.lug.fi.uba.ar
-WWW  : http://oregano.gforge.lug.fi.uba.ar/
-
-LUGFI
-
+WWW  : https://github.com/marc-lorber/oregano
