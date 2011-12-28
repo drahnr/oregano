@@ -1,22 +1,24 @@
-gladedir   = $(datadir)/oregano/dialogs
+gladedir   = $(datadir)/oregano/glade
 
 glade_DATA = 			\
-	clamp-properties-dialog.glade2 \
-	export.glade2		\
-	log-window.glade2	\
-	part-browser.glade2	\
-	part-properties-dialog.glade2 \
-	plot-add-function.glade2 \
-	plot-window.glade2	\
-	print-options.glade2	\
-	properties.glade2 	\
-	settings.glade2		\
-	sim-settings.glade2	\
-	simulation.glade2	\
-	splash.glade2 		\
+	clamp-properties-dialog.glade \
+	export.glade		\
+	log-window.glade	\
+	page-properties.glade 	\
+	part-browser.glade 	\
+	part-properties-dialog.glade \
+	plot-add-function.glade \
+	plot-export.glade	\
+	plot-window.glade	\
+	print-options.glade	\
+	properties.glade 	\
+	settings.glade		\
+	sim-settings.glade	\
+	simulation.glade	\
+	splash.glade 		\
 	splash.xpm 		\
-	textbox-properties-dialog.glade2 \
-	view-netlist.glade2
+	textbox-properties-dialog.glade \
+	view-netlist.glade
 
 EXTRA_DIST = $(glade_DATA)
 
