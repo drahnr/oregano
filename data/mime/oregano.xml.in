@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+   <mime-type type="application/x-oregano">
+     <sub-class-of type="application/xml"/>
+     <_comment>Schematic file</_comment>
+     <magic priority="60">
+       <match type="string" value="oregano" offset="20:140"/>
+     </magic>
+     <glob pattern="*.oregano"/>
+   </mime-type>
+</mime-info>
