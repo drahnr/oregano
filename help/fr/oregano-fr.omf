@@ -6,7 +6,7 @@
 						rmarkie@fi.uba.ar (Ricardo Markiewicz)
     </creator>
     <title>
-						Manuel de l'Utilisateur d'Oregano
+						Guide de l'Utilisateur d'Oregano
     </title>
     <date>
 						2004-05-03
@@ -14,8 +14,7 @@
 		<version identifier="0.0.3" date="2004-08-11" description="alpha version"/>
 		<subject category="GNOME|Core Desktop"/>
     <description>
-      Ce document deacute;crit les particulariteacute;s d'oregano 2 et les preacute;sente i
-      agrave; travers d'exemples.
+      Ce document décrit les particularités d'oregano et les présente au travers d'exemples.
     </description>
     <type>
      manual
