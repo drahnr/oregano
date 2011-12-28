@@ -345,7 +345,8 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
 		gchar *line;
-		gint status, len;
+		gint status;
+		gsize len;
 		g_io_channel_read_to_end (gnucap->priv->child_iochannel, &line, &len, NULL);
 		if (len > 0)
 			gnucap_parse (line, len, gnucap);
