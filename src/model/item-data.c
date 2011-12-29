@@ -421,6 +421,22 @@ item_data_list_get_absolute_bbox (GList *item_data_list, SheetPos *p1,
 	}
 }
 
+/*
+void
+item_data_update_bbox (ItemData *data)
+{
+	ItemDataClass *id_class;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+
+	id_class = ITEM_DATA_CLASS (GTK_OBJECT (data)->klass);
+	if (id_class->update_bbox) {
+		id_class->update_bbox (data);
+	}
+}
+*/
+
 void
 item_data_rotate (ItemData *data, int angle, SheetPos *center)
 {

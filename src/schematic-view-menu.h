@@ -32,64 +32,63 @@
 #define _SCHEMATIC_VIEW_MENU_
 static GtkActionEntry entries[] = {
 	/* Name, ICON, Text, CTRL, DESC, CALLBACK */
-	{"MenuFile", NULL, N_("_File")},
-	{"MenuEdit", NULL, N_("_Edit")},
-	{"MenuTools", NULL, N_("_Tools")},
-	{"MenuView", NULL, N_("_View")},
-	{"MenuHelp", NULL, N_("_Help")},
-	{"MenuZoom", NULL, N_("_Zoom")},
-	{"New", GTK_STOCK_NEW, N_("_New"), "<control>N", N_("Create a new schematic"), G_CALLBACK (new_cmd)},
-	{"Open", GTK_STOCK_OPEN, N_("_Open"), "<control>O", N_("Open a schematic"), G_CALLBACK (open_cmd)},
-	{"DisplayRecentFiles", NULL, N_("_Recent Files"), NULL, NULL, NULL}, //G_CALLBACK (display_recent_files)},
-	{"Save", GTK_STOCK_SAVE, N_("_Save"), "<control>S", N_("Save a schematic"), G_CALLBACK (save_cmd)},
-	{"SaveAs", GTK_STOCK_SAVE_AS, N_("Save _As..."), "<control><shift>S", N_("Save a schematic with other name"), G_CALLBACK (save_as_cmd)},
-	{"PageProperties", NULL, N_("Page Properties"), NULL, N_("Set print properties"), G_CALLBACK (page_properties_cmd)},
-	{"Print", GTK_STOCK_PRINT, N_("_Print"), NULL, N_("Print schematic"), G_CALLBACK (print_cmd)},
-	{"PrintPreview", GTK_STOCK_PRINT_PREVIEW, N_("Print Preview"), NULL, N_("Preview the schematic before printing"), G_CALLBACK (print_preview_cmd)},
-	{"SchematicProperties", NULL, N_("Schematic Pr_operties..."), NULL, N_("Modify the schematic's properties"), G_CALLBACK (properties_cmd)},
-	{"Export", NULL, N_("_Export..."), NULL, N_("Export schematic"), G_CALLBACK (export_cmd)},
-	{"Close", GTK_STOCK_CLOSE, N_("_Close"), "<control>W", N_("Close the current schematic"), G_CALLBACK (close_cmd)},
-	{"Quit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q", N_("Close all schematics"), G_CALLBACK (quit_cmd)},
- 	{"Cut", GTK_STOCK_CUT, N_("C_ut"), "<control>X", NULL, G_CALLBACK (cut_cmd)},
- 	{"Copy", GTK_STOCK_COPY, N_("_Copy"), "<control>C", NULL, G_CALLBACK (copy_cmd)},
- 	{"Paste", GTK_STOCK_PASTE, N_("_Paste"), "<control>V", NULL, G_CALLBACK (paste_cmd)},
-	{"Delete", GTK_STOCK_DELETE, N_("_Delete"), "<control>D", N_("Delete the selection"), G_CALLBACK (delete_cmd)},
-	{"Rotate", STOCK_PIXMAP_ROTATE, N_("_Rotate"), "<control>R", N_("Rotate the selection clockwise"), G_CALLBACK (rotate_cmd)},
-	{"FlipH", NULL, N_("Flip _horizontally"), "<control>F", N_("Flip the selection horizontally"), G_CALLBACK (flip_horizontal_cmd)},
-	{"FlipV", NULL, N_("Flip _vertically"), "<control><shift>F", N_("Flip the selection vertically"), G_CALLBACK (flip_vertical_cmd)},
-	{"SelectAll", NULL, N_("Select _all"), "<control>A", N_("Select all objects on the sheet"), G_CALLBACK (select_all_cmd)},
-	{"SelectNone", NULL, N_("Select _none"), "<control><shift>A",  N_("Deselect the selected objects"), G_CALLBACK (deselect_all_cmd)},
-	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), NULL, N_("Modify the object's properties"), G_CALLBACK (object_properties_cmd)},
-	{"SimulationSettings", GTK_STOCK_PROPERTIES, N_("Simulation S_ettings..."), NULL, N_("Edit the simulation settings"), G_CALLBACK (sim_settings_show)},
-	{"Settings", NULL, N_("_Preferences"), NULL, N_("Edit Oregano settings"), G_CALLBACK (settings_show)},
-	{"Simulate", GTK_STOCK_EXECUTE, N_("_Simulate"), "F5",  N_("Run a simulation"), G_CALLBACK (simulate_cmd)},
-	{"Netlist", NULL, N_("_Generate netlist"), NULL, N_("Generate a netlist"), G_CALLBACK (netlist_cmd)},
-	{"Log", NULL, N_("_Log"), NULL, N_("View the latest simulation log"), G_CALLBACK (log_cmd)},
-	{"NetlistView", NULL, N_("N_etlist"), NULL, N_("View the circuit netlist"), G_CALLBACK (netlist_view_cmd)},
-	{"About", GTK_STOCK_HELP, N_("_About"), NULL, N_("About Oregano"), G_CALLBACK (about_cmd)},
-	{"ZoomIn", GTK_STOCK_ZOOM_IN, N_("Zoom _In"), NULL, N_("Zoom in"), G_CALLBACK (zoom_in_cmd)},
-	{"ZoomOut", GTK_STOCK_ZOOM_OUT, N_("Zoom _Out"), NULL, N_("Zoom out"), G_CALLBACK (zoom_out_cmd)},
+	{"MenuFile", NULL, "_File"},
+	{"MenuEdit", NULL, "_Edit"},
+	{"MenuTools", NULL, "_Tools"},
+	{"MenuView", NULL, "_View"},
+	{"MenuHelp", NULL, "_Help"},
+	{"MenuZoom", NULL, "_Zoom"},
+	{"New", GTK_STOCK_NEW, "_New", "<control>N", "Create a new schematic", G_CALLBACK (new_cmd)},
+	{"Open", GTK_STOCK_OPEN, "_Open", "<control>O", "Open a schematic", G_CALLBACK (open_cmd)},
+	{"Save", GTK_STOCK_SAVE, "_Save", "<control>S", "Save a schematic", G_CALLBACK (save_cmd)},
+	{"SaveAs", GTK_STOCK_SAVE_AS, "Save _As ...", "<control><shift>S", "Save a schematic with other name", G_CALLBACK (save_as_cmd)},
+	{"PageProperties", NULL, "Page Properties", NULL, "Set print properties", G_CALLBACK (page_properties_cmd)},
+	{"Print", GTK_STOCK_PRINT, "_Print", NULL, "Print schematic", G_CALLBACK (print_cmd)},
+	{"PrintPreview", GTK_STOCK_PRINT_PREVIEW, "Print Preview", NULL, "Preview the schematic before printing", G_CALLBACK (print_preview_cmd)},
+	{"SchematicProperties", NULL, "Schematic Pr_operties...", NULL, "Modify the schematic's properties", G_CALLBACK (properties_cmd)},
+	{"Export", NULL, "_Export ...", NULL, "Export schematic", G_CALLBACK (export_cmd)},
+	{"Close", GTK_STOCK_CLOSE, "_Close", "<control>W", "Close the current schematic", G_CALLBACK (close_cmd)},
+	{"Quit", GTK_STOCK_QUIT, "_Quit", "<control>Q", "Close all schematic", G_CALLBACK (quit_cmd)},
+ 	{"Cut", GTK_STOCK_CUT, "C_ut", "<control>X", NULL, G_CALLBACK (cut_cmd)},
+ 	{"Copy", GTK_STOCK_COPY, "_Copy", "<control>C", NULL, G_CALLBACK (copy_cmd)},
+ 	{"Paste", GTK_STOCK_PASTE, "_Paste", "<control>V", NULL, G_CALLBACK (paste_cmd)},
+	{"Delete", GTK_STOCK_DELETE, "_Delete", "<control>D", "Delete the selection", G_CALLBACK (delete_cmd)},
+	{"Rotate", STOCK_PIXMAP_ROTATE, "_Rotate", "<control>R", "Rotate the selection clockwise", G_CALLBACK (rotate_cmd)},
+	{"FlipH", NULL, "Flip _horizontally", "<control>F", "Flip the selection horizontally", G_CALLBACK (flip_horizontal_cmd)},
+	{"FlipV", NULL, "Flip _vertically", "<control><shift>F", "Flip the selection vertically", G_CALLBACK (flip_vertical_cmd)},
+	{"SelectAll", NULL, "Select _all", "<control>A", "Select all objects on the sheet", G_CALLBACK (select_all_cmd)},
+	{"SelectNone", NULL, "Select _none", "<control><shift>A", "Deselect the selected objects", G_CALLBACK (deselect_all_cmd)},
+	{"ObjectProperties", GTK_STOCK_PROPERTIES, "_Object Properties...", NULL, "Modify the object's properties", G_CALLBACK (object_properties_cmd)},
+	{"SimulationSettings", GTK_STOCK_PROPERTIES, "Simulation S_ettings...", NULL, "Edit the simulation settings", G_CALLBACK (sim_settings_show)},
+	{"Settings", NULL, "_Preferences", NULL, "Edit Oregano settings", G_CALLBACK (settings_show)},
+	{"Simulate", GTK_STOCK_EXECUTE, "_Simulate", "F5", "Run a simulation", G_CALLBACK (simulate_cmd)},
+	{"Netlist", NULL, "_Generate netlist", NULL, "Generate a netlist", G_CALLBACK (netlist_cmd)},
+	{"Log", NULL, "_Log", NULL, "View the latest simulation log", G_CALLBACK (log_cmd)},
+	{"NetlistView", NULL, "N_etlist", NULL, "View the circuit netlist", G_CALLBACK (netlist_view_cmd)},
+	{"About", GTK_STOCK_HELP, "_About", NULL, "About Oregano", G_CALLBACK (about_cmd)},
+	{"ZoomIn", GTK_STOCK_ZOOM_IN, "Zoom _In", NULL, "Zoom in", G_CALLBACK (zoom_in_cmd)},
+	{"ZoomOut", GTK_STOCK_ZOOM_OUT, "Zoom _Out", NULL, "Zoom out", G_CALLBACK (zoom_out_cmd)},
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-	{"Labels", NULL, N_("_Node labels"), NULL, N_("Show or hide node labels"), G_CALLBACK (show_label_cmd), FALSE},
-	{"Parts", STOCK_PIXMAP_PART_BROWSER, N_("_Parts"), NULL, N_("Show or hide the part browser"), G_CALLBACK (part_browser_cmd), TRUE},
-	{"Grid", STOCK_PIXMAP_GRID, N_("_Grid"), NULL, N_("Show or hide the grid"), G_CALLBACK (grid_toggle_snap_cmd), TRUE},
+	{"Labels", NULL, "_Node labels", NULL, "Show or hide node labels", G_CALLBACK (show_label_cmd), FALSE},
+	{"Parts", STOCK_PIXMAP_PART_BROWSER, "_Parts", NULL, "Show or hide the part browser", G_CALLBACK (part_browser_cmd), TRUE},
+	{"Grid", STOCK_PIXMAP_GRID, "_Grid", NULL, "Show or hide the grid", G_CALLBACK (grid_toggle_snap_cmd), TRUE},
 };
 
 static GtkRadioActionEntry zoom_entries[] = {
-	{"Zoom50", NULL, "50%", NULL, N_("Set the zoom factor to 50%"), 0},
-	{"Zoom75", NULL, "75%", NULL, N_("Set the zoom factor to 75%"), 1},
-	{"Zoom100", NULL, "100%", "1", N_("Set the zoom factor to 100%"), 2},
-	{"Zoom125", NULL, "125%", NULL, N_("Set the zoom factor to 125%"), 3},
-	{"Zoom150", NULL, "150%", NULL, N_("Set the zoom factor to 150%"), 4},
+	{"Zoom50", NULL, "50%", NULL, "Set the zoom factor to 50%", 0},
+	{"Zoom75", NULL, "75%", NULL, "Set the zoom factor to 75%", 1},
+	{"Zoom100", NULL, "100%", "1", "Set the zoom factor to 100%", 2},
+	{"Zoom125", NULL, "125%", NULL, "Set the zoom factor to 125%", 3},
+	{"Zoom150", NULL, "150%", NULL, "Set the zoom factor to 150%", 4},
 };
 
 static GtkRadioActionEntry tools_entries[] = {
-	{"Arrow", STOCK_PIXMAP_ARROW, N_("Arrow"), NULL, N_("Select, move and modify objects"), 0},
-	{"Text", GTK_STOCK_BOLD, N_("Text"), NULL, N_("Put text on the schematic"), 1},
-	{"Wire", STOCK_PIXMAP_WIRE, N_("Wire"), "1", N_("Draw wires %"), 2},
-	{"VClamp", STOCK_PIXMAP_V_CLAMP, N_("Clamp"), NULL, N_("Add voltage clamp"), 3},
+	{"Arrow", STOCK_PIXMAP_ARROW, "Arrow", NULL, "Select, move and modify objects", 0},
+	{"Text", GTK_STOCK_BOLD, "Text", NULL, "Put text on the schematic", 1},
+	{"Wire", STOCK_PIXMAP_WIRE, "Wire", "1", "Draw wires%", 2},
+	{"VClamp", STOCK_PIXMAP_V_CLAMP, "Clamp", NULL, "Addd voltage clamp", 3},
 };
 
 static const char *ui_description =
@@ -98,7 +97,6 @@ static const char *ui_description =
 "    <menu action='MenuFile'>"
 "      <menuitem action='New'/>"
 "      <menuitem action='Open'/>"
-"      <menuitem action='DisplayRecentFiles'/>"
 "      <menuitem action='Save'/>"
 "      <menuitem action='SaveAs'/>"
 "      <separator/>"
@@ -181,3 +179,4 @@ static const char *ui_description =
 "</ui>";
 
 #endif
+

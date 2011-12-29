@@ -833,7 +833,7 @@
     </ogo:symbol>
 
     <ogo:symbol>
-      <ogo:name>Point</ogo:name>
+      <ogo:name>Punta</ogo:name>
       <ogo:objects>
 				<ogo:line>(0 0)(2 -5)</ogo:line>
         <ogo:line>(2 -5)(5 -2)</ogo:line>
@@ -4442,13 +4442,13 @@
 
     <ogo:part>
       <ogo:name>Test Clamp</ogo:name>
-      <ogo:symbol>Point</ogo:symbol>
-      <ogo:description>Point of test</ogo:description>
+      <ogo:symbol>Punta</ogo:symbol>
+      <ogo:description>Punta de Prueba</ogo:description>
 
       <ogo:properties>
         <ogo:property>
           <ogo:name>internal</ogo:name>
-          <ogo:value>point</ogo:value>
+          <ogo:value>punta</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>type</ogo:name>

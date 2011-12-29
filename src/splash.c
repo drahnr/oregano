@@ -28,7 +28,6 @@
 #include <glade/glade.h>
 #include "splash.h"
 #include "splash.xpm"
-#include "dialogs.h"
 
 
 /* TODO : If we support this, we need to know how to stop the g_timeout :-/ */
@@ -49,22 +48,8 @@ oregano_splash_new ()
 	GtkImage *img;
 	GtkEventBox *event;
 	GdkPixbuf *logo;
-	gchar *msg;
 	
-	if (!g_file_test (OREGANO_GLADEDIR "/splash.glade", G_FILE_TEST_EXISTS) ||
-	     !g_file_test (OREGANO_GLADEDIR "/splash.xpm", G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-			_("The files %s or %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/splash.glade",  OREGANO_GLADEDIR "/splash.xpm");
-		oregano_error_with_title (_("Could not create textbox properties dialog"), msg);
-		g_free (msg);
-		return;
-	}
-	gui = glade_xml_new (OREGANO_GLADEDIR "/splash.glade", NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create textbox properties dialog"));
-		return;
-	}
+	gui = glade_xml_new (OREGANO_GLADEDIR "/splash.glade2", NULL, NULL);
 
 	sp = g_new0 (Splash, 1);
 	sp->can_destroy = FALSE;

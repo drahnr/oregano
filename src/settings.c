@@ -42,12 +42,6 @@
 #include "oregano-utils.h"
 #include "oregano-config.h"
 
-/* Engines Titles */
-static const gchar*
-engine[] = {
-	"gnucap",
-	"ngspice"
-};
 typedef struct {
 	Schematic *sm;
 	GtkWidget *pbox; /* Property box */
@@ -60,35 +54,29 @@ typedef struct {
 } Settings;
 #define SETTINGS(x) ((Settings*)(x))
 
-GtkWidget *engine_path;	
-GtkWidget *button[2];
 static void
-change_modeldir_cb (GtkFileChooser *chooser, gpointer        user_data)
-{
-	gchar *model_dir;
-	
-	model_dir = gtk_file_chooser_get_uri (chooser);
-}
+remove_item_cb ( GtkWidget *widget, GnomeFileEntry *entry) {
+/*
+   GtkList *lst;
+   GList   *sel;
+   gchar   *txt;
 
-static void
-change_librarydir_cb (GtkFileChooser *chooser, gpointer        user_data)
-{
-	gchar *library_dir;
-	
-	library_dir = gtk_file_chooser_get_uri (chooser);
-}
-
-static void
-change_engine_path_cb (GtkFileChooser *chooser,
-                       gpointer        user_data)
-{
-	gchar *engine_path;
-	gboolean has_changed = FALSE;
-	Settings *s;
-	s = SETTINGS (user_data);
-	
-	int engine_id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
-	engine_path = gtk_file_chooser_get_filename (chooser);
+   txt = (gchar*) gtk_entry_get_text ( GTK_ENTRY (gnome_entry_gtk_entry (entry)));
+   lst   =  GTK_LIST ( entry->combo.list );
+   if ( lst ) {
+      sel = g_list_copy (lst->selection);
+      if ( sel ) {
+	 gtk_list_remove_items(lst,sel);
+	 g_list_free (sel);
+#ifdef GNOME_CONVERSION_COMPLETE
+	 sel = entry->items;
+	 for ( ;sel;sel = sel->next) {
+		 if ( ! strcmp(txt,sel->data) )
+			 g_list_remove (entry->items,sel->data);
+	 }
+#endif
+      }
+   }*/
 }
 
 static void
@@ -114,26 +102,7 @@ delete_event_callback (GtkWidget *w, GdkEvent *event, Settings *s)
 static void
 set_engine_name (GtkWidget *w, Settings *s)
 {
-	int engine_id;
-	s->w_engine = w; 
-	engine_id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
-	if (g_find_program_in_path (engine[engine_id]) != NULL) {
-		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(engine_path),
-						g_find_program_in_path (engine[engine_id]));
-	}
-	else
-	{
-		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button[engine_id])) ){
-			GString *msg = g_string_new(_("Engine <span weight=\"bold\" size=\"large\">"));
-			msg = g_string_append (msg, engine[engine_id]);
-			msg = g_string_append (msg, _("</span> not found\nThe engine is unable to locate the external program."));
-			oregano_warning_with_title (_("Warning"), msg->str);
-			g_string_free (msg, TRUE);
-			engine_id = (engine_id +1) % 2;
-			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), TRUE);
-		}	
-		else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), FALSE);
-	}
+	s->w_engine = w;
 }
 
 gpointer
@@ -157,11 +126,7 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	GladeXML *gui = NULL;
 	Settings *s;
 	Schematic *sm;
-	int engine_id = oregano.engine;
-	
-	gchar *fname, *library_dir, *model_dir;
-	struct dirent *libentry;
-	Library *library;
+	GtkTooltips *image_tooltips;
 
 	g_return_if_fail (sv != NULL);
 
@@ -174,17 +139,17 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	if (!g_file_test (OREGANO_GLADEDIR "/settings.glade", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_GLADEDIR "/settings.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/settings.glade");
+			OREGANO_GLADEDIR "/settings.glade2");
 		oregano_error_with_title (_("Could not create settings dialog"), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/settings.glade", NULL, NULL);
+	gui = glade_xml_new (OREGANO_GLADEDIR "/settings.glade2", NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create settings dialog"));
 		return;
@@ -223,52 +188,58 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	w = glade_xml_get_widget (gui, "realtime-enable");
 	gtk_widget_set_sensitive (w, FALSE);
 
-	
+	w = glade_xml_get_widget (gui, "library-path-entry");
+	gtk_widget_set_sensitive (w, FALSE);
+
+	w = glade_xml_get_widget (gui, "btn_remove_lib_path");
+	gtk_widget_set_sensitive (w, FALSE);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (remove_item_cb), w0);
+
+	w = glade_xml_get_widget (gui, "model-path-entry");
+	gtk_widget_set_sensitive (w, FALSE);
+
+	w = glade_xml_get_widget (gui, "btn_remove_model_path");
+	gtk_widget_set_sensitive (w, FALSE);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (remove_item_cb), w0);
+
 	w = glade_xml_get_widget (gui, "engine_table");
+	image_tooltips = gtk_tooltips_new ();
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+		GtkWidget *button;
+		GtkWidget *image = NULL;
+		GtkWidget *event = NULL;
 		OreganoEngine *engine;
 
 		if (engine_group)
-			button[i] = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engines[i]);
+			button = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engines[i]);
 		else
-			button[i] = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engines[i]);
+			button = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engines[i]);
 
 		/* Check if the engine is available */
-		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
+		engine = oregano_engine_factory_create_engine (i, NULL);
+		if (!oregano_engine_is_available (engine)) {
+			event = gtk_event_box_new ();
+			image = gtk_image_new_from_stock ("gtk-dialog-warning", GTK_ICON_SIZE_BUTTON);
+			gtk_tooltips_set_tip (image_tooltips, event, _("Engine executable not found"),
+				_("The engine is unable to locate the external program."));
+			gtk_container_add (GTK_CONTAINER (event), image);
+		}
+		g_object_unref (G_OBJECT (engine));
 
-		gtk_table_attach (GTK_TABLE (w), button[i], 0, 1, i, i+1, 
-						  GTK_EXPAND|GTK_FILL, GTK_SHRINK, 6, 6);
-		g_signal_connect (G_OBJECT (button[i]), "clicked", 
-						  G_CALLBACK (set_engine_name), s);
-		s->w_engine = GINT_TO_POINTER (oregano.engine);
+		g_object_set_data (G_OBJECT (button), "id", GUINT_TO_POINTER (i));
 
+		gtk_table_attach (GTK_TABLE (w), button, 0, 1, i, i+1, GTK_EXPAND|GTK_FILL, GTK_SHRINK, 6, 6);
+		if (image) {
+			gtk_table_attach (GTK_TABLE (w), event, 1, 2, i, i+1, GTK_SHRINK, GTK_SHRINK, 6, 6);
+		}
+		g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (set_engine_name), s);
+
+		if (oregano.engine == i) {
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
+			set_engine_name(G_OBJECT (button), s);
+		}
 	}
-	/* Libraries directory */
-	w = glade_xml_get_widget (gui, "library-path-entry");
-	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
-								 GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(w),
-										 OREGANO_LIBRARYDIR);
-	g_signal_connect (G_OBJECT (w), "selection-changed",
-					  G_CALLBACK (change_librarydir_cb), w0);
-
-	/* Models directory */	
-
-	w = glade_xml_get_widget (gui, "model-path-entry");
-	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
-								 GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(w),
-										 OREGANO_MODELDIR);
-	g_signal_connect (G_OBJECT (w), "selection-changed",
-					  G_CALLBACK (change_modeldir_cb), w0);
-	
-	/* Engine localisation */
-	engine_path = glade_xml_get_widget (gui, "engine-path");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), TRUE);
-	set_engine_name(button[oregano.engine], s);
-	g_signal_connect (G_OBJECT (engine_path), "file-set",
-					  G_CALLBACK (change_engine_path_cb), s);
-	
+	gtk_tooltips_enable (image_tooltips);
 
 	gtk_widget_show_all (toplevel);
 }

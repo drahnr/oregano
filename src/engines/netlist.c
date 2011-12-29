@@ -230,7 +230,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				data->mark_list = g_slist_prepend (data->mark_list, marker);
 			} else if (!g_strcasecmp (prop, "ground")) {
 				data->gnd_list = g_slist_prepend (data->gnd_list, GINT_TO_POINTER (data->node_nr));
-			} else if (!g_strcasecmp (prop, "point")) {
+			} else if (!g_strcasecmp (prop, "punta")) {
 				data->clamp_list = g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
 			} else if (!g_strncasecmp (prop, "jumper", 5)) {
 				/* Either jumper2 or jumper4. */
@@ -294,7 +294,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				netlist_helper_node_traverse (opposite_node, data);
 			}
 
-			if (g_strcasecmp (prop, "point")) {
+			if (g_strcasecmp (prop, "punta")) {
 				g_free (prop);
 				continue;
 			}
@@ -505,7 +505,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		if (internal != NULL) {
 			gint node_nr;
 			Pin *pins;
-			if (g_strcasecmp (internal, "point") != 0) {
+			if (g_strcasecmp (internal, "punta") != 0) {
 				g_free (internal);
 				continue;
 			}
@@ -637,7 +637,7 @@ netlist_helper_create_analisys_string (NodeStore *store, gboolean do_ac)
 	for(p=parts; p; p = p->next) {
 		prop = part_get_property (p->data, "internal");
 		if (prop) {
-			if (!g_strcasecmp (prop, "point")) {
+			if (!g_strcasecmp (prop, "punta")) {
 				Pin *pins = part_get_pins (p->data);
 				g_free (prop);
 

@@ -1,7 +1,7 @@
 oreganodir = $(datadir)/oregano
 INCLUDES = \
 	$(OREGANO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src/model \
-	-DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"  \
+	-DOREGANO_GLADEDIR=\""$(oreganodir)/dialogs"\"  \
 	-DOREGANO_LIBRARYDIR=\""$(oreganodir)/libraries"\" \
 	-DOREGANO_MODELDIR=\""$(oreganodir)/models"\"
 

@@ -108,7 +108,7 @@ dialog_save_as (SchematicView *sv)
 			GTK_FILE_CHOOSER (dialog));
 		if (name [strlen (name) - 1] != '/') {
 			gchar *tmp;
-			const gchar *base = g_path_get_basename (name);
+			const gchar *base = g_basename (name);
 
 			if (strchr (base, '.') == NULL){
 				tmp = g_strconcat (name, ".oregano", NULL);

@@ -1,60 +1,47 @@
 <?xml version="1.0"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
-		"/usr/share/xml/docbook/custom/mathml/1.0/dbmathml.dtd"
-		[
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "/usr/share/xml/docbook/schema/dtd/4.1.2/docbookx.dtd" [
   <!ENTITY legal SYSTEM "legal.xml">
   <!ENTITY appversion "0.1">
   <!ENTITY manrevision "0.1">
-  <!ENTITY date "15 November 2009">
+	<!ENTITY date "03 Mayo 2004">
   <!ENTITY app "<application>Oregano</application>">
 ]>
 <article id="index" lang="en">
   <articleinfo>
     <title><application>Oregano</application> User's Guide</title>
-	<copyright> 
-		<year>2009</year> 
-		<holder>Marc Lorber</holder> 
-    	</copyright>	
-	<copyright>
-		<year>2003</year><year>2004</year> 
-		<holder>LUGFi</holder> 
-    	</copyright> 
-    	<copyright>
-		<year>1999</year><year>2001</year><year>2002</year>
-		<holder>Richard Hult</holder> 
-    	</copyright>
+		<copyright> 
+						<year>2003</year> 
+						<year>2004</year> 
+						<holder>LUGFi</holder> 
+    </copyright> 
+    <copyright> 
+						<year>1999</year> 
+						<year>2001</year> 
+						<year>2002</year> 
+						<holder>Richard Hult</holder> 
+    </copyright>
     <publisher> 
       <publishername> LUGFI </publishername> 
     </publisher> 
     
     <authorgroup>
       <author>
-	<firstname>Marc</firstname> <surname>Lorber</surname>
+							<firstname>Ricardo</firstname> <surname>Markiewicz</surname>
 	<affiliation>
-	  <address><email>Lorber.Marc@wanadoo.fr</email></address>
-	</affiliation>
-     </author><author>
-	<firstname>Ricardo</firstname> <surname>Markiewicz</surname>
-	<affiliation>
-	  <address><email>rmarkie@fi.uba.ar</email></address>
-	</affiliation>
+	  <address>
+						<email>rmarkie@fi.uba.ar</email>
+	  </address>
+		</affiliation>
      </author>
     </authorgroup>
     <revhistory>
-	<revision>
-		<revnumber>Oregano Manual V 0.1</revnumber>
-		<date>2009</date>
-		<revdescription>
-			<para role="author">Marc Lorber</para>
-		</revdescription>
-      	</revision>
-	<revision>
-		<revnumber>Oregano Manual V 0</revnumber>
-		<date>2004</date>
-		<revdescription>
-			<para role="author">Ricardo Markiewicz</para>
-		</revdescription>
-      	</revision>
+	    <revision>
+				<revnumber>Oregano Manual V 0</revnumber>
+				<date>2004</date>
+				<revdescription>
+				  <para role="author">Ricardo Markiewicz</para>
+				</revdescription>
+      </revision>
     </revhistory>
 
     <releaseinfo>
@@ -67,327 +54,26 @@
       for someone who already is familiar with circuit simulation
       and wants to try out Oregano.
     </releaseinfo> 
-    <!-- An address can be added to the publisher information.  If a role is 
-     not specified, the publisher/author is the same for all versions of the 
-     document.  -->
-
-    &legal;
-    <!-- This file  contains link to license for the documentation (GNU FDL), and 
-        other legal stuff such as "NO WARRANTY" statement. Please do not change 
-	any of this. -->
-
       <legalnotice> 
       <title>Feedback</title> 
       <para>To report a bug or make a suggestion regarding the
-      <application>Oregano</application> application or
+      <application>Oregano 2</application> application or
       this manual, follow the directions in the <ulink
       url="ghelp:oregano-feedback" type="help">Oregano Feedback Page</ulink>. 
       </para>
       </legalnotice>
   </articleinfo>
 
-
-
-<!-- ============= Document Body ============================= -->
-
-  <sect1 id="Spice">
-    <title><emphasis>Spice</emphasis>: circuit simulation program</title>
-    <para><emphasis>Spice</emphasis> is a general-purpose circuit simulation program for nonlinear DC, nonlinear 
-    transient, and linear AC analyses. Circuits may contain resistors, capacitors, inductors, 
-    mutual inductors, independent voltage and current sources, four types of dependent sources, 
-    lossless and lossy transmission lines (two separate implementations), switches, uniform 
-    distributed RC lines, and the five most common semiconductor devices: diodes, BJTs, JFETs, 
-    MESFETs, and MOSFETs.</para>
-	 <para><emphasis>Spice</emphasis> has built-in models for the semiconductor devices, and the user need specify 
-	 only the pertinent model parameter values. The model for the BJT is based on the 
-	 integral-charge model of Gummel and Poon; however, if the Gummel-Poon parameters are not 
-	 specified, the model reduces to the simpler Ebers-Moll model. In either case, charge-storage 
-	 effects, ohmic resistances, and a current-dependent output conductance may be included. The 
-	 diode model can be used for either junction diodes or Schottky barrier diodes. The JFET model 
-	 is based on the FET model of Shichman and Hodges. Six MOSFET models are implemented: MOS1 
-	 is described by a square-law I-V characteristic, MOS2 [1] is an analytical model, while MOS3 
-	 [1] is a semi-empirical model; MOS6 [2] is a simple analytic model accurate in the short-channel 
-	 region; MOS4 [3, 4] and MOS5 [5] are the BSIM (Berkeley Short-channel IGFET Model) and BSIM2. 
-	 MOS2, MOS3, and MOS4 include second-order effects such as channel-length modulation, 
-	 subthreshold conduction, scattering-limited velocity saturation, small-size effects, and 
-	 charge-controlled capacitances.</para>
-	 <sect2 id="analyses-types">
-	 <title>Types of analyses</title>
-	 
-	 <sect3 id="dc-analyses">
-	 <title>DC analyses</title>
-	 <para>The DC analysis portion of <emphasis>Spice</emphasis> (.DC) determines the DC operating point of the circuit
-	 with inductors shorted and capacitors opened. The DC analysis options are specified on the .DC, 
-	 .TF, and .OP control lines. A DC analysis is automatically performed prior to a transient analysis 
-	 to determine the transient initial conditions, and prior to an AC small-signal analysis to determine
-	 the linearized, small-signal models for nonlinear devices. If requested, the DC small-signal value 
-	 of a transfer function (ratio of output variable to input source), input resistance, and output 
-	 resistance is also computed as a part of the dc solution. The DC analysis can also be used to 
-	 generate dc transfer curves: a specified independent voltage or current source is stepped over a 
-	 user-specified range and the DC output variables are stored for each sequential source value. 
-	 </para>
-	 </sect3>
-	 
-	 <sect3 id="ac-analyses">
-	 <title>AC Small-Signal Analysis</title>
-	 <para>The AC small-signal portion of <emphasis>Spice</emphasis> (.AC) computes the AC output variables as a function of 
-	 frequency. The program first computes the DC operating point of the circuit and determines linearized, 
-	 small-signal models for all of the nonlinear devices in the circuit. The resultant linear circuit is 
-	 then analyzed over a user-specified range of frequencies. The desired output of an AC small-signal 
-	 analysis is usually a transfer function (voltage gain, trans-impedance, etc). If the circuit has only 
-	 one AC input, it is convenient to set that input to unity and zero phase, so that output variables 
-	 have the same value as the transfer function of the output variable with respect to the input.</para>
-	 </sect3>
-	 
-	 <sect3 id="transient-analysis">
-	 <title>Transient analysis</title>
-	 <para>The transient analysis portion of <emphasis>Spice</emphasis> (.TRAN) computes the transient output variables as a 
-	 function of time over a user-specified time interval. The initial conditions are automatically 
-	 determined by a DC analysis. All sources which are not time dependent (for example, power supplies) 
-	 are set to their DC value. The transient time interval is specified on a .TRAN control line. </para> 
-	 </sect3>
-	 
-	 <sect3 id="pole-zero-analysis">
-	 <title>Pole-Zero Analysis</title>
-	 <para>The pole-zero analysis portion of <emphasis>Spice</emphasis> (.PZ) computes the poles and/or zeros in the small-signal 
-	 AC transfer function. The program first computes the DC operating point and then determines the linearized, 
-	 small-signal models for all the nonlinear devices in the circuit. This circuit is then used to find the 
-	 poles and zeros of the transfer function. 
-	 </para>
-	 <para>Two types of transfer functions are allowed: one of the form (output voltage)/(input voltage) and 
-	 the other of the form (output voltage)/(input current). These two types of transfer functions cover all 
-	 the cases and one can find the poles/zeros of functions like input/output impedance and voltage gain. 
-	 The input and output ports are specified as two pairs of nodes. 
-	 </para>
-	 <para>The pole-zero analysis works with resistors, capacitors, inductors, linear-controlled sources, 
-	 independent sources, BJTs, MOSFETs, JFETs and diodes. Transmission lines are not supported. 
-	 </para>
-	 <para>The method used in the analysis is a sub-optimal numerical search. For large circuits it may 
-	 take a considerable time or fail to find all poles and zeros. For some circuits, the method becomes 
-	 "lost" and finds an excessive number of poles or zeros. 
-	 </para>
-	 </sect3>
-	  
-	 <sect3 id="small-signal-distorsion-signal">
-	 <title>Small-Signal Distortion Analysis</title>
-	 <para>The distortion analysis portion of <emphasis>Spice</emphasis> (.DISTO) computes steady-state harmonic and 
-	 intermodulation products for small input signal magnitudes. If signals of a single frequency are 
-	 specified as the input to the circuit, the complex values of the second and third harmonics are 
-	 determined at every point in the circuit. If there are signals of two frequencies input to the circuit, 
-	 the analysis finds out the complex values of the circuit variables at the sum and difference of the input 
-	 frequencies, and at the difference of the smaller frequency from the second harmonic of the larger 
-	 frequency. </para>	 
-	 <para>Distortion analysis is supported for the following nonlinear devices: diodes (DIO), BJT, JFET, 
-	 MOSFETs (levels 1, 2, 3, 4/BSIM1, 5/BSIM2, and 6) and MESFETS. All linear devices are automatically 
-	 supported by distortion analysis. If there are switches present in the circuit, the analysis continues 
-	 to be accurate provided the switches do not change state under the small excitations used for distortion 
-	 calculations. </para>
-	 </sect3>
-	 
-	 <sect3 id="sensistivity-analysis">
-	 <title>Sensitivity Analysis</title>
-	 <para><emphasis>Spice</emphasis> will calculate (.SENS) either the DC operating-point sensitivity or the AC small-signal 
-	 sensitivity of an output variable with respect to all circuit variables, including model parameters. 
-	 <emphasis>Spice</emphasis> calculates the difference in an output variable (either a node voltage or a branch current) 
-	 by perturbing each parameter of each device independently. Since the method is a numerical approximation, 
-	 the results may demonstrate second order affects in highly sensitive parameters, or may fail to show very 
-	 low but non-zero sensitivity. Further, since each variable is perturb by a small fraction of its value, 
-	 zero-valued parameters are not analyized (this has the benefit of reducing what is usually a very large 
-	 amount of data). </para>
-	 </sect3>
-	 
-	 <sect3 id="noise-analysis">
-	 <title>Noise Analysis</title>
-	 <para>The noise analysis portion of <emphasis>Spice</emphasis> (.NOISE) does analysis device-generated noise for the given 
-	 circuit. When provided with an input source and an output port, the analysis calculates the noise 
-	 contributions of each device (and each noise generator within the device) to the output port voltage. 
-	 It also calculates the input noise to the circuit, equivalent to the output noise referred to the specified 
-	 input source. This is done for every frequency point in a specified range - the calculated value of the noise 
-	 corresponds to the spectral density of the circuit variable viewed as a stationary gaussian stochastic 
-	 process. </para> 
-	 <para>After calculating the spectral densities, noise analysis integrates these values over the specified 
-	 frequency range to arrive at the total noise voltage/current (over this frequency range). This calculated 
-	 value corresponds to the variance of the circuit variable viewed as a stationary gaussian process. 
-	 </para>
-	 </sect3>
-	 </sect2>
-	 
-	 <sect2 id="temperatures-analysis">
-	 <title>Analyses at different temperatures</title>	
-	 <para>All input data for <emphasis>Spice</emphasis> is assumed to have been measured at a nominal temperature of 27°C, which 
-	 can be changed by use of the TNOM parameter on the .OPTIONS control line. This value can further be 
-	 overridden for any device which models temperature effects by specifying the TNOM parameter on the model 
-	 itself. The circuit simulation is performed at a temperature of 27°C, unless overridden by a TEMP parameter 
-	 on the .OPTIONS control line. Individual instances may further override the circuit temperature through 
-	 the specification of a TEMP parameter on the instance. 
-	 </para>
-	 <para>Temperature appears explicitly in the exponential terms of the BJT and diode model paras. In 
-	 addition, saturation currents have a built-in temperature dependence. The temperature dependence of the 
-	 saturation current in the BJT models is determined by: 
-	 </para>
-	 <center>
-	 <para>I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)
-	 *exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>)) </para>
-	 </center>
-    <para>where k is Boltzmann's constant, q is the electronic charge, E<subscript>g</subscript> is the energy gap which is a model 
-    parameter, and XTI is the saturation current temperature exponent (also a model parameter, and usually 
-    equal to 3). 
-    </para>
-    <para>The temperature dependence of forward and reverse beta is according to the formula:
-    </para> 
-    <para>B(T<subscript>1</subscript>) = B(T<subscript>0</subscript>)* T<subscript>1</subscript><superscript>XTB</superscript>/T<subscript>0</subscript></para>
-	<pre>
-                              XTI
-                          |T |        | E q(T  T )|
-                            1            g   1  0
-          I (T ) = I (T ) |--|     exp|-----------|
-           S  1     S  0
-                          |T |        |k (T  - T )|
-                            0              1    0
-	</pre>
-	<para>COUCOUCOUCOUCOIU</para>
-    
-    <mml:mrow>
-  <mml:mi>x</mml:mi>
-  <mml:mo>=</mml:mo>
-  <mml:mfrac>
-    <mml:mrow>
-       <mml:mrow><mml:mo>-</mml:mo><mml:mi>b</mml:mi></mml:mrow>
-       <mml:mo>&PlusMinus;</mml:mo>
-       <mml:msqrt>
-         <mml:mrow>
-           <mml:msup><mml:mi>b</mml:mi><mml:mn>2</mml:mn></mml:msup>
-           <mml:mo>-</mml:mo>
-           <mml:mrow><mml:mn>4</mml:mn><mml:mi>a</mml:mi><mml:mi>c</mml:mi></mml:mrow>
-         </mml:mrow>
-       </mml:msqrt>
-    </mml:mrow>
-    <mml:mrow><mml:mn>2</mml:mn><mml:mo>&InvisibleTimes;</mml:mo><mml:mi>a</mml:mi></mml:mrow>
-  </mml:mfrac>
-</mml:mrow>
-
-	<para>COUCOUCOUCOUCOIU</para>
-    
-    <para>where T<subscript>1</subscript> and T<subscript>0</subscript> are in kelvin, and XTB is a user-supplied model parameter. Temperature effects 
-    on beta are carried out by appropriate adjustment to the values of BF, ISE, BR , and ISC (<emphasis>Spice</emphasis> model 
-    parameters BF, ISE, BR, and ISC, respectively). 
-    </para>
-    <para>Temperature dependence of the saturation current in the junction diode model is determined by: </para>
-    <para>I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)
-	 *exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>)) </para>  
-	 
-	 <pre>
-                                      XTB
-                                  |T |
-                                    1
-                    B(T ) = B(T ) |--|
-                       1       0
-                                  |T |
-                                    0
-	 </pre>
-  
-    
-    <para>where N is the emission coefficient, which is a model parameter, and the other symbols have 
-    the same meaning as above. Note that for Schottky barrier diodes, the value of the saturation current 
-    temperature exponent, XTI, is usually 2. 
-    </para>
-    <para>Temperature appears explicitly in the value of junction potential, U (in <emphasis>Spice</emphasis> PHI), for all the 
-    device models. The temperature dependence is determined by:
-    </para>
-    
-    <pre>
-                             XTI
-                             ---
-                              N
-                         |T |        |  E q(T  T ) |
-                           1             g   1  0
-         I (T ) = I (T ) |--|     exp|-------------|
-          S  1     S  0
-                         |T |        |N k (T  - T )|
-                           0                1    0
-    </pre>
-    <para>where k is Boltzmann's constant, q is the electronic charge, Na is the acceptor impurity density, 
-    Nd is the donor impurity density, Ni is the intrinsic carrier concentration, and Eg is the energy gap. 
-    </para>
-    <para>Temperature appears explicitly in the value of surface mobility, M0 (or UO), for the MOSFET model. 
-    The temperature dependence is determined by: 
-    </para>
-    <para>R(T) = R(T<subscript>0</subscript>) [1 + TC<subscript>1</subscript> (T - T<subscript>0</subscript> ) + TC<subscript>2</subscript> (T - T<subscript>0</subscript>)<superscript>2</superscript>] 
-    </para>
-    <pre>
-
-                                   | N N   |
-                                      a d
-                          kT       |------ |
-                   U(T) = --  log        2
-                           q     e |N (T)  |
-                                     i
-    </pre>
-
-    
-    <para>The effects of temperature on resistors is modeled by the formula: 
-    </para>
-    <para>I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)
-	 *exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>)) </para>
-    <pre>
-                                M (T )
-                                 0  0
-                       M (T) = -------
-                        0          1.5
-                               | T|
-                               |--|
-                               |T |
-                                 0
-     </pre>
-
-    
-    
-    <para>where T is the circuit temperature, T<subscript>0</subscript> is the nominal temperature, and TC<subscript>1</subscript> and TC<subscript>2</subscript> are the first- 
-    and second-order temperature coefficients. 
-    </para>
-	 </sect2>
-	 
-	 <sect2 id="convergence">
-	 <title>Convergence</title>
-	 <para>Both dc and transient solutions are obtained by an iterative process which is terminated when both 
-	 of the following conditions hold: 
-	 </para>
-	<orderedlist> 
-	<listitem>
-	<para>The nonlinear branch currents converge to within a tolerance of 0.1% or 1 picoamp (1.0<superscript>-12</superscript>A), whichever 
-	 is larger.</para></listitem>
-	 <listitem><para>The node voltages converge to within a tolerance of 0.1% or 1 microvolt (1.0<superscript>-6</superscript>V), whichever is larger.
-	 </para>
-	 </listitem></orderedlist>
-	 <para>Although the algorithm used in <emphasis>Spice</emphasis> has been found to be very reliable, in some cases it fails to 
-	 converge to a solution. When this failure occurs, the program terminates the job. 
-	 </para>
-	 <para>Failure to converge in dc analysis is usually due to an error in specifying circuit connections, 
-	 element values, or model parameter values. Regenerative switching circuits or circuits with positive feedback 
-	 probably will not converge in the dc analysis unless the OFF option is used for some of the devices in the 
-	 feedback path, or the .NODESET control line is used to force the circuit to converge to the desired state. 
-	 </para>
-	 </sect2>
-	 
-	 
-  </sect1>
-
   <sect1 id="getting-started">
     <title>Getting Started with Oregano</title>
 
-    <para>When you first start &app;, you will be presented to an
+    <para>When you first start Oregano, you will be presented to an
     empty sheet, where you can place circuit components and connect
     them with wires. To place a component, also known as 'part',
     first select one in the part browser on the right hand side of 
     the application window. Then press the 'Place' button, or double-click
     the selected part. You can also drag the part preview and drop it
     on the sheet.</para>
-   
-    <figure id="general-view">
-    <title>&app; oregano: main window</title>
-    	<screenshot><graphic fileref="figures/oregano-main-window.png" format="PNG"></graphic>
-      </screenshot>
-    </figure>
 
     <para>When you have some parts placed on the sheet, you can start
     connecting them with wires. Select the wire tool on the toolbar,

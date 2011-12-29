@@ -124,7 +124,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 
 	file = fopen (filename, "w");
 	if (!file) {
-		g_print ("Cannot create file %s\n", filename);
+		g_print ("No se pudo crear %s\n", filename);
 		return;
 	}
 			
@@ -387,7 +387,7 @@ static gchar *analysis_names[] = {
 	NULL
 };
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#define NG_DEBUG(s) g_print ("NG: %s\n", s)
 
 static void
 ngspice_parse (FILE *fp, OreganoNgSpice *ngspice)

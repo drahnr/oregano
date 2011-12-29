@@ -14,7 +14,7 @@ INCLUDES = 	\
 	-DGETTEXT_PACKAGE=\""oregano\""	\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 	\
 	-I$(includedir) $(GNOME_INCLUDEDIR)		\
-	-DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"	\
+	-DOREGANO_GLADEDIR=\""$(oreganodir)/dialogs"\"	\
 	-DOREGANO_LIBRARYDIR=\""$(oreganodir)/libraries"\" \
 	-DOREGANO_MODELDIR=\""$(oreganodir)/models"\" \
 	-DOREGANO_LANGDIR=\""$(oreganodir)/language-specs"\" \
@@ -23,7 +23,7 @@ INCLUDES = 	\
 	-I./gplot \
 	-I./model \
 	-I./engines \
-	-I$(top_srcdir)/data/glade \
+	-I$(top_srcdir)/data/dialogs \
 	-I. \
 	$(OREGANO_CFLAGS)
 

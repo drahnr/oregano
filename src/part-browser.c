@@ -129,7 +129,11 @@ part_search_change (GtkWidget *widget, Browser *br)
 	if (s) {
 		/* Keep record of the filter text length for each item. */
 		br->filter_len = strlen (s);
+#if (GTK_MINOR_VERSION>=4)
 		gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (br->filter_model));
+#else
+		g_warning (_("Gtk version 2.2 does not support GtkTreeModelFilter...\nFiltering disable!"));
+#endif
 	}
 
 	return TRUE;
@@ -198,7 +202,7 @@ static int
 part_selected (GtkTreeView *list, GtkTreePath *arg1, GtkTreeViewColumn *col,
 			   Browser *br)
 {
-	/* if double-click over an item, place it on work area */
+	/* if double-click over an item, place ir on work area */
 	place_cmd (NULL, br);
 
 	return FALSE;
@@ -237,7 +241,7 @@ update_preview (Browser *br)
 	 * new one.
 	 */
 	if (br->preview != NULL)
-		/* FIXME: Check if gnomecanvas are killed by this way */
+		/* FIXME Ver si los gnomecanvas se matan asi */
 		gtk_object_destroy (GTK_OBJECT (br->preview));
 
 	br->preview = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
@@ -255,14 +259,14 @@ update_preview (Browser *br)
 	width = br->canvas->allocation.width;
 	height = br->canvas->allocation.height - PREVIEW_TEXT_HEIGHT;
 
-	/* Get the coordonates */
+	/* Obtengo coordenadas */
 	gnome_canvas_item_get_bounds (GNOME_CANVAS_ITEM (br->preview),
 		&x1, &y1, &x2, &y2);
 
-	/* Translate in such a way that the canvas centre remains in (0, 0) */
+	/* Traslado de tal manera que el centro del canvas quede en (0,0) */
 	art_affine_translate(transf, -(x2 + x1) / 2.0f, -(y2 + y1) / 2.0f);
 
-	/* Compute the scale of the widget */
+	/* Calculo la escala del widget */
 	if((x2 - x1 != 0) || (y2 - y1 != 0)) {
 		if ((x2 - x1) < (y2 - y1))
 			scale = 0.60f * PREVIEW_HEIGHT / (y2 - y1);
@@ -275,21 +279,21 @@ update_preview (Browser *br)
 	art_affine_scale (affine, scale, scale);
 	art_affine_multiply (transf, transf, affine);
 
-	/* Apply the transformation */
+	/* Aplico las transformaciones */
 	gnome_canvas_item_affine_absolute (GNOME_CANVAS_ITEM (br->preview), transf);
 
-	/* Get the new coordonates after transformation */
+	/* Obtengo las nuevas coordenadas despues de transformar */
 	gnome_canvas_item_get_bounds (GNOME_CANVAS_ITEM (br->preview),
 		&x1, &y1, &x2, &y2);
 
-	/* Compute the motion to centre the Preview widget */
+	/* Calculo el desplazamiento para centrar el widget de preview */
 	new_x = (PREVIEW_WIDTH - x1 - x2) / 2;
 	new_y = (PREVIEW_HEIGHT - y1 - y2) / 2;
 
 	art_affine_translate (affine, new_x, new_y);
 	art_affine_multiply (transf, transf, affine);
 
-	/* Apply the transformation */
+	/* Aplico la transformacion resultante */
 	gnome_canvas_item_affine_absolute (GNOME_CANVAS_ITEM (br->preview),
 		transf);
 
@@ -331,6 +335,7 @@ add_part (gpointer key, LibraryPart *part, Browser *br)
 	gtk_list_store_append(model, &iter);
 	gtk_list_store_set(model, &iter, 0, part->name, -1);
 }
+
 
 /*
  * Read the available parts from the library and put them in the browser clist.
@@ -461,6 +466,10 @@ part_browser_create (SchematicView *schematic_view)
 	GladeXML *gui;
 	char *msg;
 	GtkWidget *w;
+	/*
+	 * Unused variable
+	GtkTreeModel *model;
+	*/
 	GtkCellRenderer *cell_text;
 	GtkTreeViewColumn *cell_column;
 	GtkStyle *style;
@@ -479,18 +488,18 @@ part_browser_create (SchematicView *schematic_view)
 
 	schematic_view_set_browser(schematic_view, br);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/part-browser.glade",
+	if (!g_file_test (OREGANO_GLADEDIR "/part-browser.glade2",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/part-browser.glade");
+			OREGANO_GLADEDIR "/part-browser.glade2");
 
 		oregano_error_with_title (_("Could not create part browser"), msg);
 		g_free (msg);
 		return NULL;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/part-browser.glade",
+	gui = glade_xml_new (OREGANO_GLADEDIR "/part-browser.glade2",
 		"part_browser_vbox", GETTEXT_PACKAGE);
 	if (!gui) {
 		oregano_error (_("Could not create part browser"));
@@ -504,6 +513,8 @@ part_browser_create (SchematicView *schematic_view)
 
 	style =  gtk_style_new ();
 	colormap = gtk_widget_get_colormap (GTK_WIDGET (w));
+	/* gdk_color_white was deprecated
+	 */
 	style->bg[GTK_STATE_NORMAL].red = 65535;
 	style->bg[GTK_STATE_NORMAL].blue = 65535;
 	style->bg[GTK_STATE_NORMAL].green = 65535;
@@ -588,10 +599,19 @@ part_browser_create (SchematicView *schematic_view)
 	/* Create the filter sorted model. This filter items based on user
 	   request for fast item search */
 
+	/* TODO : This work only with Gtk2.4!!!
+	 *
+	 * Need to discuss if we drop support for Gtk2.2 before or after 0.4
+	 */
+#if (GTK_MINOR_VERSION>=4)
 	br->filter_model = gtk_tree_model_filter_new (br->sort_model, NULL);
 	gtk_tree_model_filter_set_visible_func (
 		GTK_TREE_MODEL_FILTER (br->filter_model),
 		part_list_filter_func, br, NULL);
+#else
+	g_warning (_("Gtk version 2.2 does not support GtkTreeModelFilter...\nFiltering disable!"));
+	br->filter_model = NULL;
+#endif
 
 	/* If we have TreeFilter use it, if not, just use sorting model only */
 	if (br->filter_model)
@@ -625,9 +645,16 @@ part_browser_create (SchematicView *schematic_view)
 	return br->viewport;
 }
 
+#if (GTK_MINOR_VERSION>=4)
 static void
-part_browser_setup_libs(Browser *br, GladeXML *gui) {
+part_browser_setup_libs (Browser *br, GladeXML *gui) {
 
+	/*
+	 * Unused variables
+	GtkListStore *store;
+	GtkTreeIter iter;
+	GtkCellRenderer *renderer;
+	*/
 	GtkWidget *combo_box, *w;
 
 	GList *libs;
@@ -638,7 +665,7 @@ part_browser_setup_libs(Browser *br, GladeXML *gui) {
 
 	w = glade_xml_get_widget (gui, "table1");
 	combo_box = gtk_combo_box_new_text ();
-	gtk_table_attach_defaults (GTK_TABLE(w),combo_box,1,2,0,1);
+	gtk_table_attach_defaults(GTK_TABLE(w),combo_box,1,2,0,1);
 
 	libs = oregano.libraries;
 
@@ -655,10 +682,56 @@ part_browser_setup_libs(Browser *br, GladeXML *gui) {
 	g_signal_connect (G_OBJECT (combo_box),
 		"changed", G_CALLBACK(library_switch_cb), br);
 }
+#else
+static void
+part_browser_setup_libs (Browser *br, GladeXML *gui) {
+	GtkWidget *w, *menu, *item;
+	GList *libs;
+	gboolean first;
 
+	w = glade_xml_get_widget (gui, "library_optionmenu");
+
+	gtk_option_menu_remove_menu(GTK_OPTION_MENU(w));
+
+	menu = gtk_menu_new();
+	gtk_widget_show(menu);
+
+	libs = oregano.libraries;
+
+	first = TRUE;
+	while (libs) {
+		Library *lib;
+
+		lib = (Library *)libs->data;
+		item = gtk_menu_item_new_with_label(lib->name);
+
+		if (first) {
+			br->library_menu_item = item;
+			first = FALSE;
+		}
+
+		gtk_menu_shell_append(GTK_MENU_SHELL (menu), item);
+		gtk_widget_show(item);
+		gtk_object_set_user_data(GTK_OBJECT(item), lib);
+
+		g_signal_connect(G_OBJECT(item), "activate",
+			G_CALLBACK(library_switch_cb), br);
+
+		libs = libs->next;
+	}
+
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (w), menu);
+	gtk_option_menu_set_history (GTK_OPTION_MENU (w), 0);
+}
+#endif
+#if (GTK_MINOR_VERSION>=4)
 static void
 library_switch_cb (GtkWidget *combo_box, Browser *br)
 {
+	/*
+	 * Unused variable
+	Library *lib;
+	*/
 	GList *libs = oregano.libraries;
 
 	br->library = (Library *) g_list_nth_data (libs,
@@ -666,6 +739,22 @@ library_switch_cb (GtkWidget *combo_box, Browser *br)
 
 	update_list (br);
 }
+#else
+static void
+library_switch_cb (GtkWidget *item, Browser *br)
+{
+	Library *lib;
+
+	/* 1) Update the browser. */
+	lib = (Library *) gtk_object_get_user_data (GTK_OBJECT (item));
+	br->library = lib;
+
+	/* 2) Update the clist. */
+	update_list (br);
+
+	br->library_menu_item = item;
+}
+#endif
 
 static void
 wrap_string (char* str, int width)
@@ -713,3 +802,4 @@ part_browser_reparent (gpointer *br, GtkWidget *new_parent)
 	b = (Browser *)br;
 	gtk_widget_reparent (GTK_WIDGET (b->viewport), new_parent);
 }
+

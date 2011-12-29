@@ -130,7 +130,7 @@ main (int argc, char **argv)
 
 	oregano_config_load ();
 
-	if (!g_file_test (OREGANO_GLADEDIR "/sim-settings.glade",
+	if (!g_file_test (OREGANO_GLADEDIR "/sim-settings.glade2",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("You seem to be running Oregano without\n"

@@ -123,7 +123,6 @@ void sheet_item_select_in_area (SheetItem *item,
 
 void sheet_item_place (SheetItem *item, SchematicView *sv);
 void sheet_item_place_ghost (SheetItem *item, SchematicView *sv);
-void sheet_item_add_menu (SheetItem *item, const char *menu, 
-    const GtkActionEntry *action_entries, int nb_entries); 
+void sheet_item_add_menu (SheetItem *item, const char *menu); 
 
 #endif

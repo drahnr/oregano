@@ -897,6 +897,7 @@ part_get_refdes_prefix (ItemData *data)
 	Part *part;
 	char *refdes;
 	int i, length;
+	gboolean found_num;
 
 	g_return_val_if_fail (IS_PART (data), NULL);
 
@@ -906,17 +907,29 @@ part_get_refdes_prefix (ItemData *data)
 	if (refdes == NULL)
 		return NULL;
 
+	/*
+	 * FIXME: the ref.des. should be stored in two parts,
+	 * as a char and an integer.
+	 */
+
 	 /*
 	 * Get the 'prefix' i.e R for resistors.
 	 */
+	found_num = FALSE;
 	length = strlen (refdes);
-	for (i = 0; i < length; i++) { 
-		if (isdigit (refdes[length-i -1])) {
-			refdes[length -i -1] = '\0';
+	for (i = 0; i < length; i++) {
+		if (!isalpha (refdes[i])) {
+			found_num = TRUE;
+			break;
 		}
-		else break;
 	}
-	return g_strdup (refdes);
+
+	if (found_num)
+		return NULL; //g_strndup (refdes, i - 1);
+	else
+		return g_strdup (refdes);
+
+	return NULL;
 }
 
 static void

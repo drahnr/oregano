@@ -1,4 +1,4 @@
-/*
+/**
  * @file create-wire.c
  *
  * @author Richard Hult <rhult@hem.passagen.se>
@@ -9,7 +9,8 @@
  *
  * The name is not really right. This part handles creation of wires and
  * acts as glue between NodeStore/Wire and Sheet/WireItem.
- *
+ */
+/*
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
@@ -78,7 +79,7 @@ static void cancel_wire (CreateWireContext *cwc);
 
 static void exit_wire_mode (CreateWireContext *cwc);
 
-/*
+/**
  * Initiates wire creation by disconnecting the signal handler that
  * starts the wire-drawing and then connecting the drawing handler.
  * This is an event handler.
@@ -168,7 +169,7 @@ create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 	return TRUE;
 }
 
-/*
+/**
  * This needs to be called in order to start a wire creation.
  * It sets up the initial event handler that basically just
  * takes care of the first button-1 press that starts the
@@ -205,7 +206,7 @@ create_wire_initiate (SchematicView *sv)
 	return cwc;
 }
 
-/*
+/**
  * create_wire_event
  */
 static int
@@ -321,6 +322,7 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 			dy = fabs (cwc->old_y - new_y);
 			m = sqrt (dx*dx + dy*dy);
 
+			/* 20 == 10*10 == GRID_SIZE*GRIS_SIZE */
 			if (m > 20)
 				cwc->moved = TRUE;
 		}
@@ -483,6 +485,7 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 	 * If the user clicks when wire length is zero, cancel the wire.
 	 */
 	if (p1.x == p2.x && p1.y == p2.y) {
+		/* g_print ("cancel wire\n");*/
 		cancel_wire (cwc);
 		return;
 	}
@@ -670,7 +673,7 @@ create_wire_exit (CreateWireContext *cwc)
 	}
 }
 
-/*
+/**
  * Signal handler for the "cancel" signal that the sheet emits
  * when <escape> is pressed.
  */

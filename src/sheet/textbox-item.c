@@ -48,10 +48,13 @@
 
 #define NORMAL_COLOR "black"
 #define SELECTED_COLOR "green"
+//#define TEXTBOX_FONT "-*-helvetica-medium-r-*-*-*-100-*-*-*-*-*-*"
 #define TEXTBOX_FONT "Arial 10"
 
 static void textbox_item_class_init (TextboxItemClass *klass);
 static void textbox_item_init (TextboxItem *item);
+static void textbox_item_set_arg (GtkObject *object, GtkArg *arg, guint arg_id);
+static void textbox_item_get_arg (GtkObject *object, GtkArg *arg, guint arg_id);
 static void textbox_item_destroy (GtkObject *object);
 static void textbox_item_moved (SheetItem *object);
 
@@ -97,11 +100,6 @@ static const char *textbox_item_context_menu =
 "    <menuitem action='EditText'/>"
 "  </popup>"
 "</ui>";
-
-static GtkActionEntry action_entries[] = {
-	{"EditText", GTK_STOCK_PROPERTIES, N_("_Edit the text..."), NULL,
-	N_("Edit the text"),G_CALLBACK (edit_cmd)}
-};
 
 enum {
 	TEXTBOX_ITEM_ARG_0,
@@ -161,7 +159,11 @@ textbox_item_class_init (TextboxItemClass *textbox_item_class)
 	sheet_item_class = SHEET_ITEM_CLASS(textbox_item_class);
 	textbox_item_parent_class =
 		g_type_class_peek_parent(textbox_item_class);
+/*	gtk_object_add_arg_type ("TextboxItem::name",
+ *              GTK_TYPE_POINTER, GTK_ARG_READWRITE, TEXTBOX_ITEM_ARG_NAME);
 
+	object_class->set_arg = textbox_item_set_arg;
+	object_class->get_arg = textbox_item_get_arg;*/
 	gtk_object_class->destroy = textbox_item_destroy;
 
 	sheet_item_class->moved = textbox_item_moved;
@@ -184,9 +186,37 @@ textbox_item_init (TextboxItem *item)
 	priv->highlight = FALSE;
 	priv->cache_valid = FALSE;
 
-	sheet_item_add_menu (SHEET_ITEM (item), textbox_item_context_menu,
-	    action_entries, G_N_ELEMENTS (action_entries));
+	sheet_item_add_menu (SHEET_ITEM (item), textbox_item_context_menu);
 }
+
+/*static void
+textbox_item_set_arg (GObject *object, GtkArg *arg, guint arg_id)
+{
+	TextboxItem *textbox_item = TEXTBOX_ITEM (object);
+
+	textbox_item = TEXTBOX_ITEM (object);
+
+	switch (arg_id) {
+	case TEXTBOX_ITEM_ARG_NAME:
+		break;
+	}
+}
+
+static void
+textbox_item_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
+{
+	TextboxItem *textbox_item = TEXTBOX_ITEM (object);
+
+	textbox_item = TEXTBOX_ITEM (object);
+
+	switch (arg_id) {
+	case TEXTBOX_ITEM_ARG_NAME:
+		break;
+	default:
+		arg->type = GTK_TYPE_INVALID;
+		break;
+	}
+}*/
 
 static void
 textbox_item_destroy (GtkObject *object)
@@ -328,12 +358,16 @@ select_idle_callback (TextboxItem *item)
 	SheetPos bbox_start, bbox_end;
 	TextboxItemPriv *priv = item->priv;
 
+	//	if (GTK_OBJECT_DESTROYED (item))
+	//		return FALSE;
+
 	get_cached_bounds (item, &bbox_start, &bbox_end);
 	gnome_canvas_item_set (GNOME_CANVAS_ITEM (priv->text_canvas_item),
 		"fill_color", SELECTED_COLOR, NULL);
 
 	priv->highlight = TRUE;
 
+	//	g_object_unref(G_OBJECT(item));
 	return FALSE;
 }
 
@@ -347,12 +381,14 @@ deselect_idle_callback (TextboxItem *item)
 
 	priv->highlight = FALSE;
 
+	//g_object_unref(G_OBJECT(item));
 	return FALSE;
 }
 
 static void
 selection_changed (TextboxItem *item, gboolean select, gpointer user_data)
 {
+	//	g_object_ref(G_OBJECT(item));
 	if (select)
 		gtk_idle_add ((gpointer) select_idle_callback, item);
 	else
@@ -400,14 +436,21 @@ get_cached_bounds (TextboxItem *item, SheetPos *p1, SheetPos *p2)
 		SheetPos start_pos, end_pos;
 
 		font = pango_font_description_from_string(TEXTBOX_FONT);
+		//gdk_string_extents (font,
+		//		    textbox_get_text (TEXTBOX (sheet_item_get_data (SHEET_ITEM (item)))),
+		//		    &lbearing,
+		//		    &rbearing,
+		//		    &width,
+		//		    &ascent,
+		//		    &descent);
 
 		item_data_get_pos (sheet_item_get_data (SHEET_ITEM (item)),
 			&pos);
 
 		start_pos.x = pos.x;
 		start_pos.y = pos.y-5;// - font->ascent;
-		end_pos.x = pos.x+5;  // + rbearing;
-		end_pos.y = pos.y+5;  // + font->descent;
+		end_pos.x = pos.x+5; // + rbearing;
+		end_pos.y = pos.y+5;// + font->descent;
 
 		priv->bbox_start = start_pos;
 		priv->bbox_end = end_pos;
@@ -641,18 +684,18 @@ edit_textbox (SheetItem *sheet_item)
 	priv = item->priv;
 	textbox = TEXTBOX (sheet_item_get_data (sheet_item));
 
-	if (!g_file_test (OREGANO_GLADEDIR "/textbox-properties-dialog.glade",
+	if (!g_file_test (OREGANO_GLADEDIR "/textbox-properties-dialog.glade2",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/textbox-properties-dialog.glade");
+			OREGANO_GLADEDIR "/textbox-properties-dialog.glade2");
 		oregano_error (_("Could not create textbox properties dialog"));
 		g_free (msg);
 		return;
 	}
 
 	gui = glade_xml_new (
-		OREGANO_GLADEDIR "/textbox-properties-dialog.glade",
+		OREGANO_GLADEDIR "/textbox-properties-dialog.glade2",
 		NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create textbox properties dialog"));

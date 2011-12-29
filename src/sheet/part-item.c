@@ -101,21 +101,21 @@ enum {
 };
 
 struct _PartItemPriv {
-	guint 			cache_valid : 1;
-	guint 			highlight : 1;
+	guint cache_valid : 1;
+	guint highlight : 1;
 
 	GnomeCanvasGroup *label_group;
-	GSList 			 *label_items;
+	GSList *label_items;
 
 	GnomeCanvasGroup *node_group;
-	GSList           *label_nodes;
+	GSList *label_nodes;
 
 	/*
 	 * Cached bounding box. This is used to make
 	 * the rubberband selection a bit faster.
 	 */
-	SheetPos 		bbox_start;
-	SheetPos 		bbox_end;
+	SheetPos bbox_start;
+	SheetPos bbox_end;
 };
 
 typedef struct {
@@ -123,7 +123,7 @@ typedef struct {
 	PartItem  *part_item;
 
 	/* List of GtkEntry's */
-	GList     *widgets;
+	GList *widgets;
 } PartPropDialog;
 
 static PartPropDialog *prop_dialog = NULL;
@@ -135,9 +135,6 @@ static const char *part_item_context_menu =
 "    <menuitem action='ObjectProperties'/>"
 "  </popup>"
 "</ui>";
-static GtkActionEntry action_entries[] = {
-	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), NULL, N_("Modify the object's properties"), NULL}//G_CALLBACK (object_properties_cmd)}
-};
 
 enum {
 	ANCHOR_NORTH,
@@ -184,6 +181,8 @@ GtkAnchorType part_item_get_anchor_from_part (Part *part)
 		return GTK_ANCHOR_NORTH_WEST;
 	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_SOUTH))
 		return GTK_ANCHOR_SOUTH_WEST;
+	if ((anchor_v == ANCHOR_EAST) && (anchor_h == ANCHOR_SOUTH))
+		return GTK_ANCHOR_SOUTH_EAST;
 
 	return GTK_ANCHOR_SOUTH_EAST;
 }
@@ -270,6 +269,9 @@ part_item_class_init (PartItemClass *part_item_class)
 			"model",
 			G_PARAM_READABLE | G_PARAM_WRITABLE));
 
+//	object_class->dispose = part_item_dispose;
+//	object_class->finalize = item_data_finalize;
+
 	gtk_object_class->destroy = part_item_destroy;
 
 	sheet_item_class->moved = part_item_moved;
@@ -295,8 +297,7 @@ part_item_init (PartItem *item)
 
 	item->priv = priv;
 
-	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu, 
-		action_entries, G_N_ELEMENTS (action_entries));
+	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu);
 }
 
 static void
@@ -311,6 +312,12 @@ part_item_set_property (GObject *object, guint propety_id, const GValue *value,
 
 	part_item = PART_ITEM(object);
 	priv = part_item->priv;
+
+	switch (propety_id) {
+	default:
+		g_warning ("PartItem: Invalid argument.\n");
+
+	}
 }
 
 static void
@@ -325,6 +332,12 @@ part_item_get_property (GObject *object, guint propety_id, GValue *value,
 
 	part_item = PART_ITEM (object);
 	priv = part_item->priv;
+
+	switch (propety_id) {
+	default:
+		pspec->value_type = G_TYPE_INVALID;
+		break;
+	}
 }
 
 static void
@@ -467,7 +480,7 @@ update_canvas_labels (PartItem *item)
 
 	label_items = priv->label_items;
 
-	/* Put the label of each item */
+	/* Pone las etiquetas de Item */
 	for (labels = part_get_labels (part); labels;
 	     labels = labels->next, label_items = label_items->next) {
 		char *text;
@@ -499,7 +512,7 @@ part_item_update_node_label (PartItem *item)
 
 	g_return_if_fail( IS_PART(part) );
 
-	/* Put the label of each node */
+	/* Pone las etiquetas de los nodos */
 	num_pins = part_get_num_pins(part);
 	pins = part_get_pins(part);
 	labels = priv->label_nodes;
@@ -546,7 +559,7 @@ prop_dialog_response(GtkWidget *dialog, gint response,
 	     widget = widget->next) {
 		w = widget->data;
 
-		prop_name = g_object_get_data (G_OBJECT (w), "user");
+		prop_name = gtk_object_get_user_data (GTK_OBJECT (w));
 		prop_value = gtk_entry_get_text (GTK_ENTRY (w));
 
 		for (props = part_get_properties (part); props; props = props->next) {
@@ -563,7 +576,7 @@ prop_dialog_response(GtkWidget *dialog, gint response,
 }
 
 static void
-edit_properties_point (PartItem *item)
+edit_properties_punta (PartItem *item)
 {
 	GSList *properties;
 	PartItemPriv *priv;
@@ -579,17 +592,17 @@ edit_properties_point (PartItem *item)
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
 	if (!g_file_test(
-		OREGANO_GLADEDIR "/clamp-properties-dialog.glade",
+		OREGANO_GLADEDIR "/clamp-properties-dialog.glade2",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/clamp-properties-dialog.glade");
+			OREGANO_GLADEDIR "/clamp-properties-dialog.glade2");
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/clamp-properties-dialog.glade",
+	gui = glade_xml_new (OREGANO_GLADEDIR "/clamp-properties-dialog.glade2",
 		NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create part properties dialog."));
@@ -606,7 +619,7 @@ edit_properties_point (PartItem *item)
 	radio_v = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_v"));
 	radio_c = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_c"));
 
-	/* FIXME: Deactivated up to finalisation of the analysis by the backend */
+	/* FIXME : Desactivada mientras se trabaja en el backend */
 	gtk_widget_set_sensitive (GTK_WIDGET (radio_c), FALSE);
 
 	ac_r = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_r"));
@@ -720,8 +733,8 @@ edit_properties (SheetItem *object)
 			return;
 		}
 		/* Hack!! */
-		if (g_strcasecmp (internal, "point") == 0) {
-			edit_properties_point (item);
+		if (g_strcasecmp (internal, "punta") == 0) {
+			edit_properties_punta (item);
 			return;
 		}
 	}
@@ -729,17 +742,17 @@ edit_properties (SheetItem *object)
 	g_free (internal);
 
 	if (!g_file_test(
-		OREGANO_GLADEDIR "/part-properties-dialog.glade",
+		OREGANO_GLADEDIR "/part-properties-dialog.glade2",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/part-properties-dialog.glade");
+			OREGANO_GLADEDIR "/part-properties-dialog.glade2");
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/part-properties-dialog.glade",
+	gui = glade_xml_new (OREGANO_GLADEDIR "/part-properties-dialog.glade2",
 		NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create part properties dialog."));
@@ -756,20 +769,19 @@ edit_properties (SheetItem *object)
 	notebook  = GTK_NOTEBOOK (glade_xml_get_widget (gui, "notebook"));
 
 	g_signal_connect (prop_dialog->dialog, "destroy",
-		(GCallback) prop_dialog_destroy,  prop_dialog);
+		(GCallback) prop_dialog_destroy,
+		prop_dialog
+	);
 
 	prop_dialog->widgets = NULL;
 	has_model = FALSE;
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
-		
 		prop = properties->data;
 		if (prop->name) {
 			GtkWidget *entry;
 			GtkWidget *label;
-			gchar *temp=NULL;
-			
 			if (!g_strcasecmp (prop->name, "internal"))
 				continue;
 
@@ -778,33 +790,25 @@ edit_properties (SheetItem *object)
 				model_name = g_strdup (prop->value);
 			}
 
-			
-			/* Find the Refdes and replace by their real value */	
-			temp = prop->name;
-			if (!g_ascii_strcasecmp (temp,  "Refdes")) temp = _("Designation");
-			if (!g_ascii_strcasecmp (temp,  "Template")) temp  = _("Template");
-			if (!g_ascii_strcasecmp (temp,  "Res")) temp  = _("Resistor");
-			if (!g_ascii_strcasecmp (temp,  "Cap")) temp  = _("Capacitor");
-			if (!g_ascii_strcasecmp (temp,  "Ind")) temp  = _("Inductor");
-			label = gtk_label_new (temp);
+			label = gtk_label_new (prop->name);
 			entry = gtk_entry_new ();
-			gtk_entry_set_text (GTK_ENTRY (entry),  prop->value);
-			g_object_set_data (G_OBJECT (entry),  "user",  g_strdup (prop->name));
+			gtk_entry_set_text (GTK_ENTRY (entry), prop->value);
+			gtk_object_set_user_data (GTK_OBJECT (entry), g_strdup (prop->name));
 
 			gtk_table_attach (
 				prop_table, label,
 				0, 1, y, y+1,
 				GTK_FILL|GTK_SHRINK,
 				GTK_FILL|GTK_SHRINK,
-				8, 8);
-			
+				8, 8
+			);
 			gtk_table_attach (
 				prop_table, entry,
 				1, 2, y, y+1,
 				GTK_EXPAND|GTK_FILL,
 				GTK_FILL|GTK_SHRINK,
-				8, 8);
-			
+				8, 8
+			);
 			y++;
 			gtk_widget_show (label);
 			gtk_widget_show (entry);
@@ -1019,6 +1023,21 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	}
 
 	anchor = part_item_get_anchor_from_part (part);
+
+	/*if (horizontal) {
+		if (flip & ID_FLIP_HORIZ)
+			anchor = GTK_ANCHOR_SOUTH_EAST;
+		else
+			anchor = GTK_ANCHOR_SOUTH_WEST;
+	} else {
+		if (flip & ID_FLIP_VERT)
+			anchor = GTK_ANCHOR_NORTH_WEST;
+		else
+			anchor = GTK_ANCHOR_NORTH_EAST;
+	}
+	if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT)) {
+		anchor = GTK_ANCHOR_NORTH_EAST;
+	}*/
 
 	for (label = item->priv->label_items; label; label = label->next) {
 		gnome_canvas_item_set (

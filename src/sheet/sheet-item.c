@@ -35,22 +35,20 @@
 #include "stock.h"
 #include "schematic.h"
 #include "schematic-view.h"
-#include "config.h"
 
 static void sheet_item_class_init (SheetItemClass * klass);
 
 static void sheet_item_init (SheetItem *item);
 
 static void sheet_item_set_property (GObject *object, guint prop_id,
-						const GValue *value, GParamSpec *spec);
+									 const GValue *value, GParamSpec *spec);
 
 static void sheet_item_get_property (GObject *object, guint prop_id,
-						GValue *value, GParamSpec *spec);
+										 GValue *value, GParamSpec *spec);
 
 static void sheet_item_destroy (GtkObject *object);
 
-static void sheet_item_run_menu (SheetItem *item, SchematicView *sv, 
-						GdkEventButton *event);
+static void sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event);
 
 static GnomeCanvasGroupClass *sheet_item_parent_class = NULL;
 extern GObject *clipboard_data_get_item_data ();
@@ -100,14 +98,6 @@ static const char *sheet_item_context_menu =
 "  </popup>"
 "</ui>";
 
-static GtkActionEntry action_entries[] = {
- 	{"Copy", GTK_STOCK_COPY, N_("_Copy"), "<control>C", NULL, NULL}, 
-	{"Cut", GTK_STOCK_CUT, N_("C_ut"), "<control>X", NULL, NULL}, 
-	{"Delete", GTK_STOCK_DELETE, N_("_Delete"), "<control>D", N_("Delete the selection"), NULL}, 
-	{"Rotate", STOCK_PIXMAP_ROTATE, N_("_Rotate"), "<control>R", N_("Rotate the selection clockwise"), NULL}, 
-	{"FlipH", NULL, N_("Flip _horizontally"), "<control>F", N_("Flip the selection horizontally"), NULL}, 
-	{"FlipV", NULL, N_("Flip _vertically"), "<control><shift>F", N_("Flip the selection vertically"), NULL} 
-};
 GType
 sheet_item_get_type ()
 {
@@ -230,14 +220,6 @@ sheet_item_init (SheetItem *item)
 	item->priv->action_group = NULL;
 
 	item->priv->ui_manager = gtk_ui_manager_new ();
-	item->priv->action_group = gtk_action_group_new ("action_group");
-	gtk_action_group_set_translation_domain (item->priv->action_group, GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (item->priv->action_group,
-                                      action_entries,
-                                      G_N_ELEMENTS (action_entries),
-                                      NULL);
-	gtk_ui_manager_insert_action_group (item->priv->ui_manager, item->priv->action_group, 0);
-	
 	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, sheet_item_context_menu, -1, &error)) {
 		g_message ("building menus failed: %s", error->message);
 		g_error_free (error);
@@ -331,7 +313,7 @@ sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event)
 }
 
 static int
-scroll_timeout_callback (Sheet *sheet)
+scroll_timeout_cb (Sheet *sheet)
 {
 	int width, height;
 	int x, y, dx = 0, dy = 0;
@@ -430,7 +412,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 				!((event->button.state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK))
 				schematic_view_select_all (sv, FALSE);
 
-			//if (!sheet_item->priv->selected)
+//			if (!sheet_item->priv->selected)
 				sheet_item_select (sheet_item, TRUE);
 
 			class = SHEET_ITEM_CLASS (GTK_OBJECT_GET_CLASS(sheet_item));
@@ -490,7 +472,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 			  "y", &delta.y,
 			  NULL);
 
-			gtk_timeout_remove (priv->scroll_timeout_id); // Tricky...
+			gtk_timeout_remove (priv->scroll_timeout_id); // Esto no esta bien.
 
 			sheet->state = SHEET_STATE_NONE;
 			gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (sheet_item), event->button.time);
@@ -620,7 +602,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 			 * Start the autoscroll timeout.
 			 */
 			priv->scroll_timeout_id =
-				g_timeout_add (50, (void *) scroll_timeout_callback, sheet);
+				g_timeout_add (50, (void *) scroll_timeout_cb, sheet);
 		}
 
 		snapped_x = event->motion.x;
@@ -741,6 +723,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 	GList *list;
 	static SheetPos delta, tmp;
 	static int control_key_down = 0;
+//	GtkArg arg[2];
 
 	/* Remember the last position of the mouse cursor. */
 	static double last_x, last_y;
@@ -1205,16 +1188,10 @@ sheet_item_place_ghost (SheetItem *item, SchematicView *sv)
 }
 
 void
-sheet_item_add_menu (SheetItem *item, const char *menu, 
-    const GtkActionEntry *action_entries, int nb_entries)
+sheet_item_add_menu (SheetItem *item, const char *menu)
 {
 	GError *error = NULL;
-	gtk_action_group_add_actions (item->priv->action_group,
-                                      action_entries,
-                                      nb_entries,
-                                      NULL);
-	
-	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager,  menu,  -1,  &error)) {
+	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, menu, -1, &error)) {
 		g_message ("building menus failed: %s", error->message);
 		g_error_free (error);
 		exit (EXIT_FAILURE);

@@ -1,3 +1,19 @@
+/* TODO:
+
+Hoppa över wires som inte connectar.
+
+ -> Måste lagra connections dots i SheetNode.
+ -> NodeItem
+
+ -> Byt namn på SheetNode till Node.
+
+ -> Inte kunna selecta (etc) NodeItem.
+
+ -> Inte autoconnect på wires som korsas.
+ -> Möjlighet att connecta två wires som korsas.
+
+*/
+
 /*
  * node-item.c
  * Authors:
@@ -110,3 +126,5 @@ node_item_show_dot (NodeItem *item, gboolean show)
 			gnome_canvas_item_hide (item->priv->dot_item);
 	}
 }
+
+
