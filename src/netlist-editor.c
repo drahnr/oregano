@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gnome.h>
-#include <gtksourceview/gtksourcelanguagemanager.h>
+#include <gtksourceview/gtksourceprintcompositor.h>
 
 static void netlist_editor_finalize (GObject *object);
 static void netlist_editor_dispose (GObject *object);
@@ -61,6 +61,16 @@ netlist_editor_class_init (NetlistEditorClass *klass) {
 	object_class = G_OBJECT_CLASS(klass);
 	parent_class = g_type_class_peek_parent(klass);
 
+/*	netlist_editor_signals[CHANGED] =
+		g_signal_new ("changed",
+			G_TYPE_FROM_CLASS (object_class),
+			G_SIGNAL_RUN_FIRST,
+			G_STRUCT_OFFSET (NetlistEditorClass, changed),
+			NULL,
+			NULL,
+			g_cclosure_marshal_VOID__VOID,
+			G_TYPE_NONE, 0);
+*/
 	object_class->finalize = netlist_editor_finalize;
 	object_class->dispose = netlist_editor_dispose;
 }
@@ -145,7 +155,40 @@ netlist_editor_set_config (NetlistEditor * nle)
 void
 netlist_editor_print (GtkWidget * widget, NetlistEditor * nle)
 {
+/*	GnomePrintJob *print_job;
+	GtkSourcePrintJob *job;
+	GtkWidget *preview_widget;
+	char *header_left, *header_right;
+	Schematic *sm;
 
+	sm = schematic_view_get_schematic (nle->priv->sv);
+
+	job = gtk_source_print_job_new_with_buffer (gnome_print_config_default (), nle->priv->buffer);
+
+	header_left = g_strdup_printf (_("Netlist for %s"), schematic_get_title (sm));
+	header_right = g_strdup_printf (_("Author : %s"), schematic_get_author (sm));
+
+	gtk_source_print_job_set_header_format (job,
+		header_left,
+		NULL,
+		header_right,
+		FALSE
+	);
+	gtk_source_print_job_set_print_header (job, TRUE);
+
+	gtk_source_print_job_set_footer_format (job,
+		NULL,
+		NULL,
+		_("Page %N of %Q"),
+		FALSE
+	);
+	gtk_source_print_job_set_print_footer (job, TRUE);
+
+	print_job = gtk_source_print_job_print (job);
+
+	preview_widget = gnome_print_job_preview_new (print_job, _("Print Preview"));
+	gtk_widget_show (GTK_WIDGET (preview_widget));
+	*/
 }
 
 void
@@ -284,17 +327,17 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	
 	netlist_editor_get_config (nle);
 		
-	if (!g_file_test (OREGANO_GLADEDIR "/view-netlist.glade", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_GLADEDIR "/view-netlist.glade2", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/view-netlist.glade");
+			OREGANO_GLADEDIR "/view-netlist.glade2");
 		oregano_error_with_title (_("Could not create the netlist dialog"), msg);
 		g_free (msg);
 		return NULL;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/view-netlist.glade", NULL, NULL);
+	gui = glade_xml_new (OREGANO_GLADEDIR "/view-netlist.glade2", NULL, NULL);
 	
 	toplevel = glade_xml_get_widget (gui, "toplevel");
 	gtk_window_set_default_size (GTK_WINDOW (toplevel), 800, 600);

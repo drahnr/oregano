@@ -31,6 +31,7 @@
 #include <gconf/gconf-client.h>
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksourceview.h>
+#include <gtksourceview/gtksourcelanguagemanager.h>
 #include "schematic-view.h"
 #include "errors.h"
 #include "engine.h"
