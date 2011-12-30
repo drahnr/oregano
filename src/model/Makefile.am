@@ -2,7 +2,7 @@ oreganodir = $(datadir)/oregano
 INCLUDES =  						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 	\
 	-I$(includedir) $(GNOME_INCLUDEDIR)		\
-	-DOREGANO_GLADEDIR=\""$(oreganodir)/dialogs"\"	\
+	-DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"	\
 	-DOREGANO_LIBRARYDIR=\""$(oreganodir)/libraries"\" \
 	-DOREGANO_MODELDIR=\""$(oreganodir)/models"\" \
 	-DDATADIR=\""$(datadir)"\" \
