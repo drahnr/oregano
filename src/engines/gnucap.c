@@ -97,12 +97,13 @@ oregano_gnucap_get_type (void)
 			sizeof (OreganoGnuCapClass),
 			NULL,   /* base_init */
 			NULL,   /* base_finalize */
-			gnucap_class_init,   /* class_init */
+			(GClassInitFunc) gnucap_class_init,   /* class_init */ 
 			NULL,   /* class_finalize */
 			NULL,   /* class_data */
 			sizeof (OreganoGnuCap),
 			0,      /* n_preallocs */
-			gnucap_instance_init    /* instance_init */
+			(GInstanceInitFunc) gnucap_instance_init,    /* instance_init */
+			NULL
 		};
 
 		static const GInterfaceInfo gnucap_info = {
