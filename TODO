@@ -4,8 +4,6 @@ TODO list for Oregano.
 
 * Add a BUGs file that describe bugs by #.
 
-* Autorefdes, find highest N and go from there?
-
 > If in the simulation I set a start time quite greater than 0, and use
 > some pulse and/or sine generator to simulate the input to the circuit,
 > then I got no output (because of no input is present). It looks like
@@ -16,23 +14,13 @@ TODO list for Oregano.
 
 * Methods to save/load ItemData's (save first).
 
-* Context menus: make it possible to have entries that only show up when there are
-  x selected items (e.g. 1 or 1+).
+* Context menus: make it possible to have entries that only show up when 
+  there are x selected items (e.g. 1 or 1+).
   Example: edit properties should only work with 1 selected part.
-
-* Draw more symbols (JFETs, real zener diode, more opamps)
-
-<property>
-  label: Period  <--- add this?
-  name : per
-  value: 1.0
-</property>
 
 * Undo/redo
 
 * Find and plug memory leaks
-
-* Finish printing code 
 
 * Voltage/current meters at nodes
 
@@ -56,13 +44,9 @@ CRITICAL:
 
   nodes at wire endpoints.
 
-  wires försvinner ur noder ibland när man roterar...
-   dela upp count i wire/part och skriv ut när man går över debug-nod-plupparna
-
-
 TODO:
 
-  split node->count into wires adn parts (to get connection dots...)
+  split node->count into wires and parts (to get connection dots...)
 
 
 Structures
@@ -116,11 +100,11 @@ Moving/Removing/Adding
 REMEMBER
 --------
 
-	We must be able to do a "reconnect all nodes"-thing. A function that goes
-	through all the parts/wires and makes sure that things that are on the
-	same node are connected and so on. This means we cannot depend on any
-	canvas helper stuff, like signals from items etc.
+	We must be able to do a "reconnect all nodes"-thing. A function that 
+	goes through all the parts/wires and makes sure that things that are 
+	on the same node are connected and so on. This means we cannot depend 
+	on any canvas helper stuff, like signals from items etc.
 
-	When loading schematic files from disk, we need to read the node structure
-	and not build it on the fly. Unless it will be efficient enough...
-
+	When loading schematic files from disk, we need to read the node 
+	structure and not build it on the fly. Unless it will be efficient 
+	enough...

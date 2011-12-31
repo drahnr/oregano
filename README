@@ -11,9 +11,7 @@ file COPYING.
 You need libgnome2, libglade2, libgnomeui2, libgtksourceview2.0
 and libxml2 to run oregano. 
 They can be found at ftp.gnome.org or mirrors. 
-To have an executable running you mey either:
-1) do 'scons install' 
-2) do 'sh autogen.sh && ./configure && make && make install'
+To have an executable running you may do 'sh autogen.sh && ./configure && make && make install'
 
 oregano still lacks many features. If you want to help out, please
 send an email to the project.

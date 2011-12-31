@@ -1,4 +1,60 @@
-	* TAG 0.69.9  Re-installation of autotools and makefile
+Tue, 14 Apr 2009 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* TAG 0.70
+	* Installation of Makefile to allow full useability of anjuta:
+	-Creation of ./autogen.sh
+	-creation of ./Makefile.am
+	-creation of ./data/models/Makefile.am
+	-creation of ./data/mime/Makefile.am
+	-creation of ./data/examples/Makefile.am
+	-creation of ./data/glade/Makefile.am
+	-creation of ./data/Makefile.am
+	-creation of ./data/libraries/Makefile.am
+	-creation of ./src/engines/Makefile.am
+	-creation of ./src/Makefile.am
+	-creation of ./src/pixmaps/Makefile.am
+	-creation of ./src/model/Makefile.am
+	-creation of ./src/sheet/Makefile.am
+	-creation of ./src/stock/Makefile.am
+	-creation of ./src/gplot/Makefile.am
+	-creation of ./docs/Makefile.am
+	-creation of ./help/fr/Makefile.am
+	-creation of ./help/es/Makefile.am
+	-creation of ./help/Makefile.am
+	-creation of ./help/C/Makefile.am
+
+	* Glade file are moved from directory dialogs to glade
+	* Glade files have their extension chaged from glade2 to glade
+
+	* Various cleanup to answer makefile warnings:
+	-cleanup of gnucap.c
+	-cleanup of ngspice.c
+	-deletion of unused code in idem-data.c
+	-correction of bug regarding addition of a new part into an existing schema:
+         the part refdes restart at 1: modification of part.c
+	-cleanup of schematic.c
+	-cleanup of file.c
+	-cleanup of part-browser.c
+	
+	* Addition of Contextual menu to avoid warning in execution!
+	-Modification of part-item.c
+	-Modification of sheet-item.c
+	-Modification of sheet-item.h
+	-Modification of textbox-item.c
+	-Modification of plot.c
+
+	* Addition of 2 new services in dialog.c and dialogs.h 
+		to provide warning windows
+	* Removal of gnome_about_new in dialog.c
+
+	* Add a contextual dialog for the plot-add-function in 
+		plot-add-function.c
+
+	* Improve localisation of menu by modification of schematic-view-menu.h
+
+	* Add contextual recent edited files in schematic-view.c
+
+	* Add a test of availability of splash.glade in splash.c
+
 
 Tue, 14 Aug 2007 03:05:24 Ricardo Markiewicz <rmarkie@fi.uba.ar> 
 	* TAG 0.69.0
