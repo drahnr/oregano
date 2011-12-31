@@ -61,10 +61,10 @@ PartItem *part_item_new (Sheet *sheet, Part *part);
 PartItem *part_item_new_from_part (Sheet *sheet, Part *part);
 void	  part_item_signal_connect_floating (PartItem *item);
 void	  part_item_signal_connect_floating_group (Sheet *sheet,
-	SchematicView *schematic_view);
+			SchematicView *schematic_view);
 void	  part_item_create_canvas_items_for_preview (GnomeCanvasGroup *group,
-	LibraryPart *library_part);
+			LibraryPart *library_part);
 void	  part_item_update_node_label (PartItem *part);
-void    part_item_show_node_labels (PartItem *part, gboolean b);
+void      part_item_show_node_labels (PartItem *part, gboolean b);
 
 #endif
