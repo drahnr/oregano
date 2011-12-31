@@ -1,3 +1,3 @@
 EXTRA_DIST = 			\
 	Library-HOWTO.txt	\
-	oregano-herencia.dia
+	oregano-inheritance.dia
