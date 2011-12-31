@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
-		"/usr/share/xml/docbook/custom/mathml/1.0/dbmathml.dtd"
+		"/usr/share/xml/docbook/schema/dtd/4.1.2/docbookx.dtd"
 		[
   <!ENTITY legal SYSTEM "legal.xml">
   <!ENTITY appversion "0.1">
@@ -87,18 +87,653 @@
   </articleinfo>
 
 
-
 <!-- ============= Document Body ============================= -->
+<!-- ============= Introduction ============================== -->
+<!-- Use the Introduction section to give a brief overview of what
+     the application is and what it does. -->
 
-  <sect1 id="Spice">
-    <title><emphasis>Spice</emphasis>: circuit simulation program</title>
-    <para><emphasis>Spice</emphasis> is a general-purpose circuit simulation program for nonlinear DC, nonlinear 
+  <sect1 id="introduction">
+  <title>Introduction to &app;</title>
+  <para>&app; is a general purpose circuit-editor and simulation tool
+    that provides a variety of features. As you will see, you can switch
+    from the circuit editor to the simulation environment by 
+    clicking the icons in the &app; window.</para>
+    <para>&app; is based on the <emphasis role="bold">SPICE</emphasis> simulation program,
+    originates from the <ulink url="http://bwrc.eecs.berkeley.edu/Classes/IcBook/SPICE/"> 
+    EECS Department of the University of California at Berkeley.</ulink></para>
+    <para>For more details regarding <emphasis role="bold">SPICE</emphasis>, see <xref linkend="spice"/>.</para>
+
+	<sect2 id="Edition-mode">
+	<title>&app;: Circuit Editor </title>
+	<para>&app; provides a variety of services to draw, edit an electrical circuit:</para>
+	<itemizedlist>
+		<listitem><para>Pick up a part using the part browser, clicking on the "place" button.</para></listitem>
+		<listitem><para>Draw wires using the wire editor, after clicking on the "Wire Editor" button</para></listitem>
+		<listitem><para>Join parts between each other to feature a circuit.</para></listitem>
+		<listitem><para>Save the drawn circuit as an oregano file.</para></listitem>
+		<listitem><para>Re-open an oregano file to edit or modify it.</para></listitem>
+	</itemizedlist>
+   <figure id="main-circuit-view">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-main-window-4.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+	</sect2>
+	
+	<sect2 id="simulation-env">
+	<title>&app;: Simulation environment</title>
+	<para>From a schematic drawn under &app; as a circuit editor, it is possible to obtain
+	a file input for SPICE 3. To realize this, you have to select <guimenu>Tools</guimenu>-&gt;
+	<guimenuitem>Generate Netlist</guimenuitem></para>
+	<figure id="generate-list-view">
+    <title>&app;: Generate Netlist</title>
+    	<screenshot><graphic fileref="figures/oregano-Generate-List.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    <para>Concurrently, it is posible to directly run a simulation, using a simulation engine:
+    </para>
+    <itemizedlist>
+		<listitem><para>Either <ulink url="http://ngspice.sourceforge.net/"> ngspice</ulink>.</para></listitem>
+		<listitem><para>Or <ulink url="http://www.gnu.org/software/gnucap/">gnucap</ulink>.</para></listitem>
+	</itemizedlist>
+	<para>To run a simulation, just select the "engine" icon.</para>
+	<figure id="simulation-view">
+    <title>&app;: Simulate</title>
+    	<screenshot><graphic fileref="figures/oregano-Simulate.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    <para>The plot, result of the simulation will appear in a new window, beside the circuit window.</para>
+    <figure id="simulation-plot-view">
+    <title>&app;: Simulate</title>
+    	<screenshot><graphic fileref="figures/oregano-plot.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    
+	</sect2>
+	
+  </sect1>
+  
+  <sect1 id="getting-started">
+    <title>Getting Started with Oregano</title>
+
+    <para>When you first start &app;, you will be presented to an
+    empty sheet, where you can place circuit components and connect
+    them with wires.</para>
+    
+    <figure id="general-view">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-main-window-1.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    <para>To place a component, also known as 'part', first select one in the part browser 
+    on the right hand side of the application window. Then press the 'Place' button, or 
+    double-click the selected part. You can also drag the part preview and drop it
+    on the sheet.</para>
+   
+    <figure id="on-part-view">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-main-window-2.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+
+    <para>When you have some parts placed on the sheet, you can start
+    connecting them with wires. Select the wire tool on the toolbar,
+    and click on the sheet where you want the wire to start. Then
+    click where you want to fixate the wire.</para>
+    
+    <figure id="parts-with-wire-view">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-main-window-3.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    
+    <para>Make sure you connect at least one ground node to the circuit,
+    as this is neccessary to perform a simulation.</para>
+    
+    <figure id="circuite-grounded-view">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-main-window-4.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+  </sect1>
+
+  <sect1 id="editing">
+    <title>Editing the Circuit</title>
+
+    <para>There are a few accelerator keys that can help editing the
+    circuit:</para>
+
+      <variablelist>
+        <varlistentry><term><emphasis role="bold">Ctrl-A</emphasis></term>
+        		<listitem><para>Select all objects on the sheet</para></listitem>
+        </varlistentry>
+
+        <varlistentry><term><emphasis role="bold">Ctrl-Shift-A</emphasis></term>
+        		<listitem><para>Deselect all objects</para></listitem>
+        </varlistentry>
+
+        <varlistentry><term><emphasis role="bold">r</emphasis></term>
+        		<listitem><para>Rotate the selected objects 90 degrees clockwise</para></listitem>
+        </varlistentry>
+
+        <varlistentry><term><emphasis role="bold">&lt;Del&gt;</emphasis></term>
+        		<listitem><para>Delete the selected objects</para></listitem>
+        </varlistentry>
+
+        <varlistentry><term><emphasis role="bold">l</emphasis></term>
+        		<listitem><para>Place the currently selected part</para></listitem>
+        </varlistentry>
+
+      </variablelist>
+
+    <para>Parts and wires can be selected by clicking on them, and by holding the
+    Shift-key while clicking, you can select multiple parts and wires. You can
+    also select objects by 'rubber-banding': hold down the mouse button while dragging
+    the pointer over the objects that you wish to select.</para>
+    <para>Parts selected will appear "green" on the circuit.</para>
+    
+    <figure id="parts-selected-view">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-main-window-5.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    
+    <sect2 id="circuit-properties">
+    <title>Circuit Description</title>
+    
+    <para>Each circuit can be described into a dedicated "description" window, that can be activated
+    via <guimenu>File</guimenu>-&gt;<guimenuitem>Schematic Properties</guimenuitem></para>
+
+    <figure id="circuit-properties-picture">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-properties.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    </sect2>
+    
+    <sect2 id="print-circuit">
+	<title>Print the circuit</title>
+	
+	<para>The circuit drawn on the main window can be printed. Conversely, you may will 
+	observe the printing by a preview before. Therefore select
+	<guimenu>File</guimenu>-&gt;<guimenuitem>Print Preview</guimenuitem>.
+	This service will use <emphasis role="bold">evince</emphasis> and will raise a new window containing the circuit 
+	within a title block.</para>
+	
+    <figure id="preview-picture">
+    <title>&app;: preview printing</title>
+    	<screenshot><graphic fileref="figures/oregano-preview.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+   <para>As you probably see, the orientation of the preview is not correct, you may correct the printing 
+   parameters, selecting <guimenu>File</guimenu>-&gt;<guimenuitem>Print Properties</guimenuitem>.
+   A new window will appear providing you with possibilities to:</para>
+   <para>Select a printer</para>
+   <itemizedlist>
+        		<listitem><para>Any printer, for portable format</para></listitem>
+        		<listitem><para>&lt;The System printer&gt;</para></listitem>
+        		<listitem><para>a PDF output</para></listitem>
+   </itemizedlist>
+	<para>parametrize the Paper size</para>
+   <itemizedlist>
+        		<listitem><para>A4</para></listitem>
+        		<listitem><para>various format supported by the system</para></listitem>
+   </itemizedlist>
+
+   <para>define the orientation of the circuit on the printinted page:</para>
+   <itemizedlist>
+        		<listitem><para>Portrait</para></listitem>
+        		<listitem><para>Landscape</para></listitem>
+        		<listitem><para>Reverse Portrait</para></listitem>
+        		<listitem><para>Reverse Landscape</para></listitem>
+    </itemizedlist>
+    
+    <figure id="page-printing-picture">
+    <title>&app;: page properties window</title>
+    	<screenshot><graphic fileref="figures/oregano-page-properties.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>  
+  
+  <para>Select, now, an orientation conformed to "Landscape" and select again the printing preview, 
+  you will see the printing preview window with a correct orientation.</para>
+	
+    <figure id="preview-picture2">
+    <title>&app;: preview printing</title>
+    	<screenshot><graphic fileref="figures/oregano-preview2.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    
+    
+    </sect2>
+       
+    <sect2 id="netlist">
+	<title>Generate the netlist input for SPICE</title>
+	<para>It si possible to generate a file "netlist" input for <emphasis role="bold">SPICE</emphasis>.
+	For that, select <guimenu>View</guimenu>-&gt;<guimenuitem>Netlist</guimenuitem>.</para>
+	<para>The produced "netlist" can be recorded into an iondependant file. Select "Save" in
+	the window (see below).</para>
+		
+    <figure id="netlist-picture">
+    <title>&app;: preview printing</title>
+    	<screenshot><graphic fileref="figures/oregano-netlist.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+	
+    </sect2>
+    
+    <sect2 id="export-circuit">
+	<title>Export the circuit as figure</title>
+	<para>The circuit can be exported to be integrated into an other document. 
+	For that, select <guimenu>File</guimenu>-&gt;<guimenuitem>Export...</guimenuitem>.</para>
+	<para>A new window will appear providing you with possibilities to:</para>
+   <para>Size the export in pixels</para>
+   <itemizedlist>
+        		<listitem><para>Width (by default) = 300</para></listitem>
+        		<listitem><para>Height (by default) = 300</para></listitem>
+   </itemizedlist>
+	<para>define the format (according to the formats supported by your system) of the export</para>
+   <itemizedlist>
+        		<listitem><para>Scalable Vector Graphic (SVG)</para></listitem>
+        		<listitem><para>Portable Document Format (PDF)</para></listitem>
+        		<listitem><para>Postscript (PS)</para></listitem>
+        		<listitem><para>Portable Network Graphic (PNG)</para></listitem>
+   </itemizedlist>
+   <para>define the colour of the background of the export</para>
+   <itemizedlist>
+        		<listitem><para>White</para></listitem>
+        		<listitem><para>Black</para></listitem>
+        		<listitem><para>Transparent</para></listitem>
+   </itemizedlist>
+   <para>define if the export is in colour or not</para>
+   <itemizedlist>
+        		<listitem><para>Colour</para></listitem>
+        		<listitem><para>Black and White</para></listitem>
+   </itemizedlist>
+   <para>Finally, you will define the file in which you will record your export.</para>
+   
+   <figure id="export-picture">
+    <title>&app;: preview printing</title>
+    	<screenshot><graphic fileref="figures/oregano-export.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    </sect2>
+    
+    
+  </sect1>
+  <sect1 id="simulation">
+    <title>Simulation</title>
+
+    <para>When you have finalized a circuit, you may wish to run a simulation.</para>
+    <para>The simulation "run" may be parmetrized, through several menus, that will be detailled 
+    within this paragraph, hereunder.</para>
+    
+    <para>Simulation may be activated:
+    <itemizedlist>
+    	<listitem><para>either pressing the simulate button on the toolbar</para></listitem>
+    	<listitem><para>or select <guimenu>Tools</guimenu>-&gt;<guimenuitem>Simulation</guimenuitem>.</para></listitem>
+    </itemizedlist></para>
+    <para>The simulation then starts and you can follow the progress on the dialog box
+    that pops up.</para>
+    
+    <figure id="Result-Simulation">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-plot.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    
+    <sect2 id="Analyses">
+	 <title>Analyses</title>
+	 <para>This paragraph will go through the analyses that the engine ngspice is able to provide.
+	 </para>
+	 
+	 <sect3 id="Noise-analyses">
+	 <title>Noise analysis</title>
+	 <para>The noise analysis does analysis device-generated noise for the given
+ 	circuit. When provided with an input source and an output port, the analysis 
+ 	calculates the noise contributions of each device (and each noise generator 
+ 	within the device) to the output port voltage. It also calculates the input 
+ 	noise to the circuit, equivalent to the output noise referred to the 
+ 	specified input source. This is done for every frequency point in a specified 
+ 	range - the calculated value of the noise corresponds to the spectral density 
+	of the circuit variable viewed as a stationary gaussian stochastic process.</para>	 
+	 </sect3>  
+	 
+	 <sect3 id="OP-analysis">
+	 <title>Operating point analysis</title>
+	 <para>The operating point analysis determines the dc operating point of the 
+ 	circuit with inductors shorted and capacitors opened.</para>
+	 </sect3>
+	 
+	 <sect3 id="DC-analysis">
+	 <title>Operating point sweep Analysis</title>
+	 <para>The operating point sweep analysis determines the values of output 
+ 	variables while one or two specified independent voltage or current source is 
+ 	stepped over a user-specified range and the dc output variables are stored 
+ 	for each sequential source value.</para>
+	 </sect3>
+	 
+	 <sect3 id="PZ-analysis">
+	 <title>Pole-zero analysis</title>
+	 <para>The pole-zero analysis computes the poles and/or zeros in the small-signal 
+ 	ac transfer function. The program first computes the dc operating point and 
+ 	then determines the linearized, small-signal models for all the nonlinear 
+ 	devices in the circuit. This circuit is then used to find the poles and zeros 
+ 	of the transfer function.</para>
+	 </sect3>
+	 
+	 <sect3 id="SS-Analysis">
+	 <title>Small-Signal distortion analysis</title>
+	 <para>The distortion analysis computes steady-state harmonic and intermodulation 
+ 	products for small input signal magnitudes. Not all devices are supported.</para>
+	 </sect3>
+	 
+	 <sect3 id="SS-Freq-analysis">
+	 <title>Small Signal frequency response analysis</title>
+	 <para>The ac small-signal computes the ac output variables as a function of 
+ 	frequency. The program first computes the dc operating point of the circuit 
+ 	and determines linearized, small-signal models for all of the nonlinear 
+ 	devices in the circuit. The resultant linear circuit is then analyzed over a 
+ 	user-specified range of frequencies.</para>
+	 </sect3>
+	 
+	 <sect3 id="SENS-analysis">
+	 <title>Sensitivity analysis</title>
+	 <para>Ngspice will calculate either the DC operating-point sensitivity or the AC
+ 	small-signal sensitivity of an output variable with respect to all circuit 
+ 	variables, including model parameters. Spice calculates the difference in an 
+ 	output variable (either a node voltage or a branch current) by perturbing 
+ 	each parameter of each device independently.</para>
+	 </sect3>
+	 
+	 <sect3 id="TF-analysis">
+	 <title>Transfer function analysis</title>
+	 <para>The (small signal) transfer function analysis computes the dc small-signal
+ 	value of a transfer function (ratio of output variable to input source), 
+ 	input resistance, and output resistance is also computed as a part of the dc 
+ 	solution.</para>
+	 </sect3>
+	 
+	 <sect3 id="TRAN-analysis">
+	 <title>Transient analysis</title>
+	 <para>The transient analysis computes the transient output variables as a
+ 	function of time over a user-specified time interval. The initial conditions 
+ 	are automatically determined by a dc analysis. All sources which are not time 
+ 	dependent (for example, power supplies) are set to their dc value.</para>
+	 </sect3>    
+	 </sect2>
+   
+    <sect2 id="Simul-Param">
+    <title>Parameters of the simulation</title>
+	<para>Your circuit being captured, you may want to run a simulation. For that you have access
+	to 2 simulations engines that you may chosen via <guimenu>Edit</guimenu>-&gt;
+	<guimenuitem>Preferences</guimenuitem>.</para>
+	<para>Then select the simulation engine by ticking the engine name.</para>
+	
+    <figure id="engine-selection">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-engine.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+
+    <para>The simulation can be parametrized according to the kind of circuit you may analyse.
+    The selection of parameters of the siumulation is performed through:
+    <itemizedlist>
+    	<listitem><para>either pressing the "simulation Settings" button on the toolbar (see figure here below)</para></listitem>
+    	<listitem><para>or select <guimenu>Edit</guimenu>-&gt;<guimenuitem>Simulation Settings</guimenuitem>.</para></listitem>
+    </itemizedlist></para>   
+    
+    <figure id="figure-simulation-settings-activation">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-simu-param.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    <para>The "simulation settings" window pops up, allowing you to parmetrize the simulation.</para>
+    
+    <figure id="figure-simulation-settings">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-simu-settings.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>    
+    
+	<para>Therefore, you may be able to select the analysis you will run: tick the ticking box you select and 
+	the window will open the parameters associated to the analysis.</para>
+	<sect3 id="transient-Analysis-settings">
+	<title>Select the <emphasis role="bold">Transient</emphasis> analysis</title>	
+	
+	<para></para>
+   <itemizedlist>
+        		<listitem><para>You can tick to force the Initial Conditions</para></listitem>
+        		<listitem><para>You may choose the Start figure</para></listitem>
+        		<listitem><para>You may choose the Stop figure</para></listitem>
+   </itemizedlist>
+   <para>You may tick if you want to force the stepping figure: the hidden field apperas</para>
+   <itemizedlist>
+        		<listitem><para>You may choose the Stepping figure</para></listitem>
+   </itemizedlist>   
+        
+    <figure id="figure-transient-analysis-settings">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-transient-settings.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    </sect3>
+    
+    <sect3 id="fourier-Analysis-settings">
+	<title>Select the <emphasis role="bold">Fourier</emphasis> analysis</title>	
+	
+	<para></para>    
+        
+    <figure id="figure-fourier-analysis-settings">
+    <title>&app;: main window</title>
+    	<screenshot><graphic fileref="figures/oregano-fourier-settings.png" format="PNG"></graphic>
+      </screenshot>
+    </figure>
+    </sect3>
+      
+    </sect2>
+
+	 <sect2 id="Advanced-Parametrisation">
+	 <title>Advanced Parameters</title>
+    <sect3 id="Distorsion">
+	 <title>Distorsion Control</title>
+	 <para>This card controls whether SPICE will compute the distortion characteristic of the 
+	 circuit in a small-signal mode as a part of the ac small-signal sinusoidal steady-state 
+	 analysis. The analysis is performed assuming that one or two signal frequencies are imposed 
+	 at the input; let the two frequencies be f1 (the nominal analysis frequency) and f2 (=SKW2*f1). 
+	 The program then computes the following distortion measures: </para>
+	 <itemizedlist>
+    	<listitem><para>HD2 - the magnitude of the frequency component 2*f1 assuming that f2 is not present.</para></listitem>
+    	<listitem><para>HD3 - the magnitude of the frequency component 3*f1 assuming that f2 is not present.</para></listitem>
+    	<listitem><para>SIM2 - the magnitude of the frequency component f1 + f2. </para></listitem>
+    	<listitem><para>DIM2 - the magnitude of the frequency component f1 - f2. </para></listitem>
+    	<listitem><para>DIM3 - the magnitude of the frequency component 2*f1 - f2. </para></listitem>
+    </itemizedlist>
+    <para>RLOAD is the name of the output load resistor into which all distortion power products are to be 
+    computed. INTER is the interval at which the summary printout of the contributions of all nonlinear 
+    devices to the total distortion is to be printed. If omitted or set to zero, no summary printout will 
+    be made. REFPWR is the reference power level used in computing the distortion products; if omitted, a 
+    value of 1 mW (that is, dbm) is used. SKW2 is the ratio of f2 to f1. If omitted, a value of 0.9 is used 
+    (i.e., f2 = 0.9*f1). SPW2 is the amplitude of f2. If omitted, a value of 1.0 is assumed. </para>
+    <para>The distortion measures HD2, HD3, SIM2, DIM2, and DIM3 may also be be printed and/or plotted 
+    (see the description of the .PRINT and .PLOT cards). </para>
+	 </sect3>
+	 <sect3 id="Noise">
+	 <title>Noise Control</title>
+	 <para>This card controls the noise analysis of the circuit. The noise analysis is performed in 
+	 conjunction with the ac analysis (see .AC card). OUTV is an output voltage which defines the summing 
+	 point. INSRC is the name of the independent voltage or current source which is the noise input 
+	 reference. NUMS is the summary interval. SPICE will compute the equivalent output noise at the 
+	 specified output as well as the equivalent input noise at the specified input. In addition, the 
+	 contributions of every noise generator in the circuit will be printed at every NUMS frequency points 
+	 (the summary interval). If NUMS is zero, no summary printout will be made. </para>
+	 <para>The output noise and the equivalent input noise may also be printed and/or plotted (see the 
+	 description of the .PRINT and .PLOT cards). </para>
+	 </sect3>
+	 <sect3 id="Incremental-steps">
+	 <title>Choice of the incrementyal steps figure</title>
+	 <para>TSTEP is the printing or plotting increment for line-printer output. For use with the 
+	 post-processor, TSTEP is the suggested computing increment. TSTOP is the final time, and TSTART is 
+	 the initial time. If TSTART is omitted, it is assumed to be zero. The transient analysis always 
+	 begins at time zero. In the interval , the circuit is analyzed (to reach a steady state), but no 
+	 outputs are stored. In the interval , the circuit is analyzed and outputs are stored. TMAX is the 
+	 maximum stepsize that SPICE will use (for default, the program chooses either TSTEP or 
+	 (TSTOP-TSTART)/50.0, whichever is smaller. TMAX is useful when one wishes to guarantee a computing 
+	 interval which is smaller than the printer increment, TSTEP. </para>
+	 <para>UIC (use initial conditions) is an optional keyword which indicates that the user does not 
+	 want SPICE to solve for the quiescent operating point before beginning the transient analysis. If 
+	 this keyword is specified, SPICE uses the values specified using IC=... on the various elements 
+	 as the initial transient condition and proceeds with the analysis. If the .IC card has been 
+	 specified, then the node voltages on the .IC card are used to compute the intitial conditions for 
+	 the devices. Look at the description on the .IC card for its interpretation when UIC is not 
+	 specified. </para>
+ 	 </sect3>
+ 	 <sect3 id="Fourier-Transform">
+ 	 <title>Fourier Analysis</title>
+ 	 <para># This card controls whether <emphasis role="bold">SPICE</emphasis> performs a Fourier analysis as a part of the transient 
+ 	 analysis. FREQ is the fundamental frequency, and OV1, ..., are the output variables for which 
+ 	 the analysis is desired. The Fourier analysis is performed over the interval , where TSTOP is 
+ 	 the final time specified for the transient analysis, and period is one period of the fundamental 
+ 	 frequency. The dc component and the first nine components are determined. For maximum accuracy, 
+ 	 TMAX (see the .TRAN card) should be set to period/100.0 (or less for very high-Q circuits).</para>
+ 	 </sect3>
+ 	 </sect2>
+  </sect1>
+  
+  <sect1 id="Library">
+    <title>Howto maintain the <application>oregano</application> libraries</title>
+    
+    <sect2 id="Library-creation">
+    <title>How to create a new library part?</title>
+    <para>The libraries are stored in an XML based format, called *.oreglib, and are
+	installed in "prefix"/share/oregano/libraries.</para>
+	<para>The easiest way to describe how to create a part is to look at one from the
+	default library, the resistor. In each library, there is first a <emphasis role="bold">&lt;symbols&gt;</emphasis> tag.
+	This tag contains all the symbols used for the parts in the library. Take a look
+	at the resistor symbol:</para>
+	
+   <programlisting>
+   &lt;ogo:symbol&gt;
+   	&lt;ogo:name&gt;resistor&lt;/ogo:name&gt;
+   	&lt;ogo:objects&gt;
+   		&lt;ogo:line&gt;(0 10)(10 10)(11 10)(13 6)(16 14)(19 6)(22 14)
+   		                (25 6)(28 14)(30 10)(40 10)&lt;/ogo:line&gt;
+   	&lt;/ogo:objects&gt;
+   		
+   	&lt;ogo:connections&gt;
+   		&lt;ogo:connection&gt;(0 10)&lt;/ogo:connection&gt;
+   		&lt;ogo:connection&gt;(40 10)&lt;/ogo:connection&gt;
+   	&lt;/ogo:connections&gt;
+   &lt;/ogo:symbol&gt;
+   </programlisting>
+
+	
+	<para>It is built with a polyline, where each (x y) pair is a point on the line. So
+	far so good. Now lets take a look at the <emphasis role="bold">&lt;parts&gt;</emphasis> section, containing all the
+	parts that are shown in the part browser. The resistor definition looks like
+	this:</para>
+    
+    <programlisting>
+    &lt;ogo:part&gt;
+    	&lt;ogo:name&gt;Resistor&lt;/ogo:name&gt;
+    	&lt;ogo:symbol&gt;resistor&lt;/ogo:symbol&gt;
+    	&lt;ogo:description&gt;Resistor&lt;/ogo:description&gt;
+
+    	&lt;ogo:properties&gt;
+    		&lt;ogo:property&gt;
+    			&lt;ogo:name&gt;Refdes&lt;/ogo:name&gt;
+    			&lt;ogo:value&gt;R&lt;/ogo:value&gt;
+    		&lt;/ogo:property&gt;
+    		&lt;ogo:property&gt;
+    			&lt;ogo:name&gt;Res&lt;/ogo:name&gt;
+    			&lt;ogo:value&gt;1k&lt;/ogo:value&gt;
+    		&lt;/ogo:property&gt;
+    		&lt;ogo:property&gt;
+    			&lt;ogo:name&gt;Template&lt;/ogo:name&gt;
+    			&lt;ogo:value&gt;R_@refdes %1 %2 @res&lt;/ogo:value&gt;
+    		&lt;/ogo:property&gt;
+    	&lt;/ogo:properties&gt;
+
+    	&lt;ogo:labels&gt;
+    		&lt;ogo:label&gt;
+    			&lt;ogo:name&gt;Reference designator&lt;/ogo:name&gt;
+    			&lt;ogo:text&gt;@refdes&lt;/ogo:text&gt;
+    			&lt;ogo:position&gt;(15 0)&lt;/ogo:position&gt;
+    			&lt;ogo:modify&gt;yes&lt;/ogo:modify&gt;
+    		&lt;/ogo:label&gt;
+    		&lt;ogo:label&gt;
+    			&lt;ogo:name&gt;Resistance&lt;/ogo:name&gt;
+    			&lt;ogo:text&gt;@res&lt;/ogo:text&gt;
+    			&lt;ogo:position&gt;(15 30)&lt;/ogo:position&gt;
+    			&lt;ogo:modify&gt;yes&lt;/ogo:modify&gt;
+    		&lt;/ogo:label&gt;
+    	&lt;/ogo:labels&gt;
+
+    &lt;/ogo:part&gt;
+    </programlisting>
+      
+    <para>This is a bit more compilicated than the symbol tag. First we define a name,
+    which is what is shown in the part list in the browser. The description is the
+    string shown below the part in the part preview. This could be a longer and more
+    descriptive string than the name, if needed. The symbol tag assigns the symbol
+    that should be used for this part (this way a symbol can be shared between 
+    several parts).</para>
+    <para>Then we can define properties. Most parts define Refdes, that is the reference
+    designator to use. For a resistor, we use R. Likewise, a capacitor would use C.
+    We also define a property named Res, which is the actual resistance. Finally,
+    we have Template, which is the template to use when generating spice netlists.
+    As you can see, when evaluating these strings, the proporties can be referred
+    to as @&lt;property name&gt;.</para>
+	<para>he use of label tags are more or less obvious. We can use properties, using the
+   @ character. For example, the label whose text is <emphasis role="bold">&lt;ogo:text&gt;@refdes&lt;/ogo:text&gt;</emphasis>
+   will display the reference designator.</para>
+   
+   </sect2>    
+	<sect2 id="Part-model-creation">
+    <title>How to add a new part model?</title>
+    <para>If you need to include a spice model for a part, you either add it inline in the
+    library or by including a model file.</para>
+    <para>For the former, you can do like this example (a diode):</para>
+    
+    <programlisting>
+    &lt;ogo:name&gt;Template&lt;/ogo:name&gt;
+    &lt;ogo:value&gt;D_@refdes %1 %2 M_@refdes \n.model M_@refdes (IS=0.1PA, RS=16 CJO=2PF 
+    		TT=12N BV=100 IBV=0.1PA)&lt;/ogo:value&gt;
+	 </programlisting>
+
+    <para>This will add the model below each instance of the diode in the netlist.</para>
+    <para>For more complicated models, you should probably choose the latter method, which
+    is to add a property called Model. If the value of this property is, for instance,
+    PNP, the model file should be called PNP.model. The model file should be placed
+    in "srcdir"/data/models/ and gets installed in "prefix"/share/oregano/models.</para>
+	 <para>Note that we can NOT ship most models that can be found on the internet. Most of
+    these have some kind of restrictive license that keeps them from being used
+    commercially etc. So if anyone creates any models from scratch, I would be very
+    interested in adding them to Oregano. Perhaps we should start a library of free
+    part spice models.</para>
+    </sect2>
+    <sect2 id="Advanced-Part-model-creation">
+    <title>How to add a new advanced part model?</title>
+    <para>For parts that do more than just sit and wait for spice to handle them, there
+    might be a need to do some hacking. Examples of this are the parts Ground and
+    Jumper Wire. They all have a property called internal. The netlist generator looks
+    for this property and have special case code to handle them.</para>
+    <para>If you need to hack in some kind of special behaviour, take a look at netlist.c
+    and search for "internal", and "jumper". This should get you going.</para>
+    </sect2>
+  </sect1>
+
+  <sect1 id="spice">
+    <title>Spice: circuit simulation program</title>
+    <para>&app; is based on the <emphasis role="bold">SPICE</emphasis> simulation program,
+    originates from the <ulink url="http://bwrc.eecs.berkeley.edu/Classes/IcBook/SPICE/"> 
+    EECS Department of the University of California at Berkeley.</ulink></para>
+    <para><emphasis role="bold">Spice</emphasis> is a general-purpose circuit simulation program for nonlinear DC, nonlinear 
     transient, and linear AC analyses. Circuits may contain resistors, capacitors, inductors, 
     mutual inductors, independent voltage and current sources, four types of dependent sources, 
     lossless and lossy transmission lines (two separate implementations), switches, uniform 
     distributed RC lines, and the five most common semiconductor devices: diodes, BJTs, JFETs, 
     MESFETs, and MOSFETs.</para>
-	 <para><emphasis>Spice</emphasis> has built-in models for the semiconductor devices, and the user need specify 
+	 <para><emphasis role="bold">Spice</emphasis> has built-in models for the semiconductor devices, and the user need specify 
 	 only the pertinent model parameter values. The model for the BJT is based on the 
 	 integral-charge model of Gummel and Poon; however, if the Gummel-Poon parameters are not 
 	 specified, the model reduces to the simpler Ebers-Moll model. In either case, charge-storage 
@@ -116,7 +751,7 @@
 	 
 	 <sect3 id="dc-analyses">
 	 <title>DC analyses</title>
-	 <para>The DC analysis portion of <emphasis>Spice</emphasis> (.DC) determines the DC operating point of the circuit
+	 <para>The DC analysis portion of <emphasis role="bold">Spice</emphasis> (.DC) determines the DC operating point of the circuit
 	 with inductors shorted and capacitors opened. The DC analysis options are specified on the .DC, 
 	 .TF, and .OP control lines. A DC analysis is automatically performed prior to a transient analysis 
 	 to determine the transient initial conditions, and prior to an AC small-signal analysis to determine
@@ -130,7 +765,7 @@
 	 
 	 <sect3 id="ac-analyses">
 	 <title>AC Small-Signal Analysis</title>
-	 <para>The AC small-signal portion of <emphasis>Spice</emphasis> (.AC) computes the AC output variables as a function of 
+	 <para>The AC small-signal portion of <emphasis role="bold">Spice</emphasis> (.AC) computes the AC output variables as a function of 
 	 frequency. The program first computes the DC operating point of the circuit and determines linearized, 
 	 small-signal models for all of the nonlinear devices in the circuit. The resultant linear circuit is 
 	 then analyzed over a user-specified range of frequencies. The desired output of an AC small-signal 
@@ -141,7 +776,7 @@
 	 
 	 <sect3 id="transient-analysis">
 	 <title>Transient analysis</title>
-	 <para>The transient analysis portion of <emphasis>Spice</emphasis> (.TRAN) computes the transient output variables as a 
+	 <para>The transient analysis portion of <emphasis role="bold">Spice</emphasis> (.TRAN) computes the transient output variables as a 
 	 function of time over a user-specified time interval. The initial conditions are automatically 
 	 determined by a DC analysis. All sources which are not time dependent (for example, power supplies) 
 	 are set to their DC value. The transient time interval is specified on a .TRAN control line. </para> 
@@ -149,7 +784,7 @@
 	 
 	 <sect3 id="pole-zero-analysis">
 	 <title>Pole-Zero Analysis</title>
-	 <para>The pole-zero analysis portion of <emphasis>Spice</emphasis> (.PZ) computes the poles and/or zeros in the small-signal 
+	 <para>The pole-zero analysis portion of <emphasis role="bold">Spice</emphasis> (.PZ) computes the poles and/or zeros in the small-signal 
 	 AC transfer function. The program first computes the DC operating point and then determines the linearized, 
 	 small-signal models for all the nonlinear devices in the circuit. This circuit is then used to find the 
 	 poles and zeros of the transfer function. 
@@ -170,7 +805,7 @@
 	  
 	 <sect3 id="small-signal-distorsion-signal">
 	 <title>Small-Signal Distortion Analysis</title>
-	 <para>The distortion analysis portion of <emphasis>Spice</emphasis> (.DISTO) computes steady-state harmonic and 
+	 <para>The distortion analysis portion of <emphasis role="bold">Spice</emphasis> (.DISTO) computes steady-state harmonic and 
 	 intermodulation products for small input signal magnitudes. If signals of a single frequency are 
 	 specified as the input to the circuit, the complex values of the second and third harmonics are 
 	 determined at every point in the circuit. If there are signals of two frequencies input to the circuit, 
@@ -186,9 +821,9 @@
 	 
 	 <sect3 id="sensistivity-analysis">
 	 <title>Sensitivity Analysis</title>
-	 <para><emphasis>Spice</emphasis> will calculate (.SENS) either the DC operating-point sensitivity or the AC small-signal 
+	 <para><emphasis role="bold">Spice</emphasis> will calculate (.SENS) either the DC operating-point sensitivity or the AC small-signal 
 	 sensitivity of an output variable with respect to all circuit variables, including model parameters. 
-	 <emphasis>Spice</emphasis> calculates the difference in an output variable (either a node voltage or a branch current) 
+	 <emphasis role="bold">Spice</emphasis> calculates the difference in an output variable (either a node voltage or a branch current) 
 	 by perturbing each parameter of each device independently. Since the method is a numerical approximation, 
 	 the results may demonstrate second order affects in highly sensitive parameters, or may fail to show very 
 	 low but non-zero sensitivity. Further, since each variable is perturb by a small fraction of its value, 
@@ -198,7 +833,7 @@
 	 
 	 <sect3 id="noise-analysis">
 	 <title>Noise Analysis</title>
-	 <para>The noise analysis portion of <emphasis>Spice</emphasis> (.NOISE) does analysis device-generated noise for the given 
+	 <para>The noise analysis portion of <emphasis role="bold">Spice</emphasis> (.NOISE) does analysis device-generated noise for the given 
 	 circuit. When provided with an input source and an output port, the analysis calculates the noise 
 	 contributions of each device (and each noise generator within the device) to the output port voltage. 
 	 It also calculates the input noise to the circuit, equivalent to the output noise referred to the specified 
@@ -214,7 +849,7 @@
 	 
 	 <sect2 id="temperatures-analysis">
 	 <title>Analyses at different temperatures</title>	
-	 <para>All input data for <emphasis>Spice</emphasis> is assumed to have been measured at a nominal temperature of 27°C, which 
+	 <para>All input data for <emphasis role="bold">Spice</emphasis> is assumed to have been measured at a nominal temperature of 27°C, which 
 	 can be changed by use of the TNOM parameter on the .OPTIONS control line. This value can further be 
 	 overridden for any device which models temperature effects by specifying the TNOM parameter on the model 
 	 itself. The circuit simulation is performed at a temperature of 27°C, unless overridden by a TEMP parameter 
@@ -225,10 +860,10 @@
 	 addition, saturation currents have a built-in temperature dependence. The temperature dependence of the 
 	 saturation current in the BJT models is determined by: 
 	 </para>
-	 <center>
-	 <para>I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)
-	 *exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>)) </para>
-	 </center>
+	 <para>
+	 I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)*exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>))
+	 </para> 
+	 
     <para>where k is Boltzmann's constant, q is the electronic charge, E<subscript>g</subscript> is the energy gap which is a model 
     parameter, and XTI is the saturation current temperature exponent (also a model parameter, and usually 
     equal to 3). 
@@ -236,7 +871,7 @@
     <para>The temperature dependence of forward and reverse beta is according to the formula:
     </para> 
     <para>B(T<subscript>1</subscript>) = B(T<subscript>0</subscript>)* T<subscript>1</subscript><superscript>XTB</superscript>/T<subscript>0</subscript></para>
-	<pre>
+	<programlisting>
                               XTI
                           |T |        | E q(T  T )|
                             1            g   1  0
@@ -244,39 +879,17 @@
            S  1     S  0
                           |T |        |k (T  - T )|
                             0              1    0
-	</pre>
-	<para>COUCOUCOUCOUCOIU</para>
-    
-    <mml:mrow>
-  <mml:mi>x</mml:mi>
-  <mml:mo>=</mml:mo>
-  <mml:mfrac>
-    <mml:mrow>
-       <mml:mrow><mml:mo>-</mml:mo><mml:mi>b</mml:mi></mml:mrow>
-       <mml:mo>&PlusMinus;</mml:mo>
-       <mml:msqrt>
-         <mml:mrow>
-           <mml:msup><mml:mi>b</mml:mi><mml:mn>2</mml:mn></mml:msup>
-           <mml:mo>-</mml:mo>
-           <mml:mrow><mml:mn>4</mml:mn><mml:mi>a</mml:mi><mml:mi>c</mml:mi></mml:mrow>
-         </mml:mrow>
-       </mml:msqrt>
-    </mml:mrow>
-    <mml:mrow><mml:mn>2</mml:mn><mml:mo>&InvisibleTimes;</mml:mo><mml:mi>a</mml:mi></mml:mrow>
-  </mml:mfrac>
-</mml:mrow>
-
-	<para>COUCOUCOUCOUCOIU</para>
+	</programlisting>
     
     <para>where T<subscript>1</subscript> and T<subscript>0</subscript> are in kelvin, and XTB is a user-supplied model parameter. Temperature effects 
-    on beta are carried out by appropriate adjustment to the values of BF, ISE, BR , and ISC (<emphasis>Spice</emphasis> model 
+    on beta are carried out by appropriate adjustment to the values of BF, ISE, BR , and ISC (<emphasis role="bold">Spice</emphasis> model 
     parameters BF, ISE, BR, and ISC, respectively). 
     </para>
     <para>Temperature dependence of the saturation current in the junction diode model is determined by: </para>
     <para>I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)
 	 *exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>)) </para>  
 	 
-	 <pre>
+	 <programlisting>
                                       XTB
                                   |T |
                                     1
@@ -284,18 +897,18 @@
                        1       0
                                   |T |
                                     0
-	 </pre>
+	 </programlisting>
   
     
     <para>where N is the emission coefficient, which is a model parameter, and the other symbols have 
     the same meaning as above. Note that for Schottky barrier diodes, the value of the saturation current 
     temperature exponent, XTI, is usually 2. 
     </para>
-    <para>Temperature appears explicitly in the value of junction potential, U (in <emphasis>Spice</emphasis> PHI), for all the 
+    <para>Temperature appears explicitly in the value of junction potential, U (in <emphasis role="bold">Spice</emphasis> PHI), for all the 
     device models. The temperature dependence is determined by:
     </para>
     
-    <pre>
+    <programlisting>
                              XTI
                              ---
                               N
@@ -305,7 +918,7 @@
           S  1     S  0
                          |T |        |N k (T  - T )|
                            0                1    0
-    </pre>
+    </programlisting>
     <para>where k is Boltzmann's constant, q is the electronic charge, Na is the acceptor impurity density, 
     Nd is the donor impurity density, Ni is the intrinsic carrier concentration, and Eg is the energy gap. 
     </para>
@@ -314,7 +927,7 @@
     </para>
     <para>R(T) = R(T<subscript>0</subscript>) [1 + TC<subscript>1</subscript> (T - T<subscript>0</subscript> ) + TC<subscript>2</subscript> (T - T<subscript>0</subscript>)<superscript>2</superscript>] 
     </para>
-    <pre>
+    <programlisting>
 
                                    | N N   |
                                       a d
@@ -322,14 +935,15 @@
                    U(T) = --  log        2
                            q     e |N (T)  |
                                      i
-    </pre>
+    </programlisting>
 
     
     <para>The effects of temperature on resistors is modeled by the formula: 
     </para>
     <para>I<subscript>S</subscript>(T<subscript>1</subscript>) = I<subscript>S</subscript>(T<subscript>0</subscript>)*(T<subscript>1</subscript><superscript>XTI</superscript>/T<subscript>0</subscript>)
 	 *exp(q*E<subscript>G</subscript>*(T<subscript>1</subscript>*T<subscript>0</subscript>)/(k*T<subscript>1</subscript>-T<subscript>0</subscript>)) </para>
-    <pre>
+    <programlisting>
+
                                 M (T )
                                  0  0
                        M (T) = -------
@@ -338,10 +952,8 @@
                                |--|
                                |T |
                                  0
-     </pre>
+     </programlisting>
 
-    
-    
     <para>where T is the circuit temperature, T<subscript>0</subscript> is the nominal temperature, and TC<subscript>1</subscript> and TC<subscript>2</subscript> are the first- 
     and second-order temperature coefficients. 
     </para>
@@ -349,7 +961,7 @@
 	 
 	 <sect2 id="convergence">
 	 <title>Convergence</title>
-	 <para>Both dc and transient solutions are obtained by an iterative process which is terminated when both 
+	 <para>Both DC and transient solutions are obtained by an iterative process which is terminated when both 
 	 of the following conditions hold: 
 	 </para>
 	<orderedlist> 
@@ -359,7 +971,7 @@
 	 <listitem><para>The node voltages converge to within a tolerance of 0.1% or 1 microvolt (1.0<superscript>-6</superscript>V), whichever is larger.
 	 </para>
 	 </listitem></orderedlist>
-	 <para>Although the algorithm used in <emphasis>Spice</emphasis> has been found to be very reliable, in some cases it fails to 
+	 <para>Although the algorithm used in <emphasis role="bold">Spice</emphasis> has been found to be very reliable, in some cases it fails to 
 	 converge to a solution. When this failure occurs, the program terminates the job. 
 	 </para>
 	 <para>Failure to converge in dc analysis is usually due to an error in specifying circuit connections, 
@@ -368,80 +980,23 @@
 	 feedback path, or the .NODESET control line is used to force the circuit to converge to the desired state. 
 	 </para>
 	 </sect2>
-	 
-	 
+	 <sect2 id="Input-Format">
+	 <title>Input Format</title>
+	 <para>The input format for SPICE is of the free format type. Fields on a card are separated by one or more blanks, 
+	 a comma, an equal (=) sign, or a left or right parenthesis; extra spaces are ignored. A card may be continued by 
+	 entering a ; (semicolon) as the last character of the card; SPICE continues reading the command on the next card. </para>
+	 <para>A name field must begin with a letter (A through Z) and cannot contain any delimiters. Only the first eight 
+	 characters of the name are used. </para>
+	 <para>A number field may be an integer field (12, -44), a floating point field (3.14159), either an integer or 
+	 floating point number followed by an integer exponent (10<superscript>-14</superscript>, 2.65*10<superscript>3</superscript>3), or either an integer or a floating point 
+	 number followed by one of the following scale factors: </para>
+	 <para>T=10<superscript>12</superscript> G=10<superscript>9</superscript> MEG=10<superscript>6</superscript> K=10<superscript>3</superscript> 
+	 MIL=25.4*10<superscript>-6</superscript> M=10<superscript>-3</superscript> U=10<superscript>-6</superscript> N=10<superscript>-9</superscript> 
+	 P=10<superscript>-12</superscript> F=10<superscript>-15</superscript> </para>
+	 <para>Letters immediately following a number that are not scale factors are ignored, and letters immediately following a scale factor are 
+	 ignored. Hence, 10, 10V, 10VOLTS, and 10HZ all represent the same number, and M, MA, MSEC, and MMHOS all represent the same scale factor. 
+	 Note that 1000, 1000.0, 1000 Hz, 10<superscript>3</superscript>, 1.0 * 10<superscript>3</superscript>, 1 KHz, and 1 K all represent the same number.</para>
+	 </sect2>
   </sect1>
-
-  <sect1 id="getting-started">
-    <title>Getting Started with Oregano</title>
-
-    <para>When you first start &app;, you will be presented to an
-    empty sheet, where you can place circuit components and connect
-    them with wires. To place a component, also known as 'part',
-    first select one in the part browser on the right hand side of 
-    the application window. Then press the 'Place' button, or double-click
-    the selected part. You can also drag the part preview and drop it
-    on the sheet.</para>
-   
-    <figure id="general-view">
-    <title>&app; oregano: main window</title>
-    	<screenshot><graphic fileref="figures/oregano-main-window.png" format="PNG"></graphic>
-      </screenshot>
-    </figure>
-
-    <para>When you have some parts placed on the sheet, you can start
-    connecting them with wires. Select the wire tool on the toolbar,
-    and click on the sheet where you want the wire to start. Then
-    click where you want to fixate the wire.</para>
-    
-    <para>Make sure you connect at least one ground node to the circuit,
-    as this is neccessary to perform a simulation.</para>
-
-  </sect1>
-
-  <sect1 id="editing">
-    <title>Editing the Circuit</title>
-
-    <para>There are a few accelerator keys that can help editing the
-    circuit:</para>
-
-      <variablelist>
-        <varlistentry><term>Ctrl-A</term><listitem><para>Select all objects on the sheet</para>
-        </listitem></varlistentry>
-
-        <varlistentry><term>Ctrl-Shift-A</term><listitem><para>Deselect all objects</para>
-        </listitem></varlistentry>
-
-        <varlistentry><term>r</term><listitem><para>Rotate the selected objects 90 degrees clockwise</para>
-        </listitem></varlistentry>
-
-        <varlistentry><term>&lt;Del&gt;</term><listitem><para>Delete the selected objects</para>
-        </listitem></varlistentry>
-
-        <varlistentry><term>l</term><listitem><para>Place the currently selected part</para>
-        </listitem></varlistentry>
-
-      </variablelist>
-
-    <para>Parts and wires can be selected by clicking on them, and by holding the
-    Shift-key while clicking, you can select multiple parts and wires. You can
-    also select objects by 'rubber-banding': hold down the mouse button while dragging
-    the pointer over the objects that you wish to select.</para>
-
-  </sect1>
-
-  <sect1 id="simulation">
-    <title>Simulation</title>
-
-    <para>When you have a circuit and wish to run a simulation, either press the
-    simulate button on the toolbar or select
-    <guimenu>Tools</guimenu>-&gt;<guimenuitem>Simulation</guimenuitem>.
-    The simulation then starts and you can follow the progress on the dialog box
-    that pops up.</para>
-
-    <para>If you want to change the simulation parameters, select
-    <guimenu>Settings</guimenu>-&gt;<guimenuitem>Simulation Settings</guimenuitem>.
-    </para>    
-
-  </sect1>
+  
 </article>

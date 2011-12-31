@@ -1,0 +1,935 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd">
+<HTML
+><HEAD
+><TITLE
+>Oregano User's Guide</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.79"><LINK
+REL="NEXT"
+TITLE="Getting Started with Oregano"
+HREF="x222.html"></HEAD
+><BODY
+CLASS="article"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="ARTICLE"
+><DIV
+CLASS="TITLEPAGE"
+><H1
+CLASS="title"
+><A
+NAME="AEN2"
+><SPAN
+CLASS="application"
+>Oregano</SPAN
+> User's Guide</A
+></H1
+><DIV
+CLASS="authorgroup"
+><A
+NAME="AEN19"
+></A
+><H3
+CLASS="author"
+><A
+NAME="AEN20"
+>Marc Lorber</A
+></H3
+><DIV
+CLASS="affiliation"
+><DIV
+CLASS="address"
+><P
+CLASS="address"
+><CODE
+CLASS="email"
+>&#60;<A
+HREF="mailto:Lorber.Marc@wanadoo.fr"
+>Lorber.Marc@wanadoo.fr</A
+>&#62;</CODE
+></P
+></DIV
+></DIV
+><H3
+CLASS="author"
+><A
+NAME="AEN26"
+>Ricardo Markiewicz</A
+></H3
+><DIV
+CLASS="affiliation"
+><DIV
+CLASS="address"
+><P
+CLASS="address"
+><CODE
+CLASS="email"
+>&#60;<A
+HREF="mailto:rmarkie@fi.uba.ar"
+>rmarkie@fi.uba.ar</A
+>&#62;</CODE
+></P
+></DIV
+></DIV
+></DIV
+><SPAN
+CLASS="releaseinfo"
+>&#13;      Oregano is a tool for schematic capture and simulation
+      of electronic circuits. It simplifes design of simple circuits
+      by letting the user draw the circuit and then simulate its
+      electrical characteristics.
+      
+      This document is mostly meant to be an introduction
+      for someone who already is familiar with circuit simulation
+      and wants to try out Oregano.
+    <BR></SPAN
+><P
+CLASS="copyright"
+>Copyright &copy; 2009 Marc Lorber</P
+><P
+CLASS="copyright"
+>Copyright &copy; 2003, 2004 LUGFi</P
+><P
+CLASS="copyright"
+>Copyright &copy; 1999, 2001, 2002 Richard Hult</P
+><DIV
+CLASS="revhistory"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+><TR
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+COLSPAN="3"
+><B
+>Revision History</B
+></TH
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision Oregano Manual V 0.1</TD
+><TD
+ALIGN="LEFT"
+>2009</TD
+><TD
+ALIGN="LEFT"
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+>Revision Oregano Manual V 0</TD
+><TD
+ALIGN="LEFT"
+>2004</TD
+><TD
+ALIGN="LEFT"
+></TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+COLSPAN="3"
+></TD
+></TR
+></TABLE
+></DIV
+><HR></DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+>1. <A
+HREF="index.html#Spice"
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+>: circuit simulation program</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="index.html#analyses-types"
+>Types of analyses</A
+></DT
+><DD
+><DL
+><DT
+>1.1.1. <A
+HREF="index.html#dc-analyses"
+>DC analyses</A
+></DT
+><DT
+>1.1.2. <A
+HREF="index.html#ac-analyses"
+>AC Small-Signal Analysis</A
+></DT
+><DT
+>1.1.3. <A
+HREF="index.html#transient-analysis"
+>Transient analysis</A
+></DT
+><DT
+>1.1.4. <A
+HREF="index.html#pole-zero-analysis"
+>Pole-Zero Analysis</A
+></DT
+><DT
+>1.1.5. <A
+HREF="index.html#small-signal-distorsion-signal"
+>Small-Signal Distortion Analysis</A
+></DT
+><DT
+>1.1.6. <A
+HREF="index.html#sensistivity-analysis"
+>Sensitivity Analysis</A
+></DT
+><DT
+>1.1.7. <A
+HREF="index.html#noise-analysis"
+>Noise Analysis</A
+></DT
+></DL
+></DD
+><DT
+>1.2. <A
+HREF="index.html#temperatures-analysis"
+>Analyses at different temperatures</A
+></DT
+><DT
+>1.3. <A
+HREF="index.html#convergence"
+>Convergence</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="x222.html"
+>Getting Started with Oregano</A
+></DT
+><DT
+>3. <A
+HREF="x233.html"
+>Editing the Circuit</A
+></DT
+><DT
+>4. <A
+HREF="x258.html"
+>Simulation</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="sect1"
+><H1
+CLASS="sect1"
+><A
+NAME="Spice"
+>1. <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+>: circuit simulation program</A
+></H1
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> is a general-purpose circuit simulation program for nonlinear DC, nonlinear 
+    transient, and linear AC analyses. Circuits may contain resistors, capacitors, inductors, 
+    mutual inductors, independent voltage and current sources, four types of dependent sources, 
+    lossless and lossy transmission lines (two separate implementations), switches, uniform 
+    distributed RC lines, and the five most common semiconductor devices: diodes, BJTs, JFETs, 
+    MESFETs, and MOSFETs.</P
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> has built-in models for the semiconductor devices, and the user need specify 
+	 only the pertinent model parameter values. The model for the BJT is based on the 
+	 integral-charge model of Gummel and Poon; however, if the Gummel-Poon parameters are not 
+	 specified, the model reduces to the simpler Ebers-Moll model. In either case, charge-storage 
+	 effects, ohmic resistances, and a current-dependent output conductance may be included. The 
+	 diode model can be used for either junction diodes or Schottky barrier diodes. The JFET model 
+	 is based on the FET model of Shichman and Hodges. Six MOSFET models are implemented: MOS1 
+	 is described by a square-law I-V characteristic, MOS2 [1] is an analytical model, while MOS3 
+	 [1] is a semi-empirical model; MOS6 [2] is a simple analytic model accurate in the short-channel 
+	 region; MOS4 [3, 4] and MOS5 [5] are the BSIM (Berkeley Short-channel IGFET Model) and BSIM2. 
+	 MOS2, MOS3, and MOS4 include second-order effects such as channel-length modulation, 
+	 subthreshold conduction, scattering-limited velocity saturation, small-size effects, and 
+	 charge-controlled capacitances.</P
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="analyses-types"
+>1.1. Types of analyses</A
+></H2
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="dc-analyses"
+>1.1.1. DC analyses</A
+></H3
+><P
+>The DC analysis portion of <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> (.DC) determines the DC operating point of the circuit
+	 with inductors shorted and capacitors opened. The DC analysis options are specified on the .DC, 
+	 .TF, and .OP control lines. A DC analysis is automatically performed prior to a transient analysis 
+	 to determine the transient initial conditions, and prior to an AC small-signal analysis to determine
+	 the linearized, small-signal models for nonlinear devices. If requested, the DC small-signal value 
+	 of a transfer function (ratio of output variable to input source), input resistance, and output 
+	 resistance is also computed as a part of the dc solution. The DC analysis can also be used to 
+	 generate dc transfer curves: a specified independent voltage or current source is stepped over a 
+	 user-specified range and the DC output variables are stored for each sequential source value. 
+	 </P
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="ac-analyses"
+>1.1.2. AC Small-Signal Analysis</A
+></H3
+><P
+>The AC small-signal portion of <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> (.AC) computes the AC output variables as a function of 
+	 frequency. The program first computes the DC operating point of the circuit and determines linearized, 
+	 small-signal models for all of the nonlinear devices in the circuit. The resultant linear circuit is 
+	 then analyzed over a user-specified range of frequencies. The desired output of an AC small-signal 
+	 analysis is usually a transfer function (voltage gain, trans-impedance, etc). If the circuit has only 
+	 one AC input, it is convenient to set that input to unity and zero phase, so that output variables 
+	 have the same value as the transfer function of the output variable with respect to the input.</P
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="transient-analysis"
+>1.1.3. Transient analysis</A
+></H3
+><P
+>The transient analysis portion of <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> (.TRAN) computes the transient output variables as a 
+	 function of time over a user-specified time interval. The initial conditions are automatically 
+	 determined by a DC analysis. All sources which are not time dependent (for example, power supplies) 
+	 are set to their DC value. The transient time interval is specified on a .TRAN control line. </P
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="pole-zero-analysis"
+>1.1.4. Pole-Zero Analysis</A
+></H3
+><P
+>The pole-zero analysis portion of <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> (.PZ) computes the poles and/or zeros in the small-signal 
+	 AC transfer function. The program first computes the DC operating point and then determines the linearized, 
+	 small-signal models for all the nonlinear devices in the circuit. This circuit is then used to find the 
+	 poles and zeros of the transfer function. 
+	 </P
+><P
+>Two types of transfer functions are allowed: one of the form (output voltage)/(input voltage) and 
+	 the other of the form (output voltage)/(input current). These two types of transfer functions cover all 
+	 the cases and one can find the poles/zeros of functions like input/output impedance and voltage gain. 
+	 The input and output ports are specified as two pairs of nodes. 
+	 </P
+><P
+>The pole-zero analysis works with resistors, capacitors, inductors, linear-controlled sources, 
+	 independent sources, BJTs, MOSFETs, JFETs and diodes. Transmission lines are not supported. 
+	 </P
+><P
+>The method used in the analysis is a sub-optimal numerical search. For large circuits it may 
+	 take a considerable time or fail to find all poles and zeros. For some circuits, the method becomes 
+	 "lost" and finds an excessive number of poles or zeros. 
+	 </P
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="small-signal-distorsion-signal"
+>1.1.5. Small-Signal Distortion Analysis</A
+></H3
+><P
+>The distortion analysis portion of <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> (.DISTO) computes steady-state harmonic and 
+	 intermodulation products for small input signal magnitudes. If signals of a single frequency are 
+	 specified as the input to the circuit, the complex values of the second and third harmonics are 
+	 determined at every point in the circuit. If there are signals of two frequencies input to the circuit, 
+	 the analysis finds out the complex values of the circuit variables at the sum and difference of the input 
+	 frequencies, and at the difference of the smaller frequency from the second harmonic of the larger 
+	 frequency. </P
+><P
+>Distortion analysis is supported for the following nonlinear devices: diodes (DIO), BJT, JFET, 
+	 MOSFETs (levels 1, 2, 3, 4/BSIM1, 5/BSIM2, and 6) and MESFETS. All linear devices are automatically 
+	 supported by distortion analysis. If there are switches present in the circuit, the analysis continues 
+	 to be accurate provided the switches do not change state under the small excitations used for distortion 
+	 calculations. </P
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="sensistivity-analysis"
+>1.1.6. Sensitivity Analysis</A
+></H3
+><P
+><SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> will calculate (.SENS) either the DC operating-point sensitivity or the AC small-signal 
+	 sensitivity of an output variable with respect to all circuit variables, including model parameters. 
+	 <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> calculates the difference in an output variable (either a node voltage or a branch current) 
+	 by perturbing each parameter of each device independently. Since the method is a numerical approximation, 
+	 the results may demonstrate second order affects in highly sensitive parameters, or may fail to show very 
+	 low but non-zero sensitivity. Further, since each variable is perturb by a small fraction of its value, 
+	 zero-valued parameters are not analyized (this has the benefit of reducing what is usually a very large 
+	 amount of data). </P
+></DIV
+><DIV
+CLASS="sect3"
+><H3
+CLASS="sect3"
+><A
+NAME="noise-analysis"
+>1.1.7. Noise Analysis</A
+></H3
+><P
+>The noise analysis portion of <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> (.NOISE) does analysis device-generated noise for the given 
+	 circuit. When provided with an input source and an output port, the analysis calculates the noise 
+	 contributions of each device (and each noise generator within the device) to the output port voltage. 
+	 It also calculates the input noise to the circuit, equivalent to the output noise referred to the specified 
+	 input source. This is done for every frequency point in a specified range - the calculated value of the noise 
+	 corresponds to the spectral density of the circuit variable viewed as a stationary gaussian stochastic 
+	 process. </P
+><P
+>After calculating the spectral densities, noise analysis integrates these values over the specified 
+	 frequency range to arrive at the total noise voltage/current (over this frequency range). This calculated 
+	 value corresponds to the variance of the circuit variable viewed as a stationary gaussian process. 
+	 </P
+></DIV
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="temperatures-analysis"
+>1.2. Analyses at different temperatures</A
+></H2
+><P
+>All input data for <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> is assumed to have been measured at a nominal temperature of 27°C, which 
+	 can be changed by use of the TNOM parameter on the .OPTIONS control line. This value can further be 
+	 overridden for any device which models temperature effects by specifying the TNOM parameter on the model 
+	 itself. The circuit simulation is performed at a temperature of 27°C, unless overridden by a TEMP parameter 
+	 on the .OPTIONS control line. Individual instances may further override the circuit temperature through 
+	 the specification of a TEMP parameter on the instance. 
+	 </P
+><P
+>Temperature appears explicitly in the exponential terms of the BJT and diode model paras. In 
+	 addition, saturation currents have a built-in temperature dependence. The temperature dependence of the 
+	 saturation current in the BJT models is determined by: 
+	 </P
+><FONT
+COLOR="RED"
+>&#13;	 <P
+>I<SUB
+>S</SUB
+>(T<SUB
+>1</SUB
+>) = I<SUB
+>S</SUB
+>(T<SUB
+>0</SUB
+>)*(T<SUB
+>1</SUB
+><SUP
+>XTI</SUP
+>/T<SUB
+>0</SUB
+>)
+	 *exp(q*E<SUB
+>G</SUB
+>*(T<SUB
+>1</SUB
+>*T<SUB
+>0</SUB
+>)/(k*T<SUB
+>1</SUB
+>-T<SUB
+>0</SUB
+>)) </P
+>
+	 </FONT
+><P
+>where k is Boltzmann's constant, q is the electronic charge, E<SUB
+>g</SUB
+> is the energy gap which is a model 
+    parameter, and XTI is the saturation current temperature exponent (also a model parameter, and usually 
+    equal to 3). 
+    </P
+><P
+>The temperature dependence of forward and reverse beta is according to the formula:
+    </P
+><P
+>B(T<SUB
+>1</SUB
+>) = B(T<SUB
+>0</SUB
+>)* T<SUB
+>1</SUB
+><SUP
+>XTB</SUP
+>/T<SUB
+>0</SUB
+></P
+><FONT
+COLOR="RED"
+>&#13;                              XTI
+                          |T |        | E q(T  T )|
+                            1            g   1  0
+          I (T ) = I (T ) |--|     exp|-----------|
+           S  1     S  0
+                          |T |        |k (T  - T )|
+                            0              1    0
+	</FONT
+><P
+>COUCOUCOUCOUCOIU</P
+><FONT
+COLOR="RED"
+>&#13;  <FONT
+COLOR="RED"
+>x</FONT
+>
+  <FONT
+COLOR="RED"
+>=</FONT
+>
+  <FONT
+COLOR="RED"
+>&#13;    <FONT
+COLOR="RED"
+>&#13;       <FONT
+COLOR="RED"
+><FONT
+COLOR="RED"
+>-</FONT
+><FONT
+COLOR="RED"
+>b</FONT
+></FONT
+>
+       <FONT
+COLOR="RED"
+></FONT
+>
+       <FONT
+COLOR="RED"
+>&#13;         <FONT
+COLOR="RED"
+>&#13;           <FONT
+COLOR="RED"
+><FONT
+COLOR="RED"
+>b</FONT
+><FONT
+COLOR="RED"
+>2</FONT
+></FONT
+>
+           <FONT
+COLOR="RED"
+>-</FONT
+>
+           <FONT
+COLOR="RED"
+><FONT
+COLOR="RED"
+>4</FONT
+><FONT
+COLOR="RED"
+>a</FONT
+><FONT
+COLOR="RED"
+>c</FONT
+></FONT
+>
+         </FONT
+>
+       </FONT
+>
+    </FONT
+>
+    <FONT
+COLOR="RED"
+><FONT
+COLOR="RED"
+>2</FONT
+><FONT
+COLOR="RED"
+></FONT
+><FONT
+COLOR="RED"
+>a</FONT
+></FONT
+>
+  </FONT
+>
+</FONT
+><P
+>COUCOUCOUCOUCOIU</P
+><P
+>where T<SUB
+>1</SUB
+> and T<SUB
+>0</SUB
+> are in kelvin, and XTB is a user-supplied model parameter. Temperature effects 
+    on beta are carried out by appropriate adjustment to the values of BF, ISE, BR , and ISC (<SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> model 
+    parameters BF, ISE, BR, and ISC, respectively). 
+    </P
+><P
+>Temperature dependence of the saturation current in the junction diode model is determined by: </P
+><P
+>I<SUB
+>S</SUB
+>(T<SUB
+>1</SUB
+>) = I<SUB
+>S</SUB
+>(T<SUB
+>0</SUB
+>)*(T<SUB
+>1</SUB
+><SUP
+>XTI</SUP
+>/T<SUB
+>0</SUB
+>)
+	 *exp(q*E<SUB
+>G</SUB
+>*(T<SUB
+>1</SUB
+>*T<SUB
+>0</SUB
+>)/(k*T<SUB
+>1</SUB
+>-T<SUB
+>0</SUB
+>)) </P
+><FONT
+COLOR="RED"
+>&#13;                                      XTB
+                                  |T |
+                                    1
+                    B(T ) = B(T ) |--|
+                       1       0
+                                  |T |
+                                    0
+	 </FONT
+><P
+>where N is the emission coefficient, which is a model parameter, and the other symbols have 
+    the same meaning as above. Note that for Schottky barrier diodes, the value of the saturation current 
+    temperature exponent, XTI, is usually 2. 
+    </P
+><P
+>Temperature appears explicitly in the value of junction potential, U (in <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> PHI), for all the 
+    device models. The temperature dependence is determined by:
+    </P
+><FONT
+COLOR="RED"
+>&#13;                             XTI
+                             ---
+                              N
+                         |T |        |  E q(T  T ) |
+                           1             g   1  0
+         I (T ) = I (T ) |--|     exp|-------------|
+          S  1     S  0
+                         |T |        |N k (T  - T )|
+                           0                1    0
+    </FONT
+><P
+>where k is Boltzmann's constant, q is the electronic charge, Na is the acceptor impurity density, 
+    Nd is the donor impurity density, Ni is the intrinsic carrier concentration, and Eg is the energy gap. 
+    </P
+><P
+>Temperature appears explicitly in the value of surface mobility, M0 (or UO), for the MOSFET model. 
+    The temperature dependence is determined by: 
+    </P
+><P
+>R(T) = R(T<SUB
+>0</SUB
+>) [1 + TC<SUB
+>1</SUB
+> (T - T<SUB
+>0</SUB
+> ) + TC<SUB
+>2</SUB
+> (T - T<SUB
+>0</SUB
+>)<SUP
+>2</SUP
+>] 
+    </P
+><FONT
+COLOR="RED"
+>&#13;
+                                   | N N   |
+                                      a d
+                          kT       |------ |
+                   U(T) = --  log        2
+                           q     e |N (T)  |
+                                     i
+    </FONT
+><P
+>The effects of temperature on resistors is modeled by the formula: 
+    </P
+><P
+>I<SUB
+>S</SUB
+>(T<SUB
+>1</SUB
+>) = I<SUB
+>S</SUB
+>(T<SUB
+>0</SUB
+>)*(T<SUB
+>1</SUB
+><SUP
+>XTI</SUP
+>/T<SUB
+>0</SUB
+>)
+	 *exp(q*E<SUB
+>G</SUB
+>*(T<SUB
+>1</SUB
+>*T<SUB
+>0</SUB
+>)/(k*T<SUB
+>1</SUB
+>-T<SUB
+>0</SUB
+>)) </P
+><FONT
+COLOR="RED"
+>&#13;                                M (T )
+                                 0  0
+                       M (T) = -------
+                        0          1.5
+                               | T|
+                               |--|
+                               |T |
+                                 0
+     </FONT
+><P
+>where T is the circuit temperature, T<SUB
+>0</SUB
+> is the nominal temperature, and TC<SUB
+>1</SUB
+> and TC<SUB
+>2</SUB
+> are the first- 
+    and second-order temperature coefficients. 
+    </P
+></DIV
+><DIV
+CLASS="sect2"
+><H2
+CLASS="sect2"
+><A
+NAME="convergence"
+>1.3. Convergence</A
+></H2
+><P
+>Both dc and transient solutions are obtained by an iterative process which is terminated when both 
+	 of the following conditions hold: 
+	 </P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>The nonlinear branch currents converge to within a tolerance of 0.1% or 1 picoamp (1.0<SUP
+>-12</SUP
+>A), whichever 
+	 is larger.</P
+></LI
+><LI
+><P
+>The node voltages converge to within a tolerance of 0.1% or 1 microvolt (1.0<SUP
+>-6</SUP
+>V), whichever is larger.
+	 </P
+></LI
+></OL
+><P
+>Although the algorithm used in <SPAN
+CLASS="emphasis"
+><I
+CLASS="emphasis"
+>Spice</I
+></SPAN
+> has been found to be very reliable, in some cases it fails to 
+	 converge to a solution. When this failure occurs, the program terminates the job. 
+	 </P
+><P
+>Failure to converge in dc analysis is usually due to an error in specifying circuit connections, 
+	 element values, or model parameter values. Regenerative switching circuits or circuits with positive feedback 
+	 probably will not converge in the dc analysis unless the OFF option is used for some of the devices in the 
+	 feedback path, or the .NODESET control line is used to force the circuit to converge to the desired state. 
+	 </P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+SUMMARY="Footer navigation table"
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="x222.html"
+ACCESSKEY="N"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Getting Started with Oregano</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,19 @@
+<?xml version="1.0" standalone="no" ?>
+<omf>
+    <resource>
+        <creator>rmarkie@fi.uba.ar (Ricardo Markiewicz)</creator>
+        <creator>Marc Lorber Lorber.Marc@wanadoo.fr</creator>
+        <title>Oregano User Guide</title>
+        <date>2002-11-18</date>
+        <version identifier="1.0" date="2002-08-21" description="Added first User Guide" />
+        <version identifier="1.1" date="2002-11-18" description="Updated for 0.7" />
+        <subject category="GNOME|Applications" />
+        <description>User Guide for oregano</description>
+        <type>user&apos;s guide</type>
+        <format mime="text/xml" dtd="-//OASIS//DTD DocBook V4.1.2//EN" />
+        <identifier url="file://usr/local/share/gnome/help/oregano/C/oregano.xml" />
+        <language code="C" />
+        <relation seriesid="b57e7e48-be78-11d6-85a3-d094906a987c" />
+        <rights type="GNU FDL" license.version="1.1" holder="Alvaro del Castillo" />
+    </resource>
+</omf>

@@ -2,13 +2,19 @@
 <omf>
   <resource>
     <creator>
-						rmarkie@fi.uba.ar (Ricardo Markiewicz)
+      acs@barrapunto.com (Alvaro del Castillo)
     </creator>
-    <creator>
-      Marc Lorber Lorber.Marc@wanadoo.fr
-    </creator>
+    <maintainer>
+      Kurt Maute (kmaute@yahoo.com)
+    </maintainer>
+    <contributor>
+      kmaute@yahoo.com (Kurt Maute)
+    </contributor>
+    <contributor>
+      sorrodp@alum.wpi.edu (Pedro Soria-Rodriguez)
+    </contributor>
     <title>
-      Oregano User Guide
+      Planner User Guide
     </title>
     <date>
       2002-11-18
@@ -17,15 +23,15 @@
     <version identifier="1.1" date="2002-11-18" description="Updated for 0.7"/>
     <subject category="GNOME|Applications"/>
     <description>
-          User Guide for oregano
+          User Guide for Planner
     </description>
     <type>
       user's guide
     </type>
     <format mime="text/xml" dtd="-//OASIS//DTD DocBook V4.1.2//EN"/>
-    <identifier url="oregano.xml"/>
+    <identifier url="planner.xml"/>
     <language code="C"/>
-    <relation seriesid="b57e7e48-be78-11d6-85a3-d094906a987c"/>
+    <relation seriesid="517f551c-b490-11d6-9295-da147643ae57"/>
     <rights type="GNU FDL" license.version="1.1" holder="Alvaro del Castillo"/>
   </resource>
 </omf>
