@@ -109,12 +109,12 @@
       <ogo:rotation>0</ogo:rotation>
       <ogo:name>Test Clamp</ogo:name>
       <ogo:library>Default</ogo:library>
-      <ogo:symbol>Punta</ogo:symbol>
+      <ogo:symbol>Point</ogo:symbol>
       <ogo:position>(410 250)</ogo:position>
       <ogo:properties>
         <ogo:property>
           <ogo:name>internal</ogo:name>
-          <ogo:value>punta</ogo:value>
+          <ogo:value>point</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>type</ogo:name>
@@ -254,12 +254,12 @@
       <ogo:rotation>0</ogo:rotation>
       <ogo:name>Test Clamp</ogo:name>
       <ogo:library>Default</ogo:library>
-      <ogo:symbol>Punta</ogo:symbol>
+      <ogo:symbol>Point</ogo:symbol>
       <ogo:position>(150 250)</ogo:position>
       <ogo:properties>
         <ogo:property>
           <ogo:name>internal</ogo:name>
-          <ogo:value>punta</ogo:value>
+          <ogo:value>point</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>type</ogo:name>
