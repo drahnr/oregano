@@ -803,7 +803,6 @@ response_callback (GtkDialog *dlg, gint id, Schematic *sm)
 	gint page;
 	SimSettings *s;
 	gchar *tmp = NULL, **node_ids= NULL;
-	gint i = 0;
 
 	s = schematic_get_sim_settings (sm);
 
@@ -1077,7 +1076,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	/*  DC   */
 	/*  Get list of sources */
-	//node_list = netlist_helper_get_voltmeters_list (schematic_view_get_schematic (sv), &error);
+	node_list = netlist_helper_get_voltmeters_list (schematic_view_get_schematic (sv), &error);
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP)  ||
 			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)    ||
@@ -1096,12 +1095,12 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 
 	text = NULL;
-	/*while (node_list) {
+	while (node_list) {
 		if (node_list->data)
 			text = g_strdup_printf ("V(%d)", atoi (node_list->data));
 		if (text) gtk_combo_box_append_text (node_box, text);
 		node_list = node_list->next;
-	}*/
+	}
 	
 	w = glade_xml_get_widget (gui, "dc_enable");
 	s->priv->w_dc_enable = w;
@@ -1177,7 +1176,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_list_store_clear (node_list_store);	
 
 	/* Get the identification of the schematic nodes */
-	//node_list = netlist_helper_get_voltmeters_list (schematic_view_get_schematic (sv), &error);
+	node_list = netlist_helper_get_voltmeters_list (schematic_view_get_schematic (sv), &error);
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP)  ||
 			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)    ||
