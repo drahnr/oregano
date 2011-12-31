@@ -4443,7 +4443,7 @@
     <ogo:part>
       <ogo:name>Test Clamp</ogo:name>
       <ogo:symbol>Point</ogo:symbol>
-      <ogo:description>Point of test</ogo:description>
+      <ogo:description>Measure point</ogo:description>
 
       <ogo:properties>
         <ogo:property>

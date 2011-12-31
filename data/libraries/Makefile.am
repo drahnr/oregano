@@ -11,6 +11,9 @@ oreganolib_DATA = 			\
 	miscellaneous.oreglib  	\
 	power.oreglib		\
 	peripheral.oreglib	\
+	source-input.oreglib	\
+	ground.oreglib		\
+	passive-components.oreglib		\
 	interface.oreglib
 
 EXTRA_DIST = $(oreganolib_DATA)

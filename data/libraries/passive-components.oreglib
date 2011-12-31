@@ -1,0 +1,1161 @@
+<?xml version="1.0"?>
+<ogo:library xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
+  <ogo:name>Passive Components</ogo:name>
+  <ogo:description>This library comprises statndard passive components issued from default.oreglib.</ogo:description>
+  <ogo:version>1.0</ogo:version>
+  <ogo:author>Marc Lorber</ogo:author>
+  <ogo:last-updated>09-Jan-2010</ogo:last-updated>
+  <ogo:symbols>
+
+  <ogo:symbol>
+      <ogo:name>jumper4</ogo:name>
+      <ogo:objects>
+        <ogo:line>(10 0)(10 20)</ogo:line>
+        <ogo:line>(20 10)(13 10)(12 7)(10 7)(8 7)(7 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10)</ogo:connection>
+        <ogo:connection>(20 10)</ogo:connection>
+        <ogo:connection>(10 0)</ogo:connection>
+        <ogo:connection>(10 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol> 
+
+  <ogo:symbol>
+      <ogo:name>jumper2</ogo:name>
+      <ogo:objects>
+        <ogo:line>(20 10)(13 10)(12 7)(10 7)(8 7)(7 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10)</ogo:connection>
+        <ogo:connection>(20 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+  <ogo:symbol>
+      <ogo:name>antenna</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(0 15)(8 0)(-8 0)(0 15)(0 30)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 30 1)</ogo:connection>
+       </ogo:connections>
+    </ogo:symbol> 
+
+    <ogo:symbol>
+      <ogo:name>resistor</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(10 10)(11 10)(13 6)(16 14)(19 6)(22 14)(25 6)(28 14)(30 10)(40 10)</ogo:line>
+      </ogo:objects>
+
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(40 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>resistor-var1</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(10 10)(11 10)(13 6)(16 14)(19 6)(22 14)(25 6)(28 14)(30 10)(40 10)</ogo:line>
+        <ogo:line>(20 6)(20 -10)</ogo:line>
+        <ogo:line>(17 0)(20 6)(23 0)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(40 10 3)</ogo:connection>
+        <ogo:connection>(20 -10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>thermistor</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(10 10)(11 10)(13 6)(16 14)(19 6)(22 14)(25 6)(28 14)(30 10)(40 10)</ogo:line>
+        <ogo:line>(10 18)(30 2)</ogo:line>
+        <ogo:arc>(10 0)(30 20)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(40 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>varistor</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(10 10)(11 10)(13 6)(16 14)(19 6)(22 14)(25 6)(28 14)(30 10)(40 10)</ogo:line>
+        <ogo:line>(7 18)(10 18)(30 2)(33 2)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(40 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>resistor-var2</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(10 10)(11 10)(13 6)(16 14)(19 6)(22 14)(25 6)(28 14)(30 10)(40 10)</ogo:line>
+        <ogo:line>(10 18)(30 2)</ogo:line>
+        <ogo:line>(27 3)(30 2)(29 5)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(40 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+    <ogo:symbol>
+      <ogo:name>speaker</ogo:name>
+      <ogo:objects>
+        <ogo:line>(15 0)(15 10)(5 10)(5 0)(15 0)(25 -10)(25 20)(15 10)</ogo:line>
+        <ogo:line>(10 0)(10 -10)</ogo:line>
+        <ogo:line>(10 10)(10 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 -10 1)</ogo:connection>
+        <ogo:connection>(10 20 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>capacitor</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(13 10)</ogo:line>
+        <ogo:line>(13 5)(13 15)</ogo:line>
+        <ogo:line>(17 5)(17 15)</ogo:line>
+        <ogo:line>(17 10)(30 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(30 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>capacitor-var1</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(13 10)</ogo:line>
+        <ogo:line>(13 5)(13 15)</ogo:line>
+        <ogo:line>(20 5)(18 6.5)(17 10)(18 13.5)(20 15)</ogo:line>
+        <ogo:line>(17 6)(20 5)(19 8)</ogo:line>
+        <ogo:line>(17 10)(30 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(30 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>capacitor-var2</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(13 10)</ogo:line>
+        <ogo:line>(13 5)(13 15)</ogo:line>
+        <ogo:line>(17 5)(17 15)</ogo:line>
+        <ogo:line>(17 10)(30 10)</ogo:line>
+        <ogo:line>(10 5)(20 15)</ogo:line>
+        <ogo:line>(10 7)(10 5)(12 5)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(30 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>cpol</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(13 10)</ogo:line>
+        <ogo:line>(13 7)(13 13)</ogo:line>
+        <ogo:line>(12 4)(17 4)(17 16)(12 16)</ogo:line>
+        <ogo:line>(17 10)(30 10)</ogo:line>
+        <ogo:line>(5 5)(9 5)</ogo:line>
+        <ogo:line>(7 3)(7 7)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(30 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>inductor</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(11 10)
+	      (12.4 6.5)         
+	      (16.0 5.0)(19.6 6.5)(21.0 10)(19.0 14.0)(17.0 10)(18.4 6.5)(22.4 5.0)
+	      (22.0 5.0)(25.6 6.5)(27.0 10)(25.0 14.0)(23.0 10)(24.4 6.5)(28.4 5.0)
+	      (28.0 5.0)(31.6 6.5)(33.0 10)(31.0 14.0)(29.0 10)(30.4 6.5)(34.4 5.0)
+	      (34.0 5.0)(37.6 6.5)(39.0 10)
+        (39 10)(50 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(50 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>motor-stepper</ogo:name>
+      <ogo:objects>
+        <ogo:line>(60 10)(60 16)
+	      (56.5 17.4)         
+	      (55 21)(56.5 24.6)(60 26)(64 24)(60 22)(56.5 23.4)(55 27.4)
+	      (55 27)(56.5 30.6)(60 32)(64 30)(60 28)(56.5 29.4)(55 33.4)
+	      (55 33)(56.5 36.6)(60 38)(64 36)(60 34)(56.5 35.4)(55 39.4)
+	      (55 39)(56.5 42.6)(60 44)
+        (60 44)(60 50)</ogo:line>
+        <ogo:line>(10 60)(16 60)
+	      (17.4 56.5)         
+	      (21 55)(24.6 56.5)(26 60)(24 64)(22 60)(23.4 56.5)(27.4 55)
+	      (27 55)(30.6 56.5)(32 60)(30 64)(28 60)(29.4 56.5)(33.4 55)
+	      (33 55)(36.6 56.5)(38 60)(36 64)(34 60)(35.4 56.5)(39.4 55)
+	      (39 55)(42.6 56.5)(44 60)
+        (44 60)(50 60)</ogo:line>
+        <ogo:line>(60 10)(70 10)</ogo:line>
+        <ogo:line>(64 30)(70 30)</ogo:line>
+        <ogo:line>(60 50)(70 50)</ogo:line>
+        <ogo:line>(10 60)(10 70)</ogo:line>
+        <ogo:line>(30 64)(30 70)</ogo:line>
+        <ogo:line>(50 60)(50 70)</ogo:line>
+        <ogo:arc>(10 10)(50 50)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(70 10 1)</ogo:connection>
+        <ogo:connection>(70 30 2)</ogo:connection>
+        <ogo:connection>(70 50 3)</ogo:connection>
+        <ogo:connection>(10 70 4)</ogo:connection>
+        <ogo:connection>(30 70 5)</ogo:connection>
+        <ogo:connection>(50 70 6)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>motor-stepper2</ogo:name>
+      <ogo:objects>
+        <ogo:line>(60 10)(60 16)
+	      (56.5 17.4)         
+	      (55 21)(56.5 24.6)(60 26)(64 24)(60 22)(56.5 23.4)(55 27.4)
+	      (55 27)(56.5 30.6)(60 32)(64 30)(60 28)(56.5 29.4)(55 33.4)
+	      (55 33)(56.5 36.6)(60 38)(64 36)(60 34)(56.5 35.4)(55 39.4)
+	      (55 39)(56.5 42.6)(60 44)
+        (60 44)(60 50)</ogo:line>
+        <ogo:line>(10 60)(16 60)
+	      (17.4 56.5)         
+	      (21 55)(24.6 56.5)(26 60)(24 64)(22 60)(23.4 56.5)(27.4 55)
+	      (27 55)(30.6 56.5)(32 60)(30 64)(28 60)(29.4 56.5)(33.4 55)
+	      (33 55)(36.6 56.5)(38 60)(36 64)(34 60)(35.4 56.5)(39.4 55)
+	      (39 55)(42.6 56.5)(44 60)
+        (44 60)(50 60)</ogo:line>
+        <ogo:line>(60 10)(70 10)</ogo:line>
+        <ogo:line>(60 50)(70 50)</ogo:line>
+        <ogo:line>(10 60)(10 70)</ogo:line>
+        <ogo:line>(50 60)(50 70)</ogo:line>
+        <ogo:arc>(10 10)(50 50)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(70 10 1)</ogo:connection>
+        <ogo:connection>(70 50 2)</ogo:connection>
+        <ogo:connection>(10 70 3)</ogo:connection>
+        <ogo:connection>(50 70 4)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+    <ogo:symbol>
+      <ogo:name>inductor-iron</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 10)(11 10)
+	      (12.4 6.5)         
+	      (16.0 5.0)(19.6 6.5)(21.0 10)(19.0 14.0)(17.0 10)(18.4 6.5)(22.4 5.0)
+	      (22.0 5.0)(25.6 6.5)(27.0 10)(25.0 14.0)(23.0 10)(24.4 6.5)(28.4 5.0)
+	      (28.0 5.0)(31.6 6.5)(33.0 10)(31.0 14.0)(29.0 10)(30.4 6.5)(34.4 5.0)
+	      (34.0 5.0)(37.6 6.5)(39.0 10)
+        (39 10)(50 10)</ogo:line>
+        <ogo:line>(11 3)(39 3)</ogo:line>
+        <ogo:line>(11 1)(39 1)</ogo:line>
+        <ogo:line>(11 -1)(39 -1)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10 1)</ogo:connection>
+        <ogo:connection>(50 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>transformer</ogo:name>
+      <ogo:objects>
+        <ogo:line>(10 0)(10 11)
+	      (13.5 12.4)         
+	      (15.0 16.0)(13.5 19.6)(10 21.0)(6.0 19.0)(10 17.0)(13.5 18.4)(15.0 22.4)
+	      (15.0 22.0)(13.5 25.6)(10 27.0)(6.0 25.0)(10 23.0)(13.5 24.4)(15.0 28.4)
+	      (15.0 28.0)(13.5 31.6)(10 33.0)(6.0 31.0)(10 29.0)(13.5 30.4)(15.0 34.4)
+	      (15.0 34.0)(13.5 37.6)(10 39.0)
+        (10 39)(10 50)</ogo:line>
+        <ogo:line>(30 0)(30 11)
+	      (26.5 12.4)         
+	      (25.0 16.0)(26.5 19.6)(30 21.0)(34.0 19.0)(30 17.0)(26.5 18.4)(25.0 22.4)
+	      (25.0 22.0)(26.5 25.6)(30 27.0)(34.0 25.0)(30 23.0)(26.5 24.4)(25.0 28.4)
+	      (25.0 28.0)(26.5 31.6)(30 33.0)(34.0 31.0)(30 29.0)(26.5 30.4)(25.0 34.4)
+	      (25.0 34.0)(26.5 37.6)(30 39.0)
+              (26.5 52.4)         
+        (30 39)(30 50)</ogo:line>
+        <ogo:line>(22 11)(22 39)</ogo:line>
+        <ogo:line>(20 11)(20 39)</ogo:line>
+        <ogo:line>(18 11)(18 39)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 50 2)</ogo:connection>
+        <ogo:connection>(30 0 3)</ogo:connection>
+        <ogo:connection>(30 50 4)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>transformer2</ogo:name>
+      <ogo:objects>
+        <ogo:line>(10 0)(10 11)
+	      (13.5 12.4)         
+	      (15.0 16.0)(13.5 19.6)(10 21.0)(6.0 19.0)(10 17.0)(13.5 18.4)(15.0 22.4)
+	      (15.0 22.0)(13.5 25.6)(10 27.0)(6.0 25.0)(10 23.0)(13.5 24.4)(15.0 28.4)
+	      (15.0 28.0)(13.5 31.6)(10 33.0)(6.0 31.0)(10 29.0)(13.5 30.4)(15.0 34.4)
+	      (15.0 34.0)(13.5 37.6)(10 39.0)
+        (10 39)(10 50)</ogo:line>
+        <ogo:line>(30 0)(30 11)
+	      (26.5 12.4)         
+	      (25.0 16.0)(26.5 19.6)(30 21.0)(34.0 19.0)(30 17.0)(26.5 18.4)(25.0 22.4)
+	      (25.0 22.0)(26.5 25.6)(30 27.0)(34.0 25.0)(30 23.0)(26.5 24.4)(25.0 28.4)
+	      (25.0 28.0)(26.5 31.6)(30 33.0)(34.0 31.0)(30 29.0)(26.5 30.4)(25.0 34.4)
+	      (25.0 34.0)(26.5 37.6)(30 40.0)
+              (26.5 42.4)         
+	      (25.0 46.0)(26.5 49.6)(30 51.0)(34.0 49.0)(30 47.0)(26.5 48.4)(25.0 52.4)
+	      (25.0 52.0)(26.5 55.6)(30 57.0)(34.0 55.0)(30 53.0)(26.5 54.4)(25.0 58.4)
+	      (25.0 58.0)(26.5 61.6)(30 63.0)(34.0 61.0)(30 59.0)(26.5 60.4)(25.0 64.4)
+	      (25.0 64.0)(26.5 67.6)(30 69.0)
+        (30 69)(30 80)</ogo:line>
+        <ogo:line>(30 40)(50 40)</ogo:line>
+        <ogo:line>(22 11)(22 69)</ogo:line>
+        <ogo:line>(20 11)(20 69)</ogo:line>
+        <ogo:line>(18 11)(18 69)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 50 2)</ogo:connection>
+        <ogo:connection>(30 0 3)</ogo:connection>
+        <ogo:connection>(50 40 4)</ogo:connection>
+        <ogo:connection>(30 80 5)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>fuse</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(-3 -3)(3 3)</ogo:arc>
+        <ogo:arc>(17 -3)(23 3)</ogo:arc>
+        <ogo:line>(-10 0)(-3 0)</ogo:line>
+        <ogo:line>(23 0)(30 0)</ogo:line>
+        <ogo:line>(1 -2.9)(2 -4)(4 -4.9)(5 -5)(6 -4.9)(8 -4)(9 -2.9)(10 0)</ogo:line>
+        <ogo:line>(10 0)(11 2.9)(12 4)(14 4.9)(15 5)(16 4.9)(18 4)(19 2.9)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-10 0 1)</ogo:connection>
+        <ogo:connection>(30 0 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+    <ogo:symbol>
+      <ogo:name>lamp</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(-7.5 -7.5)(7.5 7.5)</ogo:arc>
+        <ogo:line>(0 -20)(0 -7.5)</ogo:line>
+        <ogo:line>(0 7.5)(0 20)</ogo:line>
+        <ogo:line>(-5.3 -5.3)(5.3 5.3)</ogo:line>
+        <ogo:line>(5.3 -5.3)(-5.3 5.3)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 -20 1)</ogo:connection>
+        <ogo:connection>(0 20 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+    <ogo:symbol>
+      <ogo:name>microphone</ogo:name>
+      <ogo:objects>
+        <ogo:line>(-2.5 -5)(0 -5)(5 -4)(7.5 -2.5)(9 0)(10 5)</ogo:line>
+        <ogo:line>(-2.5 15)(0 15)(5 14)(7.5 12.5)(9 10)(10 5)</ogo:line>
+        <ogo:line>(9 0)(20 0)</ogo:line>
+        <ogo:line>(9 10)(20 10)</ogo:line>
+        <ogo:line>(-2.5 -5)(-2.5 15)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(20 0 1)</ogo:connection>
+        <ogo:connection>(20 10 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>earphone-m</ogo:name>
+      <ogo:objects>
+        <ogo:line>(-15 0)(-14 -5)(-12.5 -8)(-10 -11)(-7.5 -13)(-5 -14)(-2.5 -14.5)(0 -15)(2.5 -14.6)(5 -14)(7.5 -13)(10 -11)(12.5 -8)(14 -5)(15 0)</ogo:line>
+        <ogo:line>(-22.5 10)(-30 10)</ogo:line>
+        <ogo:line>(15 15)(15 20)(-30 20)</ogo:line>
+        <ogo:arc>(-22.5 0)(-7.5 15)</ogo:arc>
+        <ogo:arc>(7.5 0)(22.5 15)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-30 10 1)</ogo:connection>
+        <ogo:connection>(-30 20 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>earphone-s</ogo:name>
+      <ogo:objects>
+        <ogo:line>(-15 0)(-14 -5)(-12.5 -8)(-10 -11)(-7.5 -13)(-5 -14)(-2.5 -14.5)(0 -15)(2.5 -14.6)(5 -14)(7.5 -13)(10 -11)(12.5 -8)(14 -5)(15 0)</ogo:line>
+        <ogo:line>(-22.5 10)(-30 10)</ogo:line>
+        <ogo:line>(-7.5 10)(7.5 10)</ogo:line>
+        <ogo:line>(0 10)(0 20)(-30 20)</ogo:line>
+        <ogo:line>(15 15)(15 30)(-30 30)</ogo:line>
+        <ogo:arc>(-22.5 0)(-7.5 15)</ogo:arc>
+        <ogo:arc>(7.5 0)(22.5 15)</ogo:arc>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-30 10 1)</ogo:connection>
+        <ogo:connection>(-30 20 2)</ogo:connection>
+        <ogo:connection>(-30 30 3)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+  </ogo:symbols>
+
+  <ogo:parts>
+
+   <ogo:part>
+      <ogo:name>Jumper Cross</ogo:name>
+      <ogo:symbol>jumper4</ogo:symbol>
+      <ogo:description>Wire Jumper Cross</ogo:description>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>internal</ogo:name>
+          <ogo:value>jumper4</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>Jumper</ogo:name>
+      <ogo:symbol>jumper2</ogo:symbol>
+      <ogo:description>Wire Jumper</ogo:description>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>internal</ogo:name>
+          <ogo:value>jumper2</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>Antenna</ogo:name>
+      <ogo:symbol>antenna</ogo:symbol>
+      <ogo:description>Antenna</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>internal</ogo:name>
+          <ogo:value>antenna</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Resistor</ogo:name>
+      <ogo:symbol>resistor</ogo:symbol>
+      <ogo:description>Resistor</ogo:description>
+
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Resistance</ogo:name>
+          <ogo:text>@res</ogo:text>
+          <ogo:position>(0 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>R</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Res</ogo:name>
+          <ogo:value>1k</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Potentiometer</ogo:name>
+      <ogo:symbol>resistor-var1</ogo:symbol>
+      <ogo:description>Variable Resistor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(5 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Resistance</ogo:name>
+          <ogo:text>@res</ogo:text>
+          <ogo:position>(5 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>R</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Res</ogo:name>
+          <ogo:value>1k</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@refdes %1 %2 %3 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Potentiometer-2</ogo:name>
+      <ogo:symbol>resistor-var2</ogo:symbol>
+      <ogo:description>Variable Resistor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(5 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Resistance</ogo:name>
+          <ogo:text>@res</ogo:text>
+          <ogo:position>(5 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>R</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Res</ogo:name>
+          <ogo:value>1k</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Thermistor</ogo:name>
+      <ogo:symbol>thermistor</ogo:symbol>
+      <ogo:description>Thermistor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(5 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Resistance</ogo:name>
+          <ogo:text>@res</ogo:text>
+          <ogo:position>(5 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>R</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Res</ogo:name>
+          <ogo:value>1k</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Varistor</ogo:name>
+      <ogo:symbol>varistor</ogo:symbol>
+      <ogo:description>Varistor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(5 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Resistance</ogo:name>
+          <ogo:text>@res</ogo:text>
+          <ogo:position>(5 50)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Res</ogo:name>
+          <ogo:value>270V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+    <ogo:part>
+      <ogo:name>Speaker</ogo:name>
+      <ogo:symbol>speaker</ogo:symbol>
+      <ogo:description>Speaker</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(30 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>impedance</ogo:name>
+          <ogo:text>@ohm</ogo:text>
+          <ogo:position>(30 15)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>L</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>ohm</ogo:name>
+          <ogo:value>8 ohm</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Capacitor</ogo:name>
+      <ogo:symbol>capacitor</ogo:symbol>
+      <ogo:description>Capacitor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Capacitance</ogo:name>
+          <ogo:text>@cap</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>C</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Cap</ogo:name>
+          <ogo:value>1u</ogo:value>
+        </ogo:property>
+        <ogo:property>
+					<ogo:name>IC</ogo:name>
+					<ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+					<ogo:value>C_@refdes %1 %2 @cap IC=@IC</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Trimmer</ogo:name>
+      <ogo:symbol>capacitor-var1</ogo:symbol>
+      <ogo:description>Variable Capacitor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Capacitance</ogo:name>
+          <ogo:text>@cap</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>C</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Cap</ogo:name>
+          <ogo:value>100p</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>C_@refdes %1 %2 @cap</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Trimmer-2</ogo:name>
+      <ogo:symbol>capacitor-var2</ogo:symbol>
+      <ogo:description>Variable Capacitor</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Capacitance</ogo:name>
+          <ogo:text>@cap</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>C</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Cap</ogo:name>
+          <ogo:value>30p</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>C_@refdes %1 %2 @cap</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+    <ogo:part>
+      <ogo:name>Cap.Pol.</ogo:name>
+      <ogo:symbol>cpol</ogo:symbol>
+      <ogo:description>Electrolytic Capacitor</ogo:description>
+
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Capacitance</ogo:name>
+          <ogo:text>@cap</ogo:text>
+          <ogo:position>(15 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>C</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Cap</ogo:name>
+          <ogo:value>1u</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>C_@refdes %1 %2 @cap</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+    <ogo:part>
+      <ogo:name>Inductor</ogo:name>
+      <ogo:symbol>inductor</ogo:symbol>
+      <ogo:description>Inductor</ogo:description>
+
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(20 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Inductance</ogo:name>
+          <ogo:text>@ind</ogo:text>
+          <ogo:position>(20 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>L</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Ind</ogo:name>
+          <ogo:value>1H</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@refdes %1 %2 @ind</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Inductor iron</ogo:name>
+      <ogo:symbol>inductor-iron</ogo:symbol>
+      <ogo:description>Iron core Inductor</ogo:description>
+
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(20 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Inductance</ogo:name>
+          <ogo:text>@ind</ogo:text>
+          <ogo:position>(20 30)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>L</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Ind</ogo:name>
+          <ogo:value>1H</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@refdes %1 %2 @ind</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Transformer</ogo:name>
+      <ogo:symbol>transformer</ogo:symbol>
+      <ogo:description>Transformer</ogo:description>
+
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(50 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Inductance</ogo:name>
+          <ogo:text>@ind</ogo:text>
+          <ogo:position>(50 20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>T</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Ind</ogo:name>
+          <ogo:value>1H</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>T_@refdes %1 %2 %3 %4 @ind</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Transformer-up</ogo:name>
+      <ogo:symbol>transformer2</ogo:symbol>
+      <ogo:description>Step Up Transformer</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(50 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Inductance</ogo:name>
+          <ogo:text>@ind</ogo:text>
+          <ogo:position>(50 20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>T</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Ind</ogo:name>
+          <ogo:value>1H</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>T_@refdes %1 %2 %3 %4 %5 @ind</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Fuse</ogo:name>
+      <ogo:symbol>fuse</ogo:symbol>
+      <ogo:description>Fuse</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>A</ogo:name>
+          <ogo:text>@res</ogo:text>
+          <ogo:position>(10 25)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>F</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>res</ogo:name>
+          <ogo:value>1A</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>F_@refdes %1 %2 @res</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+   <ogo:part>
+      <ogo:name>Lamp</ogo:name>
+      <ogo:symbol>lamp</ogo:symbol>
+      <ogo:description>Lamp</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V</ogo:name>
+          <ogo:text>12 V</ogo:text>
+          <ogo:position>(30 -25)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>L</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@refdes %1 %2 </ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Motor Stepper</ogo:name>
+      <ogo:symbol>motor-stepper</ogo:symbol>
+      <ogo:description>Motor Stepper 4 phases</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(30 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@refdes %1 %2 %3 %4 %5 %6 </ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Motor Stepper-2</ogo:name>
+      <ogo:symbol>motor-stepper2</ogo:symbol>
+      <ogo:description>Motor Stepper 2 phases</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(30 35)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@refdes %1 %2 %3 %4 </ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+   <ogo:part>
+      <ogo:name>Microphone</ogo:name>
+      <ogo:symbol>microphone</ogo:symbol>
+      <ogo:description>Microphone</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@refdes %1 %2 </ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>Earphone-M</ogo:name>
+      <ogo:symbol>earphone-m</ogo:symbol>
+      <ogo:description>Earphone (Mono)</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>E</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@refdes %1 %2 </ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+   <ogo:part>
+      <ogo:name>Earphone-S</ogo:name>
+      <ogo:symbol>earphone-s</ogo:symbol>
+      <ogo:description>Earphone (Stereo)</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>E</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@refdes %1 %2 %3</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+
+  </ogo:parts>
+</ogo:library>

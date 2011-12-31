@@ -1,0 +1,3260 @@
+<?xml version="1.0"?>
+<ogo:library>
+  <ogo:name>breakout</ogo:name>
+  <ogo:description>PSpice eval library</ogo:description>
+  <ogo:version>1.0</ogo:version>
+  <ogo:symbols>
+    <ogo:symbol>
+      <ogo:name>Rbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (28 14)(30 10)</ogo:line>
+        <ogo:line>0 (25 6)(28 14)</ogo:line>
+        <ogo:line>0 (22 14)(25 6)</ogo:line>
+        <ogo:line>0 (19 6)(22 14)</ogo:line>
+        <ogo:line>0 (16 14)(19 6)</ogo:line>
+        <ogo:line>0 (13 6)(16 14)</ogo:line>
+        <ogo:line>0 (11 10)(13 6)</ogo:line>
+        <ogo:line>0 (10 10)(11 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+        <ogo:line>0 (30 10)(40 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 10)</ogo:connection>
+        <ogo:connection>(40 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Wbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 20)(14 20)</ogo:line>
+        <ogo:line>0 (10 10)(14 10)</ogo:line>
+        <ogo:line>0 (14 10)(14 20)</ogo:line>
+        <ogo:line>0 (30 20)(25 20)</ogo:line>
+        <ogo:line>0 (25 10)(30 10)</ogo:line>
+        <ogo:line>0 (12 13)(14 18)(16 13)</ogo:line>
+        <ogo:line>0 (25 20)(20 12)</ogo:line>
+        <ogo:line>0 (10 5)(10 25)(30 25)(30 5)(10 5)</ogo:line>
+        <ogo:line>0 (30 20)(40 20)</ogo:line>
+        <ogo:line>0 (30 10)(40 10)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 20)</ogo:connection>
+        <ogo:connection>(40 10)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>ZbreakN</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (21 28)(28 29)(23 24)</ogo:line>
+        <ogo:line>0 (20 25)(30 30)</ogo:line>
+        <ogo:line>0 (30 10)(20 15)</ogo:line>
+        <ogo:line>0 (10 30)(17 30)</ogo:line>
+        <ogo:line>0 (17 10)(17 30)</ogo:line>
+        <ogo:line>0 (20 10)(20 30)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>DbreakCR</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (12 5)(12 15)(20 10)(12 5)</ogo:line>
+        <ogo:line>0 (10 10)(12 10)</ogo:line>
+        <ogo:line>0 (20 5)(20 15)</ogo:line>
+        <ogo:line>0 (18 15)(22 15)</ogo:line>
+        <ogo:line>0 (18 5)(22 5)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 10)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Dbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 10)(12 10)</ogo:line>
+        <ogo:line>0 (12 5)(12 15)(20 10)(12 5)</ogo:line>
+        <ogo:line>0 (20 5)(20 15)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 10)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>ADC10break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 10)(10 130)(60 130)(60 10)(10 10)</ogo:line>
+        <ogo:line>0 (60 30)(70 30)</ogo:line>
+        <ogo:line>0 (60 20)(70 20)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (40 130)(40 140)</ogo:line>
+        <ogo:line>0 (30 130)(30 140)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (60 110)(70 110)</ogo:line>
+        <ogo:line>0 (60 100)(70 100)</ogo:line>
+        <ogo:line>0 (60 90)(70 90)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 70)(70 70)</ogo:line>
+        <ogo:line>0 (60 60)(70 60)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (60 40)(70 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(70 30)</ogo:connection>
+        <ogo:connection>(70 20)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(40 140)</ogo:connection>
+        <ogo:connection>(30 140)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(70 110)</ogo:connection>
+        <ogo:connection>(70 100)</ogo:connection>
+        <ogo:connection>(70 90)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 70)</ogo:connection>
+        <ogo:connection>(70 60)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(70 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Sbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (30 20)(25 20)</ogo:line>
+        <ogo:line>0 (25 10)(30 10)</ogo:line>
+        <ogo:line>0 (25 20)(20 12)</ogo:line>
+        <ogo:line>0 (10 5)(10 25)(30 25)(30 5)(10 5)</ogo:line>
+        <ogo:line>0 (30 20)(40 20)</ogo:line>
+        <ogo:line>0 (30 10)(40 10)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 20)</ogo:connection>
+        <ogo:connection>(40 10)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Dbreak3</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (12 25)(12 35)(20 30)(12 25)</ogo:line>
+        <ogo:line>0 (10 30)(12 30)</ogo:line>
+        <ogo:line>0 (12 5)(12 15)(20 10)(12 5)</ogo:line>
+        <ogo:line>0 (10 10)(12 10)</ogo:line>
+        <ogo:line>0 (30 10)(20 10)</ogo:line>
+        <ogo:line>0 (30 30)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (20 25)(20 35)</ogo:line>
+        <ogo:line>0 (20 5)(20 15)</ogo:line>
+        <ogo:line>0 (30 20)(40 20)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 20)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakN3D</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (29 22)(23 20)(29 18)</ogo:line>
+        <ogo:line>0 (30 20)(30 30)</ogo:line>
+        <ogo:line>0 (20 20)(30 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakP4D</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (23 18)(29 20)(23 22)</ogo:line>
+        <ogo:line>0 (40 20)(40 30)</ogo:line>
+        <ogo:line>0 (20 20)(40 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (40 30)(40 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Bbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (10 20)(20 20)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>ADC8break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 10)(10 110)(60 110)(60 10)(10 10)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (40 110)(40 120)</ogo:line>
+        <ogo:line>0 (30 110)(30 120)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (60 90)(70 90)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 70)(70 70)</ogo:line>
+        <ogo:line>0 (60 60)(70 60)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (60 40)(70 40)</ogo:line>
+        <ogo:line>0 (60 30)(70 30)</ogo:line>
+        <ogo:line>0 (60 20)(70 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(40 120)</ogo:connection>
+        <ogo:connection>(30 120)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(70 90)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 70)</ogo:connection>
+        <ogo:connection>(70 60)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(70 40)</ogo:connection>
+        <ogo:connection>(70 30)</ogo:connection>
+        <ogo:connection>(70 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>DAC8break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 10)(10 110)(60 110)(60 10)(10 10)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (40 110)(40 120)</ogo:line>
+        <ogo:line>0 (30 110)(30 120)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 90)(0 90)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 70)(0 70)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 50)(0 50)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(40 120)</ogo:connection>
+        <ogo:connection>(30 120)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 90)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 70)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 50)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakN3</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (11 28)(18 29)(13 24)</ogo:line>
+        <ogo:line>0 (20 30)(10 25)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (20 30)(20 40)</ogo:line>
+        <ogo:line>0 (20 10)(20 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(20 40)</ogo:connection>
+        <ogo:connection>(20 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakN3</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (29 22)(23 20)(29 18)</ogo:line>
+        <ogo:line>0 (20 27)(20 33)</ogo:line>
+        <ogo:line>0 (20 17)(20 23)</ogo:line>
+        <ogo:line>0 (20 7)(20 13)</ogo:line>
+        <ogo:line>0 (30 20)(30 30)</ogo:line>
+        <ogo:line>0 (20 20)(30 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakN4</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (29 22)(23 20)(29 18)</ogo:line>
+        <ogo:line>0 (20 27)(20 33)</ogo:line>
+        <ogo:line>0 (20 17)(20 23)</ogo:line>
+        <ogo:line>0 (20 7)(20 13)</ogo:line>
+        <ogo:line>0 (40 20)(40 30)</ogo:line>
+        <ogo:line>0 (20 20)(40 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (40 30)(40 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakP4</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (23 18)(29 20)(23 22)</ogo:line>
+        <ogo:line>0 (20 27)(20 33)</ogo:line>
+        <ogo:line>0 (20 17)(20 23)</ogo:line>
+        <ogo:line>0 (20 7)(20 13)</ogo:line>
+        <ogo:line>0 (40 20)(40 30)</ogo:line>
+        <ogo:line>0 (20 20)(40 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (40 30)(40 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>kbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (0 0)(0 10)(10 10)(10 0)(0 0)</ogo:line>
+        <ogo:text>(-8 -2)K
+</ogo:text>
+      </ogo:objects>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakP3</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (23 18)(29 20)(23 22)</ogo:line>
+        <ogo:line>0 (20 27)(20 33)</ogo:line>
+        <ogo:line>0 (20 17)(20 23)</ogo:line>
+        <ogo:line>0 (20 7)(20 13)</ogo:line>
+        <ogo:line>0 (30 20)(30 30)</ogo:line>
+        <ogo:line>0 (20 20)(30 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakN4</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (30 17)(30 10)</ogo:line>
+        <ogo:line>0 (27 17)(33 17)</ogo:line>
+        <ogo:line>0 (30 30)(30 22)</ogo:line>
+        <ogo:line>0 (30 17)(27 22)(33 22)(30 17)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (11 28)(18 29)(13 24)</ogo:line>
+        <ogo:line>0 (20 30)(10 25)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (20 30)(20 40)</ogo:line>
+        <ogo:line>0 (20 10)(20 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(20 40)</ogo:connection>
+        <ogo:connection>(20 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakP4</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (30 23)(30 30)</ogo:line>
+        <ogo:line>0 (33 23)(27 23)</ogo:line>
+        <ogo:line>0 (30 10)(30 18)</ogo:line>
+        <ogo:line>0 (30 23)(33 18)(27 18)(30 23)</ogo:line>
+        <ogo:line>0 (19 27)(12 26)(17 31)</ogo:line>
+        <ogo:line>0 (10 25)(20 30)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (20 30)(20 40)</ogo:line>
+        <ogo:line>0 (20 10)(20 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(20 40)</ogo:connection>
+        <ogo:connection>(20 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>DAC12break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 10)(10 150)(60 150)(60 10)(10 10)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 50)(0 50)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (40 150)(40 160)</ogo:line>
+        <ogo:line>0 (30 150)(30 160)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 130)(0 130)</ogo:line>
+        <ogo:line>0 (10 120)(0 120)</ogo:line>
+        <ogo:line>0 (10 110)(0 110)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 90)(0 90)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 70)(0 70)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 50)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(40 160)</ogo:connection>
+        <ogo:connection>(30 160)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 130)</ogo:connection>
+        <ogo:connection>(0 120)</ogo:connection>
+        <ogo:connection>(0 110)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 90)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 70)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>RAM8Kx8break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 0)(10 180)(60 180)(60 0)(10 0)</ogo:line>
+        <ogo:line>0 (60 100)(70 100)</ogo:line>
+        <ogo:line>0 (60 110)(70 110)</ogo:line>
+        <ogo:line>0 (60 120)(70 120)</ogo:line>
+        <ogo:line>0 (60 130)(70 130)</ogo:line>
+        <ogo:line>0 (60 140)(70 140)</ogo:line>
+        <ogo:line>0 (60 150)(70 150)</ogo:line>
+        <ogo:line>0 (60 160)(70 160)</ogo:line>
+        <ogo:line>0 (60 170)(70 170)</ogo:line>
+        <ogo:line>0 (30 180)(30 190)</ogo:line>
+        <ogo:line>0 (40 0)(40 -10)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 70)(70 70)</ogo:line>
+        <ogo:line>0 (60 60)(70 60)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (60 40)(70 40)</ogo:line>
+        <ogo:line>0 (60 30)(70 30)</ogo:line>
+        <ogo:line>0 (60 20)(70 20)</ogo:line>
+        <ogo:line>0 (60 10)(70 10)</ogo:line>
+        <ogo:line>0 (10 170)(0 170)</ogo:line>
+        <ogo:line>0 (10 160)(0 160)</ogo:line>
+        <ogo:line>0 (10 130)(0 130)</ogo:line>
+        <ogo:line>0 (10 120)(0 120)</ogo:line>
+        <ogo:line>0 (10 110)(0 110)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 90)(0 90)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 70)(0 70)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 50)(0 50)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(70 100)</ogo:connection>
+        <ogo:connection>(70 110)</ogo:connection>
+        <ogo:connection>(70 120)</ogo:connection>
+        <ogo:connection>(70 130)</ogo:connection>
+        <ogo:connection>(70 140)</ogo:connection>
+        <ogo:connection>(70 150)</ogo:connection>
+        <ogo:connection>(70 160)</ogo:connection>
+        <ogo:connection>(70 170)</ogo:connection>
+        <ogo:connection>(30 190)</ogo:connection>
+        <ogo:connection>(40 -10)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 70)</ogo:connection>
+        <ogo:connection>(70 60)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(70 40)</ogo:connection>
+        <ogo:connection>(70 30)</ogo:connection>
+        <ogo:connection>(70 20)</ogo:connection>
+        <ogo:connection>(70 10)</ogo:connection>
+        <ogo:connection>(0 170)</ogo:connection>
+        <ogo:connection>(0 160)</ogo:connection>
+        <ogo:connection>(0 130)</ogo:connection>
+        <ogo:connection>(0 120)</ogo:connection>
+        <ogo:connection>(0 110)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 90)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 70)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 50)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakL</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 27)(10 20)</ogo:line>
+        <ogo:line>0 (7 27)(13 27)</ogo:line>
+        <ogo:line>0 (10 40)(10 32)</ogo:line>
+        <ogo:line>0 (10 27)(7 32)(13 32)(10 27)</ogo:line>
+        <ogo:line>0 (29 27)(22 26)(27 31)</ogo:line>
+        <ogo:line>0 (20 25)(30 30)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(20 20)</ogo:line>
+        <ogo:line>0 (30 10)(20 15)</ogo:line>
+        <ogo:line>0 (20 10)(20 30)</ogo:line>
+        <ogo:line>0 (10 40)(10 50)</ogo:line>
+        <ogo:line>0 (30 40)(30 50)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 50)</ogo:connection>
+        <ogo:connection>(30 50)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QDarBreakN</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 10)(40 10)(40 20)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (30 20)(30 40)</ogo:line>
+        <ogo:line>0 (31 38)(38 39)(33 34)</ogo:line>
+        <ogo:line>0 (40 40)(30 35)</ogo:line>
+        <ogo:line>0 (40 20)(30 25)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (11 28)(18 29)(13 24)</ogo:line>
+        <ogo:line>0 (20 30)(10 25)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (40 40)(40 50)</ogo:line>
+        <ogo:line>0 (40 10)(40 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 50)</ogo:connection>
+        <ogo:connection>(40 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakN</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (11 28)(18 29)(13 24)</ogo:line>
+        <ogo:line>0 (20 30)(10 25)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (20 30)(20 40)</ogo:line>
+        <ogo:line>0 (20 10)(20 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(20 40)</ogo:connection>
+        <ogo:connection>(20 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QDarBreakP</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (30 20)(30 40)</ogo:line>
+        <ogo:line>0 (39 37)(32 36)(37 41)</ogo:line>
+        <ogo:line>0 (30 35)(40 40)</ogo:line>
+        <ogo:line>0 (40 20)(30 25)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (19 27)(12 26)(17 31)</ogo:line>
+        <ogo:line>0 (10 25)(20 30)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (20 10)(40 10)(40 20)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (40 40)(40 50)</ogo:line>
+        <ogo:line>0 (40 10)(40 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 50)</ogo:connection>
+        <ogo:connection>(40 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakP</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (19 27)(12 26)(17 31)</ogo:line>
+        <ogo:line>0 (10 25)(20 30)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (20 30)(20 40)</ogo:line>
+        <ogo:line>0 (20 10)(20 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(20 40)</ogo:connection>
+        <ogo:connection>(20 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>QbreakP3</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (19 27)(12 26)(17 31)</ogo:line>
+        <ogo:line>0 (10 25)(20 30)</ogo:line>
+        <ogo:line>0 (20 10)(10 15)</ogo:line>
+        <ogo:line>0 (10 10)(10 30)</ogo:line>
+        <ogo:line>0 (20 30)(20 40)</ogo:line>
+        <ogo:line>0 (20 10)(20 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(20 40)</ogo:connection>
+        <ogo:connection>(20 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Cbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (17 10)(20 10)</ogo:line>
+        <ogo:line>0 (17 5)(17 15)</ogo:line>
+        <ogo:line>0 (13 5)(13 15)</ogo:line>
+        <ogo:line>0 (10 10)(13 10)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 10)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>DAC10break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 10)(10 130)(60 130)(60 10)(10 10)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (40 130)(40 140)</ogo:line>
+        <ogo:line>0 (30 130)(30 140)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 110)(0 110)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 90)(0 90)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 70)(0 70)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 50)(0 50)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(40 140)</ogo:connection>
+        <ogo:connection>(30 140)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 110)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 90)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 70)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 50)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>DbreakVV</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (12 5)(12 15)(20 10)(12 5)</ogo:line>
+        <ogo:line>0 (10 10)(12 10)</ogo:line>
+        <ogo:line>1 (24 6)(22 10)(24 14)</ogo:line>
+        <ogo:line>0 (20 5)(20 15)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 10)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>ROM32KX8break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 0)(10 190)(60 190)(60 0)(10 0)</ogo:line>
+        <ogo:line>0 (40 190)(40 200)</ogo:line>
+        <ogo:line>0 (40 0)(40 -10)</ogo:line>
+        <ogo:line>0 (60 120)(70 120)</ogo:line>
+        <ogo:line>0 (60 110)(70 110)</ogo:line>
+        <ogo:line>0 (60 100)(70 100)</ogo:line>
+        <ogo:line>0 (60 90)(70 90)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 70)(70 70)</ogo:line>
+        <ogo:line>0 (60 60)(70 60)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (10 170)(0 170)</ogo:line>
+        <ogo:line>0 (10 150)(0 150)</ogo:line>
+        <ogo:line>0 (10 140)(0 140)</ogo:line>
+        <ogo:line>0 (10 130)(0 130)</ogo:line>
+        <ogo:line>0 (10 120)(0 120)</ogo:line>
+        <ogo:line>0 (10 110)(0 110)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 90)(0 90)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 70)(0 70)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 50)(0 50)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 200)</ogo:connection>
+        <ogo:connection>(40 -10)</ogo:connection>
+        <ogo:connection>(70 120)</ogo:connection>
+        <ogo:connection>(70 110)</ogo:connection>
+        <ogo:connection>(70 100)</ogo:connection>
+        <ogo:connection>(70 90)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 70)</ogo:connection>
+        <ogo:connection>(70 60)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(0 170)</ogo:connection>
+        <ogo:connection>(0 150)</ogo:connection>
+        <ogo:connection>(0 140)</ogo:connection>
+        <ogo:connection>(0 130)</ogo:connection>
+        <ogo:connection>(0 120)</ogo:connection>
+        <ogo:connection>(0 110)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 90)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 70)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 50)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>JbreakN</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (11 18)(17 20)(11 22)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (10 20)(20 20)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>POT</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (19 20)(19 20)</ogo:line>
+        <ogo:line>0 (20 14)(20 14)</ogo:line>
+        <ogo:line>0 (20 20)(20 14)</ogo:line>
+        <ogo:line>0 (20 14)(20 14)</ogo:line>
+        <ogo:line>0 (10 10)(11 10)</ogo:line>
+        <ogo:line>0 (21 20)(21 20)</ogo:line>
+        <ogo:line>0 (19 20)(21 20)</ogo:line>
+        <ogo:line>0 (21 20)(20 14)</ogo:line>
+        <ogo:line>0 (20 14)(19 20)</ogo:line>
+        <ogo:line>0 (28 14)(30 10)</ogo:line>
+        <ogo:line>0 (11 10)(13 6)</ogo:line>
+        <ogo:line>0 (25 6)(28 14)</ogo:line>
+        <ogo:line>0 (19 6)(22 14)</ogo:line>
+        <ogo:line>0 (16 14)(19 6)</ogo:line>
+        <ogo:line>0 (13 6)(16 14)</ogo:line>
+        <ogo:line>0 (22 14)(25 6)</ogo:line>
+        <ogo:line>0 (20 20)(20 30)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+        <ogo:line>0 (30 10)(40 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(20 30)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+        <ogo:connection>(40 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>JbreakP</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (17 22)(11 20)(17 18)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (10 20)(20 20)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakP3D</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (23 18)(29 20)(23 22)</ogo:line>
+        <ogo:line>0 (30 20)(30 30)</ogo:line>
+        <ogo:line>0 (20 20)(30 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakN4D</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (20 7)(20 33)</ogo:line>
+        <ogo:line>0 (29 22)(23 20)(29 18)</ogo:line>
+        <ogo:line>0 (40 20)(40 30)</ogo:line>
+        <ogo:line>0 (20 20)(40 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (40 30)(40 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakN</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (29 22)(23 20)(29 18)</ogo:line>
+        <ogo:line>0 (20 27)(20 33)</ogo:line>
+        <ogo:line>0 (20 17)(20 23)</ogo:line>
+        <ogo:line>0 (20 7)(20 13)</ogo:line>
+        <ogo:line>0 (40 20)(40 30)</ogo:line>
+        <ogo:line>0 (20 20)(40 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (40 30)(40 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>DbreakZ</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (12 5)(12 15)(20 10)(12 5)</ogo:line>
+        <ogo:line>0 (10 10)(12 10)</ogo:line>
+        <ogo:line>0 (20 5)(20 15)</ogo:line>
+        <ogo:line>0 (20 15)(23 17)</ogo:line>
+        <ogo:line>0 (17 3)(20 5)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 10)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>MbreakP</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (23 18)(29 20)(23 22)</ogo:line>
+        <ogo:line>0 (20 27)(20 33)</ogo:line>
+        <ogo:line>0 (20 17)(20 23)</ogo:line>
+        <ogo:line>0 (20 7)(20 13)</ogo:line>
+        <ogo:line>0 (40 20)(40 30)</ogo:line>
+        <ogo:line>0 (20 20)(40 20)</ogo:line>
+        <ogo:line>0 (20 10)(30 10)</ogo:line>
+        <ogo:line>0 (20 30)(30 30)</ogo:line>
+        <ogo:line>0 (15 10)(15 30)</ogo:line>
+        <ogo:line>0 (10 20)(15 20)</ogo:line>
+        <ogo:line>0 (40 30)(40 40)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (30 30)(30 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 40)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(30 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>RAM8Kx1break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (10 0)(10 220)(60 220)(60 0)(10 0)</ogo:line>
+        <ogo:line>0 (10 180)(0 180)</ogo:line>
+        <ogo:line>0 (10 160)(0 160)</ogo:line>
+        <ogo:line>0 (10 150)(0 150)</ogo:line>
+        <ogo:line>0 (10 140)(0 140)</ogo:line>
+        <ogo:line>0 (60 100)(70 100)</ogo:line>
+        <ogo:line>0 (30 220)(30 230)</ogo:line>
+        <ogo:line>0 (40 0)(40 -10)</ogo:line>
+        <ogo:line>0 (10 210)(0 210)</ogo:line>
+        <ogo:line>0 (10 200)(0 200)</ogo:line>
+        <ogo:line>0 (10 130)(0 130)</ogo:line>
+        <ogo:line>0 (10 120)(0 120)</ogo:line>
+        <ogo:line>0 (10 110)(0 110)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 90)(0 90)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 70)(0 70)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 50)(0 50)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 30)(0 30)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 180)</ogo:connection>
+        <ogo:connection>(0 160)</ogo:connection>
+        <ogo:connection>(0 150)</ogo:connection>
+        <ogo:connection>(0 140)</ogo:connection>
+        <ogo:connection>(70 100)</ogo:connection>
+        <ogo:connection>(30 230)</ogo:connection>
+        <ogo:connection>(40 -10)</ogo:connection>
+        <ogo:connection>(0 210)</ogo:connection>
+        <ogo:connection>(0 200)</ogo:connection>
+        <ogo:connection>(0 130)</ogo:connection>
+        <ogo:connection>(0 120)</ogo:connection>
+        <ogo:connection>(0 110)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 90)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 70)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 50)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 30)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>ADC12break</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (70 140)(70 140)(70 140)(70 140)(70 140)</ogo:line>
+        <ogo:line>0 (10 10)(10 150)(60 150)(60 10)(10 10)</ogo:line>
+        <ogo:line>0 (60 20)(70 20)</ogo:line>
+        <ogo:line>0 (60 30)(70 30)</ogo:line>
+        <ogo:line>0 (60 50)(70 50)</ogo:line>
+        <ogo:line>0 (60 40)(70 40)</ogo:line>
+        <ogo:line>0 (10 100)(0 100)</ogo:line>
+        <ogo:line>0 (10 80)(0 80)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 40)(0 40)</ogo:line>
+        <ogo:line>0 (10 20)(0 20)</ogo:line>
+        <ogo:line>0 (40 150)(40 160)</ogo:line>
+        <ogo:line>0 (30 150)(30 160)</ogo:line>
+        <ogo:line>0 (30 10)(30 0)</ogo:line>
+        <ogo:line>0 (60 130)(70 130)</ogo:line>
+        <ogo:line>0 (60 120)(70 120)</ogo:line>
+        <ogo:line>0 (60 110)(70 110)</ogo:line>
+        <ogo:line>0 (60 100)(70 100)</ogo:line>
+        <ogo:line>0 (60 90)(70 90)</ogo:line>
+        <ogo:line>0 (60 80)(70 80)</ogo:line>
+        <ogo:line>0 (60 70)(70 70)</ogo:line>
+        <ogo:line>0 (60 60)(70 60)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(70 20)</ogo:connection>
+        <ogo:connection>(70 30)</ogo:connection>
+        <ogo:connection>(70 50)</ogo:connection>
+        <ogo:connection>(70 40)</ogo:connection>
+        <ogo:connection>(0 100)</ogo:connection>
+        <ogo:connection>(0 80)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 40)</ogo:connection>
+        <ogo:connection>(0 20)</ogo:connection>
+        <ogo:connection>(40 160)</ogo:connection>
+        <ogo:connection>(30 160)</ogo:connection>
+        <ogo:connection>(30 0)</ogo:connection>
+        <ogo:connection>(70 130)</ogo:connection>
+        <ogo:connection>(70 120)</ogo:connection>
+        <ogo:connection>(70 110)</ogo:connection>
+        <ogo:connection>(70 100)</ogo:connection>
+        <ogo:connection>(70 90)</ogo:connection>
+        <ogo:connection>(70 80)</ogo:connection>
+        <ogo:connection>(70 70)</ogo:connection>
+        <ogo:connection>(70 60)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>Lbreak</ogo:name>
+      <ogo:objects>
+        <ogo:line>1 (50 10)(45 5)(40 10)</ogo:line>
+        <ogo:line>1 (40 10)(35 5)(30 10)</ogo:line>
+        <ogo:line>1 (30 10)(25 5)(20 10)</ogo:line>
+        <ogo:line>1 (20 10)(15 5)(10 10)</ogo:line>
+        <ogo:line>0 (50 10)(60 10)</ogo:line>
+        <ogo:line>0 (10 10)(0 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(60 10)</ogo:connection>
+        <ogo:connection>(0 10)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>XFRM_NONLINEAR</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (18 50)(18 50)</ogo:line>
+        <ogo:line>0 (18 10)(18 50)</ogo:line>
+        <ogo:line>0 (22 50)(22 50)</ogo:line>
+        <ogo:line>0 (22 10)(22 50)</ogo:line>
+        <ogo:line>0 (30 50)(30 60)</ogo:line>
+        <ogo:line>0 (30 0)(30 10)</ogo:line>
+        <ogo:line>0 (10 50)(10 60)</ogo:line>
+        <ogo:line>0 (10 0)(10 10)</ogo:line>
+        <ogo:line>1 (30 40)(25 45)(30 50)</ogo:line>
+        <ogo:line>1 (30 30)(25 35)(30 40)</ogo:line>
+        <ogo:line>1 (30 20)(25 25)(30 30)</ogo:line>
+        <ogo:line>1 (30 10)(25 15)(30 20)</ogo:line>
+        <ogo:line>1 (10 20)(15 15)(10 10)</ogo:line>
+        <ogo:line>1 (10 30)(15 25)(10 20)</ogo:line>
+        <ogo:line>1 (10 40)(15 35)(10 30)</ogo:line>
+        <ogo:line>1 (10 50)(15 45)(10 40)</ogo:line>
+        <ogo:line>0 (30 60)(40 60)</ogo:line>
+        <ogo:line>0 (30 0)(40 0)</ogo:line>
+        <ogo:line>0 (10 60)(0 60)</ogo:line>
+        <ogo:line>0 (10 0)(0 0)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(40 60)</ogo:connection>
+        <ogo:connection>(40 0)</ogo:connection>
+        <ogo:connection>(0 60)</ogo:connection>
+        <ogo:connection>(0 0)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+    <ogo:symbol>
+      <ogo:name>copyright</ogo:name>
+      <ogo:objects>
+        <ogo:line>0 (0 0)(0 60)(230 60)(230 0)(0 0)</ogo:line>
+      </ogo:objects>
+    </ogo:symbol>
+  </ogo:symbols>
+  <ogo:parts>
+    <ogo:part>
+      <ogo:name>Rbreak</ogo:name>
+      <ogo:symbol>Rbreak</ogo:symbol>
+      <ogo:description> resistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>VALUE</ogo:name>
+          <ogo:value>1K</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>R_@REFDES %1 %2 @MODEL @VALUE</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>R</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>RBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(20 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Wbreak</ogo:name>
+      <ogo:symbol>Wbreak</ogo:symbol>
+      <ogo:description> Current-controlled switch breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>W_@REFDES %3 %4 VW_@REFDES @MODEL\nVW_@REFDES %1 %2 0V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>W</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>WBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 4)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(10 34)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>ZbreakN</ogo:name>
+      <ogo:symbol>ZbreakN</ogo:symbol>
+      <ogo:description> N channel IGBT breakout symbol</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>WB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>TAU</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>KP</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AGD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Z_@REFDES %C %G %E @MODEL ?AGD|\n+ AGD=@AGD| ?AREA|\n+ AREA=@AREA| ?KP|\n+ KP=@KP| ?TAU|\n+ TAU=@TAU| ?WB|\n+ WB=@WB|</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Z</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>ZBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-14 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(0 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>DbreakCR</ogo:name>
+      <ogo:symbol>DbreakCR</ogo:symbol>
+      <ogo:description> current regulator diode breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>D_@REFDES %1 %2 @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>D</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(15 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Dbreak</ogo:name>
+      <ogo:symbol>Dbreak</ogo:symbol>
+      <ogo:description> diode breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>D_@REFDES %1 %2 @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>D</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(15 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>ADC10break</ogo:name>
+      <ogo:symbol>ADC10break</ogo:symbol>
+      <ogo:description> 10Bit ADC</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DGND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DPWR)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %IN %REF %GND %CNVRT %STAT %OVER \n+ %DB9 %DB8 %DB7 %DB6 %DB5 %DB4 %DB3 %DB2 %DB1 %DB0 %DPWR %DGND @MODEL \n+PARAMS:  MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>ADC10BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Sbreak</ogo:name>
+      <ogo:symbol>Sbreak</ogo:symbol>
+      <ogo:description> Voltage-controlled switch breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>S_@REFDES %3 %4 %1 %2 @MODEL\nRS_@REFDES %1 %2 1G</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>S</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>SBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 2)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(20 35)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Dbreak3</ogo:name>
+      <ogo:symbol>Dbreak3</ogo:symbol>
+      <ogo:description> 3-terminal diode breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>VALUE</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %1 %2 %3 @MODEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>D</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DBREAK3</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(15 45)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakN3D</ogo:name>
+      <ogo:symbol>MbreakN3D</ogo:symbol>
+      <ogo:description> n-channel mosfet (depletion) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %S @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKND</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-18 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakP4D</ogo:name>
+      <ogo:symbol>MbreakP4D</ogo:symbol>
+      <ogo:description> p-channel mosfet (depletion) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %B @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKPD</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-12 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Bbreak</ogo:name>
+      <ogo:symbol>Bbreak</ogo:symbol>
+      <ogo:description> gaasfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>B_@REFDES %D %G %S @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>B</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>BBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(10 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>ADC8break</ogo:name>
+      <ogo:symbol>ADC8break</ogo:symbol>
+      <ogo:description> 8 Bit ADC</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DGND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DPWR)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %IN %REF %GND %CNVRT %STAT %OVER \n+ %DB7 %DB6 %DB5 %DB4 %DB3 %DB2 %DB1 %DB0 %DPWR %DGND @MODEL \n+ PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>ADC8BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>DAC8break</ogo:name>
+      <ogo:symbol>DAC8break</ogo:symbol>
+      <ogo:description> 8 Bit DAC</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DGND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DPWR)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %OUT %REF %GND \n+ %DB7 %DB6 %DB5 %DB4 %DB3 %DB2 %DB1 %DB0 %DPWR %DGND @MODEL \n+PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DAC8BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakN3</ogo:name>
+      <ogo:symbol>QbreakN3</ogo:symbol>
+      <ogo:description> npn bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(5 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakN3</ogo:name>
+      <ogo:symbol>MbreakN3</ogo:symbol>
+      <ogo:description> n-channel mosfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %S @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-18 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakN4</ogo:name>
+      <ogo:symbol>MbreakN4</ogo:symbol>
+      <ogo:description> n-channel mosfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %B @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-16 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakP4</ogo:name>
+      <ogo:symbol>MbreakP4</ogo:symbol>
+      <ogo:description> p-channel mosfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %B @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-12 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>kbreak</ogo:name>
+      <ogo:symbol>kbreak</ogo:symbol>
+      <ogo:description> Multi-winding Coupling (with CORE model)</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>COUPLING</ogo:name>
+          <ogo:value>1</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L6</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L5</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L4</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L3</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L2</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L1</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>KN_@REFDES L_@L1 ?L2|L_@L2| ?L3|\n+ L_@L3| ?L4|L_@L4| ?L5|\n+ L_@L5| ?L6|L_@L6| @COUPLING </ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>K</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>KBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(1 20)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>COUPLING</ogo:name>
+          <ogo:position>(31 30)</ogo:position>
+          <ogo:text>@coupling</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>L6</ogo:name>
+          <ogo:position>(4 99)</ogo:position>
+          <ogo:text>@l6</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>L5</ogo:name>
+          <ogo:position>(4 88)</ogo:position>
+          <ogo:text>@l5</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>L4</ogo:name>
+          <ogo:position>(4 77)</ogo:position>
+          <ogo:text>@l4</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>L3</ogo:name>
+          <ogo:position>(4 65)</ogo:position>
+          <ogo:text>@l3</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>L2</ogo:name>
+          <ogo:position>(4 53)</ogo:position>
+          <ogo:text>@l2</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>L1</ogo:name>
+          <ogo:position>(4 42)</ogo:position>
+          <ogo:text>@l1</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(22 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakP3</ogo:name>
+      <ogo:symbol>MbreakP3</ogo:symbol>
+      <ogo:description> p-channel mosfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %S @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-14 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakN4</ogo:name>
+      <ogo:symbol>QbreakN4</ogo:symbol>
+      <ogo:description> npn bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E [%S] @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(5 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakP4</ogo:name>
+      <ogo:symbol>QbreakP4</ogo:symbol>
+      <ogo:description> pnp bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E [%S] @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(5 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>DAC12break</ogo:name>
+      <ogo:symbol>DAC12break</ogo:symbol>
+      <ogo:description> 10 Bit DAC</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DGND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DPWR)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %OUT %REF %GND \n+ %DB11 %DB10 %DB9 %DB8 %DB7 %DB6 %DB5 %DB4 %DB3 %DB2 %DB1 %DB0 %DPWR %DGND \n+ @MODEL \n+PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DAC12BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>RAM8Kx8break</ogo:name>
+      <ogo:symbol>RAM8Kx8break</ogo:symbol>
+      <ogo:description> 8K x 8 STATIC RAM</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(VCC)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(GND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %RE %WE \n+ %A12 %A11 %A10 %A9 %A8 %A7 %A6 %A5 %A4 %A3 %A2 %A1 %A0 \n+ %W7 %W6 %W5 %W4 %W3 %W2 %W1 %W0 \n+ %R7 %R6 %R5 %R4 %R3 %R2 %R1 %R0 %VCC %GND @MODEL \n+ PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>RAM8KX8BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(0 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakL</ogo:name>
+      <ogo:symbol>QbreakL</ogo:symbol>
+      <ogo:description> pnp bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E [%S] @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKL</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(29 22)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QDarBreakN</ogo:name>
+      <ogo:symbol>QDarBreakN</ogo:symbol>
+      <ogo:description> npn darlington transistor device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %C %B %E @MODEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>X</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QDARBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(43 44)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakN</ogo:name>
+      <ogo:symbol>QbreakN</ogo:symbol>
+      <ogo:description> npn bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(5 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QDarBreakP</ogo:name>
+      <ogo:symbol>QDarBreakP</ogo:symbol>
+      <ogo:description> pnp darlington transistor device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %C %B %E @MODEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>X</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QDARBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(43 44)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakP</ogo:name>
+      <ogo:symbol>QbreakP</ogo:symbol>
+      <ogo:description> pnp bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(5 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>QbreakP3</ogo:name>
+      <ogo:symbol>QbreakP3</ogo:symbol>
+      <ogo:description> pnp bipolar transistor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>Q_@REFDES %C %B %E @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>Q</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>QBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 5)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(5 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Cbreak</ogo:name>
+      <ogo:symbol>Cbreak</ogo:symbol>
+      <ogo:description> Capacitor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>IC</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VALUE</ogo:name>
+          <ogo:value>1N</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>C_@REFDES %1 %2 @MODEL @VALUE ?IC/IC=@IC/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>C</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>CBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(20 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>DAC10break</ogo:name>
+      <ogo:symbol>DAC10break</ogo:symbol>
+      <ogo:description> 10 Bit DAC</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DGND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DPWR)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %OUT %REF %GND \n+ %DB9 %DB8 %DB7 %DB6 %DB5 %DB4 %DB3 %DB2 %DB1 %DB0 %DPWR %DGND @MODEL \n+PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DAC10BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>DbreakVV</ogo:name>
+      <ogo:symbol>DbreakVV</ogo:symbol>
+      <ogo:description> voltage-variable capacitance diode breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>D_@REFDES %1 %2 @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>D</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(15 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>ROM32KX8break</ogo:name>
+      <ogo:symbol>ROM32KX8break</ogo:symbol>
+      <ogo:description></ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(GND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(VCC)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %A14 %A13 %A12 %A11 %A10 %A9 %A8 %A7 %A6 %A5 %A4 %A3 %A2 %A1 %A0 \n+ %\OE\  %O7 %O6 %O5 %O4 %O3 %O2 %O1 %O0 %VCC %GND @MODEL \n+ PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>ROM32KX8BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(0 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>JbreakN</ogo:name>
+      <ogo:symbol>JbreakN</ogo:symbol>
+      <ogo:description> n-channel jfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>J_@REFDES %D %G %S @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>J</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>JBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(10 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>POT</ogo:name>
+      <ogo:symbol>POT</ogo:symbol>
+      <ogo:description> Potentiometer (generic - defaults to 1K)</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>SET</ogo:name>
+          <ogo:value>0.5</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VALUE</ogo:name>
+          <ogo:value>1K</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>RT_@REFDES %1 %T {(@VALUE*(1-@SET))+.001}\nRB_@REFDES %T %2 {(@VALUE*@SET)+.001}</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>R</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>JbreakP</ogo:name>
+      <ogo:symbol>JbreakP</ogo:symbol>
+      <ogo:description> p-channel jfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>J_@REFDES %D %G %S @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>J</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>JBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(10 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakP3D</ogo:name>
+      <ogo:symbol>MbreakP3D</ogo:symbol>
+      <ogo:description> p-channel mosfet (depletion) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %S @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKPD</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-14 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakN4D</ogo:name>
+      <ogo:symbol>MbreakN4D</ogo:symbol>
+      <ogo:description> n-channel mosfet (depletion) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %B @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKND</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-16 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakN</ogo:name>
+      <ogo:symbol>MbreakN</ogo:symbol>
+      <ogo:description> n-channel mosfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %B @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKN</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-12 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>DbreakZ</ogo:name>
+      <ogo:symbol>DbreakZ</ogo:symbol>
+      <ogo:description> zener diode breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>AREA</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>D_@REFDES %1 %2 @MODEL ?AREA/@AREA/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>D</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>DBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(15 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>MbreakP</ogo:name>
+      <ogo:symbol>MbreakP</ogo:symbol>
+      <ogo:description> p-channel mosfet (enhancement) breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>M</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRB</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRG</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NRD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>PD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AD</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>W</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>M_@REFDES %D %G %S %B @MODEL ?L/ \n+ L=@L/ ?W/ \n+ W=@W/ ?AD/ \n+ AD=@AD/ ?AS/ \n+ AS=@AS/ ?PD/ \n+ PD=@PD/ ?PS/ \n+ PS=@PS/ ?NRD/ \n+ NRD=@NRD/ ?NRS/ \n+ NRS=@NRS/ ?NRG/ \n+ NRG=@NRG/ ?NRB/ \n+ NRB=@NRB/ ?M/ \n+ M=@M/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>M</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>MBREAKP</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(-12 40)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(5 10)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>RAM8Kx1break</ogo:name>
+      <ogo:symbol>RAM8Kx1break</ogo:symbol>
+      <ogo:description> 8K x 1 STATIC RAM</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(VCC)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(GND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES %RE %WE \n+ %A15 %A14 %A13 %A12 %A11 %A10 %A9 %A8 %A7 %A6 %A5 %A4 %A3 %A2 %A1 %A0 \n+ %D_IN  %D_OUT %VCC %GND @MODEL \n+ PARAMS: MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>RAM8KX1BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(0 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>ADC12break</ogo:name>
+      <ogo:symbol>ADC12break</ogo:symbol>
+      <ogo:description> 12Bit ADC</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>MNTYMXDLY</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IO_LEVEL</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>MNTYMAX</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DGND)</ogo:name>
+          <ogo:value>$G_DGND</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>IPIN(DPWR)</ogo:name>
+          <ogo:value>$G_DPWR</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>X_@REFDES  %IN %REF %GND %CNVRT %STAT %OVER \n+ %DB11 %DB10 %DB9 %DB8 %DB7 %DB6 %DB5 %DB4 %DB3 %DB2 %DB1 %DB0 %DPWR %DGND \n+ @MODEL \n+PARAMS:  MNTYMXDLY=@MNTYMXDLY IO_LEVEL=@IO_LEVEL</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>ADC12BREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(10 8)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>Lbreak</ogo:name>
+      <ogo:symbol>Lbreak</ogo:symbol>
+      <ogo:description> inductor breakout device</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>IC</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VALUE</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>L_@REFDES %1 %2 @MODEL @VALUE ?IC/IC=@IC/</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>L</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>LBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(20 25)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>XFRM_NONLINEAR</ogo:name>
+      <ogo:symbol>XFRM_NONLINEAR</ogo:symbol>
+      <ogo:description> non-linear, magnetic core</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>L2_TURNS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>L1_TURNS</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>COUPLING</ogo:name>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>K_@REFDES L1_@REFDES L2_@REFDES @COUPLING @MODEL\nL1_@REFDES %1 %2 @L1_TURNS \nL2_@REFDES %3 %4 @L2_TURNS</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>TX</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>KBREAK</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>MODEL</ogo:name>
+          <ogo:position>(0 68)</ogo:position>
+          <ogo:text>@model</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(20 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:name>copyright</ogo:name>
+      <ogo:symbol>copyright</ogo:symbol>
+      <ogo:description> Copyright</ogo:description>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>RefDes</ogo:name>
+          <ogo:value>U</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>REFDES</ogo:name>
+          <ogo:position>(0 0)</ogo:position>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+  </ogo:parts>
+</ogo:library>

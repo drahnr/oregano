@@ -1,0 +1,742 @@
+<?xml version="1.0"?>
+<ogo:library xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
+  <ogo:name>Source Input</ogo:name>
+  <ogo:description>modified by H. Bellesi</ogo:description>
+  <ogo:version>1.3</ogo:version>
+  <ogo:author>Richard Hult</ogo:author>
+  <ogo:last-updated>11-Oct-2004</ogo:last-updated>
+  <ogo:symbols>
+
+
+
+    <ogo:symbol>
+      <ogo:name>VSIN</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+
+        <ogo:line>(10 12)(10 18)</ogo:line>
+        <ogo:line>(7 15)(13 15)</ogo:line>
+
+        <ogo:line>(7 25)(13 25)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 40 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>ISIN</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+
+        <ogo:line>(10 12)(10 28)</ogo:line>
+        <ogo:line>(10 12)(7 18)</ogo:line>
+        <ogo:line>(10 12)(13 18)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 40 1)</ogo:connection>
+        <ogo:connection>(10 0 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>VPULSE</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+
+        <ogo:line>(10 11)(10 17)</ogo:line>
+        <ogo:line>(7 14)(13 14)</ogo:line>
+
+        <ogo:line>(4 25)(6 25)(8 18)(12 18)(14 25)(17 25)</ogo:line>
+
+        <ogo:line>(7 27)(13 27)</ogo:line>
+
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 40 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>CCVS</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+        <ogo:line>(10 11)(10 17)</ogo:line>
+        <ogo:line>(7 14)(13 14)</ogo:line>
+        <ogo:line>(7 27)(13 27)</ogo:line>
+        <ogo:line>(0 30)(20 10)</ogo:line>
+        <ogo:line>(20 10)(20 15)</ogo:line>
+        <ogo:line>(20 10)(15 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 40 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>VCVS</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+
+        <ogo:line>(10 11)(10 17)</ogo:line>
+        <ogo:line>(7 14)(13 14)</ogo:line>
+
+        <ogo:line>(7 27)(13 27)</ogo:line>
+        <ogo:line>(0 30)(20 10)</ogo:line>
+        <ogo:line>(20 10)(20 15)</ogo:line>
+        <ogo:line>(20 10)(15 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 40 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>VCCS</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+
+        <ogo:line>(10 12)(10 28)</ogo:line>
+        <ogo:line>(10 12)(7 18)</ogo:line>
+        <ogo:line>(10 12)(13 18)</ogo:line>
+
+        <ogo:line>(0 30)(20 10)</ogo:line>
+        <ogo:line>(20 10)(20 15)</ogo:line>
+        <ogo:line>(20 10)(15 10)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 40 1)</ogo:connection>
+        <ogo:connection>(10 0 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>CCCS</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(0 10)(20 30)</ogo:arc>
+        <ogo:line>(10 0)(10 10)</ogo:line>
+        <ogo:line>(10 30)(10 40)</ogo:line>
+
+        <ogo:line>(10 12)(10 28)</ogo:line>
+        <ogo:line>(10 12)(7 18)</ogo:line>
+        <ogo:line>(10 12)(13 18)</ogo:line>
+
+        <ogo:line>(0 30)(20 10)</ogo:line>
+        <ogo:line>(20 10)(20 15)</ogo:line>
+        <ogo:line>(20 10)(15 10)</ogo:line>
+
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 40 1)</ogo:connection>
+        <ogo:connection>(10 0 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>VDC</ogo:name>
+      <ogo:objects>
+        <ogo:line>(10 0)(10 11)</ogo:line>
+        <ogo:line>(-5 11)(25 11)</ogo:line>
+        <ogo:line>(2 17)(18 17)</ogo:line>
+        <ogo:line>(-5 23)(25 23)</ogo:line>
+        <ogo:line>(2 29)(18 29)</ogo:line>
+        <ogo:line>(10 29)(10 40)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(10 0 1)</ogo:connection>
+        <ogo:connection>(10 40 2)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+    <ogo:symbol>
+      <ogo:name>MPR</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(5 -5)(50 -5)(50 5)(5 5)(0 0)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 0)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>MPL</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(-5 -5)(-50 -5)(-50 5)(-5 5)(0 0)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 0)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>MPB</ogo:name>
+      <ogo:objects>
+        <ogo:line>(0 0)(5 -5)(45 -5)(50 0)(45 5)(5 5)(0 0)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(0 0)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+    <ogo:symbol>
+      <ogo:name>power220</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(-3 -3)(3 3)</ogo:arc>
+        <ogo:arc>(17 -3)(23 3)</ogo:arc>
+        <ogo:arc>(7 2)(13 8)</ogo:arc>
+        <ogo:arc>(-5 -15)(25 15)</ogo:arc>
+        <ogo:line>(-10 0)(-3 0)</ogo:line>
+        <ogo:line>(23 0)(30 0)</ogo:line>
+        <ogo:line>(10 8)(10 20)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-10 0 1)</ogo:connection>
+        <ogo:connection>(30 0 2)</ogo:connection>
+        <ogo:connection>(10 20 3)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
+      <ogo:name>power110</ogo:name>
+      <ogo:objects>
+        <ogo:arc>(7 7)(13 13)</ogo:arc>
+        <ogo:arc>(-5 -12)(25 18)</ogo:arc>
+        <ogo:line>(-10 0)(5 0)</ogo:line>
+        <ogo:line>(15 0)(30 0)</ogo:line>
+        <ogo:line>(5 -5)(5 5)</ogo:line>
+        <ogo:line>(15 -5)(15 5)</ogo:line>
+        <ogo:line>(10 13)(10 30)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(-10 0 1)</ogo:connection>
+        <ogo:connection>(30 0 2)</ogo:connection>
+        <ogo:connection>(10 30 3)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+
+
+  </ogo:symbols>
+
+  <ogo:parts>
+
+
+    <ogo:part>
+      <ogo:name>VSIN</ogo:name>
+      <ogo:symbol>VSIN</ogo:symbol>
+      <ogo:description>Voltage source, sinusoidal</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Offset</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Amplitude</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>V_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>VAC</ogo:name>
+      <ogo:symbol>VSIN</ogo:symbol>
+      <ogo:description>AC voltage source, sinusoidal</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>AC Leyend</ogo:name>
+          <ogo:text>AC</ogo:text>
+          <ogo:position>(15 45)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Offset</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Amplitude</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>V_@refdes %+ %- dc @dc ac 1.0 sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>CCVS</ogo:name>
+      <ogo:symbol>CCVS</ogo:symbol>
+      <ogo:description>Current Controlled Voltage source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Controlling source</ogo:name>
+          <ogo:text>@transresistance I ( @vcon )</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>H</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Transresistance</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VCON</ogo:name>
+          <ogo:value>V1</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>H_@refdes %+ %- V_@vcon @transresistance</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>VCVS</ogo:name>
+      <ogo:symbol>VCVS</ogo:symbol>
+      <ogo:description>Voltage Controlled Voltage source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Controlling voltage</ogo:name>
+          <ogo:text>@gain V ( @ncp , @ncn )</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>E</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NCP</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NCN</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>E_@refdes %+ %- @ncp @ncn @gain</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>VCCS</ogo:name>
+      <ogo:symbol>VCCS</ogo:symbol>
+      <ogo:description>Voltage Controlled Current source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Controlling voltage</ogo:name>
+          <ogo:text>@transconductance V ( @ncp , @ncn )</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>G</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Transconductance</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NCP</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>NCN</ogo:name>
+          <ogo:value>0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>G_@refdes %+ %- @ncp @ncn @transconductance</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>CCCS</ogo:name>
+      <ogo:symbol>CCCS</ogo:symbol>
+      <ogo:description>Current Controlled Current source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Controlling source</ogo:name>
+          <ogo:text>@gain I ( @vcon )</ogo:text>
+          <ogo:position>(15 40)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>F</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Gain</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VCON</ogo:name>
+          <ogo:value>V1</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>F_@refdes %+ %- V_@vcon @gain</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>ISIN</ogo:name>
+      <ogo:symbol>ISIN</ogo:symbol>
+      <ogo:description>Current source, sinusoidal</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>I</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Offset</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Amplitude</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>I_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>VPULSE</ogo:name>
+      <ogo:symbol>VPULSE</ogo:symbol>
+      <ogo:description>Voltage source, pulse</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>v1</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>v2</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>td</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>tr</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>tf</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>pw</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>per</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>V_@refdes %+ %- dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>VDC</ogo:name>
+      <ogo:symbol>VDC</ogo:symbol>
+      <ogo:description>Voltage source, direct current</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(25 10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>V_@refdes %+ %- dc @DC</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>AC Power 110V</ogo:name>
+      <ogo:symbol>power110</ogo:symbol>
+      <ogo:description>AC Power 110V</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:text>60 Hz</ogo:text>
+          <ogo:position>(30 -10)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V</ogo:name>
+          <ogo:text>110 V</ogo:text>
+          <ogo:position>(30 -25)</ogo:position>
+          <ogo:modify>no</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>J</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Offset</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Amplitude</ogo:name>
+          <ogo:value>110.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:value>60.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>J_@refdes %1 %2 %3 dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>AC Power 220V</ogo:name>
+      <ogo:symbol>power220</ogo:symbol>
+      <ogo:description>AC Power 220V</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(10 -20)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:text>50 Hz</ogo:text>
+          <ogo:position>(30 -10)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>V</ogo:name>
+          <ogo:text>220 V</ogo:text>
+          <ogo:position>(30 -25)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>J</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Offset</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Amplitude</ogo:name>
+          <ogo:value>220.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Frequency</ogo:name>
+          <ogo:value>50.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>DC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>AC</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>J_@refdes %1 %2 %3 dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+
+ 
+
+  </ogo:parts>
+</ogo:library>
