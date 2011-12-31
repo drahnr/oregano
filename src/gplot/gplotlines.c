@@ -23,8 +23,25 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "gplotlines.h"
 #include <string.h>
+#include "gplot-internal.h"
+#include "gplotlines.h"
+
+typedef struct _GPlotLines GPlotLines;
+typedef struct _GPlotLinesPriv GPlotLinesPriv;
+typedef struct _GPlotLinesClass GPlotLinesClass;
+
+struct _GPlotLines {
+	GObject parent;
+
+	GPlotLinesPriv *priv;
+};
+
+struct _GPlotLinesClass {
+	GObjectClass parent;
+};
+
+GType    g_plot_function_get_type ();
 
 static void g_plot_lines_class_init (GPlotLinesClass* class);
 static void g_plot_lines_init (GPlotLines* plot);
@@ -42,6 +59,8 @@ enum {
 	ARG_COLOR,
 	ARG_COLOR_GDKCOLOR,
 	ARG_VISIBLE,
+	ARG_GRAPH_TYPE,
+	ARG_SHIFT
 };
 
 struct _GPlotLinesPriv {
@@ -58,11 +77,36 @@ struct _GPlotLinesPriv {
 	/** Line Color */
 	gchar *color_string;
 	GdkColor color;
+
+	/** Graphic type */
+	GraphicType graphic_type;
+
+	/** Shift for pulse drawings */
+	gdouble shift;
 };
+
+#define TYPE_GPLOT_LINES            (g_plot_lines_get_type())
+#define TYPE_GPLOT_GRAPHIC_TYPE		(g_plot_lines_graphic_get_type())
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
 G_DEFINE_TYPE_WITH_CODE (GPlotLines, g_plot_lines, G_TYPE_OBJECT,
 	G_IMPLEMENT_INTERFACE (TYPE_GPLOT_FUNCTION,
 	g_plot_lines_function_init));
+
+GType
+g_plot_lines_graphic_get_type(void)
+{
+        static GType etype = 0;
+        if (etype == 0) {
+                static const GEnumValue values[] = {
+                        { FUNCTIONAL_CURVE, "FUNCTIONAL_CURVE", "funct-curve" },
+                        { FREQUENCY_PULSE, "FREQUENCY_PULSE", "freq-pulse" },
+                        { 0, NULL, NULL }
+                };
+                etype = g_enum_register_static ("GraphicType", values);
+        }
+        return etype;
+}
 
 static void
 g_plot_lines_function_init (GPlotFunctionClass *iface)
@@ -126,6 +170,19 @@ g_plot_lines_class_init (GPlotLinesClass* class)
 		ARG_COLOR_GDKCOLOR,
 		g_param_spec_pointer ("color-rgb", "GPlotLines::color-rgb",
 		"the GdkColor of the line", G_PARAM_READWRITE));
+
+	g_object_class_install_property(
+		object_class,
+		ARG_GRAPH_TYPE,
+		g_param_spec_enum ("graph-type", "GPlotLines::graph-type",
+		"the type of graphic", TYPE_GPLOT_GRAPHIC_TYPE, 
+		    FUNCTIONAL_CURVE, G_PARAM_READWRITE));
+
+	g_object_class_install_property(
+	    object_class,
+		ARG_SHIFT,
+	    g_param_spec_double ("shift", "GPlotLines::shift",
+		"the shift for multiple pulses", 0.0, 500.0, 50.0, G_PARAM_READWRITE));
 }
 
 static void
@@ -161,9 +218,11 @@ g_plot_lines_set_property(GObject *object, guint prop_id, const GValue *value,
 			plot->priv->color_string = g_strdup (g_value_get_string (value));
 			gdk_color_parse (plot->priv->color_string, &plot->priv->color);
 			break;
-		case ARG_COLOR_GDKCOLOR:
-			//s = g_value_get_string (value)
-			//gdk_color_parse (s, &plot->priv->color);
+		case ARG_GRAPH_TYPE:
+			plot->priv->graphic_type = g_value_get_enum (value);
+			break;
+		case ARG_SHIFT:
+			plot->priv->shift = g_value_get_double (value);
 			break;
 		default:
 			break;
@@ -186,6 +245,12 @@ g_plot_lines_get_property(GObject *object, guint prop_id, GValue *value,
 		break;
 	case ARG_COLOR:
 		g_value_set_string (value, plot->priv->color_string);
+		break;
+	case ARG_GRAPH_TYPE:
+		g_value_set_enum (value, plot->priv->graphic_type);
+		break;
+	case ARG_SHIFT:
+		g_value_set_double (value, plot->priv->shift);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (plot, prop_id, spec);
@@ -239,13 +304,16 @@ g_plot_lines_get_bbox (GPlotFunction *f, GPlotFunctionBBox *bbox)
 	(*bbox) = plot->priv->bbox;
 }
 
+
+// This procedure is in charge to link points with ligne.
+// Modified to only draw spectral ray for Fourier analysis.
 static void
 g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox *bbox)
 {
 	gboolean first_point = TRUE;
 	guint point;
-	gdouble *x;
-	gdouble *y;
+	gdouble *x, x1;
+	gdouble *y, y1;
 	guint points;
 	GPlotLines *plot;
 
@@ -259,24 +327,34 @@ g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox *bbox)
 	x = plot->priv->x;
 	y = plot->priv->y;
 
-	for (point = 1; point < points; point++) {
-		if ((x[point] >= bbox->xmin) && (x[point] <= bbox->xmax) &&
-			 (y[point] >= bbox->ymin) && (y[point] <= bbox->ymax)) {
+	if (plot->priv->graphic_type == FUNCTIONAL_CURVE) { 
+		for (point = 1; point < points; point++) {
+			if ((x[point] >= bbox->xmin) && (x[point] <= bbox->xmax) &&
+			    (y[point] >= bbox->ymin) && (y[point] <= bbox->ymax)) {
 
-			if (first_point) {
-				cairo_move_to (cr, x[point-1], y[point-1]);
-				first_point = FALSE;
-			}
+				if (first_point) {
+					cairo_move_to (cr, x[point-1], y[point-1]);
+					first_point = FALSE;
+				}
 
-			cairo_line_to (cr, x[point], y[point]);
-		} else {
-			if (!first_point) {
 				cairo_line_to (cr, x[point], y[point]);
-				first_point = TRUE;
+			} else {
+				if (!first_point) {
+					cairo_line_to (cr, x[point], y[point]);
+					first_point = TRUE;
+				}
 			}
 		}
+	} else {
+		for (point = 1; point < points; point++) {
+			x1 = x[point-1]+plot->priv->shift;
+			y1 = 0;
+			NG_DEBUG (g_strdup_printf ("gplotlines: x= %lf\ty= %lf\n", x1, y1));
+			cairo_line_to (cr, x1, y1);
+			cairo_move_to (cr, x[point]+ plot->priv->shift, y[point]);
+		}
+
 	}
-	
 	if (point < points) {
 		cairo_line_to (cr, x[point], y[point]);
 	}
@@ -291,4 +369,3 @@ g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox *bbox)
 		cairo_stroke (cr);
 	cairo_restore (cr);
 }
-

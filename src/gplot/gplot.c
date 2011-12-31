@@ -24,6 +24,7 @@
  */
 
 #include <math.h>
+#include "gplot-internal.h"
 #include "gplot.h"
 
 #define BORDER_SIZE 50
@@ -594,7 +595,7 @@ g_plot_button_press_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 	g_return_val_if_fail (IS_GPLOT (p), TRUE);
 
 	if (e->type == GDK_2BUTTON_PRESS) {
-		/* TODO : Chekck function below cursor and open a property dialog :) */
+		/* TODO : Check function below cursor and open a property dialog :) */
 	} else {
 		switch (p->priv->zoom_mode) {
 			case GPLOT_ZOOM_INOUT:
@@ -623,7 +624,7 @@ g_plot_button_press_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 static gboolean
 g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 {
-	gdouble zoom;
+	gdouble zoom = 0.0;
 
 	g_return_val_if_fail (IS_GPLOT (p), TRUE);
 

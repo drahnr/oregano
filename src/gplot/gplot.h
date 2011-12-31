@@ -30,30 +30,16 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#include "gplotfunction.h"
-
-#define TYPE_GPLOT					(g_plot_get_type())
 #define GPLOT(obj)          G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_GPLOT, GPlot)
-#define GPLOT_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST(klass, TYPE_GPLOT, GPlotClass)
 #define IS_GPLOT(obj)       G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_GPLOT)
+#define TYPE_GPLOT					(g_plot_get_type())
 
 typedef struct _GPlot GPlot;
-typedef struct _GPlotClass GPlotClass;
-typedef struct _GPlotPriv GPlotPriv;
+typedef struct _GPlotFunction {} GPlotFunction;
 
 enum {
 	GPLOT_ZOOM_INOUT,
 	GPLOT_ZOOM_REGION
-};
-
-struct _GPlot {
-	GtkLayout parent;
-
-	GPlotPriv *priv;
-};
-
-struct _GPlotClass {
-	GtkLayoutClass parent_class;
 };
 
 GType      g_plot_get_type ();

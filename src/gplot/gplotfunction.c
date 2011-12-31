@@ -23,6 +23,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "gplot-internal.h"
 #include "gplotfunction.h"
 
 	

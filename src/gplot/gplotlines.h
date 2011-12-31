@@ -28,26 +28,15 @@
 
 #include "gplotfunction.h" 
 
-#define TYPE_GPLOT_LINES            (g_plot_lines_get_type())
-#define GPLOT_LINES(obj)            G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_GPLOT_LINES, GPlotLines)
-#define GPLOT_LINES_CLASS(klass)    G_TYPE_CHECK_CLASS_CAST(klass, TYPE_GPLOT_LINES, GPlotLinesClass)
-#define IS_GPLOT_LINES(obj)        G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_GPLOT_LINES)
 
-typedef struct _GPlotLines GPlotLines;
-typedef struct _GPlotLinesPriv GPlotLinesPriv;
-typedef struct _GPlotLinesClass GPlotLinesClass;
+typedef enum {
+	FUNCTIONAL_CURVE=0,
+	FREQUENCY_PULSE
+} GraphicType;
 
-struct _GPlotLines {
-	GObject parent;
+#define GPLOT_LINES(obj)        G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_GPLOT_LINES, GPlotLines)
+#define IS_GPLOT_LINES(obj)     G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_GPLOT_LINES)
 
-	GPlotLinesPriv *priv;
-};
-
-struct _GPlotLinesClass {
-	GObjectClass parent;
-};
-
-GType          g_plot_lines_get_type ();
 GPlotFunction* g_plot_lines_new (gdouble *x, gdouble *y, guint points);
 
 #endif

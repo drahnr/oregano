@@ -1,4 +1,7 @@
 oreganodir = $(datadir)/oregano
+
+CFLAGS += -Wall -DG_DISABLE_DEPRECATED
+
 INCLUDES = \
 	$(OREGANO_CFLAGS)
 
@@ -7,8 +10,7 @@ libgplot_a_SOURCES = \
 	gplot.c	\
 	gplotfunction.c	\
 	gplotfunction.h	\
+	gplot-internal.h \
 	gplot.h \
 	gplotlines.c \
 	gplotlines.h
-
-libgplot_a_LIBADD = libgplot.a
