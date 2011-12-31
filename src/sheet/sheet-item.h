@@ -34,8 +34,6 @@
 #include <glib.h>
 #include <libgnomecanvas/libgnomecanvas.h>
 #include "sheet-pos.h"
-#include "item-data.h"
-
 
 #define TYPE_SHEET_ITEM			 (sheet_item_get_type())
 #define SHEET_ITEM(obj)			 (G_TYPE_CHECK_INSTANCE_CAST(obj, sheet_item_get_type (), SheetItem))

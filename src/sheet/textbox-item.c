@@ -36,9 +36,10 @@
  * (C) 1999, 2000 Richard Hult, http://www.dtek.chalmers.se/~d4hult/oregano/
  */
 
-#include <math.h>
-#include <gnome.h>
 #include <glade/glade.h>
+#include <string.h>
+#include <glib/gi18n.h>
+
 #include "cursors.h"
 #include "sheet-private.h"
 #include "sheet-pos.h"
@@ -77,7 +78,6 @@ inline static void get_cached_bounds (TextboxItem *item, SheetPos *p1,
 
 static void textbox_item_place (SheetItem *item, SchematicView *sv);
 static void textbox_item_place_ghost (SheetItem *item, SchematicView *sv);
-
 static void edit_cmd (GtkWidget *widget, SchematicView *sv);
 static void edit_textbox (SheetItem *sheet_item);
 
@@ -386,11 +386,6 @@ inline static void
 get_cached_bounds (TextboxItem *item, SheetPos *p1, SheetPos *p2)
 {
 	PangoFontDescription *font;
-	PangoFontMetrics *font_metric;
-	int width;
-	int rbearing;
-	int lbearing;
-	int ascent, descent;
 	SheetPos pos;
 
 	TextboxItemPriv *priv;
@@ -417,7 +412,6 @@ get_cached_bounds (TextboxItem *item, SheetPos *p1, SheetPos *p2)
 
 	memcpy (p1, &priv->bbox_start, sizeof (SheetPos));
 	memcpy (p2, &priv->bbox_end, sizeof (SheetPos));
-
 }
 
 static void

@@ -29,7 +29,7 @@
  */
 
 #include <glade/glade.h>
-#include <math.h>
+#include <glib/gi18n.h>
 #include <string.h>
 #include "main.h"
 #include "schematic-view.h"
@@ -103,10 +103,8 @@ enum {
 struct _PartItemPriv {
 	guint 			cache_valid : 1;
 	guint 			highlight : 1;
-
 	GnomeCanvasGroup *label_group;
 	GSList 			 *label_items;
-
 	GnomeCanvasGroup *node_group;
 	GSList           *label_nodes;
 
@@ -135,6 +133,7 @@ static const char *part_item_context_menu =
 "    <menuitem action='ObjectProperties'/>"
 "  </popup>"
 "</ui>";
+
 static GtkActionEntry action_entries[] = {
 	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), NULL, N_("Modify the object's properties"), NULL}//G_CALLBACK (object_properties_cmd)}
 };
@@ -489,8 +488,7 @@ part_item_update_node_label (PartItem *item)
 	GSList *labels;
 	GnomeCanvasItem *canvas_item;
 	Pin *pins;
-	gint num_pins, i;
-
+	gint num_pins;
 
 	g_return_if_fail(item != NULL);
 	g_return_if_fail(IS_PART_ITEM (item));
@@ -501,19 +499,21 @@ part_item_update_node_label (PartItem *item)
 
 	/* Put the label of each node */
 	num_pins = part_get_num_pins(part);
-	pins = part_get_pins(part);
-	labels = priv->label_nodes;
-	for (i=0; i<num_pins; i++, labels=labels->next) {
-		int x, y;
-		char *txt;
-		x = pins[i].offset.x;
-		y = pins[i].offset.y;
+	
+	if (num_pins == 1) {
+	
+		pins = part_get_pins(part);
+		labels = priv->label_nodes;
+		for (labels = priv->label_nodes; labels; labels=labels->next) {
+			char *txt;
 
-		txt = g_strdup_printf("%d", pins[i].node_nr);
-		canvas_item = labels->data;
-		gnome_canvas_item_set (canvas_item, "text", txt, NULL);
+			txt = g_strdup_printf("V(%d)", pins[0].node_nr);
+			canvas_item = labels->data;
+			//if (pins[0].node_nr != 0)
+			gnome_canvas_item_set (canvas_item, "text", txt, NULL);
 
-		g_free(txt);
+			g_free(txt);
+		}
 	}
 }
 
@@ -551,7 +551,7 @@ prop_dialog_response(GtkWidget *dialog, gint response,
 
 		for (props = part_get_properties (part); props; props = props->next) {
 			prop = props->data;
-			if (g_strcasecmp (prop->name, prop_name) == 0) {
+			if (g_ascii_strcasecmp (prop->name, prop_name) == 0) {
 				if (prop->value) g_free (prop->value);
 				prop->value = g_strdup (prop_value);
 			}
@@ -622,27 +622,27 @@ edit_properties_point (PartItem *item)
 		Property *prop;
 		prop = properties->data;
 		if (prop->name) {
-			if (!g_strcasecmp (prop->name, "internal"))
+			if (!g_ascii_strcasecmp (prop->name, "internal"))
 				continue;
 
-			if (!g_strcasecmp (prop->name, "type")) {
-				if (!g_strcasecmp (prop->value, "v")) {
+			if (!g_ascii_strcasecmp (prop->name, "type")) {
+				if (!g_ascii_strcasecmp (prop->value, "v")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), TRUE);
 				} else {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), TRUE);
 				}
-			} else if (!g_strcasecmp (prop->name, "ac_type")) {
-				if (!g_strcasecmp (prop->value, "m")) {
+			} else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
+				if (!g_ascii_strcasecmp (prop->value, "m")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_m), TRUE);
-				} else if (!g_strcasecmp (prop->value, "i")) {
+				} else if (!g_ascii_strcasecmp (prop->value, "i")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_i), TRUE);
-				} else if (!g_strcasecmp (prop->value, "p")) {
+				} else if (!g_ascii_strcasecmp (prop->value, "p")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_p), TRUE);
-				} else if (!g_strcasecmp (prop->value, "r")) {
+				} else if (!g_ascii_strcasecmp (prop->value, "r")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_r), TRUE);
 				}
-			} else if (!g_strcasecmp (prop->name, "ac_db")) {
-				if (!g_strcasecmp (prop->value, "true"))
+			} else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
+				if (!g_ascii_strcasecmp (prop->value, "true"))
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (chk_db), TRUE);
 			}
 		}
@@ -657,17 +657,17 @@ edit_properties_point (PartItem *item)
 		prop = properties->data;
 
 		if (prop->name) {
-			if (!g_strcasecmp (prop->name, "internal"))
+			if (!g_ascii_strcasecmp (prop->name, "internal"))
 				continue;
 	
-			if (!g_strcasecmp (prop->name, "type")) {
+			if (!g_ascii_strcasecmp (prop->name, "type")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio_v))) {
 					prop->value = g_strdup ("v");
 				} else {
 					prop->value = g_strdup ("i");
 				}
-			} else if (!g_strcasecmp (prop->name, "ac_type")) {
+			} else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_m))) {
 					prop->value = g_strdup ("m");
@@ -678,7 +678,7 @@ edit_properties_point (PartItem *item)
 				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_r))) {
 					prop->value = g_strdup ("r");
 				}
-			} else if (!g_strcasecmp (prop->name, "ac_db")) {
+			} else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (chk_db)))
 					prop->value = g_strdup ("true");
@@ -687,7 +687,6 @@ edit_properties_point (PartItem *item)
 			}
 		}
 	}
-
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
@@ -715,12 +714,12 @@ edit_properties (SheetItem *object)
 
 	internal = part_get_property (part, "internal");
 	if (internal) {
-		if (g_strcasecmp (internal, "ground") == 0) {
+		if (g_ascii_strcasecmp (internal, "ground") == 0) {
 			g_free (internal);
 			return;
 		}
 		/* Hack!! */
-		if (g_strcasecmp (internal, "point") == 0) {
+		if (g_ascii_strcasecmp (internal, "point") == 0) {
 			edit_properties_point (item);
 			return;
 		}
@@ -760,24 +759,25 @@ edit_properties (SheetItem *object)
 
 	prop_dialog->widgets = NULL;
 	has_model = FALSE;
+
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
 		
 		prop = properties->data;
+
 		if (prop->name) {
 			GtkWidget *entry;
 			GtkWidget *label;
 			gchar *temp=NULL;
 			
-			if (!g_strcasecmp (prop->name, "internal"))
+			if (!g_ascii_strcasecmp (prop->name, "internal"))
 				continue;
 
-			if (!g_strcasecmp (prop->name, "model")) {
+			if (!g_ascii_strcasecmp (prop->name,  "model")) {
 				has_model = TRUE;
 				model_name = g_strdup (prop->value);
 			}
-
 			
 			/* Find the Refdes and replace by their real value */	
 			temp = prop->name;
@@ -787,6 +787,7 @@ edit_properties (SheetItem *object)
 			if (!g_ascii_strcasecmp (temp,  "Cap")) temp  = _("Capacitor");
 			if (!g_ascii_strcasecmp (temp,  "Ind")) temp  = _("Inductor");
 			label = gtk_label_new (temp);
+
 			entry = gtk_entry_new ();
 			gtk_entry_set_text (GTK_ENTRY (entry),  prop->value);
 			g_object_set_data (G_OBJECT (entry),  "user",  g_strdup (prop->name));
@@ -934,7 +935,6 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 		anchor = GTK_ANCHOR_SOUTH_WEST;
 		break;
 	}
-
 
 	for (label_items = priv->label_items; label_items;
 	     label_items = label_items->next) {
@@ -1618,15 +1618,14 @@ part_item_place_ghost (SheetItem *item, SchematicView *sv)
 
 
 void
-part_item_show_node_labels (PartItem *part, gboolean b)
+part_item_show_node_labels (PartItem *part, gboolean show)
 {
 	PartItemPriv *priv;
 
 	priv = part->priv;
 
-	if (b)
+	if (show)
 		gnome_canvas_item_show (GNOME_CANVAS_ITEM (priv->node_group));
 	else
 		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->node_group));
 }
-

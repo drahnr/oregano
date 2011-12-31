@@ -30,7 +30,6 @@
 #ifndef __SHEET_ITEM_FACTORY_H
 #define __SHEET_ITEM_FACTORY_H
 
-#include "item-data.h"
 #include "sheet-item.h"
 
 SheetItem *sheet_item_factory_create_sheet_item (SchematicView *sv, ItemData *data);

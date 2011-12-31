@@ -28,7 +28,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <math.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
+
 #include "main.h"
 #include "sheet-private.h"
 #include "sheet-item.h"
@@ -108,6 +111,7 @@ static GtkActionEntry action_entries[] = {
 	{"FlipH", NULL, N_("Flip _horizontally"), "<control>F", N_("Flip the selection horizontally"), NULL}, 
 	{"FlipV", NULL, N_("Flip _vertically"), "<control><shift>F", N_("Flip the selection vertically"), NULL} 
 };
+
 GType
 sheet_item_get_type ()
 {
@@ -326,7 +330,6 @@ sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event)
 	GtkWidget *menu;
 
 	menu = gtk_ui_manager_get_widget (item->priv->ui_manager, "/ItemMenu");
-
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button, event->time);
 }
 
@@ -494,7 +497,6 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 
 			sheet->state = SHEET_STATE_NONE;
 			gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (sheet_item), event->button.time);
-
 
 			/*
 			 * HACK :(
@@ -873,7 +875,6 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 			for (list = priv->floating_objects; list; list = list->next) {
 				sheet_item_reparent (SHEET_ITEM (list->data), priv->floating_group);
 			}
-
 			gtk_object_get (GTK_OBJECT (sheet->priv->floating_group),
 					"x", &delta.x,
 					"y", &delta.y,
@@ -1209,6 +1210,7 @@ sheet_item_add_menu (SheetItem *item, const char *menu,
     const GtkActionEntry *action_entries, int nb_entries)
 {
 	GError *error = NULL;
+
 	gtk_action_group_add_actions (item->priv->action_group,
                                       action_entries,
                                       nb_entries,

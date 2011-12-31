@@ -28,8 +28,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <math.h>
-#include <gnome.h>
+#include <gtk/gtk.h>
+#include <string.h>
+
 #include "cursors.h"
 #include "sheet-private.h"
 #include "sheet-pos.h"
@@ -46,8 +47,6 @@
 
 static void wire_item_class_init (WireItemClass *klass);
 static void wire_item_init (WireItem *item);
-static void wire_item_set_arg (GtkObject *object, GtkArg *arg, guint arg_id);
-static void wire_item_get_arg (GtkObject *object, GtkArg *arg, guint arg_id);
 static void wire_item_destroy (GtkObject *object);
 static void wire_item_moved (SheetItem *object);
 
@@ -165,35 +164,6 @@ wire_item_init (WireItem *item)
 	priv->cache_valid = FALSE;
 
 	item->priv = priv;
-}
-
-static void
-wire_item_set_arg (GtkObject *object, GtkArg *arg, guint arg_id)
-{
-	WireItem *wire_item = WIRE_ITEM (object);
-
-	wire_item = WIRE_ITEM (object);
-
-	switch (arg_id) {
-	case WIRE_ITEM_ARG_NAME:
-		break;
-	}
-}
-
-static void
-wire_item_get_arg (GtkObject *object, GtkArg *arg, guint arg_id)
-{
-	WireItem *wire_item = WIRE_ITEM (object);
-
-	wire_item = WIRE_ITEM (object);
-
-	switch (arg_id) {
-	case WIRE_ITEM_ARG_NAME:
-		break;
-	default:
-		//arg->type = G_TYPE_INVALID;
-		break;
-	}
 }
 
 static void
@@ -338,11 +308,7 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *
 	static double last_x, last_y;
 	double dx, dy, zoom;
 	/* The selected group's bounding box in window resp. canvas coordinates. */
-	double x1, y1, x2, y2;
-	static double bb_x1, bb_y1, bb_x2, bb_y2;
-	int cx1, cy1, cx2, cy2;
 	double snapped_x, snapped_y;
-	int sheet_width, sheet_height;
 	SheetPos pos;
 
 	sheet = schematic_view_get_sheet (sv);
@@ -460,7 +426,7 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *
 
 				g_signal_stop_emission_by_name (G_OBJECT (wire_item), "event");
 
-				//gtk_timeout_remove (priv->scroll_timeout_id); // Esto no esta bien.
+				//gtk_timeout_remove (priv->scroll_timeout_id);
 
 				sheet->state = SHEET_STATE_NONE;
 				gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (wire_item), event->button.time);

@@ -1,4 +1,7 @@
 oreganodir = $(datadir)/oregano
+
+CFLAGS += -Wall -DG_DISABLE_DEPRECATED
+
 INCLUDES = \
 	$(OREGANO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src/model \
 	-DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"  \
@@ -25,4 +28,3 @@ libsheet_a_SOURCES = \
 	textbox-item.h	\
 	wire-item.c \
 	wire-item.h
-libsheet_a_LIBADD = libsheet.a

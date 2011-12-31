@@ -30,7 +30,7 @@
 #ifndef __WIRE_ITEM_H
 #define __WIRE_ITEM_H
 
-#include <gnome.h>
+#include <gtk/gtk.h>
 
 #include "schematic-view.h"
 #include "sheet-item.h"
