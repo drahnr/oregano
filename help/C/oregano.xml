@@ -186,9 +186,11 @@
     	<screenshot><graphic fileref="figures/oregano-main-window-3.png" format="PNG"></graphic>
       </screenshot>
     </figure>
-    
+    <caution>
+    <title>Caution:</title>
     <para>Make sure you connect at least one ground node to the circuit,
     as this is neccessary to perform a simulation.</para>
+    </caution>
     
     <figure id="circuite-grounded-view">
     <title>&app;: main window</title>
