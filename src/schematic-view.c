@@ -218,11 +218,11 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 
 	s = schematic_view_get_schematic (sv);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/properties.glade2", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_GLADEDIR "/properties.glade", G_FILE_TEST_EXISTS)) {
 			gchar *msg;
 			msg = g_strdup_printf (
 					_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-					OREGANO_GLADEDIR "/properties.glade2");
+					OREGANO_GLADEDIR "/properties.glade");
 
 			oregano_error_with_title (_("Could not create properties dialog"), msg);
 			g_free (msg);
@@ -230,7 +230,7 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	}
 
 	xml = glade_xml_new (
-			OREGANO_GLADEDIR "/properties.glade2",
+			OREGANO_GLADEDIR "/properties.glade",
 			"properties", NULL
 	);
 
@@ -304,28 +304,26 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	GladeXML *xml;
 	GtkWidget *win;
 	GtkWidget *w;
-	GtkEntry *file;
+	GtkEntry *file = NULL;
 	GtkComboBox *combo;
-	gint btn;
+	gint btn = GTK_RESPONSE_NONE;
 	gint formats[5], fc;
+	GtkSpinButton *spinw, *spinh;
 
 	s = schematic_view_get_schematic (sv);
 			
-	if (!g_file_test (OREGANO_GLADEDIR "/export.glade2", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_GLADEDIR "/export.glade", G_FILE_TEST_EXISTS)) {
 			gchar *msg;
 			msg = g_strdup_printf (
 					_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-					OREGANO_GLADEDIR "/export.glade2");
+					OREGANO_GLADEDIR "/export.glade");
 
 			oregano_error_with_title (_("Could not create properties dialog"), msg);
 			g_free (msg);
 			return;
 	}
 
-	xml = glade_xml_new (
-			OREGANO_GLADEDIR "/export.glade2",
-			"export", NULL
-	);
+	xml = glade_xml_new (OREGANO_GLADEDIR "/export.glade", "export", NULL);
 
 	win = glade_xml_get_widget (xml, "export");
 	combo = GTK_COMBO_BOX (glade_xml_get_widget (xml, "format"));
@@ -355,13 +353,13 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file), file);
 
 	gtk_combo_box_set_active (combo, 0);
-	btn = gtk_dialog_run (GTK_DIALOG (win));
 
-	if (btn == GTK_RESPONSE_OK) {
+		btn = gtk_dialog_run (GTK_DIALOG (win));
+	
+		if  (btn == GTK_RESPONSE_OK) {
 			int bg = 0;
-			int color_scheme = 0;
-
 			GtkSpinButton *spinw, *spinh;
+			int color_scheme = 0;
 			GtkWidget *w;
 			int i = gtk_combo_box_get_active (combo);
 
@@ -404,7 +402,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *new_sm;
 	SchematicView *new_sv;
-	char *fname;
+	char *fname, *uri;
 	GList *list;
 	GError *error = NULL;
 
@@ -434,17 +432,122 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 	}
 
 	if (new_sm) {
+		GtkRecentManager *manager;
+		const gchar *mime;
+		gchar *uri;
+		GtkRecentInfo *item;
+		
+		manager = gtk_recent_manager_get_default ();
+		uri = g_strdup_printf ("file://%s", fname);
+		if (!gtk_recent_manager_has_item (manager, uri)	&&
+		    (!(uri==NULL))) 	gtk_recent_manager_add_item (manager, uri);
+		if (!new_sv)
+			new_sv = schematic_view_new (new_sm);
+		else
+			schematic_view_load (new_sv, new_sm);
+
+		gtk_widget_show_all (new_sv->toplevel);
+		schematic_set_filename (new_sm, fname);
+		schematic_set_title (new_sm, g_path_get_basename(fname));
+	}
+
+	g_free (fname);
+	g_free (uri);
+}
+
+
+static void
+oregano_recent_open (GtkRecentChooser *chooser,
+			 SchematicView *sv)
+{
+	gchar *uri;
+    const gchar *mime;
+    GtkRecentInfo *item;
+	GtkRecentManager *manager;
+	Schematic *new_sm;
+	SchematicView *new_sv;
+	GError *error = NULL;
+
+	uri = gtk_recent_chooser_get_current_uri (GTK_RECENT_CHOOSER (chooser));
+	if (!uri) return;
+
+	manager = gtk_recent_manager_get_default ();
+	item = gtk_recent_manager_lookup_item (manager, uri, NULL);
+	if (!item) return;
+
+	mime = gtk_recent_info_get_mime_type (item);
+	if (!mime) {
+		g_warning ("Unrecognized mime type");
+		return;
+	}
+
+	if (!strcmp (mime, "application/x-oregano")) {
+		new_sm = schematic_read(uri, &error);
+		if (error != NULL) {
+			oregano_error_with_title (_("Could not load file"), error->message);
+			g_error_free (error);
+		}
+		if (new_sm) {
 			if (!new_sv)
 					new_sv = schematic_view_new (new_sm);
 			else
 					schematic_view_load (new_sv, new_sm);
 
 			gtk_widget_show_all (new_sv->toplevel);
-			schematic_set_filename (new_sm, fname);
-			schematic_set_title (new_sm, g_path_get_basename(fname));
+			schematic_set_filename (new_sm, uri);
+			schematic_set_title (new_sm, g_path_get_basename(uri));
+		}
 	}
+	else
+		g_warning (_("Unknown type of file can't open"));
 
-	g_free (fname);
+	g_free(uri);
+	gtk_recent_info_unref (item);
+}
+
+
+static GtkWidget *
+create_recent_chooser_menu (GtkRecentManager *manager)
+{
+	GtkWidget *menu;
+	GtkRecentFilter *filter;
+	GtkWidget *menuitem;
+
+	menu = gtk_recent_chooser_menu_new_for_manager (manager);
+
+	gtk_recent_chooser_set_limit (GTK_RECENT_CHOOSER (menu), 10);
+
+	gtk_recent_chooser_set_local_only (GTK_RECENT_CHOOSER (menu), TRUE);
+	gtk_recent_chooser_set_sort_type (GTK_RECENT_CHOOSER (menu),
+			GTK_RECENT_SORT_MRU); 
+	
+	filter = gtk_recent_filter_new ();
+	gtk_recent_filter_add_mime_type (filter, "application/x-oregano");
+	gtk_recent_chooser_add_filter (GTK_RECENT_CHOOSER (menu), filter);
+	gtk_recent_chooser_set_filter (GTK_RECENT_CHOOSER (menu), filter);
+	gtk_recent_chooser_set_local_only (GTK_RECENT_CHOOSER (menu), TRUE);
+	g_signal_connect (menu, "item-activated",
+	                G_CALLBACK (oregano_recent_open),
+                    NULL);
+
+	gtk_widget_show_all (menu);
+
+	return menu;
+}
+
+static void
+display_recent_files (GtkWidget *menu, SchematicView *sv)
+{
+	SchematicViewPriv *priv = sv->priv;
+	GtkWidget *menuitem;
+	GtkWidget *recentmenu;
+	GtkRecentManager *manager = NULL;
+
+	manager = gtk_recent_manager_get_default ();
+	menuitem = gtk_ui_manager_get_widget (priv->ui_manager, "/MainMenu/MenuFile/DisplayRecentFiles");
+	recentmenu = create_recent_chooser_menu (manager);
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), recentmenu);
+	gtk_widget_show (menuitem);
 }
 
 static void
@@ -806,13 +909,13 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 	
 	if (error != NULL) {
 			if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-							g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-							g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-					oregano_error_with_title (_("Could not create a netlist"), error->message);
-					g_clear_error (&error);
-			} else {
-					oregano_error (_("An unexpected error has occurred"));
-			}
+				 g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+				 g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+						oregano_error_with_title (_("Could not create a netlist"), error->message);
+						g_clear_error (&error);
+			} 
+			else 	oregano_error (_("An unexpected error has occurred"));
+			
 			return;
 	}
 }
@@ -916,8 +1019,7 @@ schematic_view_get_type(void)
 			};
 
 			schematic_view_type = g_type_register_static(G_TYPE_OBJECT,
-					"SchematicView",
-					&schematic_view_info, 0);
+					"SchematicView", &schematic_view_info, 0);
 	}
 
 	return schematic_view_type;
@@ -966,8 +1068,7 @@ schematic_view_init (SchematicView *sv)
 	sv->priv->show_voltmeters = FALSE;
 	sv->priv->voltmeter_items = NULL;
 	sv->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash,
-			g_str_equal,
-			g_free, g_free);
+			g_str_equal, g_free, g_free);
 }
 
 static void
@@ -976,7 +1077,6 @@ schematic_view_finalize(GObject *object)
 	SchematicView *sv = SCHEMATIC_VIEW (object);
 
 	if (sv->priv) {
-			/* DONE (NOT TESTED): free the keys. - */
 			g_hash_table_destroy (sv->priv->dots);
 			g_free(sv->priv->rubberband);
 
@@ -1056,15 +1156,12 @@ dot_added_callback (Schematic *schematic, SheetPos *pos, SchematicView *sv)
 	if (node_item == NULL) {
 			node_item = NODE_ITEM (
 					gnome_canvas_item_new (
-							gnome_canvas_root (
-									GNOME_CANVAS (sv->priv->sheet)),
+							gnome_canvas_root (GNOME_CANVAS (sv->priv->sheet)),
 							node_item_get_type (),
 							"x", pos->x,
-					"y", pos->y,
-					NULL));
-	} else {
-			printf("Node is not NULL!");
-	}
+							"y", pos->y,
+							NULL));
+	} 
 
 	node_item_show_dot (node_item, TRUE);
 
@@ -1092,8 +1189,6 @@ dot_removed_callback (Schematic *schematic, SheetPos *pos, SchematicView *sv)
 			(gpointer) &node_item);
 
 	if (found) {
-			/*if (orig_key) g_free (orig_key);*/
-			/* g_object_unref(G_OBJECT (node_item)); */
 			gtk_object_destroy(GTK_OBJECT (node_item));
 			g_hash_table_remove(sv->priv->dots, pos);
 	} else
@@ -1165,6 +1260,7 @@ schematic_view_new (Schematic *schematic)
 	gtk_box_pack_start (GTK_BOX (hbox), part_browser_create (sv), FALSE, FALSE, 0);
 
 	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
+	gtk_action_group_set_translation_domain (priv->action_group, GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), sv);
 	gtk_action_group_add_radio_actions (action_group, zoom_entries, G_N_ELEMENTS (zoom_entries), 2, G_CALLBACK (zoom_cmd), sv);
 	gtk_action_group_add_radio_actions (action_group, tools_entries, G_N_ELEMENTS (tools_entries), 0, G_CALLBACK (tool_cmd), sv);
@@ -1184,6 +1280,9 @@ schematic_view_new (Schematic *schematic)
 	}
 
 	menubar = gtk_ui_manager_get_widget (ui_manager, "/MainMenu");
+	
+	// Upgrade the menu bar with the recent files used by oregano
+	display_recent_files (menubar, sv);
 	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
 
 	toolbar = gtk_ui_manager_get_widget (ui_manager, "/StandartToolbar");
@@ -1672,25 +1771,6 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 							schematic_get_store (sv->priv->schematic));
 					return TRUE;
 
-					/* debug_part_item (sheet->priv->selected_objects); */
-/* FIX: useful? */
-#if 0
-					if (debug_nodes_group != NULL)
-							gtk_object_destroy (
-									GTK_OBJECT (debug_nodes_group));
-
-					debug_nodes_group =
-							GNOME_CANVAS_GROUP (
-									gnome_canvas_item_new (
-											sheet->object_group,
-											gnome_canvas_group_get_type (),
-											"x", 0.0,
-											"y", 0.0,
-											NULL));
-
-					node_store_node_foreach (sheet->priv->store,
-							(gpointer) nodes_cb, debug_nodes_group);
-#endif
 					break;
 			case GDK_Escape:
 					g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
@@ -2359,10 +2439,10 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 			if (!explicit && !oregano.show_log)
 					return;
 
-			if (!g_file_test (OREGANO_GLADEDIR "/log-window.glade2", G_FILE_TEST_EXISTS)) {
+			if (!g_file_test (OREGANO_GLADEDIR "/log-window.glade", G_FILE_TEST_EXISTS)) {
 					msg = g_strdup_printf (
 							_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-							OREGANO_GLADEDIR "/log-window.glade2");
+							OREGANO_GLADEDIR "/log-window.glade");
 
 					oregano_error_with_title ( _("Could not create the log window"), msg);
 					g_free (msg);
@@ -2371,7 +2451,7 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 
 
 			sv->priv->log_gui = glade_xml_new (
-					OREGANO_GLADEDIR "/log-window.glade2",
+					OREGANO_GLADEDIR "/log-window.glade",
 					NULL, NULL);
 
 			if (!sv->priv->log_gui) {

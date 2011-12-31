@@ -71,6 +71,44 @@ oregano_error_with_title (gchar *title, gchar *desc)
 	gtk_widget_destroy (dialog);
 }
 
+void
+oregano_warning (gchar *msg)
+{
+    oregano_warning_with_title(msg, NULL);
+}
+
+
+void
+oregano_warning_with_title (gchar *title, gchar *desc)
+{
+	GtkWidget *dialog;
+	gint result;
+
+	GString* span_msg;
+
+	span_msg = g_string_new("<span weight=\"bold\" size=\"large\">");
+	span_msg = g_string_append(span_msg, title);
+	span_msg = g_string_append(span_msg,"</span>");
+
+	if (desc && desc[0] != '\0') {
+		span_msg = g_string_append(span_msg,"\n\n");
+		span_msg = g_string_append(span_msg, desc);
+	}
+
+	dialog = gtk_message_dialog_new_with_markup (
+		NULL,
+		GTK_DIALOG_MODAL,
+		GTK_MESSAGE_WARNING,
+		GTK_BUTTONS_OK,
+		span_msg->str);
+
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+
+	result = gtk_dialog_run (GTK_DIALOG (dialog));
+
+	g_string_free(span_msg, TRUE);
+	gtk_widget_destroy (dialog);
+}
 gint
 oregano_question (gchar *msg)
 {
@@ -102,18 +140,14 @@ void
 dialog_about (void)
 {
 	GdkPixbuf *logo;
-	GError *error = NULL;
 
 	const gchar *authors[] = {
+		"Richard Hult",
 		"Margarita Manterola",
 		"Andres de Barbara",
 		"Gustavo M. Pereyra",
 		"Maximiliano Curia",
 		"Ricardo Markiewicz",
-		/* TODO : What should we do with the Richard Hult credits? */
-		/*"Richard Hult <richard.hult@telia.com>",*/
-		/* maxy> I believe it should stay, and it should be the first on the
-		 *       list */
 		NULL
 	};
 
@@ -131,30 +165,19 @@ dialog_about (void)
 		return;
 	}
 
-	error = NULL;
 	logo = gdk_pixbuf_new_from_xpm_data ((const char **) logo_xpm);
 
-	about = gnome_about_new (
-		"Oregano",
-		VERSION,
-		copy,
-		_("Schematic capture and circuit simulation.\n"),
-		authors,
-		docs, NULL,
-		logo);
-
-	g_signal_connect (
-		G_OBJECT (about),
-		"destroy",
-		G_CALLBACK(about_destroy_event),
-		NULL);
-
-	gtk_widget_show (about);
+	about = gtk_about_dialog_new ();
+	gtk_about_dialog_set_name (GTK_ABOUT_DIALOG (about), "Oregano");
+	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (about), VERSION);
+	gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG (about), copy);
+	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (about), _("Schematic capture and circuit simulation.\n"));
+	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (about), "GNU General Public License");
+	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), "http://arrakis.gforge.lug.fi.uba.ar");
+	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
+	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
+	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);
+	gtk_dialog_run (GTK_DIALOG (about));
+	gtk_widget_destroy (about);
+	
 }
-
-static void
-about_destroy_event (void)
-{
-	about = NULL;
-}
-

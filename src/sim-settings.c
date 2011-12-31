@@ -769,17 +769,17 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	if (!g_file_test (OREGANO_GLADEDIR "/sim-settings.glade2", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_GLADEDIR "/sim-settings.glade", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/sim-settings.glade2");
+			OREGANO_GLADEDIR "/sim-settings.glade");
 		oregano_error_with_title (_("Could not create simulation settings dialog"), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/sim-settings.glade2", "toplevel", NULL);
+	gui = glade_xml_new (OREGANO_GLADEDIR "/sim-settings.glade", "toplevel", NULL);
 	if (!gui) {
 		oregano_error (_("Could not create simulation settings dialog"));
 		return;
@@ -1051,9 +1051,10 @@ sim_settings_add_option (SimSettings *s, SimOption *opt)
 	while (list) {
 		SimOption *so=list->data;
 		if (so && !strcmp (opt->name,so->name)) {
+			GList * tmp_list;
 			g_free (so->name);
 			g_free (so->value);
-			g_list_remove (s->priv->options, so);
+			tmp_list = g_list_remove (s->priv->options, so);
 			g_free (so);
 		}
 		list = list->next;

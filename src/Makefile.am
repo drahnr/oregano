@@ -81,7 +81,7 @@ oregano_SOURCES = 	\
 	save-schematic.h \
 	schematic-view.c \
 	schematic-view.h \
-	schematic-view-ui.h \
+	schematic-view-menu.h \
 	settings.c \
 	settings.h \
 	sim-settings.c \
