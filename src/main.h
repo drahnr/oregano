@@ -32,7 +32,7 @@
 
 #undef GTK_ENABLE_BROKEN
 
-#include <libgnome/libgnome.h>
+#include <gnome.h>
 
 typedef struct {
 	GList *libraries;

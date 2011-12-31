@@ -46,9 +46,9 @@ typedef enum {
 	NOISE		,
 	POLE_ZERO	,
 	SENSITIVITY ,
+	FOURIER		,
 	ANALYSIS_UNKNOWN
 } AnalysisType;
-
 
 #define INFINITE 1e50f
 
@@ -76,10 +76,10 @@ struct _SimulationData {
 	gdouble		*max_data;
 	gint		 got_var;
 	gint		 got_points;
-	gint		 num_data;
+	//gint		 num_data;
 
 	/* Functions  typeof SimulationFunction */
-	GList *functions;
+	GList 		*functions;
 };
 
 
@@ -92,7 +92,7 @@ typedef struct {
 typedef struct {
 	SimulationData sim_data;
 	double		   freq;
-	GList		  *out_var;
+	gint		   nb_var;
 } SimFourier;
 
 typedef struct {
@@ -113,10 +113,8 @@ typedef struct {
 	SimulationData sim_data;
 	int		 state;
 	double	 sim_length;
-	double	 start1,stop1,step1;
-	double	 start2,stop2,step2;
+	double	 start,stop,step;
 } SimDC;
-
 
 typedef union {
 	SimOp		 op;

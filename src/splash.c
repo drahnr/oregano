@@ -26,12 +26,10 @@
 
 #include <unistd.h>
 #include <glade/glade.h>
+#include <glib/gi18n.h>
 #include "splash.h"
-#include "splash.xpm"
 #include "dialogs.h"
 
-
-/* TODO : If we support this, we need to know how to stop the g_timeout :-/ */
 static void
 oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
 {
@@ -46,9 +44,7 @@ oregano_splash_new ()
 {
 	GladeXML *gui;
 	Splash *sp;
-	GtkImage *img;
 	GtkEventBox *event;
-	GdkPixbuf *logo;
 	gchar *msg;
 	
 	if (!g_file_test (OREGANO_GLADEDIR "/splash.glade", G_FILE_TEST_EXISTS) ||
@@ -58,12 +54,12 @@ oregano_splash_new ()
 			OREGANO_GLADEDIR "/splash.glade",  OREGANO_GLADEDIR "/splash.xpm");
 		oregano_error_with_title (_("Could not create textbox properties dialog"), msg);
 		g_free (msg);
-		return;
+		return NULL;
 	}
 	gui = glade_xml_new (OREGANO_GLADEDIR "/splash.glade", NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create textbox properties dialog"));
-		return;
+		return NULL;
 	}
 
 	sp = g_new0 (Splash, 1);
@@ -75,9 +71,6 @@ oregano_splash_new ()
 
 	event = GTK_EVENT_BOX (glade_xml_get_widget (gui, "event"));
 	sp->event = GTK_WIDGET (event);
-
-	// Replaced with TimeOut!
-	//g_signal_connect (G_OBJECT (event), "button_press_event", G_CALLBACK (oregano_splash_destroy), sp);
 
 	gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR (sp->progress), 0.07);
 	gtk_widget_show_all (GTK_WIDGET (sp->win));
@@ -100,7 +93,6 @@ oregano_splash_free (Splash *sp)
 void
 oregano_splash_step (Splash *sp, char *s)
 {
-	int i;
 	gtk_label_set_text (sp->lbl, s);
 	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (sp->progress));
 	while (gtk_events_pending ())

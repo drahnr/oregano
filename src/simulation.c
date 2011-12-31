@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include <locale.h>
 #include <glade/glade.h>
+#include <glib/gi18n.h>
 
 #include "main.h"
 #include "simulation.h"
@@ -41,7 +42,6 @@
 #include "oregano-config.h"
 #include "plot.h"
 #include "gnucap.h"
-
 
 typedef struct {
 	Schematic *sm;

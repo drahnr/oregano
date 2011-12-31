@@ -32,6 +32,7 @@
 #include <dirent.h>
 #include <gconf/gconf-client.h>
 #include <string.h>
+#include <glib/gi18n.h>
 
 #include "main.h"
 #include "oregano-config.h"

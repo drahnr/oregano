@@ -30,7 +30,6 @@
 #ifndef __OREGANO_UTILS_H
 #define __OREGANO_UTILS_H
 
-
-double oregano_strtod (const gchar *str, const gchar unit);
+gdouble oregano_strtod (const gchar *str, const gchar unit);
 
 #endif

@@ -30,7 +30,6 @@
 #ifndef __PART_BROWSER_H
 #define __PART_BROWSER_H
 
-#include <gnome.h>
 #include <gtk/gtk.h>
 #include "schematic.h"
 

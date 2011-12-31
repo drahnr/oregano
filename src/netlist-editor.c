@@ -25,15 +25,17 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "netlist-editor.h"
-#include "netlist.h"
-#include "simulation.h"
-#include "file.h"
+
 #include <glade/glade.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <gnome.h>
+#include <glib/gi18n.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
+#include "netlist-editor.h"
+#include "netlist-helper.h"
+#include "simulation.h"
+#include "file.h"
+#include "dialogs.h"
 
 static void netlist_editor_finalize (GObject *object);
 static void netlist_editor_dispose (GObject *object);
@@ -158,7 +160,6 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 	GtkTextIter start, end;
 	FILE *fp;
 	GError *error = 0;
-	OreganoEngine *engine;
 
 	// FIXME: OreganoEngine now override the netlist when start!
 	return;
@@ -249,7 +250,6 @@ setup_language_manager_path(GtkSourceLanguageManager *lm)
 	char **new_langs;
 
 	lang_files = g_strdupv (gtk_source_language_manager_get_search_path (lm));
-
 	lang_files_count = g_strv_length (lang_files);
 	new_langs = g_new (char*, lang_files_count + 2);
 
@@ -266,7 +266,6 @@ setup_language_manager_path(GtkSourceLanguageManager *lm)
 
 NetlistEditor *
 netlist_editor_new (GtkSourceBuffer * textbuffer) {
-	gchar** lang_files;
 	NetlistEditor * nle;
 	GladeXML * gui;
 	GtkWidget * toplevel;
@@ -275,7 +274,6 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	GtkSourceLanguageManager * lm;
 	GtkButton * save, * sim, * close, * print;
 	GtkSourceLanguage *lang=NULL;
-	const GSList *list;
 
 	if (!textbuffer) 
 		return NULL;
@@ -283,7 +281,6 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	nle = NETLIST_EDITOR (g_object_new (netlist_editor_get_type (), NULL));
 	
 	netlist_editor_get_config (nle);
-		
 	if (!g_file_test (OREGANO_GLADEDIR "/view-netlist.glade", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
@@ -359,7 +356,7 @@ netlist_editor_new_from_file (gchar * filename)
 	gsize length;
 	GError *error = NULL;
 	NetlistEditor *editor;
-	
+
 	if (!filename)
 		return NULL;
 	if (!(g_file_test (filename, G_FILE_TEST_EXISTS))) {
@@ -386,10 +383,6 @@ netlist_editor_init (NetlistEditor * nle) {
 	
 	nle->priv->toplevel = NULL;
 	nle->priv->sv = NULL;
-	/*nle->priv->source_view = NULL;
-	nle->priv->bgcolor = 1;
-	nle->priv->selectcolor = 0;
-	nle->priv->textcolor = 0;*/
 }
 
 NetlistEditor *

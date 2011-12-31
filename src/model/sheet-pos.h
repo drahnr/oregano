@@ -29,6 +29,7 @@
  */
 #ifndef __SHEET_POS_H
 #define __SHEET_POS_H
+#include <gtk/gtk.h>
 
 typedef struct _SheetPos SheetPos;
 struct _SheetPos {

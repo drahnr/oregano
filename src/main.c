@@ -64,7 +64,6 @@ int oregano_debugging;
 static void
 quit (void)
 {
-	printf("! GTK_MAIN_QUIT \n");
 	gtk_main_quit ();
 }
 
@@ -82,7 +81,6 @@ quit_hook (GSignalInvocationHint *ihint,
 static void
 session_die (void)
 {
-	/* FIXME: The session is ending. Save unsaved work etc. */
 	quit ();
 }
 

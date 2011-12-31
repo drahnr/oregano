@@ -30,6 +30,7 @@
 #define _FILE_MANAGER_H_ 1
 
 #include <gtk/gtk.h>
+#include <string.h>
 #include "schematic.h"
 
 /* Oregano Files */

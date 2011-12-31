@@ -46,10 +46,12 @@ struct _SimSettings {
 	SimSettingsPriv *priv;
 };
 
-typedef struct _SimOption {
+typedef struct _SimOption SimOption;
+
+struct _SimOption {
 	gchar *name;
 	gchar *value;
-} SimOption;
+} _SimOption;
 
 void sim_settings_show (GtkWidget     *widget,
 	SchematicView *sv);
@@ -97,13 +99,13 @@ void sim_settings_set_trans_init_cond(SimSettings *sim_settings,
  */
 gboolean   sim_settings_get_dc (SimSettings *);
 
-gchar *sim_settings_get_dc_vsrc (SimSettings *,gint);
+gchar *sim_settings_get_dc_vsrc (SimSettings *);
 
-gdouble sim_settings_get_dc_start (SimSettings *, gint);
+gdouble sim_settings_get_dc_start (SimSettings *);
 
-gdouble sim_settings_get_dc_stop  (SimSettings *,gint);
+gdouble sim_settings_get_dc_stop  (SimSettings *);
 
-gdouble sim_settings_get_dc_step  (SimSettings *,gint);
+gdouble sim_settings_get_dc_step  (SimSettings *);
 
 /**
  *
@@ -112,19 +114,15 @@ void sim_settings_set_dc (SimSettings *,
 						  gboolean);
 
 void sim_settings_set_dc_vsrc (SimSettings * ,
-							   gint,
 							   gchar *);
 
 void sim_settings_set_dc_start (SimSettings *,
-								gint,
 								gchar *);
 
 void sim_settings_set_dc_stop  (SimSettings *,
-								gint,
 								gchar *);
 
 void sim_settings_set_dc_step  (SimSettings *,
-								gint,
 								gchar *);
 
 /**
@@ -157,6 +155,29 @@ void sim_settings_set_ac_start (SimSettings *,
 
 void sim_settings_set_ac_stop (SimSettings *,
 							   gchar *);
+/**
+ *
+ */
+void sim_settings_set_fourier (SimSettings *,
+						  gboolean);
+
+void sim_settings_set_fourier_frequency (SimSettings *,
+								  gchar *);
+
+void sim_settings_set_fourier_vout (SimSettings *,
+								gchar *);
+
+/**
+ *
+ */
+gboolean sim_settings_get_fourier (SimSettings *);
+
+gint sim_settings_get_fourier_frequency (SimSettings *);
+
+gchar* sim_settings_get_fourier_vout (SimSettings *);
+
+gchar* sim_settings_get_fourier_nodes (SimSettings *);
+
 
 /**
  *

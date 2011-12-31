@@ -31,13 +31,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gnome.h>
 #include <math.h>
 #include "cursors.h"
 #include "sheet-private.h"
 #include "sheet-pos.h"
 #include "node-store.h"
-#include "item-data.h"
 #include "wire-item.h"
 #include "create-wire.h"
 #include "wire.h"
@@ -219,7 +217,7 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 	Schematic *s;
 	NodeStore *store;
 	SheetPos pos;
-	int i, intersect;
+	int intersect;
 
 	s = schematic_view_get_schematic (cwc->schematic_view);
 	store = schematic_get_store (s);
@@ -320,7 +318,6 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 			dx = fabs (cwc->old_x - new_x);
 			dy = fabs (cwc->old_y - new_y);
 			m = sqrt (dx*dx + dy*dy);
-
 			if (m > 20)
 				cwc->moved = TRUE;
 		}
@@ -687,4 +684,3 @@ sheet_cancel (Sheet *sheet, CreateWireContext *cwc)
 
 	return TRUE;
 }
-

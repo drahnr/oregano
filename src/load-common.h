@@ -31,7 +31,6 @@
 #define __LOAD_COMMON_H
 
 #include <glib.h>
-#include <libgnome/gnome-i18n.h>
 #include "sheet-pos.h"
 
 /* Note: this must be synced with Pin in part.h for now. */

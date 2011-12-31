@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
 <glade-interface>
-  <requires-version lib="gtk+" version="2.12"/>
+  <!-- interface-requires gtk+ 2.6 -->
+  <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="toplevel">
     <property name="visible">True</property>
     <property name="title" translatable="yes">Preferences</property>
-    <property name="window_position">GTK_WIN_POS_CENTER</property>
+    <property name="window_position">center</property>
     <child>
       <widget class="GtkVBox" id="vbox">
         <property name="visible">True</property>
@@ -26,7 +27,7 @@
                       <widget class="GtkFrame" id="frame3">
                         <property name="visible">True</property>
                         <property name="label_xalign">0</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkVBox" id="vbox19">
                             <property name="visible">True</property>
@@ -41,6 +42,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -48,25 +50,26 @@
                                     <property name="visible">True</property>
                                     <child>
                                       <widget class="GtkCheckButton" id="splash-enable">
+                                        <property name="label" translatable="yes">Show the splash screen at application startup</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
-                                        <property name="label" translatable="yes">Show the splash screen at application startup</property>
+                                        <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
-                                        <property name="response_id">0</property>
                                         <property name="draw_indicator">True</property>
                                       </widget>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
+                                        <property name="position">0</property>
                                       </packing>
                                     </child>
                                     <child>
                                       <widget class="GtkCheckButton" id="realtime-enable">
+                                        <property name="label" translatable="yes">Realtime update of selection (slow)</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
-                                        <property name="label" translatable="yes">Realtime update of selection (slow)</property>
+                                        <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
-                                        <property name="response_id">0</property>
                                         <property name="draw_indicator">True</property>
                                       </widget>
                                       <packing>
@@ -77,11 +80,11 @@
                                     </child>
                                     <child>
                                       <widget class="GtkCheckButton" id="log-enable">
+                                        <property name="label" translatable="yes">Automatically show log windows after simulation</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
-                                        <property name="label" translatable="yes">Automatically show log windows after simulation</property>
+                                        <property name="receives_default">False</property>
                                         <property name="use_underline">True</property>
-                                        <property name="response_id">0</property>
                                         <property name="draw_indicator">True</property>
                                       </widget>
                                       <packing>
@@ -97,18 +100,19 @@
                                           <widget class="GtkLabel" id="label34">
                                             <property name="visible">True</property>
                                             <property name="label" translatable="yes">Grid size[px]   </property>
-                                            <property name="justify">GTK_JUSTIFY_CENTER</property>
+                                            <property name="justify">center</property>
                                           </widget>
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">False</property>
+                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
                                           <widget class="GtkSpinButton" id="grid-size">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <property name="adjustment">10 0 100 10 10 10</property>
+                                            <property name="adjustment">10 0 100 10 10 0</property>
                                             <property name="climb_rate">1</property>
                                           </widget>
                                           <packing>
@@ -127,6 +131,9 @@
                                   </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
@@ -141,12 +148,15 @@
                           </packing>
                         </child>
                       </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                     <child>
                       <widget class="GtkFrame" id="frame2">
                         <property name="visible">True</property>
                         <property name="label_xalign">0</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkVBox" id="vbox16">
                             <property name="visible">True</property>
@@ -162,15 +172,16 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkCheckButton" id="compress-enable">
+                                    <property name="label" translatable="yes">Compress saved files</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Compress saved files</property>
+                                    <property name="receives_default">False</property>
                                     <property name="use_underline">True</property>
-                                    <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -178,6 +189,9 @@
                                   </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
@@ -200,7 +214,7 @@
                       <widget class="GtkFrame" id="frame1">
                         <property name="visible">True</property>
                         <property name="label_xalign">0</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkVBox" id="vbox17">
                             <property name="visible">True</property>
@@ -216,6 +230,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -244,6 +259,9 @@
                                   </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
@@ -263,6 +281,9 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
               </widget>
             </child>
@@ -270,7 +291,7 @@
               <widget class="GtkLabel" id="label35">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">User Interface</property>
-                <property name="justify">GTK_JUSTIFY_CENTER</property>
+                <property name="justify">center</property>
               </widget>
               <packing>
                 <property name="tab_fill">False</property>
@@ -289,7 +310,7 @@
                       <widget class="GtkFrame" id="frame4">
                         <property name="visible">True</property>
                         <property name="label_xalign">0</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkVBox" id="vbox22">
                             <property name="visible">True</property>
@@ -298,6 +319,9 @@
                                 <property name="visible">True</property>
                                 <property name="title" translatable="yes">Select A File</property>
                               </widget>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
@@ -314,13 +338,14 @@
                       </widget>
                       <packing>
                         <property name="expand">False</property>
+                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkFrame" id="frame5">
                         <property name="visible">True</property>
                         <property name="label_xalign">0</property>
-                        <property name="shadow_type">GTK_SHADOW_NONE</property>
+                        <property name="shadow_type">none</property>
                         <child>
                           <widget class="GtkVBox" id="vbox23">
                             <property name="visible">True</property>
@@ -337,6 +362,7 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -356,6 +382,7 @@
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">False</property>
+                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -385,6 +412,7 @@
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">False</property>
+                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -398,7 +426,7 @@
                                         </child>
                                       </widget>
                                       <packing>
-                                        <property name="pack_type">GTK_PACK_END</property>
+                                        <property name="pack_type">end</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
@@ -410,6 +438,7 @@
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                           </widget>
@@ -431,6 +460,9 @@
                       </packing>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
                 </child>
               </widget>
               <packing>
@@ -441,7 +473,7 @@
               <widget class="GtkLabel" id="label41">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Paths</property>
-                <property name="justify">GTK_JUSTIFY_CENTER</property>
+                <property name="justify">center</property>
               </widget>
               <packing>
                 <property name="position">1</property>
@@ -452,22 +484,28 @@
           </widget>
           <packing>
             <property name="expand">False</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
           <widget class="GtkHButtonBox" id="hbuttonbox">
             <property name="visible">True</property>
             <property name="border_width">2</property>
-            <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="layout_style">end</property>
             <child>
               <widget class="GtkButton" id="close_bt">
+                <property name="label">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="label">gtk-close</property>
+                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-                <property name="response_id">0</property>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
             </child>
           </widget>
           <packing>

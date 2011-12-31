@@ -30,10 +30,9 @@
 #ifndef __FILE_H
 #define __FILE_H
 
-#include <libgnome/gnome-i18n.h>
+#include <gtk/gtk.h>
 #include "schematic-view.h"
 
-/* FIXME : unificar API!! */
 char *dialog_open_file (SchematicView *sv);
 void dialog_save_as (SchematicView *sv);
 char *dialog_netlist_file (SchematicView *sv);

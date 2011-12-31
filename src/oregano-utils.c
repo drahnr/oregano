@@ -28,19 +28,21 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
+#include <string.h>
 #include <gtk/gtk.h>
 #include "oregano-utils.h"
 
-double
+gdouble
 oregano_strtod (const gchar *str, const gchar unit)
 {
-	double ret;
+	gdouble ret;
 	gchar *endptr, *c;
 
 	if (!str)
 		return 0.0;
-
-	ret = g_strtod (str, &endptr);
+	
+	ret = g_ascii_strtod (str, &endptr);
 	for (c = endptr; *c; c++) {
 		switch (*c) {
 		case 'T':

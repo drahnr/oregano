@@ -6,6 +6,8 @@ SUBDIRS = 		\
 	stock		\
 	pixmaps
 
+CFLAGS += -Wall -DG_DISABLE_DEPRECATED
+
 oreganodir = $(datadir)/oregano
 
 INCLUDES = 	\
@@ -81,7 +83,7 @@ oregano_SOURCES = 	\
 	save-schematic.h \
 	schematic-view.c \
 	schematic-view.h \
-	schematic-view-menu.h \
+	schematic-view-ui.h \
 	settings.c \
 	settings.h \
 	sim-settings.c \

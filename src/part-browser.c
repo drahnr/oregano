@@ -32,8 +32,9 @@
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtktreemodel.h>
 #include <glade/glade.h>
-#include <math.h>
 #include <string.h>
+#include <glib/gi18n.h>
+
 #include "main.h"
 #include "load-library.h"
 #include "schematic.h"

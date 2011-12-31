@@ -28,8 +28,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gnome.h>
-#include <math.h>
 #include "xml-compat.h"
 #include "main.h"
 #include "schematic.h"
@@ -44,7 +42,6 @@
 #include "sim-settings.h"
 #include "node-store.h"
 #include "save-schematic.h"
-#include "xml-helper.h"
 
 typedef struct {
 	xmlDocPtr  doc;		 /* Xml document. */
@@ -146,35 +143,36 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 		BAD_CAST (sim_settings_get_dc (s) ? "true" : "false") );
 
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "vsrc1",
-		BAD_CAST sim_settings_get_dc_vsrc(s,0));
+		BAD_CAST sim_settings_get_dc_vsrc(s));
 
-	str = g_strdup_printf ("%g", sim_settings_get_dc_start (s,0));
+	str = g_strdup_printf ("%g", sim_settings_get_dc_start (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "start1", BAD_CAST str);
 	g_free (str);
 
-	str = g_strdup_printf ("%g", sim_settings_get_dc_stop (s,0));
+	str = g_strdup_printf ("%g", sim_settings_get_dc_stop (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "stop1", BAD_CAST str);
 	g_free (str);
 
-	str = g_strdup_printf ("%g", sim_settings_get_dc_step (s,0));
+	str = g_strdup_printf ("%g", sim_settings_get_dc_step (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "step1", BAD_CAST str);
 	g_free (str);
+	
+	/*  Fourier analysis   */
+	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "fourier", NULL);
+	if (!analysis){
+		g_warning ("Failed during save of Fourier analysis settings.\n");
+		return;
+	}
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "enabled",
+		BAD_CAST (sim_settings_get_fourier (s) ? "true" : "false") );
 
-	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "vsrc2",
-		BAD_CAST sim_settings_get_dc_vsrc(s,1));
-
-	str = g_strdup_printf ("%g", sim_settings_get_dc_start (s,1));
-	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "start2", BAD_CAST str);
+	str = g_strdup_printf ("%d", sim_settings_get_fourier_frequency (s));
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "freq", BAD_CAST str);
 	g_free (str);
-
-	str = g_strdup_printf ("%g", sim_settings_get_dc_stop (s,1));
-	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "stop2", BAD_CAST str);
+	
+	str = g_strdup_printf ("%s", sim_settings_get_fourier_vout (s));
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "vout", BAD_CAST str);
 	g_free (str);
-
-	str = g_strdup_printf ("%g", sim_settings_get_dc_step (s,1));
-	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "step2", BAD_CAST str);
-	g_free (str);
-
 
 	/* Save the options */
 	list = sim_settings_get_options (s);
@@ -536,11 +534,11 @@ schematic_write_xml (Schematic *sm, GError **error)
 	 */
 	xmlSetDocCompressMode (xml, oregano.compress_files ? 9 : 0);
 
-	/* FIXME: check for != NULL. */
 	{
 		char *s =schematic_get_filename (sm);
+		int val = 0;
 		if (s != NULL) {
-			xmlIndentTreeOutput;
+			val = xmlIndentTreeOutput;
 			ret = xmlSaveFormatFile (s, xml, 1);
 		} else {
 			g_warning("Schematic has no filename!!\n");

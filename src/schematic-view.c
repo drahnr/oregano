@@ -28,12 +28,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <math.h>
 #include <string.h>
+#include <math.h>
 #include <unistd.h>
 #include <glade/glade.h>
 #include <gtk/gtk.h>
-#include <libgnomeui/gnome-app.h>
 #include <libbonobo-2.0/libbonobo.h>
 #include <sys/time.h>
 #include <cairo/cairo-features.h>
@@ -46,7 +45,6 @@
 #include "main.h"
 #include "load-schematic.h"
 #include "load-common.h"
-#include "netlist.h"
 #include "dialogs.h"
 #include "cursors.h"
 #include "save-schematic.h"
@@ -61,16 +59,12 @@
 #include "errors.h"
 #include "node-item.h"
 #include "engine.h"
+#include "netlist-editor.h"
+#include "netlist-helper.h"
+#include "textbox-item.h"
 
 /* remove: */
 #include "create-wire.h"
-
-/*
- * Pixmaps.
- */
-#include "pixmaps/plot.xpm"
-#include "pixmaps/log.xpm"
-#include "pixmaps/menu_zoom.xpm"
 
 /*
  * Mini-icon for IceWM, KWM, tasklist etc.
@@ -159,6 +153,7 @@ static void dot_removed_callback (Schematic *schematic, SheetPos *pos, Schematic
 static GList *schematic_view_list = NULL;
 GdkBitmap *stipple;
 char stipple_pattern [] = { 0x02, 0x01 };
+
 extern GnomeCanvasClass *sheet_parent_class; /*			FIXME: Remove later. */
 
 /*
@@ -166,12 +161,12 @@ extern GnomeCanvasClass *sheet_parent_class; /*			FIXME: Remove later. */
  */
 static void title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv);
 static void set_focus (GtkWindow *window, GtkWidget *focus, SchematicView *sv);
-static int delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv);
+static int  delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv);
 static void item_destroy_callback (SheetItem *item, SchematicView *sv);
-static int sheet_event_callback (GtkWidget *widget, GdkEvent *event, SchematicView *sv);
+static int  sheet_event_callback (GtkWidget *widget, GdkEvent *event, SchematicView *sv);
 static void data_received (GtkWidget *widget, GdkDragContext *context,
-	gint x, gint y, GtkSelectionData *selection_data, guint info,
-	guint32 time, SchematicView *sv);
+				gint x, gint y, GtkSelectionData *selection_data, guint info,
+				guint32 time, SchematicView *sv);
 
 static void	item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *sv);
 static void	item_selection_changed_callback (SheetItem *item, gboolean selected, SchematicView *sv);
@@ -180,17 +175,15 @@ static void	reset_tool_cb (Sheet *sheet, SchematicView *sv);
 /*
  * Misc.
  */
-static int can_close (SchematicView *sv);
-static void setup_dnd (SchematicView *sv);
-static int rubberband_timeout_cb (SchematicView *sv);
-static void stop_rubberband (SchematicView *sv, GdkEventButton *event);
-static void setup_rubberband (SchematicView *sv, GdkEventButton *event);
-static void set_tool (SchematicView *sv, SchematicTool tool);
+static int 		can_close (SchematicView *sv);
+static void 	setup_dnd (SchematicView *sv);
+static int 		rubberband_timeout_cb (SchematicView *sv);
+static void 	stop_rubberband (SchematicView *sv, GdkEventButton *event);
+static void 	setup_rubberband (SchematicView *sv, GdkEventButton *event);
+static void 	set_tool (SchematicView *sv, SchematicTool tool);
 
-static int dot_equal (gconstpointer a, gconstpointer b);
-static guint dot_hash (gconstpointer key);
-
-static void schematic_view_show_voltmeters (SchematicView *sv, gboolean show);
+static int 		dot_equal (gconstpointer a, gconstpointer b);
+static guint 	dot_hash (gconstpointer key);
 
 static void
 new_cmd (GtkWidget *widget, Schematic *sv)
@@ -219,20 +212,18 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	s = schematic_view_get_schematic (sv);
 
 	if (!g_file_test (OREGANO_GLADEDIR "/properties.glade", G_FILE_TEST_EXISTS)) {
-			gchar *msg;
-			msg = g_strdup_printf (
-					_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-					OREGANO_GLADEDIR "/properties.glade");
+		gchar *msg;
+		msg = g_strdup_printf (
+		    _("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+			OREGANO_GLADEDIR "/properties.glade");
 
-			oregano_error_with_title (_("Could not create properties dialog"), msg);
-			g_free (msg);
-			return;
+		oregano_error_with_title (_("Could not create properties dialog"), msg);
+		g_free (msg);
+		return;
 	}
 
 	xml = glade_xml_new (
-			OREGANO_GLADEDIR "/properties.glade",
-			"properties", NULL
-	);
+		OREGANO_GLADEDIR "/properties.glade", "properties", NULL);
 
 	win = glade_xml_get_widget (xml, "properties");
 	title = GTK_ENTRY (glade_xml_get_widget (xml, "title"));
@@ -245,29 +236,29 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	s_comments = schematic_get_comments (s);
 	
 	if (s_title)
-			gtk_entry_set_text (title, s_title);
+		gtk_entry_set_text (title, s_title);
 	if (s_author)
-			gtk_entry_set_text (author, s_author);
+		gtk_entry_set_text (author, s_author);
 	if (s_comments)
-			gtk_text_buffer_set_text (buffer, s_comments, strlen(s_comments));
+		gtk_text_buffer_set_text (buffer, s_comments, strlen(s_comments));
 
 	btn = gtk_dialog_run (GTK_DIALOG (win));
 
 	if (btn == GTK_RESPONSE_OK) {
-			GtkTextIter start, end;
+		GtkTextIter start, end;
 
-			gtk_text_buffer_get_start_iter (buffer, &start);
-			gtk_text_buffer_get_end_iter (buffer, &end);
+		gtk_text_buffer_get_start_iter (buffer, &start);
+		gtk_text_buffer_get_end_iter (buffer, &end);
 
-			s_title = (gchar *) gtk_entry_get_text (title);
-			s_author = (gchar *) gtk_entry_get_text (author);
-			s_comments = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
+		s_title = (gchar *) gtk_entry_get_text (title);
+		s_author = (gchar *) gtk_entry_get_text (author);
+		s_comments = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
 
-			schematic_set_title (s, s_title);
-			schematic_set_author (s, s_author);
-			schematic_set_comments (s, s_comments);
+		schematic_set_title (s, s_title);
+		schematic_set_author (s, s_author);
+		schematic_set_comments (s, s_comments);
 
-			g_free (s_comments);
+		g_free (s_comments);
 	}
 
 	gtk_widget_destroy (win);
@@ -287,11 +278,11 @@ find_file (GtkButton *btn, GtkEntry *text)
 			NULL);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-			char *filename;
+		char *filename;
 
-			filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-			gtk_entry_set_text (text, filename);
-			g_free (filename);
+		filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		gtk_entry_set_text (text, filename);
+		g_free (filename);
 	}
 
 	gtk_widget_destroy (dialog);
@@ -303,24 +294,24 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	Schematic *s;
 	GladeXML *xml;
 	GtkWidget *win;
+	GtkWidget* warning;
 	GtkWidget *w;
 	GtkEntry *file = NULL;
 	GtkComboBox *combo;
 	gint btn = GTK_RESPONSE_NONE;
 	gint formats[5], fc;
-	GtkSpinButton *spinw, *spinh;
 
 	s = schematic_view_get_schematic (sv);
 			
 	if (!g_file_test (OREGANO_GLADEDIR "/export.glade", G_FILE_TEST_EXISTS)) {
-			gchar *msg;
-			msg = g_strdup_printf (
+		gchar *msg;
+		msg = g_strdup_printf (
 					_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
 					OREGANO_GLADEDIR "/export.glade");
 
-			oregano_error_with_title (_("Could not create properties dialog"), msg);
-			g_free (msg);
-			return;
+		oregano_error_with_title (_("Could not create properties dialog"), msg);
+		g_free (msg);
+		return;
 	}
 
 	xml = glade_xml_new (OREGANO_GLADEDIR "/export.glade", "export", NULL);
@@ -354,9 +345,29 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 
 	gtk_combo_box_set_active (combo, 0);
 
-		btn = gtk_dialog_run (GTK_DIALOG (win));
+	btn = gtk_dialog_run (GTK_DIALOG (win));
 	
-		if  (btn == GTK_RESPONSE_OK) {
+	if (btn == GTK_RESPONSE_OK) {
+		
+	    if (g_path_skip_root (gtk_entry_get_text(file)) == NULL) {	
+
+			warning = gtk_message_dialog_new_with_markup (
+					NULL,
+					GTK_DIALOG_MODAL,
+					GTK_MESSAGE_WARNING,
+					GTK_BUTTONS_OK, 
+					_("<span weight=\"bold\" size=\"large\">No filename has been chosen</span>\n\n"
+					"Please, click on the tag, beside, to select an output.")); 
+
+			if (gtk_dialog_run (GTK_DIALOG (warning)) == GTK_RESPONSE_OK)  {
+				gtk_widget_destroy (GTK_WIDGET (warning));
+				export_cmd (widget, sv);
+				gtk_widget_destroy (GTK_WIDGET (win));
+				return;
+			}
+		}
+		else  {
+			 
 			int bg = 0;
 			GtkSpinButton *spinw, *spinh;
 			int color_scheme = 0;
@@ -364,26 +375,22 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 			int i = gtk_combo_box_get_active (combo);
 
 			w = glade_xml_get_widget (xml, "bgwhite");
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
-					bg = 1;
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 1;
 			w = glade_xml_get_widget (xml, "bgblack");
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
-					bg = 2;
-
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 2;
 			w = glade_xml_get_widget (xml, "color");
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
-					color_scheme = 1;
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) color_scheme = 1;
 
 			spinw = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_width"));
 			spinh = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_height"));
-
 			schematic_export (s,
-					gtk_entry_get_text (file),
-					gtk_spin_button_get_value_as_int (spinw),
-					gtk_spin_button_get_value_as_int (spinh),
-					bg,
-					color_scheme,
-					formats[i]);
+				gtk_entry_get_text (file),
+				gtk_spin_button_get_value_as_int (spinw),
+				gtk_spin_button_get_value_as_int (spinh),
+				bg,
+				color_scheme,
+				formats[i]);
+		}
 	}
 
 	gtk_widget_destroy (win);
@@ -402,7 +409,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *new_sm;
 	SchematicView *new_sv;
-	char *fname, *uri;
+	char *fname, *uri = NULL;
 	GList *list;
 	GError *error = NULL;
 
@@ -425,7 +432,6 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 			gtk_main_iteration();
 
 	new_sm = schematic_read(fname, &error);
-
 	if (error != NULL) {
 			oregano_error_with_title (_("Could not load file"), error->message);
 			g_error_free (error);
@@ -433,9 +439,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 
 	if (new_sm) {
 		GtkRecentManager *manager;
-		const gchar *mime;
 		gchar *uri;
-		GtkRecentInfo *item;
 		
 		manager = gtk_recent_manager_get_default ();
 		uri = g_strdup_printf ("file://%s", fname);
@@ -465,7 +469,7 @@ oregano_recent_open (GtkRecentChooser *chooser,
     GtkRecentInfo *item;
 	GtkRecentManager *manager;
 	Schematic *new_sm;
-	SchematicView *new_sv;
+	SchematicView *new_sv = NULL;
 	GError *error = NULL;
 
 	uri = gtk_recent_chooser_get_current_uri (GTK_RECENT_CHOOSER (chooser));
@@ -511,7 +515,6 @@ create_recent_chooser_menu (GtkRecentManager *manager)
 {
 	GtkWidget *menu;
 	GtkRecentFilter *filter;
-	GtkWidget *menuitem;
 
 	menu = gtk_recent_chooser_menu_new_for_manager (manager);
 
@@ -523,6 +526,7 @@ create_recent_chooser_menu (GtkRecentManager *manager)
 	
 	filter = gtk_recent_filter_new ();
 	gtk_recent_filter_add_mime_type (filter, "application/x-oregano");
+	gtk_recent_filter_add_application (filter, g_get_application_name());
 	gtk_recent_chooser_add_filter (GTK_RECENT_CHOOSER (menu), filter);
 	gtk_recent_chooser_set_filter (GTK_RECENT_CHOOSER (menu), filter);
 	gtk_recent_chooser_set_local_only (GTK_RECENT_CHOOSER (menu), TRUE);
@@ -755,15 +759,35 @@ log_cmd (GtkWidget *widget, SchematicView *sv)
 static void
 show_label_cmd (GtkToggleAction *toggle, SchematicView *sv)
 {
-	gboolean b;
+	gboolean show;
 	GList *item;
+	Schematic *sm;	
+	Netlist netlist;
+	GError *error = 0;
 
-	b = gtk_toggle_action_get_active (toggle);
+	show = gtk_toggle_action_get_active (toggle);
 
-	for (item = sv->priv->items; item; item=item->next) {
-			if (IS_PART_ITEM(item->data))
-					part_item_show_node_labels (PART_ITEM (item->data), b);
+	/* Use of netlist_helper_create */
+	sm = sv->priv->schematic;
+	netlist_helper_create (sm, &netlist, &error);
+	if (error != NULL) {
+		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
+			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
+			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+					oregano_error_with_title (_("Could not create a netlist"), error->message);
+					g_clear_error (&error);
+		} else 	oregano_error (_("An unexpected error has occurred"));
+		g_clear_error (&error);
+		return;
 	}
+	
+	for (item = sv->priv->items; item; item=item->next) {
+		if (IS_PART_ITEM(item->data))
+			if (part_get_num_pins(PART(sheet_item_get_data(SHEET_ITEM(item->data))))==1)
+				part_item_show_node_labels (PART_ITEM (item->data), show);
+	}
+	
+	schematic_view_update_parts (sv);	
 }
 
 static void
@@ -816,13 +840,12 @@ v_clamp_cmd (SchematicView *sv)
 	/* Find default lib */
 	for(lib=oregano.libraries; lib; lib=lib->next) {
 			l = (Library *)(lib->data);
-			if (!g_strcasecmp(l->name, "Default")) break;
+			if (!g_ascii_strcasecmp(l->name, "Default")) break;
 	}
 
 	library_part = library_get_part (l, "Test Clamp");
-
+	
 	part = part_new_from_library_part (library_part);
-
 	if (!part) {
 			g_warning ("Clamp not found!");
 			return;
@@ -832,9 +855,9 @@ v_clamp_cmd (SchematicView *sv)
 	item_data_set_property (ITEM_DATA (part), "type", "v");
 
 	schematic_view_select_all(sv, FALSE);
+	/* New */
 	schematic_view_clear_ghosts(sv);
 	schematic_view_add_ghost_item(sv, ITEM_DATA(part));
-
 	part_item_signal_connect_floating_group (sheet, sv);
 }
 
@@ -873,14 +896,10 @@ grid_toggle_snap_cmd (GtkToggleAction *action, SchematicView *sv)
 }
 
 static void
-voltmeter_cmd (GtkWidget *widget, SchematicView *sv)
+smartsearch_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	sv->priv->show_voltmeters = !sv->priv->show_voltmeters;
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget),
-			sv->priv->show_voltmeters);
-
-	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);
+	// Perform a research of a part within all librarys
+	g_print ("TODO: search_smart ()\n");
 }
 
 static void
@@ -909,13 +928,11 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 	
 	if (error != NULL) {
 			if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				 g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				 g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
+				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 						oregano_error_with_title (_("Could not create a netlist"), error->message);
 						g_clear_error (&error);
-			} 
-			else 	oregano_error (_("An unexpected error has occurred"));
-			
+			} else 	oregano_error (_("An unexpected error has occurred"));
 			return;
 	}
 }
@@ -1031,9 +1048,7 @@ schematic_view_class_init (SchematicViewClass *klass)
 	GObjectClass *object_class;
 
 	object_class = G_OBJECT_CLASS(klass);
-
 	parent_class = g_type_class_peek_parent(klass);
-
 	schematic_view_signals[CHANGED] =
 			g_signal_new ("changed",
 					G_TYPE_FROM_CLASS (object_class),
@@ -1046,7 +1061,6 @@ schematic_view_class_init (SchematicViewClass *klass)
 
 	object_class->finalize = schematic_view_finalize;
 	object_class->dispose = schematic_view_dispose;
-
 	stipple = gdk_bitmap_create_from_data(NULL, stipple_pattern, 2, 2);
 }
 
@@ -1155,16 +1169,15 @@ dot_added_callback (Schematic *schematic, SheetPos *pos, SchematicView *sv)
 	node_item = g_hash_table_lookup (sv->priv->dots, pos);
 	if (node_item == NULL) {
 			node_item = NODE_ITEM (
-					gnome_canvas_item_new (
-							gnome_canvas_root (GNOME_CANVAS (sv->priv->sheet)),
-							node_item_get_type (),
-							"x", pos->x,
-							"y", pos->y,
-							NULL));
+				gnome_canvas_item_new (
+					gnome_canvas_root (GNOME_CANVAS (sv->priv->sheet)),
+						node_item_get_type (),
+						"x", pos->x,
+						"y", pos->y,
+						NULL));
 	} 
 
 	node_item_show_dot (node_item, TRUE);
-
 	key = g_new0 (SheetPos, 1);
 	key->x = pos->x;
 	key->y = pos->y;
@@ -1414,6 +1427,10 @@ item_destroy_callback (SheetItem *item, SchematicView *sv)
 	/*		FIXME: optimize by checking if the item is selected first. */
 	sheet->priv->selected_objects = g_list_remove (sheet->priv->selected_objects, item);
 	sheet->priv->floating_objects = g_list_remove (sheet->priv->floating_objects, item);
+
+	/* FIXME: remove dot if item is a clamp */
+	//part_item_update_node_label (PART_ITEM (item));
+	//part_item_show_node_labels (PART_ITEM (item), TRUE);
 }
 
 static void
@@ -1548,7 +1565,7 @@ can_close (SchematicView *sv)
 	text = g_strdup_printf (
 			_("<span weight=\"bold\" size=\"large\">Save changes to schematic %s before closing?</span>\n\n"
 					"If you don't save, all changes since you last saved will be permanently lost."),
-					filename ?	g_basename (filename) : NULL );
+					filename ?	g_path_get_basename (filename) : NULL );
 
 	dialog = gtk_message_dialog_new_with_markup (
 			NULL,
@@ -1668,12 +1685,14 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 			 * If we are in the middle of something else, don't interfere
 			 * with that.
 			 */
-			if (sheet->state != SHEET_STATE_NONE)
+			if (sheet->state != SHEET_STATE_NONE) {
 					return FALSE;
+			}
 
 			if ((* GTK_WIDGET_CLASS
-					(sheet_parent_class)->button_press_event) (widget, (GdkEventButton *) event))
+					(sheet_parent_class)->button_press_event) (widget, (GdkEventButton *) event)) {
 					return TRUE;
+			}
 
 			if (event->button.button == 3) {
 					run_context_menu (sv, (GdkEventButton *) event);
@@ -1825,13 +1844,13 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 					part_browser_dnd (selection_data, x, y);
 			break;
 			case DRAG_URI_INFO:
-					files = g_strsplit (selection_data->data, "\n", -1);
+					files = g_strsplit ((gchar *)selection_data->data, "\n", -1);
 					if (files) {
 							int i=0;
 							while (files[i]) {
 									Schematic *new_sm = NULL;
 									int l = strlen(files[i]);
-									/* Algo queda mal al final luego del split, agrego un \0 */
+									/* Algo remains bad after the split: we agregate back into one \0 */
 									files[i][l-1] = '\0';
 
 									if (l <= 0) {
@@ -1996,7 +2015,6 @@ rubberband_timeout_cb (SchematicView *sv)
 			y1 = sv->priv->rubberband->start_y;
 			y2 = y;
 	}
-
 
 	p1.x = x1;
 	p1.y = y1;
@@ -2597,7 +2615,7 @@ schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 					g_hash_table_insert (sv->priv->voltmeter_nodes, tmp,
 							"there");
 
-					text = g_strdup_printf ("%.3f",			value);
+					text = g_strdup_printf ("%.3f",	value);
 
 					group = gnome_canvas_item_new (
 							gnome_canvas_root (
@@ -2639,8 +2657,6 @@ schematic_view_show_op_values (SchematicView *sv, OreganoEngine *engine)
 	}
 
 	g_list_free (nodes);
-
-	schematic_view_show_voltmeters (sv, sv->priv->show_voltmeters);
 }
 
 void
@@ -2664,23 +2680,6 @@ schematic_view_clear_op_values (SchematicView *sv)
 			g_str_equal, g_free, NULL);
 }
 
-static void
-schematic_view_show_voltmeters (SchematicView *sv, gboolean show)
-{
-	GList *list;
-
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	for (list = sv->priv->voltmeter_items; list; list = list->next) {
-			if (show)
-					gnome_canvas_item_show (
-							GNOME_CANVAS_ITEM (list->data));
-			else
-					gnome_canvas_item_hide (
-							GNOME_CANVAS_ITEM (list->data));
-	}
-}
 
 void
 schematic_view_update_parts (SchematicView *sv)
@@ -2695,4 +2694,3 @@ schematic_view_update_parts (SchematicView *sv)
 					part_item_update_node_label (PART_ITEM (list->data));
 	}
 }
-

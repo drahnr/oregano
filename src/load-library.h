@@ -30,7 +30,7 @@
 #ifndef __LOAD_LIBRARY_H
 #define __LOAD_LIBRARY_H
 
-#include <gnome.h>
+#include <gtk/gtk.h>
 #include "sheet.h"
 
 typedef struct _SymbolObject SymbolObject;

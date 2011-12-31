@@ -30,7 +30,6 @@
 #include <glib.h>
 #include "main.h"
 #include "sheet-item.h"
-#include "item-data.h"
 #include "clipboard.h"
 
 struct _ClipboardData {
@@ -91,10 +90,8 @@ clipboard_add_object (GObject *item)
 
 	g_return_if_fail (item != NULL);
 
-	/* TODO: FIX sheet global access */
-	g_return_if_fail (IS_SHEET_ITEM (item));
-
 	item_data = sheet_item_get_data (SHEET_ITEM (item));
+	g_return_if_fail (item_data != NULL);
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (item_data));
 	if (id_class->clone == NULL)
@@ -127,4 +124,3 @@ clipboard_data_get_item_class (ClipboardData *data)
 
 	return G_OBJECT_CLASS (data->item_class);
 }
-

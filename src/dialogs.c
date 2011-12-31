@@ -24,13 +24,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <gnome.h>
+#include <gtk/gtk.h>
 #include "dialogs.h"
 #include "main.h"
 
 #include "pixmaps/logo.xpm"
 
-static void about_destroy_event (void);
 static GtkWidget *about = NULL;
 
 void
@@ -43,8 +42,6 @@ void
 oregano_error_with_title (gchar *title, gchar *desc)
 {
 	GtkWidget *dialog;
-	gint result;
-
 	GString* span_msg;
 
 	span_msg = g_string_new("<span weight=\"bold\" size=\"large\">");
@@ -65,7 +62,7 @@ oregano_error_with_title (gchar *title, gchar *desc)
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free(span_msg, TRUE);
 	gtk_widget_destroy (dialog);
@@ -82,8 +79,6 @@ void
 oregano_warning_with_title (gchar *title, gchar *desc)
 {
 	GtkWidget *dialog;
-	gint result;
-
 	GString* span_msg;
 
 	span_msg = g_string_new("<span weight=\"bold\" size=\"large\">");
@@ -104,11 +99,12 @@ oregano_warning_with_title (gchar *title, gchar *desc)
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free(span_msg, TRUE);
 	gtk_widget_destroy (dialog);
 }
+
 gint
 oregano_question (gchar *msg)
 {
@@ -157,7 +153,7 @@ dialog_about (void)
 		NULL
 	};
 
-	const gchar *copy = _("(c) 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
+	const gchar *copy = _("(c) 2009 Marc Lorber 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
 
 	/* Allow only one about box at a time. */
 	if (about){
@@ -166,7 +162,6 @@ dialog_about (void)
 	}
 
 	logo = gdk_pixbuf_new_from_xpm_data ((const char **) logo_xpm);
-
 	about = gtk_about_dialog_new ();
 	gtk_about_dialog_set_name (GTK_ABOUT_DIALOG (about), "Oregano");
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (about), VERSION);
@@ -179,5 +174,4 @@ dialog_about (void)
 	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);
 	gtk_dialog_run (GTK_DIALOG (about));
 	gtk_widget_destroy (about);
-	
 }

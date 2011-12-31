@@ -1,5 +1,5 @@
 /*
- * schematic-view.c
+ * schematic-view-menu.h
  *
  *
  * Authors:
@@ -43,7 +43,7 @@ static GtkActionEntry entries[] = {
 	{"DisplayRecentFiles", NULL, N_("_Recent Files"), NULL, NULL, NULL}, //G_CALLBACK (display_recent_files)},
 	{"Save", GTK_STOCK_SAVE, N_("_Save"), "<control>S", N_("Save a schematic"), G_CALLBACK (save_cmd)},
 	{"SaveAs", GTK_STOCK_SAVE_AS, N_("Save _As..."), "<control><shift>S", N_("Save a schematic with other name"), G_CALLBACK (save_as_cmd)},
-	{"PageProperties", NULL, N_("Page Properties"), NULL, N_("Set print properties"), G_CALLBACK (page_properties_cmd)},
+	{"PrintProperties", NULL, N_("Print Properties"), NULL, N_("Set print properties"), G_CALLBACK (page_properties_cmd)},
 	{"Print", GTK_STOCK_PRINT, N_("_Print"), NULL, N_("Print schematic"), G_CALLBACK (print_cmd)},
 	{"PrintPreview", GTK_STOCK_PRINT_PREVIEW, N_("Print Preview"), NULL, N_("Preview the schematic before printing"), G_CALLBACK (print_preview_cmd)},
 	{"SchematicProperties", NULL, N_("Schematic Pr_operties..."), NULL, N_("Modify the schematic's properties"), G_CALLBACK (properties_cmd)},
@@ -64,9 +64,11 @@ static GtkActionEntry entries[] = {
 	{"Settings", NULL, N_("_Preferences"), NULL, N_("Edit Oregano settings"), G_CALLBACK (settings_show)},
 	{"Simulate", GTK_STOCK_EXECUTE, N_("_Simulate"), "F5",  N_("Run a simulation"), G_CALLBACK (simulate_cmd)},
 	{"Netlist", NULL, N_("_Generate netlist"), NULL, N_("Generate a netlist"), G_CALLBACK (netlist_cmd)},
+	{"SmartSearch", NULL, N_("Smart Search"), NULL, N_("Search a part within all the librarys"), G_CALLBACK (smartsearch_cmd)},
 	{"Log", NULL, N_("_Log"), NULL, N_("View the latest simulation log"), G_CALLBACK (log_cmd)},
 	{"NetlistView", NULL, N_("N_etlist"), NULL, N_("View the circuit netlist"), G_CALLBACK (netlist_view_cmd)},
 	{"About", GTK_STOCK_HELP, N_("_About"), NULL, N_("About Oregano"), G_CALLBACK (about_cmd)},
+	{"UserManual", NULL, N_("User's Manual"), NULL, N_("Oregano User's Manual"), G_CALLBACK (show_help)},
 	{"ZoomIn", GTK_STOCK_ZOOM_IN, N_("Zoom _In"), NULL, N_("Zoom in"), G_CALLBACK (zoom_in_cmd)},
 	{"ZoomOut", GTK_STOCK_ZOOM_OUT, N_("Zoom _Out"), NULL, N_("Zoom out"), G_CALLBACK (zoom_out_cmd)},
 };
@@ -102,7 +104,7 @@ static const char *ui_description =
 "      <menuitem action='Save'/>"
 "      <menuitem action='SaveAs'/>"
 "      <separator/>"
-"      <menuitem action='PageProperties'/>"
+"      <menuitem action='PrintProperties'/>"
 "      <menuitem action='Print'/>"
 "      <menuitem action='PrintPreview'/>"
 "      <separator/>"
@@ -134,6 +136,8 @@ static const char *ui_description =
 "      <menuitem action='Simulate'/>"
 "      <separator/>"
 "      <menuitem action='Netlist'/>"
+"      <separator/>"
+"	   <menuitem action='SmartSearch'/>"
 "    </menu>"
 "    <menu action='MenuView'>"
 "      <menu action='MenuZoom'>"
@@ -149,6 +153,7 @@ static const char *ui_description =
 "      <menuitem action='NetlistView'/>"
 "    </menu>"
 "    <menu action='MenuHelp'>"
+"      <menuitem action='UserManual'/>"
 "      <menuitem action='About'/>"
 "    </menu>"
 "  </menubar>"

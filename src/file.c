@@ -27,8 +27,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <gnome.h>
 #include <string.h>
+#include <glib/gi18n.h>
 #include "file.h"
 #include "schematic.h"
 #include "schematic-view.h"
@@ -119,7 +119,7 @@ dialog_save_as (SchematicView *sv)
 			sm = schematic_view_get_schematic (sv);
 
 			schematic_set_filename (sm, tmp);
-			// schematic_set_title (sm, (gchar *) g_basename (tmp));
+			// schematic_set_title (sm, (gchar *) g_path_get_basename (tmp));
 
 			if (!schematic_save_file (sm, &error)){
 				char *msg = g_strdup_printf (

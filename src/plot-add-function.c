@@ -29,20 +29,22 @@
 
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include <glib/gi18n.h>
 
 #include "plot-add-function.h"
+#include "dialogs.h"
 
-int plot_add_function_show (OreganoEngine *engine, SimulationData *current)
+void
+plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 {
 	GladeXML *gui;
-	GtkDialog *dialog, * warning;
+	GtkDialog *dialog;
+	GtkWidget* warning;
 	gchar *msg;
 	GtkComboBox *op1, *op2, *functiontype;
 	GtkListStore *model1, *model2;
-	GList *analysis = NULL;
 	int i;
 	gint result = 0;
-	GError *gerror = NULL;
 	
 	SimulationFunction *func = g_new0 (SimulationFunction, 1);
 
@@ -53,13 +55,13 @@ int plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 			OREGANO_GLADEDIR "/plot-add-function.glade");
 		oregano_error_with_title (_("Could not create plot window"), msg);
 		g_free (msg);
-		return 0;
+		return;
 	}
 
 	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-add-function.glade", NULL, NULL);
 	if (!gui) {
 		oregano_error (_("Could not create plot window"));
-		return 0;
+		return;
 	}
 
 	dialog = GTK_DIALOG (glade_xml_get_widget (gui, "toplevel"));
@@ -91,36 +93,36 @@ int plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	       		 ((gtk_combo_box_get_active (op1) == -1) ||
 			      (gtk_combo_box_get_active (op2) == -1) ||
 			      (gtk_combo_box_get_active (functiontype) == -1))) 
-	{
-						warning = gtk_message_dialog_new_with_markup (
-											NULL,
-											GTK_DIALOG_MODAL,
-											GTK_MESSAGE_WARNING,
-											GTK_BUTTONS_OK, 
-											("<span weight=\"bold\" size=\"large\">Neither function, nor operators have been chosen</span>\n\n"
-											"Please, take care to choose a function and their associated operators"));
+	{	
+		warning = gtk_message_dialog_new_with_markup (
+					NULL,
+					GTK_DIALOG_MODAL,
+					GTK_MESSAGE_WARNING,
+					GTK_BUTTONS_OK, 
+					_("<span weight=\"bold\" size=\"large\">Neither function, nor operators have been chosen</span>\n\n"
+					"Please, take care to choose a function and their associated operators")); 
 
-						if (gtk_dialog_run (GTK_DIALOG (warning)) == GTK_RESPONSE_OK)  {
-									gtk_widget_destroy (GTK_WIDGET (warning));
-									plot_add_function_show (engine, current);
-									gtk_widget_destroy (GTK_WIDGET (dialog));
-									return;
-						}
+		if (gtk_dialog_run (GTK_DIALOG (warning)) == GTK_RESPONSE_OK)  {
+			gtk_widget_destroy (GTK_WIDGET (warning));
+			plot_add_function_show (engine, current);
+			gtk_widget_destroy (GTK_WIDGET (dialog));
+			return;
 		}
-		if  ((result == GTK_RESPONSE_OK) &&
+	}
+
+	if  ((result == GTK_RESPONSE_OK) &&
 	       		 ((gtk_combo_box_get_active (op1) != -1) &&
 			      (gtk_combo_box_get_active (op2) != -1) &&
 			      (gtk_combo_box_get_active (functiontype) != -1))) {
 	
-			for (i = 1; i < current->n_variables; i++) {
-				if (strcmp (current->var_names[i], gtk_combo_box_get_active_text (op1)) == 0)
-					func->first = i;
-				if (strcmp (current->var_names[i], gtk_combo_box_get_active_text (op2)) == 0)
-					func->second = i;
+		for (i = 1; i < current->n_variables; i++) {
+			if (g_strcmp0 (current->var_names[i], gtk_combo_box_get_active_text (op1)) == 0)
+				func->first = i;
+			if (g_strcmp0 (current->var_names[i], gtk_combo_box_get_active_text (op2)) == 0)
+				func->second = i;
 			}
 		current->functions = g_list_append (current->functions, func);
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
-

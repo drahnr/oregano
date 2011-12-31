@@ -30,9 +30,7 @@
 
 #include "simulation.h"
 #include "engine.h"
-#include "dialogs.h"
 
-int plot_add_function_show (OreganoEngine *engine, SimulationData *current);
+void plot_add_function_show (OreganoEngine *engine, SimulationData *current);
 
 #endif
-

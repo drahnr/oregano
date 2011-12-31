@@ -30,7 +30,6 @@
 #ifndef __DIALOGS_H
 #define __DIALOGS_H
 
-#include <libgnome/gnome-i18n.h>
 #include "schematic.h"
 
 void oregano_error (gchar *msg);

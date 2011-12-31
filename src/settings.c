@@ -48,6 +48,7 @@ engine[] = {
 	"gnucap",
 	"ngspice"
 };
+
 typedef struct {
 	Schematic *sm;
 	GtkWidget *pbox; /* Property box */
@@ -62,6 +63,7 @@ typedef struct {
 
 GtkWidget *engine_path;	
 GtkWidget *button[2];
+
 static void
 change_modeldir_cb (GtkFileChooser *chooser, gpointer        user_data)
 {
@@ -83,11 +85,9 @@ change_engine_path_cb (GtkFileChooser *chooser,
                        gpointer        user_data)
 {
 	gchar *engine_path;
-	gboolean has_changed = FALSE;
 	Settings *s;
 	s = SETTINGS (user_data);
 	
-	int engine_id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
 	engine_path = gtk_file_chooser_get_filename (chooser);
 }
 
@@ -105,7 +105,7 @@ apply_callback (GtkWidget *w, Settings *s)
 	s->pbox = NULL;
 }
 
-static gboolean
+static void
 delete_event_callback (GtkWidget *w, GdkEvent *event, Settings *s)
 {
     apply_callback(w, s);
@@ -153,15 +153,10 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	gint i;
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
-	GtkWidget *w0;
+	GtkWidget *w0 = NULL;
 	GladeXML *gui = NULL;
 	Settings *s;
 	Schematic *sm;
-	int engine_id = oregano.engine;
-	
-	gchar *fname, *library_dir, *model_dir;
-	struct dirent *libentry;
-	Library *library;
 
 	g_return_if_fail (sv != NULL);
 
@@ -213,7 +208,6 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	s->w_compress_files = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w),
 								  oregano.compress_files);
-
 	w = glade_xml_get_widget (gui, "log-enable");
 	s->w_show_log = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_log);
@@ -222,16 +216,13 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_set_sensitive (w, FALSE);
 	w = glade_xml_get_widget (gui, "realtime-enable");
 	gtk_widget_set_sensitive (w, FALSE);
-
 	
 	w = glade_xml_get_widget (gui, "engine_table");
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
-		OreganoEngine *engine;
-
 		if (engine_group)
-			button[i] = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engines[i]);
+			button[i] = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engine[i]);
 		else
-			button[i] = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engines[i]);
+			button[i] = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
 
 		/* Check if the engine is available */
 		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
@@ -253,7 +244,6 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 					  G_CALLBACK (change_librarydir_cb), w0);
 
 	/* Models directory */	
-
 	w = glade_xml_get_widget (gui, "model-path-entry");
 	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
 								 GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
@@ -269,6 +259,5 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (engine_path), "file-set",
 					  G_CALLBACK (change_engine_path_cb), s);
 	
-
 	gtk_widget_show_all (toplevel);
 }
