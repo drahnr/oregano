@@ -1,5 +1,5 @@
 /*
- * netlist.h
+ * netlist-helper.h
  *
  *
  * Author:
@@ -11,6 +11,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2010		Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,8 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef __NETLIST_H
-#define __NETLIST_H
+#ifndef __NETLIST_HELPER_H
+#define __NETLIST_HELPER_H
 
 #include <glib.h>
 #include "schematic.h"
@@ -64,8 +65,10 @@ typedef struct {
 	Node *node;
 } NodeAndNumber;
 
-void  netlist_helper_init_data (NetlistData *data);
-void  netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
-char *netlist_helper_create_analisys_string (NodeStore *store, gboolean do_ac);
+void  		netlist_helper_init_data (NetlistData *data);
+void  		netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
+char 	*	netlist_helper_create_analysis_string (NodeStore *store, 
+    			gboolean do_ac);
+GSList 	*	netlist_helper_get_voltmeters_list (Schematic *sm, GError **error);
 
 #endif

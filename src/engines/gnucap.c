@@ -29,10 +29,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <glib/gi18n.h>
 #include "gnucap.h"
-#include "netlist.h"
+#include "netlist-helper.h"
+#include "dialogs.h"
+#include "engine-internal.h"
 
-// TODO Move analisys data and result to another file
+// TODO Move analysis data and result to another file
 #include "simulation.h"
 
 typedef enum {
@@ -42,12 +45,12 @@ typedef enum {
 	STATE_ABORT
 } ParseDataState;
 
-struct analisys_tag {
+struct analysis_tag {
 	gchar *name;
 	guint len;
 };
 
-static struct analisys_tag analisys_tags[] = {
+static struct analysis_tag analysis_tags[] = {
 	{"#", 1},     /* OP */
 	{"#Time", 5}, /* Transient */
 	{"#DC", 3},   /* DC */
@@ -56,7 +59,7 @@ static struct analisys_tag analisys_tags[] = {
 
 #define IS_THIS_ITEM(str,item)  (!strncmp(str,item.name,item.len))
 #define GNUCAP_TITLE '#'
-#define TAGS_COUNT (sizeof (analisys_tags) / sizeof (struct analisys_tag))
+#define TAGS_COUNT (sizeof (analysis_tags) / sizeof (struct analysis_tag))
 
 /* Parser STATUS */
 struct _OreganoGnuCapPriv {
@@ -75,8 +78,9 @@ struct _OreganoGnuCapPriv {
 	gboolean char_last_newline;
 	guint status;
 	guint buf_count;
-	gchar buf[256]; // FIXME later
 };
+
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
 static void gnucap_class_init (OreganoGnuCapClass *klass);
 static void gnucap_finalize (GObject *object);
@@ -85,6 +89,7 @@ static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoGnuCap *gnucap);
 static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap);
+static gdouble strtofloat (char *s);
 
 static GObjectClass *parent_class = NULL;
 
@@ -150,7 +155,8 @@ gnucap_finalize (GObject *object)
 		}
 		g_free (data->var_names);
 		g_free (data->var_units);
-		for (i=0; i<data->n_points; i++)
+		//for (i=0; i<data->n_points; i++)
+		for (i=0; i<data->n_variables; i++)
 			g_array_free (data->data[i], TRUE);
 		g_free (data->min_data);
 		g_free (data->max_data);
@@ -208,7 +214,7 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 
 	file = fopen (filename, "w");
 	if (!file) {
-		g_print ("No se pudo crear %s\n", filename);
+		oregano_error (g_strdup_printf ("Creation of %s not possible\n", filename));
 		return;
 	}
 
@@ -250,70 +256,75 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	fputs (output.template->str,file);
 	fputs ("\n*----------------------------------------------\n",file);
 
-	/* Prints Transient Analisis */
+	/* Prints Transient Analysis */
 	if (sim_settings_get_trans (output.settings)) {
-		gchar *tmp_str = netlist_helper_create_analisys_string (output.store, FALSE);
+		gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
 		fprintf(file, ".print tran %s\n", tmp_str);
 		g_free (tmp_str);
 
 		fprintf (file, ".tran %g %g ",
 			sim_settings_get_trans_start(output.settings),
 			sim_settings_get_trans_stop(output.settings));
-			if (!sim_settings_get_trans_step_enable(output.settings))
-				/* FIXME Do something to get the right resolution */
-				fprintf(file,"%g",
-						(sim_settings_get_trans_stop(output.settings)-
-						sim_settings_get_trans_start(output.settings))/100);
-			else
-				fprintf(file,"%g", sim_settings_get_trans_step(output.settings));
+		if (!sim_settings_get_trans_step_enable(output.settings))
+			/* FIXME Do something to get the right resolution */
+			fprintf(file,"%g",
+					(sim_settings_get_trans_stop(output.settings)-
+					sim_settings_get_trans_start(output.settings))/100);
+		else
+			fprintf(file,"%g", sim_settings_get_trans_step(output.settings));
 
 			if (sim_settings_get_trans_init_cond(output.settings)) {
 				fputs(" UIC\n", file);
 			} else {
 				fputs("\n", file);
-			}
+		}
 	}
 
 	/*	Print dc Analysis */
 	if (sim_settings_get_dc (output.settings)) {
-		fprintf(file, ".print dc %s\n", netlist_helper_create_analisys_string (output.store, FALSE));
+		fprintf(file, ".print dc %s\n", netlist_helper_create_analysis_string (output.store, FALSE));
 		fputs(".dc ",file);
 
-		/* GNUCAP don t support nesting so the first or the second */
-		/* Maybe a error message must be show if both are on	   */
-
-		if ( sim_settings_get_dc_vsrc (output.settings,0) ) {
-			fprintf (file,"%s %g %g %g",
-					sim_settings_get_dc_vsrc(output.settings,0),
-					sim_settings_get_dc_start (output.settings,0),
-					sim_settings_get_dc_stop (output.settings,0),
-					sim_settings_get_dc_step (output.settings,0) );
+		/* GNUCAP don't support nesting so the first or the second */
+		/* Maybe an error message must be show if both are on	   */
+		if ( sim_settings_get_dc_vsrc (output.settings) ) {
+			fprintf (file,"%s %g %g %g\n",
+					sim_settings_get_dc_vsrc(output.settings),
+					sim_settings_get_dc_start (output.settings),
+					sim_settings_get_dc_stop (output.settings),
+					sim_settings_get_dc_step (output.settings) );
 		}
-
-		else if ( sim_settings_get_dc_vsrc (output.settings,1) ) {
-			fprintf (file,"%s %g %g %g",
-					sim_settings_get_dc_vsrc(output.settings,1),
-					sim_settings_get_dc_start (output.settings,1),
-					sim_settings_get_dc_stop (output.settings,1),
-					sim_settings_get_dc_step (output.settings,1) );
-		};
-
-		fputc ('\n',file);
 	}
 
 	/* Prints ac Analysis*/
 	if ( sim_settings_get_ac (output.settings) ) {
 		double ac_start, ac_stop, ac_step;
-		/* GNUCAP dont support OCT or DEC */
-		/* Maybe a error message must be show if is set in that way */
+		/* GNUCAP dont support OCT or DEC: Maybe an error message */
+		/* must be shown if the netlist is set in that way.       */
 		ac_start = sim_settings_get_ac_start(output.settings) ;
 		ac_stop = sim_settings_get_ac_stop(output.settings);
 		ac_step = (ac_stop - ac_start) / sim_settings_get_ac_npoints(output.settings);
-		fprintf(file, ".print ac %s\n", netlist_helper_create_analisys_string (output.store, TRUE));
+		fprintf(file, ".print ac %s\n", netlist_helper_create_analysis_string (output.store, TRUE));
 		/* AC format : ac start stop step_size */
 		fprintf (file, ".ac %g %g %g\n", ac_start, ac_stop, ac_step);
 	}
 
+	/* Prints analysis using a Fourier transform*/
+	if (sim_settings_get_fourier (output.settings)) {
+		/*gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
+		fprintf (file, ".four %d %s\n",
+			sim_settings_get_fourier_freq (output.settings), tmp_str);
+		g_free (tmp_str);*/
+		gint fourier_stop;
+		gint fourier_start = 1;
+		gint fourier_step  = 1;
+		fourier_stop = sim_settings_get_fourier_frequency (output.settings);
+		NG_DEBUG (g_strdup_printf(".four %d %d %d\n", fourier_start, fourier_stop, 
+		    fourier_step));
+		fprintf (file, ".four %d %d %d\n", fourier_start, fourier_stop, 
+		    fourier_step);
+	}
+	
 	/* Debug op analysis. */
 	fputs(".print op v(nodes)\n", file);
 	fputs(".op\n", file);
@@ -337,7 +348,7 @@ gnucap_stop (OreganoEngine *self)
 	g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
 	g_source_remove (gnucap->priv->child_iochannel_watch);
 	g_spawn_close_pid (gnucap->priv->child_pid);
-	close (gnucap->priv->child_stdout);
+	g_spawn_close_pid (gnucap->priv->child_stdout);
 }
 
 static void
@@ -346,23 +357,24 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
 		gchar *line;
-		gint status;
 		gsize len;
 		g_io_channel_read_to_end (gnucap->priv->child_iochannel, &line, &len, NULL);
-		if (len > 0)
+		if (len > 0) {
 			gnucap_parse (line, len, gnucap);
+		}
 		g_free (line);
 
 		/* Free stuff */
 		g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
 		g_source_remove (gnucap->priv->child_iochannel_watch);
 		g_spawn_close_pid (gnucap->priv->child_pid);
-		close (gnucap->priv->child_stdout);
+		g_spawn_close_pid (gnucap->priv->child_stdout);
 
 		gnucap->priv->current = NULL;
 
 		if (gnucap->priv->num_analysis == 0) {
-			schematic_log_append_error (gnucap->priv->schematic, _("### Too few or none analysis found ###\n"));
+			schematic_log_append_error (gnucap->priv->schematic, 
+			    _("### Too few or none analysis found ###\n"));
 			gnucap->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
 		} else
@@ -440,7 +452,7 @@ gnucap_get_results (OreganoEngine *self)
 	return OREGANO_GNUCAP (self)->priv->analysis;
 }
 
-const gchar*
+static gchar *
 gnucap_get_operation (OreganoEngine *self)
 {
 	OreganoGnuCapPriv *priv = OREGANO_GNUCAP (self)->priv;
@@ -497,7 +509,8 @@ typedef struct {
 	//gchar *unit;
 } GCap_Variable;
 
-GCap_Variable *_get_variables(gchar *str, gint *count)
+static GCap_Variable *
+_get_variables(gchar *str, gint *count)
 {
 	GCap_Variable *out;
 	/* FIXME Improve the code */
@@ -511,7 +524,7 @@ GCap_Variable *_get_variables(gchar *str, gint *count)
 
 	i = 0;
 	ini = str;
-	/* saco espacios adelante */
+	/* Put blank in advance */
 	while (isspace(*ini)) ini++;
 	fin = ini;
 	while (*fin != '\0') {
@@ -536,11 +549,10 @@ GCap_Variable *_get_variables(gchar *str, gint *count)
 	for ( i=0; i<(*count); i++ ) {
 		out[i].name = tmp[i];
 	}
-
 	return out;
 }
 
-void
+static void
 _free_variables(GCap_Variable *v, gint count)
 {
 	int i;
@@ -550,9 +562,9 @@ _free_variables(GCap_Variable *v, gint count)
 }
 
 gdouble
-strtofloat (char *s) {
+strtofloat (gchar *s) {
 	gdouble val;
-	char *error;
+	gchar *error;
 
 	val = strtod(s, &error);
 	/* If the value looks like : 100.u, adjust it */
@@ -590,6 +602,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
+	static char buf[1024];
 	GCap_Variable *variables;
 	OreganoGnuCapPriv *priv = gnucap->priv;
 	gint i, j, n;
@@ -598,13 +611,14 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 
 	for (j=0; j < len; j++) {
 		if (raw[j] != '\n') {
-			priv->buf[priv->buf_count++] = raw[j];
+			buf[priv->buf_count++] = raw[j];
 			continue;
 		}
-		priv->buf[priv->buf_count] = '\0';
+		buf[priv->buf_count] = '\0';
 
 		//Got a complete line
-		s = priv->buf;
+		s = buf;
+		NG_DEBUG (g_strdup_printf ("%s", s));
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
 			gdouble np1, np2;
@@ -623,7 +637,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			variables = _get_variables(s, &n);
 
 			for (i = 0; i < TAGS_COUNT; i++)
-				if (IS_THIS_ITEM (variables[0].name, analisys_tags[i]))
+				if (IS_THIS_ITEM (variables[0].name, analysis_tags[i]))
 					sdata->type = i;
 
 			sdata->state = IN_VALUES;
@@ -679,36 +693,32 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 						sim_settings_get_trans_start (sim_settings);
 					data->transient.step_size =
 						sim_settings_get_trans_step (sim_settings);
-				break;
+					break;
 				case AC:
 					data->ac.start = sim_settings_get_ac_start (sim_settings);
 					data->ac.stop  = sim_settings_get_ac_stop  (sim_settings);
 					data->ac.sim_length = sim_settings_get_ac_npoints (sim_settings);
-				break;
+					break;
 				case OP_POINT:
 				case DC_TRANSFER:
-					np1 = np2 = 1.;
-					data->dc.start1 = sim_settings_get_dc_start (sim_settings,0);
-					data->dc.stop1  = sim_settings_get_dc_stop  (sim_settings,0);
-					data->dc.step1  = sim_settings_get_dc_step  (sim_settings,0);
-					data->dc.start2 = sim_settings_get_dc_start (sim_settings,1);
-					data->dc.stop2  = sim_settings_get_dc_stop  (sim_settings,1);
-					data->dc.step2  = sim_settings_get_dc_step  (sim_settings,1);
-					np1 = (data->dc.stop1 - data->dc.start1) / data->dc.step1;
-					if (data->dc.step2 != 0.0) {
-						np2 = (data->dc.stop2 - data->dc.start2) / data->dc.step2;
-					}
-					data->dc.sim_length = np1 * np2;
-				break;
+					np1 = 1.;
+					data->dc.start = sim_settings_get_dc_start (sim_settings);
+					data->dc.stop  = sim_settings_get_dc_stop  (sim_settings);
+					data->dc.step  = sim_settings_get_dc_step  (sim_settings);
+					np1 = (data->dc.stop - data->dc.start) / data->dc.step;
+					
+					data->dc.sim_length = np1;
+					break;
 				case TRANSFER:
 				case DISTORTION:
 				case NOISE:
 				case POLE_ZERO:
 				case SENSITIVITY:
-				break;
+				case FOURIER:
+					break;
 				case ANALYSIS_UNKNOWN:
 					g_error (_("Unknown analysis"));
-				break;
+					break;
 			}
 		} else {
 			if ((priv->analysis == NULL) || (isalpha (s[0]))) {
@@ -726,12 +736,14 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 					switch (sdata->type) {
 						case TRANSIENT:
 							priv->progress = val / data->transient.sim_length;
-						break;
+							break;
 						case AC:
 							priv->progress = (val - data->ac.start) / data->ac.sim_length;
-						break;
+							break;
 						case DC_TRANSFER:
 							priv->progress = val / data->ac.sim_length;
+						default:
+							break;
 					}
 					if (priv->progress > 1.0)
 						priv->progress = 1.0;
@@ -739,7 +751,6 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 					variables = _get_variables (s, &n);
 					for (i = 0; i < n; i++) {
 						val = strtofloat (variables[i].name);
-
 						sdata->data[i] = g_array_append_val (sdata->data[i], val);
 
 						/* Update the minimal and maximal values so far. */
@@ -764,4 +775,3 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 		priv->buf_count = 0;
 	}
 }
-

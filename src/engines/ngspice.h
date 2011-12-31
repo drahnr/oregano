@@ -1,5 +1,5 @@
 /*
- * ngspice.c
+ * ngspice.h
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
@@ -25,8 +25,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __NGSPICE_ENGINE
-#define __NGSPICE_ENGINE
+#ifndef __NGSPICE_H
+#define __NGSPICE_H
 
 #include <gtk/gtk.h>
 #include "engine.h"
@@ -56,4 +56,3 @@ GType          oregano_ngspice_get_type (void);
 OreganoEngine *oregano_ngspice_new (Schematic *sm);
 
 #endif
-

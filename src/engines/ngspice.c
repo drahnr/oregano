@@ -8,6 +8,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009-2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,33 +30,26 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <glib/gi18n.h>
 #include "ngspice.h"
-#include "netlist.h"
+#include "netlist-helper.h"
+#include "dialogs.h"
+#include "engine-internal.h"
+#include "ngspice-analysis.h"
 
-// TODO Move analisys data and result to another file
-#include "simulation.h"
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
-/* Parser STATUS */
-struct _OreganoNgSpicePriv {
-	GPid child_pid;
-	Schematic *schematic;
-
-	gboolean aborted;
-
-	GList *analysis;
-	gint num_analysis;
-	SimulationData *current;
-	double progress;
-	gboolean char_last_newline;
-	guint status;
-	guint buf_count;
-	gchar buf[256]; // FIXME later
-};
-
+static void ngspice_class_init (OreganoNgSpiceClass *klass);
+static void ngspice_finalize (GObject *object);
+static void ngspice_dispose (GObject *object);
 static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class);
 static void ngspice_interface_init (gpointer g_iface, gpointer iface_data);
-static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoNgSpice *ngspice);
-static void ngspice_parse (FILE *, OreganoNgSpice *ngspice);
+static gboolean ngspice_child_stdout_cb (GIOChannel *source, 
+    GIOCondition condition, OreganoNgSpice *ngspice);
+static gboolean ngspice_child_stderr_cb (GIOChannel *source, 
+    GIOCondition condition, OreganoNgSpice *ngspice);
+
+static GObjectClass *parent_class = NULL;
 
 GType 
 oregano_ngspice_get_type (void)
@@ -66,12 +60,13 @@ oregano_ngspice_get_type (void)
 			sizeof (OreganoNgSpiceClass),
 			NULL,   /* base_init */
 			NULL,   /* base_finalize */
-			NULL,   /* class_init */
+			(GClassInitFunc) ngspice_class_init,   /* class_init */ 
 			NULL,   /* class_finalize */
 			NULL,   /* class_data */
 			sizeof (OreganoNgSpice),
 			0,      /* n_preallocs */
-			ngspice_instance_init    /* instance_init */
+			(GInstanceInitFunc) ngspice_instance_init,    /* instance_init */
+			NULL
 		};
 
 		static const GInterfaceInfo ngspice_info = {
@@ -84,6 +79,54 @@ oregano_ngspice_get_type (void)
 		g_type_add_interface_static (type, OREGANO_TYPE_ENGINE, &ngspice_info);
 	}
 	return type;
+}
+
+static void
+ngspice_class_init (OreganoNgSpiceClass *klass)
+{
+	GObjectClass *object_class;
+
+	parent_class = g_type_class_peek_parent (klass);
+
+	object_class = G_OBJECT_CLASS (klass);
+
+	object_class->dispose = ngspice_dispose;
+	object_class->finalize = ngspice_finalize;
+}
+
+static void
+ngspice_finalize (GObject *object)
+{
+	SimulationData *data;
+	OreganoNgSpice *ngspice;
+	GList *lst;
+	int i;
+
+	ngspice = OREGANO_NGSPICE (object);
+	lst = ngspice->priv->analysis;
+	while (lst) {
+		data = SIM_DATA (lst->data);
+		g_free (data->var_names);
+		g_free (data->var_units);
+		for (i=0; i<data->n_variables; i++)
+			g_array_free (data->data[i], TRUE);
+
+		g_free (data->min_data);
+		g_free (data->max_data);
+		
+		g_free (lst->data);
+		lst = lst->next;
+	}
+	g_list_free (ngspice->priv->analysis);
+	ngspice->priv->analysis = NULL;
+
+	parent_class->finalize (object);
+}
+
+static void
+ngspice_dispose (GObject *object)
+{
+	parent_class->dispose (object);
 }
 
 static gboolean
@@ -109,10 +152,10 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 {
 	OreganoNgSpice *ngspice;
 	Netlist output;
-	GList *list;
 	SimOption *so;
-	GError *local_error = NULL;
+	GList *list;
 	FILE *file;
+	GError *local_error = NULL;
 
 	ngspice = OREGANO_NGSPICE (engine);
 
@@ -124,28 +167,32 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 
 	file = fopen (filename, "w");
 	if (!file) {
-		g_print ("Cannot create file %s\n", filename);
+		oregano_error (g_strdup_printf ("Creation of %s not possible\n", filename));
 		return;
 	}
-			
+	
+	list = sim_settings_get_options (output.settings);
+		
 	/* Prints title */	
 	fputs ("* ",file);
 	fputs (output.title ? output.title : "Title: <unset>", file);
 	fputs ("\n"
 		"*----------------------------------------------"
 		"\n"
-		"*\tSPICE 3 - NETLIST"
+		"*\tngspice - NETLIST"
 		"\n", file);
 
 	/* Prints Options */
 	fputs (".options\n", file);
 
-	list = sim_settings_get_options (output.settings);
 	while (list) {
 		so = list->data;
-		if (so->value)
-			if (strlen(so->value) > 0)
-				fprintf (file,"+ %s=%s\n", so->name, so->value);
+		/* Prevent send NULL text */
+		if (so->value) {
+			if (strlen(so->value) > 0) {
+				fprintf (file,"+ %s=%s\n",so->name,so->value);
+			}
+		}
 		list = list->next;
 	}
 	fputc ('\n',file);
@@ -161,13 +208,14 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	}
 
 	/* Prints template parts */ 
-	fputs ("\n*----------------------------------------------\n\n",file);
+	fputs ("*------------- Circuit Description-------------\n",file);
 	fputs (output.template->str, file);
-	fputs ("\n*----------------------------------------------\n\n",file);
+	fputs ("\n*----------------------------------------------\n",file);
 
-	/* Prints Transient Analisis */
+	/* Prints Transient Analysis */
 	if (sim_settings_get_trans (output.settings)) {
 		gdouble st = 0;
+
 		if (sim_settings_get_trans_step_enable (output.settings))
 			st = sim_settings_get_trans_step (output.settings);
 		else
@@ -179,7 +227,8 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 			sim_settings_get_trans_start (output.settings));
 		if (sim_settings_get_trans_init_cond (output.settings)) {
 			fputs(" UIC\n", file);
-		} else {
+		} 
+		else {
 			fputs("\n", file);
 		}
 	}
@@ -187,19 +236,19 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	/*	Print dc Analysis */
 	if (sim_settings_get_dc (output.settings)) {
 		fputs(".dc ",file);
-		if (sim_settings_get_dc_vsrc (output.settings, 0)) {
+		if (sim_settings_get_dc_vsrc (output.settings)) {
 			fprintf (file, "%s %g %g %g",
-				sim_settings_get_dc_vsrc (output.settings, 0),
-				sim_settings_get_dc_start (output.settings, 0),
-				sim_settings_get_dc_stop (output.settings, 0),
-				sim_settings_get_dc_step (output.settings, 0));
+				sim_settings_get_dc_vsrc (output.settings),
+				sim_settings_get_dc_start (output.settings),
+				sim_settings_get_dc_stop (output.settings),
+				sim_settings_get_dc_step (output.settings));
 		}
-		if (sim_settings_get_dc_vsrc (output.settings, 1)) {
+		if (sim_settings_get_dc_vsrc (output.settings)) {
 			fprintf (file, "%s %g %g %g",
-				sim_settings_get_dc_vsrc (output.settings, 1),
-				sim_settings_get_dc_start (output.settings, 1),
-				sim_settings_get_dc_stop (output.settings, 1),
-				sim_settings_get_dc_step (output.settings, 1));
+				sim_settings_get_dc_vsrc (output.settings),
+				sim_settings_get_dc_start (output.settings),
+				sim_settings_get_dc_stop (output.settings),
+				sim_settings_get_dc_step (output.settings));
 		}
 	}
 
@@ -211,7 +260,13 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 			sim_settings_get_ac_start (output.settings),
 			sim_settings_get_ac_stop (output.settings));
 	}
-
+	
+	/* Prints analysis using a Fourier transform*/
+	/*if (sim_settings_get_fourier (output.settings)) {	
+		fprintf (file, ".four %d %s\n",
+		    sim_settings_get_fourier_frequency (output.settings), 
+		    sim_settings_get_fourier_nodes (output.settings));
+	}*/
 	/* Debug op analysis. */
 	fputs (".op\n", file);
 	fputs ("\n.END\n", file);
@@ -221,14 +276,20 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 static void
 ngspice_progress (OreganoEngine *self, double *d)
 {
-	(*d) = OREGANO_NGSPICE (self)->priv->progress;
+	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
+
+	ngspice->priv->progress += 0.1;
+	(*d) = ngspice->priv->progress;
 }
 
 static void
 ngspice_stop (OreganoEngine *self)
 {
 	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
+	g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
+	g_source_remove (ngspice->priv->child_iochannel_watch);
 	g_spawn_close_pid (ngspice->priv->child_pid);
+	g_spawn_close_pid (ngspice->priv->child_stdout);
 }
 
 static void
@@ -236,26 +297,74 @@ ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
 	/* check for status, see man waitpid(2) */
 	if (WIFEXITED (status)) {
-		FILE *fp;
-
-		g_spawn_close_pid (ngspice->priv->child_pid);
-
-		/* Parse data */
-		if ((fp = fopen ("/tmp/netlist.raw", "r")) != NULL) {
-			g_print ("File Open\n");
-			while (!feof (fp))
-				ngspice_parse (fp, ngspice);
+		gchar *line;
+		gsize len;
+		g_io_channel_read_to_end (ngspice->priv->child_iochannel, &line, &len, NULL);
+		if (len > 0) {
+			fprintf (ngspice->priv->inputfp, "%s", line); 
 		}
+		g_free (line);
+
+		/* Free stuff */
+		g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
+		g_source_remove (ngspice->priv->child_iochannel_watch);
+		g_spawn_close_pid (ngspice->priv->child_pid);
+		g_spawn_close_pid (ngspice->priv->child_stdout);
+		g_io_channel_shutdown (ngspice->priv->child_ioerror, TRUE, NULL);
+		g_source_remove (ngspice->priv->child_ioerror_watch);
+		g_spawn_close_pid (ngspice->priv->child_error);
 
 		ngspice->priv->current = NULL;
+		fclose (ngspice->priv->inputfp);
+		ngspice_parse (ngspice);
 
 		if (ngspice->priv->num_analysis == 0) {
-			schematic_log_append_error (ngspice->priv->schematic, _("### Too few or none analysis found ###\n"));
+			schematic_log_append_error (ngspice->priv->schematic, 
+			    _("### Too few or none analysis found ###\n"));
 			ngspice->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-		} else
+		} else {
 			g_signal_emit_by_name (G_OBJECT (ngspice), "done");
+		}
 	}
+}
+
+static gboolean
+ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoNgSpice *ngspice)
+{
+	gchar *line;
+	gsize len, terminator;
+	GIOStatus status;
+	GError *error = NULL;
+
+	status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
+	if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
+		fprintf (ngspice->priv->inputfp, "%s", line); 
+	}
+	g_free (line);
+	
+	// Let UI update
+	g_main_context_iteration (NULL, FALSE);
+	return TRUE;
+}
+
+static gboolean
+ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condition, OreganoNgSpice *ngspice)
+{
+	gchar *line;
+	gsize len, terminator;
+	GIOStatus status;
+	GError *error = NULL;
+
+	status = g_io_channel_read_line (source, &line, &len, &terminator, &error);
+	if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
+		schematic_log_append_error (ngspice->priv->schematic, line);
+	}
+	g_free (line);
+	
+	// Let UI update
+	g_main_context_iteration (NULL, FALSE);
+	return TRUE;
 }
 
 static void
@@ -263,7 +372,7 @@ ngspice_start (OreganoEngine *self)
 {
 	OreganoNgSpice *ngspice;
 	GError *error = NULL;
-	char *argv[] = {"ngspice", "-r", "/tmp/netlist.raw", "-b", "/tmp/netlist.tmp", NULL};
+	char *argv[] = {"ngspice", "-b", "/tmp/netlist.tmp", NULL};
 
 	ngspice = OREGANO_NGSPICE (self);
 	oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &error);
@@ -274,7 +383,10 @@ ngspice_start (OreganoEngine *self)
 		g_error_free (error);
 		return;
 	}
-
+	
+	/* Open the file storing the output of ngspice */
+	ngspice->priv->inputfp = fopen ("/tmp/netlist.lst", "w");
+	
 	error = NULL;
 	if (g_spawn_async_with_pipes (
 			NULL, /* Working directory */
@@ -285,12 +397,22 @@ ngspice_start (OreganoEngine *self)
 			NULL,
 			&ngspice->priv->child_pid,
 			NULL, /* STDIN */
-			NULL, /* STDOUT */
-			NULL, /* STDERR*/
-			&error
-		)) {
+			&ngspice->priv->child_stdout, /* STDOUT */
+			&ngspice->priv->child_error,  /* STDERR*/
+			&error)) {
 		/* Add a watch for process status */
 		g_child_watch_add (ngspice->priv->child_pid, (GChildWatchFunc)ngspice_watch_cb, ngspice);
+		/* Add a GIOChannel to read from process stdout */
+		ngspice->priv->child_iochannel = g_io_channel_unix_new (ngspice->priv->child_stdout);
+		/* Watch the I/O Channel to read child strout */
+		ngspice->priv->child_iochannel_watch = g_io_add_watch (ngspice->priv->child_iochannel,
+			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)ngspice_child_stdout_cb, ngspice);
+		/* Add a GIOChannel to read from process stderr */
+		ngspice->priv->child_ioerror = g_io_channel_unix_new (ngspice->priv->child_error);
+		/* Watch the I/O error channel to read the child sterr */
+		ngspice->priv->child_ioerror_watch = g_io_add_watch (ngspice->priv->child_ioerror,
+			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)ngspice_child_stderr_cb, ngspice);
+		
 	} else {
 		ngspice->priv->aborted = TRUE;
 		schematic_log_append_error (ngspice->priv->schematic, _("Unable to execute NgSpice."));
@@ -301,16 +423,18 @@ ngspice_start (OreganoEngine *self)
 static GList*
 ngspice_get_results (OreganoEngine *self)
 {
+	if (OREGANO_NGSPICE (self)->priv->analysis == NULL)
+		printf ("pas d'analyse\n");
 	return OREGANO_NGSPICE (self)->priv->analysis;
 }
 
-const gchar*
+static gchar *
 ngspice_get_operation (OreganoEngine *self)
 {
 	OreganoNgSpicePriv *priv = OREGANO_NGSPICE (self)->priv;
 
 	if (priv->current == NULL)
-		return _("Waiting NgSpice backend");
+		return _("None");
 
 	return oregano_engine_get_analysis_name (priv->current);
 }
@@ -335,6 +459,14 @@ ngspice_instance_init (GTypeInstance *instance, gpointer g_class)
 	OreganoNgSpice *self = OREGANO_NGSPICE (instance);
 
 	self->priv = g_new0 (OreganoNgSpicePriv, 1);
+	self->priv->progress = 0.0;
+	self->priv->char_last_newline = TRUE;
+	self->priv->status = 0;
+	self->priv->buf_count = 0;
+	self->priv->num_analysis = 0;
+	self->priv->analysis = NULL;
+	self->priv->current = NULL;
+	self->priv->aborted = FALSE;
 }
 
 OreganoEngine*
@@ -347,287 +479,3 @@ oregano_ngspice_new (Schematic *sc)
 
 	return OREGANO_ENGINE (ngspice);
 }
-
-/* Parser stuff */
-
-/* By now, the parser read the STDOUt just like in GnuCap. In a near future I'll
- * to use the raw outout feature of NgSpice wich will improve the parser
- */
-
-typedef enum {
-	STATE_IDLE,
-	IN_VARIABLES,
-	IN_VALUES,
-	STATE_ABORT
-} ParseDataState;
-
-#define SP_TITLE      "Title"
-#define SP_DATE       "Date:"
-#define SP_PLOT_NAME  "Plotname:"
-#define SP_FLAGS      "Flags:"
-#define SP_N_VAR      "No. Variables:"
-#define SP_N_POINTS   "No. Points:"
-#define SP_COMMAND    "Command:"
-#define SP_VARIABLES  "Variables:"
-#define SP_BINARY     "Binary:"
-#define SP_VALUES     "Values:" 
-#define IS_THIS_ITEM(str,item)  (!strncmp(str,item,strlen(item)))  
-
-static gchar *analysis_names[] = {
-	N_("Operating Point")            ,
-	N_("Transient Analysis")         ,
-	N_("DC transfer characteristic") ,
-	N_("AC Analysis")                ,
-	N_("Transfer Function")          ,
-	N_("Distortion Analysis")        ,
-	N_("Noise Analysis")             ,
-	N_("Pole-Zero Analysis")         ,
-	N_("Sensitivity Analysis")       ,
-	N_("Unknown Analysis")           ,
-	NULL
-};
-
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
-
-static void
-ngspice_parse (FILE *fp, OreganoNgSpice *ngspice)
-{
-	static SimulationData *sdata = NULL;
-	static char buf[1024];
-	static int len;
-	static is_complex = FALSE;
-	SimSettings *sim_settings;
-	gint status, iter;
-	gdouble val, np1, np2;
-	gchar **tmp = NULL;	
-	gchar *send;
-	int i, c;
-
-	sim_settings = (SimSettings *)schematic_get_sim_settings (ngspice->priv->schematic);
-
-	if (!sdata || sdata->state != IN_VALUES) {
-		/* Read a line */
-		len = fscanf (fp, "%[^\n]", buf);
-		fgetc (fp);
-		if (len == 0) return;
-		NG_DEBUG (g_strdup_printf ("(%s)", buf));
-	} else {
-		buf[0] = '\0';
-		len = 0;
-	}
-
-	/* We are getting the simulation title */
-	if (IS_THIS_ITEM (buf, SP_TITLE)) {
-		sdata = SIM_DATA (g_new0 (Analysis, 1));		
-		ngspice->priv->analysis = g_list_append (ngspice->priv->analysis, sdata);
-		ngspice->priv->num_analysis++;
-		NG_DEBUG ("Nuevo Analisis");
-	} else if (IS_THIS_ITEM (buf, SP_DATE)) {
-		sdata->state = STATE_IDLE;
-	} else if (IS_THIS_ITEM (buf,SP_PLOT_NAME)) {
-		gint   i;
-		gchar *analysis = buf+strlen(SP_PLOT_NAME)+1;
-
-		NG_DEBUG ("Analisis Type");
-		sdata->state = STATE_IDLE;
-		sdata->type  = ANALYSIS_UNKNOWN;
-		for (i = 0; analysis_names[i]; i++)
-			if (IS_THIS_ITEM (analysis, analysis_names[i])) {
-				sdata->type = i;
-				break;
-			}
-
-		switch ( sdata->type ) {
-			case TRANSIENT:
-				ANALYSIS(sdata)->transient.sim_length =
-					sim_settings_get_trans_stop  (sim_settings) -
-					sim_settings_get_trans_start (sim_settings);
-				ANALYSIS(sdata)->transient.step_size = 
-					sim_settings_get_trans_step (sim_settings);
-				break;
-			case AC:
-				ANALYSIS(sdata)->ac.start = sim_settings_get_ac_start (sim_settings);
-				ANALYSIS(sdata)->ac.stop  = sim_settings_get_ac_stop  (sim_settings);
-				ANALYSIS(sdata)->ac.sim_length = sim_settings_get_ac_npoints (sim_settings);
-				break;
-			case OP_POINT:
-			case DC_TRANSFER:
-				np1 = np2 = 1.;
-				ANALYSIS(sdata)->dc.start1 = sim_settings_get_dc_start (sim_settings, 0);
-				ANALYSIS(sdata)->dc.stop1  = sim_settings_get_dc_stop  (sim_settings, 0);
-				ANALYSIS(sdata)->dc.step1  = sim_settings_get_dc_step  (sim_settings, 0);
-				ANALYSIS(sdata)->dc.start2 = sim_settings_get_dc_start (sim_settings, 1);
-				ANALYSIS(sdata)->dc.stop2  = sim_settings_get_dc_stop  (sim_settings, 1);
-				ANALYSIS(sdata)->dc.step2  = sim_settings_get_dc_step  (sim_settings, 1);
-
-				np1 = (ANALYSIS(sdata)->dc.stop1-ANALYSIS(sdata)->dc.start1) / ANALYSIS(sdata)->dc.step1;
-				if (ANALYSIS(sdata)->dc.step2 != 0.) {
-					np2 = (ANALYSIS(sdata)->dc.stop2-ANALYSIS(sdata)->dc.start2) / ANALYSIS(sdata)->dc.step2;
-				}	
-				ANALYSIS(sdata)->dc.sim_length = np1 * np2; 
-				break;
-			case TRANSFER:
-			case DISTORTION:
-			case NOISE:
-			case POLE_ZERO:
-			case SENSITIVITY:
-				break;
-			case ANALYSIS_UNKNOWN:
-				g_error ("Unknown analysis: %s", analysis);
-				break;
-		}
-		ngspice->priv->current = sdata;
-	} else if (IS_THIS_ITEM(buf, SP_FLAGS) ) {
-		char *f = buf + strlen (SP_FLAGS) + 1;
-		if (strncmp (f, "complex", 7) == 0)
-			is_complex = TRUE;
-		else
-			is_complex = FALSE;
-	} else if (IS_THIS_ITEM (buf, SP_COMMAND)) {
-		/* pass */
-	} else if (IS_THIS_ITEM (buf, SP_N_VAR)) { 
-		gint i, n = atoi (buf + strlen (SP_N_VAR));
-
-		NG_DEBUG (g_strdup_printf ("NVAR %d", n));
-		sdata->state = STATE_IDLE;
-		sdata->n_variables = n;
-		sdata->got_points  = 0;
-		sdata->got_var     = 0;
-		sdata->var_names   = (char**) g_new0 (gpointer, n);
-		sdata->var_units   = (char**) g_new0 (gpointer, n);
-		sdata->data        = (GArray**) g_new0 (gpointer, n);
-		for (i = 0; i < n; i++) 
-			sdata->data[i] = g_array_new (TRUE, TRUE, sizeof (double));
-		sdata->min_data = g_new (double, n);
-		sdata->max_data = g_new (double, n);
-		for (i = 0; i < n; i++) {
-			sdata->min_data[i] =  G_MAXDOUBLE;
-			sdata->max_data[i] = -G_MAXDOUBLE;
-		}
-	} else if (IS_THIS_ITEM (buf, SP_N_POINTS)) { 
-		sdata->state = STATE_IDLE;
-		sdata->n_points = atoi (buf + strlen (SP_N_POINTS));
-		NG_DEBUG (g_strdup_printf ("NPOINTS %d", sdata->n_points));
-	} else if (IS_THIS_ITEM (buf, SP_VARIABLES)) { 
-		NG_DEBUG ("In variables");
-		sdata->state = IN_VARIABLES;
-	} else if (IS_THIS_ITEM (buf, SP_BINARY)) { 
-		NG_DEBUG ("Data Bynari");
-		sdata->state = IN_VALUES;
-		sdata->binary = TRUE;
-		sdata->got_var = 0;
-		sdata->got_points = 0;
-	} else if (IS_THIS_ITEM (buf, SP_VALUES)) { 
-		sdata->state = IN_VALUES;
-		sdata->binary = FALSE;
-		sdata->got_var = 0;
-		sdata->got_points = 0;
-	} else {
-		if (ngspice->priv->analysis == NULL) {
-			if (len > 1)
-				schematic_log_append (ngspice->priv->schematic, buf);
-			return;
-		}
-
-		switch (sdata->state) {
-			case IN_VARIABLES:
-				tmp = g_strsplit (buf, "\t", 0);
-				sdata->var_names[sdata->got_var] = g_strdup (tmp[2]);
-				sdata->var_units[sdata->got_var] = g_strdup (tmp[3]);
-				send = strchr (sdata->var_units[sdata->got_var], '\n');
-				if (send)
-					*send = 0;
-				g_strfreev (tmp);
-			
-				if ((sdata->got_var + 1) < sdata->n_variables)
-					sdata->got_var++;
-				break;
-			case IN_VALUES:
-				if (sdata->binary) {
-					int i, j;
-					double d, dimg;
-					NG_DEBUG ("Reading Binary");
-					for (i=0; i<sdata->n_points; i++) {
-						for (j=0; j<sdata->n_variables; j++) {
-							/* TODO : This show always the real part only. We need to detect
-							 * the probe settings for this node, and show the correct
-							 * value : real, imaginary, module or phase, of the complex number.
-							 */
-							fread (&d, sizeof (double), 1, fp);
-							if (is_complex)
-								fread (&dimg, sizeof (double), 1, fp);
-							if (j == 0) {
-								switch (sdata->type) {
-									case TRANSIENT:
-										ngspice->priv->progress = d / ANALYSIS(sdata)->transient.sim_length;
-										break;
-									case AC:
-										ngspice->priv->progress = (d - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
-										break;
-									case DC_TRANSFER:
-										ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
-								}
-								if (ngspice->priv->progress > 1.0)
-									ngspice->priv->progress = 1.0;
-								if (ngspice->priv->progress < 0.0)
-									ngspice->priv->progress = 0.0;
-								g_main_context_iteration (NULL, FALSE);
-							}
-							sdata->data[j] = g_array_append_val (sdata->data[j], d);
-
-							/* Update the minimal and maximal values so far. */
-							if (d < sdata->min_data[j])
-								sdata->min_data[j] = d;
-							if (d > sdata->max_data[j])
-								sdata->max_data[j] = d;
-						}
-					}
-					sdata->state = STATE_IDLE;
-					NG_DEBUG ("Reading Binary Done");
-				} else {
-					if (sdata->got_var) 
-						sscanf(buf, "\t%lf", &val);
-					else
-						sscanf(buf, "%d\t\t%lf", &iter, &val);
-					if (sdata->got_var == 0) {
-						switch (sdata->type) {
-							case TRANSIENT:
-								ngspice->priv->progress = val /	ANALYSIS(sdata)->transient.sim_length;					
-								break;
-							case AC:
-								ngspice->priv->progress = (val - ANALYSIS(sdata)->ac.start) / ANALYSIS(sdata)->ac.sim_length;
-								break;
-							case DC_TRANSFER:
-								ngspice->priv->progress = ((gdouble) iter) / ANALYSIS(sdata)->ac.sim_length;
-						}
-						if (ngspice->priv->progress > 1.0)
-							ngspice->priv->progress = 1.0;
-					}
-
-					sdata->data[sdata->got_var] = g_array_append_val (sdata->data[sdata->got_var], val);
-
-					/* Update the minimal and maximal values so far. */
-					if (val < sdata->min_data[sdata->got_var])
-						sdata->min_data[sdata->got_var] = val;
-					if (val > sdata->max_data[sdata->got_var])
-						sdata->max_data[sdata->got_var] = val;
-
-					/* Check for the end of the point. */
-					if (sdata->got_var + 1 == sdata->n_variables) {
-						sdata->got_var = 0;
-						sdata->got_points++;
-					} else
-						sdata->got_var++;
-				}
-				break;
-			default:
-				if (len > 1) {
-					if (strstr (buf,"abort"))
-						sdata->state = STATE_ABORT;
-					schematic_log_append (ngspice->priv->schematic, buf); 
-				}
-				break;
-		}
-	}
-}
-

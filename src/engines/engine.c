@@ -25,7 +25,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <glib/gi18n.h>
 #include "engine.h"
+#include "engine-internal.h"
 #include "gnucap.h"
 #include "ngspice.h"
 
@@ -39,6 +41,7 @@ static gchar *analysis_names[] = {
 	N_("Noise Analysis"),
 	N_("Pole-Zero Analysis"),
 	N_("Sensitivity Analysis"),
+	N_("Fourier Analysis"),
 	N_("Unknown Analysis"),
 	NULL
 };
@@ -49,6 +52,7 @@ enum {
 	ABORTED,
 	LAST_SIGNAL
 };
+
 static guint engine_signals[LAST_SIGNAL] = { 0 };
 
 static void
@@ -164,15 +168,14 @@ oregano_engine_factory_create_engine (gint type, Schematic *sm)
 		default:
 			engine = NULL;
 	}
-
 	return engine;
 }
 
 gchar *
 oregano_engine_get_analysis_name (SimulationData *sdat)
 {
-	if (sdat == NULL)
+	if (sdat == NULL) {
 		return g_strdup (_(analysis_names[ANALYSIS_UNKNOWN]));
-
+	}
 	return g_strdup (_(analysis_names[sdat->type]));
 }

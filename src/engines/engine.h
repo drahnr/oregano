@@ -32,45 +32,17 @@
 #include "schematic.h"
 #include "simulation.h"
 
-#define OREGANO_TYPE_ENGINE             (oregano_engine_get_type ())
+
 #define OREGANO_ENGINE(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), OREGANO_TYPE_ENGINE, OreganoEngine))
-#define OREGANO_ENGINE_CLASS(klass)	    (G_TYPE_CHECK_CLASS_CAST((klass), OREGANO_TYPE_ENGINE, OreganoEngineClass))
 #define OREGANO_IS_ENGINE(obj)          (G_TYPE_CHECK_INSTANCE_TYPE((obj), OREGANO_TYPE_ENGINE))
-#define OREGANO_IS_ENGINE_CLASS(klass)  (G_TYPE_CLASS_TYPE((klass), OREGANO_TYPE_ENGINE, OreganoEngineClass))
-#define OREGANO_ENGINE_GET_CLASS(klass) (G_TYPE_INSTANCE_GET_INTERFACE((klass), OREGANO_TYPE_ENGINE, OreganoEngineClass))
 
 typedef struct _OreganoEngine OreganoEngine;
-typedef struct _OreganoEngineClass OreganoEngineClass;
 
-struct _OreganoEngineClass {
-	GTypeInterface parent;
-
-	void (*start) (OreganoEngine *engine);
-	void (*stop) (OreganoEngine *engine);
-	void (*progress) (OreganoEngine *engine, double *p);
-	void (*get_netlist) (OreganoEngine *engine, const gchar *sm, GError **error);
-	GList* (*get_results) (OreganoEngine *engine);
-	gchar* (*get_operation) (OreganoEngine *engine);
-	gboolean (*has_warnings) (OreganoEngine *engine);
-	gboolean (*is_available) (OreganoEngine *engine);
-
-	/* Signals */
-	void (*done) ();
-	void (*abort) ();
-};
-
-/* Engines IDs */
+// Engines IDs 
 enum {
 	OREGANO_ENGINE_GNUCAP=0,
 	OREGANO_ENGINE_NGSPICE,
 	OREGANO_ENGINE_COUNT
-};
-
-/* Engines Titles */
-static const gchar*
-engines[] = {
-	"GnuCap",
-	"NgSpice"
 };
 
 OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);
@@ -80,7 +52,8 @@ void     oregano_engine_start (OreganoEngine *engine);
 void     oregano_engine_stop (OreganoEngine *engine);
 gboolean oregano_engine_has_warnings (OreganoEngine *engine);
 void     oregano_engine_get_progress (OreganoEngine *engine, double *p);
-void     oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
+void     oregano_engine_generate_netlist (OreganoEngine *engine, 
+    			const gchar *file, GError **error);
 GList   *oregano_engine_get_results (OreganoEngine *engine);
 gchar   *oregano_engine_get_current_operation (OreganoEngine *);
 gboolean oregano_engine_is_available (OreganoEngine *);
