@@ -30,10 +30,9 @@
 #ifndef __WIRE_H
 #define __WIRE_H
 
-#include <gnome.h>
+#include <gtk/gtk.h>
 #include "sheet-pos.h"
 #include "clipboard.h"
-#include "item-data.h"
 
 #define TYPE_WIRE            (wire_get_type ())
 #define WIRE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_WIRE, Wire))
@@ -83,5 +82,6 @@ void wire_set_length (Wire *wire, SheetPos *length);
 gint wire_is_visited (Wire *wire);
 void wire_set_visited (Wire *wire, gboolean is_visited);
 void wire_delete (Wire *wire);
+void wire_update_bbox (Wire *wire);
 
 #endif

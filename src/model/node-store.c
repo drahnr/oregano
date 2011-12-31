@@ -29,15 +29,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <math.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <gtk/gtk.h>
+#include <math.h>
 #include "node-store.h"
 #include "node.h"
 #include "part.h"
 #include "wire.h"
 #include "wire-private.h"
-#include "item-data.h"
 
 /*
  * NODE_EPSILON is used to check for intersection.
@@ -54,18 +54,20 @@
 
 #define ON_THE_WIRE(p1,start,end) ( fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<NODE_EPSILON )
 
+#define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
+
 static void	   node_store_class_init (NodeStoreClass *klass);
 static void	   node_store_init (NodeStore *store);
 static guint   node_hash (gconstpointer key);
 static int	   node_equal (gconstpointer a, gconstpointer b);
 static GSList *wires_intersect (NodeStore *store, double x1, double y1,
-	double x2, double y2);
+					double x2, double y2);
 static GSList *wire_intersect_parts (NodeStore *store, Wire *wire);
 static int     is_wire_at_pos (double x1, double y1, double x2, double y2,
-	SheetPos pos);
+					SheetPos pos);
 static GSList *wires_at_pos (NodeStore *store, SheetPos pos);
 static int	   do_wires_intersect (double Ax, double Ay, double Bx, double By,
-	double Cx, double Cy, double Dx, double Dy, SheetPos *pos);
+					double Cx, double Cy, double Dx, double Dy, SheetPos *pos);
 static void	   node_store_finalize(GObject *self);
 static void	   node_store_dispose(GObject *self);
 
@@ -294,7 +296,7 @@ node_store_add_part (NodeStore *self, Part *part)
 		for (list = wire_list; list; list = list->next) {
 			Wire *wire = list->data;
 
-		/* g_print ("Add pin to wire.\n"); */
+		    NG_DEBUG ("Add pin to wire.\n");
 
 			node_add_wire (node, wire);
 			wire_add_node (wire, node);
@@ -362,7 +364,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 		} else {
 			/* FIXME: Fix this or just silently return if the part is
 			   non-existant? */
-			g_warning ("No node to remove part from.");
+			//g_warning ("No node to remove part from.");
 			return FALSE;
 		}
 	}
@@ -402,14 +404,6 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
-/*	if (wire_get_store (wire) != NULL) {
-		g_warning ("Trying to add already stored wire.");
-		return FALSE;
-	}
-*/
-
-/*	g_print ("ADD WIRE\n");*/
-
 	priv = wire->priv;
 
 	wire_get_pos_and_length (wire, &pos, &length);
@@ -426,10 +420,6 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	for (list = ip_list; list; list = list->next) {
 		ipoint = list->data;
-
-
-		//g_print ("(%g %g) (%g %g), ip (%g %g)\n", x1, y1, x2, y2, ipoint->pos.x, ipoint->pos.y);
-
 
 		if (IS_EQ (x1, x2) && ((ipoint->pos.y == y1) || (ipoint->pos.y == y2))) {
 			SheetPos w_pos, w_length;
@@ -542,7 +532,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 		wire_add_node (wire, node);
 		wire_add_node (ipoint->wire, node);
 
-/*		g_print ("Add wire to wire.\n");*/
+		NG_DEBUG ("Add wire to wire.\n");
 
 		g_free (ipoint);
 	}
@@ -562,7 +552,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 		node_add_wire (node, wire);
 		wire_add_node (wire, node);
 
-/*		g_print ("Add wire to pin.\n");*/
+		NG_DEBUG ("Add wire to pin.\n");
 	}
 
 	g_slist_free (ip_list);
@@ -815,11 +805,10 @@ node_store_get_node (NodeStore *store, SheetPos pos)
 
 	node = g_hash_table_lookup (store->nodes, &pos);
 
-/*	if (!node)
-		g_print ("No node at (%g, %g)\n", pos.x, pos.y);
-	else
-		g_print ("Found node at (%g, %g)\n", pos.x, pos.y);
-*/
+	if (!node) {
+		NG_DEBUG (g_strdup_printf ("No node at (%g, %g)\n", pos.x, pos.y));}
+	else {
+		NG_DEBUG (g_strdup_printf ("Found node at (%g, %g)\n", pos.x, pos.y));}
 	return node;
 }
 
@@ -847,16 +836,16 @@ node_equal (gconstpointer a, gconstpointer b)
 	spb = (SheetPos *) b;
 
 	if (fabs (spa->y - spb->y) > HASH_EPSILON) {
-/*		if (fabs (spa->y - spb->y) < 2.0)
-			g_print ("y mellan EPSILON och 2.0!\n");
-*/
+		if (fabs (spa->y - spb->y) < 2.0)
+			NG_DEBUG ("A neighbour of B in Y\n");
+
 		return 0;
 	}
 
 	if (fabs (spa->x - spb->x) > HASH_EPSILON) {
-/*		if (fabs (spa->x - spb->x) < 5.0)
-			g_print ("x mellan EPSILON och 2.0!\n");
-*/
+		if (fabs (spa->x - spb->x) < 5.0)
+			NG_DEBUG ("A neighbour of B in X\n\n");
+
 		return 0;
 	}
 
@@ -895,7 +884,7 @@ is_wire_at_pos (double x1, double y1, double x2, double y2, SheetPos pos)
 		}
 	}
 
-//	g_print ("no match: (%g %g) -> (%g %g), (%g %g)\n", x1, y1, x2, y2, pos.x, pos.y);
+	NG_DEBUG (g_strdup_printf ("no match: (%g %g) -> (%g %g), (%g %g)\n", x1, y1, x2, y2, pos.x, pos.y));
 
 	return FALSE;
 }
@@ -1026,7 +1015,7 @@ node_store_dump_wires (NodeStore *store)
 {
 	GList *wires;
 
-	g_print ("\n------------------- Dump wires -------------------\n");
+	NG_DEBUG ("\n------------------- Dump wires -------------------\n");
 
 	for (wires = store->wires; wires; wires = wires->next) {
 		Wire *wire;
@@ -1035,13 +1024,13 @@ node_store_dump_wires (NodeStore *store)
 		wire = wires->data;
 		wire_get_pos_and_length (wire, &start, &length);
 
-		g_print ("(%g %g) -> (%g %g):   %d nodes.\n",
+		NG_DEBUG (g_strdup_printf ("(%g %g) -> (%g %g):   %d nodes.\n",
 			 start.x, start.y,
 			 start.x + length.x, start.y + length.y,
-			 g_slist_length (wire->priv->nodes));
+			 g_slist_length (wire->priv->nodes)));
 	}
 
-	g_print ("\n");
+	NG_DEBUG ("\n");
 }
 
 static void
@@ -1086,7 +1075,7 @@ node_store_get_nodes (NodeStore *store)
 }
 
 void
-node_store_get_bounds (NodeStore *store, ArtDRect *rect)
+node_store_get_bounds (NodeStore *store, NodeRect *rect)
 {
 	GList *list;
 	SheetPos p1, p2;
@@ -1111,7 +1100,7 @@ node_store_get_bounds (NodeStore *store, ArtDRect *rect)
 }
 
 gint
-node_store_count_items (NodeStore *store, ArtDRect *rect)
+node_store_count_items (NodeStore *store, NodeRect *rect)
 {
 	GList *list;
 	SheetPos p1, p2;
@@ -1157,7 +1146,6 @@ void
 node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	GList *list;
-	SheetPos p1, p2;
 	ItemData *data;
 
 	g_return_if_fail (store != NULL);
@@ -1173,7 +1161,7 @@ node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ct
 }
 
 void
-node_store_print_labels (NodeStore *store, cairo_t *opc, ArtDRect *rect)
+node_store_print_labels (NodeStore *store, cairo_t *opc, NodeRect *rect)
 {
 /*	GList *list;
 	SheetPos p1, p2;

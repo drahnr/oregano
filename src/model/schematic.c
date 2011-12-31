@@ -29,7 +29,10 @@
  */
 
 #include <gtk/gtk.h>
+#include <string.h>
 #include <glib.h>
+#include <glib/gi18n.h>
+#include <math.h>
 #include <glade/glade.h>
 #include "schematic.h"
 #include "node-store.h"
@@ -549,8 +552,6 @@ schematic_log_show (Schematic *schematic)
 void
 schematic_log_clear (Schematic *schematic)
 {
-	GList *log;
-
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
@@ -624,7 +625,7 @@ schematic_read (char *name, GError **out_error)
 		g_object_unref(G_OBJECT(new_sm));
 		new_sm = NULL;
 		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
-			_("Load fails!."), fname);
+			_("Load fails!."));
 	} else
 		schematic_set_dirty (new_sm, FALSE);
 
@@ -847,11 +848,10 @@ static void
 schematic_render (Schematic *sm, cairo_t *cr)
 {
 	NodeStore *store;
-
 	SchematicPrintContext schematic_print_context;
 	schematic_print_context.colors = sm->priv->colors;
 	store = schematic_get_store (sm);
-
+	
 	node_store_print_items (store, cr, &schematic_print_context);
 	node_store_print_labels (store, cr, NULL);
 }
@@ -866,6 +866,7 @@ convert_to_grayscale(GdkColor *source)
 	color.red = factor;
 	color.green = factor;
 	color.blue = factor;
+	color.pixel = source->pixel;
 
 	return color;
 }
@@ -874,7 +875,7 @@ void
 schematic_export (Schematic *sm, const gchar *filename,
 	gint img_w, gint img_h, int bg, int color, int format)
 {
-	ArtDRect bbox;
+	NodeRect bbox;
 	NodeStore *store;
 	cairo_surface_t *surface;
 	cairo_t *cr;
@@ -982,10 +983,8 @@ static void
 draw_page (GtkPrintOperation *operation,
 	GtkPrintContext *context, int page_nr, Schematic *sm)
 {
-	PangoLayout *layout;
-	PangoFontDescription *desc;
 	NodeStore *store;
-	ArtDRect bbox;
+	NodeRect bbox;
 	gdouble page_w, page_h;
 	gdouble circuit_w, circuit_h;
 	

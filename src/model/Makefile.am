@@ -1,4 +1,7 @@
 oreganodir = $(datadir)/oregano
+
+CFLAGS += -Wall -DG_DISABLE_DEPRECATED
+
 INCLUDES =  						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\" 	\
 	-I$(includedir) $(GNOME_INCLUDEDIR)		\
@@ -31,5 +34,3 @@ libmodel_a_SOURCES = \
 	wire.h	\
 	wire-private.h	\
 	part-private.h
-#libmodel_a_LIBADD = @LIBMODEL_LIBADD@
-libmodel_a_LIBADD =  libmodel.a

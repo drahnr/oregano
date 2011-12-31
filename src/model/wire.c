@@ -30,10 +30,8 @@
 
 #include <gnome.h>
 #include <math.h>
-#include "item-data.h"
 #include "node-store.h"
 #include "node.h"
-#include "item-data.h"
 #include "wire.h"
 #include "wire-private.h"
 #include "clipboard.h"
@@ -374,7 +372,7 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 	Wire *wire;
 	WirePriv *priv;
 	SheetPos b1, b2;
-	SheetPos wire_center_before, wire_center_after, delta;
+	SheetPos wire_center_before = {0.0, 0.0}, wire_center_after, delta;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
@@ -471,7 +469,7 @@ wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	SheetPos b1, b2, delta;
 	double affine[6];
 	ArtPoint src, dst;
-	SheetPos wire_center_before, wire_center_after;
+	SheetPos wire_center_before = {0.0, 0.0}, wire_center_after = {0.0, 0.0};
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));

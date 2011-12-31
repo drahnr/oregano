@@ -29,8 +29,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <math.h>
-#include <gnome.h>
 #include "item-data.h"
 #include "node-store.h"
 
@@ -126,8 +124,8 @@ item_data_class_init (ItemDataClass *klass)
 
 	object_class = G_OBJECT_CLASS(klass);
 
-	/* Esta asignacion debe estar antes de las
-	 * llamadas a g_object_class_install_property
+	/* This assignment must be  performed before the call 
+	 * to g_object_class_install_property 
 	 */
 	object_class->set_property = item_data_set_gproperty;
 	object_class->get_property = item_data_get_gproperty;
@@ -514,8 +512,8 @@ item_data_has_properties (ItemData *data)
 {
 	ItemDataClass *id_class;
 
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (data));
+	g_return_val_if_fail (data != NULL, FALSE);
+	g_return_val_if_fail (IS_ITEM_DATA (data), FALSE);
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->has_properties) {

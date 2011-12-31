@@ -29,8 +29,6 @@
  */
 
 #include <gnome.h>
-#include <math.h>
-#include "item-data.h"
 #include "textbox.h"
 #include "clipboard.h"
 #include "node-store.h"
@@ -278,7 +276,7 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	Textbox *textbox;
 	TextboxPriv *priv;
 	SheetPos b1, b2;
-	SheetPos textbox_center, delta;
+	SheetPos textbox_center = {0.0, 0.0}, delta;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_TEXTBOX (data));

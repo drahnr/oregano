@@ -31,7 +31,7 @@
 #ifndef __PART_H
 #define __PART_H
 
-#include <gnome.h>
+#include <gtk/gtk.h>
 #include "sheet-pos.h"
 #include "clipboard.h"
 #include "load-common.h"
@@ -52,7 +52,7 @@ typedef struct _PartPriv PartPriv;
 struct _Pin {
 	SheetPos offset;
 	guint pin_nr;
-	gint node_nr; /* Numero de nodo en la netlist */
+	gint node_nr; /* Node number into the netlist */
 	Part *part;
 };
 

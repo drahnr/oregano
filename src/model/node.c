@@ -28,10 +28,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gnome.h>
 #include <math.h>
 #include "node.h"
 #include "part.h"
+
+#define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
 
 static void node_class_init (NodeClass *klass);
 static void node_init (Node *node);
@@ -209,7 +210,7 @@ node_add_pin (Node *node, Pin *pin)
 	g_return_val_if_fail (pin != NULL, FALSE);
 
 	if (g_slist_find (node->pins, pin)) {
-/*		g_print ("node_add_pin: pin already there.\n");*/
+		NG_DEBUG ("node_add_pin: pin already there.\n");
 		return FALSE;
 	}
 
@@ -258,7 +259,7 @@ node_add_wire (Node *node, Wire *wire)
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
 	if (g_slist_find (node->wires, wire)) {
-/*		g_print ("node_add_wire: wire already there.\n");*/
+		NG_DEBUG ("node_add_wire: wire already there.\n");
 		return FALSE;
 	}
 
@@ -287,7 +288,7 @@ node_remove_wire (Node *node, Wire *wire)
 		return FALSE;
 
 	if (!g_slist_find (node->wires, wire)) {
-		g_print ("node_remove_wire: not there.\n");
+		NG_DEBUG ("node_remove_wire: not there.\n");
 		return FALSE;
 	}
 

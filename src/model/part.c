@@ -31,11 +31,9 @@
  */
 
 #include <ctype.h>
-#include <gnome.h>
 #include <math.h>
 #include <string.h>
 #include "part.h"
-#include "item-data.h"
 #include "part-property.h"
 #include "part-label.h"
 #include "node-store.h"
@@ -427,7 +425,7 @@ part_get_property (Part *part, char *name)
 
 	for (props = priv->properties; props; props = props->next) {
 		prop = props->data;
-		if (g_strcasecmp (prop->name, name) == 0) {
+		if (g_ascii_strcasecmp (prop->name, name) == 0) {
 			return g_strdup (prop->value);
 		}
 	}
@@ -625,7 +623,7 @@ part_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	int i;
 	double affine[6];
 	ArtPoint src, dst;
-	SheetPos part_center_before, part_center_after;
+	SheetPos part_center_before = {0.0, 0.0}, part_center_after = {0.0, 0.0};
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_PART (data));
@@ -937,7 +935,7 @@ part_set_property (ItemData *data, char *property, char *value)
 
 	for (props = priv->properties; props; props = props->next) {
 		prop = props->data;
-		if (g_strcasecmp (prop->name, property) == 0) {
+		if (g_ascii_strcasecmp (prop->name, property) == 0) {
 			g_free (prop->value);
 			if (value != NULL)
 				prop->value = g_strdup (value);

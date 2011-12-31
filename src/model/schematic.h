@@ -44,7 +44,6 @@
 #include <cairo/cairo-ps.h>
 #endif
 
-#include "item-data.h"
 #include "part.h"
 #include "wire.h"
 #include "node-store.h"
@@ -97,11 +96,11 @@ double	   schematic_get_zoom (Schematic *schematic);
 void	   schematic_set_zoom (Schematic *schematic, double zoom);
 void	   schematic_add_item (Schematic *sm, ItemData *data);
 void	   schematic_parts_foreach (Schematic *schematic,
-	ForeachItemDataFunc func, gpointer user_data);
+				ForeachItemDataFunc func, gpointer user_data);
 void	   schematic_wires_foreach (Schematic *schematic,
-	ForeachItemDataFunc func, gpointer user_data);
+				ForeachItemDataFunc func, gpointer user_data);
 void	   schematic_items_foreach (Schematic *schematic,
-	ForeachItemDataFunc func, gpointer user_data);
+				ForeachItemDataFunc func, gpointer user_data);
 GList	  *schematic_get_items (Schematic *sm);
 NodeStore *schematic_get_store (Schematic *schematic);
 gpointer   schematic_get_settings (Schematic *schematic);
@@ -112,15 +111,12 @@ void	   schematic_log_append (Schematic *schematic, const char *message);
 void	   schematic_log_append_error (Schematic *schematic, const char *message);
 void	   schematic_log_show (Schematic *schematic);
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic);
-int	   schematic_count (void);
-gboolean schematic_is_dirty(Schematic *sm);	
-void     schematic_set_dirty(Schematic *sm, gboolean b);
-gint schematic_save_file (Schematic *sm, GError **error);
+int	   	   schematic_count (void);
+gboolean   schematic_is_dirty(Schematic *sm);	
+void       schematic_set_dirty(Schematic *sm, gboolean b);
+gint       schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
 void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
-void schematic_export (Schematic *sm, const gchar *filename, gint img_w, gint img_h, int bg, int color, int format);
+void       schematic_export (Schematic *sm, const gchar *filename, gint img_w, gint img_h, int bg, int color, int format);
 
 #endif /* __SCHEMATIC_H__ */
-
-
-
