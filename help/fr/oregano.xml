@@ -8,7 +8,7 @@
 ]>
 <article id="index" lang="fr">
   <articleinfo>
-    <title>Manuel de l'Utilisateur d'<application>Oregano</application></title>
+    <title>Guide de l'Utilisateur d'<application>Oregano</application></title>
 		<copyright> 
 						<year>2003</year> 
 						<year>2004</year> 
@@ -45,92 +45,92 @@
     </revhistory>
 
     <releaseinfo>
-      Oregano est &agrave; la fois un logiciel de saisie de sch&eacute;ma
-      &eacute;l&eacute;ctrique et un outil de simulation. Dans son utilisation,
-      il simplifie la conception de cicuit &eacute;l&eacute;ctrique simple en
+      Oregano est à la fois un logiciel de saisie de schéma
+      éléctrique et un outil de simulation. Dans son utilisation,
+      il simplifie la conception de cicuit éléctrique simple en
       laissant l'utilisateur passer facilement de la saisie du
-      sch&eacute;ma &agrave; la simulation.
+      schéma à la simulation.
       
-      Ce document ne pr&eacute;tend &ecirc;tre qu'une introduction &agrave; la simulation
-      &eacute;l&eacute;ctrique pour celui qui est d&eacute;j&agrave; familier &agrave; ce genre de pratique.
+      Ce document ne prétend être qu'une introduction à la simulation
+      éléctrique pour celui qui est déjà familier à ce genre de pratique.
     </releaseinfo> 
       <legalnotice> 
-      <title>Retour d'exp&eacute;rience</title> 
-      <para>Pour faire part d'un problegrave;egrave;me our faire une suggestion au
-      sujet de <application>Oregano 2</application> ou de ce manuel, nous
-      vous proposons de suivre les instructions propos&eacute;es dans <ulink
+      <title>Retour d'expérience</title> 
+      <para>Pour faire part d'un problème ou faire une suggestion au
+      sujet de <application>Oregano</application> ou de ce guide, nous
+      vous proposons de suivre les instructions proposées dans <ulink
       url="ghelp:oregano-feedback" type="help">Oregano Feedback Page</ulink>.
       </para>
       </legalnotice>
   </articleinfo>
 
   <sect1 id="getting-started">
-    <title>Comment utiliser oregano pour la premi&egrave;re fois</title>
+    <title>Comment utiliser oregano pour la première fois</title>
 
-    <para>Quand vous lancez Oregano, vous vous trouvez face &agrave; une feuille
+    <para>Quand vous lancez Oregano, vous vous trouvez face à une feuille
     de saisie vide, sur laquelle vous pouvez placer des composants et les
-    relier. Pour positionner un composant,s&eacute;l&eacute;ctionner le dans le navigateur
-    de composants install&eacute; sur le c&ocirc;t&eacute; droit de la fen&ecirc;tre de l'application.
-    Appuyer, alors, sur le boutton Placer ou bien clicker deux fois sur
-    le composant choisi. Vous pouvez aussi partir du composant pr&eacute;visualis&eacute;, 
+    relier. Pour positionner un composant, sélectionner le dans le navigateur
+    de composants installé sur le côté droit de la fenêtre de l'application.
+    Appuyer, alors, sur le boutton « Placer » ou bien clicker deux fois sur
+    le composant choisi. Vous pouvez aussi partir du composant prévisualisé, 
     le faire glisser et le coller sur la feuille de saisie.</para>
     
-    <para>Une fois que quelques composants sont positionn&eacute;s sur la feuille
-    de saisie, vous pouvez commencez &agrave; les connecter. S&eacute;lectionner l'outil
-    de saisie des fils &eacute;l&eacute;ctriques sur la barre d'outils et clicker une fois
-    avec le boutton gauche de la souris pour d&eacute;terminer le lieu de d&eacute;part du
-    cablage. Pour arr&ecirc;ter le fil, cliquer &agrave; nouveau sur lieu o&ugrave; vous 
-    souhaiter l'arr&ecirc;ter.</para>
+    <para>Une fois que quelques composants sont positionnés sur la feuille
+    de saisie, vous pouvez commencez à les connecter. Sélectionner l'outil
+    de saisie des fils éléctriques sur la barre d'outils et clicker une fois
+    avec le boutton gauche de la souris pour déterminer le lieu de départ du
+    cablage. Pour arrêter le fil, cliquer à nouveau sur lieu où vous 
+    souhaiter l'arrêter.</para>
 
     <para>Assurez-vous d'avoir connecter au moins une masse au circuit,
-    celle-ci &eacute;tant n&eacute;cessaire pour r&eacute;aliser une simulation.</para>
+    celle-ci étant nécessaire pour réaliser une simulation.</para>
 
   </sect1>
 
   <sect1 id="editing">
     <title>Saisie d'un circuit</title>
 
-    <para>Il existe quelques raccourcis calvier permettant d'acc&eacute;l&eacute;rer l'&eacute;dition du
-    sch&eacute;ma :</para>
+    <para>Il existe quelques raccourcis calvier permettant d'accélérer l'édition du
+    schéma :</para>
 
       <variablelist>
-	<varlistentry><term>Ctrl-A</term><listitem><para>Permet de s&eacute;lectionner tous les objets
-	sur le sch&eacute;ma</para>
+	<varlistentry><term>Ctrl-A</term><listitem><para>Permet de sélectionner tous les objets
+	sur le schéma</para>
 	</listitem></varlistentry>
 
-        <varlistentry><term>Ctrl-Shift-A</term><listitem><para>Permet de d&eacute;s&eacute;lectionner tous les objets</para>
+        <varlistentry><term>Ctrl-Shift-A</term><listitem><para>Permet de désélectionner tous les objets</para>
         </listitem></varlistentry>
 
-        <varlistentry><term>r</term><listitem><para>Permet de tourner l'objet s&eacute;lectionner de 90 degr&eacute;s dans le
+        <varlistentry><term>r</term><listitem><para>Permet de tourner l'objet sélectionner de 90 degrés dans le
 	sens des aiguilles d'une montre</para>
         </listitem></varlistentry>
 
-        <varlistentry><term>&lt;Del&gt;</term><listitem><para>Permet de d&eacute;truire les objets s&eacute;lectionn&eacute;s</para>
+        <varlistentry><term>&lt;Del&gt;</term><listitem><para>Permet de détruire les objets sélectionnés</para>
         </listitem></varlistentry>
 
-        <varlistentry><term>l</term><listitem><para>Permet de mette en place le composant s&eacute;lectionn&eacute;</para>
+        <varlistentry><term>l</term><listitem><para>Permet de mette en place le composant sélectionné</para>
         </listitem></varlistentry>
 
       </variablelist>
 
-    <para>Composants et fils sont s&eacute;lectionn&eacute;s en cliquant dessus, et en maintenant la
-    touche Shiftn vous pouvez effectuer une s&eacute;lection multiple. Vous pouvez en outre
-    s&eacute;lectionner plusieurs objets en les 'entourrant' : maintenez le boutton gauche appuy&eacute;
-    lorsque vous encadrez les objets que vous d&eacute;sirez s&eacute;lectionner.</para>
+    <para>Composants et fils sont sélectionnés en cliquant dessus, et en maintenant la
+    touche Shiftn vous pouvez effectuer une sélection multiple. Vous pouvez en outre
+    sélectionner plusieurs objets en les 'entourrant' : maintenez le boutton gauche appuyé
+    lorsque vous encadrez les objets que vous désirez sélectionner.</para>
 
   </sect1>
 
   <sect1 id="simulation">
     <title>Simulation</title>
 
-    <para>Quand vous avez dessin&eacute; un circuit et souhaitez effectuer une simulation,
-    pressez soit le boutton sur la barre d'outils ou s&eacute;lectionner <guimenu>Outils
+    <para>Quand vous avez dessiné un circuit et souhaitez effectuer une simulation,
+    pressez soit le boutton sur la barre d'outils ou sélectionner <guimenu>Outils
     </guimenu>-&gt;<guimenuitem>Simulation</guimenuitem>.
-    La simulation est alors lanc&eacute;e et vous suivez sa progression sur la fen&ecirc;tre qui
+    La simulation est alors lancée et vous suivez sa progression sur la fenêtre qui
     apparait devant vous.</para>
 
-    <para>Si vous souhaitez changer les param&egrave;tres de simulation, s&eacute;lectionner
-    <guimenu>Param&egrave;tres</guimenu>-&gt;<guimenuitem>Param&egrave;tres de Simulation</guimenuitem>.
+    <para>Si vous souhaitez changer les paramètres de simulation, sélectionner
+    <guimenu>Paramètres</guimenu>-&gt;<guimenuitem>Paramètres de Simulation</guimenuitem>.
     </para>
 
   </sect1>

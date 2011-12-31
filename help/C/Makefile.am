@@ -1,3 +1,4 @@
+figdir = figures
 docname = oregano
 lang = C
 omffile = oregano-C.omf
