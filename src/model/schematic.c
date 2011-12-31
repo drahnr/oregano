@@ -33,7 +33,6 @@
 #include <glade/glade.h>
 #include "schematic.h"
 #include "node-store.h"
-//#include "load-schematic.h"
 #include "file-manager.h"
 #include "settings.h"
 #include "sim-settings.h"
@@ -71,7 +70,6 @@ struct _SchematicPriv {
 	NodeStore  *store;
 	GHashTable *symbols;
 	GHashTable *refdes_values;
-/*	NetList    *netlist;*/
 
 	double zoom;
 
@@ -344,9 +342,7 @@ schematic_finalize(GObject *object)
 }
 
 /*
- *
  * Get/set functions.
- *
  */
 
 char *
@@ -433,9 +429,6 @@ schematic_set_filename (Schematic *schematic, const gchar *filename)
 
 	g_free (schematic->priv->filename);
 	schematic->priv->filename = g_strdup (filename);
-
-/*	g_signal_emit_by_name (G_OBJECT (schematic),
-	                       "filename_changed", schematic->priv->filename); */
 }
 
 char *
@@ -457,10 +450,6 @@ schematic_set_netlist_filename (Schematic *schematic, char *filename)
 		g_free (schematic->priv->netlist_filename);
 
 	schematic->priv->netlist_filename = g_strdup (filename);
-
-/*	g_signal_emit_by_name (G_OBJECT (schematic),
-			"netlist_filename_changed", schematic->priv->filename);
-*/
 }
 
 double
@@ -482,9 +471,6 @@ schematic_set_zoom (Schematic *schematic, double zoom)
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
 	schematic->priv->zoom = zoom;
-
-/*  g_signal_emit_by_name (G_OBJECT (schematic),
-	                       "zoom_changed", schematic->priv->zoom); */
 }
 
 NodeStore *
@@ -662,7 +648,7 @@ schematic_save_file (Schematic *sm, GError **error)
 	}
 
 	if (ft->save_func (sm, &internal_error)) {
-		schematic_set_title (sm, g_basename (sm->priv->filename));
+		schematic_set_title (sm, g_path_get_basename (sm->priv->filename));
 		schematic_set_dirty (sm, FALSE);
 		return TRUE;
 	}
@@ -819,8 +805,7 @@ schematic_set_lowest_available_refdes (Schematic *schematic,
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 	g_return_if_fail (prefix != NULL);
 
-	/*
-	 * If there already is a key, use it, otherwise copy the prefix and
+	/* If there already is a key, use it, otherwise copy the prefix and
 	 * use as key.
 	 */
 	if (!g_hash_table_lookup_extended (schematic->priv->refdes_values,
@@ -858,48 +843,16 @@ part_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm)
 	schematic_set_dirty (sm, TRUE);
 }
 
-/*
-static int
-schematic_get_lowest_available_refdes2 (Schematic *schematic, char *prefix)
-{
-	RefData *data;
-
-	g_return_val_if_fail (schematic != NULL, -1);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), -1);
-	g_return_val_if_fail (prefix != NULL, -1);
-
-	data = g_hash_table_lookup(schematic->priv->refdes_values, prefix);
-	if (data == NULL) {
-		return 1;
-	} else {
-		int result;
-
-		switch (data->type) {
-		REF_DATA_SINGLE:
-			break;
-		REF_DATA_RANGE:
-			break;
-		REF_DATA_MIN:
-			break;
-		REF_DATA_MAX:
-			break;
-		default:
-			result = 1;
-		}
-		return result;
-	}
-
-}
-*/
-
 static void
 schematic_render (Schematic *sm, cairo_t *cr)
 {
 	NodeStore *store;
 
+	SchematicPrintContext schematic_print_context;
+	schematic_print_context.colors = sm->priv->colors;
 	store = schematic_get_store (sm);
 
-	node_store_print_items (store, cr, &sm->priv->colors);
+	node_store_print_items (store, cr, &schematic_print_context);
 	node_store_print_labels (store, cr, NULL);
 }
 
@@ -1079,14 +1032,14 @@ print_options (GtkPrintOperation *operation, Schematic *sm)
 {
 	GladeXML *gui;
 
-	if (!g_file_test (OREGANO_GLADEDIR "/print-options.glade2", G_FILE_TEST_EXISTS)) {
-		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade2")));
+	if (!g_file_test (OREGANO_GLADEDIR "/print-options.glade", G_FILE_TEST_EXISTS)) {
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade")));
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/print-options.glade2",
+	gui = glade_xml_new (OREGANO_GLADEDIR "/print-options.glade",
 		"widget", GETTEXT_PACKAGE);
 	if (!gui) {
-		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade2")));
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade")));
 	}
 
 	if (sm->priv->printoptions)
@@ -1111,7 +1064,7 @@ print_options (GtkPrintOperation *operation, Schematic *sm)
 	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_background")),
 		&sm->priv->colors.background);
 
-	return glade_xml_get_widget (gui, "widget");
+	return (GObject *) (glade_xml_get_widget (gui, "widget"));
 }
 
 static void
