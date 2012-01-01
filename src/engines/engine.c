@@ -3,11 +3,13 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://oregano.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009-2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,6 +28,7 @@
  */
 
 #include <glib/gi18n.h>
+
 #include "engine.h"
 #include "engine-internal.h"
 #include "gnucap.h"
@@ -62,7 +65,8 @@ oregano_engine_base_init (gpointer g_class)
 
 	if (!initialized) {
 		/* create interface signals here. */
-		engine_signals[DONE] = g_signal_new ("done", G_TYPE_FROM_CLASS (g_class),
+		engine_signals[DONE] = g_signal_new ("done", 
+		    G_TYPE_FROM_CLASS (g_class),
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (OreganoEngineClass, done),
 			NULL,
@@ -71,7 +75,8 @@ oregano_engine_base_init (gpointer g_class)
 			G_TYPE_NONE,
 			0);
 
-		engine_signals[ABORTED] = g_signal_new ("aborted", G_TYPE_FROM_CLASS (g_class),
+		engine_signals[ABORTED] = g_signal_new ("aborted", 
+		    G_TYPE_FROM_CLASS (g_class),
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (OreganoEngineClass, abort),
 			NULL,
@@ -101,7 +106,8 @@ oregano_engine_get_type (void)
 			0,      /* n_preallocs */
 			NULL    /* instance_init */
 		};
-		type = g_type_register_static (G_TYPE_INTERFACE, "OreganoEngine", &info, 0);
+		type = g_type_register_static (G_TYPE_INTERFACE, "OreganoEngine", &info, 
+		                               0);
 	}
 	return type;
 }

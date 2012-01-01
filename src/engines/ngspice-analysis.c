@@ -28,7 +28,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <stdlib.h>
 #include <glib/gi18n.h>
+
 #include "ngspice.h"
 #include "netlist-helper.h"
 #include "dialogs.h"
@@ -58,11 +60,11 @@ static gchar *analysis_names[] = {
 };
 
 #define SP_TITLE      	"oregano\n"
+#define CPU_TIME		"CPU time since last call:"
 
 #define TAGS_COUNT (sizeof (analysis_tags) / sizeof (struct analysis_tag))
 #define NG_DEBUG(s) if (0) g_print ("%s\n", s)
-#define IS_THIS_ITEM(str,item)  	(!strncmp(str,item,strlen(item)))
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#define IS_THIS_ITEM(str,item)  	(!strncmp (str,item,strlen(item)))
 
 typedef struct {
 	gchar *name;
@@ -70,7 +72,7 @@ typedef struct {
 } NGSPICE_Variable;
 
 static NGSPICE_Variable *
-get_variables(gchar *str, gint *count)
+get_variables (gchar *str, gint *count)
 {
 	NGSPICE_Variable *out;
 	static gchar *tmp[100];
@@ -86,13 +88,14 @@ get_variables(gchar *str, gint *count)
 	while (*fin != '\0') {
 		if (isspace(*fin)) {
 			*fin = '\0';
-			tmp[i] = g_strdup(ini);
+			tmp[i] = g_strdup (ini);
 			*fin = ' ';
 			i++;
 			ini = fin;
 			while (isspace(*ini)) ini++;
 			fin = ini;
-		} else fin++;
+		} 
+		else fin++;
 	}
 
 	if (i == 0) {
@@ -129,16 +132,9 @@ parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	priv->analysis = g_list_append (priv->analysis, sdata);
 	priv->num_analysis = 1;
 	sdata->state = IN_VALUES;
-	sdata->type  = ANALYSIS_UNKNOWN;
+	sdata->type  = DC_TRANSFER;
 	sdata->functions = NULL;
 
-	fgets (buf, 255, priv->inputfp);
-	tmp = g_strchug (buf);
-	for (i = 0; analysis_names[i]; i++) {
-		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
-			sdata->type = i;
-		}
-	}
 	
 	np1 = 1.;
 	ANALYSIS (sdata)->dc.start =
@@ -156,7 +152,7 @@ parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	fgets (buf, 255, priv->inputfp);
 	
 	/* Calculates the number of variables */
-	variables = get_variables(buf, &n);
+	variables = get_variables (buf, &n);
 
 	n=n-1;
 	//printf ("n = %d\n", n);
@@ -197,8 +193,7 @@ parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 		variables = get_variables (tmp, &i);
 		index = atoi (variables[0].name);
 		for (i=0; i<n; i++) {
-			val[i]=g_ascii_strtod(variables[i+1].name, NULL);
-			//printf ("val[%d] = %lf\n", i, val[i]);
+			val[i]=g_ascii_strtod (variables[i+1].name, NULL);
 			sdata->data[i] = g_array_append_val (sdata->data[i], val[i]);
 			if (val[i] < sdata->min_data[i])
 				sdata->min_data[i] = val[i];
@@ -272,7 +267,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 
 	sdata->var_names   = (char**) g_new0 (gpointer, nodes_nb + 1);
 	sdata->var_units   = (char**) g_new0 (gpointer, nodes_nb + 1);
-	variables = get_variables(buf, &n);
+	variables = get_variables (buf, &n);
 	n=n-1;
 	sdata->var_names[0] = g_strdup (_("Time"));
 	sdata->var_units[0] = g_strdup (_("time"));
@@ -320,7 +315,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 		tmp=&buf[0];
 		variables = get_variables (tmp, &k);
 		for (i=0; i<n; i++) {
-			val[i]=g_ascii_strtod(variables[i+1].name, NULL);
+			val[i]=g_ascii_strtod (variables[i+1].name, NULL);
 			val_tmp1[i] = g_array_append_val (val_tmp1[i], val[i]);
 			if (val[i] < sdata->min_data[i])
 				sdata->min_data[i] = val[i];
@@ -335,7 +330,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 		fgets (buf, 255, priv->inputfp);
 		fgets (buf, 255, priv->inputfp);
 		fgets (buf, 255, priv->inputfp);
-		variables = get_variables(buf, &m);
+		variables = get_variables (buf, &m);
 		m=m-1;
 
 		for (i=1; i<m; i++) {
@@ -354,7 +349,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 			tmp=&buf[0];
 			variables = get_variables (tmp, &k);
 			for (i = 0; i < m; i++) {
-				val[i]=g_ascii_strtod(variables[i+1].name, NULL);
+				val[i]=g_ascii_strtod (variables[i+1].name, NULL);
 				val_tmp2[i] = g_array_append_val (val_tmp2[i], val[i]);
 				if (val[i] < sdata->min_data[i+n])
 					sdata->min_data[i+n-1] = val[i];
@@ -368,7 +363,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 			fgets (buf, 255, priv->inputfp);
 			fgets (buf, 255, priv->inputfp);
 			fgets (buf, 255, priv->inputfp);
-			variables = get_variables(buf, &p);
+			variables = get_variables (buf, &p);
 			p=p-1;
 			
 			for (i=1; i<p; i++) {
@@ -387,7 +382,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 				tmp=&buf[0];
 				variables = get_variables (tmp, &k);
 				for (i = 0; i < p; i++) {
-					val[i]=g_ascii_strtod(variables[i+1].name, NULL);
+					val[i]=g_ascii_strtod (variables[i+1].name, NULL);
 					val_tmp3[i] = g_array_append_val (val_tmp3[i], val[i]);
 					if (val[i] < sdata->min_data[i+n+m-3])
 						sdata->min_data[i+n+m-3] = val[i];
@@ -402,22 +397,22 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	while (!found) {
 		gdouble val0 = 0.;
 		for (i=0; i<nodes_nb+1; i++) {
-		/* 0 = time */
-		/* From node 1 to node 3 */
-		if (i < n) {
-			gdouble val=0;
-			val = g_array_index (val_tmp1[i], gdouble, sdata->got_points);
-			if (i == 0) val0 = val;
-			sdata->data[i] = g_array_append_val (sdata->data[i], val);
-		}
-		/* From node 4 to node 6 */
-		else if (i < n+m-1) {
+			/* 0 = time */
+			/* From node 1 to node 3 */
+			if (i < n) {
+				gdouble val=0;
+				val = g_array_index (val_tmp1[i], gdouble, sdata->got_points);
+				if (i == 0) val0 = val;
+				sdata->data[i] = g_array_append_val (sdata->data[i], val);
+			}
+			/* From node 4 to node 6 */
+			else if (i < n+m-1) {
 				gdouble val=0;
 				val = g_array_index (val_tmp2[i-n+1], gdouble, sdata->got_points);
 				sdata->data[i] = g_array_append_val (sdata->data[i], val);
-		}
-		/* From node 7 to node 9 */
-		else {
+			}
+			/* From node 7 to node 9 */
+			else {
 				gdouble val=0;
 				val = g_array_index (val_tmp3[i-n-m+2], gdouble, sdata->got_points);
 				sdata->data[i] = g_array_append_val (sdata->data[i], val);
@@ -437,7 +432,6 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	OreganoNgSpicePriv *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
-	gboolean found = FALSE;	
 	NGSPICE_Variable *variables;
 	gint i, n=0, freq, j, k;
 	gdouble val[10], mag[10][10];
@@ -471,7 +465,7 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sdata->n_variables = n;
 	sdata->var_names   = (char**) g_new0 (gpointer, n);
 	sdata->var_units   = (char**) g_new0 (gpointer, n);
-	variables = get_variables(tmp, &k);
+	variables = get_variables (tmp, &k);
 	sdata->var_names[0] = _("Frequency");
 	sdata->var_names[1] = g_strdup (variables[3].name);
 	for (i = 0; i < n; i++) {
@@ -513,19 +507,18 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 		fgets (buf, 255, priv->inputfp);
 		fgets (buf, 255, priv->inputfp);
 		tmp = &buf[0];
-		variables = get_variables(tmp, &k);
+		variables = get_variables (tmp, &k);
 		sdata->var_names[j] = g_strdup (variables[3].name);
 		fgets (buf, 255, priv->inputfp);
 		fgets (buf, 255, priv->inputfp);
 		fgets (buf, 255, priv->inputfp);
 		fgets (buf, 255, priv->inputfp);
 
-		for (k=0; k<10; k++){
+		for (k=0; k<10; k++) {
 			fgets (buf, 255, priv->inputfp);
 			sscanf (buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
 			mag[k][j]=val[0];
 		}
-		found = FALSE;
 	}
 	
 	for (i=0; i<n; i++) {
@@ -561,13 +554,13 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	gboolean transient_enabled = FALSE;
 	gboolean fourier_enabled = FALSE;
 	gboolean dc_enabled = FALSE;
-	gboolean ac_enabled = FALSE;
+	//gboolean ac_enabled = FALSE;
 
 	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 
 	transient_enabled = sim_settings_get_trans (sim_settings);
 	fourier_enabled = sim_settings_get_fourier (sim_settings);
-	ac_enabled = sim_settings_get_ac (sim_settings);
+	//ac_enabled = sim_settings_get_ac (sim_settings);
 	dc_enabled = sim_settings_get_dc (sim_settings);
 	
 	priv->inputfp = fopen ("/tmp/netlist.lst", "r");
@@ -581,6 +574,7 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	}
 	tmp = &buf[0];
 	tmp = g_strchug (tmp);
+	NG_DEBUG (g_strdup_printf ("0 buf = %s\n", buf));
 
 	for (i = 0; analysis_names[i]; i++) {
 		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
@@ -593,15 +587,54 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	}
 
 	if (transient_enabled) {
-		parse_transient_analysis (ngspice, buf);
+		if (g_str_has_prefix(analysis_names[analysis_type], "Transient Analysis")) {
+			parse_transient_analysis (ngspice, buf);
+		}
+		else {
+			oregano_warning (_("Analysis expected not found"));
+		}
 	}
+		
 	fgets (buf, 255, priv->inputfp);
-	if (dc_enabled) {
-		parse_dc_analysis (ngspice, buf);
+	NG_DEBUG (g_strdup_printf ("1 buf = %s\n", buf));
+	tmp = &buf[0];
+	tmp = g_strchug (tmp);
+
+	analysis_type = ANALYSIS_UNKNOWN;
+	for (i = 0; analysis_names[i]; i++) {
+		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
+			analysis_type = i;
+		}
 	}
 	if (fourier_enabled) {
-		parse_fourier_analysis (ngspice, buf);
+		if (g_str_has_prefix(analysis_names[analysis_type], "Fourier analysis")) {
+			parse_fourier_analysis (ngspice, buf);
+		}
+		else {
+			oregano_warning (_("Analysis expected not found"));
+		}
 	}
+	fgets (buf, 255, priv->inputfp);
+	NG_DEBUG (g_strdup_printf ("2 buf = %s\n", buf));
+	tmp = &buf[0];
+	tmp = g_strchug (tmp);
+
+	analysis_type = ANALYSIS_UNKNOWN;
+	for (i = 0; analysis_names[i]; i++) {
+		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
+			analysis_type = i;
+		}
+	}
+	if (dc_enabled) {
+		if (g_str_has_prefix(analysis_names[analysis_type], "DC transfer characteristic")) {
+			parse_dc_analysis (ngspice, buf);
+		}
+		else {
+			oregano_warning (_("DC Sweep expected but not found"));
+		}
+	}
+
+	
 		
 	fclose (priv->inputfp);
 }

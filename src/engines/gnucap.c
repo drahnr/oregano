@@ -3,11 +3,13 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://oregano.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009-2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,6 +32,7 @@
 #include <sys/wait.h>
 #include <ctype.h>
 #include <glib/gi18n.h>
+
 #include "gnucap.h"
 #include "netlist-helper.h"
 #include "dialogs.h"
@@ -155,7 +158,6 @@ gnucap_finalize (GObject *object)
 		}
 		g_free (data->var_names);
 		g_free (data->var_units);
-		//for (i=0; i<data->n_points; i++)
 		for (i=0; i<data->n_variables; i++)
 			g_array_free (data->data[i], TRUE);
 		g_free (data->min_data);
@@ -259,37 +261,38 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	/* Prints Transient Analysis */
 	if (sim_settings_get_trans (output.settings)) {
 		gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
-		fprintf(file, ".print tran %s\n", tmp_str);
+		fprintf (file, ".print tran %s\n", tmp_str);
 		g_free (tmp_str);
 
 		fprintf (file, ".tran %g %g ",
-			sim_settings_get_trans_start(output.settings),
-			sim_settings_get_trans_stop(output.settings));
-		if (!sim_settings_get_trans_step_enable(output.settings))
+			sim_settings_get_trans_start (output.settings),
+			sim_settings_get_trans_stop (output.settings));
+		if (!sim_settings_get_trans_step_enable (output.settings))
 			/* FIXME Do something to get the right resolution */
-			fprintf(file,"%g",
-					(sim_settings_get_trans_stop(output.settings)-
-					sim_settings_get_trans_start(output.settings))/100);
+			fprintf (file,"%g",
+					(sim_settings_get_trans_stop (output.settings)-
+					sim_settings_get_trans_start (output.settings))/100);
 		else
-			fprintf(file,"%g", sim_settings_get_trans_step(output.settings));
+			fprintf (file,"%g", sim_settings_get_trans_step (output.settings));
 
-			if (sim_settings_get_trans_init_cond(output.settings)) {
-				fputs(" UIC\n", file);
-			} else {
-				fputs("\n", file);
+		if (sim_settings_get_trans_init_cond (output.settings)) {
+			fputs(" UIC\n", file);
+		} 
+		else {
+			fputs("\n", file);
 		}
 	}
 
 	/*	Print dc Analysis */
 	if (sim_settings_get_dc (output.settings)) {
-		fprintf(file, ".print dc %s\n", netlist_helper_create_analysis_string (output.store, FALSE));
-		fputs(".dc ",file);
+		fprintf (file, ".print dc %s\n", netlist_helper_create_analysis_string (output.store, FALSE));
+		fputs (".dc ",file);
 
 		/* GNUCAP don't support nesting so the first or the second */
 		/* Maybe an error message must be show if both are on	   */
-		if ( sim_settings_get_dc_vsrc (output.settings) ) {
+		if (sim_settings_get_dc_vsrc (output.settings)) {
 			fprintf (file,"%s %g %g %g\n",
-					sim_settings_get_dc_vsrc(output.settings),
+					sim_settings_get_dc_vsrc (output.settings),
 					sim_settings_get_dc_start (output.settings),
 					sim_settings_get_dc_stop (output.settings),
 					sim_settings_get_dc_step (output.settings) );
@@ -297,13 +300,13 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	}
 
 	/* Prints ac Analysis*/
-	if ( sim_settings_get_ac (output.settings) ) {
+	if (sim_settings_get_ac (output.settings)) {
 		double ac_start, ac_stop, ac_step;
 		/* GNUCAP dont support OCT or DEC: Maybe an error message */
 		/* must be shown if the netlist is set in that way.       */
-		ac_start = sim_settings_get_ac_start(output.settings) ;
-		ac_stop = sim_settings_get_ac_stop(output.settings);
-		ac_step = (ac_stop - ac_start) / sim_settings_get_ac_npoints(output.settings);
+		ac_start = sim_settings_get_ac_start (output.settings) ;
+		ac_stop = sim_settings_get_ac_stop (output.settings);
+		ac_step = (ac_stop - ac_start) / sim_settings_get_ac_npoints (output.settings);
 		fprintf(file, ".print ac %s\n", netlist_helper_create_analysis_string (output.store, TRUE));
 		/* AC format : ac start stop step_size */
 		fprintf (file, ".ac %g %g %g\n", ac_start, ac_stop, ac_step);
@@ -311,10 +314,10 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 
 	/* Prints analysis using a Fourier transform*/
 	if (sim_settings_get_fourier (output.settings)) {
-		/*gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
+		gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
 		fprintf (file, ".four %d %s\n",
-			sim_settings_get_fourier_freq (output.settings), tmp_str);
-		g_free (tmp_str);*/
+			sim_settings_get_fourier_frequency (output.settings), tmp_str);
+		g_free (tmp_str);
 		gint fourier_stop;
 		gint fourier_start = 1;
 		gint fourier_step  = 1;
@@ -326,9 +329,9 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **
 	}
 	
 	/* Debug op analysis. */
-	fputs(".print op v(nodes)\n", file);
-	fputs(".op\n", file);
-	fputs(".end\n", file);
+	fputs (".print op v(nodes)\n", file);
+	fputs (".op\n", file);
+	fputs (".end\n", file);
 	fclose (file);
 }
 
@@ -377,7 +380,8 @@ gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 			    _("### Too few or none analysis found ###\n"));
 			gnucap->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
-		} else
+		} 
+		else
 			g_signal_emit_by_name (G_OBJECT (gnucap), "done");
 	}
 }
@@ -439,7 +443,8 @@ gnucap_start (OreganoEngine *self)
 		/* Watch the I/O Channel to read child strout */
 		gnucap->priv->child_iochannel_watch = g_io_add_watch (gnucap->priv->child_iochannel,
 			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)gnucap_child_stdout_cb, gnucap);
-	} else {
+	} 
+	else {
 		gnucap->priv->aborted = TRUE;
 		schematic_log_append_error (gnucap->priv->schematic, _("Unable to execute GnuCap."));
 		g_signal_emit_by_name (G_OBJECT (gnucap), "aborted");
@@ -510,7 +515,7 @@ typedef struct {
 } GCap_Variable;
 
 static GCap_Variable *
-_get_variables(gchar *str, gint *count)
+_get_variables (gchar *str, gint *count)
 {
 	GCap_Variable *out;
 	/* FIXME Improve the code */
@@ -518,25 +523,22 @@ _get_variables(gchar *str, gint *count)
 	gchar *ini, *fin;
 	gint i = 0;
 
-	// Don't USE!. Is not smarty !!
-	// It generate empty strings that really sucks all!!!
-	//arr = g_strsplit_set (str, " ", -1);
-
 	i = 0;
 	ini = str;
 	/* Put blank in advance */
-	while (isspace(*ini)) ini++;
+	while (isspace (*ini)) ini++;
 	fin = ini;
 	while (*fin != '\0') {
-		if (isspace(*fin)) {
+		if (isspace (*fin)) {
 			*fin = '\0';
-			tmp[i] = g_strdup(ini);
+			tmp[i] = g_strdup (ini);
 			*fin = ' ';
 			i++;
 			ini = fin;
-			while (isspace(*ini)) ini++;
+			while (isspace (*ini)) ini++;
 			fin = ini;
-		} else fin++;
+		} 
+		else fin++;
 	}
 
 	if (i == 0) {
@@ -546,19 +548,19 @@ _get_variables(gchar *str, gint *count)
 
 	out = g_new0 (GCap_Variable, i);
 	(*count) = i;
-	for ( i=0; i<(*count); i++ ) {
+	for ( i=0; i< (*count); i++ ) {
 		out[i].name = tmp[i];
 	}
 	return out;
 }
 
 static void
-_free_variables(GCap_Variable *v, gint count)
+_free_variables (GCap_Variable *v, gint count)
 {
 	int i;
-	for(i=0; i<count; i++)
-		g_free(v[i].name);
-	g_free(v);
+	for (i=0; i<count; i++)
+		g_free (v[i].name);
+	g_free (v);
 }
 
 gdouble
@@ -566,7 +568,7 @@ strtofloat (gchar *s) {
 	gdouble val;
 	gchar *error;
 
-	val = strtod(s, &error);
+	val = g_strtod (s, &error);
 	/* If the value looks like : 100.u, adjust it */
 	/* We need this because GNU Cap's or ngSpice float notation */
 	switch (error[0]) {
@@ -588,7 +590,7 @@ strtofloat (gchar *s) {
 			val *= 1000;
 		break;
 		default:
-			if (strcmp(error, "Meg") == 0) val *= 1000000;
+			if (strcmp (error, "Meg") == 0) val *= 1000000;
 	}
 
 	return val;
@@ -621,7 +623,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 		NG_DEBUG (g_strdup_printf ("%s", s));
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
-			gdouble np1, np2;
+			gdouble np1;
 
 			sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 
@@ -634,7 +636,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			sdata->functions = NULL;
 
 			/* Calculates the quantity of variables */
-			variables = _get_variables(s, &n);
+			variables = _get_variables (s, &n);
 
 			for (i = 0; i < TAGS_COUNT; i++)
 				if (IS_THIS_ITEM (variables[0].name, analysis_tags[i]))
@@ -666,7 +668,8 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 						else {
 							if (strstr (sdata->var_names[i], "db") != NULL) {
 								sdata->var_units[i] = g_strdup ("db");
-							} else
+							} 
+							else
 								sdata->var_units[i] = g_strdup (_("voltage"));
 						}
 					break;
@@ -676,7 +679,8 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 						else {
 							if (strstr (sdata->var_names[i], "db") != NULL) {
 								sdata->var_units[i] = g_strdup ("db");
-							} else
+							} 
+							else
 								sdata->var_units[i] = g_strdup (_("voltage"));
 						}
 					break;
@@ -720,7 +724,8 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 					g_error (_("Unknown analysis"));
 					break;
 			}
-		} else {
+		} 
+		else {
 			if ((priv->analysis == NULL) || (isalpha (s[0]))) {
 				if (priv->buf_count > 1) {
 					schematic_log_append (priv->schematic, s);
@@ -760,7 +765,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 							sdata->max_data[i] = val;
 					}
 
-					_free_variables(variables, n);
+					_free_variables (variables, n);
 					sdata->got_points++;
 					sdata->got_var = n;
 					break;

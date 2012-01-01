@@ -3,6 +3,7 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://oregano.lug.fi.uba.ar/
  *
@@ -27,10 +28,12 @@
  */
 
 #include <glib.h>
+#include <glib/gprintf.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <ctype.h>
 #include <glib/gi18n.h>
+
 #include "ngspice.h"
 #include "netlist-helper.h"
 #include "dialogs.h"
@@ -58,21 +61,21 @@ oregano_ngspice_get_type (void)
 	if (type == 0) {
 		static const GTypeInfo info = {
 			sizeof (OreganoNgSpiceClass),
-			NULL,   /* base_init */
-			NULL,   /* base_finalize */
-			(GClassInitFunc) ngspice_class_init,   /* class_init */ 
-			NULL,   /* class_finalize */
-			NULL,   /* class_data */
+			NULL,   										/* base_init */
+			NULL,   										/* base_finalize */
+			(GClassInitFunc) ngspice_class_init,   			/* class_init */ 
+			NULL,   										/* class_finalize */
+			NULL,   										/* class_data */
 			sizeof (OreganoNgSpice),
-			0,      /* n_preallocs */
-			(GInstanceInitFunc) ngspice_instance_init,    /* instance_init */
+			0,      										/* n_preallocs */
+			(GInstanceInitFunc) ngspice_instance_init,    	/* instance_init */
 			NULL
 		};
 
 		static const GInterfaceInfo ngspice_info = {
-			(GInterfaceInitFunc) ngspice_interface_init,    /* interface_init */
-			NULL,               /* interface_finalize */
-			NULL                /* interface_data */
+			(GInterfaceInitFunc) ngspice_interface_init,/* interface_init */
+			NULL,               						/* interface_finalize */
+			NULL                						/* interface_data */
 		};
 
 		type = g_type_register_static (G_TYPE_OBJECT, "OreganoNgSpice", &info, 0);
@@ -183,14 +186,14 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 		"\n", file);
 
 	/* Prints Options */
-	fputs (".options\n", file);
+	fputs (".options OUT=120 ",file);
 
 	while (list) {
 		so = list->data;
 		/* Prevent send NULL text */
 		if (so->value) {
 			if (strlen(so->value) > 0) {
-				fprintf (file,"+ %s=%s\n",so->name,so->value);
+				g_fprintf (file,"%s=%s ",so->name,so->value);
 			}
 		}
 		list = list->next;
@@ -203,7 +206,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	while (list) {
 		gchar *model;
 		model = (gchar *)list->data;
-		fprintf (file,".include %s/%s.model\n", OREGANO_MODELDIR, model);
+		g_fprintf (file,".include %s/%s.model\n", OREGANO_MODELDIR, model);
 		list = list->next;
 	}
 
@@ -215,46 +218,47 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	/* Prints Transient Analysis */
 	if (sim_settings_get_trans (output.settings)) {
 		gdouble st = 0;
+		gdouble start = sim_settings_get_trans_start (output.settings);
+		gdouble stop  = sim_settings_get_trans_stop (output.settings);
 
 		if (sim_settings_get_trans_step_enable (output.settings))
 			st = sim_settings_get_trans_step (output.settings);
 		else
-			st = (sim_settings_get_trans_stop (output.settings) -
-				sim_settings_get_trans_start (output.settings)) / 50;
+			st = (stop-start) / 50;
 
-		fprintf (file, ".tran %g %g %g", st,
-			sim_settings_get_trans_stop (output.settings),
-			sim_settings_get_trans_start (output.settings));
-		if (sim_settings_get_trans_init_cond (output.settings)) {
-			fputs(" UIC\n", file);
-		} 
-		else {
-			fputs("\n", file);
+		if ((stop-start) <= 0) {
+			oregano_error (_("Your transient analysis settings present a "
+			          "weakness... the start figure is greater than "
+			           "stop figure\n"));
+			return;
 		}
+
+		g_fprintf (file, ".tran %lf %lf %lf\n", st, stop, start);
+		{
+			gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
+			g_fprintf (file, ".print tran %s\n", tmp_str);
+			g_free (tmp_str);
+			
+		}
+		fputs ("\n", file);
 	}
 
 	/*	Print dc Analysis */
 	if (sim_settings_get_dc (output.settings)) {
-		fputs(".dc ",file);
+		fputs (".dc ",file);
 		if (sim_settings_get_dc_vsrc (output.settings)) {
-			fprintf (file, "%s %g %g %g",
+			g_fprintf (file, "V_V%s %g %g %g\n",
 				sim_settings_get_dc_vsrc (output.settings),
 				sim_settings_get_dc_start (output.settings),
 				sim_settings_get_dc_stop (output.settings),
 				sim_settings_get_dc_step (output.settings));
-		}
-		if (sim_settings_get_dc_vsrc (output.settings)) {
-			fprintf (file, "%s %g %g %g",
-				sim_settings_get_dc_vsrc (output.settings),
-				sim_settings_get_dc_start (output.settings),
-				sim_settings_get_dc_stop (output.settings),
-				sim_settings_get_dc_step (output.settings));
+			g_fprintf (file, ".print dc V(%s)\n", sim_settings_get_dc_vsrc (output.settings));
 		}
 	}
 
 	/* Prints ac Analysis*/
 	if (sim_settings_get_ac (output.settings)) {
-		fprintf (file, ".ac %s %d %g %g\n",
+		g_fprintf (file, ".ac %s %d %g %g\n",
 			sim_settings_get_ac_type (output.settings),
 			sim_settings_get_ac_npoints (output.settings),
 			sim_settings_get_ac_start (output.settings),
@@ -262,11 +266,11 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	}
 	
 	/* Prints analysis using a Fourier transform*/
-	/*if (sim_settings_get_fourier (output.settings)) {	
-		fprintf (file, ".four %d %s\n",
+	if (sim_settings_get_fourier (output.settings)) {	
+		g_fprintf (file, ".four %d %s\n",
 		    sim_settings_get_fourier_frequency (output.settings), 
 		    sim_settings_get_fourier_nodes (output.settings));
-	}*/
+	}
 	/* Debug op analysis. */
 	fputs (".op\n", file);
 	fputs ("\n.END\n", file);
@@ -323,7 +327,8 @@ ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 			    _("### Too few or none analysis found ###\n"));
 			ngspice->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-		} else {
+		}
+		else {
 			g_signal_emit_by_name (G_OBJECT (ngspice), "done");
 		}
 	}
@@ -344,8 +349,7 @@ ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition, OreganoNgSp
 	g_free (line);
 	
 	// Let UI update
-	g_main_context_iteration (NULL, FALSE);
-	return TRUE;
+	return g_main_context_iteration (NULL, FALSE);
 }
 
 static gboolean
@@ -413,7 +417,8 @@ ngspice_start (OreganoEngine *self)
 		ngspice->priv->child_ioerror_watch = g_io_add_watch (ngspice->priv->child_ioerror,
 			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)ngspice_child_stderr_cb, ngspice);
 		
-	} else {
+	} 
+	else {
 		ngspice->priv->aborted = TRUE;
 		schematic_log_append_error (ngspice->priv->schematic, _("Unable to execute NgSpice."));
 		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");

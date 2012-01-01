@@ -3,11 +3,13 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://oregano.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +31,7 @@
 #define __GNUCAP_ENGINE
 
 #include <gtk/gtk.h>
+
 #include "engine.h"
 
 #define OREGANO_TYPE_GNUCAP             (oregano_gnucap_get_type ())

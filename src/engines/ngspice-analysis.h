@@ -1,13 +1,15 @@
 /*
- * ngspice.h
+ * ngspice-analysis.h
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://oregano.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,30 +43,29 @@
 
 /* Parser STATUS */
 struct _OreganoNgSpicePriv {
-	GPid child_pid;
-	gint child_stdout;
-	gint child_error;
+	GPid 		child_pid;
+	gint 		child_stdout;
+	gint 		child_error;
 	GIOChannel *child_iochannel;
 	GIOChannel *child_ioerror;
-	gint child_iochannel_watch;
-	gint child_ioerror_watch;
-	Schematic *schematic;
+	gint 		child_iochannel_watch;
+	gint 		child_ioerror_watch;
+	Schematic  *schematic;
 
-	gboolean aborted;
+	gboolean 	aborted;
 
-	GList *analysis;
-	gint num_analysis;
+	GList 	   *analysis;
+	gint 		num_analysis;
 	SimulationData *current;
-	double progress;
-	gboolean char_last_newline;
-	guint status;
-	guint buf_count;
+	double 		progress;
+	gboolean 	char_last_newline;
+	guint 		status;
+	guint 		buf_count;
 	// Added to store ngspice output into a file
 	// 		input for oregano...
-	FILE *inputfp;
+	FILE       *inputfp;
 };
 
-//void ngspice_parse (gchar *raw, gint len, OreganoNgSpice *ngspice);
 void ngspice_parse (OreganoNgSpice *ngspice);
 
 #endif

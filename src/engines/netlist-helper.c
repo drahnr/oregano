@@ -32,8 +32,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <string.h>
+#include <stdlib.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include "main.h"
 #include "schematic.h"
@@ -44,6 +45,7 @@
 #include "part-property.h"
 #include "netlist-helper.h"
 #include "errors.h"
+#include "dialogs.h"
 
 #define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
 
@@ -78,7 +80,7 @@ netlist_helper_nl_wire_traverse (Wire *wire, GSList **lst)
 		Part *part;
 		Node *node = nodes->data;
 
-		for(pins=node->pins; pins; pins=pins->next) {
+		for (pins=node->pins; pins; pins=pins->next) {
 			char *template, *tmp;
 			char **template_split;
 
@@ -237,11 +239,14 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				marker->node_nr = data->node_nr;
 				marker->name = value;
 				data->mark_list = g_slist_prepend (data->mark_list, marker);
-			} else if (!g_ascii_strcasecmp (prop, "ground")) {
+			} 
+			else if (!g_ascii_strcasecmp (prop, "ground")) {
 				data->gnd_list = g_slist_prepend (data->gnd_list, GINT_TO_POINTER (data->node_nr));
-			} else if (!g_ascii_strcasecmp (prop, "point")) {
+			} 
+			else if (!g_ascii_strcasecmp (prop, "point")) {
 				data->clamp_list = g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
-			} else if (!g_ascii_strncasecmp (prop, "jumper", 5)) {
+			} 
+			else if (!g_ascii_strncasecmp (prop, "jumper", 5)) {
 				/* Either jumper2 or jumper4. */
 				Node *opposite_node;
 				Pin opposite_pin;
@@ -307,7 +312,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				g_free (prop);
 				continue;
 			}
-			g_free(prop);
+			g_free (prop);
 		}
 
 		/* Keep track of models to include. Needs to be freed when the
@@ -394,7 +399,8 @@ netlist_helper_linebreak (char *str)
 				out = g_string_append_c (out, '\n');
 				out = g_string_append (out, split[i] + 1);
 			}
-		} else {
+		} 
+		else {
 			out = g_string_append (out, split[i]);
 		}
 
@@ -436,7 +442,6 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	data.store = store;
 
 	node_store_node_foreach (store, (GHFunc *)netlist_helper_node_foreach_traverse, &data);
-
 	num_gnd_nodes = g_slist_length (data.gnd_list);
 	num_clamps = g_slist_length (data.clamp_list);
 
@@ -447,8 +452,8 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		g_set_error (error,
 			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_GND,
-				_("Possibly due to a faulty circuit schematic. Please check that\n"
-				"you have a ground node and try again."));
+			_("Possibly due to a faulty circuit schematic. Please check that\n"
+			  "you have a ground node and try again."));
 	}
 
 	else if (num_clamps == 0) {
@@ -457,8 +462,8 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		g_set_error (error,
 			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_CLAMP,
-				_("Possibly due to a faulty circuit schematic. Please check that\n"
-					"you have one o more test clamps and try again."));
+			_("Possibly due to a faulty circuit schematic. Please check that\n"
+			  "you have one o more test clamps and try again."));
 	}
 
 	else {
@@ -471,19 +476,21 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	 	 * 1, 2, 3, ...
 	 	 */
 		node2real = g_new0 (gchar*, num_nodes + 1);
- 
+		
 		for (i = 1, j = 1; i <= num_nodes; i++) {
 			GSList *mlist;
 
-			if (g_slist_find (data.gnd_list, GINT_TO_POINTER (i)))
+			if (g_slist_find (data.gnd_list, GINT_TO_POINTER (i))) {
 				node2real[i] = g_strdup ("0");
+			}
 			else if ((mlist = g_slist_find_custom (data.mark_list,
-				GINT_TO_POINTER (i),
-				compare_marker))) {
+				GINT_TO_POINTER (i), compare_marker))) {
 				Marker *marker = mlist->data;
 				node2real[i] = g_strdup (marker->name);
 			}
-			else node2real[i] = g_strdup_printf ("%d", j++);
+			else {
+				node2real[i] = g_strdup_printf ("%d", j++);
+			}
 		}
 
 		/*
@@ -498,7 +505,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		}
 
 		/* Initialize out->template */
-		out->template = g_string_new("");
+		out->template = g_string_new ("");
 		for (parts = store->parts; parts; parts = parts->next) {
 			gchar *tmp, *internal;
 			GString *str;
@@ -518,12 +525,10 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[0]));
 				if (!node_nr) {
 					g_warning ("Couln't find part, pin_nr %d.", 0);
-				} else {
-					gchar *tmp;
-					tmp = node2real[node_nr];
-
+				} 
+				else {
 					/* need to substrac 1, netlist starts in 0, and node_nr in 1 */
-					pins[0].node_nr = atoi(node2real[node_nr]);
+					pins[0].node_nr = atoi (node2real[node_nr]);
 				}
 				g_free (internal);
 				continue;
@@ -562,16 +567,19 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			NG_DEBUG (g_strdup_printf ("Reading %d pins.\n)", num_pins));
 
 			for (pin_nr = 0; pin_nr < num_pins; pin_nr++) {
-				gint node_nr;
+				gint node_nr = 0;
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[pin_nr]));
 				if (!node_nr) {
-					g_warning ("Couldn't find part, pin_nr %d.", pin_nr);
-				} else {
+					gchar * tmp = g_strdup_printf (_("Couldn't find part, pin_nr %d."), pin_nr);
+					oregano_error_with_title (_("Problem of library:"), tmp);
+					return;
+				} 
+				else {
 					gchar *tmp;
 					tmp = node2real[node_nr];
 
 					/* need to substrac 1, netlist starts in 0, and node_nr in 1 */
-					pins[pin_nr].node_nr = atoi(node2real[node_nr]);
+					pins[pin_nr].node_nr = atoi (node2real[node_nr]);
 					g_string_append (str, tmp);
 					g_string_append_c (str, ' ');
 					NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
@@ -600,8 +608,8 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 			g_strfreev (template_split);
 			NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
-			out->template = g_string_append(out->template, str->str);
-			out->template = g_string_append_c(out->template, '\n');
+			out->template = g_string_append (out->template, str->str);
+			out->template = g_string_append_c (out->template, '\n');
 			g_string_free (str, TRUE);
 		}
 
@@ -637,7 +645,7 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 
 	out = g_string_new ("");
 
-	for(p=parts; p; p = p->next) {
+	for (p=parts; p; p = p->next) {
 		prop = part_get_property (p->data, "internal");
 		if (prop) {
 			if (!g_ascii_strcasecmp (prop, "point")) {
@@ -649,7 +657,8 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 				if (!g_ascii_strcasecmp (prop, "v")) {
 					if (!do_ac) {
 						g_string_append_printf (out, " %s(%d)", prop, pins[0].node_nr);
-					} else {
+					} 
+					else {
 						gchar *ac_type, *ac_db;
 						ac_type = part_get_property (p->data, "ac_type");
 						ac_db = part_get_property (p->data, "ac_db");
@@ -659,7 +668,8 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 						else
 							g_string_append_printf (out, " %s%s(%d)", prop, ac_type, pins[0].node_nr);
 					}
-				} else {
+				} 
+				else {
 					Node *node;
 					SheetPos lookup_key;
 					SheetPos part_pos;
@@ -707,7 +717,7 @@ netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 	node_store = netlist_data.store;
 	parts = node_store_get_parts (node_store);
 
-	for(p=parts; p; p = p->next) {
+	for (p=parts; p; p = p->next) {
 		prop = part_get_property (p->data, "internal");
 		if (prop) {
 			if (!g_ascii_strcasecmp (prop, "point")) {
