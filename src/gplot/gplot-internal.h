@@ -2,10 +2,9 @@
  * gplot-internal.h
  *
  * Authors:
- *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -51,8 +50,8 @@ struct _GPlotClass {
 
 // Internal definitions associated to gplotfunction.h
 
-#define TYPE_GPLOT_FUNCTION            (g_plot_function_get_type())
-#define GPLOT_FUNCTION_CLASS(klass)    G_TYPE_CHECK_CLASS_CAST(klass, TYPE_GPLOT_FUNCTION, GPlotFunctionClass)
+#define TYPE_GPLOT_FUNCTION            (g_plot_function_get_type ())
+#define GPLOT_FUNCTION_CLASS(klass)     G_TYPE_CHECK_CLASS_CAST (klass, TYPE_GPLOT_FUNCTION, GPlotFunctionClass)
 #define GPLOT_FUNCTION_GET_CLASS(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), TYPE_GPLOT_FUNCTION, GPlotFunctionClass))
 
 typedef struct _GPlotFunctionClass GPlotFunctionClass;
@@ -60,8 +59,8 @@ typedef struct _GPlotFunctionClass GPlotFunctionClass;
 struct _GPlotFunctionClass {
 	GTypeInterface parent;
 
-	void (*draw)(GPlotFunction *, cairo_t *, GPlotFunctionBBox *);
-	void (*get_bbox)(GPlotFunction *, GPlotFunctionBBox *);
+	void (*draw)     (GPlotFunction *, cairo_t *, GPlotFunctionBBox *);
+	void (*get_bbox) (GPlotFunction *, GPlotFunctionBBox *);
 };
 
 #endif

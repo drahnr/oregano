@@ -3,9 +3,11 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009-2010  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,6 +26,7 @@
  */
 
 #include <string.h>
+
 #include "gplot-internal.h"
 #include "gplotlines.h"
 
@@ -48,8 +51,8 @@ static void g_plot_lines_init (GPlotLines* plot);
 static void g_plot_lines_draw (GPlotFunction *, cairo_t *, GPlotFunctionBBox *);
 static void g_plot_lines_get_bbox (GPlotFunction *, GPlotFunctionBBox *);
 static void g_plot_lines_function_init (GPlotFunctionClass *iface);
-static void g_plot_lines_set_property(GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
-static void g_plot_lines_get_property(GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
+static void g_plot_lines_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
+static void g_plot_lines_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
 
 static GObjectClass* parent_class = NULL;
 	
@@ -85,8 +88,8 @@ struct _GPlotLinesPriv {
 	gdouble shift;
 };
 
-#define TYPE_GPLOT_LINES            (g_plot_lines_get_type())
-#define TYPE_GPLOT_GRAPHIC_TYPE		(g_plot_lines_graphic_get_type())
+#define TYPE_GPLOT_LINES            (g_plot_lines_get_type ())
+#define TYPE_GPLOT_GRAPHIC_TYPE		(g_plot_lines_graphic_get_type ())
 #define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
 G_DEFINE_TYPE_WITH_CODE (GPlotLines, g_plot_lines, G_TYPE_OBJECT,
@@ -94,18 +97,18 @@ G_DEFINE_TYPE_WITH_CODE (GPlotLines, g_plot_lines, G_TYPE_OBJECT,
 	g_plot_lines_function_init));
 
 GType
-g_plot_lines_graphic_get_type(void)
+g_plot_lines_graphic_get_type (void)
 {
-        static GType etype = 0;
-        if (etype == 0) {
-                static const GEnumValue values[] = {
-                        { FUNCTIONAL_CURVE, "FUNCTIONAL_CURVE", "funct-curve" },
-                        { FREQUENCY_PULSE, "FREQUENCY_PULSE", "freq-pulse" },
-                        { 0, NULL, NULL }
-                };
-                etype = g_enum_register_static ("GraphicType", values);
-        }
-        return etype;
+	static GType etype = 0;
+    if (etype == 0) {
+    	static const GEnumValue values[] = {
+        	{ FUNCTIONAL_CURVE, "FUNCTIONAL_CURVE", "funct-curve" },
+            { FREQUENCY_PULSE, "FREQUENCY_PULSE", "freq-pulse" },
+            { 0, NULL, NULL }
+        };
+        etype = g_enum_register_static ("GraphicType", values);
+    }
+    return etype;
 }
 
 static void
@@ -116,13 +119,13 @@ g_plot_lines_function_init (GPlotFunctionClass *iface)
 }
 
 static void
-g_plot_lines_dispose(GObject *object)
+g_plot_lines_dispose (GObject *object)
 {
-	G_OBJECT_CLASS(parent_class)->dispose(object);
+	G_OBJECT_CLASS (parent_class)->dispose(object);
 }
 
 static void
-g_plot_lines_finalize(GObject *object)
+g_plot_lines_finalize (GObject *object)
 {
 	GPlotLines *lines;
 
@@ -135,7 +138,7 @@ g_plot_lines_finalize(GObject *object)
 		g_free (lines->priv);
 	}
 
-	G_OBJECT_CLASS(parent_class)->finalize(object);
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -153,34 +156,24 @@ g_plot_lines_class_init (GPlotLinesClass* class)
 
 	g_object_class_override_property (object_class, ARG_VISIBLE, "visible");
 
-	g_object_class_install_property(
-		object_class,
-		ARG_WIDTH,
+	g_object_class_install_property (object_class, ARG_WIDTH,
 		g_param_spec_double ("width", "GPlotLines::width",
 		"the line width", 0.1, 5.0, 1.0, G_PARAM_READWRITE));
 
-	g_object_class_install_property(
-		object_class,
-		ARG_COLOR,
+	g_object_class_install_property (object_class, ARG_COLOR,
 		g_param_spec_string ("color", "GPlotLines::color",
 		"the string color line", "white", G_PARAM_READWRITE));
 
-	g_object_class_install_property(
-		object_class,
-		ARG_COLOR_GDKCOLOR,
+	g_object_class_install_property (object_class, ARG_COLOR_GDKCOLOR,
 		g_param_spec_pointer ("color-rgb", "GPlotLines::color-rgb",
 		"the GdkColor of the line", G_PARAM_READWRITE));
 
-	g_object_class_install_property(
-		object_class,
-		ARG_GRAPH_TYPE,
+	g_object_class_install_property (object_class, ARG_GRAPH_TYPE,
 		g_param_spec_enum ("graph-type", "GPlotLines::graph-type",
 		"the type of graphic", TYPE_GPLOT_GRAPHIC_TYPE, 
 		    FUNCTIONAL_CURVE, G_PARAM_READWRITE));
 
-	g_object_class_install_property(
-	    object_class,
-		ARG_SHIFT,
+	g_object_class_install_property (object_class, ARG_SHIFT,
 	    g_param_spec_double ("shift", "GPlotLines::shift",
 		"the shift for multiple pulses", 0.0, 500.0, 50.0, G_PARAM_READWRITE));
 }
@@ -201,7 +194,7 @@ g_plot_lines_init (GPlotLines* plot)
 }
 
 static void
-g_plot_lines_set_property(GObject *object, guint prop_id, const GValue *value,
+g_plot_lines_set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *spec)
 {
 	GPlotLines *plot = GPLOT_LINES (object);
@@ -231,7 +224,7 @@ g_plot_lines_set_property(GObject *object, guint prop_id, const GValue *value,
 
 
 static void
-g_plot_lines_get_property(GObject *object, guint prop_id, GValue *value,
+g_plot_lines_get_property (GObject *object, guint prop_id, GValue *value,
 	GParamSpec *spec)
 {
 	GPlotLines *plot = GPLOT_LINES (object);
@@ -293,10 +286,10 @@ g_plot_lines_get_bbox (GPlotFunction *f, GPlotFunctionBBox *bbox)
 		plot->priv->bbox.ymin = 99999999;
 		plot->priv->bbox.ymax = -99999999;
 		for (point = 0; point < points; point++) {
-			plot->priv->bbox.xmin = MIN(plot->priv->bbox.xmin, x[point]);
-			plot->priv->bbox.ymin = MIN(plot->priv->bbox.ymin, y[point]);
-			plot->priv->bbox.xmax = MAX(plot->priv->bbox.xmax, x[point]);
-			plot->priv->bbox.ymax = MAX(plot->priv->bbox.ymax, y[point]);
+			plot->priv->bbox.xmin = MIN (plot->priv->bbox.xmin, x[point]);
+			plot->priv->bbox.ymin = MIN (plot->priv->bbox.ymin, y[point]);
+			plot->priv->bbox.xmax = MAX (plot->priv->bbox.xmax, x[point]);
+			plot->priv->bbox.ymax = MAX (plot->priv->bbox.ymax, y[point]);
 		}
 		plot->priv->bbox_valid = TRUE;
 	}
@@ -338,14 +331,16 @@ g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox *bbox)
 				}
 
 				cairo_line_to (cr, x[point], y[point]);
-			} else {
+			}
+			else {
 				if (!first_point) {
 					cairo_line_to (cr, x[point], y[point]);
 					first_point = TRUE;
 				}
 			}
 		}
-	} else {
+	} 
+	else {
 		for (point = 1; point < points; point++) {
 			x1 = x[point-1]+plot->priv->shift;
 			y1 = 0;

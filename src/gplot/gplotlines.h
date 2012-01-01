@@ -3,9 +3,11 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,11 +36,9 @@ typedef enum {
 	FREQUENCY_PULSE
 } GraphicType;
 
-#define GPLOT_LINES(obj)        G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_GPLOT_LINES, GPlotLines)
-#define IS_GPLOT_LINES(obj)     G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_GPLOT_LINES)
+#define GPLOT_LINES(obj)        G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_LINES, GPlotLines)
+#define IS_GPLOT_LINES(obj)     G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_LINES)
 
 GPlotFunction* g_plot_lines_new (gdouble *x, gdouble *y, guint points);
 
 #endif
-
-

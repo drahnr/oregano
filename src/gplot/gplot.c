@@ -3,9 +3,11 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -233,7 +235,8 @@ draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gbool
 			y2 = i;
 			x3 = bbox->xmin - extents.width * 1.5;
 			y3 = i + extents.height / 2.0;
-		} else {
+		} 
+		else {
 			x1 = i;
 			y1 = bbox->ymax - 4;
 			x2 = i;
@@ -511,9 +514,12 @@ g_plot_new ()
 		GDK_BUTTON1_MOTION_MASK|GDK_BUTTON2_MOTION_MASK|
 		GDK_BUTTON3_MOTION_MASK);
 
-	g_signal_connect (G_OBJECT (plot), "motion-notify-event", G_CALLBACK(g_plot_motion_cb), plot);
-	g_signal_connect (G_OBJECT (plot), "button-press-event", G_CALLBACK(g_plot_button_press_cb), plot);
-	g_signal_connect (G_OBJECT (plot), "button-release-event", G_CALLBACK(g_plot_button_release_cb), plot);
+	g_signal_connect (G_OBJECT (plot), "motion-notify-event", 
+	                  G_CALLBACK (g_plot_motion_cb), plot);
+	g_signal_connect (G_OBJECT (plot), "button-press-event", 
+	                  G_CALLBACK (g_plot_button_press_cb), plot);
+	g_signal_connect (G_OBJECT (plot), "button-release-event", 
+	                  G_CALLBACK (g_plot_button_release_cb), plot);
 
 	return GTK_WIDGET (plot);
 }
@@ -572,12 +578,14 @@ g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 
 				if (dx < 0) {
 					p->priv->rubberband.xmin = e->x;
-				} else {
+				} 
+				else {
 					p->priv->rubberband.xmax = e->x;
 				}
 				if (dy < 0) {
 					p->priv->rubberband.ymin = e->y;
-				} else {
+				} 
+				else {
 					p->priv->rubberband.ymax = e->y;
 				}
 
@@ -596,7 +604,8 @@ g_plot_button_press_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 
 	if (e->type == GDK_2BUTTON_PRESS) {
 		/* TODO : Check function below cursor and open a property dialog :) */
-	} else {
+	} 
+	else {
 		switch (p->priv->zoom_mode) {
 			case GPLOT_ZOOM_INOUT:
 				if (e->button == 1) {
@@ -645,7 +654,8 @@ g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 				p->priv->window_bbox.ymin /= zoom;
 				p->priv->window_bbox.ymax /= zoom;
 				gtk_widget_queue_draw (w);
-			} else {
+			} 
+			else {
 				gdk_window_set_cursor (w->window, NULL);
 				gdk_flush ();
 			}
@@ -672,7 +682,8 @@ g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 					p->priv->window_bbox.ymin = y2;
 					p->priv->window_bbox.ymax = y1;
 				}
-			} else if (e->button == 3) {
+			} 
+			else if (e->button == 3) {
 				gdk_window_set_cursor (w->window, NULL);
 				gdk_flush ();
 			}
@@ -763,7 +774,8 @@ g_plot_set_axis_labels (GPlot *p, gchar *x, gchar *y)
 
 		p->priv->xlabel = g_strdup (x);
 		p->priv->bottom_border = BORDER_SIZE + extents.height;
-	} else {
+	} 
+	else {
 		p->priv->bottom_border = BORDER_SIZE;
 		if (p->priv->xlabel) {
 			g_free (p->priv->xlabel);
@@ -782,7 +794,8 @@ g_plot_set_axis_labels (GPlot *p, gchar *x, gchar *y)
 		p->priv->left_border = BORDER_SIZE + extents.height;
 
 		p->priv->ylabel = g_strdup (y);
-	} else {
+	} 
+	else {
 		p->priv->left_border = BORDER_SIZE;
 		if (p->priv->ylabel) {
 			g_free (p->priv->ylabel);

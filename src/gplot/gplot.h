@@ -3,9 +3,11 @@
  *
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009-2010  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,9 +32,9 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#define GPLOT(obj)          G_TYPE_CHECK_INSTANCE_CAST(obj, TYPE_GPLOT, GPlot)
-#define IS_GPLOT(obj)       G_TYPE_CHECK_INSTANCE_TYPE(obj, TYPE_GPLOT)
-#define TYPE_GPLOT					(g_plot_get_type())
+#define GPLOT(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT, GPlot)
+#define IS_GPLOT(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT)
+#define TYPE_GPLOT			(g_plot_get_type())
 
 typedef struct _GPlot GPlot;
 typedef struct _GPlotFunction {} GPlotFunction;
@@ -53,4 +55,3 @@ void       g_plot_set_axis_labels (GPlot *, gchar *, gchar *);
 void       g_plot_window_to_device (GPlot *, double *x, double *y);
 
 #endif
-
