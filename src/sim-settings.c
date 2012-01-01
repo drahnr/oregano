@@ -141,7 +141,8 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 
 		/* Add Node (i-1) at the end of fourier_vout */
 		text = g_strdup_printf ("%d", i-1);
-		sim->priv->fourier_vout = g_slist_append (sim->priv->fourier_vout, g_strdup_printf ("%d", i-1));
+		sim->priv->fourier_vout = g_slist_append (sim->priv->fourier_vout, 
+		                                          g_strdup_printf ("%d", i-1));
 
 		/* Update the fourier_vout widget */
 		node_slist = g_slist_copy (sim->priv->fourier_vout);
@@ -1076,7 +1077,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	/*  DC   */
 	/*  Get list of sources */
-	node_list = netlist_helper_get_voltmeters_list (schematic_view_get_schematic (sv), &error);
+	node_list = netlist_helper_get_voltmeters_list (schematic_view_get_schematic (sv), 
+	                                                &error);
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP)  ||
 			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)    ||
@@ -1151,6 +1153,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	text = NULL;
 	slist = g_slist_copy (s->priv->fourier_vout);
+	if (slist == NULL) return;
 	if (atoi (slist->data) != 0) {
 		text = g_strdup_printf ("V(%d)", atoi (slist->data));
 	}
@@ -1228,10 +1231,9 @@ sim_settings_add_option (SimSettings *s, SimOption *opt)
 	while (list) {
 		SimOption *so=list->data;
 		if (so && !strcmp (opt->name,so->name)) {
-			GList * tmp_list;
 			g_free (so->name);
 			g_free (so->value);
-			tmp_list = g_list_remove (s->priv->options, so);
+			s->priv->options = g_list_remove (s->priv->options, so);
 			g_free (so);
 		}
 		list = list->next;

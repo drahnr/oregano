@@ -725,9 +725,9 @@ netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 		}
 	}
 	if (0) {
-	clamp_list = g_slist_prepend (clamp_list, "3");	
-	clamp_list = g_slist_prepend (clamp_list, "2");	
-	clamp_list = g_slist_prepend (clamp_list, "1");	
+		clamp_list = g_slist_prepend (clamp_list, "3");	
+		clamp_list = g_slist_prepend (clamp_list, "2");	
+		clamp_list = g_slist_prepend (clamp_list, "1");	
 	}
 	if (0) {
 		GSList *slist = NULL;

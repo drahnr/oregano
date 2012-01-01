@@ -1,3 +1,41 @@
+Sun, 17 Jan 2010 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* TAG 0.71
+	* Creation of some new Libraries to ease the finding of some parts:
+		-Ground ==> creation of ground.oreglib
+		-power devides ==> creation of power.oreglib
+		-passive parts (Resistor, Capacitor,...) ==> creation of 
+			passive-components.oreglib
+		-source inputs parts ==> creation of source-input.oreglib 
+
+	* Upgrade of the oregano help
+
+	* Clear separation of header file for libraries between external interface
+          and internal interfaces:*
+		==> Creation of engine-internal.h
+		==> Creation of gplot-internal.h
+
+	* Rename netlist.c in netlist-helper.c since the primitives provided by netlist.c
+	  have a prefix with netlist_helper_<>
+
+	* Modification of ngspice.c to stand the specificities of ngspice: ngspice is limited 
+	  while using rawfile option. In fact, Fourier is not accessible through rawfile option.
+	  Therefore the output of ngspice is ascii and no more binary.
+	  ==> Split of ngspice.c to separate preparation of command file for ngspice from 
+	  analysis of ngspice output.
+
+	* Cleanup to isolate deprecated gnome libraries:
+		==> remove of <gnome.h> everywhere when feasible
+
+	* Main introduction of Fourier analysis with the associated dialogs
+		==> Modification of load-schematic.c
+		==> Modification of save-schematic.c
+		==> Modification of sim-settings.c
+
+	* Suppression of gnome-window:
+		==> Modification of plot.c
+
+	* Modification of gplot to allow the drawing of pulse (Fourier analysis)
+
 Tue, 14 Apr 2009 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* TAG 0.70
 	* Installation of Makefile to allow full useability of anjuta:
