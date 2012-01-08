@@ -5,10 +5,12 @@
  * Author:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -25,6 +27,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #ifndef __PLOT_ADD__H
 #define __PLOT_ADD_H
 

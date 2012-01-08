@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -69,7 +71,8 @@ dialog_open_file (SchematicView *sv)
 			name = NULL;
 		else
 			name = g_strdup (name);
-	} else
+	} 
+	else
 		name = NULL;
 
 	gtk_widget_destroy (dialog);
@@ -110,18 +113,18 @@ dialog_save_as (SchematicView *sv)
 			gchar *tmp;
 			const gchar *base = g_path_get_basename (name);
 
-			if (strchr (base, '.') == NULL){
+			if (strchr (base, '.') == NULL) {
 				tmp = g_strconcat (name, ".oregano", NULL);
-			} else {
+			} 
+			else {
 				tmp = g_strdup (name);
 			}
 
 			sm = schematic_view_get_schematic (sv);
 
 			schematic_set_filename (sm, tmp);
-			// schematic_set_title (sm, (gchar *) g_path_get_basename (tmp));
 
-			if (!schematic_save_file (sm, &error)){
+			if (!schematic_save_file (sm, &error)) {
 				char *msg = g_strdup_printf (
 					"Could not save Schematic file %s\n",
 					tmp);
@@ -156,9 +159,11 @@ dialog_netlist_file (SchematicView *sv)
 		if (name[strlen (name) - 1] == '/') {
 			g_free (name);
 			name = NULL;
-		} else
+		} 
+		else
 			name = g_strdup (name);
-	} else
+	} 
+	else
 		name = NULL;
 
 	gtk_widget_destroy (dialog);
@@ -184,9 +189,11 @@ dialog_file_open (const gchar *title)
 		if (name[strlen (name) - 1] == '/') {
 			g_free (name);
 			name = NULL;
-		} else
+		} 
+		else
 			name = g_strdup (name);
-	} else
+	} 
+	else
 		name = NULL;
 
 	gtk_widget_destroy (dialog);

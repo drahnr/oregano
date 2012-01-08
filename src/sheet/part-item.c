@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,9 +33,8 @@
 #include <glade/glade.h>
 #include <glib/gi18n.h>
 #include <string.h>
+
 #include "main.h"
-#include "schematic-view.h"
-#include "sheet-private.h"
 #include "sheet-item.h"
 #include "part-item.h"
 #include "part-private.h"
@@ -50,45 +51,38 @@
 #define SELECTED_COLOR "green"
 #define O_DEBUG 0
 
-static void part_item_class_init(PartItemClass *klass);
-static void part_item_init(PartItem *gspart);
-static void part_item_destroy(GtkObject *object);
-static void part_item_moved(SheetItem *sheet_item);
+static void 		part_item_class_init (PartItemClass *klass);
+static void 		part_item_init (PartItem *gspart);
+static void 		part_item_destroy (GtkObject *object);
+static void 		part_item_moved (SheetItem *sheet_item);
+static void 		edit_properties (SheetItem *object);
+static void 		selection_changed (PartItem *item, gboolean select,
+						gpointer user_data);
+static int  		select_idle_callback (PartItem *item);
+static int  		deselect_idle_callback (PartItem *item);
+static void 		update_canvas_labels (PartItem *part_item);
 
-static void edit_properties (SheetItem *object);
-
-static void selection_changed (PartItem *item, gboolean select,
-	gpointer user_data);
-static int select_idle_callback (PartItem *item);
-static int deselect_idle_callback (PartItem *item);
-
-static void update_canvas_labels (PartItem *part_item);
-
-static gboolean is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
-inline static void get_cached_bounds (PartItem *item, SheetPos *p1,
-	SheetPos *p2);
-static void show_labels (SheetItem *sheet_item, gboolean show);
-static void part_item_paste (SchematicView *sv, ItemData *data);
-
-static void part_rotated_callback (ItemData *data, int angle, SheetItem *item);
-static void part_flipped_callback (ItemData *data, gboolean horizontal,
-	SheetItem *sheet_item);
-
-static void part_moved_callback (ItemData *data, SheetPos *pos,
-	SheetItem *item);
-
-static void part_item_place (SheetItem *item, SchematicView *sv);
-static void part_item_place_ghost (SheetItem *item, SchematicView *sv);
-
-static void create_canvas_items (GnomeCanvasGroup *group,
-	LibraryPart *library_part);
-static void create_canvas_labels (PartItem *item, Part *part);
-static void create_canvas_label_nodes (PartItem *item, Part *part);
-
-static void part_item_get_property (GObject *object, guint prop_id,
-	GValue *value, GParamSpec *spec);
-static void part_item_set_property (GObject *object, guint prop_id,
-	const GValue *value, GParamSpec *spec);
+static gboolean 	is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
+inline static void 	get_cached_bounds (PartItem *item, SheetPos *p1,
+						SheetPos *p2);
+static void 		show_labels (SheetItem *sheet_item, gboolean show);
+static void 		part_item_paste (Sheet *sheet, ItemData *data);
+static void 		part_rotated_callback (ItemData *data, int angle, SheetItem *item);
+static void 		part_flipped_callback (ItemData *data, gboolean horizontal,
+						SheetItem *sheet_item);
+static void 		part_moved_callback (ItemData *data, SheetPos *pos,
+						SheetItem *item);
+static void 		part_item_place (SheetItem *item, Sheet *sheet);
+static void 		part_item_place_ghost (SheetItem *item, Sheet *sheet);
+static void 		create_canvas_items (GnomeCanvasGroup *group,
+						LibraryPart *library_part);
+static void 		create_canvas_labels (PartItem *item, Part *part);
+static void 		create_canvas_label_nodes (PartItem *item, Part *part);
+static void 		part_item_get_property (GObject *object, guint prop_id,
+						GValue *value, GParamSpec *spec);
+static void 		part_item_set_property (GObject *object, guint prop_id,
+						const GValue *value, GParamSpec *spec);
+static PartItem *	part_item_canvas_new (Sheet *sheet, Part *part);
 
 enum {
 	ARG_0,
@@ -101,26 +95,24 @@ enum {
 };
 
 struct _PartItemPriv {
-	guint 			cache_valid : 1;
-	guint 			highlight : 1;
+	guint 			  cache_valid : 1;
+	guint 			  highlight : 1;
 	GnomeCanvasGroup *label_group;
 	GSList 			 *label_items;
 	GnomeCanvasGroup *node_group;
 	GSList           *label_nodes;
 
-	/*
-	 * Cached bounding box. This is used to make
-	 * the rubberband selection a bit faster.
-	 */
-	SheetPos 		bbox_start;
-	SheetPos 		bbox_end;
+	// Cached bounding box. This is used to make
+	// the rubberband selection a bit faster.
+	SheetPos 		  bbox_start;
+	SheetPos 		  bbox_end;
 };
 
 typedef struct {
 	GtkDialog *dialog;
 	PartItem  *part_item;
 
-	/* List of GtkEntry's */
+	// List of GtkEntry's
 	GList     *widgets;
 } PartPropDialog;
 
@@ -135,7 +127,9 @@ static const char *part_item_context_menu =
 "</ui>";
 
 static GtkActionEntry action_entries[] = {
-	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), NULL, N_("Modify the object's properties"), NULL}//G_CALLBACK (object_properties_cmd)}
+	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), 
+		NULL, N_("Modify the object's properties"), 
+		NULL}//G_CALLBACK (object_properties_cmd)}
 };
 
 enum {
@@ -194,7 +188,7 @@ part_item_get_type ()
 
 	if (!part_item_type) {
 		static const GTypeInfo part_item_info = {
-			sizeof(PartItemClass),
+			sizeof (PartItemClass),
 			NULL,
 			NULL,
 			(GClassInitFunc) part_item_class_init,
@@ -205,7 +199,7 @@ part_item_get_type ()
 			(GInstanceInitFunc) part_item_init,
 			NULL
 		};
-		part_item_type = g_type_register_static(TYPE_SHEET_ITEM,
+		part_item_type = g_type_register_static (TYPE_SHEET_ITEM,
 			"PartItem", &part_item_info, 0);
 	}
 	return part_item_type;
@@ -218,55 +212,36 @@ part_item_class_init (PartItemClass *part_item_class)
 	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
 
-	object_class = G_OBJECT_CLASS(part_item_class);
-	gtk_object_class = GTK_OBJECT_CLASS(part_item_class);
-	sheet_item_class = SHEET_ITEM_CLASS(part_item_class);
-	parent_class = g_type_class_peek_parent(part_item_class);
+	object_class = G_OBJECT_CLASS (part_item_class);
+	gtk_object_class = GTK_OBJECT_CLASS (part_item_class);
+	sheet_item_class = SHEET_ITEM_CLASS (part_item_class);
+	parent_class = g_type_class_peek_parent (part_item_class);
 
 	object_class->set_property = part_item_set_property;
 	object_class->get_property = part_item_get_property;
 
-	g_object_class_install_property	(
-		object_class,
-		ARG_NAME,
-		g_param_spec_pointer ("name",
-			"PartItem::name",
-			"name",
+	g_object_class_install_property (object_class, ARG_NAME,
+		g_param_spec_pointer ("name", "PartItem::name", "name",
 			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	g_object_class_install_property	(
-		object_class,
-		ARG_SYMNAME,
-		g_param_spec_pointer ("symbol_name",
-			"PartItem::symbol_name",
-			"symbol name",
+	
+	g_object_class_install_property (object_class, ARG_SYMNAME,
+		g_param_spec_pointer ("symbol_name", "PartItem::symbol_name",
+			"symbol name", G_PARAM_READABLE | G_PARAM_WRITABLE));
+	
+	g_object_class_install_property (object_class, ARG_REFDES,
+		g_param_spec_pointer ("refdes", "PartItem::refdes", "refdes",
 			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	g_object_class_install_property	(
-		object_class,
-		ARG_REFDES,
-		g_param_spec_pointer ("refdes",
-			"PartItem::refdes",
-			"refdes",
-			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	g_object_class_install_property	(
-		object_class,
-		ARG_LIBNAME,
-		g_param_spec_pointer ("library_name",
-			"PartItem::library_name",
-			"library_name",
-			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	g_object_class_install_property	(
-		object_class,
-		ARG_TEMPLATE,
-		g_param_spec_pointer ("template",
-			"PartItem::template",
-			"template",
-			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	g_object_class_install_property	(
-		object_class,
-		ARG_MODEL,
-		g_param_spec_pointer ("model",
-			"PartItem::model",
-			"model",
+	
+	g_object_class_install_property	(object_class, ARG_LIBNAME,
+		g_param_spec_pointer ("library_name", "PartItem::library_name",
+			"library_name", G_PARAM_READABLE | G_PARAM_WRITABLE));
+	
+	g_object_class_install_property (object_class, ARG_TEMPLATE,
+		g_param_spec_pointer ("template", "PartItem::template",
+			"template", G_PARAM_READABLE | G_PARAM_WRITABLE));
+	
+	g_object_class_install_property (object_class, ARG_MODEL,
+		g_param_spec_pointer ("model", "PartItem::model", "model",
 			G_PARAM_READABLE | G_PARAM_WRITABLE));
 
 	gtk_object_class->destroy = part_item_destroy;
@@ -295,7 +270,7 @@ part_item_init (PartItem *item)
 	item->priv = priv;
 
 	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu, 
-		action_entries, G_N_ELEMENTS (action_entries));
+	    action_entries, G_N_ELEMENTS (action_entries));
 }
 
 static void
@@ -306,9 +281,9 @@ part_item_set_property (GObject *object, guint propety_id, const GValue *value,
 	PartItemPriv *priv;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_PART_ITEM(object));
+	g_return_if_fail (IS_PART_ITEM (object));
 
-	part_item = PART_ITEM(object);
+	part_item = PART_ITEM (object);
 	priv = part_item->priv;
 }
 
@@ -327,14 +302,10 @@ part_item_get_property (GObject *object, guint propety_id, GValue *value,
 }
 
 static void
-part_item_destroy(GtkObject *object)
+part_item_destroy (GtkObject *object)
 {
 	PartItem *item;
 	PartItemPriv *priv;
-	/*
-	 * Unused variable
-	Part *part;
-	*/
 	ArtPoint *old;
 
 	g_return_if_fail (object != NULL);
@@ -343,7 +314,7 @@ part_item_destroy(GtkObject *object)
 	/*
 	 * Free the stored coordinate that lets us rotate circles.
 	 */
-	old = g_object_get_data(G_OBJECT(object), "hack");
+	old = g_object_get_data (G_OBJECT (object), "hack");
 	if (old)
 		g_free (old);
 
@@ -352,8 +323,8 @@ part_item_destroy(GtkObject *object)
 
 	if (priv) {
 		if (priv->label_group) {
-			/* GnomeCanvasGroups utiliza GtkObject todavia */
-			gtk_object_destroy(GTK_OBJECT(priv->label_group));
+			/* GnomeCanvasGroups still use GtkObject */
+			gtk_object_destroy (GTK_OBJECT (priv->label_group));
 			priv->label_group = NULL;
 		}
 
@@ -362,7 +333,7 @@ part_item_destroy(GtkObject *object)
 	}
 
 	if (GTK_OBJECT_CLASS (parent_class)->destroy) {
-		GTK_OBJECT_CLASS (parent_class)->destroy(object);
+		GTK_OBJECT_CLASS (parent_class)->destroy (object);
 	}
 }
 
@@ -397,55 +368,41 @@ part_item_moved (SheetItem *sheet_item)
 }
 
 PartItem *
-part_item_new (Sheet *sheet, Part *part)
+part_item_canvas_new (Sheet *sheet, Part *part)
 {
 	PartItem *item;
 	PartItemPriv *priv;
 
-	g_return_val_if_fail(sheet != NULL, NULL);
-	g_return_val_if_fail(IS_SHEET (sheet), NULL);
-	g_return_val_if_fail(part != NULL, NULL);
-	g_return_val_if_fail(IS_PART (part), NULL);
+	g_return_val_if_fail (sheet != NULL, NULL);
+	g_return_val_if_fail (IS_SHEET (sheet), NULL);
+	g_return_val_if_fail (part != NULL, NULL);
+	g_return_val_if_fail (IS_PART (part), NULL);
 
-	item = PART_ITEM(gnome_canvas_item_new(
-		sheet->object_group,
-		TYPE_PART_ITEM,
-		"data", part,
-		NULL));
+	item = PART_ITEM (gnome_canvas_item_new (sheet->object_group,
+		TYPE_PART_ITEM, "data", part, NULL));
 
 	priv = item->priv;
 
-	priv->label_group = GNOME_CANVAS_GROUP(gnome_canvas_item_new(
-		GNOME_CANVAS_GROUP(item),
-		GNOME_TYPE_CANVAS_GROUP,
+	priv->label_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
+		GNOME_CANVAS_GROUP (item), GNOME_TYPE_CANVAS_GROUP,
 		"x", 0.0,
 		"y", 0.0,
 		NULL));
 
-	priv->node_group = GNOME_CANVAS_GROUP(gnome_canvas_item_new(
-		GNOME_CANVAS_GROUP(item),
-		GNOME_TYPE_CANVAS_GROUP,
+	priv->node_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
+		GNOME_CANVAS_GROUP (item), GNOME_TYPE_CANVAS_GROUP,
 		"x", 0.0,
 		"y", 0.0,
 		NULL));
 		
 	gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->node_group));
 
-	g_signal_connect_object(G_OBJECT(part),
-		"rotated",
-		G_CALLBACK (part_rotated_callback),
-		G_OBJECT(item),
-		0);
-	g_signal_connect_object(G_OBJECT(part),
-		"flipped",
-		G_CALLBACK(part_flipped_callback),
-		G_OBJECT(item),
-		0);
-	g_signal_connect_object(G_OBJECT(part),
-		"moved",
-		G_CALLBACK(part_moved_callback),
-		G_OBJECT(item),
-		0);
+	g_signal_connect_object (G_OBJECT (part), "rotated",
+		G_CALLBACK (part_rotated_callback), G_OBJECT(item), 0);
+	g_signal_connect_object (G_OBJECT (part), "flipped",
+		G_CALLBACK (part_flipped_callback), G_OBJECT(item), 0);
+	g_signal_connect_object (G_OBJECT (part), "moved",
+		G_CALLBACK (part_moved_callback), G_OBJECT (item), 0);
 
 	return item;
 }
@@ -458,11 +415,11 @@ update_canvas_labels (PartItem *item)
 	GSList *labels, *label_items;
 	GnomeCanvasItem *canvas_item;
 
-	g_return_if_fail(item != NULL);
-	g_return_if_fail(IS_PART_ITEM (item));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_PART_ITEM (item));
 
 	priv = item->priv;
-	part = PART(sheet_item_get_data(SHEET_ITEM(item)));
+	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
 	label_items = priv->label_items;
 
@@ -490,29 +447,28 @@ part_item_update_node_label (PartItem *item)
 	Pin *pins;
 	gint num_pins;
 
-	g_return_if_fail(item != NULL);
-	g_return_if_fail(IS_PART_ITEM (item));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_PART_ITEM (item));
 	priv = item->priv;
-	part = PART(sheet_item_get_data(SHEET_ITEM(item)));
+	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
-	g_return_if_fail( IS_PART(part) );
+	g_return_if_fail (IS_PART (part) );
 
 	/* Put the label of each node */
-	num_pins = part_get_num_pins(part);
+	num_pins = part_get_num_pins (part);
 	
 	if (num_pins == 1) {
 	
-		pins = part_get_pins(part);
+		pins = part_get_pins (part);
 		labels = priv->label_nodes;
 		for (labels = priv->label_nodes; labels; labels=labels->next) {
 			char *txt;
 
-			txt = g_strdup_printf("V(%d)", pins[0].node_nr);
+			txt = g_strdup_printf ("V(%d)", pins[0].node_nr);
 			canvas_item = labels->data;
-			//if (pins[0].node_nr != 0)
 			gnome_canvas_item_set (canvas_item, "text", txt, NULL);
 
-			g_free(txt);
+			g_free (txt);
 		}
 	}
 }
@@ -524,18 +480,18 @@ prop_dialog_destroy (GtkWidget *widget, PartPropDialog *prop_dialog)
 }
 
 static void
-prop_dialog_response(GtkWidget *dialog, gint response,
+prop_dialog_response (GtkWidget *dialog, gint response,
 	PartPropDialog *prop_dialog)
 {
 	GSList		 *props;
-	GList		   *widget;
+	GList		 *widget;
 	Property	 *prop;
 	PartItem	 *item;
 	PartItemPriv *priv;
 	Part		 *part;
-	gchar *prop_name;
-	const gchar *prop_value;
-	GtkWidget *w;
+	gchar        *prop_name;
+	const gchar  *prop_value;
+	GtkWidget    *w;
 
 	item = prop_dialog->part_item;
 
@@ -628,27 +584,33 @@ edit_properties_point (PartItem *item)
 			if (!g_ascii_strcasecmp (prop->name, "type")) {
 				if (!g_ascii_strcasecmp (prop->value, "v")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), TRUE);
-				} else {
+				} 
+				else {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), TRUE);
 				}
-			} else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
+			} 
+			else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
 				if (!g_ascii_strcasecmp (prop->value, "m")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_m), TRUE);
-				} else if (!g_ascii_strcasecmp (prop->value, "i")) {
+				} 
+				else if (!g_ascii_strcasecmp (prop->value, "i")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_i), TRUE);
-				} else if (!g_ascii_strcasecmp (prop->value, "p")) {
+				} 
+				else if (!g_ascii_strcasecmp (prop->value, "p")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_p), TRUE);
-				} else if (!g_ascii_strcasecmp (prop->value, "r")) {
+				} 
+				else if (!g_ascii_strcasecmp (prop->value, "r")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_r), TRUE);
 				}
-			} else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
+			} 
+			else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
 				if (!g_ascii_strcasecmp (prop->value, "true"))
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (chk_db), TRUE);
 			}
 		}
 	}
 
-	response = gtk_dialog_run(prop_dialog->dialog);
+	response = gtk_dialog_run (prop_dialog->dialog);
 
 	/* Save properties from GUI */
 	for (properties = part_get_properties (part); properties;
@@ -664,21 +626,27 @@ edit_properties_point (PartItem *item)
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio_v))) {
 					prop->value = g_strdup ("v");
-				} else {
+				} 
+				else {
 					prop->value = g_strdup ("i");
 				}
-			} else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
+			} 
+			else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_m))) {
 					prop->value = g_strdup ("m");
-				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_i))) {
+				} 
+				else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_i))) {
 					prop->value = g_strdup ("i");
-				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_p))) {
+				} 
+				else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_p))) {
 					prop->value = g_strdup ("p");
-				} else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_r))) {
+				} 
+				else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_r))) {
 					prop->value = g_strdup ("r");
 				}
-			} else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
+			} 
+			else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (chk_db)))
 					prop->value = g_strdup ("true");
@@ -816,7 +784,8 @@ edit_properties (SheetItem *object)
 
 	if (!has_model) {
 		gtk_notebook_remove_page (notebook, 1); 
-	} else {
+	} 
+	else {
 		GtkTextBuffer *txtbuffer;
 		GtkTextView *txtmodel;
 		gchar *filename, *str;
@@ -829,7 +798,8 @@ edit_properties (SheetItem *object)
 		if (g_file_get_contents (filename, &str, NULL, &read_error)) {
 			gtk_text_buffer_set_text (txtbuffer, str, -1);
 			g_free (str);
-		} else {
+		} 
+		else {
 			gtk_text_buffer_set_text (txtbuffer, read_error->message, -1);
 			g_error_free (read_error);
 		}
@@ -842,7 +812,7 @@ edit_properties (SheetItem *object)
 
 	gtk_dialog_set_default_response (prop_dialog->dialog, 1);
 
-	response = gtk_dialog_run(prop_dialog->dialog);
+	response = gtk_dialog_run (prop_dialog->dialog);
 
 	prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
 
@@ -851,7 +821,8 @@ edit_properties (SheetItem *object)
 
 /* Matrix Multiplication
    Tried art_affine_multiply, but that didn't work */
-static void matrix_mult(double* a,double* b,double* c){
+static void matrix_mult(double* a,double* b,double* c)
+{
   c[0]=a[0]*b[0]+a[1]*b[2];
   c[2]=a[2]*b[0]+a[3]*b[2];
   c[1]=a[0]*b[1]+a[1]*b[3];
@@ -879,31 +850,34 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	item = PART_ITEM (sheet_item);
 	group = GNOME_CANVAS_GROUP (item);
-	part = PART(data);
+	part = PART (data);
 
 	priv = item->priv;
 
 	if (angle!=0) {
-	// check if the part is flipped
-	  if ((part->priv->flip & 1) && (part->priv->flip & 2)) {
+		// check if the part is flipped
+		if ((part->priv->flip & 1) && (part->priv->flip & 2)) {
 	    // Nothing to do in this case
-	    art_affine_rotate (affine, angle);
-	  } else {
-	    if ((part->priv->flip & 1) || (part->priv->flip & 2)) {
-	      // mirror over point (0,0)
-	      art_affine_scale(affine_scale,-1,-1);
-	      art_affine_rotate(affine_rotate,angle);
-	      /* Matrix multiplication */
-	      /* Don't use art_affine_multiply() here !*/
-	      matrix_mult(affine_rotate,affine_scale,affine);
-	      affine[4]=affine_rotate[4];
-	      affine[5]=affine_rotate[5];
-	    } else
-	      art_affine_rotate (affine, angle);
-	  }
-	} else {
+	    	art_affine_rotate (affine, angle);
+		} 
+		else {
+	    	if ((part->priv->flip & 1) || (part->priv->flip & 2)) {
+	      	// mirror over point (0,0)
+	      		art_affine_scale (affine_scale,-1,-1);
+	      		art_affine_rotate (affine_rotate,angle);
+	     		/* Matrix multiplication */
+	      		/* Don't use art_affine_multiply() here !*/
+	      		matrix_mult(affine_rotate,affine_scale,affine);
+	      		affine[4]=affine_rotate[4];
+	      	affine[5]=affine_rotate[5];
+	    	} 
+		 	else
+	      		art_affine_rotate (affine, angle);
+	  	}
+	} 
+	else {
 	  // angle==0: Nothing has changed, therefore do nothing
-	  art_affine_scale(affine,1,1);
+	  art_affine_scale (affine,1,1);
 	}
 
 	for (list = group->item_list; list; list = list->next) {
@@ -991,24 +965,24 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	else
 		art_affine_scale (affine, 1, -1);
 
-	angle=part_get_rotation(part);
+	angle = part_get_rotation (part);
 	if (angle!=0) {
-	  switch (angle){
-	  case 90: art_affine_rotate(affine_rotate,180);
-	    memcpy(affine_scale,affine,6*sizeof(double));
+	  switch (angle) {
+	  case 90: art_affine_rotate (affine_rotate, 180);
+	    memcpy (affine_scale, affine, 6*sizeof (double));
 	    break;
 	  case 180: //don't do a thing
-	    art_affine_rotate(affine_rotate,0);
-	    memcpy(affine_scale,affine,6*sizeof(double));
+	    art_affine_rotate (affine_rotate, 0);
+	    memcpy (affine_scale, affine, 6*sizeof (double));
 	    break;
-	  case 270: art_affine_rotate(affine_rotate,0);
+	  case 270: art_affine_rotate (affine_rotate, 0);
 	    // only to reset the memory of affine_scale, just a hack
-	    memcpy(affine_scale,affine,6*sizeof(double));
+	    memcpy (affine_scale, affine, 6*sizeof (double));
 	    // switch the flipping from horizontal to vertical and vice versa
 	    affine_scale[0]=affine[3];
 	    affine_scale[3]=affine[0];
 	  }
-	  matrix_mult(affine_scale,affine_rotate,affine);
+	  matrix_mult (affine_scale, affine_rotate, affine);
 	}
 
 
@@ -1043,7 +1017,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 static void
 part_arrange_canvas_item (ItemData *data, SheetItem *sheet_item)
 {
-  double affine[6];
+	double affine[6];
 	double affine_scale[6];
 	double affine_rotate[6];
 	GList *list;
@@ -1061,42 +1035,46 @@ part_arrange_canvas_item (ItemData *data, SheetItem *sheet_item)
 
 	item = PART_ITEM (sheet_item);
 	group = GNOME_CANVAS_GROUP (item);
-	part = PART(data);
+	part = PART (data);
 
 	priv = item->priv;
 	
-	angle=part_get_rotation(part);
+	angle=part_get_rotation (part);
 
 	if (angle!=0) {
-	  if ((part->priv->flip & ID_FLIP_HORIZ)
-	      && (part->priv->flip & ID_FLIP_VERT)) {
-	    art_affine_rotate(affine,angle+180);
-	  } else { if ((part->priv->flip & ID_FLIP_HORIZ)
-		       || (part->priv->flip & ID_FLIP_VERT)) {
-	      if (part->priv->flip & ID_FLIP_HORIZ)
-		art_affine_scale(affine_scale,-1,1);
-	      else
-		art_affine_scale(affine_scale,1,-1);
+		if ((part->priv->flip & ID_FLIP_HORIZ) &&
+	        (part->priv->flip & ID_FLIP_VERT)) {
+	    	art_affine_rotate (affine, angle+180);
+	  	} 
+		else { 
+			if ((part->priv->flip & ID_FLIP_HORIZ) ||
+		        (part->priv->flip & ID_FLIP_VERT)) {
+	      		if (part->priv->flip & ID_FLIP_HORIZ)
+					art_affine_scale (affine_scale, -1, 1);
+	      		else
+					art_affine_scale (affine_scale, 1, -1);
 
-	      art_affine_rotate(affine_rotate,angle);
+	      	art_affine_rotate (affine_rotate, angle);
 
-	      matrix_mult(affine_rotate,affine_scale,affine);
-	      affine[4]=affine_rotate[4];
-	      affine[5]=affine_rotate[5];
-	    } else
-	      art_affine_rotate (affine, angle);
+	      	matrix_mult (affine_rotate, affine_scale, affine);
+	      	affine[4]=affine_rotate[4];
+	      	affine[5]=affine_rotate[5];
+	    } 
+		else
+	      	art_affine_rotate (affine, angle);
 	  }
-	} else {
-	  art_affine_scale(affine,1,1); //default
-	  if ((part->priv->flip & ID_FLIP_HORIZ)
-	      && (part->priv->flip & ID_FLIP_VERT))
-	    art_affine_scale(affine,-1,-1);
-	  if ((part->priv->flip & ID_FLIP_HORIZ)
-	      && !(part->priv->flip & ID_FLIP_VERT))
-	    art_affine_scale(affine,-1,1);
-	  if (!(part->priv->flip & ID_FLIP_HORIZ)
-	      && (part->priv->flip & ID_FLIP_VERT))
-	    art_affine_scale(affine,1,-1);
+	} 
+	else {
+		art_affine_scale (affine,1,1); //default
+	  	if ((part->priv->flip & ID_FLIP_HORIZ) &&
+	        (part->priv->flip & ID_FLIP_VERT))
+	    		art_affine_scale (affine,-1,-1);
+	  	if ((part->priv->flip & ID_FLIP_HORIZ) &&
+	       !(part->priv->flip & ID_FLIP_VERT))
+	    		art_affine_scale (affine,-1,1);
+	  	if (!(part->priv->flip & ID_FLIP_HORIZ) &&
+	         (part->priv->flip & ID_FLIP_VERT))
+	    	art_affine_scale (affine,1,-1);
 	}
 
 	for (list = group->item_list; list; list = list->next) {
@@ -1130,45 +1108,20 @@ part_arrange_canvas_item (ItemData *data, SheetItem *sheet_item)
 
 	for (label_items = priv->label_items; label_items;
 	     label_items = label_items->next) {
-		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label_items->data),
-			"anchor", anchor,
-			NULL);
+		gnome_canvas_item_set (GNOME_CANVAS_ITEM (label_items->data),
+			"anchor", anchor, NULL);
 	}
 
 	for (label_items = priv->label_nodes; label_items;
 	     label_items = label_items->next) {
-		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label_items->data),
-			"anchor", anchor,
-			NULL);
+		gnome_canvas_item_set (GNOME_CANVAS_ITEM (label_items->data),
+			"anchor", anchor, NULL);
 	}
 
 	/*
 	 * Invalidate the bounding box cache.
 	 */
 	priv->cache_valid = FALSE;
-}
-
-void
-part_item_signal_connect_floating_group (Sheet *sheet, SchematicView *sv)
-{
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
-
-	sheet->state = SHEET_STATE_FLOAT_START;
-
-	/* FIXME: clean all this mess with floating groups etc... */
-	if (sheet->priv->float_handler_id != 0)
-		return;
-
-	sheet->priv->float_handler_id = g_signal_connect(
-		G_OBJECT (sheet),
-		"event",
-		G_CALLBACK(sheet_item_floating_event),
-		sv);
 }
 
 void
@@ -1179,11 +1132,8 @@ part_item_signal_connect_floating (PartItem *item)
 	sheet = sheet_item_get_sheet (SHEET_ITEM (item));
 	sheet->state = SHEET_STATE_FLOAT_START;
 
-	g_signal_connect (
-		G_OBJECT (item),
-		"double_clicked",
-		G_CALLBACK(edit_properties),
-		item);
+	g_signal_connect (G_OBJECT (item), "double_clicked",
+		G_CALLBACK (edit_properties), item);
 }
 
 static void
@@ -1191,9 +1141,9 @@ selection_changed (PartItem *item, gboolean select, gpointer user_data)
 {
 	g_object_ref (G_OBJECT (item));
 	if (select)
-		gtk_idle_add ((gpointer) select_idle_callback, item);
+		g_idle_add ((gpointer) select_idle_callback, item);
 	else
-		gtk_idle_add ((gpointer) deselect_idle_callback, item);
+		g_idle_add ((gpointer) deselect_idle_callback, item);
 }
 
 static int
@@ -1206,24 +1156,26 @@ select_idle_callback (PartItem *item)
 	priv = item->priv;
 
 	if (priv->highlight) {
-		g_object_unref(G_OBJECT (item));
+		g_object_unref (G_OBJECT (item));
 		return FALSE;
 	}
 
-	for (list = GNOME_CANVAS_GROUP (item)->item_list; list;
-	     list = list->next){
+	for (list = GNOME_CANVAS_GROUP (item)->item_list; list; list = list->next) {
 		canvas_item = GNOME_CANVAS_ITEM (list->data);
 		if (GNOME_IS_CANVAS_LINE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", SELECTED_COLOR, NULL);
+			gnome_canvas_item_set (canvas_item, "fill_color", SELECTED_COLOR, 
+				NULL);
 		else if (GNOME_IS_CANVAS_ELLIPSE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "outline_color", SELECTED_COLOR, NULL);
+			gnome_canvas_item_set (canvas_item, "outline_color", SELECTED_COLOR, 
+				NULL);
 		else if (GNOME_IS_CANVAS_TEXT  (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", SELECTED_COLOR, NULL);
+			gnome_canvas_item_set (canvas_item, "fill_color", SELECTED_COLOR, 
+				NULL);
 	}
 
 	priv->highlight = TRUE;
 
-	g_object_unref(G_OBJECT(item));
+	g_object_unref (G_OBJECT (item));
 	return FALSE;
 }
 
@@ -1242,19 +1194,22 @@ deselect_idle_callback (PartItem *item)
 	}
 
 	for (list = GNOME_CANVAS_GROUP (item)->item_list; list;
-	     list = list->next){
+	     list = list->next) {
 		canvas_item = GNOME_CANVAS_ITEM (list->data);
 		if (GNOME_IS_CANVAS_LINE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", NORMAL_COLOR, NULL);
+			gnome_canvas_item_set (canvas_item, "fill_color", NORMAL_COLOR, 
+				NULL);
 		else if (GNOME_IS_CANVAS_ELLIPSE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "outline_color", NORMAL_COLOR, NULL);
-		else if (GNOME_IS_CANVAS_TEXT  (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", LABEL_COLOR, NULL);
+			gnome_canvas_item_set (canvas_item, "outline_color", NORMAL_COLOR, 
+				NULL);
+		else if (GNOME_IS_CANVAS_TEXT (canvas_item))
+			gnome_canvas_item_set (canvas_item, "fill_color", LABEL_COLOR, 
+				NULL);
 	}
 
 	priv->highlight = FALSE;
 
-	g_object_unref(G_OBJECT(item));
+	g_object_unref (G_OBJECT (item));
 	return FALSE;
 }
 
@@ -1333,22 +1288,18 @@ get_cached_bounds (PartItem *item, SheetPos *p1, SheetPos *p2)
 }
 
 static void
-part_item_paste (SchematicView *sv, ItemData *data)
+part_item_paste (Sheet *sheet, ItemData *data)
 {
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (IS_SHEET (sheet));
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_PART (data));
 
-	schematic_view_add_ghost_item (sv, data);
+	sheet_add_ghost_item (sheet, data);
 }
 
-/**
- * FIXME: make this the default constructor for PartItem (rename to
- * part_item_new).
- */
 PartItem *
-part_item_new_from_part (Sheet *sheet, Part *part)
+part_item_new (Sheet *sheet, Part *part)
 {
 	Library *library;
 	LibraryPart *library_part;
@@ -1363,13 +1314,13 @@ part_item_new_from_part (Sheet *sheet, Part *part)
 	/*
 	 * Create the PartItem canvas item.
 	 */
-	item = part_item_new (sheet, part);
+	item = part_item_canvas_new (sheet, part);
 
 	create_canvas_items (GNOME_CANVAS_GROUP (item), library_part);
 	create_canvas_labels (item, part);
-	create_canvas_label_nodes(item, part);
+	create_canvas_label_nodes (item, part);
 
-	part_arrange_canvas_item(ITEM_DATA (part), SHEET_ITEM (item));
+	part_arrange_canvas_item (ITEM_DATA (part), SHEET_ITEM (item));
 	return item;
 }
 
@@ -1398,7 +1349,7 @@ create_canvas_items (GnomeCanvasGroup *group, LibraryPart *library_part)
 	g_return_if_fail (library_part != NULL);
 
 	symbol = library_get_symbol (library_part->symbol_name);
-	if (symbol ==  NULL){
+	if (symbol ==  NULL) {
 		g_warning ("Couldn't find the requested symbol %s for part %s in library.\n",
 			library_part->symbol_name,
 			library_part->name);
@@ -1408,7 +1359,7 @@ create_canvas_items (GnomeCanvasGroup *group, LibraryPart *library_part)
 	for (objects = symbol->symbol_objects; objects;
 	     objects = objects->next) {
 		object = (SymbolObject *)(objects->data);
-		switch (object->type){
+		switch (object->type) {
 		case SYMBOL_OBJECT_LINE:
 			points = object->u.uline.line;
 			item = gnome_canvas_item_new (
@@ -1516,8 +1467,8 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 	g_return_if_fail (part != NULL);
 	g_return_if_fail (IS_PART (part));
 
-	num_pins = part_get_num_pins(part);
-	pins = part_get_pins(part);
+	num_pins = part_get_num_pins (part);
+	pins = part_get_pins (part);
 	group = item->priv->node_group;
 	item_list = NULL;
 
@@ -1549,10 +1500,9 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 		x = pins[i].offset.x;
 		y = pins[i].offset.y;
 
-		txt = g_strdup_printf("%d", pins[i].node_nr);
-		canvas_item = gnome_canvas_item_new (
-			group,
-			gnome_canvas_text_get_type (),
+		txt = g_strdup_printf ("%d", pins[i].node_nr);
+		canvas_item = gnome_canvas_item_new (group, 
+		    gnome_canvas_text_get_type (),
 			"x", (double) x,
 			"y", (double) y,
 			"text", txt,
@@ -1562,7 +1512,7 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 			NULL);
 
 		item_list = g_slist_prepend (item_list, canvas_item);
-		g_free(txt);
+		g_free (txt);
 	}
 	item_list = g_slist_reverse (item_list);
 	item->priv->label_nodes = item_list;
@@ -1595,23 +1545,17 @@ part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 }
 
 static void
-part_item_place (SheetItem *item, SchematicView *sv)
+part_item_place (SheetItem *item, Sheet *sheet)
 {
-	g_signal_connect (
-		G_OBJECT(item),
-		"event",
-		G_CALLBACK(sheet_item_event),
-		sv);
+	g_signal_connect (G_OBJECT (item), "event", 
+		G_CALLBACK (sheet_item_event), sheet);
 
-	g_signal_connect (
-		G_OBJECT(item),
-		"double_clicked",
-		G_CALLBACK(edit_properties),
-		item);
+	g_signal_connect (G_OBJECT (item), "double_clicked",
+		G_CALLBACK (edit_properties), item);
 }
 
 static void
-part_item_place_ghost (SheetItem *item, SchematicView *sv)
+part_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
 //	part_item_signal_connect_placed (PART_ITEM (item));
 }

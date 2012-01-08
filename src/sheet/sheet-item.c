@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,24 +38,18 @@
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "stock.h"
-#include "schematic.h"
-#include "schematic-view.h"
 #include "config.h"
 
 static void sheet_item_class_init (SheetItemClass * klass);
-
 static void sheet_item_init (SheetItem *item);
-
 static void sheet_item_set_property (GObject *object, guint prop_id,
-						const GValue *value, GParamSpec *spec);
-
+				const GValue *value, GParamSpec *spec);
 static void sheet_item_get_property (GObject *object, guint prop_id,
-						GValue *value, GParamSpec *spec);
-
+				GValue *value, GParamSpec *spec);
 static void sheet_item_destroy (GtkObject *object);
+static void sheet_item_run_menu (SheetItem *item, Sheet *sheet, 
+				GdkEventButton *event);
 
-static void sheet_item_run_menu (SheetItem *item, SchematicView *sv, 
-						GdkEventButton *event);
 
 static GnomeCanvasGroupClass *sheet_item_parent_class = NULL;
 extern GObject *clipboard_data_get_item_data ();
@@ -80,7 +76,6 @@ enum {
 	SELECTION_CHANGED,
 	MOUSE_OVER,
 	DOUBLE_CLICKED,
-
 	LAST_SIGNAL
 };
 
@@ -130,7 +125,7 @@ sheet_item_get_type ()
 			(GInstanceInitFunc)sheet_item_init,
 			NULL
 		};
-		sheet_item_type = g_type_register_static(GNOME_TYPE_CANVAS_GROUP,
+		sheet_item_type = g_type_register_static (GNOME_TYPE_CANVAS_GROUP,
 												 "SheetItem",
 												 &sheet_item_info, 0);
 	}
@@ -143,31 +138,24 @@ sheet_item_class_init (SheetItemClass *sheet_item_class)
 	GObjectClass *object_class;
 	GtkObjectClass *gtk_object_class;
 
-	object_class = G_OBJECT_CLASS(sheet_item_class);
-	gtk_object_class = GTK_OBJECT_CLASS(sheet_item_class);
-	sheet_item_parent_class = g_type_class_peek_parent(sheet_item_class);
+	object_class = G_OBJECT_CLASS (sheet_item_class);
+	gtk_object_class = GTK_OBJECT_CLASS (sheet_item_class);
+	sheet_item_parent_class = g_type_class_peek_parent (sheet_item_class);
 
 	object_class->set_property = sheet_item_set_property;
 	object_class->get_property = sheet_item_get_property;
 
-	g_object_class_install_property(
-				object_class,
-				ARG_DATA,
-				g_param_spec_pointer("data", "SheetItem::data", "the data",
-									 G_PARAM_READWRITE)
-	);
-	g_object_class_install_property(
-				object_class,
-				ARG_SHEET,
-				g_param_spec_pointer("sheet", "SheetItem::sheet", "the sheet",
-									 G_PARAM_READABLE)
-	);
-	g_object_class_install_property(
-				object_class,
-				ARG_ACTION_GROUP,
-				g_param_spec_pointer("action_group", "SheetItem::action_group", "action group",
-									 G_PARAM_READWRITE)
-	);
+	g_object_class_install_property (object_class, ARG_DATA,
+				g_param_spec_pointer ("data", "SheetItem::data", "the data",
+				G_PARAM_READWRITE));
+	
+	g_object_class_install_property (object_class, ARG_SHEET,
+				g_param_spec_pointer ("sheet", "SheetItem::sheet", "the sheet",
+				G_PARAM_READABLE));
+	
+	g_object_class_install_property (object_class, ARG_ACTION_GROUP,
+				g_param_spec_pointer ("action_group", "SheetItem::action_group", 
+				"action group", G_PARAM_READWRITE)	);
 
 	gtk_object_class->destroy = sheet_item_destroy;
 
@@ -179,42 +167,41 @@ sheet_item_class_init (SheetItemClass *sheet_item_class)
 	sheet_item_class->selection_changed = NULL;
 	sheet_item_class->mouse_over = NULL;
 
-	so_signals[PLACED] =
-		g_signal_new ("placed",
-				G_TYPE_FROM_CLASS(object_class),
-				G_SIGNAL_RUN_FIRST,
-				0,
-				NULL,
-				NULL,
-				g_cclosure_marshal_VOID__VOID,
-				G_TYPE_NONE, 0);
+	so_signals[PLACED] = g_signal_new ("placed",
+		G_TYPE_FROM_CLASS (object_class),
+		G_SIGNAL_RUN_FIRST,
+		0,
+		NULL,
+		NULL,
+		g_cclosure_marshal_VOID__VOID,
+		G_TYPE_NONE, 0);
 
 	so_signals[MOVED] = g_signal_new ("moved",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SheetItemClass, moved),
+		G_STRUCT_OFFSET (SheetItemClass, moved),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
 
 	so_signals[SELECTION_CHANGED] = g_signal_new ("selection_changed",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SheetItemClass, selection_changed),
+		G_STRUCT_OFFSET (SheetItemClass, selection_changed),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__INT,
 		G_TYPE_NONE, 1, G_TYPE_INT);
 
 	so_signals[MOUSE_OVER] = g_signal_new ("mouse_over",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SheetItemClass, mouse_over),
+		G_STRUCT_OFFSET (SheetItemClass, mouse_over),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
 
 	so_signals[DOUBLE_CLICKED] = g_signal_new ("double_clicked",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
 		0, NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
@@ -235,14 +222,15 @@ sheet_item_init (SheetItem *item)
 
 	item->priv->ui_manager = gtk_ui_manager_new ();
 	item->priv->action_group = gtk_action_group_new ("action_group");
-	gtk_action_group_set_translation_domain (item->priv->action_group, GETTEXT_PACKAGE);
+	gtk_action_group_set_translation_domain (item->priv->action_group, 
+	                 GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (item->priv->action_group,
-                                      action_entries,
-                                      G_N_ELEMENTS (action_entries),
-                                      NULL);
-	gtk_ui_manager_insert_action_group (item->priv->ui_manager, item->priv->action_group, 0);
+                     action_entries, G_N_ELEMENTS (action_entries), NULL);
+	gtk_ui_manager_insert_action_group (item->priv->ui_manager, 
+	                 item->priv->action_group, 0);
 	
-	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, sheet_item_context_menu, -1, &error)) {
+	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, 
+	                 sheet_item_context_menu, -1, &error)) {
 		g_message ("building menus failed: %s", error->message);
 		g_error_free (error);
 		exit (EXIT_FAILURE);
@@ -289,7 +277,7 @@ sheet_item_get_property (GObject *object, guint prop_id, GValue *value,
 
 	switch (prop_id) {
 	case ARG_DATA:
-		g_value_set_pointer(value, sheet_item->priv->data);
+		g_value_set_pointer (value, sheet_item->priv->data);
 		break;
 	case ARG_SHEET:
 		g_value_set_pointer (value, sheet_item_get_sheet (sheet_item));
@@ -298,7 +286,7 @@ sheet_item_get_property (GObject *object, guint prop_id, GValue *value,
 		g_value_set_pointer (value, sheet_item->priv->action_group);
 		break;
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(sheet_item, prop_id, spec);
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (sheet_item, prop_id, spec);
 		break;
 	}
 }
@@ -314,23 +302,24 @@ sheet_item_destroy (GtkObject *object)
 	sheet_item = SHEET_ITEM (object);
 
 	if (sheet_item->priv) {
-		g_object_unref(G_OBJECT(sheet_item->priv->data));
-		g_free(sheet_item->priv);
+		g_object_unref (G_OBJECT (sheet_item->priv->data));
+		g_free (sheet_item->priv);
 		sheet_item->priv = NULL;
 	}
 
-	if (GTK_OBJECT_CLASS(sheet_item_parent_class)->destroy) {
-		GTK_OBJECT_CLASS(sheet_item_parent_class)->destroy(object);
+	if (GTK_OBJECT_CLASS (sheet_item_parent_class)->destroy) {
+		GTK_OBJECT_CLASS (sheet_item_parent_class)->destroy (object);
 	}
 }
 
 static void
-sheet_item_run_menu (SheetItem *item, SchematicView *sv, GdkEventButton *event)
+sheet_item_run_menu (SheetItem *item, Sheet *sheet, GdkEventButton *event)
 {
 	GtkWidget *menu;
 
 	menu = gtk_ui_manager_get_widget (item->priv->ui_manager, "/ItemMenu");
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button, event->time);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sheet, event->button, 
+	                event->time);
 }
 
 static int
@@ -361,19 +350,16 @@ scroll_timeout_callback (Sheet *sheet)
 
 	return TRUE;
 }
-
-
 /*
  * sheet_item_event
  *
  * Event handler for a SheetItem
  */
 int
-sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *sv)
+sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, 
+                  Sheet *sheet)
 {
-	SheetItemClass *class;
 	GnomeCanvas *canvas;
-	Sheet *sheet;
 	SheetPriv *priv;
 	GList *list;
 	SheetPos delta;
@@ -392,14 +378,13 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 
 	g_return_val_if_fail (sheet_item != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET_ITEM (sheet_item), FALSE);
-	g_return_val_if_fail (sv != NULL, FALSE);
-	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), FALSE);
+	g_return_val_if_fail (sheet != NULL, FALSE);
+	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
 
-	sheet = schematic_view_get_sheet (sv);
 	priv = sheet->priv;
 	canvas = GNOME_CANVAS (sheet);
 
-	switch (event->type){
+	switch (event->type) {
 	case GDK_ENTER_NOTIFY:
 		/*
 		 * Debugging...
@@ -411,7 +396,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 	case GDK_BUTTON_PRESS:
 		/* Grab focus to sheet for correct use of events */
 		gtk_widget_grab_focus (GTK_WIDGET (sheet));
-		switch (event->button.button){
+		switch (event->button.button) {
 		case 1:
 			g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
 			sheet->state = SHEET_STATE_DRAG_START;
@@ -431,13 +416,11 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 			 */
 			if (!sheet_item->priv->selected &&
 				!((event->button.state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK))
-				schematic_view_select_all (sv, FALSE);
+				sheet_select_all (sheet, FALSE);
 
-			//if (!sheet_item->priv->selected)
-				sheet_item_select (sheet_item, TRUE);
+			sheet_item_select (sheet_item, TRUE);
 
-			class = SHEET_ITEM_CLASS (GTK_OBJECT_GET_CLASS(sheet_item));
-			sheet_item_run_menu ( sheet_item, sv, (GdkEventButton *) event);
+			sheet_item_run_menu ( sheet_item, sheet, (GdkEventButton *) event);
 			break;
 		default:
 			return FALSE;
@@ -451,7 +434,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 		if (sheet->state == SHEET_STATE_DRAG)
 			return FALSE;
 
-		switch (event->button.button){
+		switch (event->button.button) {
 		case 1:
 			if (sheet->state == SHEET_STATE_DRAG_START)
 				sheet->state = SHEET_STATE_NONE;
@@ -469,7 +452,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 		return TRUE;
 
 	case GDK_BUTTON_RELEASE:
-		switch (event->button.button){
+		switch (event->button.button) {
 		case 1:
 			if (sheet->state != SHEET_STATE_DRAG &&
 				sheet->state != SHEET_STATE_DRAG_START)
@@ -481,7 +464,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 				sheet->state = SHEET_STATE_NONE;
 
 				if (!(event->button.state & GDK_SHIFT_MASK))
-					schematic_view_select_all (sv, FALSE);
+					sheet_select_all (sheet, FALSE);
 
 				sheet_item_select (sheet_item, TRUE);
 
@@ -496,7 +479,8 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 			gtk_timeout_remove (priv->scroll_timeout_id); // Tricky...
 
 			sheet->state = SHEET_STATE_NONE;
-			gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (sheet_item), event->button.time);
+			gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (sheet_item), 
+			                          event->button.time);
 
 			/*
 			 * HACK :(
@@ -534,11 +518,11 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 		case GDK_r:
-			schematic_view_rotate_selection (sv);
+			sheet_rotate_selection (sheet);
 			{
 				int x, y;
 
-				gdk_window_get_pointer (GDK_WINDOW (GTK_WIDGET (sheet)->window), &x, &y, NULL);
+				gdk_window_get_pointer (gtk_widget_get_window (GTK_WIDGET (sheet)),&x, &y, NULL);
 				gnome_canvas_window_to_world (GNOME_CANVAS (sheet), x, y, &snapped_x, &snapped_y);
 
 				/*
@@ -585,27 +569,26 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 			/*
 			 * Update the selection if needed.
 			 */
-			if (!sheet_item->priv->selected){
+			if (!sheet_item->priv->selected) {
 				if (!(event->motion.state & GDK_SHIFT_MASK))
-					schematic_view_select_all (sv, FALSE);
+					sheet_select_all (sheet, FALSE);
 				sheet_item_select (sheet_item, TRUE);
 			}
 
-			gnome_canvas_item_set (
-				GNOME_CANVAS_ITEM (priv->selected_group),
-				"x", 0.0, "y", 0.0, NULL
-			);
+			gnome_canvas_item_set (GNOME_CANVAS_ITEM (priv->selected_group),
+				"x", 0.0, "y", 0.0, NULL);
 
 			/*
 			 * Reparent the selected objects so that we can
 			 * move them efficiently.
 			 */
-			for (list = priv->selected_objects; list; list = list->next){
+			for (list = priv->selected_objects; list; list = list->next) {
 				ItemData *item_data;
 
 				item_data = SHEET_ITEM (list->data)->priv->data;
 				item_data_unregister (item_data);
-				sheet_item_reparent (SHEET_ITEM (list->data), priv->selected_group);
+				sheet_item_reparent (SHEET_ITEM (list->data), 
+				                     priv->selected_group);
 			}
 
 			gnome_canvas_item_grab (GNOME_CANVAS_ITEM (sheet_item),
@@ -615,12 +598,9 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 
 			gnome_canvas_item_get_bounds (
 				GNOME_CANVAS_ITEM (priv->selected_group),
-				&bb_x1, &bb_y1, &bb_x2, &bb_y2
-			);
+				&bb_x1, &bb_y1, &bb_x2, &bb_y2);
 
-			/*
-			 * Start the autoscroll timeout.
-			 */
+			// Start the autoscroll timeout.
 			priv->scroll_timeout_id =
 				g_timeout_add (50, (void *) scroll_timeout_callback, sheet);
 		}
@@ -642,22 +622,24 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
 		sheet_get_size_pixels (sheet, &sheet_width, &sheet_height);
 
 		/* Check that we don't move outside the sheet... horizontally: */
-		if (cx1 <= 0){  /* leftmost edge */
+		if (cx1 <= 0) {  /* leftmost edge */
 			dx = dx - x1;
 			snap_to_grid (sheet->grid, &dx, NULL);
 			snapped_x = last_x + dx;
-		} else if (cx2 >= sheet_width){  /* rightmost edge */
+		} 
+		else if (cx2 >= sheet_width) {  /* rightmost edge */
 			dx = dx - (x2 - sheet_width / priv->zoom);
 			snap_to_grid (sheet->grid, &dx, NULL);
 			snapped_x = last_x + dx;
 		}
 
 		/* And vertically: */
-		if (cy1 <= 0){  /* upper edge */
+		if (cy1 <= 0) {  /* upper edge */
 			dy = dy - y1;
 			snap_to_grid (sheet->grid, NULL, &dy);
 			snapped_y = last_y + dy;
-		} else if (cy2 >= sheet_height){  /* lower edge */
+		} 
+		else if (cy2 >= sheet_height) {  /* lower edge */
 			dy = dy - (y2 - sheet_height / priv->zoom);
 			snap_to_grid (sheet->grid, NULL, &dy);
 			snapped_y = last_y + dy;
@@ -687,24 +669,26 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event, SchematicView *s
  * Cancel the placement of floating items and remove them.
  */
 void
-sheet_item_cancel_floating (SchematicView *sv)
+sheet_item_cancel_floating (Sheet *sheet)
 {
 	GnomeCanvasGroup *group;
-	Sheet *sheet;
 	GList *list;
 
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (IS_SHEET (sheet));
 
-	sheet = schematic_view_get_sheet (sv);
 	group = sheet->priv->floating_group;
 	if (group == NULL)
 		return;
 
-	if (sheet->state != SHEET_STATE_FLOAT && sheet->state != SHEET_STATE_FLOAT_START)
+	if (sheet->state != SHEET_STATE_FLOAT && 
+	    sheet->state != SHEET_STATE_FLOAT_START)
 		return;
 
-	g_signal_handler_disconnect(G_OBJECT (sheet), sheet->priv->float_handler_id);
+	if (g_signal_handler_is_connected (G_OBJECT (sheet), 
+	      sheet->priv->float_handler_id))
+		g_signal_handler_disconnect(G_OBJECT (sheet), 
+		  sheet->priv->float_handler_id);
 
 	gtk_object_destroy (GTK_OBJECT (group));
 
@@ -719,24 +703,19 @@ sheet_item_cancel_floating (SchematicView *sv)
 	}
 
 	sheet->priv->floating_group = GNOME_CANVAS_GROUP (
-		gnome_canvas_item_new (
-			sheet->object_group,
-			gnome_canvas_group_get_type (),
-			"x", 0.0,
-			"y", 0.0,
-			NULL)
-		);
+		gnome_canvas_item_new (sheet->object_group,
+		    gnome_canvas_group_get_type (), "x", 0.0, "y", 0.0, NULL));
 
 	sheet->priv->float_handler_id = 0;
 	sheet->state = SHEET_STATE_NONE;
-	schematic_view_clear_ghosts (sv);
+	sheet_clear_ghosts (sheet);
 }
 
 /*
  * Event handler for a "floating" group of objects.
  */
 int
-sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *schematic_view)
+sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 {
 	GnomeCanvas *canvas;
 	SheetPriv *priv;
@@ -766,8 +745,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 
 	g_return_val_if_fail (sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
-	g_return_val_if_fail (schematic_view != NULL, FALSE);
-	g_return_val_if_fail (IS_SCHEMATIC_VIEW (schematic_view), FALSE);
+
 	/* assert? */
 	g_return_val_if_fail (sheet->priv->floating_objects != NULL, FALSE);
 
@@ -796,7 +774,10 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 			if (!control_key_down) {
 				sheet->state = SHEET_STATE_NONE;
 				g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
-				g_signal_handler_disconnect ( G_OBJECT (sheet), sheet->priv->float_handler_id);
+				if (g_signal_handler_is_connected (G_OBJECT (sheet), 
+				    	sheet->priv->float_handler_id))
+					g_signal_handler_disconnect (G_OBJECT (sheet), 
+					    sheet->priv->float_handler_id);
 				sheet->priv->float_handler_id = 0;
 			}
 
@@ -823,7 +804,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 				g_object_ref (G_OBJECT (floating_data));
 
 				item_data_move (floating_data, &delta);
-				schematic_add_item (schematic_view_get_schematic (schematic_view),
+				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
 									floating_data);
 
 				if (!control_key_down)
@@ -833,8 +814,9 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 			if (!control_key_down) {
 				g_list_free (sheet->priv->floating_objects);
 				sheet->priv->floating_objects = NULL;
-			} else {
-				gtk_object_set (GTK_OBJECT (sheet->priv->floating_group),
+			} 
+			else {
+				g_object_set (G_OBJECT (sheet->priv->floating_group),
 						"x", tmp.x,
 						"y", tmp.y,
 						NULL);
@@ -848,7 +830,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 			 * Cancel the "float-placement" for button-3 clicks.
 			 */
 			g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
-			sheet_item_cancel_floating (schematic_view);
+			sheet_item_cancel_floating (sheet);
 			break;
 		}
 		break;
@@ -875,7 +857,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 			for (list = priv->floating_objects; list; list = list->next) {
 				sheet_item_reparent (SHEET_ITEM (list->data), priv->floating_group);
 			}
-			gtk_object_get (GTK_OBJECT (sheet->priv->floating_group),
+			g_object_get (G_OBJECT (sheet->priv->floating_group),
 					"x", &delta.x,
 					"y", &delta.y,
 					NULL);
@@ -938,22 +920,24 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 		sheet_get_size_pixels (sheet, &sheet_width, &sheet_height);
 
 		/* Check that we don't move outside the sheet horizontally */
-		if (cx1 <= 0){  /* leftmost edge */
+		if (cx1 <= 0) {  /* leftmost edge */
 			dx = dx - x1;
 			snap_to_grid (sheet->grid, &dx, NULL);
 			snapped_x = last_x + dx;
-		} else if (cx2 >= sheet_width){  /* rightmost edge */
+		} 
+		else if (cx2 >= sheet_width) {  /* rightmost edge */
 			dx = dx - (x2 - sheet_width/sheet->priv->zoom);
 			snap_to_grid (sheet->grid, &dx, NULL);
 			snapped_x = last_x + dx;
 		}
 
 		/* And vertically */
-		if (cy1 <= 0){  /* upper edge */
+		if (cy1 <= 0) {  /* upper edge */
 			dy = dy - y1;
 			snap_to_grid (sheet->grid, NULL, &dy);
 			snapped_y = last_y + dy;
-		} else if (cy2 >= sheet_height){  /* lower edge */
+		} 
+		else if (cy2 >= sheet_height) {  /* lower edge */
 			dy = dy - (y2 - sheet_height/sheet->priv->zoom);
 			snap_to_grid (sheet->grid, NULL, &dy);
 			snapped_y = last_y + dy;
@@ -962,7 +946,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 		last_x = snapped_x;
 		last_y = snapped_y;
 
-		if (dx != 0 || dy != 0){
+		if (dx != 0 || dy != 0) {
 			gnome_canvas_item_move (GNOME_CANVAS_ITEM (priv->floating_group),
 									dx, dy);
 		}
@@ -971,11 +955,11 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event, SchematicView *s
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 		case GDK_r:
-			schematic_view_rotate_ghosts (schematic_view);
+			sheet_rotate_ghosts (sheet);
 			{
 				int x, y;
 
-				gdk_window_get_pointer (GDK_WINDOW (GTK_WIDGET (sheet)->window),
+				gdk_window_get_pointer (gtk_widget_get_window (GTK_WIDGET (sheet)),
 										&x, &y, NULL);
 				gnome_canvas_window_to_world (GNOME_CANVAS (sheet), x, y,
 											  &snapped_x, &snapped_y);
@@ -1106,14 +1090,14 @@ sheet_item_rotate (SheetItem *sheet_item, int angle, SheetPos *center)
 }
 
 void
-sheet_item_paste (SchematicView *schematic_view, ClipboardData *data)
+sheet_item_paste (Sheet *sheet, ClipboardData *data)
 {
 	SheetItemClass *item_class;
 	ItemDataClass *id_class;
 	ItemData *item_data, *clone;
 
-	g_return_if_fail (schematic_view != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (schematic_view));
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (IS_SHEET (sheet));
 	g_return_if_fail (data != NULL);
 
 	item_data = ITEM_DATA (clipboard_data_get_item_data (data));
@@ -1128,7 +1112,7 @@ sheet_item_paste (SchematicView *schematic_view, ClipboardData *data)
 	item_class = SHEET_ITEM_CLASS (clipboard_data_get_item_class (data));
 	if (item_class->paste) {
 		clone = id_class->clone (item_data);
-		item_class->paste (schematic_view, clone);
+		item_class->paste (sheet, clone);
 	}
 }
 
@@ -1178,7 +1162,7 @@ sheet_item_set_preserve_selection (SheetItem *item, gboolean set)
 }
 
 void
-sheet_item_place (SheetItem *item, SchematicView *sv)
+sheet_item_place (SheetItem *item, Sheet *sheet)
 {
 	SheetItemClass *si_class;
 
@@ -1188,11 +1172,11 @@ sheet_item_place (SheetItem *item, SchematicView *sv)
 	si_class = SHEET_ITEM_CLASS (GTK_OBJECT_GET_CLASS (item));
 
 	if (si_class->place)
-		si_class->place (item, sv);
+		si_class->place (item, sheet);
 }
 
 void
-sheet_item_place_ghost (SheetItem *item, SchematicView *sv)
+sheet_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
 	SheetItemClass *si_class;
 
@@ -1202,7 +1186,7 @@ sheet_item_place_ghost (SheetItem *item, SchematicView *sv)
 	si_class = SHEET_ITEM_CLASS (GTK_OBJECT_GET_CLASS (item));
 
 	if (si_class->place_ghost)
-		si_class->place_ghost (item, sv);
+		si_class->place_ghost (item, sheet);
 }
 
 void

@@ -7,11 +7,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,14 +34,15 @@
 #include "item-data.h"
 #include "node-store.h"
 
-static void item_data_class_init(ItemDataClass *klass);
-static void item_data_init(ItemData *item_data);
-static void item_data_set_gproperty(GObject *object, guint prop_id,
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+
+static void item_data_class_init (ItemDataClass *klass);
+static void item_data_init (ItemData *item_data);
+static void item_data_set_gproperty (GObject *object, guint prop_id,
 									const GValue *value, GParamSpec *spec);
-static void item_data_get_gproperty(GObject *object, guint prop_id,
+static void item_data_get_gproperty (GObject *object, guint prop_id,
 									GValue *value, GParamSpec *spec);
-static void item_data_copy(ItemData *dest, ItemData *src);
-static void item_data_moved(ItemData *item_data, SheetPos *delta);
+static void item_data_copy (ItemData *dest, ItemData *src);
 
 enum {
 	ARG_0,
@@ -75,19 +78,19 @@ item_data_get_type (void)
 
 	if (!item_data_type) {
 		static const GTypeInfo item_data_info = {
-			sizeof(ItemDataClass),
+			sizeof (ItemDataClass),
 			NULL, /* base_init */
 			NULL, /* base_finalize */
 			(GClassInitFunc) item_data_class_init,
 			NULL, /* class_finalize */
 			NULL, /* class_data */
-			sizeof(ItemData),
+			sizeof (ItemData),
 			0, /* n_preallocs */
-			(GInstanceInitFunc)item_data_init,
+			(GInstanceInitFunc) item_data_init,
 			NULL
 		};
 
-		item_data_type = g_type_register_static(G_TYPE_OBJECT, "ItemData",
+		item_data_type = g_type_register_static (G_TYPE_OBJECT, "ItemData",
 			&item_data_info, 0);
 	}
 
@@ -95,23 +98,23 @@ item_data_get_type (void)
 }
 
 static void
-item_data_dispose(GObject *object)
+item_data_dispose (GObject *object)
 {
 	/*
 	 * Remove the item from the sheet node store if there.
 	 */
-	if (ITEM_DATA(object)->priv->store) {
-		item_data_unregister(ITEM_DATA(object));
+	if (ITEM_DATA (object)->priv->store) {
+		item_data_unregister (ITEM_DATA(object));
 	}
 
-	parent_class->dispose(object);
+	parent_class->dispose (object);
 }
 
 
 static void
-item_data_finalize(GObject *object)
+item_data_finalize (GObject *object)
 {
-	parent_class->finalize(object);
+	parent_class->finalize (object);
 }
 
 
@@ -120,9 +123,9 @@ item_data_class_init (ItemDataClass *klass)
 {
 	GObjectClass *object_class;
 
-	parent_class = g_type_class_peek_parent(klass);
+	parent_class = g_type_class_peek_parent (klass);
 
-	object_class = G_OBJECT_CLASS(klass);
+	object_class = G_OBJECT_CLASS (klass);
 
 	/* This assignment must be  performed before the call 
 	 * to g_object_class_install_property 
@@ -130,44 +133,40 @@ item_data_class_init (ItemDataClass *klass)
 	object_class->set_property = item_data_set_gproperty;
 	object_class->get_property = item_data_get_gproperty;
 
-	g_object_class_install_property(
-		object_class,
-		ARG_STORE,
-		g_param_spec_pointer("store", "ItemData::store",
+	g_object_class_install_property (object_class, ARG_STORE,
+		g_param_spec_pointer ("store", "ItemData::store",
 		"the store data", G_PARAM_READWRITE));
 
-	g_object_class_install_property(
-		object_class,
-		ARG_POS,
-		g_param_spec_pointer("pos", "ItemData::pos",
+	g_object_class_install_property (object_class, ARG_POS,
+		g_param_spec_pointer ("pos", "ItemData::pos",
 		"the pos data", G_PARAM_READWRITE));
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
 	item_data_signals [MOVED] = g_signal_new ("moved",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(ItemDataClass, moved),
+		G_STRUCT_OFFSET (ItemDataClass, moved),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__POINTER,
 		G_TYPE_NONE, 1, G_TYPE_POINTER);
 
 	item_data_signals [ROTATED] = g_signal_new ("rotated",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
 		0, NULL, NULL,
 		g_cclosure_marshal_VOID__INT,
 	  G_TYPE_NONE, 1, G_TYPE_INT);
 
 	item_data_signals [FLIPPED] = g_signal_new ("flipped",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
 		0, NULL, NULL,
 		g_cclosure_marshal_VOID__INT,
 		G_TYPE_NONE, 1, G_TYPE_INT);
 
 	item_data_signals [HIGHLIGHT] = g_signal_new ("highlight",
-		G_TYPE_FROM_CLASS(object_class),
+		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
 		0, NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
@@ -186,7 +185,7 @@ item_data_class_init (ItemDataClass *klass)
 	/*
 	 * Signals.
 	 */
-	klass->moved = item_data_moved;  /* FIXME: remove this field.*/
+	klass->moved = NULL;
 }
 
 static void
@@ -208,40 +207,38 @@ item_data_new (void)
 {
 	ItemData *item_data;
 
-	item_data = ITEM_DATA(g_object_new(item_data_get_type(), NULL));
+	item_data = ITEM_DATA (g_object_new(item_data_get_type(), NULL));
 
 	return item_data;
 }
 
-
 static void
-item_data_set_gproperty(GObject *object, guint prop_id, const GValue *value,
-						GParamSpec *spec)
-{
-	ItemData *item_data = ITEM_DATA(object);
-
-	switch (prop_id) {
-	case ARG_STORE:
-		item_data->priv->store = g_value_get_pointer(value);
-		break;
-	default:
-		break;
-	}
-}
-
-
-static void
-item_data_get_gproperty(GObject *object, guint prop_id, GValue *value,
+item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 						GParamSpec *spec)
 {
 	ItemData *item_data = ITEM_DATA (object);
 
 	switch (prop_id) {
 	case ARG_STORE:
-		g_value_set_pointer(value, item_data->priv->store);
+		item_data->priv->store = g_value_get_pointer (value);
 		break;
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(item_data, prop_id, spec);
+		break;
+	}
+}
+
+static void
+item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
+						GParamSpec *spec)
+{
+	ItemData *item_data = ITEM_DATA (object);
+
+	switch (prop_id) {
+	case ARG_STORE:
+		g_value_set_pointer (value, item_data->priv->store);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (item_data, prop_id, spec);
 	}
 }
 
@@ -276,7 +273,7 @@ item_data_set_pos (ItemData *item_data, SheetPos *pos)
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
 
-	g_signal_emit_by_name(G_OBJECT(item_data), "moved", &delta);
+	g_signal_emit_by_name (G_OBJECT (item_data), "moved", &delta);
 }
 
 void
@@ -294,13 +291,7 @@ item_data_move (ItemData *item_data, SheetPos *delta)
 	priv->pos.x += delta->x;
 	priv->pos.y += delta->y;
 
-	g_signal_emit_by_name(G_OBJECT(item_data), "moved", delta);
-}
-
-static void
-item_data_moved (ItemData *item_data, SheetPos *delta)
-{
-/*	g_print ("mooooooved\n");*/
+	g_signal_emit_by_name (G_OBJECT (item_data), "moved", delta);
 }
 
 gpointer /*NodeStore * */
@@ -536,4 +527,3 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 		id_class->print (data, cr, ctx);
 	}
 }
-

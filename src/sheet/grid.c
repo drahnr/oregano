@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,7 +32,7 @@
 
 #include <math.h>
 #include "grid.h"
-#include "sheet-private.h"
+#include "sheet.h"
 
 #define ROUND(x) (floor((x)+0.5))
 
@@ -87,7 +89,7 @@ grid_get_type (void)
 			NULL
 		};
 
-		grid_type = g_type_register_static(GNOME_TYPE_CANVAS_ITEM,
+		grid_type = g_type_register_static (GNOME_TYPE_CANVAS_ITEM,
 			"Grid", &grid_info, 0);
 	}
 
@@ -102,8 +104,8 @@ grid_class_init (GridClass *class)
 	GnomeCanvasItemClass *item_class;
 
 	object_class = G_OBJECT_CLASS (class);
-	gtk_object_class = GTK_OBJECT_CLASS(class);
-	item_class = GNOME_CANVAS_ITEM_CLASS(class);
+	gtk_object_class = GTK_OBJECT_CLASS (class);
+	item_class = GNOME_CANVAS_ITEM_CLASS (class);
 	
 	gtk_object_class->destroy = grid_destroy;
 
@@ -112,25 +114,18 @@ grid_class_init (GridClass *class)
 	object_class->set_property = grid_set_property;
 	object_class->get_property = grid_get_property;
 
-	g_object_class_install_property(
-		object_class,
-		ARG_COLOR,
-		g_param_spec_string("color", "Grid::color", "the color",
-			"black", G_PARAM_WRITABLE)
-		);
-	g_object_class_install_property(
-		object_class,
-		ARG_SPACING,
-		g_param_spec_double("spacing", "Grid::spacing",
+	g_object_class_install_property (object_class, ARG_COLOR,
+		g_param_spec_string ("color", "Grid::color", "the color",
+			"black", G_PARAM_WRITABLE));
+	
+	g_object_class_install_property (object_class, ARG_SPACING,
+		g_param_spec_double ("spacing", "Grid::spacing",
 			"the grid spacing", 0.0f, 100.0f, 10.0f,
-			G_PARAM_READWRITE)
-		);
-	g_object_class_install_property(
-		object_class,
-		ARG_SNAP,
-		g_param_spec_boolean("snap", "Grid::snap", "snap to grid?",
-			TRUE,G_PARAM_READWRITE)
-		);
+			G_PARAM_READWRITE));
+	
+	g_object_class_install_property (object_class, ARG_SNAP,
+		g_param_spec_boolean ("snap", "Grid::snap", "snap to grid?",
+			TRUE,G_PARAM_READWRITE));
 
 	item_class->update = grid_update;
 	item_class->realize = grid_realize;
@@ -162,8 +157,8 @@ grid_destroy (GtkObject *object)
 	grid = GRID (object);
 	priv = grid->priv;
 	
-	if (GTK_OBJECT_CLASS(grid_parent_class)->destroy) {
-		GTK_OBJECT_CLASS(grid_parent_class)->destroy(object);
+	if (GTK_OBJECT_CLASS (grid_parent_class)->destroy) {
+		GTK_OBJECT_CLASS (grid_parent_class)->destroy (object);
 	}
 }
 
@@ -177,8 +172,8 @@ snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 	spacing = priv->spacing;
 
 	if (priv->snap) {
-		if (x) *x = ROUND((*x) / spacing) * spacing;
-		if (y) *y = ROUND((*y) / spacing) * spacing;
+		if (x) *x = ROUND ((*x) / spacing) * spacing;
+		if (y) *y = ROUND ((*y) / spacing) * spacing;
 	}
 }
 
@@ -195,12 +190,13 @@ grid_set_property (GObject *object, guint prop_id, const GValue *value,
 	grid = GRID (object);
 	priv = grid->priv;
 
-	switch (prop_id){
+	switch (prop_id) {
 	case ARG_COLOR:
 		if (gnome_canvas_get_color (item->canvas,
-			    g_value_get_string(value), &color)) {
+			    g_value_get_string (value), &color)) {
 			priv->color = color;
-		} else {
+		} 
+		else {
 			color.pixel = 0;
 			priv->color = color;
 		}
@@ -209,7 +205,7 @@ grid_set_property (GObject *object, guint prop_id, const GValue *value,
 		break;
 
 	case ARG_SPACING:
-		priv->spacing = g_value_get_double(value);
+		priv->spacing = g_value_get_double (value);
 		break;
 
 	case ARG_SNAP:
@@ -231,16 +227,16 @@ grid_get_property (GObject *object, guint prop_id, GValue *value,
 	grid = GRID (object);
 	priv = grid->priv;
 
-	switch (prop_id){
+	switch (prop_id) {
 	case ARG_SPACING:
-		g_value_set_double(value, priv->spacing);
+		g_value_set_double (value, priv->spacing);
 		break;
 	case ARG_SNAP:
-		g_value_set_boolean(value, priv->snap);
+		g_value_set_boolean (value, priv->snap);
 		break;
 
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(grid, prop_id, spec);
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (grid, prop_id, spec);
 		break;
 	}
 }
@@ -292,12 +288,14 @@ grid_update (GnomeCanvasItem *item, gdouble *affine, ArtSVP *clip_path,
 {
 	Grid *grid;
 	GridPriv *priv;
+	gdouble zoom;
 
 	grid = GRID (item);
 
 	priv = grid->priv;
 
-	priv->cached_zoom = SHEET(item->canvas)->priv->zoom;
+	sheet_get_zoom (SHEET (item->canvas), &zoom);
+	priv->cached_zoom = zoom;
 
 	if (grid_parent_class->update)
 		(* grid_parent_class->update) (item, affine, clip_path, flags);
@@ -342,13 +340,14 @@ start_coord (long c, long g)
 {
 	long m;
 
-	if (c > 0){
+	if (c > 0) {
 		m = c % g;
 		if (m == 0)
 			return m;
 		else
 			return g - m;
-	} else
+	} 
+	else
 		return (-c) % g;
 }
 
@@ -362,7 +361,7 @@ grid_draw (GnomeCanvasItem *canvas, GdkDrawable *drawable, gint x, gint y,
 	gdouble gx, gy, sgx, sgy;
 	gdouble spacing;
 
-	grid = GRID(canvas);
+	grid = GRID (canvas);
 	priv = grid->priv;
 
 	if (!priv->visible)

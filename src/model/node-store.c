@@ -7,11 +7,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006 Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -33,6 +35,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 #include <math.h>
+
 #include "node-store.h"
 #include "node.h"
 #include "part.h"
@@ -52,7 +55,7 @@
 /* Equals? */
 #define IS_EQ(a,b) (fabs ((a) - (b)) < NODE_EPSILON)
 
-#define ON_THE_WIRE(p1,start,end) ( fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<NODE_EPSILON )
+#define ON_THE_WIRE(p1,start,end) (fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<NODE_EPSILON )
 
 #define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
 
@@ -68,8 +71,8 @@ static int     is_wire_at_pos (double x1, double y1, double x2, double y2,
 static GSList *wires_at_pos (NodeStore *store, SheetPos pos);
 static int	   do_wires_intersect (double Ax, double Ay, double Bx, double By,
 					double Cx, double Cy, double Dx, double Dy, SheetPos *pos);
-static void	   node_store_finalize(GObject *self);
-static void	   node_store_dispose(GObject *self);
+static void	   node_store_finalize (GObject *self);
+static void	   node_store_dispose (GObject *self);
 
 typedef struct {
 	Wire *wire;
@@ -77,8 +80,8 @@ typedef struct {
 } IntersectionPoint;
 
 enum {
-	DOT_ADDED,
-	DOT_REMOVED,
+	NODE_DOT_ADDED,
+	NODE_DOT_REMOVED,
 	LAST_SIGNAL
 };
 
@@ -112,9 +115,9 @@ node_store_get_type (void)
 }
 
 static void
-node_store_finalize(GObject *object)
+node_store_finalize (GObject *object)
 {
-	NodeStore *self = NODE_STORE(object);
+	NodeStore *self = NODE_STORE (object);
 
 	if (self->nodes) {
 		g_hash_table_destroy (self->nodes);
@@ -134,13 +137,13 @@ node_store_finalize(GObject *object)
 		self->items = NULL;
 	}
 
-	parent_class->finalize(object);
+	parent_class->finalize (object);
 }
 
 static void
-node_store_dispose(GObject *self)
+node_store_dispose (GObject *self)
 {
-	parent_class->dispose(self);
+	parent_class->dispose (self);
 }
 
 static void
@@ -148,28 +151,28 @@ node_store_class_init (NodeStoreClass *klass)
 {
 	GObjectClass *gobject_class;
 
-	gobject_class = G_OBJECT_CLASS(klass);
-	parent_class = g_type_class_peek_parent(klass);
+	gobject_class = G_OBJECT_CLASS (klass);
+	parent_class = g_type_class_peek_parent (klass);
 
 	gobject_class->finalize = node_store_finalize;
 	gobject_class->dispose = node_store_dispose;
 
-	node_store_signals [DOT_ADDED] =
-		g_signal_new ("dot_added",
-		  G_TYPE_FROM_CLASS(gobject_class),
+	node_store_signals [NODE_DOT_ADDED] =
+		g_signal_new ("node_dot_added",
+		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
-		  G_STRUCT_OFFSET (NodeStoreClass, dot_added),
+		  G_STRUCT_OFFSET (NodeStoreClass, node_dot_added),
 		  NULL,
 		  NULL,
 		  g_cclosure_marshal_VOID__POINTER,
 		  G_TYPE_NONE,
 		  1, G_TYPE_POINTER);
 
-	node_store_signals [DOT_REMOVED] =
-		g_signal_new ("dot_removed",
+	node_store_signals [NODE_DOT_REMOVED] =
+		g_signal_new ("node_dot_removed",
 		  TYPE_NODE_STORE,
 		  G_SIGNAL_RUN_FIRST,
-		  G_STRUCT_OFFSET (NodeStoreClass, dot_removed),
+		  G_STRUCT_OFFSET (NodeStoreClass, node_dot_removed),
 		  NULL,
 		  NULL,
 		  g_cclosure_marshal_VOID__POINTER,
@@ -194,21 +197,21 @@ node_store_new (void)
 }
 
 static void
-dot_added_callback (Node *node, SheetPos *pos, NodeStore *store)
+node_dot_added_callback (Node *node, SheetPos *pos, NodeStore *store)
 {
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
 
-	g_signal_emit_by_name(G_OBJECT(store), "dot_added", pos);
+	g_signal_emit_by_name (G_OBJECT (store), "node_dot_added", pos);
 }
 
 static void
-dot_removed_callback (Node *node, SheetPos *pos, NodeStore *store)
+node_dot_removed_callback (Node *node, SheetPos *pos, NodeStore *store)
 {
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
 
-	g_signal_emit_by_name(G_OBJECT(store), "dot_removed", pos);
+	g_signal_emit_by_name (G_OBJECT (store), "node_dot_removed", pos);
 }
 
 Node *
@@ -227,19 +230,11 @@ node_store_get_or_create_node (NodeStore *self, SheetPos pos)
 		 */
 		node = node_new (pos);
 
-		g_signal_connect_object(
-			G_OBJECT (node),
-			"dot_added",
-			G_CALLBACK (dot_added_callback),
-			G_OBJECT (self),
-			0);
+		g_signal_connect_object (G_OBJECT (node), "node_dot_added",
+			G_CALLBACK (node_dot_added_callback), G_OBJECT (self), 0);
 
-		g_signal_connect_object (
-			G_OBJECT (node),
-			"dot_removed",
-			G_CALLBACK (dot_removed_callback),
-			G_OBJECT (self),
-			0);
+		g_signal_connect_object (G_OBJECT (node), "node_dot_removed",
+			G_CALLBACK (node_dot_removed_callback), G_OBJECT (self), 0);
 
 		g_hash_table_insert (self->nodes, &node->key, node);
 	}
@@ -359,12 +354,10 @@ node_store_remove_part (NodeStore *self, Part *part)
 			 */
 			if (node_is_empty (node)) {
 				g_hash_table_remove (self->nodes, &lookup_key);
-				g_object_unref(G_OBJECT(node));
+				g_object_unref (G_OBJECT (node));
 			}
-		} else {
-			/* FIXME: Fix this or just silently return if the part is
-			   non-existant? */
-			//g_warning ("No node to remove part from.");
+		} 
+		else {
 			return FALSE;
 		}
 	}
@@ -470,7 +463,10 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				/* Done!, return -1 so wire si deleted */
 				return -1;
 			}
-		} else if (IS_EQ (y1, y2) && ((ipoint->pos.x == x1) || (ipoint->pos.x == x2))) {
+		}
+		else if (IS_EQ (y1, y2)          && 
+		         ((ipoint->pos.x == x1)  || 
+				  (ipoint->pos.x == x2))) {
 			SheetPos w_pos, w_length;
 			gboolean can_join;
 			GSList *nodes;
@@ -874,11 +870,13 @@ is_wire_at_pos (double x1, double y1, double x2, double y2, SheetPos pos)
 		if (IS_EQ (y0, (y1 + k * (x0 - x1)))) {
 			return TRUE;
 		}
-	} else if (IS_EQ (x2, x1) && IS_EQ (x1, x0)) {
+	} 
+	else if (IS_EQ (x2, x1) && IS_EQ (x1, x0)) {
 		if (y0 >= y1 && y0 <= y2) {
 			return TRUE;
 		}
-	} else if (IS_EQ (y2, y1) && IS_EQ (y1, y0)) {
+	} 
+	else if (IS_EQ (y2, y1) && IS_EQ (y1, y0)) {
 		if (x0 >= x1 && x0 <= x2) {
 			return TRUE;
 		}
@@ -907,15 +905,18 @@ do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
 		pos->x = Ax;
 		pos->y = Ay;
 		return TRUE;
-	} else if (SEP (Ax, Ay, Dx, Dy)) { /* 1st start == 2nd end */
+	} 
+	else if (SEP (Ax, Ay, Dx, Dy)) { /* 1st start == 2nd end */
 		pos->x = Ax;
 		pos->y = Ay;
 		return TRUE;
-	} else if (SEP (Bx, By, Cx, Cy)) { /* 1st end == 2nd start */
+	} 
+	else if (SEP (Bx, By, Cx, Cy)) { /* 1st end == 2nd start */
 		pos->x = Bx;
 		pos->y = By;
 		return TRUE;
-	} else if (SEP (Bx, By, Dx, Dy)) { /* 1st end == 2nd end */
+	} 
+	else if (SEP (Bx, By, Dx, Dy)) { /* 1st end == 2nd end */
 		pos->x = Bx;
 		pos->y = By;
 		return TRUE;
@@ -934,15 +935,6 @@ do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
 	}
 
 	r = ((Ay - Cy) * (Dx - Cx) - (Ax - Cx) * (Dy - Cy));
-
-	/*
-	 * Colinear wires, if r = 0. FIXME: check for intersection?
-	 *            not needed since we already checked for starts and ends
-	 */
-	if (fabs (r) < NODE_EPSILON) {
-
-	}
-
 	r = r / d;
 	s = ((Ay - Cy) * (Bx - Ax) - (Ax - Cx) * (By - Ay)) / d;
 
@@ -950,10 +942,10 @@ do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
 	 * Check for intersection, which we have for values of
 	 * r and s in [0, 1].
 	 */
-	if (r >= 0 &&
-		(r - 1.0) < NODE_EPSILON &&
-		s >= 0 &&
-		(s - 1.0) < NODE_EPSILON) {
+	if (r >= 0                  &&
+	   (r - 1.0) < NODE_EPSILON &&
+		s >= 0                  &&
+	   (s - 1.0) < NODE_EPSILON) {
 
 		/*
 		 * Calculate the intersection point.
@@ -965,15 +957,15 @@ do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
 		   to be accepted only if it coincides with the start or end
 		   of any of the wires
 		*/
-		if ( SEP(pos->x,pos->y,Ax,Ay) ||
-			 SEP(pos->x,pos->y,Bx,By) ||
-			 SEP(pos->x,pos->y,Cx,Cy) ||
-			 SEP(pos->x,pos->y,Dx,Dy)
+		if ( SEP (pos->x,pos->y,Ax,Ay) ||
+			 SEP (pos->x,pos->y,Bx,By) ||
+			 SEP (pos->x,pos->y,Cx,Cy) ||
+			 SEP (pos->x,pos->y,Dx,Dy)
 			 )
 
-		return TRUE;
+			return TRUE;
 		else
-		   return FALSE;
+		   	return FALSE;
 	}
 
 	return FALSE;
@@ -1119,9 +1111,6 @@ node_store_count_items (NodeStore *store, NodeRect *rect)
 		if (p1.x <= rect->x1 && p1.y <= rect->y1 &&
 			p2.x >= rect->x0 && p2.y >= rect->y0) {
 			n++;
-/*
-		if (p1.x >= rect->x0 && p1.y >= rect->y0 && p2.x <= rect->x1 && p2.y <= rect->y1) {
-*/
 		}
 	}
 
@@ -1133,11 +1122,11 @@ draw_dot (SheetPos *key, Node *value, cairo_t *cr)
 {
 	if (node_needs_dot (value)) {
 		cairo_save (cr);
-			cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-			cairo_translate (cr, key->x, key->y);
-			cairo_scale (cr, 1.0, 1.0);
-			cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
-			cairo_fill (cr);
+		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
+		cairo_translate (cr, key->x, key->y);
+		cairo_scale (cr, 1.0, 1.0);
+		cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
+		cairo_fill (cr);
 		cairo_restore (cr);
 	}
 }
@@ -1158,29 +1147,6 @@ node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ct
 	}
 
 	g_hash_table_foreach (store->nodes, (GHFunc)draw_dot, cr);
-}
-
-void
-node_store_print_labels (NodeStore *store, cairo_t *opc, NodeRect *rect)
-{
-/*	GList *list;
-	SheetPos p1, p2;
-	ItemData *data;
-
-	g_return_if_fail (store != NULL);
-	g_return_if_fail (IS_NODE_STORE (store));
-	g_return_if_fail (rect != NULL);
-
-	for (list = store->textbox; list; list = list->next) {
-		data = ITEM_DATA (list->data);
-		item_data_get_absolute_bbox (data, &p1, &p2);
-//		if (p1.x >= rect->x0 && p1.y >= rect->y0 && p2.x <= rect->x1 && p2.y <= rect->y1) {
-		if ((p1.x <= rect->x1) && (p1.y <= rect->y1) &&
-			(p2.x >= rect->x0) && (p2.y >= rect->y0)) {
-			item_data_print (data, opc);
-		}
-	}
-*/
 }
 
 int

@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,7 +36,6 @@
 #include "xml-helper.h"
 #include "load-common.h"
 #include "load-library.h"
-#include "sheet-private.h"
 #include "part-label.h"
 
 typedef enum {
@@ -161,7 +162,7 @@ library_get_part (Library *library, const gchar *part_name)
 	g_return_val_if_fail (part_name != NULL, NULL);
 
 	part = g_hash_table_lookup (library->part_hash, part_name);
-	if (part == NULL){
+	if (part == NULL) {
 		g_message (_("Could not find the requested part: %s\n"), part_name);
 	}
 	return part;
@@ -179,7 +180,8 @@ library_parse_xml_file (const gchar *filename)
 
 	if (state.state == PARSE_ERROR) {
 		library = NULL;
-	} else {
+	} 
+	else {
 		library = state.library;
 	}
 
@@ -226,7 +228,8 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (strcmp (name, "ogo:library")) {
 			g_warning ("Expecting 'ogo:library'.  Got '%s'", name);
 			state->state = PARSE_ERROR;
-		} else
+		} 
+		else
 			state->state = PARSE_LIBRARY;
 		break;
 
@@ -234,14 +237,18 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:author")) {
 			state->state = PARSE_AUTHOR;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:name")) {
+		} 
+		else if (!strcmp (name, "ogo:name")) {
 			state->state = PARSE_NAME;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:symbols")) {
+		} 
+		else if (!strcmp (name, "ogo:symbols")) {
 			state->state = PARSE_SYMBOLS;
-		} else if (!strcmp (name, "ogo:parts")) {
+		} 
+		else if (!strcmp (name, "ogo:parts")) {
 			state->state = PARSE_PARTS;
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -252,7 +259,8 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:symbol")) {
 			state->state = PARSE_SYMBOL;
 			state->symbol = g_new0 (LibrarySymbol, 1);
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -263,11 +271,14 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:name")) {
 			state->state = PARSE_SYMBOL_NAME;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:objects")) {
+		} 
+		else if (!strcmp (name, "ogo:objects")) {
 			state->state = PARSE_SYMBOL_OBJECTS;
-		} else if (!strcmp (name, "ogo:connections")) {
+		} 
+		else if (!strcmp (name, "ogo:connections")) {
 			state->state = PARSE_SYMBOL_CONNECTIONS;
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -279,17 +290,20 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 			state->object->type = SYMBOL_OBJECT_LINE;
 			state->state = PARSE_SYMBOL_LINE;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:arc")) {
+		} 
+		else if (!strcmp (name, "ogo:arc")) {
 			state->object = g_new0 (SymbolObject, 1);
 			state->object->type = SYMBOL_OBJECT_ARC;
 			state->state = PARSE_SYMBOL_ARC;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:text")) {
+		} 
+		else if (!strcmp (name, "ogo:text")) {
 			state->object = g_new0 (SymbolObject, 1);
 			state->object->type = SYMBOL_OBJECT_TEXT;
 			state->state = PARSE_SYMBOL_TEXT;
 			g_string_truncate (state->content, 0);
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -301,7 +315,8 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 			state->state = PARSE_SYMBOL_CONNECTION;
 			state->connection = g_new0 (Connection, 1);
 			g_string_truncate (state->content, 0);
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -314,7 +329,8 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 			state->state = PARSE_PART;
 			state->part = g_new0 (LibraryPart, 1);
 			state->part->library = state->library;
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -324,17 +340,22 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:name")) {
 			state->state = PARSE_PART_NAME;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:description")) {
+		} 
+		else if (!strcmp (name, "ogo:description")) {
 			state->state = PARSE_PART_DESCRIPTION;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:symbol")) {
+		} 
+		else if (!strcmp (name, "ogo:symbol")) {
 			state->state = PARSE_PART_USESYMBOL;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:labels")) {
+		} 
+		else if (!strcmp (name, "ogo:labels")) {
 			state->state = PARSE_PART_LABELS;
-		} else if (!strcmp (name, "ogo:properties")) {
+		} 
+		else if (!strcmp (name, "ogo:properties")) {
 			state->state = PARSE_PART_PROPERTIES;
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -344,7 +365,8 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:label")) {
 			state->state = PARSE_PART_LABEL;
 			state->label = g_new0 (PartLabel, 1);
-		} else {
+		}
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -354,13 +376,16 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:name")) {
 			state->state = PARSE_PART_LABEL_NAME;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:text")) {
+		}
+		else if (!strcmp (name, "ogo:text")) {
 			state->state = PARSE_PART_LABEL_TEXT;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:position")) {
+		} 
+		else if (!strcmp (name, "ogo:position")) {
 			state->state = PARSE_PART_LABEL_POS;
 			g_string_truncate (state->content, 0);
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -371,7 +396,8 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:property")) {
 			state->state = PARSE_PART_PROPERTY;
 			state->property = g_new0 (Property, 1);
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
@@ -381,10 +407,12 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		if (!strcmp (name, "ogo:name")) {
 			state->state = PARSE_PART_PROPERTY_NAME;
 			g_string_truncate (state->content, 0);
-		} else if (!strcmp (name, "ogo:value")) {
+		} 
+		else if (!strcmp (name, "ogo:value")) {
 			state->state = PARSE_PART_PROPERTY_VALUE;
 			g_string_truncate (state->content, 0);
-		} else {
+		} 
+		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;

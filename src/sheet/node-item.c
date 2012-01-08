@@ -4,11 +4,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,7 +29,7 @@
  */
 
 #include <gtk/gtk.h>
-#include <gnome.h>
+
 #include "node-item.h"
 
 static void node_item_init		(NodeItem		 *item);
@@ -61,7 +63,7 @@ node_item_get_type (void)
 			NULL
 		};
 
-		item_type = g_type_register_static(GNOME_TYPE_CANVAS_GROUP, "NodeItem",
+		item_type = g_type_register_static (GNOME_TYPE_CANVAS_GROUP, "NodeItem",
 										   &item_info, 0);
 	}
 
@@ -73,9 +75,9 @@ node_item_class_init (NodeItemClass *klass)
 {
 	GObjectClass *object_class;
 
-	object_class = G_OBJECT_CLASS(klass);
+	object_class = G_OBJECT_CLASS (klass);
 
-	parent_class = g_type_class_peek_parent(klass);
+	parent_class = g_type_class_peek_parent (klass);
 }
 
 
@@ -105,7 +107,8 @@ node_item_show_dot (NodeItem *item, gboolean show)
 		}
 
 		gnome_canvas_item_show (item->priv->dot_item);
-	} else {
+	} 
+	else {
 		if (item->priv->dot_item != NULL)
 			gnome_canvas_item_hide (item->priv->dot_item);
 	}

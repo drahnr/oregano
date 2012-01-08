@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,8 +29,10 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #include <glib.h>
 #include <string.h>
+
 #include "part.h"
 #include "part-property.h"
 
@@ -60,7 +64,7 @@ static char *get_macro_name (const char *str, char **cls1,
 
 	/* Get the name */
 	for (q = str; (*q) && (*q != ' ') && !(csep = strchr (separators, *q)); q++) {
-		if ( q > qend ) {
+		if (q > qend) {
 			g_warning ("Expand macro error.");
 			rc = 1;
 			break;
@@ -91,7 +95,7 @@ static char *get_macro_name (const char *str, char **cls1,
 		g_string_free (aux, FALSE);
 
 		/* Check for the second one */
-		if ( (*q) && (csep = strchr (separators, *q))) {
+		if ((*q) && (csep = strchr (separators, *q))) {
 			q++; /* skip the separator and store in tmp*/
 			aux = g_string_new ("");
 			for (; (*q) && (*q != *csep); q++)
@@ -175,11 +179,13 @@ part_property_expand_macros (Part *part, char *string)
 			value = part_get_property (part, qn);
 			if ((*temp == '@' || *temp == '&') && value) {
 				out = g_string_append (out, value);
-			} else if (*temp =='&' && !value) {
+			} 
+			else if (*temp =='&' && !value) {
 				g_warning ( "expand macro error: macro %s undefined", qn);
 				g_free (qn);
 				return NULL;
-			} else if (*temp == '?' || *temp == '~') {
+			} 
+			else if (*temp == '?' || *temp == '~') {
 				if (cls1 == NULL) {
 					g_warning ("error in template: %s", temp);
 					g_free (qn);
@@ -194,22 +200,26 @@ part_property_expand_macros (Part *part, char *string)
 					if (!t0) {
 						g_warning ( "error in template: %s", temp);
 						g_free (qn);
-					} else {
+					} 
+					else {
 						out = g_string_append (out, t0);
 						g_free (t0);
 					}
 				}
-			} else if (*temp=='#') {
+			} 
+			else if (*temp=='#') {
 				if (value) {
 					t0 = part_property_expand_macros (part, value);
 					if (!t0) {
 						g_warning ( "error in template: %s", temp);
 						g_free (qn);
-					} else {
+					} 
+					else {
 						out = g_string_append (out, t0);
 						g_free (t0);
 					}
-				} else
+				} 
+				else
 					*(temp + sln) = 0;
 			}
 			temp += 1;
@@ -217,7 +227,8 @@ part_property_expand_macros (Part *part, char *string)
 			if (qn) g_free (qn);
 			if (cls1) g_free (cls1);
 			if (cls2) g_free (cls2);
-		} else {
+		} 
+		else {
 			if ( *temp== '\\' ) {
 				temp++;
 				switch (*temp) {
@@ -234,7 +245,8 @@ part_property_expand_macros (Part *part, char *string)
 					out = g_string_append_c (out, '\f');
 				}
 				temp++;
-			} else {
+			} 
+			else {
 				out = g_string_append_c (out, *temp);
 				temp++;
 			}
@@ -249,71 +261,3 @@ part_property_expand_macros (Part *part, char *string)
 
 	return ret;
 }
-
-
-#if 0
-//---------------------
-char *
-part_property_expand_macros (Part *part, char *string)
-{
-	char *name;
-	char *value;
-	char *temp;
-	char buffer[512];
-	gint in_index = 0, out_index = 0;
-
-	g_return_val_if_fail (part != NULL, NULL);
-	g_return_val_if_fail (IS_PART (part), NULL);
-	g_return_val_if_fail (string != NULL, NULL);
-
-	/* Examples: R^@refdes %1 %2 @value
-	 *           V^@refdes %+ %- SIN(@offset @ampl @freq 0 0)
-	 */
-
-	temp = string;
-	in_index = 0;
-	out_index = 0;
-
-	while (*temp != 0) {
-		/* Is it a macro? */
-		if (temp[0] == '@'){
-			int i = 0;
-			/* Find the end of the macro. */
-			while (1){
-				if (temp[i] == ' ' || temp[i] == '(' ||
-					temp[i] == ')' || temp[i] == 0)
-					break;
-				else {
-					i++;
-					if (i > strlen (string)){
-						g_warning (
-							"expand macro error.");
-						break;
-					}
-				}
-			}
-
-			/* Perform a lookup on the macro. */
-			name = g_strndup (temp + 1, i - 1);
-			value = part_get_property (part, name);
-			g_free (name);
-
-			if (value) {
-				snprintf (buffer + out_index, 16,
-					"%s ", value);
-				out_index += strlen (value);
-				in_index += i + 1;
-			}
-			temp += i;
-		} else{
-			buffer[out_index] = *temp;
-			out_index++;
-			in_index++;
-			temp++;
-		}
-	}
-
-	buffer[out_index] = '\0';
-	return g_strdup (buffer);
-}
-#endif

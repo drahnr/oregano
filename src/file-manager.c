@@ -5,10 +5,12 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 2003,2006 Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,7 +31,8 @@
 #include "file-manager.h"
 
 FileType file_types[] = {
-	FILE_TYPE("oregano", "Oregano Schematic File", schematic_parse_xml_file, schematic_write_xml)
+	FILE_TYPE ("oregano", "Oregano Schematic File", schematic_parse_xml_file, 
+	           schematic_write_xml)
 };
 
 #define FILE_TYPES_COUNT (sizeof(file_types)/sizeof(FileType))
@@ -61,4 +64,3 @@ FileType *file_manager_get_handler (const gchar *fname)
 
 	return ft;
 }
-

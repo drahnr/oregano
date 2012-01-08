@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,12 +34,13 @@
 #include <string.h>
 
 #include "cursors.h"
-#include "sheet-private.h"
 #include "sheet-pos.h"
 #include "wire-item.h"
 #include "node-store.h"
 #include "wire.h"
 #include "wire-private.h"
+#include "schematic.h"
+#include "schematic-view.h"
 
 #define NORMAL_COLOR "blue"
 #define SELECTED_COLOR "green"
@@ -45,34 +48,30 @@
 
 #define RESIZER_SIZE 4.0f
 
-static void wire_item_class_init (WireItemClass *klass);
-static void wire_item_init (WireItem *item);
-static void wire_item_destroy (GtkObject *object);
-static void wire_item_moved (SheetItem *object);
-
-static void wire_rotated_callback (ItemData *data, int angle,
-	SheetItem *sheet_item);
-static void wire_flipped_callback (ItemData *data, gboolean horizontal,
-	SheetItem *sheet_item);
-static void wire_moved_callback (ItemData *data, SheetPos *pos,
-	SheetItem *item);
-static void wire_changed_callback (Wire *, WireItem *item);
-static void wire_delete_callback (Wire *, WireItem *item);
-
-static void wire_item_paste (SchematicView *sv, ItemData *data);
-static void selection_changed (WireItem *item, gboolean select,
-	gpointer user_data);
-static int select_idle_callback (WireItem *item);
-static int deselect_idle_callback (WireItem *item);
-static gboolean is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
-inline static void get_bbox (WireItem *item, SheetPos *p1, SheetPos *p2);
-
-static void mouse_over_wire_cb (WireItem *item, SchematicView *sv);
-static void highlight_wire_cb (Wire *wire, WireItem *item);
-static int unhighlight_wire (WireItem *item);
-
-static void wire_item_place (SheetItem *item, SchematicView *sv);
-static void wire_item_place_ghost (SheetItem *item, SchematicView *sv);
+static void 		wire_item_class_init (WireItemClass *klass);
+static void 		wire_item_init (WireItem *item);
+static void 		wire_item_destroy (GtkObject *object);
+static void 		wire_item_moved (SheetItem *object);
+static void 		wire_rotated_callback (ItemData *data, int angle,
+						SheetItem *sheet_item);
+static void 		wire_flipped_callback (ItemData *data, gboolean horizontal,
+						SheetItem *sheet_item);
+static void 		wire_moved_callback (ItemData *data, SheetPos *pos,
+						SheetItem *item);
+static void 		wire_changed_callback (Wire *, WireItem *item);
+static void 		wire_delete_callback (Wire *, WireItem *item);
+static void 		wire_item_paste (Sheet *sheet, ItemData *data);
+static void 		selection_changed (WireItem *item, gboolean select,
+						gpointer user_data);
+static int 			select_idle_callback (WireItem *item);
+static int 			deselect_idle_callback (WireItem *item);
+static gboolean 	is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
+inline static void 	get_bbox (WireItem *item, SheetPos *p1, SheetPos *p2);
+static void 		mouse_over_wire_cb (WireItem *item, Sheet *sheet);
+static void 		highlight_wire_cb (Wire *wire, WireItem *item);
+static int 			unhighlight_wire (WireItem *item);
+static void 		wire_item_place (SheetItem *item, Sheet *sheet);
+static void 		wire_item_place_ghost (SheetItem *item, Sheet *sheet);
 
 static SheetItemClass *wire_item_parent_class = NULL;
 
@@ -115,16 +114,16 @@ wire_item_get_type ()
 			sizeof (WireItemClass),
 			NULL,
 			NULL,
-			(GClassInitFunc)wire_item_class_init,
+			(GClassInitFunc) wire_item_class_init,
 			NULL,
 			NULL,
 			sizeof (WireItem),
 			0,
-			(GInstanceInitFunc)wire_item_init,
+			(GInstanceInitFunc) wire_item_init,
 			NULL
 		};
 
-		wire_item_type = g_type_register_static(TYPE_SHEET_ITEM,
+		wire_item_type = g_type_register_static (TYPE_SHEET_ITEM,
 			"WireItem", &wire_item_info, 0);
 	}
 	return wire_item_type;
@@ -137,10 +136,10 @@ wire_item_class_init (WireItemClass *wire_item_class)
 	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
 
-	object_class = G_OBJECT_CLASS(wire_item_class);
-	gtk_object_class = GTK_OBJECT_CLASS(wire_item_class);
-	sheet_item_class = SHEET_ITEM_CLASS(wire_item_class);
-	wire_item_parent_class = g_type_class_peek(TYPE_SHEET_ITEM);
+	object_class = G_OBJECT_CLASS (wire_item_class);
+	gtk_object_class = GTK_OBJECT_CLASS (wire_item_class);
+	sheet_item_class = SHEET_ITEM_CLASS (wire_item_class);
+	wire_item_parent_class = g_type_class_peek (TYPE_SHEET_ITEM);
 
 	gtk_object_class->destroy = wire_item_destroy;
 
@@ -189,8 +188,8 @@ wire_item_destroy (GtkObject *object)
 		wire->priv = NULL;
 	}
 
-	if (GTK_OBJECT_CLASS(wire_item_parent_class)->destroy){
-		GTK_OBJECT_CLASS(wire_item_parent_class)->destroy(object);
+	if (GTK_OBJECT_CLASS(wire_item_parent_class)->destroy) {
+		GTK_OBJECT_CLASS(wire_item_parent_class)->destroy (object);
 	}
 }
 
@@ -220,9 +219,6 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
-	//g_object_ref (G_OBJECT(wire));
-	/* XXX Ver si hay equivalente gtk_object_sink (GTK_OBJECT (wire)); */
-
 	wire_get_pos_and_length (wire, &start_pos, &length);
 
 	/*
@@ -230,8 +226,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	 * here. The group starts at the startpoint of the wire, and the line
 	 * goes from (0,0) to (length.x, length.y).
 	 */
-	item = WIRE_ITEM (gnome_canvas_item_new (
-		sheet->object_group,
+	item = WIRE_ITEM (gnome_canvas_item_new (sheet->object_group,
 		wire_item_get_type (),
 		"data", wire,
 		"x", (double) start_pos.x,
@@ -284,26 +279,27 @@ wire_item_new (Sheet *sheet, Wire *wire)
 
 	gnome_canvas_points_free (points);
 
-	g_signal_connect_object(G_OBJECT(wire),	"rotated",
-		G_CALLBACK(wire_rotated_callback), G_OBJECT(item), 0);
-	g_signal_connect_object(G_OBJECT(wire), "flipped",
-		G_CALLBACK(wire_flipped_callback), G_OBJECT(item), 0);
-	g_signal_connect_object(G_OBJECT(wire), "moved",
-		G_CALLBACK(wire_moved_callback),  G_OBJECT(item), 0);
-
-	g_signal_connect (G_OBJECT (wire), "changed", G_CALLBACK (wire_changed_callback), item);
-	g_signal_connect (G_OBJECT (wire), "delete", G_CALLBACK (wire_delete_callback), item);
+	g_signal_connect_object (G_OBJECT (wire), "rotated",
+		G_CALLBACK (wire_rotated_callback), G_OBJECT (item), 0);
+	g_signal_connect_object (G_OBJECT (wire), "flipped",
+		G_CALLBACK (wire_flipped_callback), G_OBJECT (item), 0);
+	g_signal_connect_object (G_OBJECT (wire), "moved",
+		G_CALLBACK (wire_moved_callback),  G_OBJECT (item), 0);
+	g_signal_connect (G_OBJECT (wire), "changed", 
+		G_CALLBACK (wire_changed_callback), item);
+	g_signal_connect (G_OBJECT (wire), "delete", 
+	    G_CALLBACK (wire_delete_callback), item);
 	wire_update_bbox (wire);
 
 	return item;
 }
 
 static
-int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *sv)
+int wire_item_event (WireItem *wire_item, const GdkEvent *event, 
+                     Sheet *sheet)
 {
 	SheetPos start_pos, length;
 	Wire *wire;
-	Sheet *sheet;
 	GnomeCanvas *canvas;
 	static double last_x, last_y;
 	double dx, dy, zoom;
@@ -311,7 +307,6 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *
 	double snapped_x, snapped_y;
 	SheetPos pos;
 
-	sheet = schematic_view_get_sheet (sv);
 	canvas = GNOME_CANVAS (sheet);
 	g_object_get (G_OBJECT (wire_item), "data", &wire, NULL);
 
@@ -394,7 +389,8 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *
 							pos.x = last_x;
 							length.x -= dx;
 					}
-				} else {
+				} 
+				else {
 					switch (wire->priv->direction) {
 						case WIRE_DIR_VERT:
 							/* Vertical Wire */
@@ -426,8 +422,6 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *
 
 				g_signal_stop_emission_by_name (G_OBJECT (wire_item), "event");
 
-				//gtk_timeout_remove (priv->scroll_timeout_id);
-
 				sheet->state = SHEET_STATE_NONE;
 				gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (wire_item), event->button.time);
 
@@ -438,31 +432,25 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event, SchematicView *
 			}
 			break;
 		default:
-			return sheet_item_event (SHEET_ITEM (wire_item), event, sv);
+			return sheet_item_event (SHEET_ITEM (wire_item), event, sheet);
 	}
-	return sheet_item_event (SHEET_ITEM (wire_item), event, sv);
+	return sheet_item_event (SHEET_ITEM (wire_item), event, sheet);
 }
 
 void
-wire_item_signal_connect_placed (WireItem *wire, SchematicView *sv)
+wire_item_signal_connect_placed (WireItem *wire, Sheet *sheet)
 {
-	g_signal_connect (
-		G_OBJECT (wire),
-		"event",
-		G_CALLBACK(wire_item_event),
-		sv);
+	ItemData *item;
 
-	g_signal_connect (
-		G_OBJECT (wire),
-		"mouse_over",
-		G_CALLBACK(mouse_over_wire_cb),
-		sv);
+	item = sheet_item_get_data (SHEET_ITEM (wire));
+	g_signal_connect (G_OBJECT (wire), "event",
+		G_CALLBACK (wire_item_event), sheet);
 
-	g_signal_connect (
-		G_OBJECT (sheet_item_get_data (SHEET_ITEM (wire))),
-		"highlight",
-		G_CALLBACK(highlight_wire_cb),
-		wire);
+	g_signal_connect (G_OBJECT (wire), "mouse_over",
+		G_CALLBACK (mouse_over_wire_cb), sheet);
+
+	g_signal_connect (G_OBJECT (item), "highlight",
+		G_CALLBACK (highlight_wire_cb), wire);
 }
 
 static void
@@ -578,15 +566,16 @@ deselect_idle_callback (WireItem *item)
 }
 
 static void
-selection_changed(WireItem *item, gboolean select, gpointer user_data)
+selection_changed (WireItem *item, gboolean select, gpointer user_data)
 {
-	g_object_ref(G_OBJECT(item));
+	g_object_ref (G_OBJECT (item));
 	if (select) {
-		gtk_idle_add ((gpointer) select_idle_callback, item);
+		g_idle_add ((gpointer) select_idle_callback, item);
 		gnome_canvas_item_show (GNOME_CANVAS_ITEM (item->priv->resize1));
 		gnome_canvas_item_show (GNOME_CANVAS_ITEM (item->priv->resize2));
-	} else {
-		gtk_idle_add ((gpointer) deselect_idle_callback, item);
+	} 
+	else {
+		g_idle_add ((gpointer) deselect_idle_callback, item);
 		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (item->priv->resize1));
 		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (item->priv->resize2));
 	}
@@ -603,7 +592,10 @@ wire_item_get_start_pos (WireItem *item, SheetPos *pos)
 	g_return_if_fail (IS_WIRE_ITEM (item));
 	g_return_if_fail (pos != NULL);
 
-	g_object_get(G_OBJECT(item), "x", &pos->x, "y", &pos->y, NULL);
+	g_object_get (G_OBJECT (item),
+				  "x", &pos->x,
+				  "y", &pos->y, 
+				  NULL);
 }
 
 /**
@@ -621,7 +613,9 @@ wire_item_get_length (WireItem *item, SheetPos *pos)
 
 	priv = item->priv;
 
-	g_object_get(G_OBJECT(priv->line), "points", &points, NULL);
+	g_object_get (G_OBJECT (priv->line), 
+                  "points", &points, 
+                  NULL);
 
 	/*
 	 * This is not strictly neccessary, since the first point is always
@@ -682,14 +676,14 @@ get_bbox (WireItem *item, SheetPos *p1, SheetPos *p2)
 }
 
 static void
-wire_item_paste (SchematicView *sv, ItemData *data)
+wire_item_paste (Sheet *sheet, ItemData *data)
 {
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (IS_SHEET (sheet));
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
 
-	schematic_view_add_ghost_item (sv, data);
+	sheet_add_ghost_item (sheet, data);
 }
 
 static void wire_traverse (Wire *wire);
@@ -744,19 +738,17 @@ node_foreach_reset (gpointer key, gpointer value, gpointer user_data)
 }
 
 static void
-mouse_over_wire_cb (WireItem *item, SchematicView *sv)
+mouse_over_wire_cb (WireItem *item, Sheet *sheet)
 {
 	GList *wires;
 	Wire *wire;
 	NodeStore *store;
-	Sheet *sheet;
-
-	sheet = schematic_view_get_sheet (sv);
 
 	if (sheet->state != SHEET_STATE_NONE)
 		return;
 
-	store = schematic_get_store (schematic_view_get_schematic (sv));
+	store = schematic_get_store (
+	        	schematic_view_get_schematic_from_sheet (sheet));
 
 	node_store_node_foreach (store, (GHFunc *) node_foreach_reset, NULL);
 	for (wires = store->wires; wires; wires = wires->next) {
@@ -827,13 +819,13 @@ wire_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 }
 
 static void
-wire_item_place (SheetItem *item, SchematicView *sv)
+wire_item_place (SheetItem *item, Sheet *sheet)
 {
-	wire_item_signal_connect_placed (WIRE_ITEM (item), sv);
+	wire_item_signal_connect_placed (WIRE_ITEM (item), sheet);
 }
 
 static void
-wire_item_place_ghost (SheetItem *item, SchematicView *sv)
+wire_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
 //	wire_item_signal_connect_placed (WIRE_ITEM (item));
 }

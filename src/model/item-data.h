@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,21 +32,20 @@
 #ifndef __ITEM_DATA_H
 #define __ITEM_DATA_H
 
-/** \file
- *
+/*
  * Base class for schematic model.
- *
  */
 
 #include <cairo/cairo.h>
+
 #include "sheet-pos.h"
 #include "schematic-print-context.h"
 
-#define TYPE_ITEM_DATA			  (item_data_get_type())
-#define ITEM_DATA(obj)			  (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_ITEM_DATA, ItemData))
-#define ITEM_DATA_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST((klass), TYPE_ITEM_DATA, ItemDataClass))
-#define IS_ITEM_DATA(obj)		  (G_TYPE_CHECK_INSTANCE_TYPE((obj), TYPE_ITEM_DATA))
-#define IS_ITEM_DATA_CLASS(klass) (G_TYPE_CHECK_INSTANCE_GET_CLASS((klass), TYPE_ITEM_DATA, ItemDataClass))
+#define TYPE_ITEM_DATA			  (item_data_get_type ())
+#define ITEM_DATA(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_ITEM_DATA, ItemData))
+#define ITEM_DATA_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_ITEM_DATA, ItemDataClass))
+#define IS_ITEM_DATA(obj)		  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_ITEM_DATA))
+#define IS_ITEM_DATA_CLASS(klass) (G_TYPE_CHECK_INSTANCE_GET_CLASS ((klass), TYPE_ITEM_DATA, ItemDataClass))
 
 typedef struct _ItemData ItemData;
 typedef struct _ItemDataClass ItemDataClass;
@@ -66,21 +67,22 @@ struct _ItemDataClass
 	GObjectClass parent_class;
 
 	/* Signals. */
-	void (*moved) (ItemData *data, SheetPos *delta);
+	void 		(*moved) (ItemData *data, SheetPos *delta);
 
 	/* Methods. */
-	ItemData *(*clone) (ItemData *src);
-	void (*copy) (ItemData *dest, ItemData *src);
-	void (*rotate) (ItemData *data, int angle, SheetPos *center);
-	void (*flip) (ItemData *data, gboolean horizontal, SheetPos *center);
-	void (*unreg) (ItemData *data);
-	int (*reg) (ItemData *data);
+	ItemData *	(*clone) (ItemData *src);
+	void 		(*copy) (ItemData *dest, ItemData *src);
+	void 		(*rotate) (ItemData *data, int angle, SheetPos *center);
+	void 		(*flip) (ItemData *data, gboolean horizontal, SheetPos *center);
+	void 		(*unreg) (ItemData *data);
+	int 		(*reg) (ItemData *data);
 
-	char* (*get_refdes_prefix) (ItemData *data);
-	void (*set_property) (ItemData *data, char *property, char *value);
-	gboolean (*has_properties) (ItemData *data);
+	char* 		(*get_refdes_prefix) (ItemData *data);
+	void 		(*set_property) (ItemData *data, char *property, char *value);
+	gboolean 	(*has_properties) (ItemData *data);
 
-	void (*print) (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
+	void 		(*print) (ItemData *data, cairo_t *cr, 
+			               SchematicPrintContext *ctx);
 };
 
 GType	  item_data_get_type (void);
@@ -110,7 +112,6 @@ void item_data_get_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2);
 /** Set the relative bounding box */
 void item_data_set_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2);
 /** Get absolute bounding box
- *
  *  This function is like item_data_get_relative_bbox but it add
  *  the item position to the bbox vertex
  */
@@ -133,8 +134,9 @@ gpointer  item_data_get_store (ItemData *item_data);
 void item_data_unregister (ItemData *data);
 /** Register item in his Store */
 int item_data_register (ItemData *data);
-/** Tell us what it does :-D FIXME */
+/** Get the prefix of a part reference */
 char *item_data_get_refdes_prefix (ItemData *data);
+
 gboolean item_data_has_properties (ItemData *date);
 /** Set property */
 void item_data_set_property (ItemData *data, char *property, char *value);

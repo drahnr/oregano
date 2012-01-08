@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,7 +33,6 @@
 #include "xml-compat.h"
 #include "main.h"
 #include "schematic.h"
-#include "sheet-private.h"
 #include "sheet-pos.h"
 #include "load-library.h"
 #include "part.h"
@@ -68,7 +69,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 
 	sim_settings_node = xmlNewChild (cur, ctxt->ns,
 		BAD_CAST"simulation-settings", NULL);
-	if (!sim_settings_node){
+	if (!sim_settings_node) {
 		g_warning ("Failed during save of simulation settings.\n");
 		return;
 	}
@@ -76,7 +77,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	/* Transient analysis    */
 	analysis = xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "transient",
 		NULL);
-	if (!analysis){
+ 	if (!analysis) {
 		g_warning ("Failed during save of transient analysis settings.\n");
 		return;
 	}
@@ -113,7 +114,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 
 	/*  AC analysis   */
 	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "ac", NULL);
-	if (!analysis){
+	if (!analysis) {
 		g_warning ("Failed during save of AC analysis settings.\n");
 		return;
 	}
@@ -135,7 +136,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	/*  DC analysis   */
 	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "dc-sweep",
 		NULL);
-	if (!analysis){
+	if (!analysis) {
 		g_warning ("Failed during save of DC sweep analysis settings.\n");
 		return;
 	}
@@ -159,7 +160,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	
 	/*  Fourier analysis   */
 	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "fourier", NULL);
-	if (!analysis){
+	if (!analysis) {
 		g_warning ("Failed during save of Fourier analysis settings.\n");
 		return;
 	}
@@ -179,7 +180,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	if ( list ) {
 		options =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "options",
 			NULL);
-		if (!options){
+		if (!options) {
 			g_warning ("Failed during save of sim engine options.\n");
 			return;
 		}
@@ -204,7 +205,7 @@ write_xml_property (Property *prop, parseXmlContext *ctxt)
 	 */
 	node_property = xmlNewChild (ctxt->node_props, ctxt->ns, BAD_CAST "property",
 		NULL);
-	if (!node_property){
+	if (!node_property) {
 		g_warning ("Failed during save of property %s.\n", prop->name);
 		return;
 	}
@@ -232,7 +233,7 @@ write_xml_label (PartLabel *label, parseXmlContext *ctxt)
 	 * Create a node for the property.
 	 */
 	node_label = xmlNewChild (ctxt->node_labels, ctxt->ns, BAD_CAST "label", NULL);
-	if (!node_label){
+	if (!node_label) {
 		g_warning ("Failed during save of label %s.\n", label->name);
 		return;
 	}
@@ -274,7 +275,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	 * Create a node for the part.
 	 */
 	node_part = xmlNewChild (ctxt->node_parts, ctxt->ns, BAD_CAST "part", NULL);
-	if (!node_part){
+	if (!node_part) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
 		return;
 	}
@@ -323,7 +324,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	 */
 	ctxt->node_props = xmlNewChild (node_part, ctxt->ns, BAD_CAST "properties",
 		NULL);
-	if (!ctxt->node_props){
+	if (!ctxt->node_props) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
 		return;
 	}
@@ -336,7 +337,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	 * Create a node for the labels.
 	 */
 	ctxt->node_labels = xmlNewChild (node_part, ctxt->ns, BAD_CAST "labels", NULL);
-	if (!ctxt->node_labels){
+	if (!ctxt->node_labels) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
 		return;
 	}
@@ -359,7 +360,7 @@ write_xml_wire (Wire *wire, parseXmlContext *ctxt)
 	 * Create a node for the wire.
 	 */
 	node_wire = xmlNewChild (ctxt->node_wires, ctxt->ns, BAD_CAST "wire", NULL);
-	if (!node_wire){
+	if (!node_wire) {
 		g_warning ("Failed during save of wire.\n");
 		return;
 	}
@@ -382,20 +383,12 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 
 	g_return_if_fail (textbox != NULL);
 
-	/*
-	 * FIXME: just a quick hack to get this working.
-	 */
-	if (!IS_TEXTBOX (textbox))
-		return;
-
 	g_return_if_fail (IS_TEXTBOX (textbox));
 
-	/*
-	 * Create a node for the textbox.
-	 */
+	// Create a node for the textbox.
 	node_textbox = xmlNewChild (ctxt->node_textboxes, ctxt->ns,
 		BAD_CAST "textbox", NULL);
-	if (!node_textbox){
+	if (!node_textbox) {
 		g_warning ("Failed during save of text box.\n");
 		return;
 	}
@@ -427,7 +420,7 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 
 	cur = xmlNewDocNode (ctxt->doc, ctxt->ns, BAD_CAST "schematic", NULL);
 	if (cur == NULL) {
-		printf("%s:%d NULL que no debe ser NULL!\n", __FILE__,
+		printf ("%s:%d NULL que no debe ser NULL!\n", __FILE__,
 			__LINE__);
 		return NULL;
 	}
@@ -454,14 +447,6 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 	str = g_strdup_printf ("%s", schematic_get_comments (sm));
 	xmlNewChild (cur, ctxt->ns, BAD_CAST "comments", xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
-
-	/*
-	 * Zoom.
-	 */
-//	sheet_get_zoom (sm->sheet, &zoom);
-//	str = g_strdup_printf ("%g", zoom);
-//	xmlNewChild (cur, ctxt->ns, "zoom", str);
-//	g_free (str);
 
 	/*
 	 * Grid.
@@ -515,14 +500,14 @@ schematic_write_xml (Schematic *sm, GError **error)
 	 * Create the tree.
 	 */
 	xml = xmlNewDoc (BAD_CAST "1.0");
-	if (xml == NULL){
+	if (xml == NULL) {
 		return FALSE;
 	}
 
 	ctxt.ns = NULL;
 	ctxt.doc = xml;
 
-	xmlDocSetRootElement(xml, write_xml_schematic(&ctxt, sm, &internal_error));
+	xmlDocSetRootElement (xml, write_xml_schematic (&ctxt, sm, &internal_error));
 
 	if (internal_error) {
 		g_propagate_error (error, internal_error);
@@ -540,15 +525,17 @@ schematic_write_xml (Schematic *sm, GError **error)
 		if (s != NULL) {
 			val = xmlIndentTreeOutput;
 			ret = xmlSaveFormatFile (s, xml, 1);
-		} else {
-			g_warning("Schematic has no filename!!\n");
+		} 
+		else {
+			g_warning ("Schematic has no filename!!\n");
 		}
 	}
 
 	if (xml != NULL) {
 		xmlFreeDoc (xml);
-	} else {
-		g_warning("XML object is NULL\n");
+	} 
+	else {
+		g_warning ("XML object is NULL\n");
 	}
 
 	if (ret < 0)

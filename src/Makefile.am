@@ -48,8 +48,6 @@ oregano_PIXMAPS = \
 oregano_SOURCES = 	\
 	clipboard.h \
 	clipboard.c \
-	create-wire.c \
-	create-wire.h \
 	cursors.c \
 	cursors.h \
 	dialogs.c \
@@ -77,8 +75,6 @@ oregano_SOURCES = 	\
 	part-browser.h \
 	plot.c \
 	plot.h \
-	plot-add-function.c \
-	plot-add-function.h \
 	save-schematic.c \
 	save-schematic.h \
 	schematic-view.c \
@@ -101,4 +97,4 @@ oregano_SOURCES = 	\
 	xml-helper.h
 
 oregano_LDADD = \
-	$(OREGANO_LIBS) 
+	$(OREGANO_LIBS)

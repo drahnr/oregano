@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -63,11 +65,11 @@ struct _Browser {
 	/**
 	 * Models for the TreeView
 	 */
-	GtkTreeModel *real_model;
-	GtkTreeModel *sort_model;
-	GtkTreeModel *filter_model;
-	GtkEntry	 *filter_entry;
-	gint		  filter_len;
+	GtkTreeModel 	 *real_model;
+	GtkTreeModel 	 *sort_model;
+	GtkTreeModel 	 *filter_model;
+	GtkEntry	 	 *filter_entry;
+	gint		  	  filter_len;
 };
 
 typedef struct {
@@ -88,7 +90,7 @@ static int part_selected (GtkTreeView *list, GtkTreePath *arg1,
 static void part_browser_setup_libs (Browser *br, GladeXML *gui);
 static void library_switch_cb (GtkWidget *item, Browser *br);
 static void preview_realized (GtkWidget *widget, Browser *br);
-static void wrap_string(char* str, int width);
+static void wrap_string (char* str, int width);
 static void place_cmd (GtkWidget *widget, Browser *br);
 
 static gboolean
@@ -96,11 +98,11 @@ part_list_filter_func (GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	char *part_name;
 	const char *s;
-	char *comp1, *comp2; /* auxilires para guardar el nombre en upcase */
+	char *comp1, *comp2; /* Auxiliary parameters shall keep their number in upcase */
 	Browser *br = (Browser *)data;
 
 	s = gtk_entry_get_text (GTK_ENTRY (br->filter_entry));
-	/* Si no hay filtro, la componente se muestra */
+	/* Without filter, the part is shown */
 	if (s == NULL) return TRUE;
 	if (br->filter_len == 0) return TRUE;
 
@@ -110,7 +112,7 @@ part_list_filter_func (GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 		comp1 = g_utf8_strup (s, -1);
 		comp2 = g_utf8_strup (part_name, -1);
 
-		if (g_strrstr(comp2, comp1)) {
+		if (g_strrstr (comp2, comp1)) {
 			g_free (comp1);
 			g_free (comp2);
 			return TRUE;
@@ -176,23 +178,23 @@ place_cmd (GtkWidget *widget, Browser *br)
 		return;
 	}
 
-	gtk_tree_model_get(model, &iter, 0, &part_name, -1);
+	gtk_tree_model_get (model, &iter, 0, &part_name, -1);
 
 	library_part = library_get_part (br->library, part_name);
 	part = part_new_from_library_part (library_part);
 	if (!part) {
-		oregano_error(_("Unable to load required part"));
+		oregano_error (_("Unable to load required part"));
 		return;
 	}
 
 	pos.x = pos.y = 0;
 	item_data_set_pos (ITEM_DATA (part), &pos);
 
-	schematic_view_select_all(br->schematic_view, FALSE);
-	schematic_view_clear_ghosts(br->schematic_view);
-	schematic_view_add_ghost_item(br->schematic_view, ITEM_DATA(part));
+	sheet_select_all (sheet, FALSE);
+	sheet_clear_ghosts (sheet);
+	sheet_add_ghost_item (sheet, ITEM_DATA(part));
 
-	part_item_signal_connect_floating_group (sheet, br->schematic_view);
+	sheet_connect_part_item_to_floating_group (sheet, (gpointer) br->schematic_view);
 }
 
 static int
@@ -220,16 +222,17 @@ update_preview (Browser *br)
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	GtkTreeSelection *selection;
+	GtkAllocation allocation;
 
 	/* Get the current selected row */
-	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(br->list));
-	model = gtk_tree_view_get_model(GTK_TREE_VIEW(br->list));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW (br->list));
 
-	if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+	if (!gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		return;
 	}
 
-	gtk_tree_model_get(model, &iter, 0, &part_name, -1);
+	gtk_tree_model_get (model, &iter, 0, &part_name, -1);
 
 	library_part = library_get_part (br->library, part_name);
 
@@ -238,12 +241,11 @@ update_preview (Browser *br)
 	 * new one.
 	 */
 	if (br->preview != NULL)
-		/* FIXME: Check if gnomecanvas are killed by this way */
 		gtk_object_destroy (GTK_OBJECT (br->preview));
 
 	br->preview = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-		gnome_canvas_root (GNOME_CANVAS (br->canvas)),
-		gnome_canvas_group_get_type(),
+	    gnome_canvas_root (GNOME_CANVAS (br->canvas)),
+		gnome_canvas_group_get_type (),
 		"x", 0.0,
 		"y", 0.0,
 		NULL));
@@ -261,16 +263,17 @@ update_preview (Browser *br)
 		&x1, &y1, &x2, &y2);
 
 	/* Translate in such a way that the canvas centre remains in (0, 0) */
-	art_affine_translate(transf, -(x2 + x1) / 2.0f, -(y2 + y1) / 2.0f);
+	art_affine_translate (transf, -(x2 + x1) / 2.0f, -(y2 + y1) / 2.0f);
 
 	/* Compute the scale of the widget */
-	if((x2 - x1 != 0) || (y2 - y1 != 0)) {
+	if ((x2 - x1 != 0) || (y2 - y1 != 0)) {
 		if ((x2 - x1) < (y2 - y1))
 			scale = 0.60f * PREVIEW_HEIGHT / (y2 - y1);
 		else
 			scale = 0.60f * PREVIEW_WIDTH / (x2 - x1);
 
-	} else
+	} 
+	else
 		scale = 5;
 
 	art_affine_scale (affine, scale, scale);
@@ -303,10 +306,11 @@ update_preview (Browser *br)
 	g_object_get (G_OBJECT (br->description),
 		"text_width", &text_width, NULL);
 
-	g_object_set (G_OBJECT(br->description), "x",
-		PREVIEW_WIDTH / 2 - text_width / 2, NULL);
+	g_object_set (G_OBJECT (br->description), 
+				  "x", PREVIEW_WIDTH / 2 - text_width / 2, 
+                  NULL);
 	gnome_canvas_item_request_update (GNOME_CANVAS_ITEM (br->description));
-	g_free(part_name);
+	g_free (part_name);
 }
 
 static gboolean
@@ -320,7 +324,6 @@ static void
 add_part (gpointer key, LibraryPart *part, Browser *br)
 {
 	GtkTreeIter iter;
-	//GtkTreeModel *sort; /* The sortable interface */
 	GtkListStore *model;
 
 	g_return_if_fail (part != NULL);
@@ -328,9 +331,9 @@ add_part (gpointer key, LibraryPart *part, Browser *br)
 	g_return_if_fail (br != NULL);
 	g_return_if_fail (br->list != NULL);
 
-	model = GTK_LIST_STORE(br->real_model);
-	gtk_list_store_append(model, &iter);
-	gtk_list_store_set(model, &iter, 0, part->name, -1);
+	model = GTK_LIST_STORE (br->real_model);
+	gtk_list_store_append (model, &iter);
+	gtk_list_store_set (model, &iter, 0, part->name, -1);
 }
 
 /*
@@ -347,7 +350,7 @@ update_list (Browser *br)
 }
 
 
-/**
+/*
  * Show a part browser. If one already exists, just bring it up, otherwise
  * create it.  We can afford to keep it in memory all the time, and we don't
  * have to delete it and build it every time it is needed. If already shown,
@@ -358,13 +361,15 @@ part_browser_toggle_show (SchematicView *schematic_view)
 {
 	Browser *browser = schematic_view_get_browser (schematic_view);
 		
-	if (browser == NULL){
-		part_browser_create (schematic_view);
-	} else {
+	if (browser == NULL) {
+	//	part_browser_create (schematic_view);
+	}
+	else {
 		browser->hidden = !(browser->hidden);
-		if (browser->hidden){
+		if (browser->hidden) {
 			gtk_widget_hide_all (browser->viewport);
-		} else {
+		} 
+		else {
 			gtk_widget_show_all (browser->viewport);
 		}
 	}
@@ -399,11 +404,11 @@ part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 
 	item_data_set_pos (ITEM_DATA (part), &pos);
 
-	schematic_view_select_all (data->schematic_view, FALSE);
-	schematic_view_clear_ghosts (data->schematic_view);
-	schematic_view_add_ghost_item (data->schematic_view, ITEM_DATA (part));
+	sheet_select_all (sheet, FALSE);
+	sheet_clear_ghosts (schematic_view_get_sheet (data->schematic_view));
+	sheet_add_ghost_item (sheet, ITEM_DATA (part));
 
-	part_item_signal_connect_floating_group (sheet, data->schematic_view);
+	sheet_connect_part_item_to_floating_group (sheet, (gpointer) data->schematic_view);
 }
 
 static void
@@ -434,7 +439,7 @@ drag_data_get (GtkWidget *widget, GdkDragContext *context,
 		return;
 	}
 
-	gtk_tree_model_get(model, &iter, 0, &part_name, -1);
+	gtk_tree_model_get (model, &iter, 0, &part_name, -1);
 
 	data->part_name = part_name;
 
@@ -522,7 +527,7 @@ part_browser_create (SchematicView *schematic_view)
 	points->coords[2] = PREVIEW_WIDTH + 10;
 	points->coords[3] = PREVIEW_HEIGHT - 10;
 
-	gnome_canvas_item_new (gnome_canvas_root (GNOME_CANVAS(br->canvas)),
+	gnome_canvas_item_new (gnome_canvas_root (GNOME_CANVAS (br->canvas)),
 		gnome_canvas_line_get_type (),
 		"fill_color", "gray",
 		"line_style", GDK_LINE_ON_OFF_DASH,
@@ -580,10 +585,10 @@ part_browser_create (SchematicView *schematic_view)
 
 	/* Create the sort model for the items, this sort the real model */
 	br->sort_model = gtk_tree_model_sort_new_with_model (
-		GTK_TREE_MODEL(br->real_model));
+		GTK_TREE_MODEL (br->real_model));
 
 	gtk_tree_sortable_set_sort_column_id (
-		GTK_TREE_SORTABLE(br->sort_model),
+		GTK_TREE_SORTABLE (br->sort_model),
 		0, GTK_SORT_ASCENDING);
 
 	/* Create the filter sorted model. This filter items based on user
@@ -612,10 +617,10 @@ part_browser_create (SchematicView *schematic_view)
 	gtk_drag_source_set (w, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 		dnd_types, dnd_num_types, GDK_ACTION_MOVE);
 
-	g_signal_connect (G_OBJECT (w),
-		"cursor_changed", G_CALLBACK(select_row), br);
-	g_signal_connect (G_OBJECT (w),
-		"row_activated", G_CALLBACK(part_selected), br);
+	g_signal_connect (G_OBJECT (w), "cursor_changed", 
+		G_CALLBACK (select_row), br);
+	g_signal_connect (G_OBJECT (w), "row_activated", 
+	    G_CALLBACK (part_selected), br);
 
 	br->viewport = glade_xml_get_widget (gui, "part_browser_vbox");
 
@@ -639,7 +644,7 @@ part_browser_setup_libs(Browser *br, GladeXML *gui) {
 
 	w = glade_xml_get_widget (gui, "table1");
 	combo_box = gtk_combo_box_new_text ();
-	gtk_table_attach_defaults (GTK_TABLE(w),combo_box,1,2,0,1);
+	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,1,2,0,1);
 
 	libs = oregano.libraries;
 
@@ -648,13 +653,13 @@ part_browser_setup_libs(Browser *br, GladeXML *gui) {
 			((Library *)libs->data)->name);
 		libs = libs->next;
 		if (!first) {
-			gtk_combo_box_set_active (GTK_COMBO_BOX(combo_box),0);
+			gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),0);
 			first = TRUE;
 		}
 	}
 
-	g_signal_connect (G_OBJECT (combo_box),
-		"changed", G_CALLBACK(library_switch_cb), br);
+	g_signal_connect (G_OBJECT (combo_box), "changed", 
+		G_CALLBACK (library_switch_cb), br);
 }
 
 static void
@@ -686,13 +691,13 @@ wrap_string (char* str, int width)
 		if (*ptr == ' ')
 			sppos = ptr;
 
-		if(ptr - lnbeg > width - te && sppos >= lnbeg + minl) {
+		if (ptr - lnbeg > width - te && sppos >= lnbeg + minl) {
 			*sppos = '\n';
 			lnbeg = ptr;
 			te = 0;
 		}
 
-		if(*ptr=='\n') {
+		if (*ptr=='\n') {
 			lnbeg = ptr;
 			te = 0;
 		}

@@ -18,9 +18,11 @@ data/glade/textbox-properties-dialog.glade
 data/glade/view-netlist.glade
 
 src/xml-helper.c
+src/sheet/create-wire.c
 src/sheet/grid.c
 src/sheet/node-item.c
 src/sheet/part-item.c
+src/sheet/plot-add-function.c
 src/sheet/sheet.c
 src/sheet/sheet-item.c
 src/sheet/sheet-item-factory.c
@@ -38,11 +40,12 @@ src/save-schematic.c
 src/plot.c
 src/part-browser.c
 src/oregano-utils.c
-src/oregano-impl.c
 src/oregano-config.c
-src/engines/netlist.c
+src/engines/netlist-helper.c
 src/engines/gnucap.c
 src/engines/engine.c
+src/engines/ngspice.c
+src/engines/ngspice-analysis.c
 src/netlist-editor.c
 src/main.c
 src/load-schematic.c
@@ -58,8 +61,6 @@ src/model/node-store.c
 src/model/schematic.c
 src/model/textbox.c
 src/model/part-property.c
-src/create-wire.c
 src/clipboard.c
-src/plot-add-function.c
 src/file-manager.c
 src/errors.c

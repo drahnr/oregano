@@ -1,4 +1,0 @@
-application/x-oregano:
-	open=oregano %f
-	view=oregano %f
-	icon-filename=@icondir@/gnome-oregano.svg

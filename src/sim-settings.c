@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,7 +47,8 @@ struct _SimSettingsPriv {
 	/* Transient analysis. */
 	GtkWidget *w_main;
 	GtkWidget *w_trans_enable, *w_trans_start, *w_trans_stop;
-	GtkWidget *w_trans_step, *w_trans_step_enable, *w_trans_init_cond, *w_trans_frame;
+	GtkWidget *w_trans_step, *w_trans_step_enable, *w_trans_init_cond,
+		*w_trans_frame;
 	gboolean trans_enable;
 	gboolean trans_init_cond;
 	gchar *trans_start;
@@ -54,7 +57,8 @@ struct _SimSettingsPriv {
 	gboolean trans_step_enable;
 
 	/*  AC   */
-	GtkWidget *w_ac_enable, *w_ac_type, *w_ac_npoints, *w_ac_start, *w_ac_stop, *w_ac_frame;
+	GtkWidget *w_ac_enable, *w_ac_type, *w_ac_npoints, *w_ac_start, *w_ac_stop, 
+		*w_ac_frame;
 	gboolean ac_enable;
 	gchar   *ac_type;
 	gchar   *ac_npoints;
@@ -82,6 +86,12 @@ struct _SimSettingsPriv {
 	GList *options;
 };
 
+static char *AC_types_list[] = {
+	"DEC",
+	"LIN",
+	"OCT",
+	NULL
+};
 
 static SimOption default_options[] = {
 		{"TEMP" ,NULL},
@@ -117,18 +127,19 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 	gint i;
 	gint result = FALSE;
 	
-	node_box = GTK_COMBO_BOX(sim->priv->w_four_combobox);
+	node_box = GTK_COMBO_BOX (sim->priv->w_four_combobox);
 	
 	/* Get the node identifier */
 	for (i=0; (i <1000 && result == FALSE); ++i) {
-		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), gtk_combo_box_get_active_text (node_box)) == 0)
+		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), 
+		               gtk_combo_box_get_active_text (node_box)) == 0)
 			result = TRUE;
 	}
 	result=FALSE;
 	
 	/* Is the node identifier already available? */
 	node_slist = g_slist_copy (sim->priv->fourier_vout);
-	while (node_slist){
+	while (node_slist) {
 		if ((i-1) == atoi (node_slist->data)) {
 			result = TRUE;
 		}
@@ -152,7 +163,8 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 		while (node_slist)
 		{
 			if (node_slist->data)
-				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+				text = g_strdup_printf ("%s V(%d)", text, 
+				                        atoi (node_slist->data));
 			node_slist = node_slist->next;
 		}
 		if (text) 
@@ -170,11 +182,12 @@ fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 	gint result = FALSE;
 	gint i;
 	
-	node_box = GTK_COMBO_BOX(sim->priv->w_four_combobox);
+	node_box = GTK_COMBO_BOX (sim->priv->w_four_combobox);
 
 	/* Get the node identifier */
-	for (i=0; (i <1000 && result == FALSE); ++i) {
-		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), gtk_combo_box_get_active_text (node_box)) == 0)
+	for (i=0; (i < 1000 && result == FALSE); i++) {
+		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), 
+		               gtk_combo_box_get_active_text (node_box)) == 0)
 			result = TRUE;
 	}
 	
@@ -183,7 +196,6 @@ fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 		gchar *text = NULL;
 
 		/* Remove current data in the g_slist */
-		/* N.B.: should be replaced by g_slist_remove... */
 		{
 			GSList *tmp, *prev = NULL;
 
@@ -211,7 +223,8 @@ fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 		while (node_slist)
 		{
 			if (node_slist->data) 
-				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+				text = g_strdup_printf ("%s V(%d)", text, 
+				                        atoi (node_slist->data));
 			node_slist = node_slist->next;
 		}
 		if (text) gtk_entry_set_text (GTK_ENTRY (sim->priv->w_four_vout), text);
@@ -222,7 +235,7 @@ fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 }
 
 static void
-set_options_in_list(gchar *key, gchar *val, GtkTreeView *cl)
+set_options_in_list (gchar *key, gchar *val, GtkTreeView *cl)
 {
 	int i;
 	GtkTreeModel *model;
@@ -230,13 +243,13 @@ set_options_in_list(gchar *key, gchar *val, GtkTreeView *cl)
 	char *name;
 	char *value;
 
-	model = gtk_tree_view_get_model(cl);
+	model = gtk_tree_view_get_model (cl);
 
 	i=0;
-	while (gtk_tree_model_iter_nth_child(model, &iter, NULL, i)) {
-		gtk_tree_model_get(model, &iter, 0, &name, 1, &value, -1);
-		if (!strcmp (name, key) ) {
-			gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, val, -1);
+	while (gtk_tree_model_iter_nth_child (model, &iter, NULL, i)) {
+		gtk_tree_model_get (model, &iter, 0, &name, 1, &value, -1);
+		if (!strcmp (name, key)) {
+			gtk_list_store_set (GTK_LIST_STORE(model), &iter, 1, val, -1);
 		}
 		i++;
 	}
@@ -265,15 +278,15 @@ get_options_from_list (SimSettings *s)
 		if (s->priv->options) s->priv->options = s->priv->options->next;
 	}
 
-	model = gtk_tree_view_get_model(cl);
+	model = gtk_tree_view_get_model (cl);
 	i = 0;
-	while (gtk_tree_model_iter_nth_child(model, &iter, NULL, i)) {
+	while (gtk_tree_model_iter_nth_child (model, &iter, NULL, i)) {
 		SimOption *so;
-		gtk_tree_model_get(model, &iter, 0, &name, 1, &value, -1);
+		gtk_tree_model_get (model, &iter, 0, &name, 1, &value, -1);
 
 		so = g_new0 (SimOption,1);
-		so->name = g_strdup(name);
-		so->value = g_strdup(value);
+		so->name = g_strdup (name);
+		so->value = g_strdup (value);
 		s->priv->options = g_list_append (s->priv->options, so);
 		i++;
 	}
@@ -291,14 +304,14 @@ select_opt_callback (GtkWidget *widget,
 	if (event->button != 1) return FALSE;
 
 	/* Get the current selected row */
-	selection = gtk_tree_view_get_selection(sim->priv->w_opt_list);
-	model = gtk_tree_view_get_model(sim->priv->w_opt_list);
+	selection = gtk_tree_view_get_selection (sim->priv->w_opt_list);
+	model = gtk_tree_view_get_model (sim->priv->w_opt_list);
 
-	if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+	if (!gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		return FALSE;
 	}
 
-	gtk_tree_model_get(model, &iter, 1, &value, -1);
+	gtk_tree_model_get (model, &iter, 1, &value, -1);
 
 	if (value)
 		gtk_entry_set_text (sim->priv->w_opt_value, value);
@@ -320,14 +333,14 @@ option_setvalue (GtkWidget *w, SimSettings *s)
 	if (!value) return;
 
 	/* Get the current selected row */
-	selection = gtk_tree_view_get_selection(s->priv->w_opt_list);
-	model = gtk_tree_view_get_model(s->priv->w_opt_list);
+	selection = gtk_tree_view_get_selection (s->priv->w_opt_list);
+	model = gtk_tree_view_get_model (s->priv->w_opt_list);
 
-	if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+	if (!gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		return;
 	}
 
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, value, -1);
+	gtk_list_store_set(GTK_LIST_STORE (model), &iter, 1, value, -1);
 }
 
 static void
@@ -355,8 +368,10 @@ add_option (GtkWidget *w, SimSettings *s)
 		/* Warning : don't free opt later, is added to the list */
 		sim_settings_add_option (s, opt);
 	
-		gtk_list_store_append (GTK_LIST_STORE (gtk_tree_view_get_model(s->priv->w_opt_list)), &iter);
-		gtk_list_store_set (GTK_LIST_STORE (gtk_tree_view_get_model(s->priv->w_opt_list)), &iter, 0, opt->name, -1);
+		gtk_list_store_append (GTK_LIST_STORE (gtk_tree_view_get_model(
+		                       s->priv->w_opt_list)), &iter);
+		gtk_list_store_set (GTK_LIST_STORE (gtk_tree_view_get_model(
+		                       s->priv->w_opt_list)), &iter, 0, opt->name, -1);
 	}
 
 	gtk_widget_destroy (dialog);
@@ -371,14 +386,14 @@ option_remove (GtkWidget *w, SimSettings *s)
 	GtkTreeSelection *selection;
 
 	/* Get the current selected row */
-	selection = gtk_tree_view_get_selection(s->priv->w_opt_list);
-	model = gtk_tree_view_get_model(s->priv->w_opt_list);
+	selection = gtk_tree_view_get_selection (s->priv->w_opt_list);
+	model = gtk_tree_view_get_model (s->priv->w_opt_list);
 
-	if (!gtk_tree_selection_get_selected(selection, NULL, &iter)) {
+	if (!gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		return;
 	}
 
-	gtk_list_store_set(GTK_LIST_STORE(model), &iter, 1, "", -1);
+	gtk_list_store_set (GTK_LIST_STORE (model), &iter, 1, "", -1);
 }
 
 static void
@@ -387,7 +402,8 @@ trans_enable_cb (GtkWidget *widget, SimSettings *s)
 	gboolean enable, step_enable;
 
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_step_enable));
+	step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (
+	                                s->priv->w_trans_step_enable));
 	
 	if (enable)
 		gtk_widget_show (s->priv->w_trans_frame);
@@ -401,7 +417,8 @@ trans_step_enable_cb (GtkWidget *widget, SimSettings *s)
 	gboolean enable, step_enable;
 
 	step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
+	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (
+	                                s->priv->w_trans_enable));
 
 	gtk_widget_set_sensitive (s->priv->w_trans_step, step_enable & enable);
 }
@@ -553,7 +570,7 @@ sim_settings_set_trans_start (SimSettings *sim_settings, gchar *str)
 }
 
 void
-sim_settings_set_trans_init_cond(SimSettings *sim_settings, gboolean enable)
+sim_settings_set_trans_init_cond (SimSettings *sim_settings, gboolean enable)
 {
 	sim_settings->priv->trans_init_cond = enable;
 }
@@ -617,18 +634,18 @@ sim_settings_set_ac (SimSettings *sim_settings,gboolean enable)
 }
 
 void
-sim_settings_set_ac_type(SimSettings *sim_settings,gchar *str)
+sim_settings_set_ac_type (SimSettings *sim_settings,gchar *str)
 {
-	if ( sim_settings->priv->ac_type )
-		g_free ( sim_settings->priv->ac_type );
+	if (sim_settings->priv->ac_type)
+		g_free (sim_settings->priv->ac_type);
 	sim_settings->priv->ac_type = g_strdup (str);
 }
 
 void
 sim_settings_set_ac_npoints (SimSettings *sim_settings,gchar *str)
 {
-	if ( sim_settings->priv->ac_npoints )
-		g_free ( sim_settings->priv->ac_npoints );
+	if (sim_settings->priv->ac_npoints)
+		g_free (sim_settings->priv->ac_npoints);
 	sim_settings->priv->ac_npoints = g_strdup (str);
 
 }
@@ -642,7 +659,7 @@ sim_settings_set_ac_start (SimSettings *sim_settings,gchar *str)
 }
 
 void
-sim_settings_set_ac_stop(SimSettings *sim_settings,gchar *str)
+sim_settings_set_ac_stop (SimSettings *sim_settings,gchar *str)
 {
 	if (sim_settings->priv->ac_stop)
 		g_free (sim_settings->priv->ac_stop);
@@ -688,32 +705,32 @@ sim_settings_set_dc (SimSettings *sim_settings, gboolean enable)
 void
 sim_settings_set_dc_vsrc (SimSettings *sim_settings, gchar *str)
 {
-	if ( sim_settings->priv->dc_vin)
-		g_free ( sim_settings->priv->dc_vin);
+	if (sim_settings->priv->dc_vin)
+		g_free (sim_settings->priv->dc_vin);
 	sim_settings->priv->dc_vin = g_strdup (str);
 }
 
 void
 sim_settings_set_dc_start (SimSettings *sim_settings, gchar *str) 
 {	
-	if ( sim_settings->priv->dc_start)
-		g_free ( sim_settings->priv->dc_start);
+	if (sim_settings->priv->dc_start)
+		g_free (sim_settings->priv->dc_start);
 	sim_settings->priv->dc_start = g_strdup (str);
 }
 
 void
 sim_settings_set_dc_stop  (SimSettings *sim_settings, gchar *str)
 {
-	if ( sim_settings->priv->dc_stop)
-		g_free ( sim_settings->priv->dc_stop);
+	if (sim_settings->priv->dc_stop)
+		g_free (sim_settings->priv->dc_stop);
 	sim_settings->priv->dc_stop = g_strdup (str);
 }
 
 void
 sim_settings_set_dc_step  (SimSettings *sim_settings, gchar *str)
 {
-	if ( sim_settings->priv->dc_step)
-		g_free ( sim_settings->priv->dc_step);
+	if (sim_settings->priv->dc_step)
+		g_free (sim_settings->priv->dc_step);
 	sim_settings->priv->dc_step = g_strdup (str);	
 }
 
@@ -726,8 +743,8 @@ sim_settings_set_fourier (SimSettings *sim_settings, gboolean enable)
 void 
 sim_settings_set_fourier_frequency (SimSettings *sim_settings,gchar *str)
 {
-	if ( sim_settings->priv->fourier_frequency )
-		g_free ( sim_settings->priv->fourier_frequency );
+	if (sim_settings->priv->fourier_frequency)
+		g_free (sim_settings->priv->fourier_frequency);
 	sim_settings->priv->fourier_frequency = g_strdup (str);	
 }
 
@@ -743,7 +760,8 @@ sim_settings_set_fourier_vout (SimSettings *sim_settings,
 	for (i=0; node_ids[i]!= NULL; i++) {
 		if (node_ids[i]) 
 			sim_settings->priv->fourier_vout = 
-				g_slist_append(sim_settings->priv->fourier_vout, g_strdup (node_ids[i]));
+				g_slist_append (sim_settings->priv->fourier_vout, 
+				               g_strdup (node_ids[i]));
 	}
 }
 
@@ -771,7 +789,8 @@ sim_settings_get_fourier_vout (SimSettings *sim)
 	if (node_slist) node_slist=node_slist->next;
 	while (node_slist)
 	{
-		if (node_slist->data) text = g_strdup_printf ("%s %d", text, atoi (node_slist->data));
+		if (node_slist->data) 
+			text = g_strdup_printf ("%s %d", text, atoi (node_slist->data));
 		node_slist = node_slist->next;
 	}
 	g_slist_free (node_slist);
@@ -807,69 +826,94 @@ response_callback (GtkDialog *dlg, gint id, Schematic *sm)
 
 	s = schematic_get_sim_settings (sm);
 
-	g_object_get(s->notebook, "page", &page, NULL);
+	g_object_get (s->notebook, "page", &page, NULL);
 
 	/* Trans */
-	s->priv->trans_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
+	s->priv->trans_enable = gtk_toggle_button_get_active (
+	                         GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
 
-	if (s->priv->trans_start) g_free (s->priv->trans_start);
-	s->priv->trans_start = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_start), 0, -1);
+	if (s->priv->trans_start) 
+		g_free (s->priv->trans_start);
+	s->priv->trans_start = gtk_editable_get_chars (
+	                       GTK_EDITABLE (s->priv->w_trans_start), 0, -1);
 
-	if (s->priv->trans_stop) g_free (s->priv->trans_stop);
-	s->priv->trans_stop = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_stop), 0, -1);
+	if (s->priv->trans_stop) 
+		g_free (s->priv->trans_stop);
+	s->priv->trans_stop = gtk_editable_get_chars (
+	                       GTK_EDITABLE (s->priv->w_trans_stop), 0, -1);
 
-	if (s->priv->trans_step) g_free (s->priv->trans_step);
-	s->priv->trans_step = gtk_editable_get_chars (GTK_EDITABLE (s->priv->w_trans_step), 0, -1);
+	if (s->priv->trans_step) 
+		g_free (s->priv->trans_step);
+	s->priv->trans_step = gtk_editable_get_chars (
+	                       GTK_EDITABLE (s->priv->w_trans_step), 0, -1);
 
-	s->priv->trans_step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_step_enable));
+	s->priv->trans_step_enable = gtk_toggle_button_get_active (
+	                       GTK_TOGGLE_BUTTON (s->priv->w_trans_step_enable));
 
-	s->priv->trans_init_cond = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_trans_init_cond));
+	s->priv->trans_init_cond = gtk_toggle_button_get_active (
+	                       GTK_TOGGLE_BUTTON (s->priv->w_trans_init_cond));
 
 	/* DC */
-	s->priv->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
-	if (s->priv->dc_vin) g_free (s->priv->dc_vin);
+	s->priv->dc_enable = gtk_toggle_button_get_active (
+                           GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
+	if (s->priv->dc_vin) 
+		g_free (s->priv->dc_vin);
 	
-	tmp = g_strdup (gtk_entry_get_text(GTK_ENTRY(GTK_COMBO (s->priv->w_dc_vin)->entry)));
+	tmp = g_strdup (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (s->priv->w_dc_vin)->entry)));
 	node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
 	tmp = node_ids[1];
 	node_ids = g_strsplit (g_strdup (tmp), ")", 0);
 	s->priv->dc_vin = node_ids[0];
 	
-	if (s->priv->dc_start) g_free (s->priv->dc_start);
-	s->priv->dc_start = g_strdup (gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_start)));
+	if (s->priv->dc_start) 
+		g_free (s->priv->dc_start);
+	s->priv->dc_start = g_strdup (gtk_entry_get_text (
+	                       GTK_ENTRY (s->priv->w_dc_start)));
 
-	if (s->priv->dc_stop) g_free(s->priv->dc_stop);
-	s->priv->dc_stop = g_strdup(gtk_entry_get_text (GTK_ENTRY (s->priv->w_dc_stop)));
+	if (s->priv->dc_stop) 
+		g_free (s->priv->dc_stop);
+	s->priv->dc_stop = g_strdup (gtk_entry_get_text (
+	                       GTK_ENTRY (s->priv->w_dc_stop)));
 
-	if (s->priv->dc_step) g_free(s->priv->dc_step);
-	s->priv->dc_step = g_strdup(gtk_entry_get_text(GTK_ENTRY (s->priv->w_dc_step)));
+	if (s->priv->dc_step) 
+		g_free (s->priv->dc_step);
+	s->priv->dc_step = g_strdup (gtk_entry_get_text (
+	                       GTK_ENTRY (s->priv->w_dc_step)));
 
 	/* AC */
-	s->priv->ac_enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (s->priv->w_ac_enable));
+	s->priv->ac_enable = gtk_toggle_button_get_active (
+	                       GTK_TOGGLE_BUTTON (s->priv->w_ac_enable));
 
 	if (s->priv->ac_type) g_free(s->priv->ac_type);
-	s->priv->ac_type = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_type)));
+	s->priv->ac_type = g_strdup (gtk_entry_get_text (
+							GTK_ENTRY (s->priv->w_ac_type)));
 
 	if (s->priv->ac_npoints) g_free (s->priv->ac_npoints);
 	s->priv->ac_npoints = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_npoints)));
 
-	if (s->priv->ac_start) g_free (s->priv->ac_start);
-	s->priv->ac_start = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_start)));
+	if (s->priv->ac_start) 
+		g_free (s->priv->ac_start);
+	s->priv->ac_start = g_strdup (gtk_entry_get_text(
+	                       GTK_ENTRY (s->priv->w_ac_start)));
 
-	if (s->priv->ac_stop) g_free (s->priv->ac_stop);
-	s->priv->ac_stop = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_ac_stop)));
+	if (s->priv->ac_stop) 
+		g_free (s->priv->ac_stop);
+	s->priv->ac_stop = g_strdup (gtk_entry_get_text(
+	                       GTK_ENTRY (s->priv->w_ac_stop)));
 
 	/* Fourier analysis */
-	s->priv->fourier_enable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (s->priv->w_four_enable));
+	s->priv->fourier_enable = gtk_toggle_button_get_active (
+	                       GTK_TOGGLE_BUTTON (s->priv->w_four_enable));
 
-	if (s->priv->fourier_frequency) g_free (s->priv->fourier_frequency);
-	s->priv->fourier_frequency = g_strdup(gtk_entry_get_text(GTK_ENTRY( s->priv->w_four_freq)));
+	if (s->priv->fourier_frequency) 
+		g_free (s->priv->fourier_frequency);
+	s->priv->fourier_frequency = g_strdup (gtk_entry_get_text (
+	                       GTK_ENTRY (s->priv->w_four_freq)));
 
-	
 	/* Options */
 	get_options_from_list (s);
-	gtk_widget_hide(GTK_WIDGET(dlg));
-	gtk_widget_destroy(GTK_WIDGET(dlg));
+	gtk_widget_hide (GTK_WIDGET (dlg));
+	gtk_widget_destroy (GTK_WIDGET (dlg));
 	s->pbox = NULL;
 	s->notebook = NULL;
 
@@ -906,7 +950,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s = schematic_get_sim_settings (sm);
 
 	/* Only allow one instance of the property box per schematic. */
-	if (s->pbox){
+	if (s->pbox) {
 		gdk_window_raise (GTK_WIDGET (s->pbox)->window);
 		return;
 	}
@@ -937,7 +981,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s->pbox = GTK_WIDGET (pbox);
 	s->notebook = GTK_NOTEBOOK (glade_xml_get_widget (gui, "notebook"));
 	g_signal_connect (G_OBJECT (pbox),
-		"delete_event", G_CALLBACK(delete_event_cb), s);
+		"delete_event", G_CALLBACK (delete_event_cb), s);
 
 	/*  Prepare options list   */
 	s->priv->w_opt_value = GTK_ENTRY (glade_xml_get_widget (gui, "opt_value"));
@@ -951,33 +995,35 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s->priv->w_fourier_frame = GTK_WIDGET (glade_xml_get_widget (gui, "fourier_frame"));
 	
 	/* Create the Columns */
-	cell_option = gtk_cell_renderer_text_new();
-	cell_value = gtk_cell_renderer_text_new();
-	column_option = gtk_tree_view_column_new_with_attributes(N_("Option"),
+	cell_option = gtk_cell_renderer_text_new ();
+	cell_value = gtk_cell_renderer_text_new ();
+	column_option = gtk_tree_view_column_new_with_attributes (N_("Option"),
 		cell_option, "text", 0, NULL);
-	column_value = gtk_tree_view_column_new_with_attributes(N_("Value"),
+	column_value = gtk_tree_view_column_new_with_attributes (N_("Value"),
 		cell_value, "text", 1, NULL);
 
 	/* Create the model */
-	opt_model = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-	gtk_tree_view_set_model(opt_list, GTK_TREE_MODEL(opt_model));
-	gtk_tree_view_append_column(opt_list, column_option);
-	gtk_tree_view_append_column(opt_list, column_value);
+	opt_model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
+	gtk_tree_view_set_model (opt_list, GTK_TREE_MODEL (opt_model));
+	gtk_tree_view_append_column (opt_list, column_option);
+	gtk_tree_view_append_column (opt_list, column_value);
 
 	if (s->priv->options == NULL) {
 		/* Load defaults */
 		for (i = 0; default_options[i].name; i++) {
-			gtk_list_store_append(opt_model, &iter);
-			gtk_list_store_set(opt_model, &iter, 0, default_options[i].name, -1);
+			gtk_list_store_append (opt_model, &iter);
+			gtk_list_store_set (opt_model, &iter, 0, 
+			                   default_options[i].name, -1);
 		}
-	} else {
+	} 
+	else {
 		/* Load schematic options */
 		list = s->priv->options;
 		while (list) {
 			SimOption *so = list->data;
 			if (so) {
-				gtk_list_store_append(opt_model, &iter);
-				gtk_list_store_set(opt_model, &iter, 0, so->name, -1);
+				gtk_list_store_append (opt_model, &iter);
+				gtk_list_store_set (opt_model, &iter, 0, so->name, -1);
 			}
 			list = list->next;
 		}
@@ -992,8 +1038,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		list = list->next;
 	}
 
-	g_signal_connect(G_OBJECT (opt_list),
-		"button_release_event", G_CALLBACK(select_opt_callback), s);
+	g_signal_connect (G_OBJECT (opt_list), "button_release_event", 
+		G_CALLBACK (select_opt_callback), s);
 
 	w = glade_xml_get_widget (gui, "opt_accept");
 	g_signal_connect (G_OBJECT(w),"clicked", G_CALLBACK(option_setvalue), s);

@@ -4,10 +4,12 @@
  *
  * Author:
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -60,8 +62,8 @@ static void
 netlist_editor_class_init (NetlistEditorClass *klass) {
 	GObjectClass *object_class;
 
-	object_class = G_OBJECT_CLASS(klass);
-	parent_class = g_type_class_peek_parent(klass);
+	object_class = G_OBJECT_CLASS (klass);
+	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = netlist_editor_finalize;
 	object_class->dispose = netlist_editor_dispose;
@@ -82,17 +84,17 @@ netlist_editor_finalize (GObject *object)
 		g_free (nle->priv);
 	}
 
-	G_OBJECT_CLASS(parent_class)->finalize(object);
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
 netlist_editor_dispose (GObject *object)
 {
-	NetlistEditor *nle = NETLIST_EDITOR(object);
+	NetlistEditor *nle = NETLIST_EDITOR (object);
 
 	if (nle->priv) {
 	}
-	G_OBJECT_CLASS(parent_class)->dispose(object);
+	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 GType
@@ -102,18 +104,18 @@ netlist_editor_get_type (void)
 
 	if (!netlist_editor_type) {
 		static const GTypeInfo netlist_editor_info = {
-			sizeof(NetlistEditorClass),
+			sizeof (NetlistEditorClass),
 			NULL,
 			NULL,
-			(GClassInitFunc)netlist_editor_class_init,
+			(GClassInitFunc) netlist_editor_class_init,
 			NULL,
 			NULL,
-			sizeof(NetlistEditor),
+			sizeof (NetlistEditor),
 			0,
-			(GInstanceInitFunc)netlist_editor_init,
+			(GInstanceInitFunc) netlist_editor_init,
 			NULL
 		};
-		netlist_editor_type = g_type_register_static(G_TYPE_OBJECT,
+		netlist_editor_type = g_type_register_static (G_TYPE_OBJECT,
 			"NetlistEditor",
 			&netlist_editor_info, 0);
 	}
@@ -175,8 +177,8 @@ netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
 
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+		    g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
+			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 			oregano_error_with_title (_("Could not create a netlist"), error->message);
 			g_clear_error (&error);
 		} else {
@@ -313,7 +315,8 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 		gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (textbuffer), lang);
 		gtk_source_buffer_set_highlight_syntax (GTK_SOURCE_BUFFER (textbuffer), TRUE);
 		gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER (textbuffer), TRUE);
-	} else {
+	} 
+	else {
 		g_warning ("Can't load netlist.lang in %s", OREGANO_LANGDIR "/netlist.lang");
 	}
 
@@ -323,18 +326,20 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	gtk_container_add (GTK_CONTAINER (scroll), GTK_WIDGET (source_view));
 	
 	close = GTK_BUTTON (glade_xml_get_widget (gui, "btn_close"));
-	g_signal_connect_swapped (G_OBJECT (close), "clicked", G_CALLBACK (g_object_unref), G_OBJECT (nle));
+	g_signal_connect_swapped (G_OBJECT (close), "clicked", 
+                              G_CALLBACK (g_object_unref), G_OBJECT (nle));
 	save = GTK_BUTTON (glade_xml_get_widget (gui, "btn_save"));
-	g_signal_connect (G_OBJECT (save), "clicked", G_CALLBACK (netlist_editor_save), nle);
+	g_signal_connect (G_OBJECT (save), "clicked", 
+                      G_CALLBACK (netlist_editor_save), nle);
 	sim = GTK_BUTTON (glade_xml_get_widget (gui, "btn_sim"));
-	g_signal_connect (G_OBJECT (sim), "clicked", G_CALLBACK (netlist_editor_simulate), nle);
+	g_signal_connect (G_OBJECT (sim), "clicked", 
+                      G_CALLBACK (netlist_editor_simulate), nle);
 	print = GTK_BUTTON (glade_xml_get_widget (gui, "btn_print"));	
-	g_signal_connect (G_OBJECT (print), "clicked", G_CALLBACK (netlist_editor_print), nle);
-	/*
-	 *  Set tab, fonts, wrap mode, colors, etc. according
-	 *  to preferences 
-	 */
-	
+	g_signal_connect (G_OBJECT (print), "clicked", 
+                      G_CALLBACK (netlist_editor_print), nle);
+
+	//  Set tab, fonts, wrap mode, colors, etc. according
+	//  to preferences 
 	nle->priv->lm = lm;
 	nle->priv->view = GTK_TEXT_VIEW (source_view);
 	nle->priv->toplevel = GTK_WINDOW (toplevel);
@@ -389,7 +394,7 @@ NetlistEditor *
 netlist_editor_new_from_schematic_view (SchematicView *sv)
 {
 	NetlistEditor *editor;
-	gchar *name = "/tmp/oregano.netlist"; // FIXME
+	gchar *name = "/tmp/oregano.netlist";
 	GError *error = 0;
 	Schematic *sm;
 	OreganoEngine *engine;
@@ -402,8 +407,8 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 
 	if (error != NULL) {
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
-				g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
+			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
 			oregano_error_with_title (_("Could not create a netlist"), error->message);
 			g_clear_error (&error);
 		} else {

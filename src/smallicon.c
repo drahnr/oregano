@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * 
  *  http://www.dtek.chalmers.se/~d4hult/oregano/ 
@@ -32,6 +34,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdk.h>
@@ -40,7 +43,7 @@
 #include "smallicon.h"
 
 void
-set_small_icon(GdkWindow *window,
+set_small_icon (GdkWindow *window,
 	       GdkPixmap *pixmap,
 	       GdkBitmap *mask)
 {

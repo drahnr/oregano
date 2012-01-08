@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +31,7 @@
  */
 
 #include <math.h>
+
 #include "node.h"
 #include "part.h"
 
@@ -38,8 +41,8 @@ static void node_class_init (NodeClass *klass);
 static void node_init (Node *node);
 
 enum {
-	DOT_ADDED,
-	DOT_REMOVED,
+	NODE_DOT_ADDED,
+	NODE_DOT_REMOVED,
 	VOLTAGE_CHANGED,
 	LAST_SIGNAL
 };
@@ -66,7 +69,7 @@ node_get_type (void)
 			NULL
 		};
 
-		node_type = g_type_register_static(G_TYPE_OBJECT, "Node", &node_info, 0);
+		node_type = g_type_register_static (G_TYPE_OBJECT, "Node", &node_info, 0);
 	}
 
 	return node_type;
@@ -78,10 +81,9 @@ node_class_init (NodeClass *klass)
 	GObjectClass *object_class;
 
 	object_class = (GObjectClass *)klass;
-	parent_class = g_type_class_peek_parent(klass);
+	parent_class = g_type_class_peek_parent (klass);
 
-	node_signals [DOT_ADDED] =
-		g_signal_new ("dot_added",
+	node_signals [NODE_DOT_ADDED] = g_signal_new ("node_dot_added",
 					  G_TYPE_FROM_CLASS (object_class),
 					  G_SIGNAL_RUN_FIRST,
 					  0,
@@ -90,8 +92,7 @@ node_class_init (NodeClass *klass)
 					  g_cclosure_marshal_VOID__POINTER,
 					  G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	node_signals [DOT_REMOVED] =
-		g_signal_new ("dot_removed",
+	node_signals [NODE_DOT_REMOVED] = g_signal_new ("node_dot_removed",
 					  G_TYPE_FROM_CLASS (object_class),
 					  G_SIGNAL_RUN_FIRST,
 					  0,
@@ -100,8 +101,7 @@ node_class_init (NodeClass *klass)
 					  g_cclosure_marshal_VOID__POINTER,
 					  G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	node_signals [VOLTAGE_CHANGED] =
-		g_signal_new ("voltage_changed",
+	node_signals [VOLTAGE_CHANGED] = g_signal_new ("voltage_changed",
 					  G_TYPE_FROM_CLASS (object_class),
 					  G_SIGNAL_RUN_FIRST,
 					  0,
@@ -126,7 +126,7 @@ node_new (SheetPos pos)
 {
 	Node *node;
 
-	node = NODE(g_object_new(node_get_type(), NULL));
+	node = NODE (g_object_new (node_get_type(), NULL));
 
 	node->key = pos;
 
@@ -172,10 +172,10 @@ node_needs_dot (Node *node)
 		      The dot is only needed when the end/start-point of
 		      one of the wires in on the other wire.
 		   */
-		   if ( ON_THE_WIRE(start_pos1,start_pos2,end_pos2) ||
-				ON_THE_WIRE(  end_pos1,start_pos2,end_pos2) ||
-				ON_THE_WIRE(start_pos2,start_pos1,end_pos1) ||
-				ON_THE_WIRE(  end_pos2,start_pos1,end_pos1)
+		   if (ON_THE_WIRE (start_pos1, start_pos2, end_pos2) ||
+			   ON_THE_WIRE (  end_pos1, start_pos2, end_pos2) ||
+			   ON_THE_WIRE (start_pos2, start_pos1, end_pos1) ||
+			   ON_THE_WIRE (  end_pos2, start_pos1, end_pos1)
 			) {
 			   return TRUE;
 		   }
@@ -184,7 +184,8 @@ node_needs_dot (Node *node)
 		}
 
 		return FALSE;
-	} else if (node->pin_count == 1 && node->wire_count == 1) {
+	} 
+	else if (node->pin_count == 1 && node->wire_count == 1) {
 		/*
 		 * Check if we have one wire with a pin in the 'middle'.
 		 */
@@ -220,7 +221,7 @@ node_add_pin (Node *node, Pin *pin)
 	node->pin_count++;
 
 	if (!dot && node_needs_dot (node))
-		g_signal_emit_by_name(G_OBJECT(node),"dot_added", &node->key);
+		g_signal_emit_by_name (G_OBJECT (node), "node_dot_added", &node->key);
 
 	return TRUE;
 }
@@ -243,7 +244,7 @@ node_remove_pin (Node *node, Pin *pin)
 	node->pin_count--;
 
 	if (dot && !node_needs_dot (node))
-		g_signal_emit_by_name(G_OBJECT (node), "dot_removed", &node->key);
+		g_signal_emit_by_name (G_OBJECT (node), "node_dot_removed", &node->key);
 
 	return TRUE;
 }
@@ -269,7 +270,7 @@ node_add_wire (Node *node, Wire *wire)
 	node->wire_count++;
 
 	if (!dot && node_needs_dot (node))
-		g_signal_emit_by_name(G_OBJECT(node), "dot_added", &node->key);
+		g_signal_emit_by_name (G_OBJECT (node), "node_dot_added", &node->key);
 
 	return TRUE;
 }
@@ -298,7 +299,7 @@ node_remove_wire (Node *node, Wire *wire)
 	node->wire_count--;
 
 	if (dot && (!node_needs_dot (node)))
-		g_signal_emit_by_name(G_OBJECT(node), "dot_removed", &node->key);
+		g_signal_emit_by_name (G_OBJECT (node), "node_dot_removed", &node->key);
 
 	return TRUE;
 }

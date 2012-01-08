@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,10 +29,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #ifndef __GRID_H
 #define __GRID_H
 
 #include <libgnomecanvas/gnome-canvas.h>
+#include <gtk/gtk.h>
 
 #define GRID(obj)		   (G_TYPE_CHECK_INSTANCE_CAST (obj, grid_get_type (), Grid))
 #define GRID_CLASS(klass)  (G_TYPE_CHECK_CLASS_CAST (klass, grid_get_type (), GridClass))
@@ -50,7 +54,7 @@ struct _GridClass {
 };
 
 GType grid_get_type (void);
-void snap_to_grid(Grid *grid, double *x, double *y);
+void snap_to_grid (Grid *grid, double *x, double *y);
 
 void grid_show (Grid *grid, gboolean snap);
 void grid_snap (Grid *grid, gboolean snap);
@@ -58,4 +62,3 @@ gint grid_is_show (Grid *grid);
 gint grid_is_snap (Grid *grid);
 
 #endif
-

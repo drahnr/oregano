@@ -7,11 +7,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -33,6 +35,8 @@
 #include <ctype.h>
 #include <math.h>
 #include <string.h>
+#include <glib/gi18n.h>
+
 #include "part.h"
 #include "part-property.h"
 #include "part-label.h"
@@ -41,6 +45,7 @@
 #include "load-library.h"
 #include "part-private.h"
 #include "schematic-print-context.h"
+#include "dialogs.h"
 
 static void part_class_init (PartClass *klass);
 
@@ -97,18 +102,18 @@ part_get_type (void)
 
 	if (!part_type) {
 		static const GTypeInfo part_info = {
-			sizeof(PartClass),
+			sizeof (PartClass),
 			NULL, /* Base Init */
 			NULL, /* Base Finalize */
-			(GClassInitFunc)part_class_init, /* Class Init */
+			(GClassInitFunc) part_class_init, /* Class Init */
 			NULL, /* Class Finalize */
 			NULL, /* Class Data */
-			sizeof(Part),
+			sizeof (Part),
 			0, /* n_preallocs */
-			(GInstanceInitFunc)part_init, /* Instance init */
+			(GInstanceInitFunc) part_init, /* Instance init */
 			NULL
 		};
-		part_type = g_type_register_static(TYPE_ITEM_DATA,
+		part_type = g_type_register_static (TYPE_ITEM_DATA,
 			"Part", &part_info, 0);
 	}
 
@@ -116,7 +121,7 @@ part_get_type (void)
 }
 
 static void
-part_finalize(GObject *object)
+part_finalize (GObject *object)
 {
 	Part *part;
 	PartPriv *priv;
@@ -152,13 +157,13 @@ part_finalize(GObject *object)
 		part->priv = NULL;
 	}
 
-	G_OBJECT_CLASS(parent_class)->finalize(object);
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
-part_dispose(GObject *object)
+part_dispose (GObject *object)
 {
-	G_OBJECT_CLASS(parent_class)->dispose(object);
+	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void
@@ -167,21 +172,21 @@ part_class_init (PartClass *klass)
 	GObjectClass *object_class;
 	ItemDataClass *item_data_class;
 
-	parent_class = g_type_class_peek(TYPE_ITEM_DATA);
+	parent_class = g_type_class_peek (TYPE_ITEM_DATA);
 
-	object_class = G_OBJECT_CLASS(klass);
-	item_data_class = ITEM_DATA_CLASS(klass);
+	object_class = G_OBJECT_CLASS (klass);
+	item_data_class = ITEM_DATA_CLASS (klass);
 
 	object_class->set_property = part_set_gproperty;
 	object_class->get_property = part_get_gproperty;
 	object_class->dispose = part_dispose;
 	object_class->finalize = part_finalize;
 
-	g_object_class_install_property ( object_class,	ARG_PROPERTIES,
-		g_param_spec_pointer("properties", "properties",
+	g_object_class_install_property (object_class,	ARG_PROPERTIES,
+		g_param_spec_pointer ("properties", "properties",
 			"the properties", G_PARAM_READWRITE));
-	g_object_class_install_property(object_class, ARG_LABELS,
-		g_param_spec_pointer("labels", "labels", "the labels",
+	g_object_class_install_property (object_class, ARG_LABELS,
+		g_param_spec_pointer ("labels", "labels", "the labels",
 			G_PARAM_READWRITE));
 
 	item_data_class->clone = part_clone;
@@ -197,7 +202,7 @@ part_class_init (PartClass *klass)
 	item_data_class->print = part_print;
 
 	part_signals[CHANGED] =
-		g_signal_new ("changed", G_TYPE_FROM_CLASS(object_class),
+		g_signal_new ("changed", G_TYPE_FROM_CLASS (object_class),
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (PartClass, changed),
 			NULL,
@@ -205,8 +210,6 @@ part_class_init (PartClass *klass)
 			g_cclosure_marshal_VOID__VOID,
 			G_TYPE_NONE,
 			0);
-
-// ?	g_object_class_add_signals (object_class, part_signals, LAST_SIGNAL);
 }
 
 static void
@@ -214,7 +217,7 @@ part_init (Part *part)
 {
 	PartPriv *priv;
 
-	priv = g_new0(PartPriv, 1);
+	priv = g_new0 (PartPriv, 1);
 
 	part->priv = priv;
 }
@@ -224,7 +227,7 @@ part_new (void)
 {
 	Part *part;
 
-	part = PART(g_object_new(TYPE_PART, NULL));
+	part = PART (g_object_new (TYPE_PART, NULL));
 
 	return part;
 }
@@ -239,17 +242,18 @@ part_new_from_library_part (LibraryPart *library_part)
 
 	g_return_val_if_fail (library_part != NULL, NULL);
 
-	part = part_new();
+	part = part_new ();
 	if (!part)
 		return NULL;
 
 	priv = part->priv;
 
 	symbol = library_get_symbol (library_part->symbol_name);
-	if (symbol ==  NULL){
-		g_warning ("Couldn't find the requested symbol %s for part %s in library.\n",
+	if (symbol ==  NULL) {
+		oregano_warning (g_strdup_printf (_("Couldn't find the requested symbol"
+		"%s for part %s in library.\n"),
 			library_part->symbol_name,
-			library_part->name);
+			library_part->name));
 		return NULL;
 	}
 
@@ -265,7 +269,6 @@ part_new_from_library_part (LibraryPart *library_part)
 		"Part::labels", library_part->labels,
 		NULL);
 
-	/* FIXME: */
 	priv->name = g_strdup (library_part->name);
 	priv->symbol_name = g_strdup (library_part->symbol_name);
 	priv->library = library_part->library;
@@ -276,7 +279,7 @@ part_new_from_library_part (LibraryPart *library_part)
 }
 
 static void
-part_set_gproperty(GObject *object, guint prop_id, const GValue *value,
+part_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *spec)
 {
 	GSList *list;
@@ -284,18 +287,18 @@ part_set_gproperty(GObject *object, guint prop_id, const GValue *value,
 
 	switch (prop_id) {
 	case ARG_PROPERTIES:
-		list = g_value_get_pointer(value);
+		list = g_value_get_pointer (value);
 		part_set_properties (part, list);
 		break;
 	case ARG_LABELS:
-		list = g_value_get_pointer(value);
+		list = g_value_get_pointer (value);
 		part_set_labels (part, list);
 		break;
 	}
 }
 
 static void
-part_get_gproperty(GObject *object, guint prop_id, GValue *value,
+part_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	GParamSpec *spec)
 {
 	Part *part = PART (object);
@@ -303,10 +306,10 @@ part_get_gproperty(GObject *object, guint prop_id, GValue *value,
 
 	switch (prop_id) {
 	case ARG_LABELS:
-		g_value_set_pointer(value, priv->labels);
+		g_value_set_pointer (value, priv->labels);
 		break;
 	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID(part, prop_id, spec);
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (part, prop_id, spec);
 	}
 }
 
@@ -607,9 +610,7 @@ part_rotate (ItemData *data, int angle, SheetPos *center)
 		item_data_move (ITEM_DATA (part), &delta);
 	}
 	
-	/*
-	 * Let the views (canvas items) know about the rotation.
-	 */
+	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (part), "rotated", angle);
 
 }
@@ -663,10 +664,9 @@ part_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 		priv->pins[i].offset.y = dst.y;
 	}
 
-	/*
-	 * Tell the views.
-	 */
-	g_signal_emit_by_name (G_OBJECT (part), "flipped", horizontal);
+	// Tell the views.
+	g_signal_emit_by_name (G_OBJECT (part), 
+	                       "flipped", horizontal);
 
 	if (center) {
 		item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
@@ -728,7 +728,7 @@ part_clone (ItemData *src)
 		return NULL;
 
 	src_part = PART (src);
-	new_part = PART(g_object_new(TYPE_PART, NULL));
+	new_part = PART (g_object_new (TYPE_PART, NULL));
 	new_part->priv->pins = g_new0 (Pin, src_part->priv->num_pins);
 	id_class->copy (ITEM_DATA (new_part), src);
 
@@ -813,9 +813,9 @@ part_update_bbox (Part *part)
 	b1.x = b1.y = b2.x = b2.y = 0.0;
 
 	for (objects = symbol->symbol_objects; objects;
-	     objects = objects->next){
+	     objects = objects->next) {
 		object = objects->data;
-		switch (object->type){
+		switch (object->type) {
 		case SYMBOL_OBJECT_LINE:
 			points = object->u.uline.line;
 
@@ -994,7 +994,8 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 	  cairo_rotate (cr, rotation*M_PI/180);
 	  cairo_translate (cr, -x0, -y0);
-	} else {
+	} 
+	else {
 	  flip = part_get_flip (part);
 	  if (flip) {
 	    cairo_translate (cr, x0, y0);	  
@@ -1003,7 +1004,7 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	    if (!(flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
 	      cairo_scale (cr, 1, -1);
 	    if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
-	      cairo_scale(cr,-1,-1);
+	      cairo_scale (cr,-1,-1);
 	    cairo_translate (cr, -x0, -y0);
 	  }
 	}
@@ -1070,20 +1071,6 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 		y = label->pos.y + y0;
 
 		text = part_property_expand_macros (part, label->text);
-		/* Align the label.
-		switch (rotation) {
-			case 90:
-				y += text_height*opc->scale;
-			break;
-			case 180:
-			break;
-			case 270:
-				x -= text_width*opc->scale;
-			break;
-			case 0:
-			default:
-			break;
-		} */
 
 		cairo_save (cr);
 			cairo_move_to (cr, x, y);
@@ -1093,5 +1080,3 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	}
 	cairo_restore (cr);
 }
-
-

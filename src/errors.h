@@ -4,8 +4,10 @@
  *
  * Author:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Copyright (C) 2003-2008  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,4 +43,3 @@ typedef enum {
 } OREGANO_ERRORS;
 
 #endif
-

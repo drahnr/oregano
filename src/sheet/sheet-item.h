@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -33,6 +35,8 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <libgnomecanvas/libgnomecanvas.h>
+
+#include "sheet.h"
 #include "sheet-pos.h"
 
 #define TYPE_SHEET_ITEM			 (sheet_item_get_type())
@@ -40,11 +44,9 @@
 #define SHEET_ITEM_CLASS(klass)	 (G_TYPE_CHECK_CLASS_CAST(klass, sheet_item_get_type (), SheetItemClass))
 #define IS_SHEET_ITEM(obj)		 (G_TYPE_INSTANCE_GET_CLASS(obj, TYPE_SHEET_ITEM, SheetItemClass))
 
-typedef struct _SheetItem SheetItem;
 typedef struct _SheetItemClass SheetItemClass;
 typedef struct _SheetItemPriv SheetItemPriv;
 
-#include "schematic-view.h"
 #include "sheet.h"
 #include "clipboard.h"
 
@@ -62,10 +64,9 @@ struct _SheetItemClass {
 	gboolean (*is_in_area)		 (SheetItem *item, SheetPos *p1, SheetPos *p2);
 	void	 (*show_labels)		 (SheetItem *sheet_item, gboolean show);
 	void	 (*edit_properties)	 (SheetItem *item);
-	void	 (*paste)			 (SchematicView *schematic_view,
-								  ItemData *data);
-	void	 (*place)			 (SheetItem *item, SchematicView *sv);
-	void	 (*place_ghost)		 (SheetItem *item, SchematicView *sv);
+	void	 (*paste)			 (Sheet *sheet, ItemData *data);
+	void	 (*place)			 (SheetItem *item, Sheet *sheet);
+	void	 (*place_ghost)		 (SheetItem *item, Sheet *sheet);
 
 	/*
 	 * Signal handlers.
@@ -75,53 +76,29 @@ struct _SheetItemClass {
 	void	 (*mouse_over)		 (SheetItem *item);
 };
 
-GType sheet_item_get_type (void);
-
-void sheet_item_select_all (SchematicView *sv,
-							gboolean	   select);
-
-gboolean sheet_item_select (SheetItem *item,
-							 gboolean  select);
-
-Sheet *sheet_item_get_sheet (SheetItem *item);
-
-int sheet_item_event (SheetItem		 *sheet_item,
-					  const GdkEvent *event,
-					  SchematicView	 *sv);
-
-int sheet_item_floating_event (Sheet		  *sheet,
-							   const GdkEvent *event,
-							   SchematicView  *schematic_view);
-
-void sheet_item_reparent (SheetItem		   *item,
-	GnomeCanvasGroup *group);
-
-void sheet_item_cancel_floating (SchematicView *sv);
-
-void sheet_item_edit_properties (SheetItem *item);
-
-ItemData *sheet_item_get_data (SheetItem *item);
-
-void sheet_item_paste (SchematicView *schematic_view,
-	ClipboardData *data);
-
-void sheet_item_rotate (SheetItem *sheet_item,
-	int		   angle, SheetPos  *center);
-
-gboolean sheet_item_get_selected (SheetItem *item);
-
-gboolean sheet_item_get_preserve_selection (SheetItem *item);
-
-void sheet_item_set_preserve_selection (SheetItem *item,
-										gboolean   set);
-
-void sheet_item_select_in_area (SheetItem *item,
-								SheetPos  *p1,
-								SheetPos  *p2);
-
-void sheet_item_place (SheetItem *item, SchematicView *sv);
-void sheet_item_place_ghost (SheetItem *item, SchematicView *sv);
-void sheet_item_add_menu (SheetItem *item, const char *menu, 
-    const GtkActionEntry *action_entries, int nb_entries); 
+GType		sheet_item_get_type (void);
+void 		sheet_item_select_all (Sheet *sheet, gboolean select);
+gboolean	sheet_item_select (SheetItem *item, gboolean  select);
+Sheet	*	sheet_item_get_sheet (SheetItem *item);
+int 		sheet_item_event (SheetItem *sheet_item, const GdkEvent *event,
+				Sheet	*sheet);
+int 		sheet_item_floating_event (Sheet *sheet, const GdkEvent *event);
+void 		sheet_item_reparent (SheetItem *item, GnomeCanvasGroup *group);
+void 		sheet_item_cancel_floating (Sheet *sheet);
+void 		sheet_item_edit_properties (SheetItem *item);
+ItemData *	sheet_item_get_data (SheetItem *item);
+void 		sheet_item_paste (Sheet *sheet, 
+				ClipboardData *data);
+void 		sheet_item_rotate (SheetItem *sheet_item, int angle, 
+		        SheetPos *center);
+gboolean 	sheet_item_get_selected (SheetItem *item);
+gboolean 	sheet_item_get_preserve_selection (SheetItem *item);
+void 		sheet_item_set_preserve_selection (SheetItem *item, gboolean   set);
+void 		sheet_item_select_in_area (SheetItem *item, SheetPos  *p1,
+		    	SheetPos  *p2);
+void 		sheet_item_place (SheetItem *item, Sheet *sheet);
+void 		sheet_item_place_ghost (SheetItem *item, Sheet *sheet);
+void 		sheet_item_add_menu (SheetItem *item, const char *menu, 
+    			const GtkActionEntry *action_entries, int nb_entries); 
 
 #endif

@@ -37,3 +37,5 @@ clean-local:
 	find . -name "*.sav" | xargs rm -rf
 	rm -rf autom4te.cache
 	find . -name "*.a" | xargs rm -rf
+	find . -name "Makefile.in" | xargs rm -rf
+	rm -rf configure

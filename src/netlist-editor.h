@@ -4,10 +4,12 @@
  *
  * Author:
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,6 +33,7 @@
 #include <gconf/gconf-client.h>
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksourceview.h>
+
 #include "schematic-view.h"
 #include "errors.h"
 #include "engine.h"

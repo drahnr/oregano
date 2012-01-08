@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,20 +33,11 @@
 #ifndef __XML_COMPAT_H
 #define __XML_COMPAT_H
 
-/*#include <xmlmemory.h> cl3: where is that file ? what is it used for ? */
-
-/*#if defined(LIBXML_VERSION) && LIBXML_VERSION >= 20000 */
-
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 
 #define root children
 #define childs children
-
-/*#else
-#  include <gnome-xml/parser.h>
-#  include <gnome-xml/parserInternals.h>
-#endif*/
 
 #endif /* __XML_COMPAT_H */
 

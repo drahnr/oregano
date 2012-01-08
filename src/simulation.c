@@ -6,11 +6,13 @@
  *	Richard Hult <rhult@hem.passagen.se>
  *	Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *	Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001	Richard Hult
  * Copyright (C) 2003,2006	Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -44,13 +46,13 @@
 #include "gnucap.h"
 
 typedef struct {
-	Schematic *sm;
-	SchematicView *sv;
-	GtkDialog *dialog;
-	OreganoEngine *engine;
-	GtkProgressBar *progress;
-	GtkLabel *progress_label;
-	int progress_timeout_id;
+	Schematic 		*sm;
+	SchematicView 	*sv;
+	GtkDialog 		*dialog;
+	OreganoEngine 	*engine;
+	GtkProgressBar 	*progress;
+	GtkLabel 		*progress_label;
+	int 			 progress_timeout_id;
 } Simulation;
 
 static int progress_bar_timeout_cb (Simulation *s);
@@ -174,11 +176,10 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 	if (oregano_engine_has_warnings (s->engine))
 		schematic_view_log_show (s->sv, FALSE);
 
-	schematic_view_clear_op_values (s->sv);
-	schematic_view_show_op_values (s->sv, s->engine);
+	sheet_clear_op_values (schematic_view_get_sheet (s->sv));
 
 	/* I don't need the engine anymore. The plot
-	 * window own his reference to the engine */
+	 * window owns its reference to the engine */
 	g_object_unref (s->engine);
 	s->engine = NULL;
 
@@ -198,14 +199,14 @@ engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 
-	if (!schematic_view_log_window_exists (s->sv)) {
+	if (!schematic_view_get_log_window_exists (s->sv)) {
 		dialog = gtk_message_dialog_new_with_markup (
-			GTK_WINDOW (s->sv->toplevel),
+		    GTK_WINDOW (schematic_view_get_toplevel (s->sv)),
 			GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 			GTK_MESSAGE_ERROR,
 			GTK_BUTTONS_YES_NO,
-			_("<span weight=\"bold\" size=\"large\">The simulation was aborted due to an error.</span>\n\n"
-				"Would you like to view the error log?"));
+			_("<span weight=\"bold\" size=\"large\">The simulation was aborted"
+			" due to an error.</span>\n\nWould you like to view the error log?"));
 
 		answer = gtk_dialog_run (GTK_DIALOG (dialog));
 		gtk_widget_destroy (dialog);
@@ -213,7 +214,8 @@ engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 		if (answer == GTK_RESPONSE_YES) {
 			schematic_view_log_show (s->sv, TRUE);
 		}
-	} else {
+	} 
+	else {
 		oregano_error (_("The simulation was aborted due to an error"));
 
 		schematic_view_log_show (s->sv, FALSE);
@@ -251,12 +253,14 @@ simulate_cmd (Simulation *s)
 	engine = oregano_engine_factory_create_engine (oregano.engine, s->sm);
 	s->engine = engine;
 
-	s->progress_timeout_id = g_timeout_add (100, (GSourceFunc)progress_bar_timeout_cb, s);
+	s->progress_timeout_id = g_timeout_add (100,
+	                                   (GSourceFunc)progress_bar_timeout_cb, s);
 
-	g_signal_connect (G_OBJECT (engine), "done", G_CALLBACK (engine_done_cb), s);
-	g_signal_connect (G_OBJECT (engine), "aborted", G_CALLBACK (engine_aborted_cb), s);
+	g_signal_connect (G_OBJECT (engine), "done", 
+		G_CALLBACK (engine_done_cb), s);
+	g_signal_connect (G_OBJECT (engine), "aborted", 
+	    G_CALLBACK (engine_aborted_cb), s);
 
-	/*TODO: separar generate list del start */
 	oregano_engine_start (engine);
 
 	return TRUE;

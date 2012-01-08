@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *	Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *	Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001	Richard Hult
  * Copyright (C) 2003,2006	Ricardo Markiewicz
+ * Copyright (C) 2009-2010	Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -77,36 +79,38 @@ static char *plot_curve_colors[] = {
 };
 
 typedef struct {
-	GtkWidget *window;
-	GtkWidget *canvas;
-	GtkWidget *coord;  /* shows the coordinates of the mouse */
-	GtkWidget *combobox;
+	GtkWidget 		*window;
+	GtkWidget 		*canvas;
+	GtkWidget 		*coord;  /* shows the coordinates of the mouse */
+	GtkWidget 		*combobox;
 
-	GtkWidget *plot;
+	GtkWidget 		*plot;
 
-	gboolean show_cursor;
+	gboolean 		 show_cursor;
 
-	OreganoEngine *sim;
-	SimulationData *current;
+	OreganoEngine 	*sim;
+	SimulationData 	*current;
 
-	gboolean logx;
-	gboolean logy;
+	gboolean 		 logx;
+	gboolean 		 logy;
 
-	gchar *title;
-	gchar *xtitle;
-	gchar *ytitle;
+	gchar 			*title;
+	gchar 			*xtitle;
+	gchar 			*ytitle;
 
-	gint width;  /* width of the plot, excluding */
-	gint height; /* axes, titles and padding etc */
+	gint 			 width;  /* width of the plot, excluding */
+	gint 			 height; /* axes, titles and padding etc */
 
-	gdouble plot_min, plot_max;
-	gdouble x_min,x_max;
+	gdouble 		 plot_min;
+	gdouble			 plot_max;
+	gdouble 		 x_min;
+	gdouble			 x_max;
 
-	gdouble padding_x; /* padding around the plot. Note that */
-	gdouble padding_y; /* titles, axes etc live here */
+	gdouble 		 padding_x; /* padding around the plot. Note that */
+	gdouble 		 padding_y; /* titles, axes etc live here */
 
-	gint selected; /* the currently selected plot in the clist */
-	gint prev_selected;
+	gint 			 selected; /* the currently selected plot in the clist */
+	gint 			 prev_selected;
 } Plot;
 
 static GtkWidget *plot_window_create (Plot *plot);
@@ -115,7 +119,7 @@ static void zoom_100 (GtkWidget *widget, Plot *plot);
 static void zoom_region (GtkWidget *widget, Plot *plot);
 static void zoom_pan (GtkWidget *widget, Plot *plot);
 static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot);
-static void plot_canvas_movement(GtkWidget *, GdkEventMotion *, Plot *);
+static void plot_canvas_movement (GtkWidget *, GdkEventMotion *, Plot *);
 static void add_function (GtkMenuItem *menuitem, Plot *plot);
 static void close_window (GtkMenuItem *menuitem, Plot *plot);
 
@@ -129,15 +133,20 @@ gchar *tmp;
 
 	if (!strcmp (str, _("voltage"))) {
 		tmp = g_strdup ("V");
-	} else if (!strcmp (str, "db") ) {
+	} 
+	else if (!strcmp (str, "db") ) {
 		tmp = g_strdup ("db");
-	} else if (!strcmp (str, _("time")) ) {
+	} 
+	else if (!strcmp (str, _("time")) ) {
 		tmp = g_strdup ("s");
-	} else if (!strcmp (str, _("frequency")) ) {
+	} 
+	else if (!strcmp (str, _("frequency")) ) {
 		tmp = g_strdup ("Hz");
-	} else if (!strcmp (str, _("current")) ) {
+	} 
+	else if (!strcmp (str, _("current")) ) {
 		tmp = g_strdup ("A");
-	} else {
+	} 
+	else {
 		tmp = g_strdup ("##");
 	}
 	return tmp;
@@ -148,15 +157,15 @@ delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot)
 {
 	plot->window = NULL;
 	g_object_unref (plot->sim);
-	if (plot->ytitle) g_free(plot->ytitle);
-	g_free(plot);
+	if (plot->ytitle) g_free (plot->ytitle);
+	g_free (plot);
 	plot = NULL;
 	return FALSE;
 }
 
 /* Call this to close the plot window */
 static void
-destroy_window(GtkWidget *widget, Plot *plot)
+destroy_window (GtkWidget *widget, Plot *plot)
 {
 	gtk_widget_destroy (plot->canvas);
 	gtk_widget_destroy (plot->coord);
@@ -178,7 +187,7 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 	GtkTreeView *treeview;
 	gboolean activo;
 
-	treeview = GTK_TREE_VIEW(g_object_get_data(G_OBJECT(plot->window), 
+	treeview = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), 
 	    "clist"));
 
 	model = gtk_tree_view_get_model (treeview);
@@ -269,7 +278,7 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	}
 
 	if (plot->current == NULL) {
-		/* Simulation failed? */
+		// Simulation failed?
 		g_warning (_("The simulation produced no data!!\n"));
 		return;
 	}
@@ -283,11 +292,11 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	plot->title = g_strdup_printf (_("Plot - %s"),
 		oregano_engine_get_analysis_name (plot->current));
 
-	/*  Set the variable names in the list  */
+	//  Set the variable names in the list
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
 	gtk_tree_store_clear (GTK_TREE_STORE (model));
 
-	/* Create root nodes */
+	// Create root nodes
 	gtk_tree_store_append (GTK_TREE_STORE (model), &parent_nodes, NULL);
 	gtk_tree_store_set (GTK_TREE_STORE (model), &parent_nodes, 0, FALSE, 1, 
 	    _("Nodes"), 2, FALSE, 3, "white", -1);
@@ -409,16 +418,15 @@ plot_window_create (Plot *plot)
 	gtk_widget_set_size_request (plot->plot, 600, 400);
 	gtk_container_add (GTK_CONTAINER (plot_scrolled), plot->plot);
 
-	g_signal_connect(G_OBJECT (plot->plot),
-		"motion_notify_event",
-		G_CALLBACK(plot_canvas_movement), plot
-	);
+	g_signal_connect (G_OBJECT (plot->plot), "motion_notify_event",
+		G_CALLBACK (plot_canvas_movement), plot);
 
 	// Creation of the menubar	
-	vbox = gtk_vbox_new(FALSE, 0);
+	vbox = gtk_vbox_new (FALSE, 0);
     menubar = gtk_menu_bar_new ();
 	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, TRUE, 0);
     gtk_widget_show (menubar);
+
 	// Creation of the menu
 	menu = gtk_menu_new ();
 	menuitem = gtk_menu_item_new_with_label (_("Add Function"));
@@ -434,14 +442,15 @@ plot_window_create (Plot *plot)
 	g_signal_connect (menuitem, "activate", G_CALLBACK (close_window), 
 	    plot);
 	gtk_widget_show (menuitem);
+
 	// Installation of the menu in the menubar
     menuitem = gtk_menu_item_new_with_label (_("File"));
     gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), menu);
     gtk_menu_shell_append (GTK_MENU_SHELL (menubar), menuitem);
     gtk_widget_show (menuitem);
 	
-	g_object_ref(outer_table);
-	gtk_widget_unparent(outer_table);
+	g_object_ref (outer_table);
+	gtk_widget_unparent (outer_table);
 	gtk_container_add (GTK_CONTAINER (vbox), outer_table);
 	gtk_widget_show (vbox);
 	
@@ -469,35 +478,35 @@ plot_window_create (Plot *plot)
 	tree_model = gtk_tree_store_new (5, G_TYPE_BOOLEAN, G_TYPE_STRING, 
 	    G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_POINTER);
 
-	/* One Column with 2 CellRenderer. First the Toggle and next a Text */
+	// One Column with 2 CellRenderer. First the Toggle and next a Text
 	column = gtk_tree_view_column_new ();
 
 	cell = gtk_cell_renderer_toggle_new ();
-	g_signal_connect (G_OBJECT (cell), "toggled", G_CALLBACK (on_plot_selected), 
-	    plot);
+	g_signal_connect (G_OBJECT (cell), "toggled", 
+                      G_CALLBACK (on_plot_selected), plot);
 	gtk_tree_view_column_pack_start (column, cell, FALSE);
 	gtk_tree_view_column_set_attributes (column, cell, "active", 0, "visible", 
 	    2, NULL);
 
-	cell = gtk_cell_renderer_text_new();
+	cell = gtk_cell_renderer_text_new ();
 	gtk_tree_view_column_pack_start (column, cell, TRUE);
 	gtk_tree_view_column_set_attributes (column, cell, "text", 1, NULL);
 
-	cell = gtk_cell_renderer_text_new();
+	cell = gtk_cell_renderer_text_new ();
 	gtk_tree_view_column_pack_start (column, cell, FALSE);
 	gtk_cell_renderer_set_fixed_size (cell, 20, 20);
 	gtk_tree_view_column_set_attributes (column, cell, "background", 3, NULL);
 
-	gtk_tree_view_append_column(list, column);
-	gtk_tree_view_set_model(list, GTK_TREE_MODEL(tree_model));
+	gtk_tree_view_append_column (list, column);
+	gtk_tree_view_set_model (list, GTK_TREE_MODEL (tree_model));
 
-	g_object_set_data (G_OBJECT(window), "clist", list);
+	g_object_set_data (G_OBJECT (window), "clist", list);
 
-	gtk_widget_realize(GTK_WIDGET(window));
+	gtk_widget_realize (GTK_WIDGET (window));
 
 	plot->combobox = glade_xml_get_widget (gui, "analysis_combo");
 	plot->window = window;
-	gtk_widget_show_all(window);
+	gtk_widget_show_all (window);
 
 	return window;
 }
@@ -515,11 +524,11 @@ plot_show (OreganoEngine *engine)
 
 	g_return_val_if_fail (engine != NULL, FALSE);
 
-	plot = g_new0(Plot, 1);
+	plot = g_new0 (Plot, 1);
 
 	g_object_ref (engine);
 	plot->sim = engine;
-	plot->window = plot_window_create(plot);
+	plot->window = plot_window_create (plot);
 
 	plot->logx = FALSE;
 	plot->logy = FALSE;
@@ -531,8 +540,9 @@ plot_show (OreganoEngine *engine)
 
 	next_color = 0;
 
-	/*  Get the analysis we have */
+	//  Get the analysis we have
 	analysis = oregano_engine_get_results (engine);
+
 	for (; analysis ; analysis = analysis->next) {
 		SimulationData *sdat = SIM_DATA (analysis->data);
 		gchar *str = oregano_engine_get_analysis_name (sdat);
@@ -597,7 +607,8 @@ create_plot_function_from_data (SimulationFunction *func,
 						Y[j] = -G_MAXDOUBLE;
 					else
 						Y[j] = G_MAXDOUBLE;
-				} else {
+				} 
+				else {
 					Y[j] /= data;
 				}
 		}
@@ -643,7 +654,7 @@ add_function (GtkMenuItem *menuitem, Plot *plot)
 
 	plot_add_function_show (plot->sim, plot->current);
 
-	tree = GTK_TREE_VIEW(g_object_get_data(G_OBJECT (plot->window), "clist"));
+	tree = GTK_TREE_VIEW (g_object_get_data(G_OBJECT (plot->window), "clist"));
 	model = gtk_tree_view_get_model (tree);
 
 	path = gtk_tree_path_new_from_string ("1");
@@ -652,8 +663,8 @@ add_function (GtkMenuItem *menuitem, Plot *plot)
 	
 	gtk_tree_store_remove (GTK_TREE_STORE (model), &iter);
 
-	gtk_tree_store_append(GTK_TREE_STORE(model), &iter, NULL);
-	gtk_tree_store_set(GTK_TREE_STORE(model), &iter, 0, FALSE, 1, 
+	gtk_tree_store_append(GTK_TREE_STORE (model), &iter, NULL);
+	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, FALSE, 1, 
 	    _("Functions"), 2, FALSE, 3, "white", -1);
 
 	lst = plot->current->functions;
@@ -686,8 +697,8 @@ add_function (GtkMenuItem *menuitem, Plot *plot)
 
 		g_plot_add_function (GPLOT (plot->plot), f);
 
-		gtk_tree_store_append(GTK_TREE_STORE(model), &child, &iter);
-		gtk_tree_store_set(GTK_TREE_STORE(model), &child, 0, TRUE, 1, str, 2, 
+		gtk_tree_store_append (GTK_TREE_STORE (model), &child, &iter);
+		gtk_tree_store_set (GTK_TREE_STORE (model), &child, 0, TRUE, 1, str, 2, 
 		    TRUE, 3, color, 4, f, -1);
 
 		lst = lst->next;

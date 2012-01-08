@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,14 +33,15 @@
 #define __NODE_H
 
 #include <gtk/gtk.h>
+
 #include "sheet-pos.h"
 #include "part.h"
 
 #define TYPE_NODE			 (node_get_type ())
-#define NODE(obj)			 (G_TYPE_CHECK_INSTANCE_CAST((obj), TYPE_NODE, Node))
+#define NODE(obj)			 (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE, Node))
 #define NODE_CLASS(klass)	 (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NODE, NodeClass))
 #define IS_NODE(obj)		 (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NODE))
-#define IS_NODE_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS((klass), TYPE_NODE, NodeClass))
+#define IS_NODE_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_NODE, NodeClass))
 
 typedef struct _Node Node;
 typedef struct _NodeClass NodeClass;

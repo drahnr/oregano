@@ -4,6 +4,7 @@
  * @author Richard Hult <rhult@hem.passagen.se>
  * @author Ricardo Markiewicz <rmarkie@fi.uba.ar>
  * @author Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * @brief Handles the user interaction when creating wires.
  *
@@ -14,6 +15,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,49 +34,42 @@
  */
 
 #include <math.h>
+#include <stdlib.h>
+
 #include "cursors.h"
-#include "sheet-private.h"
 #include "sheet-pos.h"
 #include "node-store.h"
 #include "wire-item.h"
 #include "create-wire.h"
 #include "wire.h"
-#include "schematic-view.h"
 
 struct _CreateWireContext {
-	guint active : 1;
-	guint moved : 1;
-	guint oneshot : 1;
-	gint start_handler_id;
-	gint draw_handler_id;
-	gint sheet_cancel_id;
+	guint 				active : 1;
+	guint 				moved : 1;
+	guint 				oneshot : 1;
+	gint 				start_handler_id;
+	gint 				draw_handler_id;
+	gint 				create_wire_cancel_id;
+	gdouble 			old_x, old_y;
 
-	gdouble old_x, old_y;
+	Sheet *				sheet;
 
-	SchematicView *schematic_view;
+	GnomeCanvasItem *	dot_item;
 
-	GnomeCanvasItem *dot_item;
-
-	CreateWire *create_wire;
+	CreateWire *		create_wire;
 };
 
-static int create_wire_event (Sheet *sheet, const GdkEvent *event,
-	CreateWireContext *cwc);
-
-static int create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
-	CreateWireContext *cwc);
-
-static int sheet_cancel (Sheet *sheet, CreateWireContext *cwc);
-
-static void fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both,
-	int x, int y);
-
-static Wire *create_wire_and_place_item (SchematicView *sv, SheetPos start_pos,
-	SheetPos end_pos);
-
-static void cancel_wire (CreateWireContext *cwc);
-
-static void exit_wire_mode (CreateWireContext *cwc);
+static int 		create_wire_event (Sheet *sheet, const GdkEvent *event,
+					CreateWireContext *cwc);
+static int 		create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
+					CreateWireContext *cwc);
+static int 		create_wire_cancel (Sheet *sheet, CreateWireContext *cwc);
+static void 	fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both,
+					int x, int y);
+static Wire *	create_wire_and_place_item (Sheet *sheet, SheetPos start_pos,
+					SheetPos end_pos);
+static void 	cancel_wire (CreateWireContext *cwc);
+static void 	exit_wire_mode (CreateWireContext *cwc);
 
 /*
  * Initiates wire creation by disconnecting the signal handler that
@@ -117,7 +112,7 @@ create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 	/*
 	 * Button 1 starts a new wire. Start by deselecting all objects.
 	 */
-	schematic_view_select_all (cwc->schematic_view, FALSE);
+	sheet_select_all (sheet, FALSE);
 
 	gnome_canvas_window_to_world (GNOME_CANVAS (sheet),
 		event->button.x, event->button.y,
@@ -142,8 +137,7 @@ create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 	cwc->old_x = x;
 	cwc->old_y = y;
 
-	wire->line = GNOME_CANVAS_LINE (
-		gnome_canvas_item_new (
+	wire->line = GNOME_CANVAS_LINE (gnome_canvas_item_new (
 			sheet->object_group,
 			gnome_canvas_line_get_type (),
 			"points", points,
@@ -155,11 +149,8 @@ create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 	wire->points = points;
 	wire->direction = WIRE_DIR_NONE;
 
-	cwc->draw_handler_id = g_signal_connect (
-		G_OBJECT (sheet),
-		"event",
-		G_CALLBACK (create_wire_event),
-		cwc);
+	cwc->draw_handler_id = g_signal_connect (G_OBJECT (sheet), "event",
+		G_CALLBACK (create_wire_event), cwc);
 
 	cwc->active = TRUE;
 
@@ -173,32 +164,23 @@ create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
  * drawing mode.
  */
 CreateWireContext *
-create_wire_initiate (SchematicView *sv)
+create_wire_initiate (Sheet *sheet)
 {
 	CreateWireContext *cwc;
-	Sheet *sheet;
 
-	g_return_val_if_fail (sv != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), NULL);
-
-	sheet = schematic_view_get_sheet (sv);
+	g_return_val_if_fail (sheet != NULL, NULL);
+	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
 	cwc = g_new0 (CreateWireContext, 1);
-	cwc->schematic_view = sv;
+	cwc->sheet = sheet;
 	cwc->active = FALSE;
 	cwc->dot_item = NULL;
 
-	cwc->start_handler_id = g_signal_connect (
-		G_OBJECT (sheet),
-		"button_press_event",
-		G_CALLBACK (create_wire_pre_create_event),
-		cwc);
+	cwc->start_handler_id = g_signal_connect (G_OBJECT (sheet),
+		"button_press_event", G_CALLBACK (create_wire_pre_create_event), cwc);
 
-	cwc->sheet_cancel_id = g_signal_connect (
-		G_OBJECT (sheet),
-		"cancel",
-		G_CALLBACK (sheet_cancel),
-		cwc);
+	cwc->create_wire_cancel_id = g_signal_connect (G_OBJECT (sheet),
+		"cancel", G_CALLBACK (create_wire_cancel), cwc);
 
 	return cwc;
 }
@@ -219,15 +201,15 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 	SheetPos pos;
 	int intersect;
 
-	s = schematic_view_get_schematic (cwc->schematic_view);
+	s = schematic_view_get_schematic_from_sheet (cwc->sheet);
 	store = schematic_get_store (s);
 
-	if (event->type == GDK_2BUTTON_PRESS
-		|| event->type == GDK_3BUTTON_PRESS) {
+	if (event->type == GDK_2BUTTON_PRESS ||
+		event->type == GDK_3BUTTON_PRESS) {
 		return FALSE;
 	}
 
-	switch (event->type){
+	switch (event->type) {
 	case GDK_BUTTON_PRESS:
 
 		switch (event->button.button) {
@@ -341,11 +323,13 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 
 		if (x1 == snapped_x && y1 == snapped_y) {
 			wire->direction = WIRE_DIR_NONE;
-		} else {
+		} 
+		else {
 			if (wire->direction == WIRE_DIR_NONE) {
 				if (abs (y1 - snapped_y) < abs (x1 - snapped_x)) {
 					wire->direction = WIRE_DIR_HORIZ;
-				} else {
+				} 
+				else {
 					wire->direction = WIRE_DIR_VERT;
 				}
 			}
@@ -362,14 +346,16 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 
 		if (wire->direction == WIRE_DIR_HORIZ) {
 			y2 = y1;
-		} else if (wire->direction == WIRE_DIR_VERT) {
+		} 
+		else if (wire->direction == WIRE_DIR_VERT) {
 			x2 = x1;
 		}
 
 		if (wire->direction == WIRE_DIR_HORIZ && x2 == x1) {
 			x2 = snapped_x;
 			y2 = snapped_y;
-		} else if (wire->direction == WIRE_DIR_VERT && y2 == y1) {
+		} 
+		else if (wire->direction == WIRE_DIR_VERT && y2 == y1) {
 			x2 = snapped_x;
 			y2 = snapped_y;
 		}
@@ -383,7 +369,8 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 		 */
 		if (x2 == snapped_x && y2 == snapped_y) {
 			wire->points->num_points = 2;
-		} else {
+		} 
+		else {
 			wire->points->num_points = 3;
 		}
 
@@ -415,7 +402,8 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 				);
 
 				gnome_canvas_item_show (cwc->dot_item);
-			} else {
+			} 
+			else {
 				cwc->dot_item = gnome_canvas_item_new (
 					GNOME_CANVAS_GROUP (sheet->object_group),
 					gnome_canvas_ellipse_get_type (),
@@ -424,11 +412,11 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 					"x2", 3.0+new_x,
 					"y2", 3.0+new_y,
 					"fill_color", "red",
-					NULL
-				);
+					NULL);
 				gnome_canvas_item_show (cwc->dot_item);
 			}
-		} else {
+		} 
+		else {
 			if (cwc->dot_item) gnome_canvas_item_hide (cwc->dot_item);
 		}
 
@@ -445,7 +433,6 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 static void
 fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 {
-	SchematicView *sv;
 	CreateWire *create_wire = cwc->create_wire;
 	Wire *wire1, *wire2;
 	SheetPos p1, p2, start_pos, end_pos, start_pos2, end_pos2;
@@ -456,8 +443,7 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 	g_return_if_fail (cwc != NULL);
 	g_return_if_fail (create_wire != NULL);
 
-	sv = cwc->schematic_view;
-	schematic = schematic_view_get_schematic (sv);
+	schematic = schematic_view_get_schematic_from_sheet (cwc->sheet);
 
 	store = schematic_get_store (schematic);
 
@@ -489,7 +475,8 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 		start_pos.y = MIN (p1.y, p2.y);
 		end_pos.x = MAX (p1.x, p2.x);
 		end_pos.y = MAX (p1.y, p2.y);
-	} else {
+	} 
+	else {
 		start_pos.x = p1.x;
 		start_pos.y = p1.y;
 		end_pos.x = p2.x;
@@ -516,21 +503,22 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 				start_pos2.y = MIN (p1.y, p2.y);
 				end_pos2.x = MAX (p1.x, p2.x);
 				end_pos2.y = MAX (p1.y, p2.y);
-			} else {
+			} 
+			else {
 				start_pos2.x = p1.x;
 				start_pos2.y = p1.y;
 				end_pos2.x = p2.x;
 				end_pos2.y = p2.y;
 			}
 
-			wire2 = create_wire_and_place_item (sv,
+			wire2 = create_wire_and_place_item (cwc->sheet,
 				start_pos2, end_pos2);
 		}
 		cancel_wire (cwc);
 		cancel = TRUE;
 	}
 
-	wire1 = create_wire_and_place_item (sv, start_pos, end_pos);
+	wire1 = create_wire_and_place_item (cwc->sheet, start_pos, end_pos);
 
 	if (cancel)
 		return;
@@ -566,20 +554,18 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 }
 
 Wire *
-create_wire_and_place_item (SchematicView *sv, SheetPos start_pos,
+create_wire_and_place_item (Sheet *sheet, SheetPos start_pos,
 	SheetPos end_pos)
 {
 	Wire *wire;
 	NodeStore *store;
-	Sheet *sheet;
 	Schematic *schematic;
 	SheetPos length;
 
-	g_return_val_if_fail (sv != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), NULL);
+	g_return_val_if_fail (sheet != NULL, NULL);
+	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
-	schematic = schematic_view_get_schematic (sv);
-	sheet = schematic_view_get_sheet (sv);
+	schematic = schematic_view_get_schematic_from_sheet (sheet);
 	store = schematic_get_store (schematic);
 
 	wire = wire_new ();
@@ -589,7 +575,8 @@ create_wire_and_place_item (SchematicView *sv, SheetPos start_pos,
 	length.y = end_pos.y - start_pos.y;
 	wire_set_length (wire, &length);
 
-	schematic_add_item (schematic_view_get_schematic (sv), ITEM_DATA (wire));
+	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), 
+	                    ITEM_DATA (wire));
 
 	return wire;
 }
@@ -598,14 +585,12 @@ static void
 cancel_wire (CreateWireContext *cwc)
 {
 	CreateWire *create_wire;
-	Sheet *sheet;
 
 	create_wire = cwc->create_wire;
-	sheet = schematic_view_get_sheet (cwc->schematic_view);
 
 	g_return_if_fail (create_wire != NULL);
 
-	g_signal_handler_disconnect (G_OBJECT (sheet), cwc->draw_handler_id);
+	g_signal_handler_disconnect (G_OBJECT (cwc->sheet), cwc->draw_handler_id);
 	cwc->draw_handler_id = 0;
 	cwc->active = FALSE;
 
@@ -626,26 +611,22 @@ cancel_wire (CreateWireContext *cwc)
 static void
 exit_wire_mode (CreateWireContext *cwc)
 {
-	Sheet *sheet;
-
-	sheet = schematic_view_get_sheet (cwc->schematic_view);
-
 	if (cwc->draw_handler_id != 0)
 		cancel_wire (cwc);
 
 	if (cwc->start_handler_id != 0) {
-		g_signal_handler_disconnect (G_OBJECT (sheet),
+		g_signal_handler_disconnect (G_OBJECT (cwc->sheet),
 			cwc->start_handler_id);
 		cwc->start_handler_id = 0;
 	}
 
-	if (cwc->sheet_cancel_id != 0) {
-		g_signal_handler_disconnect (G_OBJECT (sheet),
-			cwc->sheet_cancel_id);
-		cwc->sheet_cancel_id = 0;
+	if (cwc->create_wire_cancel_id != 0) {
+		g_signal_handler_disconnect (G_OBJECT (cwc->sheet),
+			cwc->create_wire_cancel_id);
+		cwc->create_wire_cancel_id = 0;
 	}
-
-	g_signal_emit_by_name (G_OBJECT (sheet), "reset_tool");
+	schematic_view_reset_tool (
+	          schematic_view_get_schematicview_from_sheet (cwc->sheet));
 
 	g_free (cwc);
 }
@@ -653,15 +634,11 @@ exit_wire_mode (CreateWireContext *cwc)
 void
 create_wire_exit (CreateWireContext *cwc)
 {
-	Sheet *sheet;
-
-	sheet = schematic_view_get_sheet (cwc->schematic_view);
-
 	if (cwc->draw_handler_id != 0)
 		cancel_wire (cwc);
 
 	if (cwc->start_handler_id != 0) {
-		g_signal_handler_disconnect (G_OBJECT (sheet),
+		g_signal_handler_disconnect (G_OBJECT (cwc->sheet),
 			cwc->start_handler_id);
 		cwc->start_handler_id = 0;
 	}
@@ -672,7 +649,7 @@ create_wire_exit (CreateWireContext *cwc)
  * when <escape> is pressed.
  */
 static int
-sheet_cancel (Sheet *sheet, CreateWireContext *cwc)
+create_wire_cancel (Sheet *sheet, CreateWireContext *cwc)
 {
 	g_return_val_if_fail (sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);

@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,9 +32,6 @@
 #include <gnome.h>
 
 #include "xml-compat.h"
-//#include <gnome-xml/parser.h>
-//#include <gnome-xml/parserInternals.h>
-
 #include "xml-helper.h"
 
 /**
@@ -52,7 +51,7 @@ int oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
 	ctxt->userData = user_data;
 
 #if defined(LIBXML_VERSION) && LIBXML_VERSION >= 20000
-	xmlKeepBlanksDefault(0);
+	xmlKeepBlanksDefault (0);
 #endif
 	xmlParseDocument (ctxt);
 
@@ -80,14 +79,14 @@ xmlSetCoordinate (xmlNodePtr node, const char *name, double x, double y)
 
 	str = g_strdup_printf ("(%g %g)", x, y);
 	ret = xmlGetProp (node, BAD_CAST name);
-	if (ret != NULL){
+	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		g_free (str);
 		return;
 	}
 	child = node->childs;
-	while (child != NULL){
-		if (!xmlStrcmp (child->name, BAD_CAST name)){
+	while (child != NULL) {
+		if (!xmlStrcmp (child->name, BAD_CAST name)) {
 			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
@@ -112,14 +111,14 @@ xmlSetCoordinates (xmlNodePtr node, const char *name,
 
 	str = g_strdup_printf ("(%g %g)(%g %g)", x1, y1, x2, y2);
 	ret = xmlGetProp (node, BAD_CAST name);
-	if (ret != NULL){
+	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		g_free (str);
 		return;
 	}
 	child = node->childs;
-	while (child != NULL){
-		if (!xmlStrcmp (child->name, BAD_CAST name)){
+	while (child != NULL) {
+		if (!xmlStrcmp (child->name, BAD_CAST name)) {
 			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
@@ -180,13 +179,13 @@ xmlSetValue (xmlNodePtr node, const char *name, const char *val)
 	xmlNodePtr child;
 
 	ret = xmlGetProp (node, BAD_CAST name);
-	if (ret != NULL){
+	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST val);
 		return;
 	}
 	child = node->childs;
-	while (child != NULL){
-		if (!xmlStrcmp (child->name, BAD_CAST name)){
+	while (child != NULL) {
+		if (!xmlStrcmp (child->name, BAD_CAST name)) {
 			xmlNodeSetContent (child, BAD_CAST val);
 			return;
 		}
@@ -208,13 +207,13 @@ xmlSetIntValue (xmlNodePtr node, const char *name, int val)
 
 	snprintf (str, 100, "%d", val);
 	ret = xmlGetProp (node,BAD_CAST name);
-	if (ret != NULL){
+	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		return;
 	}
 	child = node->childs;
-	while (child != NULL){
-		if (!xmlStrcmp (child->name, BAD_CAST name)){
+	while (child != NULL) {
+		if (!xmlStrcmp (child->name, BAD_CAST name)) {
 			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}
@@ -237,13 +236,13 @@ xmlSetDoubleValue (xmlNodePtr node, const char *name, double val)
 
 	snprintf (str, 100, "%g", (float) val);
 	ret = xmlGetProp (node, BAD_CAST name);
-	if (ret != NULL){
+	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		return;
 	}
 	child = node->childs;
-	while (child != NULL){
-		if (!xmlStrcmp (child->name, BAD_CAST name)){
+	while (child != NULL) {
+		if (!xmlStrcmp (child->name, BAD_CAST name)) {
 			xmlNodeSetContent (child, BAD_CAST str);
 			return;
 		}

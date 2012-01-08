@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,28 +29,55 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #ifndef __SHEET_PRIVATE_H
 #define __SHEET_PRIVATE_H
 
 #include "sheet.h"
+#include "create-wire.h"
 
+typedef enum {
+	RUBBER_NO = 0,
+	RUBBER_YES,
+	RUBBER_START
+} RubberState;
+
+typedef struct {
+	RubberState		 state;
+	int 			 timeout_id;
+	int 			 click_start_state;
+	GnomeCanvasItem *rectangle;
+	double	 		 start_x, start_y;
+} RubberbandInfo;
+	
 struct _SheetPriv {
+	// Keeps the current signal handler for wire creation.	
+	int 				 wire_handler_id;
+	// Keeps the signal handler for floating objects.
+	int 				 float_handler_id;
 
-	int wire_handler_id;  /* Keeps the current signal handler for wire
-							 creation. */
-	int float_handler_id; /* Keeps the signal handler for floating objects. */
-	int scroll_timeout_id;
+	int                  scroll_timeout_id;
 
-	double zoom;
-	gulong width;
-	gulong height;
+	double 				 zoom;
+	gulong 				 width;
+	gulong  			 height;
 
-	void *current_object; /* SheetItem */
+	GnomeCanvasGroup	*selected_group;
+	GnomeCanvasGroup	*floating_group;
+	GList				*selected_objects;
+	GList				*floating_objects;
 
-	GnomeCanvasGroup *selected_group;
-	GnomeCanvasGroup *floating_group;
-	GList *selected_objects;
-	GList *floating_objects;
+	GList				*items;
+	RubberbandInfo		*rubberband;
+	GList 				*preserve_selection_items;
+	GnomeCanvasClass 	*sheet_parent_class;
+
+	GList 				*voltmeter_items; // List of GnomeCanvasItem
+	GHashTable 			*voltmeter_nodes;
+
+	CreateWireContext 	*create_wire_context; // Wire context for each schematic
+
+	GHashTable 			*node_dots;
 };
 
 #endif

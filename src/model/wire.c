@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -28,8 +30,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gnome.h>
+#include <libgnomecanvas/libgnomecanvas.h>
 #include <math.h>
+
 #include "node-store.h"
 #include "node.h"
 #include "wire.h"
@@ -43,7 +46,7 @@ static void      wire_copy (ItemData *dest, ItemData *src);
 static ItemData *wire_clone (ItemData *src);
 static void      wire_rotate (ItemData *data, int angle, SheetPos *center);
 static void      wire_flip (ItemData *data, gboolean horizontal,
-	SheetPos *center);
+					SheetPos *center);
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
@@ -77,7 +80,7 @@ wire_get_type (void)
 			NULL
 		};
 
-		wire_type = g_type_register_static(TYPE_ITEM_DATA,
+		wire_type = g_type_register_static (TYPE_ITEM_DATA,
 			"Wire", &wire_info, 0);
 	}
 
@@ -85,7 +88,7 @@ wire_get_type (void)
 }
 
 static void
-wire_finalize(GObject *object)
+wire_finalize (GObject *object)
 {
 	Wire *wire = WIRE (object);
 	WirePriv *priv = wire->priv;
@@ -96,13 +99,13 @@ wire_finalize(GObject *object)
 		wire->priv = NULL;
 	}
 
-	G_OBJECT_CLASS(parent_class)->finalize (object);
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
-wire_dispose(GObject *object)
+wire_dispose (GObject *object)
 {
-	G_OBJECT_CLASS(parent_class)->dispose(object);
+	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 
@@ -113,8 +116,8 @@ wire_class_init (WireClass *klass)
 	ItemDataClass *item_data_class;
 
 	parent_class = g_type_class_peek (TYPE_ITEM_DATA);
-	item_data_class = ITEM_DATA_CLASS(klass);
-	object_class = G_OBJECT_CLASS(klass);
+	item_data_class = ITEM_DATA_CLASS (klass);
+	object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = wire_dispose;
 	object_class->finalize = wire_finalize;
@@ -170,7 +173,7 @@ wire_init (Wire *wire)
 Wire *
 wire_new (void)
 {
-	return WIRE(g_object_new(TYPE_WIRE, NULL));
+	return WIRE (g_object_new (TYPE_WIRE, NULL));
 }
 
 gint
@@ -287,13 +290,16 @@ wire_set_length (Wire *wire, SheetPos *length)
 
 	if (length->x == 0) {
 		wire->priv->direction = WIRE_DIR_VERT;
-	} else if (length->y == 0) {
+	} 
+	else if (length->y == 0) {
 		wire->priv->direction = WIRE_DIR_HORIZ;
-	} else {
+	} 
+	else {
 		wire->priv->direction = WIRE_DIR_DIAG;
 	}
 
-	g_signal_emit_by_name (G_OBJECT (wire), "changed");
+	g_signal_emit_by_name (G_OBJECT (wire), 
+	                       "changed");
 }
 
 gint
@@ -392,15 +398,14 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 
 	if (priv->direction == WIRE_DIR_VERT) {
 		priv->direction = WIRE_DIR_HORIZ;
-	} else if (priv->direction == WIRE_DIR_HORIZ) {
+	} 
+	else if (priv->direction == WIRE_DIR_HORIZ) {
 		priv->direction = WIRE_DIR_VERT;
 	}
 
 	art_affine_rotate (affine, angle);
 
-	/*
-	 * Rotate the wire's end point.
-	 */
+	// Rotate the wire's end point.
 	src.x = priv->length.x;
 	src.y = priv->length.y;
 
@@ -411,30 +416,25 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 	if (fabs (dst.y) < 1e-2)
 		dst.y = 0.0;
 
-	/*
-	 * 'Normalize'.
-	 */
-	if (dst.y < 0 ||
-	    (dst.y == 0 && dst.x < 0)) {
+	// 'Normalize'.
+	if (dst.y < 0					||
+        (dst.y == 0 && dst.x < 0)) {
 		priv->length.x = -dst.x;
 		priv->length.y = -dst.y;
 		delta.x = -dst.x;
 		delta.y = -dst.y;
 
 		item_data_move (ITEM_DATA (wire), &delta);
-	} else {
+	} 
+	else {
 		priv->length.x = dst.x;
 		priv->length.y = dst.y;
 	}
 
-	/*
-	 * Let the views (canvas items) know about the rotation.
-	 */
+	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle);
 
-	/*
-	 * Update bounding box.
-	 */
+	// Update bounding box.
 	wire_update_bbox (wire);
 
 	if (center) {
@@ -482,9 +482,7 @@ wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	else
 		art_affine_scale (affine, 1, -1);
 
-	/*
-	 * Flip the wire's end point.
-	 */
+	// Flip the wire's end point.
 	src.x = priv->length.x;
 	src.y = priv->length.y;
 
@@ -495,9 +493,7 @@ wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	if (fabs (dst.y) < 1e-2)
 		dst.y = 0.0;
 
-	/*
-	 * 'Normalize'.
-	 */
+	// 'Normalize'.
 	if (dst.y < 0 ||
 	    (dst.y == 0 && dst.x < 0)) {
 		priv->length.x = -dst.x;
@@ -506,14 +502,13 @@ wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 		delta.y = -dst.y;
 
 		item_data_move (ITEM_DATA (wire), &delta);
-	} else {
+	} 
+	else {
 		priv->length.x = dst.x;
 		priv->length.y = dst.y;
 	}
 
-	/*
-	 * Tell the views.
-	 */
+	// Tell the views.
 	g_signal_emit_by_name (G_OBJECT (wire), "flipped", horizontal);
 
 	if (center) {

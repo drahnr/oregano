@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -50,7 +52,7 @@
 
 #define TYPE_SCHEMATIC			  (schematic_get_type ())
 #define SCHEMATIC(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC, Schematic))
-#define SCHEMATIC_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC, SchematicClass))
+#define SCHEMATIC_CLASS (klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC, SchematicClass))
 #define IS_SCHEMATIC(obj)		  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SCHEMATIC))
 #define IS_SCHEMATIC_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC, SchematicClass))
 
@@ -62,8 +64,6 @@ typedef void (*ForeachItemDataFunc) (ItemData *item_data, gpointer user_data);
 
 struct _Schematic {
 	GObject parent;
-
-	gpointer corba_server;
 	SchematicPriv *priv;
 };
 
@@ -74,8 +74,8 @@ struct _SchematicClass {
 	void (*title_changed) (Schematic* ,gchar*);
 	void (*item_data_added) (Schematic*, gpointer*);
 	void (*log_updated) (gpointer);
-	void (*dot_added) (Schematic*);
-	void (*dot_removed) (Schematic*, gpointer*);
+	void (*node_dot_added) (Schematic*);
+	void (*node_dot_removed) (Schematic*, gpointer*);
 	void (*last_schematic_destroyed) (Schematic*);
 };
 
@@ -112,8 +112,8 @@ void	   schematic_log_append_error (Schematic *schematic, const char *message);
 void	   schematic_log_show (Schematic *schematic);
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic);
 int	   	   schematic_count (void);
-gboolean   schematic_is_dirty(Schematic *sm);	
-void       schematic_set_dirty(Schematic *sm, gboolean b);
+gboolean   schematic_is_dirty (Schematic *sm);	
+void       schematic_set_dirty (Schematic *sm, gboolean b);
 gint       schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
 void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);

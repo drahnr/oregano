@@ -1,19 +1,18 @@
 /**
- * @file   main.c
- * @author Richard Hult <rhult@hem.passagen.se>
- * @author Ricardo Markiewicz <rmarkie@fi.uba.ar>
- * @author Andres de Barbara <adebarbara@fi.uba.ar>
+ * main.c
  *
- * @date   1999-2001,2003-2006
+ * Author:
+ *         Richard Hult <rhult@hem.passagen.se>
+ *         Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *         Andres de Barbara <adebarbara@fi.uba.ar>
+ *         Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * @brief Oregano, a tool for schematic capture and simulation of electronic
+ * Oregano, a tool for schematic capture and simulation of electronic
  * circuits.
  *
- * @link Web page: http://arrakis.lug.fi.uba.ar/
- */
-/*
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -108,7 +107,7 @@ main (int argc, char **argv)
 
 	gchar *msg;
 	gint i;
-	Splash *splash=NULL;
+	Splash *splash = NULL;
 
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
@@ -178,7 +177,7 @@ main (int argc, char **argv)
 				if (!convert_all) {
 					schematic_view = schematic_view_new (new_schematic);
 
-					gtk_widget_show_all (schematic_view->toplevel);
+					gtk_widget_show_all (schematic_view_get_toplevel(schematic_view));
 					schematic_set_filename (new_schematic, fname);
 					schematic_set_title (new_schematic, g_path_get_basename(fname));
 
@@ -230,7 +229,7 @@ main (int argc, char **argv)
 	if (schematic == NULL){
 		schematic = schematic_new ();
 		schematic_view = schematic_view_new (schematic);
-		gtk_widget_show_all (schematic_view->toplevel);
+		gtk_widget_show_all (schematic_view_get_toplevel(schematic_view));
 	}
 
 	g_signal_add_emission_hook (

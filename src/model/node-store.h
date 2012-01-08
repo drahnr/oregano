@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2009,2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,6 +34,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
+
 #include "sheet-pos.h"
 
 #define TYPE_NODE_STORE			  node_store_get_type ()
@@ -67,8 +70,8 @@ struct _NodeStoreClass
 
 	/* signals */
 
-	void (*dot_added) (NodeStore*);
-	void (*dot_removed) (NodeStore*);
+	void (*node_dot_added) 		(NodeStore*);
+	void (*node_dot_removed) 	(NodeStore*);
 };
 
 struct _NodeRect
@@ -99,8 +102,6 @@ void	     node_store_get_bounds (NodeStore *store, NodeRect *rect);
 gint	     node_store_count_items (NodeStore *store, NodeRect *rect);
 void	     node_store_print_items (NodeStore *store, cairo_t *opc, 
     				SchematicPrintContext *ctx);
-void	     node_store_print_labels (NodeStore *store,
-					cairo_t *opc, NodeRect *rect);
 Node	    *node_store_get_or_create_node (NodeStore *store, SheetPos pos);
 
 #endif

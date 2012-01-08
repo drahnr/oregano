@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2008-2010  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -65,7 +67,7 @@ GtkWidget *engine_path;
 GtkWidget *button[2];
 
 static void
-change_modeldir_cb (GtkFileChooser *chooser, gpointer        user_data)
+change_modeldir_cb (GtkFileChooser *chooser, gpointer  user_data)
 {
 	gchar *model_dir;
 	
@@ -73,7 +75,7 @@ change_modeldir_cb (GtkFileChooser *chooser, gpointer        user_data)
 }
 
 static void
-change_librarydir_cb (GtkFileChooser *chooser, gpointer        user_data)
+change_librarydir_cb (GtkFileChooser *chooser, gpointer user_data)
 {
 	gchar *library_dir;
 	
@@ -81,8 +83,7 @@ change_librarydir_cb (GtkFileChooser *chooser, gpointer        user_data)
 }
 
 static void
-change_engine_path_cb (GtkFileChooser *chooser,
-                       gpointer        user_data)
+change_engine_path_cb (GtkFileChooser *chooser, gpointer user_data)
 {
 	gchar *engine_path;
 	Settings *s;
@@ -94,10 +95,14 @@ change_engine_path_cb (GtkFileChooser *chooser,
 static void
 apply_callback (GtkWidget *w, Settings *s)
 {
-	oregano.engine = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
-	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
-	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log ));
-	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash ));
+	oregano.engine = GPOINTER_TO_INT (
+	                  g_object_get_data (G_OBJECT (s->w_engine), "id"));
+	oregano.compress_files = gtk_toggle_button_get_active (
+	                  GTK_TOGGLE_BUTTON (s->w_compress_files));
+	oregano.show_log = gtk_toggle_button_get_active (
+	                  GTK_TOGGLE_BUTTON (s->w_show_log ));
+	oregano.show_splash = gtk_toggle_button_get_active (
+	                  GTK_TOGGLE_BUTTON (s->w_show_splash ));
 
 	oregano_config_save ();
 
@@ -116,23 +121,30 @@ set_engine_name (GtkWidget *w, Settings *s)
 {
 	int engine_id;
 	s->w_engine = w; 
-	engine_id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
+	engine_id = GPOINTER_TO_INT (
+	               g_object_get_data (G_OBJECT (s->w_engine), "id"));
 	if (g_find_program_in_path (engine[engine_id]) != NULL) {
 		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(engine_path),
 						g_find_program_in_path (engine[engine_id]));
 	}
 	else
 	{
-		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button[engine_id])) ){
-			GString *msg = g_string_new(_("Engine <span weight=\"bold\" size=\"large\">"));
+		if (gtk_toggle_button_get_active (
+		                GTK_TOGGLE_BUTTON (button[engine_id]))) {
+			GString *msg = g_string_new (
+			               _("Engine <span weight=\"bold\" size=\"large\">"));
 			msg = g_string_append (msg, engine[engine_id]);
-			msg = g_string_append (msg, _("</span> not found\nThe engine is unable to locate the external program."));
+			msg = g_string_append (msg, 
+			              _("</span> not found\nThe engine is unable to locate "
+			                "the external program."));
 			oregano_warning_with_title (_("Warning"), msg->str);
 			g_string_free (msg, TRUE);
 			engine_id = (engine_id +1) % 2;
-			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), TRUE);
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
+			                              TRUE);
 		}	
-		else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), FALSE);
+		else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
+		                                  FALSE);
 	}
 }
 

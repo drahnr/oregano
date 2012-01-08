@@ -6,11 +6,13 @@
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: http://arrakis.lug.fi.uba.ar/
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -43,6 +45,7 @@
 #include "errors.h"
 #include "schematic-print-context.h"
 
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 typedef struct _SchematicsPrintOptions {
 	GtkColorButton *components;
 	GtkColorButton *labels;
@@ -52,34 +55,34 @@ typedef struct _SchematicsPrintOptions {
 } SchematicPrintOptions;
 
 struct _SchematicPriv {
-	char *title;
-	char *filename;
-	char *author;
-	char *comments;
-	char *netlist_filename;
+	char 					*title;
+	char 					*filename;
+	char 					*author;
+	char 					*comments;
+	char 					*netlist_filename;
 
-	SchematicColors colors;
-	SchematicPrintOptions *printoptions;
+	SchematicColors 		 colors;
+	SchematicPrintOptions 	*printoptions;
 
 	/*
 	 * Data for various dialogs.
 	 */
-	gpointer settings;
-	gpointer sim_settings;
-	gpointer simulation;
+	gpointer 				 settings;
+	gpointer 				 sim_settings;
+	gpointer 				 simulation;
 
-	GList *items;
+	GList 					*current_items;
 
-	NodeStore  *store;
-	GHashTable *symbols;
-	GHashTable *refdes_values;
+	NodeStore  				*store;
+	GHashTable 				*symbols;
+	GHashTable 				*refdes_values;
 
-	double zoom;
+	double 					 zoom;
 
-	gboolean dirty;
+	gboolean 				 dirty;
 
-	GtkTextBuffer *log;
-	GtkTextTag *tag_error;
+	GtkTextBuffer 			*log;
+	GtkTextTag 				*tag_error;
 };
 
 typedef enum {
@@ -101,23 +104,23 @@ enum {
 	TITLE_CHANGED,
 	ITEM_DATA_ADDED,
 	LOG_UPDATED,
-	DOT_ADDED,
-	DOT_REMOVED,
+	NODE_DOT_ADDED,
+	NODE_DOT_REMOVED,
 	LAST_SCHEMATIC_DESTROYED,
 	LAST_SIGNAL
 };
 
-static void schematic_init(Schematic *schematic);
-static void schematic_class_init(SchematicClass	*klass);
-static void schematic_finalize(GObject *object);
-static void schematic_dispose(GObject *object);
+static void schematic_init (Schematic *schematic);
+static void schematic_class_init (SchematicClass	*klass);
+static void schematic_finalize (GObject *object);
+static void schematic_dispose (GObject *object);
 static void item_data_destroy_callback (gpointer s, GObject *data);
-static void part_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm);
+static void item_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm);
 
 static int  schematic_get_lowest_available_refdes (Schematic *schematic,
-	char *prefix);
+				char *prefix);
 static void schematic_set_lowest_available_refdes (Schematic *schematic,
-	char *prefix, int num);
+				char *prefix, int num);
 
 static GObjectClass *parent_class = NULL;
 static guint schematic_signals[LAST_SIGNAL] = { 0 };
@@ -157,13 +160,13 @@ schematic_class_init (SchematicClass *klass)
 {
 	GObjectClass *object_class;
 
-	object_class = G_OBJECT_CLASS(klass);
-	parent_class = g_type_class_peek_parent(klass);
+	object_class = G_OBJECT_CLASS (klass);
+	parent_class = g_type_class_peek_parent (klass);
 
 	schematic_signals[TITLE_CHANGED] = g_signal_new ("title_changed",
 		TYPE_SCHEMATIC,
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SchematicClass,title_changed),
+		G_STRUCT_OFFSET (SchematicClass, title_changed),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__STRING,
 		G_TYPE_NONE, 1,
@@ -172,7 +175,7 @@ schematic_class_init (SchematicClass *klass)
 	schematic_signals[LAST_SCHEMATIC_DESTROYED] = g_signal_new ("last_schematic_destroyed",
 		TYPE_SCHEMATIC,
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SchematicClass,last_schematic_destroyed),
+		G_STRUCT_OFFSET (SchematicClass, last_schematic_destroyed),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
@@ -180,31 +183,31 @@ schematic_class_init (SchematicClass *klass)
 	schematic_signals[ITEM_DATA_ADDED] = g_signal_new ("item_data_added",
 		TYPE_SCHEMATIC,
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SchematicClass,item_data_added),
-	  NULL, NULL,
-	  g_cclosure_marshal_VOID__POINTER,
-	  G_TYPE_NONE, 1, G_TYPE_POINTER);
+		G_STRUCT_OFFSET (SchematicClass, item_data_added),
+	  	NULL, NULL,
+	  	g_cclosure_marshal_VOID__POINTER,
+	  	G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	schematic_signals[DOT_ADDED] = g_signal_new ("dot_added",
+	schematic_signals[NODE_DOT_ADDED] = g_signal_new ("node_dot_added",
 		TYPE_SCHEMATIC,
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SchematicClass,dot_added),
+		G_STRUCT_OFFSET (SchematicClass, node_dot_added),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__POINTER,
 		G_TYPE_NONE, 1,
 		G_TYPE_POINTER);
 
-	schematic_signals[DOT_REMOVED] = g_signal_new ("dot_removed",
+	schematic_signals[NODE_DOT_REMOVED] = g_signal_new ("node_dot_removed",
 		TYPE_SCHEMATIC,
 		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET(SchematicClass,dot_removed),
+		G_STRUCT_OFFSET (SchematicClass, node_dot_removed),
 		NULL, NULL, g_cclosure_marshal_VOID__POINTER,
 		G_TYPE_NONE, 1, G_TYPE_POINTER);
 
 	schematic_signals[LOG_UPDATED] = g_signal_new ("log_updated",
 	  TYPE_SCHEMATIC,
 	  G_SIGNAL_RUN_FIRST,
-	  G_STRUCT_OFFSET(SchematicClass,log_updated),
+	  G_STRUCT_OFFSET (SchematicClass, log_updated),
 	  NULL, NULL, g_cclosure_marshal_VOID__VOID,
 	  G_TYPE_NONE,0);
 
@@ -213,25 +216,25 @@ schematic_class_init (SchematicClass *klass)
 }
 
 static void
-dot_added_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
+node_dot_added_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	g_signal_emit_by_name (G_OBJECT(schematic), "dot_added", pos);
+	g_signal_emit_by_name (G_OBJECT (schematic), "node_dot_added", pos);
 }
 
 static void
-dot_removed_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
+node_dot_removed_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	g_signal_emit_by_name (G_OBJECT(schematic), "dot_removed", pos);
+	g_signal_emit_by_name (G_OBJECT (schematic), "node_dot_removed", pos);
 }
 
 static void
-schematic_init(Schematic *schematic)
+schematic_init (Schematic *schematic)
 {
 	SchematicPriv *priv;
 
@@ -253,26 +256,21 @@ schematic_init(Schematic *schematic)
 	priv->colors.text.blue = 0;
 
 	priv->symbols = g_hash_table_new (g_str_hash, g_str_equal);
-	/* FIXME: use own str_equal (lib::sym)*/
 	priv->refdes_values = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->store = node_store_new ();
 	priv->dirty = FALSE;
 	priv->log = gtk_text_buffer_new (NULL);
 	priv->tag_error = gtk_text_buffer_create_tag (priv->log, "error",
-		"foreground", "red", "weight", PANGO_WEIGHT_BOLD, NULL);
+		"foreground", "red", 
+	    "weight", PANGO_WEIGHT_BOLD, 
+	    NULL);
 
-	g_signal_connect_object (
-		G_OBJECT (priv->store),
-		"dot_added",
-		G_CALLBACK(dot_added_callback),
-		G_OBJECT (schematic),
-		G_CONNECT_AFTER);
+	g_signal_connect_object (G_OBJECT (priv->store), "node_dot_added",
+		G_CALLBACK (node_dot_added_callback), G_OBJECT (schematic), 
+	    G_CONNECT_AFTER);
 
-	g_signal_connect_object (
-		G_OBJECT (priv->store),
-		"dot_removed",
-		G_CALLBACK(dot_removed_callback),
-		G_OBJECT (schematic),
+	g_signal_connect_object (G_OBJECT (priv->store), "node_dot_removed",
+		G_CALLBACK (node_dot_removed_callback), G_OBJECT (schematic),
 		G_CONNECT_AFTER);
 
 	priv->sim_settings = sim_settings_new (schematic);
@@ -290,7 +288,7 @@ schematic_new (void)
 {
 	Schematic *schematic;
 
-	schematic = SCHEMATIC(g_object_new (TYPE_SCHEMATIC, NULL));
+	schematic = SCHEMATIC (g_object_new (TYPE_SCHEMATIC, NULL));
 
 	schematic_count_++;
 	schematic_list = g_list_prepend (schematic_list, schematic);
@@ -304,12 +302,12 @@ schematic_dispose (GObject *object)
 	Schematic *schematic;
 	GList *list;
 
-	schematic = SCHEMATIC(object);
+	schematic = SCHEMATIC (object);
 
 	/* Disconnect weak item signal */
-	for(list=schematic->priv->items; list; list=list->next)
-		g_object_weak_unref(G_OBJECT(list->data),
-			item_data_destroy_callback, G_OBJECT(schematic));
+	for (list=schematic->priv->current_items; list; list=list->next)
+		g_object_weak_unref (G_OBJECT (list->data),
+			item_data_destroy_callback, G_OBJECT (schematic));
 
 	g_object_unref (G_OBJECT (schematic->priv->log));
 
@@ -321,27 +319,27 @@ schematic_dispose (GObject *object)
 			"last_schematic_destroyed", NULL);
 	}
 
-	G_OBJECT_CLASS(parent_class)->dispose(G_OBJECT(schematic));
+	G_OBJECT_CLASS (parent_class)->dispose (G_OBJECT (schematic));
 }
 
 static void
-schematic_finalize(GObject *object)
+schematic_finalize (GObject *object)
 {
 	Schematic *sm;
 
-	sm = SCHEMATIC(object);
+	sm = SCHEMATIC (object);
 	if (sm->priv) {
-		g_free(sm->priv->simulation);
-		g_hash_table_destroy(sm->priv->symbols);
-		g_hash_table_destroy(sm->priv->refdes_values);
+		g_free (sm->priv->simulation);
+		g_hash_table_destroy (sm->priv->symbols);
+		g_hash_table_destroy (sm->priv->refdes_values);
 		if (sm->priv->netlist_filename)
 			g_free (sm->priv->netlist_filename);
 
-		g_free(sm->priv);
+		g_free (sm->priv);
 		sm->priv = NULL;
 	}
 
-	G_OBJECT_CLASS(parent_class)->finalize(G_OBJECT(sm));
+	G_OBJECT_CLASS (parent_class)->finalize (G_OBJECT (sm));
 }
 
 /*
@@ -464,9 +462,6 @@ schematic_get_zoom (Schematic *schematic)
 	return schematic->priv->zoom;
 }
 
-/*
- * FIXME: different zoom level on views...
- */
 void
 schematic_set_zoom (Schematic *schematic, double zoom)
 {
@@ -545,7 +540,7 @@ schematic_log_show (Schematic *schematic)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	g_signal_emit_by_name (G_OBJECT(schematic),
+	g_signal_emit_by_name (G_OBJECT (schematic),
 		"log_updated", schematic->priv->log);
 }
 
@@ -617,16 +612,17 @@ schematic_read (char *name, GError **out_error)
 
 	if (error != NULL) {
 		g_propagate_error (out_error, error);
-		g_object_unref(G_OBJECT(new_sm));
+		g_object_unref (G_OBJECT (new_sm));
 		return NULL;
 	}
 
 	if (ret) {
-		g_object_unref(G_OBJECT(new_sm));
+		g_object_unref (G_OBJECT (new_sm));
 		new_sm = NULL;
 		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
 			_("Load fails!."));
-	} else
+	} 
+	else
 		schematic_set_dirty (new_sm, FALSE);
 
 	return new_sm;
@@ -664,7 +660,7 @@ void
 schematic_add_item (Schematic *sm, ItemData *data)
 {
 	NodeStore *store;
-	char *prefix, *refdes;
+	char *prefix = NULL, *refdes = NULL;
 	int num;
 
 	g_return_if_fail (sm != NULL);
@@ -673,16 +669,16 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	store = sm->priv->store;
-	g_object_set(G_OBJECT(data), "store", store, NULL);
-	if (item_data_register(data) == -1) {
-		/* Item does not be added */
+	g_object_set (G_OBJECT (data), 
+	              "store", store, 
+	              NULL);
+	if (item_data_register (data) == -1) {
+		// Item does not be added
 		g_object_unref (G_OBJECT (data));
 		return;
 	}
 
-	/*
-	 * Some items need a reference designator. Find a good one.
-	 */
+	// Some items need a reference designator. Find a good one.
 	prefix = item_data_get_refdes_prefix (data);
 	if (prefix != NULL) {
 		num = schematic_get_lowest_available_refdes (sm, prefix);
@@ -690,23 +686,22 @@ schematic_add_item (Schematic *sm, ItemData *data)
 		item_data_set_property (data, "refdes", refdes);
 
 		schematic_set_lowest_available_refdes (sm, prefix, num + 1);
-
-		g_free (prefix);
-		g_free (refdes);
 	}
+	g_free (prefix);
+	g_free (refdes);
 
-	sm->priv->items = g_list_prepend(sm->priv->items, data);
-	g_object_weak_ref(G_OBJECT(data), item_data_destroy_callback, G_OBJECT(sm));
+	sm->priv->current_items = g_list_prepend (sm->priv->current_items, data);
+	g_object_weak_ref (G_OBJECT (data), item_data_destroy_callback, 
+		G_OBJECT (sm));
 
-	g_signal_connect_object(G_OBJECT(data),
-		"moved",
-		G_CALLBACK(part_moved_callback),
-		sm,
-		0);
+	g_signal_connect_object (G_OBJECT (data), 
+	                         "moved", G_CALLBACK (item_moved_callback), 
+	                         sm, 0);
 
 	sm->priv->dirty = TRUE;
 
-	g_signal_emit_by_name(G_OBJECT(sm), "item_data_added", data);
+	g_signal_emit_by_name (G_OBJECT (sm), 
+	                       "item_data_added", data);
 }
 
 void
@@ -755,7 +750,7 @@ schematic_items_foreach (Schematic *schematic,
 	if (func == NULL)
 		return;
 
-	for (list = schematic->priv->items; list; list = list->next) {
+	for (list = schematic->priv->current_items; list; list = list->next) {
 		func (list->data, user_data);
 	}
 }
@@ -766,16 +761,16 @@ schematic_get_items (Schematic *sm)
 	g_return_val_if_fail (sm != NULL, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (sm), NULL);
 
-	return sm->priv->items;
+	return sm->priv->current_items;
 }
 
 static void
 item_data_destroy_callback (gpointer s, GObject *data)
 {
-	Schematic *sm = SCHEMATIC(s);
+	Schematic *sm = SCHEMATIC (s);
 	schematic_set_dirty (sm, TRUE);
 	if (sm->priv) {
-		sm->priv->items = g_list_remove (sm->priv->items, data);
+		sm->priv->current_items = g_list_remove (sm->priv->current_items, data);
 	}
 }
 
@@ -791,7 +786,8 @@ schematic_get_lowest_available_refdes (Schematic *schematic, char *prefix)
 	if ( g_hash_table_lookup_extended (schematic->priv->refdes_values,
 		     prefix, &key, &value) ) {
 		return GPOINTER_TO_INT (value);
-	} else {
+	} 
+	else {
 		return 1;
 	}
 }
@@ -818,7 +814,7 @@ schematic_set_lowest_available_refdes (Schematic *schematic,
 }
 
 gboolean
-schematic_is_dirty(Schematic *sm)
+schematic_is_dirty (Schematic *sm)
 {
 	g_return_val_if_fail (sm != NULL, FALSE);
 	g_return_val_if_fail (IS_SCHEMATIC (sm), FALSE);
@@ -827,7 +823,7 @@ schematic_is_dirty(Schematic *sm)
 }
 
 void
-schematic_set_dirty(Schematic *sm, gboolean b)
+schematic_set_dirty (Schematic *sm, gboolean b)
 {
 	g_return_if_fail (sm != NULL);
 	g_return_if_fail (IS_SCHEMATIC (sm));
@@ -836,7 +832,7 @@ schematic_set_dirty(Schematic *sm, gboolean b)
 }
 
 static void
-part_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm)
+item_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -853,11 +849,10 @@ schematic_render (Schematic *sm, cairo_t *cr)
 	store = schematic_get_store (sm);
 	
 	node_store_print_items (store, cr, &schematic_print_context);
-	node_store_print_labels (store, cr, NULL);
 }
 
 GdkColor
-convert_to_grayscale(GdkColor *source)
+convert_to_grayscale (GdkColor *source)
 {
 	GdkColor color;
 	int factor;
@@ -879,7 +874,6 @@ schematic_export (Schematic *sm, const gchar *filename,
 	NodeStore *store;
 	cairo_surface_t *surface;
 	cairo_t *cr;
-	gdouble w, h;
 	gdouble graph_w, graph_h;
 	gdouble scale, scalew, scaleh;
 	SchematicColors colors;
@@ -895,9 +889,6 @@ schematic_export (Schematic *sm, const gchar *filename,
 
 	store = schematic_get_store (sm);
 	node_store_get_bounds (store, &bbox);
-
-	w = bbox.x1 - bbox.x0;
-	h = bbox.y1 - bbox.y0;
 
 	switch (format) {
 #ifdef CAIRO_HAS_SVG_SURFACE
@@ -986,13 +977,9 @@ draw_page (GtkPrintOperation *operation,
 	NodeStore *store;
 	NodeRect bbox;
 	gdouble page_w, page_h;
-	gdouble circuit_w, circuit_h;
 	
 	page_w = gtk_print_context_get_width (context);
 	page_h = gtk_print_context_get_height (context);
-
-	circuit_w = page_w * 0.8;
-	circuit_h = page_h * 0.8;
 
 	cairo_t *cr = gtk_print_context_get_cairo_context (context);
 
@@ -1067,7 +1054,7 @@ print_options (GtkPrintOperation *operation, Schematic *sm)
 }
 
 static void
-read_print_options(GtkPrintOperation *operation, GtkWidget *widget, Schematic *sm)
+read_print_options (GtkPrintOperation *operation, GtkWidget *widget, Schematic *sm)
 {
 	SchematicPrintOptions *colors = sm->priv->printoptions;
 
@@ -1095,9 +1082,12 @@ schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, 
 	gtk_print_operation_set_unit (op, GTK_UNIT_MM);
 	gtk_print_operation_set_use_full_page (op, TRUE);
 
-	g_signal_connect (op, "create-custom-widget", G_CALLBACK (print_options), sm);
-	g_signal_connect (op, "custom-widget-apply", G_CALLBACK (read_print_options), sm);
-	g_signal_connect (op, "draw_page", G_CALLBACK (draw_page), sm);
+	g_signal_connect (op, "create-custom-widget", 
+	                  G_CALLBACK (print_options), sm);
+	g_signal_connect (op, "custom-widget-apply", 
+	                  G_CALLBACK (read_print_options), sm);
+	g_signal_connect (op, "draw_page", 
+	                  G_CALLBACK (draw_page), sm);
 
 	gtk_print_operation_set_custom_tab_label (op, _("Schematic"));
 
