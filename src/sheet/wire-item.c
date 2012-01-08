@@ -132,11 +132,9 @@ wire_item_get_type ()
 static void
 wire_item_class_init (WireItemClass *wire_item_class)
 {
-	GObjectClass *object_class;
 	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
 
-	object_class = G_OBJECT_CLASS (wire_item_class);
 	gtk_object_class = GTK_OBJECT_CLASS (wire_item_class);
 	sheet_item_class = SHEET_ITEM_CLASS (wire_item_class);
 	wire_item_parent_class = g_type_class_peek (TYPE_SHEET_ITEM);
@@ -300,15 +298,15 @@ int wire_item_event (WireItem *wire_item, const GdkEvent *event,
 {
 	SheetPos start_pos, length;
 	Wire *wire;
-	GnomeCanvas *canvas;
 	static double last_x, last_y;
 	double dx, dy, zoom;
 	/* The selected group's bounding box in window resp. canvas coordinates. */
 	double snapped_x, snapped_y;
 	SheetPos pos;
 
-	canvas = GNOME_CANVAS (sheet);
-	g_object_get (G_OBJECT (wire_item), "data", &wire, NULL);
+	g_object_get (G_OBJECT (wire_item), 
+	              "data", &wire, 
+	              NULL);
 
 	wire_get_pos_and_length (WIRE (wire), &start_pos, &length);
 	sheet_get_zoom (sheet, &zoom);
@@ -773,7 +771,7 @@ highlight_wire_cb (Wire *wire, WireItem *item)
 	 */
 	g_object_ref(G_OBJECT (item));
 
-	gtk_timeout_add (1000, (gpointer) unhighlight_wire, item);
+	g_timeout_add (1000, (gpointer) unhighlight_wire, item);
 }
 
 static int

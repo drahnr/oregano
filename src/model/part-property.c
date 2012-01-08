@@ -133,7 +133,7 @@ part_property_expand_macros (Part *part, char *string)
 {
 	static char mcode[] = {"@?~#&"};
 	char *value;
-	char *tmp0, *temp, *qn, *q0, *qend, *t0;
+	char *tmp0, *temp, *qn, *q0, *t0;
 	char *cls1, *cls2;
 	GString *out;
 	size_t sln;
@@ -164,7 +164,6 @@ part_property_expand_macros (Part *part, char *string)
 	   ?DC|DC @DC|
 	*/
 	tmp0 = temp = g_strdup (string);
-	qend = temp + strlen (temp);
 
 	out = g_string_new ("");
 

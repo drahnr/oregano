@@ -300,10 +300,8 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	guint graph_height;
 	GPlotFunction *f;
 	GList *lst;
-	GPlotFunctionBBox bbox;
 	gdouble aX, bX, aY, bY;
 	gint div;
-	int i = 0;
 	cairo_text_extents_t extents;
 	GtkAllocation allocation;
 
@@ -349,9 +347,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	priv->viewport_bbox.xmin = priv->left_border;
 	priv->viewport_bbox.ymax = allocation.height - priv->bottom_border;
 	priv->viewport_bbox.ymin = priv->top_border;
-
-	/* Save real bbox */
-	bbox = priv->window_bbox;
 
 	/* Calculating Window to Viewport matrix */
 	aX = (priv->viewport_bbox.xmax - priv->viewport_bbox.xmin)
@@ -404,7 +399,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	cairo_restore (cr);
 
 	cairo_save (cr);
-		i = 0;
 		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 		cairo_set_line_width (cr, 1);
 

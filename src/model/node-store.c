@@ -389,15 +389,12 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	GSList *ip_list, *list;
 	IntersectionPoint *ipoint;
 	Node *node;
-	WirePriv *priv;
 	SheetPos pos, length;
 
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
-
-	priv = wire->priv;
 
 	wire_get_pos_and_length (wire, &pos, &length);
 
@@ -563,17 +560,13 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 int
 node_store_remove_wire (NodeStore *store, Wire *wire)
 {
-	gdouble x1, y1, x2, y2;
 	GSList *list;
 	SheetPos lookup_key, pos, length;
-	WirePriv *priv;
 
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
-
-	priv = wire->priv;
 
 	if (item_data_get_store (ITEM_DATA (wire)) == NULL) {
 		g_warning ("Trying to remove non-stored wire.");
@@ -581,11 +574,6 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 	}
 
 	wire_get_pos_and_length (wire, &pos, &length);
-
-	x1 = pos.x;
-	y1 = pos.y;
-	x2 = x1 + length.x;
-	y2 = y1 + length.y;
 
 	store->wires = g_list_remove (store->wires, wire);
 	store->items = g_list_remove (store->items, wire);
@@ -747,16 +735,10 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
 	GSList *ip_list;
 	Wire *wire2;
 	SheetPos pos, wire2_pos, wire2_length;
-	SheetPos wire1_start_pos, wire1_end_pos;
 	double wire2_x1, wire2_y1, wire2_x2, wire2_y2;
 
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
-
-	wire1_start_pos.x = x1;
-	wire1_start_pos.y = y1;
-	wire1_end_pos.x = x2;
-	wire1_end_pos.y = y2;
 
 	/*
 	 * Search through all the wires. Is there a better way?

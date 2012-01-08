@@ -58,12 +58,6 @@ OreganoApp oregano;
 static char **startup_files = NULL;
 int oregano_debugging;
 
-static void
-quit (void)
-{
-	gtk_main_quit ();
-}
-
 /* I have no idea if this is right. */
 static gboolean
 quit_hook (GSignalInvocationHint *ihint,
@@ -71,14 +65,7 @@ quit_hook (GSignalInvocationHint *ihint,
 	const GValue *param_values,
 	gpointer data)
 {
-	bonobo_main_quit ();
 	return FALSE;
-}
-
-static void
-session_die (void)
-{
-	quit ();
 }
 
 static gchar* convert_all = NULL;
@@ -98,31 +85,30 @@ static GOptionEntry options[] = {
 };
 
 int
-main (int argc, char **argv)
+main (int argc, char *argv[])
 {
-	GnomeProgram *OreProgram = NULL;
-	GnomeClient *client = NULL;
 	GOptionContext *context;
 
 	Schematic *schematic = NULL ;
 	SchematicView *schematic_view = NULL;
 
 	gchar *msg;
-	gint i;
 	Splash *splash = NULL;
 
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	setlocale (LC_ALL, "");
+	/* This will be done by gtk+ later, but for now, force it to GNOME */
+	//g_desktop_app_info_set_desktop_env ("GNOME");
 
 	context = g_option_context_new (_("[FILES]"));
 	g_option_context_add_main_entries (context, options, GETTEXT_PACKAGE);
+    g_option_context_add_group (context, gtk_get_option_group (TRUE));
+	g_option_context_parse (context, &argc, &argv, NULL);
+	g_option_context_free (context);
 
-	OreProgram = gnome_program_init (PACKAGE, VERSION, LIBGNOMEUI_MODULE,
-		argc, argv, GNOME_PARAM_GOPTION_CONTEXT, context,
-		GNOME_PARAM_APP_DATADIR, DATADIR, GNOME_PARAM_NONE);
+	gtk_init (&argc, &argv);
 
 	cursors_init ();
 	stock_init ();
@@ -144,15 +130,12 @@ main (int argc, char **argv)
 	/* Keep non localized input for ngspice */
 	setlocale (LC_NUMERIC, "C");
 
-	/* Connect to session manager. */
-	client = gnome_master_client ();
-	g_signal_connect (G_OBJECT (client), "die", G_CALLBACK(session_die), NULL);
-
-	if (oregano.show_splash){
+	
+	if (oregano.show_splash) {
 		splash = oregano_splash_new ();
 	}
 	/* splash == NULL if showing splash is disabled */
-	oregano_lookup_libraries(splash);
+	oregano_lookup_libraries (splash);
 
 	if (oregano.libraries == NULL) {
 		oregano_error (
@@ -227,8 +210,6 @@ main (int argc, char **argv)
 		startup_files = NULL;
 	}
 
-	g_option_context_free (context);
-
 	if (convert_all != NULL) {
 		g_print (_("Done.\n"));
 		return 0;
@@ -250,8 +231,7 @@ main (int argc, char **argv)
 	if (oregano.show_splash)
 		oregano_splash_done (splash, _("Welcome to Oregano"));
 
-	bonobo_main ();
 	cursors_shutdown ();
-	gnome_config_drop_all ();
+	gtk_main ();
 	return 0;
 }

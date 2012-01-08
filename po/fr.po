@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oregano 0.69\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-08 12:07+0100\n"
-"PO-Revision-Date: 2012-01-08 12:08+0100\n"
+"POT-Creation-Date: 2012-01-07 22:27+0100\n"
+"PO-Revision-Date: 2012-01-07 22:28+0100\n"
 "Last-Translator: Marc Lorber <Lorber.Marc@wanadoo.fr>\n"
 "Language-Team: Français <gnomefr@traduc.org>\n"
 "Language: \n"
@@ -271,7 +271,7 @@ msgstr "<b>Type de fonction</b>"
 msgid "<b>Values</b>"
 msgstr "<b>Valeurs</b>"
 
-#: ../data/xml/plot-add-function.ui.h:3 ../src/plot.c:440
+#: ../data/xml/plot-add-function.ui.h:3 ../src/plot.c:441
 msgid "Add Function"
 msgstr "Ajouter la fonction"
 
@@ -427,24 +427,24 @@ msgstr "Propriétés du texte"
 msgid "Netlist View"
 msgstr "Affichage de la liste des connexions"
 
-#: ../src/sheet/part-item.c:130 ../src/schematic-view-menu.h:64
+#: ../src/sheet/part-item.c:128 ../src/schematic-view-menu.h:64
 msgid "_Object Properties..."
 msgstr "_Propriétés de l'objet..."
 
-#: ../src/sheet/part-item.c:131 ../src/schematic-view-menu.h:64
+#: ../src/sheet/part-item.c:129 ../src/schematic-view-menu.h:64
 msgid "Modify the object's properties"
 msgstr "Modifier les propriétés de l'objet"
 
-#: ../src/sheet/part-item.c:539 ../src/sheet/part-item.c:549
-#: ../src/sheet/part-item.c:556 ../src/sheet/part-item.c:705
+#: ../src/sheet/part-item.c:537 ../src/sheet/part-item.c:548
+#: ../src/sheet/part-item.c:555 ../src/sheet/part-item.c:704
 #: ../src/sheet/part-item.c:714 ../src/sheet/part-item.c:722
 msgid "Could not create part properties dialog."
 msgstr "Création du dialogue des propriétés du composant impossible."
 
-#: ../src/sheet/part-item.c:547 ../src/sheet/part-item.c:712
-#: ../src/sheet/textbox-item.c:617 ../src/settings.c:197
-#: ../src/schematic-view.c:306 ../src/schematic-view.c:1711
-#: ../src/part-browser.c:492 ../src/netlist-editor.c:302
+#: ../src/sheet/part-item.c:546 ../src/sheet/part-item.c:712
+#: ../src/sheet/textbox-item.c:617 ../src/settings.c:198
+#: ../src/schematic-view.c:305 ../src/schematic-view.c:1713
+#: ../src/part-browser.c:491 ../src/netlist-editor.c:303
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -474,12 +474,12 @@ msgid "Inductor"
 msgstr "Bobine d'induction"
 
 #: ../src/sheet/plot-add-function.c:54 ../src/sheet/plot-add-function.c:64
-#: ../src/sheet/plot-add-function.c:72 ../src/plot.c:396 ../src/plot.c:406
-#: ../src/plot.c:414
+#: ../src/sheet/plot-add-function.c:72 ../src/plot.c:397 ../src/plot.c:407
+#: ../src/plot.c:415
 msgid "Could not create plot window."
 msgstr "Création de la fenêtre de tracé impossible."
 
-#: ../src/sheet/plot-add-function.c:62 ../src/schematic-view.c:1164
+#: ../src/sheet/plot-add-function.c:62 ../src/schematic-view.c:1165
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -570,12 +570,12 @@ msgstr ""
 "Les fichiers %s ou %s sont introuvables. Vous devez essayer de réinstaller "
 "Oregano pour corriger ce problème."
 
-#: ../src/simulation.c:94 ../src/simulation.c:109 ../src/simulation.c:117
-#: ../src/simulation.c:124
+#: ../src/simulation.c:94 ../src/simulation.c:110 ../src/simulation.c:118
+#: ../src/simulation.c:125
 msgid "Could not create simulation dialog"
 msgstr "Création impossible du dialogue de simulation"
 
-#: ../src/simulation.c:161
+#: ../src/simulation.c:162
 #, c-format
 msgid "Progress: <b>%s</b>"
 msgstr "Avancement : <b>%s</b>"
@@ -596,11 +596,11 @@ msgstr ""
 msgid "The simulation was aborted due to an error"
 msgstr "La simulation s'est terminée prématurément à la suite d'une erreur"
 
-#: ../src/sim-settings.c:351
+#: ../src/sim-settings.c:350
 msgid "Add new option"
 msgstr "Ajouter une nouvelle option"
 
-#: ../src/sim-settings.c:966 ../src/plot.c:403
+#: ../src/sim-settings.c:966 ../src/plot.c:404
 #, c-format
 msgid ""
 "The file %s could not be found.You might need to reinstall Oregano to fix "
@@ -623,7 +623,7 @@ msgid "Value"
 msgstr "Valeur"
 
 #: ../src/sim-settings.c:1177 ../src/sim-settings.c:1283
-#: ../src/schematic-view.c:751 ../src/schematic-view.c:904
+#: ../src/schematic-view.c:748 ../src/schematic-view.c:901
 #: ../src/netlist-editor.c:180 ../src/netlist-editor.c:425
 msgid "Could not create a netlist"
 msgstr "Création de la liste des connexions impossible"
@@ -648,17 +648,17 @@ msgstr ""
 msgid "Warning"
 msgstr "Avertissement"
 
-#: ../src/settings.c:180 ../src/settings.c:200 ../src/settings.c:208
-#: ../src/settings.c:215
+#: ../src/settings.c:180 ../src/settings.c:201 ../src/settings.c:209
+#: ../src/settings.c:216
 msgid "Could not create settings dialog"
 msgstr "Création impossible du dialogue des paramètres"
 
-#: ../src/schematic-view.c:195 ../src/schematic-view.c:206
-#: ../src/schematic-view.c:213
+#: ../src/schematic-view.c:194 ../src/schematic-view.c:205
+#: ../src/schematic-view.c:212
 msgid "Could not create properties dialog"
 msgstr "Création du dialogue des propriétés impossible"
 
-#: ../src/schematic-view.c:202
+#: ../src/schematic-view.c:201
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstallOregano to fix "
@@ -667,16 +667,16 @@ msgstr ""
 "Le fichier %s est introuvable. Vous devriez réinstaller Oregano pour "
 "corriger ce problème."
 
-#: ../src/schematic-view.c:263
+#: ../src/schematic-view.c:262
 msgid "Export to..."
 msgstr "Exporter vers..."
 
-#: ../src/schematic-view.c:299 ../src/schematic-view.c:310
-#: ../src/schematic-view.c:317
+#: ../src/schematic-view.c:298 ../src/schematic-view.c:309
+#: ../src/schematic-view.c:316
 msgid "Could not create export dialog."
 msgstr "Création du dialogue des propriétés impossible"
 
-#: ../src/schematic-view.c:363
+#: ../src/schematic-view.c:362
 msgid ""
 "<span weight=\"bold\" size=\"large\">No filename has been chosen</span>\n"
 "\n"
@@ -686,38 +686,38 @@ msgstr ""
 "\n"
 "Activer la fenêtre de sélection afin d'en choisir un."
 
-#: ../src/schematic-view.c:440 ../src/schematic-view.c:495
+#: ../src/schematic-view.c:439 ../src/schematic-view.c:494
 msgid "Could not load file"
 msgstr "Chargement du fichier impossible"
 
-#: ../src/schematic-view.c:510
+#: ../src/schematic-view.c:509
 msgid "Unknown type of file can't open"
 msgstr "Type de fichier inconnu"
 
-#: ../src/schematic-view.c:570 ../src/schematic-view.c:1280
-#: ../src/schematic-view.c:1286
+#: ../src/schematic-view.c:569 ../src/schematic-view.c:1281
+#: ../src/schematic-view.c:1287
 msgid "Untitled.oregano"
 msgstr "SansTitre.oregano"
 
-#: ../src/schematic-view.c:576
+#: ../src/schematic-view.c:575
 msgid "Could not save schematic file"
 msgstr "Enregistrement du fichier de schéma impossible"
 
-#: ../src/schematic-view.c:756 ../src/schematic-view.c:908
-#: ../src/netlist-editor.c:184 ../src/netlist-editor.c:428
+#: ../src/schematic-view.c:753 ../src/schematic-view.c:905
+#: ../src/netlist-editor.c:184 ../src/netlist-editor.c:429
 msgid "An unexpected error has occurred"
 msgstr "Une erreur inattendue s'est produite"
 
-#: ../src/schematic-view.c:1156 ../src/schematic-view.c:1166
-#: ../src/schematic-view.c:1174
+#: ../src/schematic-view.c:1157 ../src/schematic-view.c:1167
+#: ../src/schematic-view.c:1175
 msgid "Could not create main window."
 msgstr "Création de la fenêtre principale impossible."
 
-#: ../src/schematic-view.c:1287
+#: ../src/schematic-view.c:1288
 msgid "Untitled.netlist"
 msgstr "SansTitre.netlist"
 
-#: ../src/schematic-view.c:1422
+#: ../src/schematic-view.c:1423
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Save changes to schematic %s before "
@@ -730,15 +730,15 @@ msgstr ""
 "\n"
 "Voulez-vous l'enregistrer ?"
 
-#: ../src/schematic-view.c:1435
+#: ../src/schematic-view.c:1436
 msgid "Close _without Saving"
 msgstr "Fermeture _sans enregistrement"
 
-#: ../src/schematic-view.c:1695 ../src/schematic-view.c:1721
+#: ../src/schematic-view.c:1697 ../src/schematic-view.c:1723
 msgid "Could not create the log window."
 msgstr "Création de la fenêtre de journal impossible"
 
-#: ../src/schematic-view.c:1713
+#: ../src/schematic-view.c:1715
 msgid "Could not create the log window"
 msgstr "Création de la fenêtre de journal impossible"
 
@@ -1062,46 +1062,46 @@ msgid "current"
 msgstr "Courant"
 
 #. Simulation failed?
-#: ../src/plot.c:263 ../src/plot.c:280
+#: ../src/plot.c:264 ../src/plot.c:281
 msgid "The simulation produced no data!!\n"
 msgstr "Aucun résultat produit par la simulation\n"
 
-#: ../src/plot.c:290 ../src/plot.c:568
+#: ../src/plot.c:291 ../src/plot.c:570
 #, c-format
 msgid "Plot - %s"
 msgstr "Tracé - %s"
 
-#: ../src/plot.c:300
+#: ../src/plot.c:301
 msgid "Nodes"
 msgstr "Noeuds"
 
-#: ../src/plot.c:304 ../src/plot.c:667
+#: ../src/plot.c:305 ../src/plot.c:669
 msgid "Functions"
 msgstr "Fonctions"
 
-#: ../src/plot.c:388
+#: ../src/plot.c:389
 msgid "Oregano - Plot"
 msgstr "Oregano - Tracé"
 
-#: ../src/plot.c:448
+#: ../src/plot.c:449
 msgid "Close"
 msgstr "Fermer"
 
 #. Installation of the menu in the menubar
-#: ../src/plot.c:455
+#: ../src/plot.c:456
 msgid "File"
 msgstr "Fichier"
 
-#: ../src/plot.c:690
+#: ../src/plot.c:692
 msgid "TRANSFER"
 msgstr "TRANSFERT"
 
-#: ../src/part-browser.c:186 ../src/part-browser.c:396
+#: ../src/part-browser.c:184 ../src/part-browser.c:394
 msgid "Unable to load required part"
 msgstr "Il est impossible de charger le composant demandé"
 
-#: ../src/part-browser.c:478 ../src/part-browser.c:495
-#: ../src/part-browser.c:503
+#: ../src/part-browser.c:476 ../src/part-browser.c:494
+#: ../src/part-browser.c:502
 msgid "Could not create part browser"
 msgstr "Création du navigateur de composants impossible"
 
@@ -1266,8 +1266,8 @@ msgstr "Enregistrement impossible du ficher %s"
 msgid "Could not save temporary netlist file"
 msgstr "Enregistrement impossible du fichier temporaire "
 
-#: ../src/netlist-editor.c:291 ../src/netlist-editor.c:304
-#: ../src/netlist-editor.c:313
+#: ../src/netlist-editor.c:292 ../src/netlist-editor.c:305
+#: ../src/netlist-editor.c:314
 msgid "Could not create the netlist dialog"
 msgstr "Création impossible du dialogue netlist"
 
@@ -1281,11 +1281,13 @@ msgstr "Fichier %s introuvable."
 msgid "Could not find the required file"
 msgstr "Fichier requis introuvable"
 
-#: ../src/main.c:120
+#. This will be done by gtk+ later, but for now, force it to GNOME
+#. g_desktop_app_info_set_desktop_env ("GNOME");
+#: ../src/main.c:105
 msgid "[FILES]"
 msgstr "[Fichiers]"
 
-#: ../src/main.c:135
+#: ../src/main.c:121
 #, c-format
 msgid ""
 "You seem to be running Oregano without having it installed properly on your "
@@ -1297,76 +1299,76 @@ msgstr ""
 "qu'il soit correctement installé sur votre\n"
 "système.\n"
 "Veuillez réinstaller Oregano et essayer\n"
-"de nouveau."
+"à nouveau."
 
-#: ../src/main.c:159
-#, fuzzy
+#: ../src/main.c:141
 msgid ""
 "Could not find a parts library.\n"
 "\n"
 "This is probably due to a faulty installation of Oregano. Please check your "
 "installation."
 msgstr ""
-"Une bibliothèque de composants n'a pas été trouvée.\n"
+"Aucune bibliothèque de composants trouvée.\n"
 "\n"
 "Ce problème est probablement dû à une installation\n"
-"défectueuse d'Oregano. Veuillez vérifier votre installation."
+"défectueuse d'Oregano.\n"
+"Veuillez vérifier votre installation."
 
-#: ../src/main.c:213
+#: ../src/main.c:195
 #, c-format
 msgid "Format '%s' not supported."
 msgstr "Le format « %s » n'est pas supporté"
 
-#: ../src/main.c:233
+#: ../src/main.c:213
 #, c-format
 msgid "Done.\n"
 msgstr "Effectué.\n"
 
-#: ../src/main.c:251
+#: ../src/main.c:231
 msgid "Welcome to Oregano"
 msgstr "Oregano"
 
-#: ../src/load-schematic.c:266
+#: ../src/load-schematic.c:265
 #, c-format
 msgid "Bad file format."
 msgstr "Format de fichier incorrect."
 
-#: ../src/load-schematic.c:276
+#: ../src/load-schematic.c:275
 #, c-format
 msgid "Unknown parser error."
 msgstr "Erreur inconnue de l'analyseur."
 
-#: ../src/load-library.c:152
+#: ../src/load-library.c:153
 #, c-format
 msgid "Could not find the requested symbol: %s\n"
 msgstr "Le symbole demandé est introuvable : %s\n"
 
-#: ../src/load-library.c:168
+#: ../src/load-library.c:169
 #, c-format
 msgid "Could not find the requested part: %s\n"
 msgstr "Le composant demandé est introuvable : %s\n"
 
-#: ../src/file.c:51 ../src/file.c:92
+#: ../src/file.c:53 ../src/file.c:94
 msgid "Oregano Files"
 msgstr "Fichiers d'Oregano"
 
-#: ../src/file.c:53 ../src/file.c:94
+#: ../src/file.c:55 ../src/file.c:96
 msgid "All Files"
 msgstr "Tous les fichiers"
 
-#: ../src/file.c:56
+#: ../src/file.c:58
 msgid "Open File"
 msgstr "Ouvrir le fichier"
 
-#: ../src/file.c:97
+#: ../src/file.c:99
 msgid "Save File"
 msgstr "Enregistrer fichier"
 
-#: ../src/file.c:147
+#: ../src/file.c:149
 msgid "Netlist File"
 msgstr "Fichier netlist"
 
-#: ../src/dialogs.c:163
+#: ../src/dialogs.c:165
 msgid ""
 "(c) 2009-2010 Marc Lorber 2003-2006 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
@@ -1374,7 +1376,7 @@ msgstr ""
 "(c) 2009-2010 Marc Lorber 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 
-#: ../src/dialogs.c:176
+#: ../src/dialogs.c:178
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Dessin de schémas et simulation de circuits.\n"
 
@@ -1383,27 +1385,27 @@ msgstr "Dessin de schémas et simulation de circuits.\n"
 msgid "Couldn't find the requested symbol%s for part %s in library.\n"
 msgstr "Le symbole %s du composant %s est introuvable.\n"
 
-#: ../src/model/schematic.c:596
+#: ../src/model/schematic.c:595
 #, c-format
 msgid "File %s does not exists."
 msgstr "Le fichier %s n'existe pas."
 
-#: ../src/model/schematic.c:604 ../src/model/schematic.c:643
+#: ../src/model/schematic.c:603 ../src/model/schematic.c:642
 #, c-format
 msgid "Unknown file format for %s."
 msgstr "Format de fichier inconnu pour %s."
 
-#: ../src/model/schematic.c:623
+#: ../src/model/schematic.c:622
 #, c-format
 msgid "Load fails!."
 msgstr "Échec du chargement."
 
-#: ../src/model/schematic.c:1023 ../src/model/schematic.c:1027
-#: ../src/model/schematic.c:1033
+#: ../src/model/schematic.c:1022 ../src/model/schematic.c:1026
+#: ../src/model/schematic.c:1032
 msgid "Error loading print-options.ui"
 msgstr "Il est impossible de charger « print-options.ui »"
 
-#: ../src/model/schematic.c:1107
+#: ../src/model/schematic.c:1096
 msgid "Schematic"
 msgstr "Schéma"
 

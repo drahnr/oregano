@@ -182,7 +182,7 @@ textbox_new (char *font)
 static ItemData *
 textbox_clone (ItemData *src)
 {
-	Textbox *src_textbox, *new_textbox;
+	Textbox *new_textbox;
 	ItemDataClass *id_class;
 
 	g_return_val_if_fail (src != NULL, NULL);
@@ -192,7 +192,6 @@ textbox_clone (ItemData *src)
 	if (id_class->copy == NULL)
 		return NULL;
 
-	src_textbox = TEXTBOX (src);
 	new_textbox = TEXTBOX (g_object_new (TYPE_TEXTBOX, NULL));
 	id_class->copy (ITEM_DATA (new_textbox), src);
 
@@ -225,7 +224,6 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 	double affine[6];
 	ArtPoint src, dst;
 	Textbox *textbox;
-	TextboxPriv *priv;
 	SheetPos b1, b2;
 	SheetPos textbox_center, delta;
 
@@ -242,8 +240,6 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 		textbox_center.x = b1.x + (b2.x - b1.x) / 2;
 		textbox_center.y = b1.y + (b2.y - b1.y) / 2;
 	}
-
-	priv = textbox->priv;
 
 	art_affine_rotate (affine, angle);
 
@@ -272,7 +268,6 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	double affine[6];
 	ArtPoint src, dst;
 	Textbox *textbox;
-	TextboxPriv *priv;
 	SheetPos b1, b2;
 	SheetPos textbox_center = {0.0, 0.0}, delta;
 
@@ -286,8 +281,6 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 		textbox_center.x = b1.x + (b2.x - b1.x) / 2;
 		textbox_center.y = b1.y + (b2.y - b1.y) / 2;
 	}
-
-	priv = textbox->priv;
 
 	if (horizontal)
 		art_affine_scale (affine, -1, 1);

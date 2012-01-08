@@ -46,7 +46,6 @@ void
 oregano_error_with_title (gchar *title, gchar *desc)
 {
 	GtkWidget *dialog;
-	gint result;
 	GString* span_msg;
 
 	span_msg = g_string_new ("<span weight=\"bold\" size=\"large\">");
@@ -67,7 +66,7 @@ oregano_error_with_title (gchar *title, gchar *desc)
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free (span_msg, TRUE);
 	gtk_widget_destroy (dialog);
@@ -84,7 +83,6 @@ void
 oregano_warning_with_title (gchar *title, gchar *desc)
 {
 	GtkWidget *dialog;
-	gint result;
 	GString* span_msg;
 
 	span_msg = g_string_new ("<span weight=\"bold\" size=\"large\">");
@@ -105,7 +103,7 @@ oregano_warning_with_title (gchar *title, gchar *desc)
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
-	result = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free (span_msg, TRUE);
 	gtk_widget_destroy (dialog);

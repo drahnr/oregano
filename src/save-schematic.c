@@ -201,9 +201,7 @@ write_xml_property (Property *prop, parseXmlContext *ctxt)
 {
 	xmlNodePtr node_property;
 
-	/*
-	 * Create a node for the property.
-	 */
+	/* Create a node for the property. */
 	node_property = xmlNewChild (ctxt->node_props, ctxt->ns, BAD_CAST "property",
 		NULL);
 	if (!node_property) {
@@ -211,15 +209,11 @@ write_xml_property (Property *prop, parseXmlContext *ctxt)
 		return;
 	}
 
-	/*
-	 * Store the name.
-	 */
+	/* Store the name. */
 	xmlNewChild (node_property, ctxt->ns, BAD_CAST "name",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST prop->name));
 
-	/*
-	 * Store the value.
-	 */
+	/* Store the value. */
 	xmlNewChild (node_property, ctxt->ns, BAD_CAST "value",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST prop->value));
 }
@@ -230,35 +224,24 @@ write_xml_label (PartLabel *label, parseXmlContext *ctxt)
 	xmlNodePtr node_label;
 	gchar *str;
 
-	/*
-	 * Create a node for the property.
-	 */
+	/* Create a node for the property.*/
 	node_label = xmlNewChild (ctxt->node_labels, ctxt->ns, BAD_CAST "label", NULL);
 	if (!node_label) {
 		g_warning ("Failed during save of label %s.\n", label->name);
 		return;
 	}
 
-	/*
-	 * Store the name.
-	 */
+	/* Store the name. */
 	xmlNewChild (node_label, ctxt->ns, BAD_CAST "name",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST label->name));
 
-	/*
-	 * Store the value.
-	 */
+	/* Store the value.*/
 	xmlNewChild (node_label, ctxt->ns, BAD_CAST "text",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST label->text));
 
 	str = g_strdup_printf ("(%g %g)",  label->pos.x, label->pos.y);
 	xmlNewChild (node_label, ctxt->ns, BAD_CAST "position", BAD_CAST str);
 	g_free (str);
-
-	/*
-	 * Editable or not?
-	 */
-/*	xmlNewChild (node_property, ctxt->ns, "editable", prop->edit ? "true" : "false");*/
 }
 
 static void
@@ -266,15 +249,13 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 {
 	PartPriv *priv;
 	xmlNodePtr node_part;
-	xmlNodePtr node_pos;
+	//xmlNodePtr node_pos;
 	gchar *str;
 	SheetPos pos;
 
 	priv = part->priv;
 
-	/*
-	 * Create a node for the part.
-	 */
+	/* Create a node for the part. */
 	node_part = xmlNewChild (ctxt->node_parts, ctxt->ns, BAD_CAST "part", NULL);
 	if (!node_part) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
@@ -294,35 +275,26 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 		xmlNewChild (node_part, ctxt->ns, BAD_CAST "flip",
 			xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST "vertical"));
 
-	/*
-	 * Store the name.
-	 */
+	/* Store the name. */
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "name",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST priv->name));
 
-	/*
-	 * Store the name of the library the part resides in.
-	 */
+	/* Store the name of the library the part resides in. */
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "library",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST priv->library->name));
 
-	/*
-	 * Which symbol to use.
-	 */
+	/* Which symbol to use. */
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "symbol",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST priv->symbol_name));
 
-	/*
-	 * Position.
-	 */
+	/* Position. */
 	item_data_get_pos (ITEM_DATA (part), &pos);
 	str = g_strdup_printf ("(%g %g)", pos.x, pos.y);
-	node_pos = xmlNewChild (node_part, ctxt->ns, BAD_CAST "position", BAD_CAST str);
+	//node_pos = xmlNewChild (node_part, ctxt->ns, BAD_CAST "position", BAD_CAST str);
+	xmlNewChild (node_part, ctxt->ns, BAD_CAST "position", BAD_CAST str);
 	g_free (str);
 
-	/*
-	 * Create a node for the properties.
-	 */
+	/* Create a node for the properties. */
 	ctxt->node_props = xmlNewChild (node_part, ctxt->ns, BAD_CAST "properties",
 		NULL);
 	if (!ctxt->node_props) {
@@ -334,9 +306,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 			ctxt);
 	}
 
-	/*
-	 * Create a node for the labels.
-	 */
+	/* Create a node for the labels. */
 	ctxt->node_labels = xmlNewChild (node_part, ctxt->ns, BAD_CAST "labels", NULL);
 	if (!ctxt->node_labels) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
@@ -357,9 +327,7 @@ write_xml_wire (Wire *wire, parseXmlContext *ctxt)
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
 
-	/*
-	 * Create a node for the wire.
-	 */
+	/* Create a node for the wire. */
 	node_wire = xmlNewChild (ctxt->node_wires, ctxt->ns, BAD_CAST "wire", NULL);
 	if (!node_wire) {
 		g_warning ("Failed during save of wire.\n");
@@ -404,9 +372,7 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 	xmlNewChild (node_textbox, ctxt->ns, BAD_CAST "text", BAD_CAST str);
 }
 
-/*
- * Create an XML subtree of doc equivalent to the given Schematic.
- */
+/* Create an XML subtree of doc equivalent to the given Schematic. */
 static xmlNodePtr
 write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 {
@@ -414,14 +380,10 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 	xmlNodePtr grid;
 	xmlNsPtr ogo;
 	gchar *str;
-	/*
-	 * Unused variables
-	double zoom;
-	*/
 
 	cur = xmlNewDocNode (ctxt->doc, ctxt->ns, BAD_CAST "schematic", NULL);
 	if (cur == NULL) {
-		printf ("%s:%d NULL que no debe ser NULL!\n", __FILE__,
+		printf ("%s:%d NULL that shall be not NULL!\n", __FILE__,
 			__LINE__);
 		return NULL;
 	}
@@ -434,9 +396,7 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 		ctxt->ns = ogo;
 	}
 
-	/*
-	 * General information about the Schematic.
-	 */
+	/* General information about the Schematic.	 */
 	str = g_strdup_printf ("%s", schematic_get_author (sm));
 	xmlNewChild (cur, ctxt->ns, BAD_CAST "author", xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
@@ -449,32 +409,23 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 	xmlNewChild (cur, ctxt->ns, BAD_CAST "comments", xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
 
-	/*
-	 * Grid.
-	 */
+	/* Grid. */
 	grid = xmlNewChild (cur, ctxt->ns, BAD_CAST "grid", NULL);
 	xmlNewChild (grid, ctxt->ns, BAD_CAST "visible", BAD_CAST "true");
 	xmlNewChild (grid, ctxt->ns, BAD_CAST "snap", BAD_CAST "true");
-	/*
-	 * Simulation settings.
-	 */
+	
+	/* Simulation settings. */
 	write_xml_sim_settings (cur, ctxt, sm);
 
-	/*
-	 * Parts.
-	 */
+	/* Parts. */
 	ctxt->node_parts = xmlNewChild (cur, ctxt->ns, BAD_CAST "parts", NULL);
 	schematic_parts_foreach (sm, (gpointer) write_xml_part, ctxt);
 
-	/*
-	 * Wires.
-	 */
+	/* Wires. */
 	ctxt->node_wires = xmlNewChild (cur, ctxt->ns, BAD_CAST "wires", NULL);
 	schematic_wires_foreach (sm, (gpointer) write_xml_wire, ctxt);
 
-	/*
-	 * Text boxes.
-	 */
+	/* Text boxes. */
 	ctxt->node_textboxes = xmlNewChild (cur, ctxt->ns, BAD_CAST "textboxes", NULL);
 	schematic_items_foreach (sm, (gpointer) write_xml_textbox, ctxt);
 
@@ -497,9 +448,7 @@ schematic_write_xml (Schematic *sm, GError **error)
 
 	g_return_val_if_fail (sm != NULL, FALSE);
 
-	/*
-	 * Create the tree.
-	 */
+	/* Create the tree. */
 	xml = xmlNewDoc (BAD_CAST "1.0");
 	if (xml == NULL) {
 		return FALSE;
@@ -515,16 +464,12 @@ schematic_write_xml (Schematic *sm, GError **error)
 		return FALSE;
 	}
 
-	/*
-	 * Dump the tree.
-	 */
+	/* Dump the tree. */
 	xmlSetDocCompressMode (xml, oregano.compress_files ? 9 : 0);
 
 	{
 		char *s =schematic_get_filename (sm);
-		int val = 0;
 		if (s != NULL) {
-			val = xmlIndentTreeOutput;
 			ret = xmlSaveFormatFile (s, xml, 1);
 		} 
 		else {

@@ -1,0 +1,18 @@
+<?xml version="1.0" standalone="no" ?>
+<!DOCTYPE omf PUBLIC "-//OMF//DTD Scrollkeeper OMF Variant V1.0//EN" "http://scrollkeeper.sourceforge.net/dtds/scrollkeeper-omf-1.0/scrollkeeper-omf.dtd">
+<omf>
+    <resource>
+        <creator>rmarkie@fi.uba.ar (Ricardo Markiewicz)</creator>
+        <title>Oregano User Guide</title>
+        <date>2004-05-03</date>
+        <version identifier="0.0.3" date="2004-08-11" description="alpha version" />
+        <subject category="GNOME|Core Desktop" />
+        <description>This document will describe the benefits of oregano 2, and show you some examples.</description>
+        <type>manual</type>
+        <format mime="text/xml" dtd="-//OASIS//DTD DocBook XML V4.1.2//EN" />
+        <identifier url="" />
+        <language code="C" />
+        <relation seriesid="b57e7e48-be78-11d6-85a3-d094906a987c" />
+        <rights type="GNU FDL" license.version="1.1" license="http://www.gnu.org/licenses/fdl.html" holder="Havoc&#x0A;      Pennington, John Fleck" />
+    </resource>
+</omf>

@@ -422,9 +422,10 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
 			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
 			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			oregano_error_with_title (_("Could not create a netlist"), error->message);
-			g_clear_error (&error);
-		} else {
+				oregano_error_with_title (_("Could not create a netlist"), error->message);
+				g_clear_error (&error);
+		} 
+		else {
 			oregano_error (_("An unexpected error has occurred"));
 		}
 		return NULL;
@@ -437,4 +438,3 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 
 	return editor;
 }
-

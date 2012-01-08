@@ -71,27 +71,16 @@ GtkWidget *button[2];
 static void
 change_modeldir_cb (GtkFileChooser *chooser, gpointer  user_data)
 {
-	gchar *model_dir;
-	
-	model_dir = gtk_file_chooser_get_uri (chooser);
 }
 
 static void
 change_librarydir_cb (GtkFileChooser *chooser, gpointer user_data)
 {
-	gchar *library_dir;
-	
-	library_dir = gtk_file_chooser_get_uri (chooser);
 }
 
 static void
 change_engine_path_cb (GtkFileChooser *chooser, gpointer user_data)
 {
-	gchar *engine_path;
-	Settings *s;
-	s = SETTINGS (user_data);
-	
-	engine_path = gtk_file_chooser_get_filename (chooser);
 }
 
 static void

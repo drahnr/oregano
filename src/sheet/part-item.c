@@ -277,28 +277,12 @@ static void
 part_item_set_property (GObject *object, guint propety_id, const GValue *value,
 	GParamSpec *pspec)
 {
-	PartItem *part_item;
-	PartItemPriv *priv;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_PART_ITEM (object));
-
-	part_item = PART_ITEM (object);
-	priv = part_item->priv;
 }
 
 static void
 part_item_get_property (GObject *object, guint propety_id, GValue *value,
 	GParamSpec *pspec)
 {
-	PartItem *part_item;
-	PartItemPriv *priv;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_PART_ITEM (object));
-
-	part_item = PART_ITEM (object);
-	priv = part_item->priv;
 }
 
 static void
@@ -487,7 +471,6 @@ prop_dialog_response (GtkWidget *dialog, gint response,
 	GList		 *widget;
 	Property	 *prop;
 	PartItem	 *item;
-	PartItemPriv *priv;
 	Part		 *part;
 	gchar        *prop_name;
 	const gchar  *prop_value;
@@ -495,7 +478,6 @@ prop_dialog_response (GtkWidget *dialog, gint response,
 
 	item = prop_dialog->part_item;
 
-	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
 	for (widget = prop_dialog->widgets; widget;
@@ -522,7 +504,6 @@ static void
 edit_properties_point (PartItem *item)
 {
 	GSList *properties;
-	PartItemPriv *priv;
 	Part *part;
 	char *msg;
 	GtkBuilder *gui;
@@ -530,9 +511,7 @@ edit_properties_point (PartItem *item)
 	GtkRadioButton *radio_v, *radio_c;
 	GtkRadioButton *ac_r, *ac_m, *ac_i, *ac_p;
 	GtkCheckButton *chk_db;
-	gint response;
 
-	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
 	if ((gui = gtk_builder_new ()) == NULL) {
@@ -544,7 +523,8 @@ edit_properties_point (PartItem *item)
 		OREGANO_UIDIR "/clamp-properties-dialog.ui",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+			_("The file %s could not be found. You might need to reinstall "
+			  "Oregano to fix this."),
 			OREGANO_UIDIR "/clamp-properties-dialog.ui");
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
@@ -556,14 +536,14 @@ edit_properties_point (PartItem *item)
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_error_free (perror);
 		return;
-	}
+	}	
 
 	prop_dialog = g_new0 (PartPropDialog, 1);
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG  (gtk_builder_get_object (gui, "clamp-properties-dialog"));
-	gtk_dialog_set_has_separator (prop_dialog->dialog, FALSE);
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, 
+	                                   "clamp-properties-dialog"));
 
 	radio_v = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_v"));
 	radio_c = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_c"));
@@ -615,7 +595,7 @@ edit_properties_point (PartItem *item)
 		}
 	}
 
-	response = gtk_dialog_run (prop_dialog->dialog);
+	gtk_dialog_run (prop_dialog->dialog);
 
 	/* Save properties from GUI */
 	for (properties = part_get_properties (part); properties;
@@ -668,7 +648,6 @@ edit_properties (SheetItem *object)
 {
 	GSList *properties;
 	PartItem *item;
-	PartItemPriv *priv;
 	Part *part;
 	char *internal, *msg;
 	GtkBuilder *gui;
@@ -683,7 +662,6 @@ edit_properties (SheetItem *object)
 	g_return_if_fail (IS_PART_ITEM (object));
 
 	item = PART_ITEM (object);
-	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
 	internal = part_get_property (part, "internal");
@@ -955,7 +933,6 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
-	IDFlip flip;
 	double affine[6];
 	double affine_rotate[6];
 	double affine_scale[6];
@@ -967,7 +944,6 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	item = PART_ITEM (sheet_item);
 	group = GNOME_CANVAS_GROUP (item);
 	part = PART (data);
-	flip = part_get_flip (part);
 
 	priv = item->priv;
 
@@ -1471,7 +1447,6 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 	int num_pins, i;
 	SheetPos p1, p2;
 	GtkAnchorType anchor;
-	int w, h;
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
@@ -1484,9 +1459,6 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 	item_list = NULL;
 
 	get_cached_bounds (item, &p1, &p2);
-
-	w = p2.x - p1.x;
-	h = p2.y - p1.y;
 
 	switch (part_get_rotation (part)) {
 		case 0:

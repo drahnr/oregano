@@ -31,6 +31,7 @@
  */
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <ctype.h>
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
@@ -120,20 +121,22 @@ static SimOption default_options[] = {
 		{NULL, NULL}
 };
 
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+
 static void
 fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 {
-	GtkComboBox *node_box;
+	GtkComboBoxText *node_box;
 	GSList *node_slist;
 	gint i;
 	gint result = FALSE;
 	
-	node_box = GTK_COMBO_BOX (sim->priv->w_four_combobox);
+	node_box = GTK_COMBO_BOX_TEXT (sim->priv->w_four_combobox);
 	
 	/* Get the node identifier */
 	for (i=0; (i <1000 && result == FALSE); ++i) {
 		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), 
-		               gtk_combo_box_get_active_text (node_box)) == 0)
+		               gtk_combo_box_text_get_active_text (node_box)) == 0)
 			result = TRUE;
 	}
 	result=FALSE;
@@ -179,16 +182,16 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 static void
 fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 {
-	GtkComboBox *node_box;
+	GtkComboBoxText *node_box;
 	gint result = FALSE;
 	gint i;
 	
-	node_box = GTK_COMBO_BOX (sim->priv->w_four_combobox);
+	node_box = GTK_COMBO_BOX_TEXT (sim->priv->w_four_combobox);
 
 	/* Get the node identifier */
 	for (i=0; (i < 1000 && result == FALSE); i++) {
 		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), 
-		               gtk_combo_box_get_active_text (node_box)) == 0)
+		               gtk_combo_box_text_get_active_text (node_box)) == 0)
 			result = TRUE;
 	}
 	
@@ -401,11 +404,9 @@ option_remove (GtkWidget *w, SimSettings *s)
 static void
 trans_enable_cb (GtkWidget *widget, SimSettings *s)
 {
-	gboolean enable, step_enable;
+	gboolean enable;
 
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	step_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (
-	                                s->priv->w_trans_step_enable));
 	
 	if (enable)
 		gtk_widget_show (s->priv->w_trans_frame);
@@ -484,31 +485,29 @@ sim_settings_new (Schematic *sm)
 
 	s->priv = g_new0 (SimSettingsPriv, 1);
 
-	/*
-	 * Set some default settings.
-	 */
-	/*  transient   */
+	//Set some default settings.
+	// transient
 	s->priv->trans_enable = TRUE;
 	s->priv->trans_start = g_strdup ("0 s");
 	s->priv->trans_stop = g_strdup ("5 ms");
 	s->priv->trans_step = g_strdup ("0.1 ms");
 	s->priv->trans_step_enable = FALSE;
 
-	/*  ac   */
+	//  AC
 	s->priv->ac_enable = FALSE;
 	s->priv->ac_type   = g_strdup ("DEC");
 	s->priv->ac_npoints= g_strdup ("50");
 	s->priv->ac_start  = g_strdup ("1");
 	s->priv->ac_stop   = g_strdup ("1 Meg");
 
-	/*  dc   */
+	// DC
 	s->priv->dc_enable = FALSE;
 	s->priv->dc_vin   = g_strdup ("");
 	s->priv->dc_start = g_strdup ("");
 	s->priv->dc_stop  = g_strdup ("");
 	s->priv->dc_step  = g_strdup ("");
 
-	/*   fourier   */
+	// Fourier
 	s->priv->fourier_enable = FALSE;
 	s->priv->fourier_frequency = g_strdup ("");
 	s->priv->fourier_vout  = NULL;
@@ -860,8 +859,8 @@ response_callback (GtkButton *button, Schematic *sm)
 	                       GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
 	if (s->priv->dc_vin) 
 		g_free (s->priv->dc_vin);
-	tmp = gtk_combo_box_get_active_text (
-	                       GTK_COMBO_BOX (s->priv->w_dc_vin));
+	tmp = gtk_combo_box_text_get_active_text (
+	                       GTK_COMBO_BOX_TEXT (s->priv->w_dc_vin));
 	node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
 	tmp = node_ids[1];
 	node_ids = g_strsplit (g_strdup (tmp), ")", 0);
@@ -888,8 +887,8 @@ response_callback (GtkButton *button, Schematic *sm)
 
 	if (s->priv->ac_type) 
 		g_free (s->priv->ac_type);
-	s->priv->ac_type = gtk_combo_box_get_active_text (
-	                         GTK_COMBO_BOX (s->priv->w_ac_type));
+	s->priv->ac_type = gtk_combo_box_text_get_active_text (
+	                         GTK_COMBO_BOX_TEXT (s->priv->w_ac_type));
 
 	if (s->priv->ac_npoints) 
 		g_free (s->priv->ac_npoints);
@@ -943,7 +942,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	SimSettings *s;
 	Schematic *sm;
 	GList *list;
-	GList *sources=NULL, *ltmp;
+	GList *sources = NULL, *ltmp;
 	GtkComboBox *node_box;
 	GtkListStore *node_list_store;
 	gchar *text = NULL;
@@ -1106,6 +1105,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w),
 		s->priv->trans_step_enable);
 	s->priv->w_trans_step_enable = w;
+	g_signal_connect (G_OBJECT (s->priv->w_trans_step_enable), "clicked", 
+		G_CALLBACK (trans_step_enable_cb), s);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "trans_init_cond"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w),
@@ -1129,14 +1130,14 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	w =  GTK_WIDGET (gtk_builder_get_object (gui, "ac_type"));
 	gtk_widget_destroy (w);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table14"));
-	combo_box = gtk_combo_box_new_text ();
+	combo_box = gtk_combo_box_text_new ();
 	gtk_table_attach_defaults (GTK_TABLE(w), combo_box, 1, 2, 0, 1);
 	s->priv->w_ac_type = combo_box;
 
 	{
 		gint index = 0;
 		for (index = 0; AC_types_list[index]!= NULL ; index++) {
-			gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box), 
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), 
 			                           AC_types_list[index]);
 		}
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),0);
@@ -1190,13 +1191,13 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "dc_vin1"));
 	gtk_widget_destroy (w);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table13"));
-	combo_box = gtk_combo_box_new_text ();
+	combo_box = gtk_combo_box_text_new ();
 	gtk_table_attach_defaults (GTK_TABLE(w), combo_box, 1, 2, 0, 1);
 	s->priv->w_dc_vin = combo_box;
 	if (sources) {
 		for (; sources; sources = sources->next) {
-			gtk_combo_box_append_text (
-			             GTK_COMBO_BOX (combo_box), sources->data);
+			gtk_combo_box_text_append_text (
+			             GTK_COMBO_BOX_TEXT (combo_box), sources->data);
 		}
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),0);		
 	}
@@ -1224,7 +1225,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	for (ltmp = sources; ltmp; ltmp = ltmp->next) g_free (ltmp->data);
 	g_list_free (sources);
 
-	/* Fourier  */
+	// Fourier
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "fourier_enable"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), 
 	                         s->priv->fourier_enable);
@@ -1267,7 +1268,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_destroy (w);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table12"));
-	combo_box = gtk_combo_box_new_text ();
+	combo_box = gtk_combo_box_text_new ();
 	gtk_table_attach_defaults (GTK_TABLE(w),combo_box,2,3,2,3);
 	
 	s->priv->w_four_combobox = combo_box;
@@ -1291,7 +1292,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	while (node_list) {
 		if (node_list->data)
 			text = g_strdup_printf ("V(%d)", atoi (node_list->data));
-		if (text) gtk_combo_box_append_text (node_box, text);
+		if (text) gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (node_box), text);
 		node_list = node_list->next;
 	}
 	gtk_combo_box_set_active (node_box, 0);

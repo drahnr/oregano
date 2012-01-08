@@ -480,7 +480,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event,
 			  "y", &delta.y,
 			  NULL);
 
-			gtk_timeout_remove (priv->scroll_timeout_id); // Tricky...
+			g_source_remove (priv->scroll_timeout_id); // Tricky...
 
 			sheet->state = SHEET_STATE_NONE;
 			gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (sheet_item), 
@@ -494,8 +494,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event,
 			 */
 			gnome_canvas_item_move (
 				GNOME_CANVAS_ITEM (priv->selected_group),
-				-delta.x, -delta.y
-			);
+				-delta.x, -delta.y);
 
 			/*
 			 * Make sure the objects are reparented back to the object
@@ -534,8 +533,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event,
 				 */
 				gnome_canvas_item_get_bounds (
 					GNOME_CANVAS_ITEM (priv->floating_group),
-					&x1, &y1, &x2, &y2
-				);
+					&x1, &y1, &x2, &y2);
 
 				snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
 
@@ -545,8 +543,7 @@ sheet_item_event (SheetItem *sheet_item, const GdkEvent *event,
 
 				gnome_canvas_item_move (
 					GNOME_CANVAS_ITEM (priv->floating_group),
-					dx, dy
-				);
+					dx, dy);
 
 				last_x = snapped_x;
 				last_y = snapped_y;

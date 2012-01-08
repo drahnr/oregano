@@ -112,10 +112,8 @@ static void
 sheet_class_init (SheetClass *sheet_class)
 {
 	GObjectClass *object_class;
-	GtkWidgetClass *widget_class;
 
 	object_class = G_OBJECT_CLASS (sheet_class);
-	widget_class = GTK_WIDGET_CLASS (sheet_class);
 
 	object_class->set_property = sheet_set_property;
 	object_class->get_property = sheet_get_property;
@@ -222,7 +220,6 @@ sheet_change_zoom (const Sheet *sheet, gdouble rate)
 static void
 sheet_realized (GtkWidget *widget, gpointer data)
 {
-	GdkWindow *window;
 	GdkColormap *colormap;
 	GtkStyle  *style;
 
@@ -230,9 +227,6 @@ sheet_realized (GtkWidget *widget, gpointer data)
 	// exposed areas and thus be faster.
 	gdk_window_set_back_pixmap (gtk_layout_get_bin_window (GTK_LAYOUT(widget)), 
 	                            NULL, FALSE);
-
-	window = gtk_widget_get_window (widget);
-	
 
 	// Set the background to white.
 	style = gtk_style_copy (gtk_widget_get_style (widget));
@@ -244,7 +238,7 @@ sheet_realized (GtkWidget *widget, gpointer data)
 	                          TRUE);
 	                         	
 	gtk_widget_set_style (widget, style);
-	gtk_style_unref (style);
+	g_object_unref (style);
 }
 
 /* This function defines the drawing sheet on which schematic will be drawn */

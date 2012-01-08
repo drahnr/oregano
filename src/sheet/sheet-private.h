@@ -32,6 +32,8 @@
 
 #ifndef __SHEET_PRIVATE_H
 #define __SHEET_PRIVATE_H
+#include <libgnomecanvas/libgnomecanvas.h>
+#include <gtk/gtk.h>
 
 #include "sheet.h"
 #include "create-wire.h"

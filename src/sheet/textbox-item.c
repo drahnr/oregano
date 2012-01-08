@@ -139,11 +139,9 @@ textbox_item_get_type ()
 static void
 textbox_item_class_init (TextboxItemClass *textbox_item_class)
 {
-	GObjectClass *object_class;
 	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
 
-	object_class = G_OBJECT_CLASS (textbox_item_class);
 	gtk_object_class = GTK_OBJECT_CLASS (textbox_item_class);
 	sheet_item_class = SHEET_ITEM_CLASS (textbox_item_class);
 	textbox_item_parent_class =
@@ -333,9 +331,9 @@ static void
 selection_changed (TextboxItem *item, gboolean select, gpointer user_data)
 {
 	if (select)
-		gtk_idle_add ((gpointer) select_idle_callback, item);
+		g_idle_add ((gpointer) select_idle_callback, item);
 	else
-		gtk_idle_add ((gpointer) deselect_idle_callback, item);
+		g_idle_add ((gpointer) deselect_idle_callback, item);
 }
 
 static gboolean
@@ -571,14 +569,12 @@ textbox_item_listen (Sheet *sheet)
 static void
 edit_dialog_ok(TextboxItem *item)
 {
-	TextboxItemPriv *priv;
 	Textbox *textbox;
 	const gchar *value;
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_TEXTBOX_ITEM (item));
 
-	priv = item->priv;
 	textbox = TEXTBOX (sheet_item_get_data (SHEET_ITEM (item)));
 
 	value = gtk_entry_get_text (GTK_ENTRY (prop_dialog->entry));
@@ -591,9 +587,7 @@ edit_dialog_ok(TextboxItem *item)
 static void
 edit_textbox (SheetItem *sheet_item)
 {
-	Sheet *sheet;
 	TextboxItem *item;
-	TextboxItemPriv *priv;
 	Textbox *textbox;
 	char *msg, *value;
 	GtkBuilder *gui;
@@ -608,13 +602,13 @@ edit_textbox (SheetItem *sheet_item)
 	else gtk_builder_set_translation_domain (gui, NULL);
 
 	item = TEXTBOX_ITEM (sheet_item);
-	priv = item->priv;
 	textbox = TEXTBOX (sheet_item_get_data (sheet_item));
 
 	if (!g_file_test (OREGANO_UIDIR "/textbox-properties-dialog.ui",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+			_("The file %s could not be found. You might need to reinstall "
+			  "Oregano to fix this."),
 			OREGANO_UIDIR "/textbox-properties-dialog.ui");
 		oregano_error (_("Could not create textbox properties dialog"));
 		g_free (msg);
@@ -642,8 +636,6 @@ edit_textbox (SheetItem *sheet_item)
 
 	value = textbox_get_text (textbox);
 	gtk_entry_set_text (GTK_ENTRY (prop_dialog->entry), value);
-
-	sheet = sheet_item_get_sheet (SHEET_ITEM (item));
 
 	gtk_dialog_set_default_response (
 		GTK_DIALOG (prop_dialog->dialog), GTK_RESPONSE_OK);

@@ -7,4 +7,5 @@ samples_DATA =			\
 	capacitor_charge.oregano \
 	opamp.oregano 	\
 	simple.oregano 		\
-	simple2.oregano 
+	simple2.oregano \
+	CC-test.oregano

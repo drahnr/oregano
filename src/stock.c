@@ -38,7 +38,8 @@
  * Author: Federico Mena-Quintero <federico@gimp.org>
  */
 
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
 
 #include "stock.h"
 #include "stock/sim-settings.xpm"

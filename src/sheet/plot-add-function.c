@@ -11,7 +11,7 @@
  *
  * Copyright (C) 1999-2001	Richard Hult
  * Copyright (C) 2003,2006	Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,12 +41,12 @@ plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	GtkBuilder *gui;
 	GError *perror = NULL;
 	GtkDialog *dialog;
-	GtkWidget* warning;
 	gchar *msg;
-	GtkComboBox *op1, *op2, *functiontype;
-	GtkListStore *model1, *model2;
+	GtkComboBoxText *op1, *op2, *functiontype;
 	int i;
 	gint result = 0;
+	GtkWidget *warning;
+	GtkWidget *container_temp;
 	
 	SimulationFunction *func = g_new0 (SimulationFunction, 1);
 
@@ -75,38 +75,46 @@ plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	}
 
 	dialog = GTK_DIALOG (gtk_builder_get_object (gui, "toplevel"));
-	op1 = GTK_COMBO_BOX (gtk_builder_get_object (gui, "op1"));
-	op2 = GTK_COMBO_BOX (gtk_builder_get_object (gui, "op2"));
-	functiontype = GTK_COMBO_BOX (gtk_builder_get_object (gui, "functiontype"));
+	container_temp = GTK_WIDGET (gtk_builder_get_object (gui, "op1_alignment"));
+	op1 = GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
+	gtk_container_add (GTK_CONTAINER (container_temp), GTK_WIDGET (op1));
+	gtk_widget_show (GTK_WIDGET (op1));
+	
+	container_temp = GTK_WIDGET (gtk_builder_get_object (gui, "op2_alignment"));
+	op2 = GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
+	gtk_container_add (GTK_CONTAINER (container_temp), GTK_WIDGET (op2));
+	gtk_widget_show (GTK_WIDGET (op2));
 
-	model1 = GTK_LIST_STORE (gtk_combo_box_get_model (op1));
-	model2 = GTK_LIST_STORE (gtk_combo_box_get_model (op2));
+	container_temp = GTK_WIDGET (gtk_builder_get_object (gui, "function_alignment"));
+	functiontype = GTK_COMBO_BOX_TEXT (gtk_combo_box_text_new ());
+	gtk_container_add (GTK_CONTAINER (container_temp), GTK_WIDGET (functiontype));
+	gtk_widget_show (GTK_WIDGET (functiontype));
 
-	gtk_list_store_clear (model1);
-	gtk_list_store_clear (model2);
+	gtk_combo_box_text_append_text (functiontype, _("Substraction"));
+	gtk_combo_box_text_append_text (functiontype, _("Division"));
 
 	for (i = 1; i < current->n_variables; i++) {
 		if (current->type != DC_TRANSFER) {
-			if (strchr(current->var_names[i], '#') == NULL) {
-				gtk_combo_box_append_text (op1, current->var_names[i]);
-				gtk_combo_box_append_text (op2, current->var_names[i]);
+			if (strchr (current->var_names[i], '#') == NULL) {
+				gtk_combo_box_text_append_text (op1, current->var_names[i]);
+				gtk_combo_box_text_append_text (op2, current->var_names[i]);
 			}
 		} 
 		else {
-			gtk_combo_box_append_text (op1, current->var_names[i]);
-			gtk_combo_box_append_text (op2, current->var_names[i]);
+			gtk_combo_box_text_append_text (op1, current->var_names[i]);
+			gtk_combo_box_text_append_text (op2, current->var_names[i]);
 		}
 	}
-	gtk_combo_box_set_active (op1,0);
-	gtk_combo_box_set_active (op2,0);
-	gtk_combo_box_set_active (functiontype,0);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (op1),0);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (op2),1);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (functiontype),0);
 
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 	
 	if ((result == GTK_RESPONSE_OK) &&
-	       		 ((gtk_combo_box_get_active (op1) == -1) ||
-			      (gtk_combo_box_get_active (op2) == -1) ||
-			      (gtk_combo_box_get_active (functiontype) == -1))) 
+	    ((gtk_combo_box_get_active (GTK_COMBO_BOX (op1)) == -1) ||
+		 (gtk_combo_box_get_active (GTK_COMBO_BOX (op2)) == -1) ||
+		 (gtk_combo_box_get_active (GTK_COMBO_BOX (functiontype)) == -1))) 
 	{	
 		warning = gtk_message_dialog_new_with_markup (
 					NULL,
@@ -125,14 +133,14 @@ plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	}
 
 	if  ((result == GTK_RESPONSE_OK) &&
-	       		 ((gtk_combo_box_get_active (op1) != -1) &&
-			      (gtk_combo_box_get_active (op2) != -1) &&
-			      (gtk_combo_box_get_active (functiontype) != -1))) {
+	     ((gtk_combo_box_get_active (GTK_COMBO_BOX (op1)) != -1) &&
+		  (gtk_combo_box_get_active (GTK_COMBO_BOX (op2)) != -1) &&
+		  (gtk_combo_box_get_active (GTK_COMBO_BOX (functiontype)) != -1))) {
 	
 		for (i = 1; i < current->n_variables; i++) {
-			if (g_strcmp0 (current->var_names[i], gtk_combo_box_get_active_text (op1)) == 0)
+			if (g_strcmp0 (current->var_names[i], gtk_combo_box_text_get_active_text (op1)) == 0)
 				func->first = i;
-			if (g_strcmp0 (current->var_names[i], gtk_combo_box_get_active_text (op2)) == 0)
+			if (g_strcmp0 (current->var_names[i], gtk_combo_box_text_get_active_text (op2)) == 0)
 				func->second = i;
 			}
 		current->functions = g_list_append (current->functions, func);

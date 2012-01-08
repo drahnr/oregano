@@ -32,7 +32,7 @@
 #ifndef __XML_HELPER_H
 #define __XML_HELPER_H
 
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <glib.h>
 
 #include "xml-compat.h"
 

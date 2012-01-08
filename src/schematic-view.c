@@ -55,16 +55,10 @@
 #include "engine.h"
 #include "netlist-editor.h"
 #include "sheet.h"
- 
 #include "sheet-item-factory.h"
 #include "textbox-item.h"
 
 #define NG_DEBUG(s) if (0) g_print ("%s\n", s)
-
-/*
- * Mini-icon for IceWM, KWM, tasklist etc.
- */
-#include "pixmaps/mini_icon.xpm"
 
 enum {
 	CHANGED,
@@ -321,33 +315,32 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 
 	window = GTK_WIDGET (gtk_builder_get_object (gui, "export"));
 	
-	combo = GTK_COMBO_BOX (gtk_builder_get_object (gui, "format"));
-
-	gtk_list_store_clear (GTK_LIST_STORE (gtk_combo_box_get_model (combo)));
+	combo = GTK_COMBO_BOX_TEXT (gtk_builder_get_object (gui, "format"));
 	fc = 0;
 #ifdef CAIRO_HAS_SVG_SURFACE
-	gtk_combo_box_append_text (combo, "Scalar Vector Graphics (SVG)");
+	gtk_combo_box_text_append_text (combo, "Scalar Vector Graphics (SVG)");
 	formats[fc++] = 0;
 #endif
 #ifdef CAIRO_HAS_PDF_SURFACE
-	gtk_combo_box_append_text (combo, "Portable Document Format (PDF)");
+	gtk_combo_box_text_append_text (combo, "Portable Document Format (PDF)");
 	formats[fc++] = 1;
 #endif
 #ifdef CAIRO_HAS_PS_SURFACE
-	gtk_combo_box_append_text (combo, "Postscript (PS)");
+	gtk_combo_box_text_append_text (combo, "Postscript (PS)");
 	formats[fc++] = 2;
 #endif
 #ifdef CAIRO_HAS_PNG_FUNCTIONS
-	gtk_combo_box_append_text (combo, "Portable Network Graphics (PNG)");
+	gtk_combo_box_text_append_text (combo, "Portable Network Graphics (PNG)");
 	formats[fc++] = 3;
 #endif
 
 	file = GTK_ENTRY (gtk_builder_get_object (gui, "file"));
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui,"find"));
-	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file), file);
+	g_signal_connect (G_OBJECT (w), "clicked", 
+	                  G_CALLBACK (find_file), file);
 
-	gtk_combo_box_set_active (combo, 0);
+	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
 	button = gtk_dialog_run (GTK_DIALOG (window));
 	
@@ -377,7 +370,7 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 			GtkSpinButton *spinw, *spinh;
 			int color_scheme = 0;
 			GtkWidget *w;
-			int i = gtk_combo_box_get_active (combo);
+			int i = gtk_combo_box_get_active (GTK_COMBO_BOX (combo));
 
 			w = GTK_WIDGET (gtk_builder_get_object (gui, "bgwhite"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 1;
@@ -804,13 +797,13 @@ v_clamp_cmd (SchematicView *sv)
 	Sheet *sheet;
 	Part *part;
 	GList *lib;
-	Library *l;
+	Library *l = NULL;
 
 	set_tool (sv, SCHEMATIC_TOOL_PART);
 	sheet = sv->priv->sheet;
 
 	/* Find default lib */
-	for(lib=oregano.libraries; lib; lib=lib->next) {
+	for (lib=oregano.libraries; lib; lib=lib->next) {
 		l = (Library *)(lib->data);
 		if (!g_ascii_strcasecmp(l->name, "Default")) break;
 	}
@@ -1100,20 +1093,6 @@ schematic_view_dispose (GObject *object)
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
-/**
-* Set up a mini icon for the window.
-*/
-static void
-realized (GtkWidget *widget)
-{
-	GdkPixmap *icon;
-	GdkBitmap *icon_mask;
-
-	icon = gdk_pixmap_create_from_xpm_d (gtk_widget_get_window (widget),
-			&icon_mask, NULL, mini_icon_xpm);
-	set_small_icon (gtk_widget_get_window (widget), icon, icon_mask);
-}
-
 static void
 show_help (GtkWidget *widget, SchematicView *sv)
 {
@@ -1345,11 +1324,9 @@ static void
 item_data_added_callback (Schematic *schematic, ItemData *data,
 	SchematicView *sv)
 {
-	NodeStore *store;
 	Sheet *sheet;
 	SheetItem *item;
 
-	store = schematic_get_store (schematic);
 	sheet = sv->priv->sheet;
 
 	item = sheet_item_factory_create_sheet_item (sheet, data);

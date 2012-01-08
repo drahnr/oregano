@@ -31,8 +31,6 @@
  */
 
 #include <gtk/gtk.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtktreemodel.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -362,7 +360,7 @@ part_browser_toggle_show (SchematicView *schematic_view)
 	else {
 		browser->hidden = !(browser->hidden);
 		if (browser->hidden) {
-			gtk_widget_hide_all (browser->viewport);
+			gtk_widget_hide (browser->viewport);
 		} 
 		else {
 			gtk_widget_show_all (browser->viewport);
@@ -523,7 +521,7 @@ part_browser_create (SchematicView *schematic_view)
 	gdk_colormap_alloc_color (colormap, &style->bg[GTK_STATE_NORMAL],
 		TRUE, TRUE);
 	gtk_widget_set_style (GTK_WIDGET (w), style);
-	gtk_widget_set_usize (w, PREVIEW_WIDTH,
+	gtk_widget_set_size_request (w, PREVIEW_WIDTH,
 		PREVIEW_HEIGHT + PREVIEW_TEXT_HEIGHT);
 	gnome_canvas_set_scroll_region (GNOME_CANVAS (w), 0, 0, PREVIEW_WIDTH,
 		PREVIEW_HEIGHT + PREVIEW_TEXT_HEIGHT);
@@ -559,7 +557,7 @@ part_browser_create (SchematicView *schematic_view)
 	 * Set up dnd.
 	 */
 	g_signal_connect (G_OBJECT (br->canvas), "drag_data_get",
-		GTK_SIGNAL_FUNC (drag_data_get), br);
+		G_CALLBACK (drag_data_get), br);
 
 	gtk_drag_source_set (br->canvas, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 		dnd_types, dnd_num_types, GDK_ACTION_MOVE);
@@ -574,7 +572,7 @@ part_browser_create (SchematicView *schematic_view)
 	/* Buttons. */
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "place_button"));
 	g_signal_connect (G_OBJECT (w), "clicked",
-		GTK_SIGNAL_FUNC (place_cmd), br);
+		G_CALLBACK (place_cmd), br);
 
 	/* Update the libraries option menu */
 	br->library = g_list_nth_data (oregano.libraries, 0);
@@ -619,7 +617,7 @@ part_browser_create (SchematicView *schematic_view)
 	 * Set up TreeView dnd.
 	 */
 	g_signal_connect (G_OBJECT (w), "drag_data_get",
-		GTK_SIGNAL_FUNC (drag_data_get), br);
+		G_CALLBACK (drag_data_get), br);
 
 	gtk_drag_source_set (w, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 		dnd_types, dnd_num_types, GDK_ACTION_MOVE);
@@ -652,13 +650,13 @@ part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 	gtk_widget_destroy (w);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
-	combo_box = gtk_combo_box_new_text ();
+	combo_box = gtk_combo_box_text_new ();
 	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,1,2,0,1);
 
 	libs = oregano.libraries;
 
 	while (libs) {
-		gtk_combo_box_append_text (GTK_COMBO_BOX (combo_box),
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box),
 			((Library *)libs->data)->name);
 		libs = libs->next;
 		if (!first) {

@@ -233,13 +233,10 @@ wire_get_nodes (Wire *wire)
 void
 wire_get_start_pos (Wire *wire, SheetPos *pos)
 {
-	WirePriv *priv;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
 	g_return_if_fail (pos != NULL);
-
-	priv = wire->priv;
 
 	item_data_get_pos (ITEM_DATA (wire), pos);
 }
@@ -331,7 +328,7 @@ wire_set_visited (Wire *wire, gboolean is_visited)
 static ItemData *
 wire_clone (ItemData *src)
 {
-	Wire *src_wire, *new_wire;
+	Wire *new_wire;
 	ItemDataClass *id_class;
 
 	g_return_val_if_fail (src != NULL, NULL);
@@ -340,8 +337,6 @@ wire_clone (ItemData *src)
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS(src));
 	if (id_class->copy == NULL)
 		return NULL;
-
-	src_wire = WIRE (src);
 	new_wire = g_object_new (TYPE_WIRE, NULL);
 	id_class->copy (ITEM_DATA (new_wire), src);
 
@@ -562,9 +557,6 @@ void
 wire_update_bbox (Wire *wire)
 {
 	SheetPos b1, b2, pos, length;
-	WirePriv *priv;
-
-	priv = wire->priv;
 
 	wire_get_pos_and_length (wire, &pos, &length);
 

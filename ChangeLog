@@ -1,3 +1,13 @@
+Fri, 18 Jun 2010 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* TAG 0.73
+	* Add option-DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED \
+		-DGTK_DISABLE_DEPRECATED \
+		-DG_DISABLE_SINGLE_INCLUDES -DGDK_PIXBUF_DISABLE_SINGLE_INCLUDES \
+		-DGTK_DISABLE_SINGLE_INCLUDEs to Makefile.am
+	* Perform the corrections requested by the herebove options
+	* Prepare to switch from gnome_canvas to goo_canvas
+		 
+
 Sun, 9 May 2010 Marc Lorber  <Lorber.Marc@wanadoo.fr>
 	* TAG 0.72
 

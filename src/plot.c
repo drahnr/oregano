@@ -263,7 +263,7 @@ analysis_selected (GtkWidget *combo_box, Plot *plot)
 		g_warning (_("The simulation produced no data!!\n"));
 		return;
 	}
-	ca = gtk_combo_box_get_active_text (GTK_COMBO_BOX (combo_box));
+	ca = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (combo_box));
 
 	plot->current = NULL;
 	analysis = oregano_engine_get_results (plot->sim);
@@ -504,7 +504,8 @@ plot_window_create (Plot *plot)
 	gtk_widget_destroy (w);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
-	combo_box = gtk_combo_box_new_text ();
+	combo_box = gtk_combo_box_text_new_with_entry ();
+	
 	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,0,1,0,1);
 
 	plot->combo_box = combo_box;
@@ -517,7 +518,6 @@ plot_window_create (Plot *plot)
 int
 plot_show (OreganoEngine *engine)
 {
-	GtkTreeView *list;
 	GList *analysis = NULL;
 	GList *combo_items = NULL;
 	Plot *plot;
@@ -563,8 +563,6 @@ plot_show (OreganoEngine *engine)
 	g_signal_connect (G_OBJECT (plot->combo_box), "changed",
 		G_CALLBACK (analysis_selected), plot);
 
-	list = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), "clist"));
-
 	plot->title = g_strdup_printf (_("Plot - %s"), s_current);
 	plot->xtitle = get_variable_units (first ? first->var_units[0] : "##");
 	plot->ytitle = get_variable_units (first ? first->var_units[1] : "!!");
@@ -586,7 +584,6 @@ create_plot_function_from_data (SimulationFunction *func,
 	double data;
 	guint j, len;
 	GraphicType graphic_type = FUNCTIONAL_CURVE;
-	gdouble width = 1.0;
 
 	len = current->data[func->first]->len;
 	X = g_new0 (double, len);
@@ -617,11 +614,9 @@ create_plot_function_from_data (SimulationFunction *func,
 	if (current->type == FOURIER) {
 		graphic_type = FREQUENCY_PULSE;
 		next_pulse++;
-		width = 5.0;
 	}
 	else {
 		next_pulse = 0;
-		width = 1.0;
 	}
 
 	f = g_plot_lines_new (X, Y, len);

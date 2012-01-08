@@ -434,7 +434,6 @@ static void
 fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 {
 	CreateWire *create_wire = cwc->create_wire;
-	Wire *wire1, *wire2;
 	SheetPos p1, p2, start_pos, end_pos, start_pos2, end_pos2;
 	gboolean cancel = FALSE;
 	NodeStore *store;
@@ -511,14 +510,14 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 				end_pos2.y = p2.y;
 			}
 
-			wire2 = create_wire_and_place_item (cwc->sheet,
+			create_wire_and_place_item (cwc->sheet,
 				start_pos2, end_pos2);
 		}
 		cancel_wire (cwc);
 		cancel = TRUE;
 	}
 
-	wire1 = create_wire_and_place_item (cwc->sheet, start_pos, end_pos);
+	create_wire_and_place_item (cwc->sheet, start_pos, end_pos);
 
 	if (cancel)
 		return;
@@ -558,15 +557,10 @@ create_wire_and_place_item (Sheet *sheet, SheetPos start_pos,
 	SheetPos end_pos)
 {
 	Wire *wire;
-	NodeStore *store;
-	Schematic *schematic;
 	SheetPos length;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
-
-	schematic = schematic_view_get_schematic_from_sheet (sheet);
-	store = schematic_get_store (schematic);
 
 	wire = wire_new ();
 	item_data_set_pos (ITEM_DATA (wire), &start_pos);
