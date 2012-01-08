@@ -29,7 +29,6 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <gnome.h>
 
 #include "xml-compat.h"
 #include "xml-helper.h"
@@ -126,45 +125,6 @@ xmlSetCoordinates (xmlNodePtr node, const char *name,
 	}
 	xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 	g_free (str);
-}
-
-
-/**
- * Set a string value for a node either carried as an attibute or as
- * the content of a child.
- */
-void
-xmlSetGnomeCanvasPoints (xmlNodePtr node, const char *name,
-			 GnomeCanvasPoints *val)
-{
-	xmlNodePtr child;
-	char *str, *base;
-	int i;
-
-	if (val == NULL)
-		return;
-	if ((val->num_points < 0) || (val->num_points > 5000))
-		return;
-	base = str = g_malloc (val->num_points * 30 * sizeof (char));
-	if (str == NULL)
-		return;
-	for (i = 0; i < val->num_points; i++){
-		str += sprintf (str, "(%g %g)", val->coords[2 * i],
-				val->coords[2 * i + 1]);
-	}
-
-	child = node->childs;
-	while (child != NULL){
-		if (!xmlStrcmp (child->name, BAD_CAST name)){
-			xmlNodeSetContent (child, BAD_CAST base);
-			free (base);
-			return;
-		}
-		child = child->next;
-	}
-	xmlNewChild (node, NULL, BAD_CAST name,
-		xmlEncodeEntitiesReentrant(node->doc, BAD_CAST base));
-	g_free (base);
 }
 
 

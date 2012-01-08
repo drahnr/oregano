@@ -1,35 +1,35 @@
 <?xml version="1.0"?>
-<glade-interface>
+<interface>
   <!-- interface-requires gtk+ 2.6 -->
   <!-- interface-naming-policy toplevel-contextual -->
-  <widget class="GtkWindow" id="splash">
+  <object class="GtkWindow" id="splash">
     <property name="visible">True</property>
     <property name="title">Oregano</property>
     <property name="window_position">center-on-parent</property>
     <property name="type_hint">splashscreen</property>
     <child>
-      <widget class="GtkVBox" id="vbox1">
+      <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
         <child>
-          <widget class="GtkEventBox" id="event">
+          <object class="GtkEventBox" id="event">
             <property name="visible">True</property>
             <property name="visible_window">False</property>
             <child>
-              <widget class="GtkImage" id="image">
+              <object class="GtkImage" id="image">
                 <property name="visible">True</property>
                 <property name="pixbuf">splash.xpm</property>
-              </widget>
+              </object>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <widget class="GtkLabel" id="label">
+          <object class="GtkLabel" id="label">
             <property name="visible">True</property>
             <property name="label" translatable="yes">label1</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
@@ -37,18 +37,18 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkProgressBar" id="pbar">
+          <object class="GtkProgressBar" id="pbar">
             <property name="visible">True</property>
             <property name="fraction">0.46000000000000002</property>
             <property name="pulse_step">0.17000000000000001</property>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
             <property name="position">2</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+  </object>
+</interface>

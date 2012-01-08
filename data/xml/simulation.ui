@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
-<glade-interface>
+<interface>
   <!-- interface-requires gtk+ 2.6 -->
   <!-- interface-naming-policy toplevel-contextual -->
-  <widget class="GtkDialog" id="toplevel">
+  <object class="GtkDialog" id="toplevel">
     <property name="title" translatable="yes">Simulation</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
-      <widget class="GtkVBox" id="dialog-vbox1">
+      <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="spacing">8</property>
         <child>
-          <widget class="GtkVBox" id="vbox1">
+          <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
             <property name="border_width">6</property>
             <property name="spacing">4</property>
             <child>
-              <widget class="GtkLabel" id="progress_label">
+              <object class="GtkLabel" id="progress_label">
                 <property name="visible">True</property>
                 <property name="label" translatable="yes">Progress: None</property>
                 <property name="use_markup">True</property>
                 <property name="justify">center</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -28,48 +28,51 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkProgressBar" id="progressbar">
+              <object class="GtkProgressBar" id="progressbar">
                 <property name="visible">True</property>
                 <property name="pulse_step">0.10000000149</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">1</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="position">2</property>
           </packing>
         </child>
         <child internal-child="action_area">
-          <widget class="GtkHButtonBox" id="dialog-action_area1">
+          <object class="GtkHButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
             <property name="layout_style">spread</property>
             <child>
-              <widget class="GtkButton" id="button3">
+              <object class="GtkButton" id="button3">
                 <property name="label">gtk-cancel</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">0</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+    <action-widgets>
+      <action-widget response="0">button3</action-widget>
+    </action-widgets>
+  </object>
+</interface>

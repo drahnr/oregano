@@ -1,21 +1,22 @@
 data/oregano.desktop.in.in
 data/mime/oregano.xml.in
 
-data/glade/clamp-properties-dialog.glade
-data/glade/export.glade
-data/glade/log-window.glade
-data/glade/part-browser.glade
-data/glade/part-properties-dialog.glade
-data/glade/plot-add-function.glade
-data/glade/plot-window.glade
-data/glade/print-options.glade
-data/glade/properties.glade
-data/glade/settings.glade
-data/glade/sim-settings.glade
-data/glade/simulation.glade
-data/glade/splash.glade
-data/glade/textbox-properties-dialog.glade
-data/glade/view-netlist.glade
+[type: gettext/glade]data/xml/oregano-main.ui
+[type: gettext/glade]data/xml/plot-window.ui
+[type: gettext/glade]data/xml/sim-settings.ui
+[type: gettext/glade]data/xml/clamp-properties-dialog.ui
+[type: gettext/glade]data/xml/export.ui
+[type: gettext/glade]data/xml/log-window.ui
+[type: gettext/glade]data/xml/part-browser.ui
+[type: gettext/glade]data/xml/part-properties-dialog.ui
+[type: gettext/glade]data/xml/plot-add-function.ui
+[type: gettext/glade]data/xml/print-options.ui
+[type: gettext/glade]data/xml/properties.ui
+[type: gettext/glade]data/xml/settings.ui
+[type: gettext/glade]data/xml/simulation.ui
+[type: gettext/glade]data/xml/splash.ui
+[type: gettext/glade]data/xml/textbox-properties-dialog.ui
+[type: gettext/glade]data/xml/view-netlist.ui
 
 src/xml-helper.c
 src/sheet/create-wire.c

@@ -30,7 +30,6 @@
  */
 
 #include <gtk/gtk.h>
-#include <glade/glade.h>
 #include <glib/gi18n.h>
 
 #include "plot-add-function.h"
@@ -39,7 +38,8 @@
 void
 plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 {
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	GtkDialog *dialog;
 	GtkWidget* warning;
 	gchar *msg;
@@ -50,26 +50,34 @@ plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	
 	SimulationFunction *func = g_new0 (SimulationFunction, 1);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/plot-add-function.glade",
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create plot window."));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
+
+	if (!g_file_test (OREGANO_UIDIR "/plot-add-function.ui",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this"),
-			OREGANO_GLADEDIR "/plot-add-function.glade");
-		oregano_error_with_title (_("Could not create plot window"), msg);
+			OREGANO_UIDIR "/plot-add-function.ui");
+		oregano_error_with_title (_("Could not create plot window."), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-add-function.glade", NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create plot window"));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/plot-add-function.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create plot window."), msg);
+		g_error_free (perror);
 		return;
 	}
 
-	dialog = GTK_DIALOG (glade_xml_get_widget (gui, "toplevel"));
-	op1 = GTK_COMBO_BOX (glade_xml_get_widget (gui, "op1"));
-	op2 = GTK_COMBO_BOX (glade_xml_get_widget (gui, "op2"));
-	functiontype = GTK_COMBO_BOX (glade_xml_get_widget (gui, "functiontype"));
+	dialog = GTK_DIALOG (gtk_builder_get_object (gui, "toplevel"));
+	op1 = GTK_COMBO_BOX (gtk_builder_get_object (gui, "op1"));
+	op2 = GTK_COMBO_BOX (gtk_builder_get_object (gui, "op2"));
+	functiontype = GTK_COMBO_BOX (gtk_builder_get_object (gui, "functiontype"));
 
 	model1 = GTK_LIST_STORE (gtk_combo_box_get_model (op1));
 	model2 = GTK_LIST_STORE (gtk_combo_box_get_model (op2));
@@ -89,6 +97,9 @@ plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 			gtk_combo_box_append_text (op2, current->var_names[i]);
 		}
 	}
+	gtk_combo_box_set_active (op1,0);
+	gtk_combo_box_set_active (op2,0);
+	gtk_combo_box_set_active (functiontype,0);
 
 	result = gtk_dialog_run (GTK_DIALOG (dialog));
 	

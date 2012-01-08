@@ -30,7 +30,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <glade/glade.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -597,45 +596,51 @@ edit_textbox (SheetItem *sheet_item)
 	TextboxItemPriv *priv;
 	Textbox *textbox;
 	char *msg, *value;
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create textbox properties dialog"));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 
 	item = TEXTBOX_ITEM (sheet_item);
 	priv = item->priv;
 	textbox = TEXTBOX (sheet_item_get_data (sheet_item));
 
-	if (!g_file_test (OREGANO_GLADEDIR "/textbox-properties-dialog.glade",
+	if (!g_file_test (OREGANO_UIDIR "/textbox-properties-dialog.ui",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/textbox-properties-dialog.glade");
+			OREGANO_UIDIR "/textbox-properties-dialog.ui");
 		oregano_error (_("Could not create textbox properties dialog"));
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (
-		OREGANO_GLADEDIR "/textbox-properties-dialog.glade",
-		NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create textbox properties dialog"));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/textbox-properties-dialog.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create textbox properties dialog"), msg);
+		g_error_free (perror);
 		return;
 	}
 
 	prop_dialog = g_new0 (TextboxPropDialog, 1);
 	prop_dialog->dialog = GTK_DIALOG (
-		glade_xml_get_widget (gui, "textbox-properties-dialog"));
+		gtk_builder_get_object (gui, "textbox-properties-dialog"));
 	prop_dialog->font = GTK_FONT_SELECTION (
-		glade_xml_get_widget (gui, "font_selector"));
-	prop_dialog->entry = GTK_ENTRY (glade_xml_get_widget (gui, "entry"));
+		gtk_builder_get_object (gui, "font_selector"));
+	prop_dialog->entry = GTK_ENTRY (gtk_builder_get_object (gui, "entry"));
 
 	value = textbox_get_font (textbox);
 	gtk_font_selection_set_font_name (
 		GTK_FONT_SELECTION (prop_dialog->font), value);
 
-	value = textbox_get_text(textbox);
+	value = textbox_get_text (textbox);
 	gtk_entry_set_text (GTK_ENTRY (prop_dialog->entry), value);
 
 	sheet = sheet_item_get_sheet (SHEET_ITEM (item));

@@ -27,12 +27,11 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
-#include <glade/glade.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib/gi18n.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
+
 #include "netlist-editor.h"
 #include "netlist-helper.h"
 #include "simulation.h"
@@ -51,11 +50,10 @@ struct _NetlistEditorPriv {
 	SchematicView *sv;
 	gchar * font;
 	GdkColor bgcolor, selectcolor, textcolor;
-	GtkSourceLanguageManager *lm;
 	GtkTextView *view;
 	GtkSourceBuffer *buffer;
 	GtkWindow *toplevel;
-	GtkButton *sim, *save, *close;
+	GtkButton *save, *close;
 };	
 
 static void
@@ -242,16 +240,25 @@ netlist_editor_save (GtkWidget * widget, NetlistEditor * nle)
 }
 
 /* This method append OREGANO_LANGDIR directory where the netlist.lang file
- * is located to the search path of GtkSourceLanguageManager.
- */
+ * is located to the search path of GtkSourceLanguageManager.*/
 void
-setup_language_manager_path(GtkSourceLanguageManager *lm)
+setup_language_manager_path (GtkSourceLanguageManager *lm)
 {
 	gchar **lang_files;
+	const gchar * const * temp;
+	GPtrArray *dirs;
 	int i, lang_files_count;
 	char **new_langs;
 
-	lang_files = g_strdupv (gtk_source_language_manager_get_search_path (lm));
+	dirs = g_ptr_array_new ();
+
+	// Stolen from gtranslator
+	for (temp = gtk_source_language_manager_get_search_path(lm);
+            temp != NULL && *temp != NULL; ++temp)
+                g_ptr_array_add (dirs, g_strdup(*temp));
+
+	g_ptr_array_add (dirs, NULL);
+	lang_files = (gchar **) g_ptr_array_free (dirs, FALSE);
 	lang_files_count = g_strv_length (lang_files);
 	new_langs = g_new (char*, lang_files_count + 2);
 
@@ -261,7 +268,7 @@ setup_language_manager_path(GtkSourceLanguageManager *lm)
 	new_langs[lang_files_count] = g_strdup (OREGANO_LANGDIR);
 	new_langs[lang_files_count+1] = NULL;
 
-	g_free (lang_files);
+	g_strfreev (lang_files);
 
 	gtk_source_language_manager_set_search_path (lm, new_langs);
 }
@@ -269,37 +276,50 @@ setup_language_manager_path(GtkSourceLanguageManager *lm)
 NetlistEditor *
 netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	NetlistEditor * nle;
-	GladeXML * gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	GtkWidget * toplevel;
 	GtkScrolledWindow * scroll;
 	GtkSourceView * source_view;
 	GtkSourceLanguageManager * lm;
-	GtkButton * save, * sim, * close, * print;
+	GtkButton * save, * close;
 	GtkSourceLanguage *lang=NULL;
 
 	if (!textbuffer) 
 		return NULL;
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create the netlist dialog"));
+		return NULL;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 	
 	nle = NETLIST_EDITOR (g_object_new (netlist_editor_get_type (), NULL));
 	
 	netlist_editor_get_config (nle);
-	if (!g_file_test (OREGANO_GLADEDIR "/view-netlist.glade", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_UIDIR "/view-netlist.ui", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/view-netlist.glade");
+			OREGANO_UIDIR "/view-netlist.ui");
 		oregano_error_with_title (_("Could not create the netlist dialog"), msg);
 		g_free (msg);
 		return NULL;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/view-netlist.glade", NULL, NULL);
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/view-netlist.ui", 
+	    &perror) <= 0) {
+			gchar *msg;
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create the netlist dialog"), msg);
+		g_error_free (perror);
+		return NULL;
+	}
 	
-	toplevel = glade_xml_get_widget (gui, "toplevel");
+	toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
 	gtk_window_set_default_size (GTK_WINDOW (toplevel), 800, 600);
 	gtk_window_set_title (GTK_WINDOW (toplevel), "Net List Editor\n");
 	
-	scroll = GTK_SCROLLED_WINDOW (glade_xml_get_widget (gui, "netlist-scrolled-window"));
+	scroll = GTK_SCROLLED_WINDOW (gtk_builder_get_object (gui, "netlist-scrolled-window"));
 	
 	source_view = GTK_SOURCE_VIEW (gtk_source_view_new ());
 	lm = GTK_SOURCE_LANGUAGE_MANAGER (gtk_source_language_manager_new ());
@@ -325,25 +345,18 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 
 	gtk_container_add (GTK_CONTAINER (scroll), GTK_WIDGET (source_view));
 	
-	close = GTK_BUTTON (glade_xml_get_widget (gui, "btn_close"));
+	close = GTK_BUTTON (gtk_builder_get_object (gui, "btn_close"));
 	g_signal_connect_swapped (G_OBJECT (close), "clicked", 
-                              G_CALLBACK (g_object_unref), G_OBJECT (nle));
-	save = GTK_BUTTON (glade_xml_get_widget (gui, "btn_save"));
+		G_CALLBACK (g_object_unref), G_OBJECT (nle));
+	save = GTK_BUTTON (gtk_builder_get_object (gui, "btn_save"));
 	g_signal_connect (G_OBJECT (save), "clicked", 
-                      G_CALLBACK (netlist_editor_save), nle);
-	sim = GTK_BUTTON (glade_xml_get_widget (gui, "btn_sim"));
-	g_signal_connect (G_OBJECT (sim), "clicked", 
-                      G_CALLBACK (netlist_editor_simulate), nle);
-	print = GTK_BUTTON (glade_xml_get_widget (gui, "btn_print"));	
-	g_signal_connect (G_OBJECT (print), "clicked", 
-                      G_CALLBACK (netlist_editor_print), nle);
+		G_CALLBACK (netlist_editor_save), nle);
+	
 
 	//  Set tab, fonts, wrap mode, colors, etc. according
 	//  to preferences 
-	nle->priv->lm = lm;
 	nle->priv->view = GTK_TEXT_VIEW (source_view);
 	nle->priv->toplevel = GTK_WINDOW (toplevel);
-	nle->priv->sim = sim;
 	nle->priv->save = save;
 	nle->priv->close = close;
 	nle->priv->buffer = textbuffer;

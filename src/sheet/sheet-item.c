@@ -327,13 +327,17 @@ scroll_timeout_callback (Sheet *sheet)
 {
 	int width, height;
 	int x, y, dx = 0, dy = 0;
+	GtkAllocation allocation;
 
 	/* Get the current mouse position so that we can decide if the pointer is
 	   inside the viewport. */
-	gdk_window_get_pointer (GTK_WIDGET (sheet)->window, &x, &y, NULL);
+	gdk_window_get_pointer (gtk_widget_get_window (GTK_WIDGET (sheet)), 
+			&x, &y, NULL);
 
-	width = GTK_WIDGET (sheet)->allocation.width;
-	height = GTK_WIDGET (sheet)->allocation.height;
+	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
+	
+	width = allocation.width;
+	height = allocation.height;
 
 	if (x < 0)
 		dx = -1;

@@ -1,11 +1,11 @@
 oreganodir = $(datadir)/oregano
 
-CFLAGS += -Wall -DG_DISABLE_DEPRECATED
+AM_CFLAGS = -Wall -DG_DISABLE_DEPRECATED -DGSEAL_ENABLE
 
 INCLUDES = \
 	$(OREGANO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src/model \
 	-I$(top_srcdir)/src/engines \
-	-DOREGANO_GLADEDIR=\""$(oreganodir)/glade"\"  \
+	-DOREGANO_UIDIR=\""$(oreganodir)/xml"\"  \
 	-DOREGANO_LIBRARYDIR=\""$(oreganodir)/libraries"\" \
 	-DOREGANO_MODELDIR=\""$(oreganodir)/models"\"
 

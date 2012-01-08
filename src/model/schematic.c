@@ -35,7 +35,7 @@
 #include <glib.h>
 #include <glib/gi18n.h>
 #include <math.h>
-#include <glade/glade.h>
+
 #include "schematic.h"
 #include "node-store.h"
 #include "file-manager.h"
@@ -1016,41 +1016,56 @@ draw_page (GtkPrintOperation *operation,
 static GObject*
 print_options (GtkPrintOperation *operation, Schematic *sm)
 {
-	GladeXML *gui;
-
-	if (!g_file_test (OREGANO_GLADEDIR "/print-options.glade", G_FILE_TEST_EXISTS)) {
-		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade")));
+	GtkBuilder *gui;
+	GError *perror = NULL;
+	
+	if ((gui = gtk_builder_new ()) == NULL) {
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.ui")));
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/print-options.glade",
-		"widget", GETTEXT_PACKAGE);
-	if (!gui) {
-		return G_OBJECT (gtk_label_new (_("Error loading print-options.glade")));
+	if (!g_file_test (OREGANO_UIDIR "/print-options.ui", G_FILE_TEST_EXISTS)) {
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.ui")));
+	}
+
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/print-options.ui", 
+	    &perror) <= 0) {
+		g_error_free (perror);
+		return G_OBJECT (gtk_label_new (_("Error loading print-options.ui")));
 	}
 
 	if (sm->priv->printoptions)
 		g_free (sm->priv->printoptions);
-	sm->priv->printoptions = g_new0(SchematicPrintOptions, 1);
+	sm->priv->printoptions = g_new0 (SchematicPrintOptions, 1);
 
-	sm->priv->printoptions->components = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_components"));
-	sm->priv->printoptions->labels = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_labels"));
-	sm->priv->printoptions->wires = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_wires"));
-	sm->priv->printoptions->text = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_text"));
-	sm->priv->printoptions->background = GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_background"));
+	sm->priv->printoptions->components = GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_components"));
+	sm->priv->printoptions->labels = GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_labels"));
+	sm->priv->printoptions->wires = GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_wires"));
+	sm->priv->printoptions->text = GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_text"));
+	sm->priv->printoptions->background = GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_background"));
 
 	/* Set default colors */
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_components")),
-		&sm->priv->colors.components);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_labels")),
-		&sm->priv->colors.labels);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_wires")),
-		&sm->priv->colors.wires);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_text")),
-		&sm->priv->colors.text);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (glade_xml_get_widget (gui, "color_background")),
-		&sm->priv->colors.background);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_components")),
+					&sm->priv->colors.components);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_labels")),
+					&sm->priv->colors.labels);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_wires")),
+					&sm->priv->colors.wires);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_text")),
+					&sm->priv->colors.text);
+	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+					gtk_builder_get_object (gui, "color_background")),
+					&sm->priv->colors.background);
 
-	return (GObject *) (glade_xml_get_widget (gui, "widget"));
+	return gtk_builder_get_object (gui, "widget");
 }
 
 static void

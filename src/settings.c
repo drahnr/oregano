@@ -32,9 +32,10 @@
 
 #include <unistd.h>
 #include <glib.h>
-#include <gnome.h>
-#include <glade/glade.h>
+#include <libgnomecanvas/libgnomecanvas.h>
 #include <stdio.h>
+#include <glib/gi18n.h>
+
 #include "main.h"
 #include "string.h"
 #include "settings.h"
@@ -61,6 +62,7 @@ typedef struct {
 	GtkWidget *w_compress_files;
 	GtkWidget *w_engine;
 } Settings;
+
 #define SETTINGS(x) ((Settings*)(x))
 
 GtkWidget *engine_path;	
@@ -166,38 +168,49 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
 	GtkWidget *w0 = NULL;
-	GladeXML *gui = NULL;
+	GtkBuilder *gui;
+	GError *perror = NULL;
+	gchar *msg;
 	Settings *s;
 	Schematic *sm;
 
 	g_return_if_fail (sv != NULL);
 
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create settings dialog"));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_settings (sm);
 
 	/* Only allow one instance of the property box per schematic. */
-	if (GTK_WIDGET(SETTINGS (s)->pbox)){
-		gdk_window_raise (GTK_WIDGET (SETTINGS (s)->pbox)->window);
+	if (GTK_WIDGET(SETTINGS (s)->pbox)) {
+		gdk_window_raise (gtk_widget_get_window (
+		                   GTK_WIDGET (SETTINGS (s)->pbox)));
 		return;
 	}
 
-	if (!g_file_test (OREGANO_GLADEDIR "/settings.glade", G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (OREGANO_UIDIR "/settings.ui", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/settings.glade");
+			_("The file %s could not be found. "
+			  "You might need to reinstall Oregano to fix this."),
+			OREGANO_UIDIR "/settings.ui");
 		oregano_error_with_title (_("Could not create settings dialog"), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/settings.glade", NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create settings dialog"));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/settings.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create settings dialog"), msg);
+		g_error_free (perror);
 		return;
 	}
 
-	w = toplevel = glade_xml_get_widget (gui, "toplevel");
+	w = toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
 	if (!w) {
 		oregano_error (_("Could not create settings dialog"));
 		return;
@@ -208,33 +221,35 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	pbox = toplevel;
 	s->pbox = GTK_WIDGET (pbox);
 
-	w = glade_xml_get_widget (gui, "close_bt");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "close_bt"));
 	g_signal_connect (G_OBJECT (w), "clicked",
 		G_CALLBACK (apply_callback), s);
 
-	w = glade_xml_get_widget (gui, "splash-enable");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "splash-enable"));
 	s->w_show_splash = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_splash);
 
-	w = glade_xml_get_widget (gui, "compress-enable");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "compress-enable"));
 	s->w_compress_files = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w),
 								  oregano.compress_files);
-	w = glade_xml_get_widget (gui, "log-enable");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "log-enable"));
 	s->w_show_log = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_log);
 
-	w = glade_xml_get_widget (gui, "grid-size");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid-size"));
 	gtk_widget_set_sensitive (w, FALSE);
-	w = glade_xml_get_widget (gui, "realtime-enable");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "realtime-enable"));
 	gtk_widget_set_sensitive (w, FALSE);
 	
-	w = glade_xml_get_widget (gui, "engine_table");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "engine_table"));
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
 		if (engine_group)
-			button[i] = gtk_radio_button_new_with_label_from_widget (GTK_RADIO_BUTTON (engine_group), engine[i]);
+			button[i] = gtk_radio_button_new_with_label_from_widget (
+			      GTK_RADIO_BUTTON (engine_group), engine[i]);
 		else
-			button[i] = engine_group = gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
+			button[i] = engine_group = 
+		          gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
 
 		/* Check if the engine is available */
 		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
@@ -247,27 +262,28 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 
 	}
 	/* Libraries directory */
-	w = glade_xml_get_widget (gui, "library-path-entry");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "library-path-entry"));
 	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
-								 GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+					  GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
 	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(w),
-										 OREGANO_LIBRARYDIR);
+					  OREGANO_LIBRARYDIR);
 	g_signal_connect (G_OBJECT (w), "selection-changed",
 					  G_CALLBACK (change_librarydir_cb), w0);
 
 	/* Models directory */	
-	w = glade_xml_get_widget (gui, "model-path-entry");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "model-path-entry"));
 	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
-								 GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+					  GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
 	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(w),
-										 OREGANO_MODELDIR);
+					  OREGANO_MODELDIR);
 	g_signal_connect (G_OBJECT (w), "selection-changed",
 					  G_CALLBACK (change_modeldir_cb), w0);
 	
 	/* Engine localisation */
-	engine_path = glade_xml_get_widget (gui, "engine-path");
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), TRUE);
-	set_engine_name(button[oregano.engine], s);
+	engine_path = GTK_WIDGET (gtk_builder_get_object (gui, "engine-path"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (
+	                  button[oregano.engine]), TRUE);
+	set_engine_name (button[oregano.engine], s);
 	g_signal_connect (G_OBJECT (engine_path), "file-set",
 					  G_CALLBACK (change_engine_path_cb), s);
 	

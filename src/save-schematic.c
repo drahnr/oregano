@@ -43,6 +43,7 @@
 #include "sim-settings.h"
 #include "node-store.h"
 #include "save-schematic.h"
+#include "xml-helper.h"
 
 typedef struct {
 	xmlDocPtr  doc;		 /* Xml document. */

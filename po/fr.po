@@ -2,20 +2,21 @@
 # Copyright (C) 2000-2005 Free Software Foundation, Inc.
 # David Monniaux <monniaux@arbouse.ens.fr>, 2000.
 # Jean-Luc Coulon (f5ibh) <jean-luc.coulon@wanadoo.fr>, 2005
-# Marc Lorber <linux-lorber@club-internet.fr>, 2012.
+# Marc Lorber <Lorber.Marc@wanadoo.fr>, 2010, 2012.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Oregano 0.69\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-01-07 18:06+0100\n"
-"PO-Revision-Date: 2012-01-07 18:11+0100\n"
-"Last-Translator: Marc Lorber <linux-lorber@club-internet.fr>\n"
-"Language-Team: French <gnomefr@traduc.org>\n"
-"Language: fr\n"
+"POT-Creation-Date: 2012-01-08 12:07+0100\n"
+"PO-Revision-Date: 2012-01-08 12:08+0100\n"
+"Last-Translator: Marc Lorber <Lorber.Marc@wanadoo.fr>\n"
+"Language-Team: Français <gnomefr@traduc.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1;\n"
 
 #: ../data/oregano.desktop.in.in.h:1
 msgid "Electrical Engineering Tool"
@@ -26,6 +27,10 @@ msgid "Oregano"
 msgstr "Oregano"
 
 #: ../data/oregano.desktop.in.in.h:3
+msgid "Oregano Electrical Engineering Tool"
+msgstr "Oregano : outil d'ingéniérie éléctrique"
+
+#: ../data/oregano.desktop.in.in.h:4
 msgid "Schematic, capture and simulation of electronic circuits"
 msgstr "Permet de saisir et de simuler des circuits éléctroniques."
 
@@ -33,430 +38,392 @@ msgstr "Permet de saisir et de simuler des circuits éléctroniques."
 msgid "Schematic file"
 msgstr "Fichier définissant un schéma éléctrique"
 
-#: ../data/glade/clamp-properties-dialog.glade.h:1
-msgid "<b>AC Analysis Options</b>"
-msgstr "<b>Options de l'analyse AC</b>"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:2
-msgid "<b>Clamp Reference</b>"
-msgstr "<b>Référence du point de test</b>"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:3
-msgid "<b>Type</b>"
-msgstr "<b>Type</b>"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:4
-msgid "Clamp properties"
-msgstr "Propriétés du point de test"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:5
-msgid "Current"
-msgstr "Courant"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:6
-msgid "Imaginary part"
-msgstr "Partie imaginaire"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:7
-msgid "Magnitude"
-msgstr "Amplitude"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:8
-msgid "Phase"
-msgstr "Phase"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:9
-msgid "Real part"
-msgstr "Partie réelle"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:10
-msgid "Use decibel scale"
-msgstr "Utiliser une échelle en décibel"
-
-#: ../data/glade/clamp-properties-dialog.glade.h:11
-msgid "Voltage"
-msgstr "Tension"
-
-#: ../data/glade/export.glade.h:1 ../data/glade/properties.glade.h:1
-#: ../data/glade/textbox-properties-dialog.glade.h:1
-msgid "    "
-msgstr "    "
-
-#: ../data/glade/export.glade.h:2
-msgid "..."
-msgstr "..."
-
-#: ../data/glade/export.glade.h:3
-msgid "<b>Background</b>"
-msgstr "<b>Fond</b>"
-
-#: ../data/glade/export.glade.h:4
-msgid "<b>Format</b>"
-msgstr "<b>Format</b>"
-
-#: ../data/glade/export.glade.h:5
-msgid "<b>Output</b>"
-msgstr "<b>Sortie</b>"
-
-#: ../data/glade/export.glade.h:6
-msgid "<b>Size</b>"
-msgstr "<b>Taille</b>"
-
-#: ../data/glade/export.glade.h:7
-msgid "Black"
-msgstr "Noir"
-
-#: ../data/glade/export.glade.h:8
-msgid "Black and White"
-msgstr "Blanc et noir"
-
-#: ../data/glade/export.glade.h:9
-msgid "Color"
-msgstr "Couleur"
-
-#: ../data/glade/export.glade.h:10
-msgid "Export ..."
-msgstr "Exporter..."
-
-#: ../data/glade/export.glade.h:11
-msgid "Height : "
-msgstr "Hauteur : "
-
-#: ../data/glade/export.glade.h:12
-msgid "Output File"
-msgstr "Fichier de sortie"
-
-#: ../data/glade/export.glade.h:13
-msgid "Transparent"
-msgstr "Transparent"
-
-#: ../data/glade/export.glade.h:14
-msgid "White"
-msgstr "Blanc"
-
-#: ../data/glade/export.glade.h:15
-msgid "Width : "
-msgstr "Largeur :"
-
-#: ../data/glade/log-window.glade.h:1
-msgid "Clear"
-msgstr "Effacer"
-
-#: ../data/glade/log-window.glade.h:2
-msgid "Oregano Log Window"
-msgstr "Fenêtre du journal d'Oregano"
-
-#: ../data/glade/part-browser.glade.h:1
-msgid "<b>Preview</b>"
-msgstr "<b>Aperçu</b>"
-
-#: ../data/glade/part-browser.glade.h:2
-msgid "Fast Search:"
-msgstr "Recherche rapide :"
-
-#: ../data/glade/part-browser.glade.h:3
-msgid "Library:"
-msgstr "Bibliothèque :"
-
-#: ../data/glade/part-browser.glade.h:4
-msgid "Parts"
-msgstr "Composants"
-
-#: ../data/glade/part-browser.glade.h:5
-msgid "Place"
-msgstr "Placer"
-
-#: ../data/glade/part-browser.glade.h:6
-msgid "Press this button to place the selected part"
-msgstr "Presser ce bouton pour placer le composant sélectionné"
-
-#: ../data/glade/part-browser.glade.h:7
-msgid "Select which library to use"
-msgstr "Choisir la bibliothèque à utiliser"
-
-#: ../data/glade/part-properties-dialog.glade.h:1
-msgid "General"
-msgstr "Vue générale"
-
-#: ../data/glade/part-properties-dialog.glade.h:2
-#: ../data/glade/settings.glade.h:12
-msgid "Model"
-msgstr "Modèle"
-
-#: ../data/glade/part-properties-dialog.glade.h:3
-msgid "Part Properties"
-msgstr "Propriétés du composant"
-
-#: ../data/glade/plot-add-function.glade.h:1 ../data/glade/settings.glade.h:1
-#: ../data/glade/sim-settings.glade.h:1
-msgid "\n"
-msgstr "\n"
-
-#: ../data/glade/plot-add-function.glade.h:3
-msgid "<b>Function Type</b>"
-msgstr "<b>Type de fonction</b>"
-
-#: ../data/glade/plot-add-function.glade.h:4
-msgid "<b>Values</b>"
-msgstr "<b>Valeurs</b>"
-
-#: ../data/glade/plot-add-function.glade.h:5 ../src/plot.c:432
-msgid "Add Function"
-msgstr "Ajouter la fonction"
-
-#: ../data/glade/plot-add-function.glade.h:6
-msgid "First Operand"
-msgstr "Premier opérateur"
-
-#: ../data/glade/plot-add-function.glade.h:7
-msgid "Second Operand"
-msgstr "Seconde opérateur"
-
-#: ../data/glade/plot-add-function.glade.h:8
-msgid ""
-"Subtraction\n"
-"Division"
-msgstr ""
-"Soustraction\n"
-"Division"
-
-#: ../data/glade/plot-window.glade.h:1
+#: ../data/xml/plot-window.ui.h:1
 msgid "<b>Plot</b>"
 msgstr "<b>Tracé</b>"
 
-#: ../data/glade/plot-window.glade.h:2
+#: ../data/xml/plot-window.ui.h:2
 msgid "<b>Variables</b>"
 msgstr "<b>Variables</b>"
 
-#: ../data/glade/plot-window.glade.h:3
-msgid "Plot"
-msgstr "Tracé"
-
-#: ../data/glade/plot-window.glade.h:4
-msgid "Region"
-msgstr "Vue locale"
-
-#: ../data/glade/plot-window.glade.h:5
-msgid "Shift"
-msgstr "Déplacement"
-
-#: ../data/glade/print-options.glade.h:1
-msgid "<b>Colors</b>"
-msgstr "<b>Couleurs</b>"
-
-#: ../data/glade/print-options.glade.h:2
-msgid "<b>General</b>"
-msgstr "<b>Général</b>"
-
-#: ../data/glade/print-options.glade.h:3
-msgid "Background"
-msgstr "Fond"
-
-#: ../data/glade/print-options.glade.h:4
-msgid "Components"
-msgstr "Composants"
-
-#: ../data/glade/print-options.glade.h:5
-msgid "Labels"
-msgstr "Étiquettes"
-
-#: ../data/glade/print-options.glade.h:6 ../src/schematic-view-menu.h:94
-msgid "Text"
-msgstr "Texte"
-
-#: ../data/glade/print-options.glade.h:7
-msgid "Use colors"
-msgstr "Utilisation de la couleur"
-
-#: ../data/glade/print-options.glade.h:8
-msgid "Wires"
-msgstr "Fils"
-
-#: ../data/glade/properties.glade.h:2
-msgid "<b>Comments</b>"
-msgstr "<b>Commentaires</b>"
-
-#: ../data/glade/properties.glade.h:3
-msgid "Author:"
-msgstr "Auteur :"
-
-#: ../data/glade/properties.glade.h:4
-msgid "Properties"
-msgstr "Propriétés"
-
-#: ../data/glade/properties.glade.h:5
-msgid "Title:"
-msgstr "Titre :"
-
-#: ../data/glade/settings.glade.h:3
-msgid "<b>Data Paths</b>"
-msgstr "<b>Chemins vers les données</b>"
-
-#: ../data/glade/settings.glade.h:4
-msgid "<b>Engine</b>"
-msgstr "<b>Moteur</b>"
-
-#: ../data/glade/settings.glade.h:5
-msgid "<b>Executable Path</b>"
-msgstr "<b>Chemin vers l'exécutable</b>"
-
-#: ../data/glade/settings.glade.h:6
-msgid "<b>File Format</b>"
-msgstr "<b>Format de fichier</b>"
-
-#: ../data/glade/settings.glade.h:7
-msgid "<b>User Interface</b>"
-msgstr "<b>Interface utilisateur</b>"
-
-#: ../data/glade/settings.glade.h:8
-msgid "Automatically show log windows after simulation"
-msgstr "Afficher automatiquement la fenêtre de journal après la simulation"
-
-#: ../data/glade/settings.glade.h:9
-msgid "Compress saved files"
-msgstr "Compresser les fichiers lors de l'enregistrement"
-
-#: ../data/glade/settings.glade.h:10
-msgid "Grid size[px]   "
-msgstr "Pas de la grille [pixel]    "
-
-#: ../data/glade/settings.glade.h:11
-msgid "Library"
-msgstr "Bibliothèque"
-
-#: ../data/glade/settings.glade.h:13
-msgid "Paths"
-msgstr "Chemins"
-
-#: ../data/glade/settings.glade.h:14
-msgid "Preferences"
-msgstr "Préférences"
-
-#: ../data/glade/settings.glade.h:15
-msgid "Realtime update of selection (slow)"
-msgstr "Mise à jour en temps réel de la sélection (lent)"
-
-#: ../data/glade/settings.glade.h:16
-msgid "Select A Directory"
-msgstr "Sélectionner un répertoire"
-
-#: ../data/glade/settings.glade.h:17
-msgid "Select A File"
-msgstr "Sélectionner un fichier"
-
-#: ../data/glade/settings.glade.h:18
-msgid "Show the splash screen at application startup"
-msgstr "Afficher la bannière du programme au démarrage de l'application"
-
-#: ../data/glade/settings.glade.h:19
-msgid "User Interface"
-msgstr "Interface utilisateur"
-
-#: ../data/glade/sim-settings.glade.h:3
+#: ../data/xml/sim-settings.ui.h:1
 msgid "<b>AC</b>"
 msgstr "<b>AC</b>"
 
-#: ../data/glade/sim-settings.glade.h:4
+#: ../data/xml/sim-settings.ui.h:2
 msgid "<b>DC Sweep</b>"
 msgstr "<b>Variation du point DC</b>"
 
-#: ../data/glade/sim-settings.glade.h:5
+#: ../data/xml/sim-settings.ui.h:3
 msgid "<b>Fourier</b>"
 msgstr "<b>Fourier</b>"
 
-#: ../data/glade/sim-settings.glade.h:6
+#: ../data/xml/sim-settings.ui.h:4
 msgid "<b>Transient</b>"
 msgstr "<b>Transitoire</b>"
 
-#: ../data/glade/sim-settings.glade.h:7
+#: ../data/xml/sim-settings.ui.h:5
 msgid "Add new options"
 msgstr "Ajouter de nouvelles options"
 
-#: ../data/glade/sim-settings.glade.h:8
+#: ../data/xml/sim-settings.ui.h:6
 msgid "Add to list"
 msgstr "Ajouter à la liste"
 
-#: ../data/glade/sim-settings.glade.h:9
+#: ../data/xml/sim-settings.ui.h:7
 msgid "Analysis Options"
 msgstr "Options d'analyse"
 
-#: ../data/glade/sim-settings.glade.h:10
+#: ../data/xml/sim-settings.ui.h:8
 msgid "Analysis Parameters"
 msgstr "Paramètres d'analyse"
 
-#: ../data/glade/sim-settings.glade.h:11
-msgid "DEC"
-msgstr "DÉC"
-
-#: ../data/glade/sim-settings.glade.h:12 ../src/engines/ngspice-analysis.c:469
+#: ../data/xml/sim-settings.ui.h:9 ../src/engines/ngspice-analysis.c:469
 msgid "Frequency"
 msgstr "Fréquence"
 
-#: ../data/glade/sim-settings.glade.h:13
-msgid "LIN"
-msgstr "LIN"
-
-#: ../data/glade/sim-settings.glade.h:14
+#: ../data/xml/sim-settings.ui.h:10
 msgid "List of outputs"
 msgstr "Liste des sorties"
 
-#: ../data/glade/sim-settings.glade.h:15
-msgid "OCT"
-msgstr "OCT"
-
-#: ../data/glade/sim-settings.glade.h:16
+#: ../data/xml/sim-settings.ui.h:11
 msgid "Points"
 msgstr "Points"
 
-#: ../data/glade/sim-settings.glade.h:17
+#: ../data/xml/sim-settings.ui.h:12
 msgid "Remove"
 msgstr "Supprimer"
 
-#: ../data/glade/sim-settings.glade.h:18
-msgid "Simulation Settings"
-msgstr "Paramètres de la simulation"
-
-#: ../data/glade/sim-settings.glade.h:19
+#: ../data/xml/sim-settings.ui.h:13
 msgid "Source"
 msgstr "Source"
 
-#: ../data/glade/sim-settings.glade.h:20
+#: ../data/xml/sim-settings.ui.h:14
 msgid "Start"
 msgstr "Début"
 
-#: ../data/glade/sim-settings.glade.h:21
+#: ../data/xml/sim-settings.ui.h:15
 msgid "Step"
 msgstr "Pas"
 
-#: ../data/glade/sim-settings.glade.h:22
+#: ../data/xml/sim-settings.ui.h:16
 msgid "Stop"
 msgstr "Fin"
 
-#: ../data/glade/sim-settings.glade.h:23
+#: ../data/xml/sim-settings.ui.h:17
 msgid "Type"
 msgstr "Type"
 
-#: ../data/glade/sim-settings.glade.h:24
+#: ../data/xml/sim-settings.ui.h:18
 msgid "Use Initial Conditions"
 msgstr "Utiliser les conditions initiales"
 
-#: ../data/glade/simulation.glade.h:1
+#: ../data/xml/clamp-properties-dialog.ui.h:1
+msgid "<b>AC Analysis Options</b>"
+msgstr "<b>Options de l'analyse AC</b>"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:2
+msgid "<b>Clamp Reference</b>"
+msgstr "<b>Référence du point de test</b>"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:3
+msgid "<b>Type</b>"
+msgstr "<b>Type</b>"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:4
+msgid "Clamp properties"
+msgstr "Propriétés du point de test"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:5
+msgid "Current"
+msgstr "Courant"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:6
+msgid "Imaginary part"
+msgstr "Partie imaginaire"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:7
+msgid "Magnitude"
+msgstr "Amplitude"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:8
+msgid "Phase"
+msgstr "Phase"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:9
+msgid "Real part"
+msgstr "Partie réelle"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:10
+msgid "Use decibel scale"
+msgstr "Utiliser une échelle en décibel"
+
+#: ../data/xml/clamp-properties-dialog.ui.h:11
+msgid "Voltage"
+msgstr "Tension"
+
+#: ../data/xml/export.ui.h:1 ../data/xml/properties.ui.h:1
+#: ../data/xml/textbox-properties-dialog.ui.h:1
+msgid "    "
+msgstr "    "
+
+#: ../data/xml/export.ui.h:2
+msgid "..."
+msgstr "..."
+
+#: ../data/xml/export.ui.h:3
+msgid "<b>Background</b>"
+msgstr "<b>Fond</b>"
+
+#: ../data/xml/export.ui.h:4
+msgid "<b>Format</b>"
+msgstr "<b>Format</b>"
+
+#: ../data/xml/export.ui.h:5
+msgid "<b>Output</b>"
+msgstr "<b>Sortie</b>"
+
+#: ../data/xml/export.ui.h:6
+msgid "<b>Size</b>"
+msgstr "<b>Taille</b>"
+
+#: ../data/xml/export.ui.h:7
+msgid "Black"
+msgstr "Noir"
+
+#: ../data/xml/export.ui.h:8
+msgid "Black and White"
+msgstr "Blanc et noir"
+
+#: ../data/xml/export.ui.h:9
+msgid "Color"
+msgstr "Couleur"
+
+#: ../data/xml/export.ui.h:10
+msgid "Export ..."
+msgstr "Exporter..."
+
+#: ../data/xml/export.ui.h:11
+msgid "Height : "
+msgstr "Hauteur : "
+
+#: ../data/xml/export.ui.h:12
+msgid "Output File"
+msgstr "Fichier de sortie"
+
+#: ../data/xml/export.ui.h:13
+msgid "Transparent"
+msgstr "Transparent"
+
+#: ../data/xml/export.ui.h:14
+msgid "White"
+msgstr "Blanc"
+
+#: ../data/xml/export.ui.h:15
+msgid "Width : "
+msgstr "Largeur :"
+
+#: ../data/xml/log-window.ui.h:1
+msgid "Clear"
+msgstr "Effacer"
+
+#: ../data/xml/log-window.ui.h:2
+msgid "Oregano Log Window"
+msgstr "Fenêtre du journal d'Oregano"
+
+#: ../data/xml/part-browser.ui.h:1
+msgid "<b>Preview</b>"
+msgstr "<b>Aperçu</b>"
+
+#: ../data/xml/part-browser.ui.h:2
+msgid "Fast Search:"
+msgstr "Recherche rapide :"
+
+#: ../data/xml/part-browser.ui.h:3
+msgid "Library:"
+msgstr "Bibliothèque :"
+
+#: ../data/xml/part-browser.ui.h:4
+msgid "Parts"
+msgstr "Composants"
+
+#: ../data/xml/part-browser.ui.h:5
+msgid "Place"
+msgstr "Placer"
+
+#: ../data/xml/part-properties-dialog.ui.h:1
+msgid "General"
+msgstr "Vue générale"
+
+#: ../data/xml/part-properties-dialog.ui.h:2 ../data/xml/settings.ui.h:12
+msgid "Model"
+msgstr "Modèle"
+
+#: ../data/xml/part-properties-dialog.ui.h:3
+msgid "Part Properties"
+msgstr "Propriétés du composant"
+
+#: ../data/xml/plot-add-function.ui.h:1
+msgid "<b>Function Type</b>"
+msgstr "<b>Type de fonction</b>"
+
+#: ../data/xml/plot-add-function.ui.h:2
+msgid "<b>Values</b>"
+msgstr "<b>Valeurs</b>"
+
+#: ../data/xml/plot-add-function.ui.h:3 ../src/plot.c:440
+msgid "Add Function"
+msgstr "Ajouter la fonction"
+
+#: ../data/xml/plot-add-function.ui.h:4
+msgid "Division"
+msgstr "Division"
+
+#: ../data/xml/plot-add-function.ui.h:5
+msgid "First Operand"
+msgstr "Premier opérateur"
+
+#: ../data/xml/plot-add-function.ui.h:6
+msgid "Second Operand"
+msgstr "Seconde opérateur"
+
+#: ../data/xml/plot-add-function.ui.h:7
+msgid "Substraction"
+msgstr "Soustraction"
+
+#: ../data/xml/print-options.ui.h:1
+msgid "<b>Colors</b>"
+msgstr "<b>Couleurs</b>"
+
+#: ../data/xml/print-options.ui.h:2
+msgid "<b>General</b>"
+msgstr "<b>Général</b>"
+
+#: ../data/xml/print-options.ui.h:3
+msgid "Background"
+msgstr "Fond"
+
+#: ../data/xml/print-options.ui.h:4
+msgid "Components"
+msgstr "Composants"
+
+#: ../data/xml/print-options.ui.h:5
+msgid "Labels"
+msgstr "Étiquettes"
+
+#: ../data/xml/print-options.ui.h:6 ../src/schematic-view-menu.h:94
+msgid "Text"
+msgstr "Texte"
+
+#: ../data/xml/print-options.ui.h:7
+msgid "Use colors"
+msgstr "Utilisation de la couleur"
+
+#: ../data/xml/print-options.ui.h:8
+msgid "Wires"
+msgstr "Fils"
+
+#: ../data/xml/properties.ui.h:2
+msgid "<b>Comments</b>"
+msgstr "<b>Commentaires</b>"
+
+#: ../data/xml/properties.ui.h:3
+msgid "Author:"
+msgstr "Auteur :"
+
+#: ../data/xml/properties.ui.h:4
+msgid "Properties"
+msgstr "Propriétés"
+
+#: ../data/xml/properties.ui.h:5
+msgid "Title:"
+msgstr "Titre :"
+
+#: ../data/xml/settings.ui.h:1
+msgid "\n"
+msgstr "\n"
+
+#: ../data/xml/settings.ui.h:3
+msgid "<b>Data Paths</b>"
+msgstr "<b>Chemins vers les données</b>"
+
+#: ../data/xml/settings.ui.h:4
+msgid "<b>Engine</b>"
+msgstr "<b>Moteur</b>"
+
+#: ../data/xml/settings.ui.h:5
+msgid "<b>Executable Path</b>"
+msgstr "<b>Chemin vers l'exécutable</b>"
+
+#: ../data/xml/settings.ui.h:6
+msgid "<b>File Format</b>"
+msgstr "<b>Format de fichier</b>"
+
+#: ../data/xml/settings.ui.h:7
+msgid "<b>User Interface</b>"
+msgstr "<b>Interface utilisateur</b>"
+
+#: ../data/xml/settings.ui.h:8
+msgid "Automatically show log windows after simulation"
+msgstr "Afficher automatiquement la fenêtre de journal après la simulation"
+
+#: ../data/xml/settings.ui.h:9
+msgid "Compress saved files"
+msgstr "Compresser les fichiers lors de l'enregistrement"
+
+#: ../data/xml/settings.ui.h:10
+msgid "Grid size[px]   "
+msgstr "Pas de la grille [pixel]    "
+
+#: ../data/xml/settings.ui.h:11
+msgid "Library"
+msgstr "Bibliothèque"
+
+#: ../data/xml/settings.ui.h:13
+msgid "Paths"
+msgstr "Chemins"
+
+#: ../data/xml/settings.ui.h:14
+msgid "Preferences"
+msgstr "Préférences"
+
+#: ../data/xml/settings.ui.h:15
+msgid "Realtime update of selection (slow)"
+msgstr "Mise à jour en temps réel de la sélection (lent)"
+
+#: ../data/xml/settings.ui.h:16
+msgid "Select A Directory"
+msgstr "Sélectionner un répertoire"
+
+#: ../data/xml/settings.ui.h:17
+msgid "Select A File"
+msgstr "Sélectionner un fichier"
+
+#: ../data/xml/settings.ui.h:18
+msgid "Show the splash screen at application startup"
+msgstr "Afficher la bannière du programme au démarrage de l'application"
+
+#: ../data/xml/settings.ui.h:19
+msgid "User Interface"
+msgstr "Interface utilisateur"
+
+#: ../data/xml/simulation.ui.h:1
 msgid "Progress: None"
 msgstr "Aucun avancement"
 
-#: ../data/glade/simulation.glade.h:2
+#: ../data/xml/simulation.ui.h:2
 msgid "Simulation"
 msgstr "Simulation"
 
-#: ../data/glade/textbox-properties-dialog.glade.h:2
+#: ../data/xml/textbox-properties-dialog.ui.h:2
 msgid "<b>Text</b>"
 msgstr "<b>Texte</b>"
 
-#: ../data/glade/textbox-properties-dialog.glade.h:3
+#: ../data/xml/textbox-properties-dialog.ui.h:3
 msgid "Text Properties"
 msgstr "Propriétés du texte"
 
-#: ../data/glade/view-netlist.glade.h:1
+#: ../data/xml/view-netlist.ui.h:1
 msgid "Netlist View"
 msgstr "Affichage de la liste des connexions"
 
@@ -468,11 +435,16 @@ msgstr "_Propriétés de l'objet..."
 msgid "Modify the object's properties"
 msgstr "Modifier les propriétés de l'objet"
 
-#: ../src/sheet/part-item.c:541 ../src/sheet/part-item.c:702
-#: ../src/sheet/textbox-item.c:612 ../src/sim-settings.c:961
-#: ../src/settings.c:187 ../src/schematic-view.c:194
-#: ../src/schematic-view.c:286 ../src/schematic-view.c:1657
-#: ../src/part-browser.c:491 ../src/netlist-editor.c:289
+#: ../src/sheet/part-item.c:539 ../src/sheet/part-item.c:549
+#: ../src/sheet/part-item.c:556 ../src/sheet/part-item.c:705
+#: ../src/sheet/part-item.c:714 ../src/sheet/part-item.c:722
+msgid "Could not create part properties dialog."
+msgstr "Création du dialogue des propriétés du composant impossible."
+
+#: ../src/sheet/part-item.c:547 ../src/sheet/part-item.c:712
+#: ../src/sheet/textbox-item.c:617 ../src/settings.c:197
+#: ../src/schematic-view.c:306 ../src/schematic-view.c:1711
+#: ../src/part-browser.c:492 ../src/netlist-editor.c:302
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -481,32 +453,33 @@ msgstr ""
 "Le fichier %s est introuvable. Vous pouvez essayer de réinstaller Oregano "
 "pour corriger ce problème."
 
-#: ../src/sheet/part-item.c:543 ../src/sheet/part-item.c:551
-#: ../src/sheet/part-item.c:704 ../src/sheet/part-item.c:712
-msgid "Could not create part properties dialog."
-msgstr "Création du dialogue des propriétés du composant impossible."
-
-#: ../src/sheet/part-item.c:752
+#: ../src/sheet/part-item.c:763
 msgid "Designation"
 msgstr "Désignation"
 
-#: ../src/sheet/part-item.c:753
+#: ../src/sheet/part-item.c:764
 msgid "Template"
 msgstr "Modèle"
 
-#: ../src/sheet/part-item.c:754
+#: ../src/sheet/part-item.c:765
 msgid "Resistor"
 msgstr "Résistance"
 
-#: ../src/sheet/part-item.c:755
+#: ../src/sheet/part-item.c:766
 msgid "Capacitor"
 msgstr "Condensateur"
 
-#: ../src/sheet/part-item.c:756
+#: ../src/sheet/part-item.c:767
 msgid "Inductor"
 msgstr "Bobine d'induction"
 
-#: ../src/sheet/plot-add-function.c:56
+#: ../src/sheet/plot-add-function.c:54 ../src/sheet/plot-add-function.c:64
+#: ../src/sheet/plot-add-function.c:72 ../src/plot.c:396 ../src/plot.c:406
+#: ../src/plot.c:414
+msgid "Could not create plot window."
+msgstr "Création de la fenêtre de tracé impossible."
+
+#: ../src/sheet/plot-add-function.c:62 ../src/schematic-view.c:1164
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -515,11 +488,7 @@ msgstr ""
 "Le fichier %s est introuvable. Vous pouvez essayer de réinstaller Oregano "
 "pour corriger ce problème"
 
-#: ../src/sheet/plot-add-function.c:58 ../src/sheet/plot-add-function.c:65
-msgid "Could not create plot window"
-msgstr "Création de la fenêtre de tracé impossible"
-
-#: ../src/sheet/plot-add-function.c:105
+#: ../src/sheet/plot-add-function.c:116
 msgid ""
 "<span weight=\"bold\" size=\"large\">Neither function, nor operators have "
 "been chosen</span>\n"
@@ -571,24 +540,28 @@ msgstr "Effectuer une symétrie _verticale"
 msgid "Flip the selection vertically"
 msgstr "Effectuer une symétrie verticale de la sélection"
 
-#: ../src/sheet/textbox-item.c:92
+#: ../src/sheet/textbox-item.c:91
 msgid "_Edit the text..."
 msgstr "_Éditer le texte"
 
-#: ../src/sheet/textbox-item.c:93
+#: ../src/sheet/textbox-item.c:92
 msgid "Edit the text"
 msgstr "Éditer le texte"
 
-#: ../src/sheet/textbox-item.c:522
+#: ../src/sheet/textbox-item.c:521
 msgid "Label"
 msgstr "Étiquette"
 
-#: ../src/sheet/textbox-item.c:614 ../src/sheet/textbox-item.c:623
-#: ../src/splash.c:57 ../src/splash.c:63
+#: ../src/sheet/textbox-item.c:605 ../src/sheet/textbox-item.c:619
+#: ../src/sheet/textbox-item.c:627
 msgid "Could not create textbox properties dialog"
 msgstr "Création impossible du dialogue des propriétés des boîtes de texte"
 
-#: ../src/splash.c:55
+#: ../src/splash.c:54 ../src/splash.c:64 ../src/splash.c:72
+msgid "Could not create splash message."
+msgstr "Impossible de créer le message de bienvenue"
+
+#: ../src/splash.c:62
 #, c-format
 msgid ""
 "The files %s or %s could not be found. You might need to reinstall Oregano "
@@ -597,16 +570,17 @@ msgstr ""
 "Les fichiers %s ou %s sont introuvables. Vous devez essayer de réinstaller "
 "Oregano pour corriger ce problème."
 
-#: ../src/simulation.c:104 ../src/simulation.c:111 ../src/simulation.c:117
+#: ../src/simulation.c:94 ../src/simulation.c:109 ../src/simulation.c:117
+#: ../src/simulation.c:124
 msgid "Could not create simulation dialog"
 msgstr "Création impossible du dialogue de simulation"
 
-#: ../src/simulation.c:152
+#: ../src/simulation.c:161
 #, c-format
 msgid "Progress: <b>%s</b>"
 msgstr "Avancement : <b>%s</b>"
 
-#: ../src/simulation.c:208
+#: ../src/simulation.c:217
 msgid ""
 "<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
 "error.</span>\n"
@@ -618,72 +592,91 @@ msgstr ""
 "\n"
 "Voulez-vous afficher le journal des erreurs ?"
 
-#: ../src/simulation.c:219
+#: ../src/simulation.c:228
 msgid "The simulation was aborted due to an error"
 msgstr "La simulation s'est terminée prématurément à la suite d'une erreur"
 
-#: ../src/sim-settings.c:350
+#: ../src/sim-settings.c:351
 msgid "Add new option"
 msgstr "Ajouter une nouvelle option"
 
-#: ../src/sim-settings.c:963 ../src/sim-settings.c:970
-#: ../src/sim-settings.c:976
+#: ../src/sim-settings.c:966 ../src/plot.c:403
+#, c-format
+msgid ""
+"The file %s could not be found.You might need to reinstall Oregano to fix "
+"this."
+msgstr ""
+"Le fichier %s est introuvable. Vous devez réinstaller Oregano pour corriger "
+"ce problème."
+
+#: ../src/sim-settings.c:970 ../src/sim-settings.c:976
+#: ../src/sim-settings.c:985 ../src/sim-settings.c:992
 msgid "Could not create simulation settings dialog"
 msgstr "Création impossible du dialogue des paramètres de simulation"
 
-#: ../src/sim-settings.c:1000
+#: ../src/sim-settings.c:1020
 msgid "Option"
 msgstr "Option"
 
-#: ../src/sim-settings.c:1002
+#: ../src/sim-settings.c:1022
 msgid "Value"
 msgstr "Valeur"
 
-#: ../src/sim-settings.c:1134 ../src/sim-settings.c:1235
-#: ../src/schematic-view.c:723 ../src/schematic-view.c:876
-#: ../src/netlist-editor.c:182 ../src/netlist-editor.c:412
+#: ../src/sim-settings.c:1177 ../src/sim-settings.c:1283
+#: ../src/schematic-view.c:751 ../src/schematic-view.c:904
+#: ../src/netlist-editor.c:180 ../src/netlist-editor.c:425
 msgid "Could not create a netlist"
 msgstr "Création de la liste des connexions impossible"
 
-#: ../src/sim-settings.c:1135 ../src/sim-settings.c:1236
-#: ../src/schematic-view.c:728 ../src/schematic-view.c:880
-#: ../src/netlist-editor.c:186 ../src/netlist-editor.c:415
-msgid "An unexpected error has occurred"
-msgstr "Une erreur inattendue s'est produite"
-
-#: ../src/sim-settings.c:1137 ../src/sim-settings.c:1238
+#: ../src/sim-settings.c:1182 ../src/sim-settings.c:1288
 msgid "No node in the schematic!"
 msgstr "Il n'y a aucun noeud dans le schéma !"
 
-#: ../src/settings.c:135
+#: ../src/settings.c:137
 msgid "Engine <span weight=\"bold\" size=\"large\">"
 msgstr "Le moteur <span weight=\"bold\" size=\"large\">"
 
-#: ../src/settings.c:138
+#: ../src/settings.c:140
 msgid ""
 "</span> not found\n"
 "The engine is unable to locate the external program."
 msgstr ""
 "</span> n'a pas été trouvé.\n"
-"Le moteur est incapable d'accéder au programme externe."
+"Le moteur « SPICE » est incapable d'accéder au programme externe"
 
-#: ../src/settings.c:140
+#: ../src/settings.c:142
 msgid "Warning"
 msgstr "Avertissement"
 
-#: ../src/settings.c:189 ../src/settings.c:196 ../src/settings.c:202
+#: ../src/settings.c:180 ../src/settings.c:200 ../src/settings.c:208
+#: ../src/settings.c:215
 msgid "Could not create settings dialog"
 msgstr "Création impossible du dialogue des paramètres"
 
-#: ../src/schematic-view.c:197 ../src/schematic-view.c:289
+#: ../src/schematic-view.c:195 ../src/schematic-view.c:206
+#: ../src/schematic-view.c:213
 msgid "Could not create properties dialog"
 msgstr "Création du dialogue des propriétés impossible"
 
-#: ../src/schematic-view.c:250
+#: ../src/schematic-view.c:202
+#, c-format
+msgid ""
+"The file %s could not be found. You might need to reinstallOregano to fix "
+"this."
+msgstr ""
+"Le fichier %s est introuvable. Vous devriez réinstaller Oregano pour "
+"corriger ce problème."
+
+#: ../src/schematic-view.c:263
 msgid "Export to..."
 msgstr "Exporter vers..."
 
-#: ../src/schematic-view.c:336
+#: ../src/schematic-view.c:299 ../src/schematic-view.c:310
+#: ../src/schematic-view.c:317
+msgid "Could not create export dialog."
+msgstr "Création du dialogue des propriétés impossible"
+
+#: ../src/schematic-view.c:363
 msgid ""
 "<span weight=\"bold\" size=\"large\">No filename has been chosen</span>\n"
 "\n"
@@ -693,28 +686,38 @@ msgstr ""
 "\n"
 "Activer la fenêtre de sélection afin d'en choisir un."
 
-#: ../src/schematic-view.c:412 ../src/schematic-view.c:467
+#: ../src/schematic-view.c:440 ../src/schematic-view.c:495
 msgid "Could not load file"
 msgstr "Chargement du fichier impossible"
 
-#: ../src/schematic-view.c:482
+#: ../src/schematic-view.c:510
 msgid "Unknown type of file can't open"
 msgstr "Type de fichier inconnu"
 
-#: ../src/schematic-view.c:542 ../src/schematic-view.c:1229
-#: ../src/schematic-view.c:1235
+#: ../src/schematic-view.c:570 ../src/schematic-view.c:1280
+#: ../src/schematic-view.c:1286
 msgid "Untitled.oregano"
 msgstr "SansTitre.oregano"
 
-#: ../src/schematic-view.c:548
+#: ../src/schematic-view.c:576
 msgid "Could not save schematic file"
 msgstr "Enregistrement du fichier de schéma impossible"
 
-#: ../src/schematic-view.c:1236
+#: ../src/schematic-view.c:756 ../src/schematic-view.c:908
+#: ../src/netlist-editor.c:184 ../src/netlist-editor.c:428
+msgid "An unexpected error has occurred"
+msgstr "Une erreur inattendue s'est produite"
+
+#: ../src/schematic-view.c:1156 ../src/schematic-view.c:1166
+#: ../src/schematic-view.c:1174
+msgid "Could not create main window."
+msgstr "Création de la fenêtre principale impossible."
+
+#: ../src/schematic-view.c:1287
 msgid "Untitled.netlist"
 msgstr "SansTitre.netlist"
 
-#: ../src/schematic-view.c:1375
+#: ../src/schematic-view.c:1422
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Save changes to schematic %s before "
@@ -727,11 +730,15 @@ msgstr ""
 "\n"
 "Voulez-vous l'enregistrer ?"
 
-#: ../src/schematic-view.c:1388
+#: ../src/schematic-view.c:1435
 msgid "Close _without Saving"
 msgstr "Fermeture _sans enregistrement"
 
-#: ../src/schematic-view.c:1660 ../src/schematic-view.c:1671
+#: ../src/schematic-view.c:1695 ../src/schematic-view.c:1721
+msgid "Could not create the log window."
+msgstr "Création de la fenêtre de journal impossible"
+
+#: ../src/schematic-view.c:1713
 msgid "Could not create the log window"
 msgstr "Création de la fenêtre de journal impossible"
 
@@ -1033,80 +1040,68 @@ msgstr "Point de mesure"
 msgid "Add voltage clamp"
 msgstr "Ajouter un point de mesure"
 
-#: ../src/plot.c:134 ../src/engines/gnucap.c:673 ../src/engines/gnucap.c:684
+#: ../src/plot.c:130 ../src/engines/gnucap.c:673 ../src/engines/gnucap.c:684
 #: ../src/engines/ngspice-analysis.c:162 ../src/engines/ngspice-analysis.c:164
 #: ../src/engines/ngspice-analysis.c:276 ../src/engines/ngspice-analysis.c:338
 #: ../src/engines/ngspice-analysis.c:371 ../src/engines/ngspice-analysis.c:475
 msgid "voltage"
 msgstr "tension"
 
-#: ../src/plot.c:140 ../src/engines/gnucap.c:667
+#: ../src/plot.c:136 ../src/engines/gnucap.c:667
 #: ../src/engines/ngspice-analysis.c:273
 msgid "time"
 msgstr "temps"
 
-#: ../src/plot.c:143 ../src/engines/gnucap.c:678
+#: ../src/plot.c:139 ../src/engines/gnucap.c:678
 #: ../src/engines/ngspice-analysis.c:473
 msgid "frequency"
 msgstr "fréquence"
 
-#: ../src/plot.c:146
+#: ../src/plot.c:142
 msgid "current"
 msgstr "Courant"
 
 #. Simulation failed?
-#: ../src/plot.c:282
+#: ../src/plot.c:263 ../src/plot.c:280
 msgid "The simulation produced no data!!\n"
 msgstr "Aucun résultat produit par la simulation\n"
 
-#: ../src/plot.c:292 ../src/plot.c:569
+#: ../src/plot.c:290 ../src/plot.c:568
 #, c-format
 msgid "Plot - %s"
 msgstr "Tracé - %s"
 
-#: ../src/plot.c:302
+#: ../src/plot.c:300
 msgid "Nodes"
 msgstr "Noeuds"
 
-#: ../src/plot.c:306 ../src/plot.c:668
+#: ../src/plot.c:304 ../src/plot.c:667
 msgid "Functions"
 msgstr "Fonctions"
 
-#: ../src/plot.c:389
+#: ../src/plot.c:388
 msgid "Oregano - Plot"
 msgstr "Oregano - Tracé"
 
-#: ../src/plot.c:398
-#, c-format
-msgid ""
-"The file %s could not be found.You might need to reinstall Oregano to fix "
-"this."
-msgstr ""
-"Le fichier %s est introuvable. Vous devez réinstaller Oregano pour corriger "
-"ce problème."
-
-#: ../src/plot.c:401 ../src/plot.c:408
-msgid "Could not create plot window."
-msgstr "Création de la fenêtre de tracé impossible."
-
-#: ../src/plot.c:440
+#: ../src/plot.c:448
 msgid "Close"
 msgstr "Fermer"
 
 #. Installation of the menu in the menubar
-#: ../src/plot.c:447
+#: ../src/plot.c:455
 msgid "File"
 msgstr "Fichier"
 
-#: ../src/plot.c:691
+#: ../src/plot.c:690
 msgid "TRANSFER"
 msgstr "TRANSFERT"
 
-#: ../src/part-browser.c:186 ../src/part-browser.c:401
+#: ../src/part-browser.c:186 ../src/part-browser.c:396
 msgid "Unable to load required part"
 msgstr "Il est impossible de charger le composant demandé"
 
-#: ../src/part-browser.c:494 ../src/part-browser.c:502
+#: ../src/part-browser.c:478 ../src/part-browser.c:495
+#: ../src/part-browser.c:503
 msgid "Could not create part browser"
 msgstr "Création du navigateur de composants impossible"
 
@@ -1160,11 +1155,11 @@ msgstr ""
 #: ../src/engines/netlist-helper.c:573
 #, c-format
 msgid "Couldn't find part, pin_nr %d."
-msgstr "La patte %d du composant n'est pas trouvée"
+msgstr "Impossible de trouver le composant, contact %d"
 
 #: ../src/engines/netlist-helper.c:574
 msgid "Problem of library:"
-msgstr "Problème de librairie de composants :"
+msgstr "Problème de bibliothèque"
 
 #: ../src/engines/gnucap.c:380 ../src/engines/ngspice.c:327
 msgid "### Too few or none analysis found ###\n"
@@ -1235,8 +1230,8 @@ msgid ""
 "Your transient analysis settings present a weakness... the start figure is "
 "greater than stop figure\n"
 msgstr ""
-"Les paramètres de l'analyse transitoire présentent des incohérences... la "
-"valeur de départ est plus grande que la valeur d'arrivée\n"
+"Le paramètres de l'analyse transitoire sont incohérents... la valeur de "
+"départ est supérieure à la valeur d'arrivée.\n"
 
 #: ../src/engines/ngspice.c:423
 msgid "Unable to execute NgSpice."
@@ -1256,45 +1251,45 @@ msgstr "Aucune analyse trouvée"
 
 #: ../src/engines/ngspice-analysis.c:594 ../src/engines/ngspice-analysis.c:614
 msgid "Analysis expected not found"
-msgstr "L'analyse attendue n'est pas trouvée"
+msgstr "Analyse attendue non trouvée"
 
 #: ../src/engines/ngspice-analysis.c:633
 msgid "DC Sweep expected but not found"
-msgstr ""
-"Un balayage en courant continu (DC) était attendu, il n'a pas été trouvé"
+msgstr "Analyse de balayage en courant continue non trouvée"
 
-#: ../src/netlist-editor.c:195 ../src/netlist-editor.c:231
+#: ../src/netlist-editor.c:193 ../src/netlist-editor.c:229
 #, c-format
 msgid "The file %s could not be saved"
 msgstr "Enregistrement impossible du ficher %s"
 
-#: ../src/netlist-editor.c:196 ../src/netlist-editor.c:232
+#: ../src/netlist-editor.c:194 ../src/netlist-editor.c:230
 msgid "Could not save temporary netlist file"
 msgstr "Enregistrement impossible du fichier temporaire "
 
-#: ../src/netlist-editor.c:291
+#: ../src/netlist-editor.c:291 ../src/netlist-editor.c:304
+#: ../src/netlist-editor.c:313
 msgid "Could not create the netlist dialog"
 msgstr "Création impossible du dialogue netlist"
 
 #. gettext support
-#: ../src/netlist-editor.c:370
+#: ../src/netlist-editor.c:383
 #, c-format
 msgid "The file %s could not be found."
 msgstr "Fichier %s introuvable."
 
-#: ../src/netlist-editor.c:371
+#: ../src/netlist-editor.c:384
 msgid "Could not find the required file"
 msgstr "Fichier requis introuvable"
 
-#: ../src/main.c:118
+#: ../src/main.c:120
 msgid "[FILES]"
 msgstr "[Fichiers]"
 
-#: ../src/main.c:133
+#: ../src/main.c:135
 #, c-format
 msgid ""
-"You seem to be running Oregano without\n"
-"having it installed properly on your system.\n"
+"You seem to be running Oregano without having it installed properly on your "
+"system.\n"
 "\n"
 "Please install Oregano and try again."
 msgstr ""
@@ -1304,101 +1299,89 @@ msgstr ""
 "Veuillez réinstaller Oregano et essayer\n"
 "de nouveau."
 
-#: ../src/main.c:156
+#: ../src/main.c:159
+#, fuzzy
 msgid ""
 "Could not find a parts library.\n"
 "\n"
-"This is probably due to a faulty installation\n"
-"of Oregano. Please check your installation."
+"This is probably due to a faulty installation of Oregano. Please check your "
+"installation."
 msgstr ""
-"Aucune bibliothèque de composants trouvée.\n"
+"Une bibliothèque de composants n'a pas été trouvée.\n"
 "\n"
 "Ce problème est probablement dû à une installation\n"
-"défectueuse d'Oregano.\n"
-"Veuillez vérifier votre installation."
+"défectueuse d'Oregano. Veuillez vérifier votre installation."
 
-#: ../src/main.c:205
+#: ../src/main.c:213
 #, c-format
 msgid "Format '%s' not supported."
 msgstr "Le format « %s » n'est pas supporté"
 
-#: ../src/main.c:225
+#: ../src/main.c:233
 #, c-format
 msgid "Done.\n"
 msgstr "Effectué.\n"
 
-#: ../src/main.c:243
+#: ../src/main.c:251
 msgid "Welcome to Oregano"
 msgstr "Oregano"
 
-#: ../src/load-schematic.c:264
+#: ../src/load-schematic.c:266
 #, c-format
 msgid "Bad file format."
 msgstr "Format de fichier incorrect."
 
-#: ../src/load-schematic.c:274
+#: ../src/load-schematic.c:276
 #, c-format
 msgid "Unknown parser error."
 msgstr "Erreur inconnue de l'analyseur."
 
-#: ../src/load-library.c:150
+#: ../src/load-library.c:152
 #, c-format
 msgid "Could not find the requested symbol: %s\n"
 msgstr "Le symbole demandé est introuvable : %s\n"
 
-#: ../src/load-library.c:166
+#: ../src/load-library.c:168
 #, c-format
 msgid "Could not find the requested part: %s\n"
 msgstr "Le composant demandé est introuvable : %s\n"
 
-#: ../src/file.c:52 ../src/file.c:93
+#: ../src/file.c:51 ../src/file.c:92
 msgid "Oregano Files"
 msgstr "Fichiers d'Oregano"
 
-#: ../src/file.c:54 ../src/file.c:95
+#: ../src/file.c:53 ../src/file.c:94
 msgid "All Files"
 msgstr "Tous les fichiers"
 
-#: ../src/file.c:57
+#: ../src/file.c:56
 msgid "Open File"
 msgstr "Ouvrir le fichier"
 
-#: ../src/file.c:98
+#: ../src/file.c:97
 msgid "Save File"
 msgstr "Enregistrer fichier"
 
-#: ../src/file.c:148
+#: ../src/file.c:147
 msgid "Netlist File"
 msgstr "Fichier netlist"
 
-#: ../src/file.c:228
-msgid "Open file"
-msgstr "Ouvrir fichier"
-
-#: ../src/file.c:278
-msgid "Save schematic as"
-msgstr "Enregistrer le schéma sous"
-
-#: ../src/file.c:343
-msgid "Netlist filename"
-msgstr "Nom du fichier netlist"
-
-#: ../src/dialogs.c:161
+#: ../src/dialogs.c:163
 msgid ""
 "(c) 2009-2010 Marc Lorber 2003-2006 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 msgstr ""
-"(c) 2009 Marc Lorber 2003-2005 LUGFi\n"
+"(c) 2009-2010 Marc Lorber 2003-2005 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 
-#: ../src/dialogs.c:174
+#: ../src/dialogs.c:176
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Dessin de schémas et simulation de circuits.\n"
 
 #: ../src/model/part.c:253
 #, c-format
 msgid "Couldn't find the requested symbol%s for part %s in library.\n"
-msgstr "Le symbole %s pour le composant %s est introuvable.\n"
+msgstr "Le symbole %s du composant %s est introuvable.\n"
 
 #: ../src/model/schematic.c:596
 #, c-format
@@ -1415,13 +1398,53 @@ msgstr "Format de fichier inconnu pour %s."
 msgid "Load fails!."
 msgstr "Échec du chargement."
 
-#: ../src/model/schematic.c:1022 ../src/model/schematic.c:1028
-msgid "Error loading print-options.glade"
-msgstr "Il est impossible de charger « print-options.glade »"
+#: ../src/model/schematic.c:1023 ../src/model/schematic.c:1027
+#: ../src/model/schematic.c:1033
+msgid "Error loading print-options.ui"
+msgstr "Il est impossible de charger « print-options.ui »"
 
-#: ../src/model/schematic.c:1092
+#: ../src/model/schematic.c:1107
 msgid "Schematic"
 msgstr "Schéma"
+
+#~ msgid "Plot"
+#~ msgstr "Tracé"
+
+#~ msgid "Region"
+#~ msgstr "Vue locale"
+
+#~ msgid "Shift"
+#~ msgstr "Déplacement"
+
+#~ msgid "DEC"
+#~ msgstr "DÉC"
+
+#~ msgid "LIN"
+#~ msgstr "LIN"
+
+#~ msgid "OCT"
+#~ msgstr "OCT"
+
+#~ msgid "Simulation Settings"
+#~ msgstr "Paramètres de la simulation"
+
+#~ msgid "Press this button to place the selected part"
+#~ msgstr "Presser ce bouton pour placer le composant sélectionné"
+
+#~ msgid "Select which library to use"
+#~ msgstr "Choisir la bibliothèque à utiliser"
+
+#~ msgid "Open file"
+#~ msgstr "Ouvrir fichier"
+
+#~ msgid "Save schematic as"
+#~ msgstr "Enregistrer le schéma sous"
+
+#~ msgid "Netlist filename"
+#~ msgstr "Nom du fichier netlist"
+
+#~ msgid "Could not create plot window"
+#~ msgstr "Création de la fenêtre de tracé impossible"
 
 #~ msgid "Page Properties"
 #~ msgstr "Mise en page"
@@ -1452,9 +1475,6 @@ msgstr "Schéma"
 
 #~ msgid "Save PNG"
 #~ msgstr "Enregistrer au format PNG"
-
-#~ msgid "Oregano Electrical Engineering Tool"
-#~ msgstr "Oregano : outil d'ingéniérie éléctrique"
 
 #~ msgid "_Recent Projects"
 #~ msgstr "Projets _Récents"

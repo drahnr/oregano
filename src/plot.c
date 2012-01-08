@@ -30,7 +30,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <glade/glade.h>
 #include <math.h>
 #include <string.h>
 #include <glib/gi18n.h>
@@ -82,7 +81,7 @@ typedef struct {
 	GtkWidget 		*window;
 	GtkWidget 		*canvas;
 	GtkWidget 		*coord;  /* shows the coordinates of the mouse */
-	GtkWidget 		*combobox;
+	GtkWidget 		*combo_box;
 
 	GtkWidget 		*plot;
 
@@ -115,9 +114,6 @@ typedef struct {
 
 static GtkWidget *plot_window_create (Plot *plot);
 static void destroy_window (GtkWidget *widget, Plot *plot);
-static void zoom_100 (GtkWidget *widget, Plot *plot);
-static void zoom_region (GtkWidget *widget, Plot *plot);
-static void zoom_pan (GtkWidget *widget, Plot *plot);
 static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot);
 static void plot_canvas_movement (GtkWidget *, GdkEventMotion *, Plot *);
 static void add_function (GtkMenuItem *menuitem, Plot *plot);
@@ -169,7 +165,7 @@ destroy_window (GtkWidget *widget, Plot *plot)
 {
 	gtk_widget_destroy (plot->canvas);
 	gtk_widget_destroy (plot->coord);
-	gtk_widget_destroy (plot->combobox);
+	gtk_widget_destroy (plot->combo_box);
 	gtk_widget_destroy (plot->window);
 	g_object_unref (plot->sim);
 	plot->window = NULL;
@@ -251,11 +247,10 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 }
 
 static void
-analysis_selected (GtkEditable *editable, Plot *plot)
+analysis_selected (GtkWidget *combo_box, Plot *plot)
 {
 	int i;
 	const gchar *ca;
-	GtkWidget *entry;
 	GtkTreeView *list;
 	GtkTreeModel *model;
 	GtkTreeIter parent_nodes, parent_functions;
@@ -263,9 +258,12 @@ analysis_selected (GtkEditable *editable, Plot *plot)
 	SimulationData *sdat;
 
 	list = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), "clist"));
-	entry = GTK_COMBO (plot->combobox)->entry;
-
-	ca = gtk_entry_get_text (GTK_ENTRY (entry));
+	if (gtk_combo_box_get_active (GTK_COMBO_BOX (combo_box)) == -1) {
+		// Simulation failed?
+		g_warning (_("The simulation produced no data!!\n"));
+		return;
+	}
+	ca = gtk_combo_box_get_active_text (GTK_COMBO_BOX (combo_box));
 
 	plot->current = NULL;
 	analysis = oregano_engine_get_results (plot->sim);
@@ -380,38 +378,48 @@ plot_window_create (Plot *plot)
 	GtkTreeViewColumn *column;
 
 	GtkWidget *outer_table, *window, *button, *plot_scrolled;
-	GtkWidget *vbox, *menubar, *menu, *menuitem;
-	GladeXML *gui;
+	GtkWidget *vbox, *menubar, *menu, *menuitem, *combo_box, *w;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	gchar *msg;
   	GtkAccelGroup *accel_group;
 
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW(window), _("Oregano - Plot"));
+	gtk_window_set_title (GTK_WINDOW (window), _("Oregano - Plot"));
   	gtk_container_set_border_width (GTK_CONTAINER (window), 0);
 	g_signal_connect (G_OBJECT (window), "delete-event",
 		G_CALLBACK (delete_event_cb), plot);
 	accel_group = gtk_accel_group_new ();
   	gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/plot-window.glade",G_FILE_TEST_EXISTS))
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create plot window."));
+		return NULL;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
+
+	if (!g_file_test (OREGANO_UIDIR "/plot-window.ui",G_FILE_TEST_EXISTS))
 	{
 		msg = g_strdup_printf (_("The file %s could not be found."
 			    "You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/plot-window.glade");
+			OREGANO_UIDIR "/plot-window.ui");
 		oregano_error_with_title (_("Could not create plot window."), msg);
 		g_free (msg);
 		return NULL;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/plot-window.glade", NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create plot window."));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/plot-window.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create plot window."), msg);
+		g_error_free (perror);
 		return NULL;
 	}
 
-	outer_table = glade_xml_get_widget (gui, "plot_table");
-	plot_scrolled = plot->canvas = glade_xml_get_widget (gui, "plot_scrolled");
-	plot->coord  = glade_xml_get_widget(gui, "pos_label");
+	outer_table = GTK_WIDGET (gtk_builder_get_object (gui, "plot_table"));
+	plot_scrolled = plot->canvas = GTK_WIDGET (gtk_builder_get_object (gui, 
+	    "plot_scrolled"));
+	plot->coord  = GTK_WIDGET (gtk_builder_get_object (gui, "pos_label"));
 
 	plot->plot = g_plot_new ();
 
@@ -458,23 +466,11 @@ plot_window_create (Plot *plot)
 	gtk_widget_unparent (vbox);
 	gtk_container_add (GTK_CONTAINER (window), vbox);
 	
-	button = glade_xml_get_widget (gui, "close_button");
-	g_signal_connect(G_OBJECT(button), "clicked",
-		G_CALLBACK(destroy_window), plot);
+	button = GTK_WIDGET (gtk_builder_get_object (gui, "close_button"));
+	g_signal_connect (G_OBJECT (button), "clicked",
+		G_CALLBACK (destroy_window), plot);
 
-	button = glade_xml_get_widget (gui, "zoom_panning");
-	g_signal_connect(G_OBJECT(button), "clicked",
-		G_CALLBACK(zoom_pan), plot);
-
-	button = glade_xml_get_widget (gui, "zoom_region");
-	g_signal_connect(G_OBJECT(button), "clicked",
-		G_CALLBACK(zoom_region), plot);
-
-	button = glade_xml_get_widget (gui, "zoom_normal");
-	g_signal_connect(G_OBJECT(button), "clicked",
-		G_CALLBACK(zoom_100), plot);
-
-	list = GTK_TREE_VIEW(glade_xml_get_widget (gui, "variable_list"));
+	list = GTK_TREE_VIEW (gtk_builder_get_object (gui, "variable_list"));
 	tree_model = gtk_tree_store_new (5, G_TYPE_BOOLEAN, G_TYPE_STRING, 
 	    G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_POINTER);
 
@@ -504,7 +500,14 @@ plot_window_create (Plot *plot)
 
 	gtk_widget_realize (GTK_WIDGET (window));
 
-	plot->combobox = glade_xml_get_widget (gui, "analysis_combo");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "analysis_combobox"));
+	gtk_widget_destroy (w);
+
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
+	combo_box = gtk_combo_box_new_text ();
+	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,0,1,0,1);
+
+	plot->combo_box = combo_box;
 	plot->window = window;
 	gtk_widget_show_all (window);
 
@@ -514,7 +517,6 @@ plot_window_create (Plot *plot)
 int
 plot_show (OreganoEngine *engine)
 {
-	GtkEntry *entry;
 	GtkTreeView *list;
 	GList *analysis = NULL;
 	GList *combo_items = NULL;
@@ -554,15 +556,12 @@ plot_show (OreganoEngine *engine)
 			first = sdat;
 		}
 		combo_items = g_list_append (combo_items, str);
+		gtk_combo_box_append_text (GTK_COMBO_BOX (plot->combo_box), str);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (plot->combo_box),0);
 	}
-
-	gtk_combo_set_popdown_strings (GTK_COMBO (plot->combobox), combo_items);
-
-	entry = GTK_ENTRY (GTK_COMBO (plot->combobox)->entry);
-	g_signal_connect (G_OBJECT (entry), "changed",
+	
+	g_signal_connect (G_OBJECT (plot->combo_box), "changed",
 		G_CALLBACK (analysis_selected), plot);
-
-	gtk_entry_set_text (GTK_ENTRY (entry), s_current ? s_current : "?");
 
 	list = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), "clist"));
 
@@ -572,7 +571,7 @@ plot_show (OreganoEngine *engine)
 
 	g_free (s_current);
 
-	analysis_selected (GTK_EDITABLE (entry), plot);
+	analysis_selected ((plot->combo_box), plot);
 
 	return TRUE;
 }
@@ -706,22 +705,4 @@ add_function (GtkMenuItem *menuitem, Plot *plot)
 
 
 	gtk_widget_queue_draw (plot->plot);
-}
-
-static void
-zoom_100 (GtkWidget *widget, Plot *plot)
-{
-	g_plot_reset_zoom (GPLOT (plot->plot));
-}
-
-static void
-zoom_region (GtkWidget *widget, Plot *plot)
-{
-	g_plot_set_zoom_mode (GPLOT (plot->plot), GPLOT_ZOOM_REGION);
-}
-
-static void
-zoom_pan (GtkWidget *widget, Plot *plot)
-{
-	g_plot_set_zoom_mode (GPLOT (plot->plot), GPLOT_ZOOM_INOUT);
 }

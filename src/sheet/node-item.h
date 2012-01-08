@@ -34,7 +34,7 @@
 #define __NODE_ITEM_H__
 
 #include <gtk/gtk.h>
-#include <gnome.h>
+#include <libgnomecanvas/libgnomecanvas.h>
 
 #define TYPE_NODE_ITEM	 (node_item_get_type ())
 #define NODE_ITEM(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE_ITEM, NodeItem))

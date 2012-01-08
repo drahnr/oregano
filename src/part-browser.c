@@ -33,7 +33,6 @@
 #include <gtk/gtk.h>
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtktreemodel.h>
-#include <glade/glade.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -45,6 +44,7 @@
 #include "part-item.h"
 #include "dialogs.h"
 #include "sheet-pos.h"
+#include "sheet.h"
 
 typedef struct _Browser Browser;
 struct _Browser {
@@ -86,8 +86,8 @@ typedef struct {
 static void update_preview (Browser *br);
 static void add_part (gpointer key, LibraryPart *part, Browser *br);
 static int part_selected (GtkTreeView *list, GtkTreePath *arg1,
-	GtkTreeViewColumn *col, Browser *br);
-static void part_browser_setup_libs (Browser *br, GladeXML *gui);
+				GtkTreeViewColumn *col, Browser *br);
+static void part_browser_setup_libs (Browser *br, GtkBuilder *gui);
 static void library_switch_cb (GtkWidget *item, Browser *br);
 static void preview_realized (GtkWidget *widget, Browser *br);
 static void wrap_string (char* str, int width);
@@ -215,14 +215,12 @@ update_preview (Browser *br)
 	gdouble scale;
 	double affine[6];
 	double transf[6];
-	gdouble width, height;
 	gchar *part_name;
 	char *description;
 	gdouble text_width;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	GtkTreeSelection *selection;
-	GtkAllocation allocation;
 
 	/* Get the current selected row */
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
@@ -254,9 +252,6 @@ update_preview (Browser *br)
 		return;
 
 	part_item_create_canvas_items_for_preview (br->preview, library_part);
-
-	width = br->canvas->allocation.width;
-	height = br->canvas->allocation.height - PREVIEW_TEXT_HEIGHT;
 
 	/* Get the coordonates */
 	gnome_canvas_item_get_bounds (GNOME_CANVAS_ITEM (br->preview),
@@ -384,7 +379,7 @@ part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 	Sheet *sheet;
 	Part *part;
 
-	data = (DndData *) (selection_data->data);
+	data = (DndData *) (gtk_selection_data_get_data (selection_data));
 
 	g_return_if_fail (data != NULL);
 
@@ -398,7 +393,7 @@ part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 	library_part = library_get_part (data->br->library, data->part_name);
 	part = part_new_from_library_part (library_part);
 	if (!part) {
-		oregano_error(_("Unable to load required part"));
+		oregano_error (_("Unable to load required part"));
 		return;
 	}
 
@@ -444,7 +439,7 @@ drag_data_get (GtkWidget *widget, GdkDragContext *context,
 	data->part_name = part_name;
 
 	gtk_selection_data_set (selection_data,
-		selection_data->target,
+	    gtk_selection_data_get_target (selection_data),
 		8,
 		(gpointer) data,
 		sizeof (DndData));
@@ -464,9 +459,10 @@ GtkWidget *
 part_browser_create (SchematicView *schematic_view)
 {
 	Browser *br;
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	char *msg;
-	GtkWidget *w;
+	GtkWidget *w, *view;
 	GtkCellRenderer *cell_text;
 	GtkTreeViewColumn *cell_column;
 	GtkStyle *style;
@@ -478,35 +474,46 @@ part_browser_create (SchematicView *schematic_view)
 	static int dnd_num_types = sizeof (dnd_types) / sizeof (dnd_types[0]);
 	GtkTreePath *path;
 
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create part browser"));
+		return NULL;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 	br = g_new0 (Browser, 1);
 	br->preview = NULL;
 	br->schematic_view = schematic_view;
 	br->hidden = FALSE;
 
-	schematic_view_set_browser(schematic_view, br);
+	schematic_view_set_browser (schematic_view, br);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/part-browser.glade",
+	if (!g_file_test (OREGANO_UIDIR "/part-browser.ui",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/part-browser.glade");
+			OREGANO_UIDIR "/part-browser.ui");
 
 		oregano_error_with_title (_("Could not create part browser"), msg);
 		g_free (msg);
 		return NULL;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/part-browser.glade",
-		"part_browser_vbox", GETTEXT_PACKAGE);
-	if (!gui) {
-		oregano_error (_("Could not create part browser"));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-browser.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create part browser"), msg);
+		g_error_free (perror);
 		return NULL;
 	}
 
-	w = glade_xml_get_widget (gui, "preview_canvas");
+	view = GTK_WIDGET (gtk_builder_get_object (gui, "viewport1"));
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (view), 
+	    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	w = gnome_canvas_new ();
+	gtk_container_add (GTK_CONTAINER (view), GTK_WIDGET (w));
+	
 	br->canvas = w;
 
-	g_signal_connect(w, "realize", (GCallback) preview_realized, br);
+	g_signal_connect (w, "realize", (GCallback) preview_realized, br);
 
 	style =  gtk_style_new ();
 	colormap = gtk_widget_get_colormap (GTK_WIDGET (w));
@@ -557,7 +564,7 @@ part_browser_create (SchematicView *schematic_view)
 	gtk_drag_source_set (br->canvas, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 		dnd_types, dnd_num_types, GDK_ACTION_MOVE);
 
-	br->filter_entry = GTK_ENTRY (glade_xml_get_widget(gui, "part_search"));
+	br->filter_entry = GTK_ENTRY (gtk_builder_get_object (gui, "part_search"));
 
 	g_signal_connect (G_OBJECT (br->filter_entry), "changed",
 		G_CALLBACK (part_search_change), br);
@@ -565,7 +572,7 @@ part_browser_create (SchematicView *schematic_view)
 		G_CALLBACK (part_search_activate), br);
 
 	/* Buttons. */
-	w = glade_xml_get_widget (gui, "place_button");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "place_button"));
 	g_signal_connect (G_OBJECT (w), "clicked",
 		GTK_SIGNAL_FUNC (place_cmd), br);
 
@@ -574,7 +581,7 @@ part_browser_create (SchematicView *schematic_view)
 	part_browser_setup_libs (br, gui);
 
 	/* Parts list. */
-	w = glade_xml_get_widget (gui, "parts_list");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "parts_list"));
 	br->list = w;
 
 	/* Create de ListModel for TreeView, this is a Real model */
@@ -622,27 +629,29 @@ part_browser_create (SchematicView *schematic_view)
 	g_signal_connect (G_OBJECT (w), "row_activated", 
 	    G_CALLBACK (part_selected), br);
 
-	br->viewport = glade_xml_get_widget (gui, "part_browser_vbox");
+	br->viewport = GTK_WIDGET (gtk_builder_get_object (gui, 
+	    "part_browser_vbox"));
 
 	path = gtk_tree_path_new_first ();
 	gtk_tree_view_set_cursor (GTK_TREE_VIEW (w),path, NULL, FALSE);
 	gtk_tree_path_free (path);
 
+	gtk_widget_unparent (br->viewport);
 	return br->viewport;
 }
 
 static void
-part_browser_setup_libs(Browser *br, GladeXML *gui) {
+part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 
 	GtkWidget *combo_box, *w;
 
 	GList *libs;
 	gboolean first = FALSE;
 
-	w = glade_xml_get_widget (gui, "library_optionmenu");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "library_optionmenu"));
 	gtk_widget_destroy (w);
 
-	w = glade_xml_get_widget (gui, "table1");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
 	combo_box = gtk_combo_box_new_text ();
 	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,1,2,0,1);
 

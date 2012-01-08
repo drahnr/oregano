@@ -1,4 +1,4 @@
-SUBDIRS = libraries models glade mime
+SUBDIRS = libraries models mime xml
 
 desktopdir = $(datadir)/applications
 desktop_in_files = oregano.desktop.in

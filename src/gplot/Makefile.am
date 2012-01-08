@@ -1,6 +1,6 @@
 oreganodir = $(datadir)/oregano
 
-CFLAGS += -Wall -DG_DISABLE_DEPRECATED
+AM_CFLAGS = -Wall -DG_DISABLE_DEPRECATED -DGSEAL_ENABLE
 
 INCLUDES = \
 	$(OREGANO_CFLAGS)

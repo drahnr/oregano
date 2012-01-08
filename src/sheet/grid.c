@@ -309,6 +309,7 @@ grid_realize (GnomeCanvasItem *item)
 {
 	Grid *grid;
 	GridPriv *priv;
+	GtkLayout *layout;
 
 	grid = GRID (item);
 
@@ -317,7 +318,8 @@ grid_realize (GnomeCanvasItem *item)
 	if (grid_parent_class->realize)
 		(* grid_parent_class->realize) (item);
 
-	priv->gc = gdk_gc_new (item->canvas->layout.bin_window);
+	layout = &item->canvas->layout;
+	priv->gc = gdk_gc_new (gtk_layout_get_bin_window (layout));
 }
 
 static void

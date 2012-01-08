@@ -30,7 +30,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <glade/glade.h>
 #include <glib/gi18n.h>
 #include <string.h>
 
@@ -44,6 +43,7 @@
 #include "part-label.h"
 #include "stock.h"
 #include "dialogs.h"
+#include "sheet.h"
 
 
 #define NORMAL_COLOR "red"
@@ -525,7 +525,8 @@ edit_properties_point (PartItem *item)
 	PartItemPriv *priv;
 	Part *part;
 	char *msg;
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	GtkRadioButton *radio_v, *radio_c;
 	GtkRadioButton *ac_r, *ac_m, *ac_i, *ac_p;
 	GtkCheckButton *chk_db;
@@ -534,21 +535,26 @@ edit_properties_point (PartItem *item)
 	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create part properties dialog."));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 	if (!g_file_test(
-		OREGANO_GLADEDIR "/clamp-properties-dialog.glade",
+		OREGANO_UIDIR "/clamp-properties-dialog.ui",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/clamp-properties-dialog.glade");
+			OREGANO_UIDIR "/clamp-properties-dialog.ui");
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/clamp-properties-dialog.glade",
-		NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create part properties dialog."));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui", &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create part properties dialog."), msg);
+		g_error_free (perror);
 		return;
 	}
 
@@ -556,21 +562,20 @@ edit_properties_point (PartItem *item)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (glade_xml_get_widget (gui, "clamp-properties-dialog"));
+	prop_dialog->dialog = GTK_DIALOG  (gtk_builder_get_object (gui, "clamp-properties-dialog"));
 	gtk_dialog_set_has_separator (prop_dialog->dialog, FALSE);
 
-	radio_v = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_v"));
-	radio_c = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_c"));
+	radio_v = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_v"));
+	radio_c = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_c"));
 
-	/* FIXME: Deactivated up to finalisation of the analysis by the backend */
 	gtk_widget_set_sensitive (GTK_WIDGET (radio_c), FALSE);
 
-	ac_r = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_r"));
-	ac_m = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_m"));
-	ac_p = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_p"));
-	ac_i = GTK_RADIO_BUTTON (glade_xml_get_widget (gui, "radio_i"));
+	ac_r = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_r"));
+	ac_m = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_m"));
+	ac_p = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_p"));
+	ac_i = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_i"));
 
-	chk_db = GTK_CHECK_BUTTON (glade_xml_get_widget (gui, "check_db"));
+	chk_db = GTK_CHECK_BUTTON (gtk_builder_get_object (gui, "check_db"));
 	
 	/* Setup GUI from properties */
 	for (properties = part_get_properties (part); properties;
@@ -666,7 +671,8 @@ edit_properties (SheetItem *object)
 	PartItemPriv *priv;
 	Part *part;
 	char *internal, *msg;
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	GtkTable *prop_table;
 	GtkNotebook *notebook;
 	gint response, y = 0;
@@ -695,21 +701,26 @@ edit_properties (SheetItem *object)
 
 	g_free (internal);
 
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create part properties dialog."));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 	if (!g_file_test(
-		OREGANO_GLADEDIR "/part-properties-dialog.glade",
-		G_FILE_TEST_EXISTS)) {
+		OREGANO_UIDIR "/part-properties-dialog.ui",	G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/part-properties-dialog.glade");
+			OREGANO_UIDIR "/part-properties-dialog.ui");
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_free (msg);
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/part-properties-dialog.glade",
-		NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create part properties dialog."));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-properties-dialog.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create part properties dialog."), msg);
+		g_error_free (perror);
 		return;
 	}
 
@@ -717,13 +728,13 @@ edit_properties (SheetItem *object)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG ( glade_xml_get_widget (gui, "part-properties-dialog"));
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, "part-properties-dialog"));
 
-	prop_table = GTK_TABLE (glade_xml_get_widget (gui, "prop_table"));
-	notebook  = GTK_NOTEBOOK (glade_xml_get_widget (gui, "notebook"));
+	prop_table = GTK_TABLE (gtk_builder_get_object (gui, "prop_table"));
+	notebook  = GTK_NOTEBOOK (gtk_builder_get_object (gui, "notebook"));
 
 	g_signal_connect (prop_dialog->dialog, "destroy",
-		(GCallback) prop_dialog_destroy,  prop_dialog);
+		G_CALLBACK (prop_dialog_destroy),  prop_dialog);
 
 	prop_dialog->widgets = NULL;
 	has_model = FALSE;
@@ -791,7 +802,7 @@ edit_properties (SheetItem *object)
 		gchar *filename, *str;
 		GError *read_error = NULL;
 
-		txtmodel = GTK_TEXT_VIEW (glade_xml_get_widget (gui, "txtmodel"));
+		txtmodel = GTK_TEXT_VIEW (gtk_builder_get_object (gui, "txtmodel"));
 		txtbuffer = gtk_text_buffer_new (NULL);
 
 		filename = g_strdup_printf ("%s/%s.model", OREGANO_MODELDIR, model_name);

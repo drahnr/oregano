@@ -26,7 +26,9 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
 #include "dialogs.h"
 #include "main.h"
 
@@ -161,14 +163,14 @@ dialog_about (void)
 	const gchar *copy = _("(c) 2009-2010 Marc Lorber 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
 
 	/* Allow only one about box at a time. */
-	if (about){
-		gdk_window_raise (about->window);
+	if (about) {
+		gdk_window_raise (gtk_widget_get_window (about));
 		return;
 	}
 
 	logo = gdk_pixbuf_new_from_xpm_data ((const char **) logo_xpm);
 	about = gtk_about_dialog_new ();
-	gtk_about_dialog_set_name (GTK_ABOUT_DIALOG (about), "Oregano");
+	gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (about), "Oregano");
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (about), VERSION);
 	gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG (about), copy);
 	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (about), _("Schematic capture and circuit simulation.\n"));

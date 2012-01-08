@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<glade-interface>
+<interface>
   <!-- interface-requires gtk+ 2.6 -->
   <!-- interface-naming-policy toplevel-contextual -->
-  <widget class="GtkDialog" id="clamp-properties-dialog">
+  <object class="GtkDialog" id="clamp-properties-dialog">
     <property name="height_request">300</property>
     <property name="title" translatable="yes">Clamp properties</property>
     <property name="resizable">False</property>
@@ -11,20 +11,20 @@
     <property name="skip_taskbar_hint">True</property>
     <property name="skip_pager_hint">True</property>
     <child internal-child="vbox">
-      <widget class="GtkVBox" id="dialog-vbox1">
+      <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="spacing">8</property>
         <child>
-          <widget class="GtkVBox" id="vbox1">
+          <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
             <property name="border_width">12</property>
             <child>
-              <widget class="GtkLabel" id="label17">
+              <object class="GtkLabel" id="label17">
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="label" translatable="yes">&lt;b&gt;Type&lt;/b&gt;</property>
                 <property name="use_markup">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -32,14 +32,14 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox1">
+              <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
                 <child>
-                  <widget class="GtkLabel" id="label21">
+                  <object class="GtkLabel" id="label21">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="label">    </property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
@@ -47,17 +47,17 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkVBox" id="vbox2">
+                  <object class="GtkVBox" id="vbox2">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkRadioButton" id="radio_v">
+                      <object class="GtkRadioButton" id="radio_v">
                         <property name="label" translatable="yes">Voltage</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
@@ -65,7 +65,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="radio_c">
+                      <object class="GtkRadioButton" id="radio_c">
                         <property name="label" translatable="yes">Current</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -74,30 +74,30 @@
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radio_v</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label18">
+              <object class="GtkLabel" id="label18">
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="label" translatable="yes">&lt;b&gt;AC Analysis Options&lt;/b&gt;</property>
                 <property name="use_markup">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -105,14 +105,14 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox2">
+              <object class="GtkHBox" id="hbox2">
                 <property name="visible">True</property>
                 <child>
-                  <widget class="GtkLabel" id="label20">
+                  <object class="GtkLabel" id="label20">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                     <property name="label">   </property>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
@@ -120,17 +120,17 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkVBox" id="vbox3">
+                  <object class="GtkVBox" id="vbox3">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkRadioButton" id="radio_r">
+                      <object class="GtkRadioButton" id="radio_r">
                         <property name="label" translatable="yes">Real part</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
@@ -138,7 +138,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="radio_m">
+                      <object class="GtkRadioButton" id="radio_m">
                         <property name="label" translatable="yes">Magnitude</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -146,7 +146,7 @@
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radio_r</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
@@ -154,7 +154,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="radio_i">
+                      <object class="GtkRadioButton" id="radio_i">
                         <property name="label" translatable="yes">Imaginary part</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -162,7 +162,7 @@
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radio_r</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
@@ -170,7 +170,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkRadioButton" id="radio_p">
+                      <object class="GtkRadioButton" id="radio_p">
                         <property name="label" translatable="yes">Phase</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -178,32 +178,32 @@
                         <property name="use_underline">True</property>
                         <property name="draw_indicator">True</property>
                         <property name="group">radio_r</property>
-                      </widget>
+                      </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="position">3</property>
                       </packing>
                     </child>
-                  </widget>
+                  </object>
                   <packing>
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </widget>
+              </object>
               <packing>
                 <property name="position">3</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkCheckButton" id="check_db">
+              <object class="GtkCheckButton" id="check_db">
                 <property name="label" translatable="yes">Use decibel scale</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -211,12 +211,12 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkLabel" id="label2">
+              <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
                 <property name="label" translatable="yes">&lt;b&gt;Clamp Reference&lt;/b&gt;</property>
                 <property name="use_markup">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
@@ -224,48 +224,50 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkEntry" id="entry1">
+              <object class="GtkEntry" id="entry1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-              </widget>
+              </object>
               <packing>
                 <property name="position">6</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="position">2</property>
           </packing>
         </child>
         <child internal-child="action_area">
-          <widget class="GtkHButtonBox" id="dialog-action_area1">
+          <object class="GtkHButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
             <property name="layout_style">end</property>
             <child>
-              <widget class="GtkButton" id="button3">
+              <object class="GtkButton" id="button3">
                 <property name="label">gtk-close</property>
-                <property name="response_id">-7</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
-              </widget>
+              </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">0</property>
               </packing>
             </child>
-          </widget>
+          </object>
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
             <property name="position">0</property>
           </packing>
         </child>
-      </widget>
+      </object>
     </child>
-  </widget>
-</glade-interface>
+    <action-widgets>
+      <action-widget response="-7">button3</action-widget>
+    </action-widgets>
+  </object>
+</interface>

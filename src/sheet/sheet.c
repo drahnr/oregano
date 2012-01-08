@@ -30,7 +30,9 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gdk/gdkprivate.h>
+#include <gdk/gdk.h>
+#include <gdk/gdkkeysyms.h>
+#include <math.h>
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "node-store.h"
@@ -226,14 +228,21 @@ sheet_realized (GtkWidget *widget, gpointer data)
 
 	// We set the background pixmap to NULL so that X won't clear
 	// exposed areas and thus be faster.
-	gdk_window_set_back_pixmap (GTK_LAYOUT (widget)->bin_window, NULL, FALSE);
+	gdk_window_set_back_pixmap (gtk_layout_get_bin_window (GTK_LAYOUT(widget)), 
+	                            NULL, FALSE);
 
-	window = widget->window;
+	window = gtk_widget_get_window (widget);
+	
 
 	// Set the background to white.
-	style = gtk_style_copy (widget->style);
-	colormap = gtk_widget_get_colormap (widget);
-	gdk_color_white (colormap, &style->bg[GTK_STATE_NORMAL]);
+	style = gtk_style_copy (gtk_widget_get_style (widget));
+	colormap = gtk_widget_get_colormap (widget);	
+	style->bg->red = 65535;
+	style->bg->green = 65535;
+	style->bg->blue = 65535;
+	gdk_colormap_alloc_color (colormap, &style->bg[GTK_STATE_NORMAL], FALSE, 
+	                          TRUE);
+	                         	
 	gtk_widget_set_style (widget, style);
 	gtk_style_unref (style);
 }
@@ -404,35 +413,35 @@ void
 sheet_scroll (const Sheet *sheet, int delta_x, int delta_y)
 {
 	GtkAdjustment *hadj, *vadj;
-	GtkAllocation *allocation;
+	GtkAllocation allocation;
 	gfloat vnew, hnew;
 	gfloat hmax, vmax;
 	const SheetPriv *priv = sheet->priv;
 
-	hadj = GTK_LAYOUT (sheet)->hadjustment;
-	vadj = GTK_LAYOUT (sheet)->vadjustment;
+	hadj = gtk_layout_get_hadjustment (GTK_LAYOUT (sheet));
+	vadj = gtk_layout_get_vadjustment (GTK_LAYOUT (sheet));
 
-	allocation = &GTK_WIDGET (sheet)->allocation;
+	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
 
-	if (priv->width > allocation->width)
-		hmax = (gfloat) (priv->width - allocation->width);
+	if (priv->width > allocation.width)
+		hmax = (gfloat) (priv->width - allocation.width);
 	else
 		hmax = 0.0;
 
-	if (priv->height > allocation->height)
-		vmax = (gfloat) (priv->height - allocation->height);
+	if (priv->height > allocation.height)
+		vmax = (gfloat) (priv->height -  allocation.height);
 	else
 		vmax = 0.0;
 
-	hnew = CLAMP (hadj->value + (gfloat) delta_x, 0.0, hmax);
-	vnew = CLAMP (vadj->value + (gfloat) delta_y, 0.0, vmax);
+	hnew = CLAMP (gtk_adjustment_get_value (hadj) + (gfloat) delta_x, 0.0, hmax);
+	vnew = CLAMP (gtk_adjustment_get_value (vadj) + (gfloat) delta_y, 0.0, vmax);
 
-	if (hnew != hadj->value) {
-		hadj->value = hnew;
+	if (hnew != gtk_adjustment_get_value (hadj)) {
+		gtk_adjustment_set_value (hadj, hnew);
 		g_signal_emit_by_name (G_OBJECT (hadj), "value_changed");
 	}
-	if (vnew != vadj->value) {
-		vadj->value = vnew;
+	if (vnew != gtk_adjustment_get_value (vadj)) {
+		gtk_adjustment_set_value (vadj, vnew);
 		g_signal_emit_by_name (G_OBJECT (vadj), "value_changed");
 	}
 }

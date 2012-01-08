@@ -32,7 +32,6 @@
 
 #include <gtk/gtk.h>
 #include <locale.h>
-#include <glade/glade.h>
 #include <glib/gi18n.h>
 
 #include "main.h"
@@ -84,51 +83,61 @@ void
 simulation_show (GtkWidget *widget, SchematicView *sv)
 {
 	GtkWidget *w;
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	Simulation *s;
 	Schematic *sm;
 
 	g_return_if_fail (sv != NULL);
 
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create simulation dialog"));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_simulation (sm);
 
 	/* Only allow one instance of the dialog box per schematic.  */
-	if (s->dialog){
-		gdk_window_raise (GTK_WIDGET (s->dialog)->window);
+	if (s->dialog) {
+		gdk_window_raise (gtk_widget_get_window (GTK_WIDGET (s->dialog)));
 		return;
 	}
 
-	if (!g_file_test (OREGANO_GLADEDIR "/simulation.glade",
+	if (!g_file_test (OREGANO_UIDIR "/simulation.ui",
 		G_FILE_TEST_EXISTS)) {
 		oregano_error (_("Could not create simulation dialog"));
 		return;
 	}
 
-	gui = glade_xml_new (OREGANO_GLADEDIR "/simulation.glade", "toplevel", NULL);
-
-	if (!gui) {
-		oregano_error (_("Could not create simulation dialog"));
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/simulation.ui", 
+	    &perror) <= 0) {
+			gchar *msg;
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create simulation dialog"), msg);
+		g_error_free (perror);
 		return;
 	}
 
-	w = glade_xml_get_widget (gui, "toplevel");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
 	if (!w) {
 		oregano_error (_("Could not create simulation dialog"));
 		return;
 	}
 
 	s->dialog = GTK_DIALOG (w);
-	g_signal_connect (G_OBJECT (w), "delete_event", G_CALLBACK (delete_event_cb), s);
+	g_signal_connect (G_OBJECT (w), "delete_event", 
+		G_CALLBACK (delete_event_cb), s);
 
-	w = glade_xml_get_widget (gui, "progressbar");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "progressbar"));
 	s->progress = GTK_PROGRESS_BAR (w);
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 0.0);
 
-	w = glade_xml_get_widget (gui, "progress_label");
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "progress_label"));
 	s->progress_label = GTK_LABEL (w);
 
-	g_signal_connect (G_OBJECT (s->dialog), "response", G_CALLBACK (cancel_cb), s);
+	g_signal_connect (G_OBJECT (s->dialog), "response", 
+		G_CALLBACK (cancel_cb), s);
 
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
 

@@ -33,6 +33,8 @@
 #define __LOAD_LIBRARY_H
 
 #include <gtk/gtk.h>
+#include <libgnomecanvas/libgnomecanvas.h>
+
 #include "sheet.h"
 
 typedef struct _SymbolObject SymbolObject;

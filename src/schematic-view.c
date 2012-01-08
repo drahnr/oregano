@@ -33,11 +33,12 @@
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
-#include <glade/glade.h>
 #include <gtk/gtk.h>
-#include <libbonobo-2.0/libbonobo.h>
+#include <gdk/gdkkeysyms.h>
+#include <glib/gi18n.h>
 #include <sys/time.h>
 #include <cairo/cairo-features.h>
+#include <libgnomecanvas/libgnomecanvas.h>
 
 #include "schematic-view.h"
 #include "part-browser.h"
@@ -178,7 +179,9 @@ static void
 properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
-	GladeXML *xml;
+	GtkBuilder *gui;
+	GError *perror = NULL;
+	gchar *msg;
 	GtkWidget *window;
 	GtkEntry *title, *author;
 	GtkTextView *comments;
@@ -188,24 +191,34 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 
 	s = schematic_view_get_schematic (sv);
 
-	if (!g_file_test (OREGANO_GLADEDIR "/properties.glade", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create properties dialog"));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
+
+	if (!g_file_test (OREGANO_UIDIR "/properties.ui", G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-		    _("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/properties.glade");
+		    _("The file %s could not be found. You might need to reinstall"
+			    "Oregano to fix this."),
+			OREGANO_UIDIR "/properties.ui");
 
 		oregano_error_with_title (_("Could not create properties dialog"), msg);
-		g_free (msg);
 		return;
 	}
 
-	xml = glade_xml_new (
-		OREGANO_GLADEDIR "/properties.glade", "properties", NULL);
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/properties.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create properties dialog"), msg);
+		g_error_free (perror);
+		return;
+	}
 
-	window = glade_xml_get_widget (xml, "properties");
-	title = GTK_ENTRY (glade_xml_get_widget (xml, "title"));
-	author = GTK_ENTRY (glade_xml_get_widget (xml, "author")); 
-	comments = GTK_TEXT_VIEW (glade_xml_get_widget (xml, "comments")); 
+	window = GTK_WIDGET (gtk_builder_get_object (gui, "properties"));
+	title = GTK_ENTRY (gtk_builder_get_object (gui, "title"));
+	author = GTK_ENTRY (gtk_builder_get_object (gui, "author")); 
+	comments = GTK_TEXT_VIEW (gtk_builder_get_object (gui, "comments")); 
 	buffer = gtk_text_view_get_buffer (comments);
 
 	s_title = schematic_get_title (s);
@@ -269,32 +282,46 @@ static void
 export_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
-	GladeXML *xml;
+	GtkBuilder *gui;
+	GError *perror = NULL;
+	gchar *msg;
 	GtkWidget *window;
 	GtkWidget* warning;
 	GtkWidget *w;
 	GtkEntry *file = NULL;
-	GtkComboBox *combo;
+	GtkComboBoxText *combo;
 	gint button = GTK_RESPONSE_NONE;
 	gint formats[5], fc;
 
 	s = schematic_view_get_schematic (sv);
-			
-	if (!g_file_test (OREGANO_GLADEDIR "/export.glade", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
-		msg = g_strdup_printf (
-					_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-					OREGANO_GLADEDIR "/export.glade");
 
-		oregano_error_with_title (_("Could not create properties dialog"), msg);
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create export dialog."));
+		return;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
+	
+	if (!g_file_test (OREGANO_UIDIR "/export.ui", G_FILE_TEST_EXISTS)) {
+		gchar *msg;
+		msg = g_strdup_printf (_("The file %s could not be found. You might "
+		    "need to reinstall Oregano to fix this."), 
+		    OREGANO_UIDIR "/export.xml");
+
+		oregano_error_with_title (_("Could not create export dialog."), msg);
 		g_free (msg);
 		return;
 	}
 
-	xml = glade_xml_new (OREGANO_GLADEDIR "/export.glade", "export", NULL);
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/export.ui", &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create export dialog."), msg);
+		g_error_free (perror);
+		return;
+	}
 
-	window = glade_xml_get_widget (xml, "export");
-	combo = GTK_COMBO_BOX (glade_xml_get_widget (xml, "format"));
+	window = GTK_WIDGET (gtk_builder_get_object (gui, "export"));
+	
+	combo = GTK_COMBO_BOX (gtk_builder_get_object (gui, "format"));
 
 	gtk_list_store_clear (GTK_LIST_STORE (gtk_combo_box_get_model (combo)));
 	fc = 0;
@@ -315,9 +342,9 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	formats[fc++] = 3;
 #endif
 
-	file = GTK_ENTRY (glade_xml_get_widget (xml, "file"));
+	file = GTK_ENTRY (gtk_builder_get_object (gui, "file"));
 
-	w = glade_xml_get_widget (xml, "find");
+	w = GTK_WIDGET (gtk_builder_get_object (gui,"find"));
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file), file);
 
 	gtk_combo_box_set_active (combo, 0);
@@ -352,15 +379,16 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 			GtkWidget *w;
 			int i = gtk_combo_box_get_active (combo);
 
-			w = glade_xml_get_widget (xml, "bgwhite");
+			w = GTK_WIDGET (gtk_builder_get_object (gui, "bgwhite"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 1;
-			w = glade_xml_get_widget (xml, "bgblack");
+			w = GTK_WIDGET (gtk_builder_get_object (gui, "bgblack"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 2;
-			w = glade_xml_get_widget (xml, "color");
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) color_scheme = 1;
+			w = GTK_WIDGET (gtk_builder_get_object (gui, "color"));
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) 
+				color_scheme = 1;
 
-			spinw = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_width"));
-			spinh = GTK_SPIN_BUTTON (glade_xml_get_widget (xml, "export_height"));
+			spinw = GTK_SPIN_BUTTON (gtk_builder_get_object (gui, "export_width"));
+			spinh = GTK_SPIN_BUTTON (gtk_builder_get_object (gui, "export_height"));
 			schematic_export (s,
 				gtk_entry_get_text (file),
 				gtk_spin_button_get_value_as_int (spinw),
@@ -1091,9 +1119,10 @@ show_help (GtkWidget *widget, SchematicView *sv)
 {
 	GError *error = NULL;
 
-	if (!gnome_help_display_uri("ghelp:oregano",&error)) {
+	if (!gtk_show_uri (gtk_widget_get_screen (widget), "ghelp:oregano",
+	              gtk_get_current_event_time (), &error)) {     
 			printf("Error %s\n", error->message);
-			g_error_free(error);
+			g_error_free (error);
 	}
 }
 
@@ -1111,19 +1140,46 @@ schematic_view_new (Schematic *schematic)
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
 	GtkWidget *menubar;
-	GError *error;
+	GtkTable *table;
+	GError *error = NULL;
+	GtkBuilder *gui;
+	gchar *msg;
 
 	g_return_val_if_fail (schematic != NULL, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
 
-	sv = SCHEMATIC_VIEW(g_object_new(schematic_view_get_type(), NULL));
+	sv = SCHEMATIC_VIEW (g_object_new (schematic_view_get_type(), NULL));
 
 	schematic_view_list = g_list_prepend (schematic_view_list, sv);
 
-	sv->toplevel = gnome_app_new ("Oregano", "Oregano");
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create main window."));
+		return NULL;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
 
-	w = gnome_appbar_new (FALSE, TRUE, GNOME_PREFERENCES_NEVER);
-	gnome_app_set_statusbar (GNOME_APP (sv->toplevel), w);
+	if (!g_file_test (OREGANO_UIDIR "/oregano-main.ui",
+		    G_FILE_TEST_EXISTS)) {
+		msg = g_strdup_printf (
+			_("The file %s could not be found. You might need to reinstall "
+			  "Oregano to fix this"), OREGANO_UIDIR "/oregano-main.ui");
+		oregano_error_with_title (_("Could not create main window."), msg);
+		g_free (msg);
+		return NULL;
+	}
+
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/oregano-main.ui", 
+	    &error) <= 0) {
+		msg = error->message;
+		oregano_error_with_title (_("Could not create main window."), msg);
+		g_error_free (error);
+		return NULL;
+	}
+
+	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
+	g_signal_connect (G_OBJECT (sv->toplevel), "destroy",
+	                  G_CALLBACK (gtk_main_quit), NULL);
+	table = GTK_TABLE (gtk_builder_get_object (gui, "table1"));
 
 	sv->priv->sheet = SHEET (sheet_new (10000, 10000));
 
@@ -1138,8 +1194,8 @@ schematic_view_new (Schematic *schematic)
 
 	vadj = gtk_layout_get_vadjustment (GTK_LAYOUT (sv->priv->sheet));
 	hadj = gtk_layout_get_hadjustment (GTK_LAYOUT (sv->priv->sheet));
-	vadj->step_increment = 10;
-	hadj->step_increment = 10;
+	gtk_adjustment_set_step_increment (vadj, 10);
+	gtk_adjustment_set_step_increment (hadj, 10);
 	gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (w), vadj);
 	gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (w), hadj);
 
@@ -1173,10 +1229,11 @@ schematic_view_new (Schematic *schematic)
 	gtk_window_add_accel_group (GTK_WINDOW (sv->toplevel), accel_group);
 
 	error = NULL;
-	if (!gtk_ui_manager_add_ui_from_string (ui_manager, ui_description, -1, &error)) {
-			g_message ("building menus failed: %s", error->message);
-			g_error_free (error);
-			exit (EXIT_FAILURE);
+	if (!gtk_ui_manager_add_ui_from_string (ui_manager, ui_description, -1, 
+	    &error)) {
+		g_message ("building menus failed: %s", error->message);
+		g_error_free (error);
+		exit (EXIT_FAILURE);
 	}
 
 	menubar = gtk_ui_manager_get_widget (ui_manager, "/MainMenu");
@@ -1191,9 +1248,10 @@ schematic_view_new (Schematic *schematic)
 
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
-	gnome_app_set_contents (GNOME_APP (sv->toplevel), vbox);
+	gtk_table_attach_defaults (table, vbox, 0, 1, 0, 1);
 
-	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), GTK_WIDGET (sv->priv->sheet)); 
+	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), 
+	    GTK_WIDGET (sv->priv->sheet)); 
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 
 	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus", 
@@ -1204,21 +1262,14 @@ schematic_view_new (Schematic *schematic)
 	setup_dnd (sv);
 
 	/* Set default sensitive for items */
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, 
+	    "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, 
+	    "/MainMenu/MenuEdit/Paste"), FALSE);
 
-	// Set the window size to something reasonable. Stolen from Gnumeric.
-	{
-			int sx, sy;
-
-			gtk_window_set_policy (GTK_WINDOW (sv->toplevel), TRUE, TRUE, FALSE);
-			sx = MAX (gdk_screen_width		() - 64, 640);
-			sy = MAX (gdk_screen_height () - 64, 480);
-			sx = (sx * 3) / 4;
-			sy = (sy * 3) / 4;
-			gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
-					sx, sy);
-	}
+	// Set the window size to something reasonable.
+	gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
+		3 * gdk_screen_width () / 5, 3 * gdk_screen_height () / 5);
 
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool",
 			G_CALLBACK (reset_tool_cb), G_OBJECT (sv), 0);
@@ -1341,23 +1392,19 @@ set_focus (GtkWindow *window, GtkWidget *focus, SchematicView *sv)
 	g_return_if_fail (sv->priv != NULL);
 	g_return_if_fail (sv->priv->sheet != NULL);
 
-	if (!window->focus_widget)
-			gtk_widget_grab_focus(GTK_WIDGET (sv->priv->sheet));
+	if (!gtk_window_get_focus (window))
+		gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 }
 
 static int
 delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 {
 	if (can_close (sv)) {
-			g_object_unref(G_OBJECT(sv));
-
-			if (schematic_count() == 0)
-					bonobo_main_quit();
-
-			return FALSE;
+		g_object_unref (G_OBJECT (sv));
+		return FALSE;
 	} 
 	else
-			return TRUE;
+		return TRUE;
 }
 
 static int
@@ -1468,42 +1515,41 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 
 	// Extract the filenames from the URI-list we received.
 	switch (info) {
-			case DRAG_PART_INFO:
-					part_browser_dnd (selection_data, x, y);
-			break;
-			case DRAG_URI_INFO:
-					files = g_strsplit ((gchar *)selection_data->data, "\n", -1);
-					if (files) {
-							int i=0;
-							while (files[i]) {
-									Schematic *new_sm = NULL;
-									int l = strlen(files[i]);
-									/* Algo remains bad after the split: we agregate back into one \0 */
-									files[i][l-1] = '\0';
+		case DRAG_PART_INFO:
+			part_browser_dnd (selection_data, x, y);
+		break;
+		case DRAG_URI_INFO:
+			files = g_strsplit ((gchar *) gtk_selection_data_get_data (selection_data), "\n", -1);
+			if (files) {
+				int i=0;
+				while (files[i]) {
+					Schematic *new_sm = NULL;
+					int l = strlen (files[i]);
+					/* Algo remains bad after the split: we agregate back into one \0 */
+					files[i][l-1] = '\0';
 
-									if (l <= 0) {
-											/* Empty file name, ignore! */
-											i++;
-											continue;
-									}
-
-									gchar *fname = files[i];
-
-									new_sm = schematic_read (fname, &error);
-									if (new_sm) {
-													SchematicView *new_view;
-											new_view = schematic_view_new (new_sm);
-											if (new_view) {
-													gtk_widget_show_all (new_view->toplevel);
-													schematic_set_filename (new_sm, fname);
-											}
-											// schematic_set_title (new_sm, fname);
-											while (gtk_events_pending ()) /* Show something. */
-													gtk_main_iteration ();
-											}
-									i++;
-							}
+					if (l <= 0) {
+						/* Empty file name, ignore! */
+						i++;
+						continue;
 					}
+					gchar *fname = files[i];
+
+					new_sm = schematic_read (fname, &error);
+					if (new_sm) {
+						SchematicView *new_view;
+						new_view = schematic_view_new (new_sm);
+						if (new_view) {
+							gtk_widget_show_all (new_view->toplevel);
+							schematic_set_filename (new_sm, fname);
+						}
+						// schematic_set_title (new_sm, fname);
+						while (gtk_events_pending ()) /* Show something. */
+							gtk_main_iteration ();
+						}
+						i++;
+					}
+				}
 	}
 	gtk_drag_finish (context, TRUE, TRUE, time);
 }
@@ -1638,74 +1684,78 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 	GtkWidget *w;
 	gchar *msg;
 	Schematic *sm;
+	GError *perror = NULL;
 
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
-	sm = schematic_view_get_schematic (sv);
+	sm = sv->priv->schematic;
+
+	if ((sv->priv->log_info->log_gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create the log window."));
+		return;
+	} 
+	else 
+		gtk_builder_set_translation_domain (sv->priv->log_info->log_gui, NULL);
 
 	if (sv->priv->log_info->log_window == NULL) {
-			/*
-			 * Create the log window if not already done.
-			 */
+		/*
+		 * Create the log window if not already done.
+		 */
 
-			if (!explicit && !oregano.show_log)
-					return;
+		if (!explicit && !oregano.show_log)
+			return;
 
-			if (!g_file_test (OREGANO_GLADEDIR "/log-window.glade", G_FILE_TEST_EXISTS)) {
-					msg = g_strdup_printf (
-							_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-							OREGANO_GLADEDIR "/log-window.glade");
+		if (!g_file_test (OREGANO_UIDIR "/log-window.ui", G_FILE_TEST_EXISTS)) {
+			msg = g_strdup_printf (
+				_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+					OREGANO_UIDIR "/log-window.ui");
+			oregano_error_with_title ( _("Could not create the log window"), msg);
+			g_free (msg);
+			return;
+		}
 
-					oregano_error_with_title ( _("Could not create the log window"), msg);
-					g_free (msg);
-					return;
-			}
+		if (gtk_builder_add_from_file (sv->priv->log_info->log_gui, 
+		    OREGANO_UIDIR "/log-window.ui", &perror) <= 0) {
+			msg = perror->message;
+			oregano_error_with_title (_("Could not create the log window."), msg);
+			g_error_free (perror);
+			return;
+		}
 
+		sv->priv->log_info->log_window = GTK_WIDGET (
+		    gtk_builder_get_object (sv->priv->log_info->log_gui,
+			"log-window"));
+		sv->priv->log_info->log_text = GTK_TEXT_VIEW (
+			gtk_builder_get_object (sv->priv->log_info->log_gui,
+			"log-text"));
 
-			sv->priv->log_info->log_window = glade_xml_new (
-					OREGANO_GLADEDIR "/log-window.glade",
-					NULL, NULL);
+		gtk_window_set_default_size (GTK_WINDOW (sv->priv->log_info->log_window),
+				500, 250);
 
-			if (!sv->priv->log_info->log_window) {
-					oregano_error (_("Could not create the log window"));
-					return;
-			}
+		/*
+		 * Delete event.
+		 */
+		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window), 
+		    "delete_event", G_CALLBACK (log_window_delete_event), sv);
 
-			sv->priv->log_info->log_window = glade_xml_get_widget (sv->priv->log_info->log_window,
-					"log-window");
-			sv->priv->log_info->log_text = GTK_TEXT_VIEW (
-					glade_xml_get_widget (sv->priv->log_info->log_window,
-							"log-text"));
+		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window), 
+		    "destroy_event", G_CALLBACK (log_window_destroy_event), sv);
 
-			/*		gtk_window_set_policy (GTK_WINDOW (sv->priv->log_window),
-																 TRUE, TRUE, FALSE); */
-			gtk_window_set_default_size (GTK_WINDOW (sv->priv->log_info->log_window),
-					500, 250);
+		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, 
+		    "close-button"));
+		g_signal_connect (G_OBJECT (w), "clicked", 
+		    G_CALLBACK (log_window_close_cb), sv);
 
-			/*
-			 * Delete event.
-			 */
-			g_signal_connect (
-					G_OBJECT (sv->priv->log_info->log_window), "delete_event",
-					G_CALLBACK (log_window_delete_event), sv);
-
-			g_signal_connect (
-					G_OBJECT (sv->priv->log_info->log_window), "destroy_event",
-					G_CALLBACK (log_window_destroy_event), sv);
-
-			w = glade_xml_get_widget (sv->priv->log_info->log_window, "close-button");
-			g_signal_connect (G_OBJECT (w),
-					"clicked", G_CALLBACK (log_window_close_cb), sv);
-
-			w = glade_xml_get_widget (sv->priv->log_info->log_window, "clear-button");
-			g_signal_connect (G_OBJECT (w),
-					"clicked", G_CALLBACK (log_window_clear_cb), sv);
-			g_signal_connect(G_OBJECT (sm),
-					"log_updated", G_CALLBACK(log_updated_callback), sv);
+		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, 
+		    "clear-button"));
+		g_signal_connect (G_OBJECT (w), "clicked", 
+		    G_CALLBACK (log_window_clear_cb), sv);
+		g_signal_connect (G_OBJECT (sm), "log_updated", 
+		    G_CALLBACK (log_updated_callback), sv);
 	} 
-    else {
-			gdk_window_raise (sv->priv->log_info->log_window);
+	else {
+		gdk_window_raise (gtk_widget_get_window (sv->priv->log_info->log_window));
 	}
 
 	gtk_text_view_set_buffer (sv->priv->log_info->log_text, 

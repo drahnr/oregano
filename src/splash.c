@@ -27,8 +27,8 @@
 
 
 #include <unistd.h>
-#include <glade/glade.h>
 #include <glib/gi18n.h>
+
 #include "splash.h"
 #include "dialogs.h"
 
@@ -44,34 +44,44 @@ oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
 Splash *
 oregano_splash_new ()
 {
-	GladeXML *gui;
+	GtkBuilder *gui;
+	GError *perror = NULL;
 	Splash *sp;
 	GtkEventBox *event;
 	gchar *msg;
 	
-	if (!g_file_test (OREGANO_GLADEDIR "/splash.glade", G_FILE_TEST_EXISTS) ||
-	     !g_file_test (OREGANO_GLADEDIR "/splash.xpm", G_FILE_TEST_EXISTS)) {
+	if ((gui = gtk_builder_new ()) == NULL) {
+		oregano_error (_("Could not create splash message."));
+		return NULL;
+	} 
+	else gtk_builder_set_translation_domain (gui, NULL);
+	
+	if (!g_file_test (OREGANO_UIDIR "/splash.ui", G_FILE_TEST_EXISTS) ||
+	     !g_file_test (OREGANO_UIDIR "/splash.xpm", G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
 			_("The files %s or %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_GLADEDIR "/splash.glade",  OREGANO_GLADEDIR "/splash.xpm");
-		oregano_error_with_title (_("Could not create textbox properties dialog"), msg);
+			OREGANO_UIDIR "/splash.ui",  OREGANO_UIDIR "/splash.xpm");
+		oregano_error_with_title (_("Could not create splash message."), msg);
 		g_free (msg);
 		return NULL;
 	}
-	gui = glade_xml_new (OREGANO_GLADEDIR "/splash.glade", NULL, NULL);
-	if (!gui) {
-		oregano_error (_("Could not create textbox properties dialog"));
+	
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/splash.ui", 
+	    &perror) <= 0) {
+		msg = perror->message;
+		oregano_error_with_title (_("Could not create splash message."), msg);
+		g_error_free (perror);
 		return NULL;
 	}
 
 	sp = g_new0 (Splash, 1);
 	sp->can_destroy = FALSE;
 
-	sp->win = GTK_WINDOW (glade_xml_get_widget (gui, "splash"));
-	sp->lbl = GTK_LABEL (glade_xml_get_widget (gui, "label"));
-	sp->progress = glade_xml_get_widget (gui, "pbar");
+	sp->win = GTK_WINDOW (gtk_builder_get_object (gui, "splash"));
+	sp->lbl = GTK_LABEL (gtk_builder_get_object (gui, "label"));
+	sp->progress = GTK_WIDGET (gtk_builder_get_object (gui, "pbar"));
 
-	event = GTK_EVENT_BOX (glade_xml_get_widget (gui, "event"));
+	event = GTK_EVENT_BOX (gtk_builder_get_object (gui, "event"));
 	sp->event = GTK_WIDGET (event);
 
 	gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR (sp->progress), 0.07);

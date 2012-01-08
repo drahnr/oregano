@@ -37,8 +37,6 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
-#include <glade/glade.h>
-#include <libbonobo-2.0/libbonobo.h>
 #include <locale.h>
 #include <signal.h>
 
@@ -88,10 +86,14 @@ static gint convert_width  = 300;
 static gint convert_height = 300;
 
 static GOptionEntry options[] = {
-	{"convert", 'c', 0, G_OPTION_ARG_STRING, &convert_all, "Convert schematic to [PNG|SVG|PDF|PS] format", "[PNG|SVG|PDF|PS]"},
-	{"width", 'w', 0, G_OPTION_ARG_INT, &convert_width, "Set output width to W for converted schematic. Default 300", "W"},
-	{"height", 'h', 0, G_OPTION_ARG_INT, &convert_height, "Set output height to H for converted schematic. Default 300", "h"},
-	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &startup_files, "Special option that collects any remaining arguments for us"},
+	{"convert", 'c', 0, G_OPTION_ARG_STRING, &convert_all, 
+		"Convert schematic to [PNG|SVG|PDF|PS] format", "[PNG|SVG|PDF|PS]"},
+	{"width", 'w', 0, G_OPTION_ARG_INT, &convert_width, 
+		"Set output width to W for converted schematic. Default 300", "W"},
+	{"height", 'h', 0, G_OPTION_ARG_INT, &convert_height, 
+		"Set output height to H for converted schematic. Default 300", "h"},
+	{G_OPTION_REMAINING, 0, 0, G_OPTION_ARG_FILENAME_ARRAY, &startup_files, 
+		"Special option that collects any remaining arguments for us"},
 	{NULL}
 };
 
@@ -127,18 +129,19 @@ main (int argc, char **argv)
 
 	oregano_config_load ();
 
-	if (!g_file_test (OREGANO_GLADEDIR "/sim-settings.glade",
+	if (!g_file_test (OREGANO_UIDIR "/splash.ui",
 		G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("You seem to be running Oregano without\n"
-				"having it installed properly on your system.\n\n"
-				"Please install Oregano and try again."));
+			_("You seem to be running Oregano without "
+			  "having it installed properly on your system.\n\n"
+			  "Please install Oregano and try again."));
 
 		oregano_error (msg);
 		g_free (msg);
 		return 1;
 	}
 
+	/* Keep non localized input for ngspice */
 	setlocale (LC_NUMERIC, "C");
 
 	/* Connect to session manager. */
@@ -154,8 +157,8 @@ main (int argc, char **argv)
 	if (oregano.libraries == NULL) {
 		oregano_error (
 			_("Could not find a parts library.\n\n"
-				"This is probably due to a faulty installation\n"
-				"of Oregano. Please check your installation."));
+			  "This is probably due to a faulty installation "
+			  "of Oregano. Please check your installation."));
 		return 1;
 	}
 
@@ -165,7 +168,7 @@ main (int argc, char **argv)
 
 	if (startup_files) {
 		GError *error = NULL;
-		gint numfiles;
+		gint numfiles, i;
 
 		numfiles = g_strv_length (startup_files);
 		for (i = 0; i < numfiles; i++) {
@@ -185,23 +188,28 @@ main (int argc, char **argv)
 					while (gtk_events_pending ())
 						gtk_main_iteration ();
 					schematic = new_schematic;
-				} else {
+				} 
+				else {
 					gchar *filename, *ext, *tmp;
 					int format = -1;
 
 					if (!g_ascii_strcasecmp (convert_all, "PDF")) {
 						format = 1;
 						ext = "pdf";
-					} else if (!g_ascii_strcasecmp (convert_all, "PS")) {
+					} 
+					else if (!g_ascii_strcasecmp (convert_all, "PS")) {
 						format = 2;
 						ext = "ps";
-					} else if (!g_ascii_strcasecmp (convert_all, "SVG")) {
+					} 
+					else if (!g_ascii_strcasecmp (convert_all, "SVG")) {
 						format = 0;
 						ext = "svg";
-					} else if (!g_ascii_strcasecmp (convert_all, "PNG")) {
+					} 
+					else if (!g_ascii_strcasecmp (convert_all, "PNG")) {
 						format = 3;
 						ext = "png";
-					} else {
+					} 
+					else {
 						g_print (_("Format '%s' not supported."), convert_all);
 						exit (1);
 					}
@@ -226,14 +234,14 @@ main (int argc, char **argv)
 		return 0;
 	}
 
-	if (schematic == NULL){
+	if (schematic == NULL) {
 		schematic = schematic_new ();
 		schematic_view = schematic_view_new (schematic);
 		gtk_widget_show_all (schematic_view_get_toplevel(schematic_view));
 	}
 
 	g_signal_add_emission_hook (
-		g_signal_lookup("last_schematic_destroyed", TYPE_SCHEMATIC),
+		g_signal_lookup ("last_schematic_destroyed", TYPE_SCHEMATIC),
 		0,
 		quit_hook,
 		NULL,

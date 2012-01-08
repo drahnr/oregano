@@ -30,8 +30,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <gnome.h>
+#include <libgnomecanvas/libgnomecanvas.h>
 #include <string.h>
+#include <glib/gi18n.h>
+
 #include "xml-compat.h"
 #include "main.h"
 #include "xml-helper.h"

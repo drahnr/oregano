@@ -62,8 +62,6 @@ cursors_shutdown (void)
 void
 cursor_set_widget (GtkWidget *w, int name)
 {
-	if (w->window)
-		gdk_window_set_cursor (w->window, oregano_cursors[name].cursor);
+	if (gtk_widget_get_window (w))
+		gdk_window_set_cursor (gtk_widget_get_window (w), oregano_cursors[name].cursor);
 }
-
-

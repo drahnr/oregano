@@ -33,7 +33,7 @@
 #define __SHEET_H
 
 #include <libgnomecanvas/libgnomecanvas.h>
-#include <gtk/gtkdialog.h>
+#include <gtk/gtk.h>
 
 #include "grid.h"
 #include "item-data.h"

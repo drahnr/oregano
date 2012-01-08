@@ -1,5 +1,5 @@
 AC_INIT(AUTHORS)
-AM_INIT_AUTOMAKE(oregano, 0.71)
+AM_INIT_AUTOMAKE(oregano, 0.72)
 
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
@@ -8,6 +8,8 @@ GETTEXT_PACKAGE=oregano
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
 	[GetText version number])
+
+
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -43,13 +45,17 @@ fi
 
 # Change to support gnomeprint2.0 and 2.2
 PKG_CHECK_MODULES(OREGANO,
-	gtk+-2.0 >= 2.10.0 \
-	libglade-2.0 >= 2.5.0 \
 	libgnomeui-2.0 >= 2.12.0 \
 	libxml-2.0 >= 2.6.0 \
 	libgnomecanvas-2.0 >= 2.12.0 \
-	gtksourceview-2.0 >= 2.0 \
+	gtksourceview-2.0 >= 2.8 \
 	cairo >= 1.2.0)
+
+
+# Taken from Screem HTML editor configure.in
+AC_ARG_ENABLE(update_mime,
+	AC_HELP_STRING([--disable-update-mime Do not run update-mime-database when installing]), UPDATE_MIME=$enableval,UPDATE_MIME=yes)
+	AM_CONDITIONAL(UPDATE_MIME, test x"$UPDATE_MIME" = x"yes")
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
@@ -73,11 +79,11 @@ help/C/Makefile
 help/es/Makefile
 help/fr/Makefile
 data/Makefile
-data/glade/Makefile
 data/models/Makefile
 data/libraries/Makefile
 data/examples/Makefile
 data/mime/Makefile
+data/xml/Makefile
 docs/Makefile
 stamp.h
 ])

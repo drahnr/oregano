@@ -129,7 +129,7 @@ g_plot_create_cairo (GPlot *p)
 {
 	cairo_t *cr;
 
-	cr = gdk_cairo_create (GTK_LAYOUT (p)->bin_window);
+	cr = gdk_cairo_create (gtk_layout_get_bin_window (GTK_LAYOUT (p)));
 
 	return cr;
 }
@@ -305,6 +305,7 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	gint div;
 	int i = 0;
 	cairo_text_extents_t extents;
+	GtkAllocation allocation;
 
 	plot = GPLOT (widget);
 	priv = plot->priv;
@@ -313,8 +314,9 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 		g_plot_update_bbox (plot);
 	}
 
-	width = widget->allocation.width;
-	height = widget->allocation.height;
+	gtk_widget_get_allocation (widget, &allocation);
+	width = allocation.width;
+	height = allocation.height;
 
 	graph_width = width - priv->left_border - priv->right_border;
 	graph_height = height - priv->top_border - priv->bottom_border;
@@ -342,9 +344,10 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	cairo_restore (cr);
 
 	/* TODO : Move this to SizeAllocation functions */
-	priv->viewport_bbox.xmax = widget->allocation.width - priv->right_border;
+	gtk_widget_get_allocation (widget, &allocation);
+	priv->viewport_bbox.xmax = allocation.width - priv->right_border;
 	priv->viewport_bbox.xmin = priv->left_border;
-	priv->viewport_bbox.ymax = widget->allocation.height - priv->bottom_border;
+	priv->viewport_bbox.ymax = allocation.height - priv->bottom_border;
 	priv->viewport_bbox.ymin = priv->top_border;
 
 	/* Save real bbox */
@@ -543,8 +546,7 @@ g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 				gdouble dx, dy;
 				cairo_matrix_t t = p->priv->matrix;
 				GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
-				gdk_window_set_cursor (w->window, cursor);
-				gdk_cursor_destroy (cursor);
+				gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
 				gdk_flush ();
 
 				dx = p->priv->last_x - e->x;
@@ -568,8 +570,7 @@ g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 			if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
 				gdouble dx, dy;
 				GdkCursor *cursor = gdk_cursor_new (GDK_CROSS);
-				gdk_window_set_cursor (w->window, cursor);
-				gdk_cursor_destroy (cursor);
+				gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
 				gdk_flush ();
 
 				/* dx < 0 == moving to the left */
@@ -656,13 +657,13 @@ g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 				gtk_widget_queue_draw (w);
 			} 
 			else {
-				gdk_window_set_cursor (w->window, NULL);
+				gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
 				gdk_flush ();
 			}
 		break;
 		case GPLOT_ZOOM_REGION:
 			if ((e->button == 1) && (p->priv->action == ACTION_REGION)) {
-				gdk_window_set_cursor (w->window, NULL);
+				gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
 				gdk_flush ();
 				{
 					gdouble x1, y1, x2, y2;
@@ -684,7 +685,7 @@ g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 				}
 			} 
 			else if (e->button == 3) {
-				gdk_window_set_cursor (w->window, NULL);
+				gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
 				gdk_flush ();
 			}
 			gtk_widget_queue_draw (w);
