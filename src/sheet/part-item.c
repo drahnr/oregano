@@ -450,7 +450,16 @@ part_item_update_node_label (PartItem *item)
 
 			txt = g_strdup_printf ("V(%d)", pins[0].node_nr);
 			canvas_item = labels->data;
-			gnome_canvas_item_set (canvas_item, "text", txt, NULL);
+			if (pins[0].node_nr != 0)
+				gnome_canvas_item_set (canvas_item, 
+						       "text", txt,
+						       "fill_color", LABEL_COLOR,
+						       "font", "Sans 8",	
+						       NULL);
+			else
+				gnome_canvas_item_set (canvas_item, 
+                                       "text", "", 
+                                       NULL);
 
 			g_free (txt);
 		}

@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -44,12 +44,12 @@ enum {
 };
 
 typedef struct {
-	guint snap : 1;
-	guint visible : 1;
+	guint    snap : 1;
+	guint    visible : 1;
 	GdkColor color;
-	gdouble spacing;
-	gdouble cached_zoom;
-	GdkGC *gc;
+	gdouble  spacing;
+	gdouble  cached_zoom;
+	cairo_t *cr;
 } GridPriv;
 
 static void grid_class_init (GridClass *class);
@@ -150,13 +150,7 @@ grid_init (Grid *grid)
 
 static void
 grid_destroy (GtkObject *object)
-{
-	Grid *grid;
-	GridPriv *priv;
-
-	grid = GRID (object);
-	priv = grid->priv;
-	
+{	
 	if (GTK_OBJECT_CLASS (grid_parent_class)->destroy) {
 		GTK_OBJECT_CLASS (grid_parent_class)->destroy (object);
 	}
@@ -200,8 +194,8 @@ grid_set_property (GObject *object, guint prop_id, const GValue *value,
 			color.pixel = 0;
 			priv->color = color;
 		}
-		if (priv->gc)
-			gdk_gc_set_foreground (priv->gc, &color);
+		if (priv->cr)
+				gdk_cairo_set_source_color (priv->cr, &color);
 		break;
 
 	case ARG_SPACING:
@@ -300,7 +294,7 @@ grid_update (GnomeCanvasItem *item, gdouble *affine, ArtSVP *clip_path,
 	if (grid_parent_class->update)
 		(* grid_parent_class->update) (item, affine, clip_path, flags);
 
-	gdk_gc_set_foreground (priv->gc, &priv->color);
+	gdk_cairo_set_source_color (priv->cr, &priv->color);
 	gnome_canvas_update_bbox (item, 0, 0, INT_MAX, INT_MAX);
 }
 
@@ -309,17 +303,20 @@ grid_realize (GnomeCanvasItem *item)
 {
 	Grid *grid;
 	GridPriv *priv;
-	GtkLayout *layout;
+	cairo_surface_t *cairo_surface;
+	guint width, height;
 
 	grid = GRID (item);
-
-	priv = grid->priv;
 
 	if (grid_parent_class->realize)
 		(* grid_parent_class->realize) (item);
 
-	layout = &item->canvas->layout;
-	priv->gc = gdk_gc_new (gtk_layout_get_bin_window (layout));
+	gtk_layout_get_size (&item->canvas->layout, &width, & height);
+	cairo_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
+	                                            width,
+	                                            height);
+	priv = grid->priv;
+	priv->cr = cairo_create (cairo_surface);
 }
 
 static void
@@ -331,7 +328,7 @@ grid_unrealize (GnomeCanvasItem *item)
 	grid = GRID (item);
 	priv = grid->priv;
 
-	g_object_unref (priv->gc);
+	cairo_destroy (priv->cr);
 
 	if (grid_parent_class->unrealize)
 		(* grid_parent_class->unrealize) (item);
@@ -359,7 +356,7 @@ grid_draw (GnomeCanvasItem *canvas, GdkDrawable *drawable, gint x, gint y,
 {
 	GridPriv *priv;
 	Grid *grid;
-	GdkGC *gc;
+	cairo_t * cr;
 	gdouble gx, gy, sgx, sgy;
 	gdouble spacing;
 
@@ -370,15 +367,15 @@ grid_draw (GnomeCanvasItem *canvas, GdkDrawable *drawable, gint x, gint y,
 		return;
 
 	spacing = priv->spacing * priv->cached_zoom * 10000;
-	gc = priv->gc;
+	cr = priv->cr;
 
 	sgx = start_coord (x * 10000, spacing) - spacing;
 	sgy = start_coord (y * 10000, spacing) - spacing;
 
 	for (gx = sgx; gx <= width * 10000; gx += spacing)
 		for (gy = sgy; gy <= height * 10000; gy += spacing) {
-			gdk_draw_point (drawable, gc, rint (gx/10000 + 0.45),
-				rint (gy/10000 + 0.45));
+			cairo_move_to (cr, rint (gx/10000 + 0.45), rint (gy/10000 + 0.45));
+			cairo_stroke (cr);
 		}
 }
 
