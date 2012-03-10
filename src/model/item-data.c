@@ -13,7 +13,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,6 +31,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "goocanvas.h"
+
 #include "item-data.h"
 #include "node-store.h"
 
@@ -43,6 +45,7 @@ static void item_data_set_gproperty (GObject *object, guint prop_id,
 static void item_data_get_gproperty (GObject *object, guint prop_id,
 									GValue *value, GParamSpec *spec);
 static void item_data_copy (ItemData *dest, ItemData *src);
+static gboolean emit_moved_signal_when_handler_connected (gpointer data);
 
 enum {
 	ARG_0,
@@ -61,75 +64,52 @@ enum {
 struct _ItemDataPriv {
 	NodeStore *store;
 	SheetPos pos;
-
-	/*
-	 * Bounding box.
-	 */
-	SheetPos b1, b2;
+	/* Bounding box.*/
+	GooCanvasBounds bounds;
 };
 
+// Structure defined to cover exchange between g_timeout_add and the
+// function in charge to emit the moved signal only once the handler
+// has been connected.
+typedef struct {
+	ItemData *item_data;
+	SheetPos  delta;
+} SignalStruct;
+
+G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT)
+
 static guint item_data_signals [LAST_SIGNAL] = { 0 };
-static GObjectClass *parent_class = NULL;
-
-GType
-item_data_get_type (void)
-{
-	static GType item_data_type = 0;
-
-	if (!item_data_type) {
-		static const GTypeInfo item_data_info = {
-			sizeof (ItemDataClass),
-			NULL, /* base_init */
-			NULL, /* base_finalize */
-			(GClassInitFunc) item_data_class_init,
-			NULL, /* class_finalize */
-			NULL, /* class_data */
-			sizeof (ItemData),
-			0, /* n_preallocs */
-			(GInstanceInitFunc) item_data_init,
-			NULL
-		};
-
-		item_data_type = g_type_register_static (G_TYPE_OBJECT, "ItemData",
-			&item_data_info, 0);
-	}
-
-	return item_data_type;
-}
 
 static void
 item_data_dispose (GObject *object)
 {
-	/*
-	 * Remove the item from the sheet node store if there.
-	 */
+	// Remove the item from the sheet node store if there.
 	if (ITEM_DATA (object)->priv->store) {
-		item_data_unregister (ITEM_DATA(object));
+		item_data_unregister (ITEM_DATA (object));
 	}
 
-	parent_class->dispose (object);
+	G_OBJECT_CLASS (item_data_parent_class)->dispose (object);
 }
 
 
 static void
 item_data_finalize (GObject *object)
 {
-	parent_class->finalize (object);
+	g_return_if_fail (object != NULL);
+	G_OBJECT_CLASS (item_data_parent_class)->finalize (object);
 }
-
 
 static void
 item_data_class_init (ItemDataClass *klass)
 {
 	GObjectClass *object_class;
 
-	parent_class = g_type_class_peek_parent (klass);
+	item_data_parent_class = g_type_class_peek_parent (klass);
 
 	object_class = G_OBJECT_CLASS (klass);
 
-	/* This assignment must be  performed before the call 
-	 * to g_object_class_install_property 
-	 */
+	// This assignment must be  performed before the call 
+	// to g_object_class_install_property
 	object_class->set_property = item_data_set_gproperty;
 	object_class->get_property = item_data_get_gproperty;
 
@@ -147,34 +127,46 @@ item_data_class_init (ItemDataClass *klass)
 		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
 		G_STRUCT_OFFSET (ItemDataClass, moved),
-		NULL, NULL,
+		NULL, 
+	    NULL,
 		g_cclosure_marshal_VOID__POINTER,
-		G_TYPE_NONE, 1, G_TYPE_POINTER);
+		G_TYPE_NONE,
+		1, 
+	    G_TYPE_POINTER);
 
 	item_data_signals [ROTATED] = g_signal_new ("rotated",
 		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		0, NULL, NULL,
+		0, 
+	    NULL, 
+	    NULL,
 		g_cclosure_marshal_VOID__INT,
-	  G_TYPE_NONE, 1, G_TYPE_INT);
+	  	G_TYPE_NONE, 
+	    1, 
+	    G_TYPE_INT);
 
 	item_data_signals [FLIPPED] = g_signal_new ("flipped",
 		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		0, NULL, NULL,
+		0, 
+	    NULL, 
+	    NULL,
 		g_cclosure_marshal_VOID__INT,
-		G_TYPE_NONE, 1, G_TYPE_INT);
+		G_TYPE_NONE, 
+	    1, 
+	    G_TYPE_INT);
 
 	item_data_signals [HIGHLIGHT] = g_signal_new ("highlight",
 		G_TYPE_FROM_CLASS (object_class),
 		G_SIGNAL_RUN_FIRST,
-		0, NULL, NULL,
+		0, 
+	    NULL, 
+	    NULL,
 		g_cclosure_marshal_VOID__VOID,
-		G_TYPE_NONE, 0);
+		G_TYPE_NONE, 
+	    0);
 
-	/*
-	 * Methods.
-	 */
+	/* Methods.*/
 	klass->clone = NULL;
 	klass->copy = item_data_copy;
 	klass->rotate = NULL;
@@ -182,9 +174,7 @@ item_data_class_init (ItemDataClass *klass)
 	klass->reg = NULL;
 	klass->unreg = NULL;
 
-	/*
-	 * Signals.
-	 */
+	/* Signals.*/
 	klass->moved = NULL;
 }
 
@@ -197,7 +187,7 @@ item_data_init (ItemData *item_data)
 
 	priv->pos.x = 0;
 	priv->pos.y = 0;
-	priv->b1.x = priv->b1.y = priv->b2.x = priv->b2.y = 0.0;
+	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 
 	item_data->priv = priv;
 }
@@ -207,7 +197,7 @@ item_data_new (void)
 {
 	ItemData *item_data;
 
-	item_data = ITEM_DATA (g_object_new(item_data_get_type(), NULL));
+	item_data = ITEM_DATA (g_object_new (item_data_get_type(), NULL));
 
 	return item_data;
 }
@@ -257,6 +247,7 @@ item_data_set_pos (ItemData *item_data, SheetPos *pos)
 {
 	ItemDataPriv *priv;
 	SheetPos delta;
+	SignalStruct *signal_struct;
 
 	g_return_if_fail (pos != NULL);
 	g_return_if_fail (item_data != NULL);
@@ -273,7 +264,34 @@ item_data_set_pos (ItemData *item_data, SheetPos *pos)
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
 
-	g_signal_emit_by_name (G_OBJECT (item_data), "moved", &delta);
+	signal_struct = g_new0 (SignalStruct, 1);
+	signal_struct->item_data = item_data;
+	signal_struct->delta = delta;
+	g_timeout_add (10,
+	               (gpointer) emit_moved_signal_when_handler_connected, 
+	               (gpointer) signal_struct);
+}
+
+static gboolean
+emit_moved_signal_when_handler_connected (gpointer data)
+{
+	gboolean handler_connected;
+	SignalStruct *signal_struct = (SignalStruct *) data;
+	SheetPos delta;
+	ItemData *item_data;
+
+	item_data = signal_struct->item_data;
+	delta.x = signal_struct->delta.x;
+	delta.y = signal_struct->delta.y;
+
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), 
+	                                                   item_data->moved_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (item_data), 
+		                       "moved", &delta);
+	}
+
+	return !handler_connected;
 }
 
 void
@@ -288,10 +306,11 @@ item_data_move (ItemData *item_data, SheetPos *delta)
 		return;
 
 	priv = item_data->priv;
-	priv->pos.x += delta->x;
-	priv->pos.y += delta->y;
+	priv->pos.x = delta->x;
+	priv->pos.y = delta->y;
 
-	g_signal_emit_by_name (G_OBJECT (item_data), "moved", delta);
+	g_signal_emit_by_name (G_OBJECT (item_data), 
+	                       "moved", delta);
 }
 
 gpointer /*NodeStore * */
@@ -337,13 +356,13 @@ item_data_get_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	if (p1) {
-		p1->x = data->priv->b1.x;
-		p1->y = data->priv->b1.y;
+		p1->x = data->priv->bounds.x1;
+		p1->y = data->priv->bounds.y1;
 	}
 
 	if (p2) {
-		p2->x = data->priv->b2.x;
-		p2->y = data->priv->b2.y;
+		p2->x = data->priv->bounds.x2;
+		p2->y = data->priv->bounds.y2;
 	}
 }
 
@@ -373,13 +392,13 @@ item_data_set_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	if (p1) {
-		data->priv->b1.x = p1->x;
-		data->priv->b1.y = p1->y;
+		data->priv->bounds.x1 = p1->x;
+		data->priv->bounds.y1 = p1->y;
 	}
 
 	if (p2) {
-		data->priv->b2.x = p2->x;
-		data->priv->b2.y = p2->y;
+		data->priv->bounds.x2 = p2->x;
+		data->priv->bounds.y2 = p2->y;
 	}
 }
 

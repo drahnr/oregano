@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -33,6 +33,7 @@
 #include <gtk/gtk.h>
 #include <string.h>
 #include <glib/gi18n.h>
+#include <goocanvas.h>
 
 #include "main.h"
 #include "load-library.h"
@@ -44,25 +45,19 @@
 #include "sheet-pos.h"
 #include "sheet.h"
 
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+
 typedef struct _Browser Browser;
 struct _Browser {
 	SchematicView	 *schematic_view;
 	GtkWidget		 *viewport;
 	GtkWidget		 *list;
 	GtkWidget		 *canvas;
-	GnomeCanvasText	 *description;
-	GnomeCanvasGroup *preview;
+	GooCanvasText	 *description;
+	GooCanvasGroup	 *preview;
 	Library			 *library;
-	/**
-	 * The currently selected option menu item.
-	 */
-	GtkWidget		 *library_menu_item;
-
 	gboolean		  hidden;
-
-	/**
-	 * Models for the TreeView
-	 */
+	// Models for the TreeView
 	GtkTreeModel 	 *real_model;
 	GtkTreeModel 	 *sort_model;
 	GtkTreeModel 	 *filter_model;
@@ -96,11 +91,12 @@ part_list_filter_func (GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
 {
 	char *part_name;
 	const char *s;
-	char *comp1, *comp2; /* Auxiliary parameters shall keep their number in upcase */
+	// Auxiliary parameters shall keep their number in upcase
+	char *comp1, *comp2;
 	Browser *br = (Browser *)data;
 
 	s = gtk_entry_get_text (GTK_ENTRY (br->filter_entry));
-	/* Without filter, the part is shown */
+	// Without filter, the part is shown
 	if (s == NULL) return TRUE;
 	if (br->filter_len == 0) return TRUE;
 
@@ -128,7 +124,7 @@ part_search_change (GtkWidget *widget, Browser *br)
 	const char *s = gtk_entry_get_text (GTK_ENTRY (widget));
 
 	if (s) {
-		/* Keep record of the filter text length for each item. */
+		// Keep record of the filter text length for each item.
 		br->filter_len = strlen (s);
 		gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (br->filter_model));
 	}
@@ -168,7 +164,7 @@ place_cmd (GtkWidget *widget, Browser *br)
 	schematic_view_reset_tool (br->schematic_view);
 	sheet = schematic_view_get_sheet (br->schematic_view);
 
-	/* Get the current selected row */
+	// Get the current selected row
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (br->list));
 
@@ -190,16 +186,17 @@ place_cmd (GtkWidget *widget, Browser *br)
 
 	sheet_select_all (sheet, FALSE);
 	sheet_clear_ghosts (sheet);
-	sheet_add_ghost_item (sheet, ITEM_DATA(part));
+	sheet_add_ghost_item (sheet, ITEM_DATA (part));
 
-	sheet_connect_part_item_to_floating_group (sheet, (gpointer) br->schematic_view);
+	sheet_connect_part_item_to_floating_group (sheet, 
+	     (gpointer) br->schematic_view);
 }
 
 static int
 part_selected (GtkTreeView *list, GtkTreePath *arg1, GtkTreeViewColumn *col,
 			   Browser *br)
 {
-	/* if double-click over an item, place it on work area */
+	// if double-click over an item, place it on work area
 	place_cmd (NULL, br);
 
 	return FALSE;
@@ -210,17 +207,18 @@ update_preview (Browser *br)
 {
 	LibraryPart *library_part;
 	gdouble new_x, new_y, x1, y1, x2, y2;
-	gdouble scale;
-	double affine[6];
-	double transf[6];
+	gdouble text_width;
+	gdouble width, height;
+	GooCanvasBounds bounds;
+	gdouble scale; 
+	cairo_matrix_t transf, affine;
 	gchar *part_name;
 	char *description;
-	gdouble text_width;
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 	GtkTreeSelection *selection;
 
-	/* Get the current selected row */
+	// Get the current selected row
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (br->list));
 
@@ -231,32 +229,45 @@ update_preview (Browser *br)
 	gtk_tree_model_get (model, &iter, 0, &part_name, -1);
 
 	library_part = library_get_part (br->library, part_name);
+	
+	// If there is already a preview part-item, destroy its group and create a
+	// new one.
+	if (br->preview != NULL) {
+		goo_canvas_item_remove (GOO_CANVAS_ITEM (br->preview));
+	}
+	
+	br->preview = GOO_CANVAS_GROUP (goo_canvas_group_new (
+	    goo_canvas_get_root_item (GOO_CANVAS (br->canvas)),
+	    NULL));
 
-	/*
-	 * If there already is a preview part, destroy its group and create a
-	 * new one.
-	 */
-	if (br->preview != NULL)
-		gtk_object_destroy (GTK_OBJECT (br->preview));
+	goo_canvas_set_bounds (GOO_CANVAS (br->canvas), 0.0, 0.0, 250.0, 110.0);
 
-	br->preview = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-	    gnome_canvas_root (GNOME_CANVAS (br->canvas)),
-		gnome_canvas_group_get_type (),
-		"x", 0.0,
-		"y", 0.0,
-		NULL));
-
+	g_object_get (br->preview, 
+	              "width", &width, 
+	              "height", &height, 
+	              NULL);
+	
 	if (!library_part)
 		return;
 
 	part_item_create_canvas_items_for_preview (br->preview, library_part);
 
+	// Unconstraint the canvas width & height to adjust for the part description
+	g_object_set (br->preview,
+	              "width", -1.0,
+	              "height", -1.0,
+	              NULL);
+	
 	/* Get the coordonates */
-	gnome_canvas_item_get_bounds (GNOME_CANVAS_ITEM (br->preview),
-		&x1, &y1, &x2, &y2);
+	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (br->preview), &bounds);
+	x1 = bounds.x1;
+	x2 = bounds.x2;
+	y1 = bounds.y1;
+	y2 = bounds.y2;
 
 	/* Translate in such a way that the canvas centre remains in (0, 0) */
-	art_affine_translate (transf, -(x2 + x1) / 2.0f, -(y2 + y1) / 2.0f);
+	cairo_matrix_init_translate (&transf, -(x2 + x1) / 2.0f + PREVIEW_WIDTH / 2,
+	                             -(y2 + y1) / 2.0f + PREVIEW_HEIGHT / 2);
 
 	/* Compute the scale of the widget */
 	if ((x2 - x1 != 0) || (y2 - y1 != 0)) {
@@ -264,45 +275,44 @@ update_preview (Browser *br)
 			scale = 0.60f * PREVIEW_HEIGHT / (y2 - y1);
 		else
 			scale = 0.60f * PREVIEW_WIDTH / (x2 - x1);
-
 	} 
 	else
 		scale = 5;
 
-	art_affine_scale (affine, scale, scale);
-	art_affine_multiply (transf, transf, affine);
+	cairo_matrix_init_scale (&affine, scale, scale);
+	cairo_matrix_multiply (&transf, &transf, &affine);
 
 	/* Apply the transformation */
-	gnome_canvas_item_affine_absolute (GNOME_CANVAS_ITEM (br->preview), transf);
-
-	/* Get the new coordonates after transformation */
-	gnome_canvas_item_get_bounds (GNOME_CANVAS_ITEM (br->preview),
-		&x1, &y1, &x2, &y2);
-
+	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (br->preview), &transf);
+	
 	/* Compute the motion to centre the Preview widget */
-	new_x = (PREVIEW_WIDTH - x1 - x2) / 2;
-	new_y = (PREVIEW_HEIGHT - y1 - y2) / 2;
-
-	art_affine_translate (affine, new_x, new_y);
-	art_affine_multiply (transf, transf, affine);
+	new_x = 100 + (PREVIEW_WIDTH - x1 - x2) / 2;
+	new_y = (PREVIEW_HEIGHT - y1 - y2) / 2 - 10;
 
 	/* Apply the transformation */
-	gnome_canvas_item_affine_absolute (GNOME_CANVAS_ITEM (br->preview),
-		transf);
-
+	if (scale > 5.0) scale = 3.0;
+	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (br->preview), 
+	                                      new_x,
+	                                      new_y,
+	                                      scale,
+	                                      0.0);
+    	
 	description = g_strdup (library_part->description);
 	wrap_string (description, 20);
-	gnome_canvas_item_set (GNOME_CANVAS_ITEM (br->description), "text",
-						   description, NULL);
+	g_object_set (br->description,
+	              "text", description, 
+	              NULL);
 	g_free (description);
 
 	g_object_get (G_OBJECT (br->description),
-		"text_width", &text_width, NULL);
-
-	g_object_set (G_OBJECT (br->description), 
-				  "x", PREVIEW_WIDTH / 2 - text_width / 2, 
-                  NULL);
-	gnome_canvas_item_request_update (GNOME_CANVAS_ITEM (br->description));
+	              "width", &text_width, 
+	              NULL);
+	
+	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (br->description), 
+	                                      50.0, 
+	                                      -20.0,
+	                                      1.0,
+	                                      0.0);
 	g_free (part_name);
 }
 
@@ -442,9 +452,7 @@ drag_data_get (GtkWidget *widget, GdkDragContext *context,
 		(gpointer) data,
 		sizeof (DndData));
 
-	/*
-	 * gtk_selection_data_set copies the information so we can free it now.
-	 */
+	// gtk_selection_data_set copies the information so we can free it now.
 	g_free (data);
 }
 
@@ -463,9 +471,6 @@ part_browser_create (SchematicView *schematic_view)
 	GtkWidget *w, *view;
 	GtkCellRenderer *cell_text;
 	GtkTreeViewColumn *cell_column;
-	GtkStyle *style;
-	GdkColormap *colormap;
-	GnomeCanvasPoints *points;
 	static GtkTargetEntry dnd_types[] =
 		{ { "x-application/oregano-part", 0, DRAG_PART_INFO } };
 
@@ -476,7 +481,9 @@ part_browser_create (SchematicView *schematic_view)
 		oregano_error (_("Could not create part browser"));
 		return NULL;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	else 
+		gtk_builder_set_translation_domain (gui, NULL);
+
 	br = g_new0 (Browser, 1);
 	br->preview = NULL;
 	br->schematic_view = schematic_view;
@@ -487,7 +494,8 @@ part_browser_create (SchematicView *schematic_view)
 	if (!g_file_test (OREGANO_UIDIR "/part-browser.ui",
 		    G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+			_("The file %s could not be found. You might need to reinstall "
+			  "Oregano to fix this."),
 			OREGANO_UIDIR "/part-browser.ui");
 
 		oregano_error_with_title (_("Could not create part browser"), msg);
@@ -506,56 +514,29 @@ part_browser_create (SchematicView *schematic_view)
 	view = GTK_WIDGET (gtk_builder_get_object (gui, "viewport1"));
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (view), 
 	    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-	w = gnome_canvas_new ();
+
+	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (view),
+	                                            115);
+	
+	w = goo_canvas_new ();
 	gtk_container_add (GTK_CONTAINER (view), GTK_WIDGET (w));
 	
 	br->canvas = w;
 
 	g_signal_connect (w, "realize", (GCallback) preview_realized, br);
 
-	style =  gtk_style_new ();
-	colormap = gtk_widget_get_colormap (GTK_WIDGET (w));
-	style->bg[GTK_STATE_NORMAL].red = 65535;
-	style->bg[GTK_STATE_NORMAL].blue = 65535;
-	style->bg[GTK_STATE_NORMAL].green = 65535;
-	gdk_colormap_alloc_color (colormap, &style->bg[GTK_STATE_NORMAL],
-		TRUE, TRUE);
-	gtk_widget_set_style (GTK_WIDGET (w), style);
-	gtk_widget_set_size_request (w, PREVIEW_WIDTH,
-		PREVIEW_HEIGHT + PREVIEW_TEXT_HEIGHT);
-	gnome_canvas_set_scroll_region (GNOME_CANVAS (w), 0, 0, PREVIEW_WIDTH,
-		PREVIEW_HEIGHT + PREVIEW_TEXT_HEIGHT);
+	//gtk_widget_set_size_request (w, PREVIEW_WIDTH,
+	//	PREVIEW_HEIGHT + PREVIEW_TEXT_HEIGHT);
+	goo_canvas_set_bounds (GOO_CANVAS (w), 0, 0, PREVIEW_WIDTH,
+		(PREVIEW_HEIGHT + PREVIEW_TEXT_HEIGHT));
 
-	points = gnome_canvas_points_new (2);
-	points->coords[0] = - 10;
-	points->coords[1] = PREVIEW_HEIGHT - 10;
-	points->coords[2] = PREVIEW_WIDTH + 10;
-	points->coords[3] = PREVIEW_HEIGHT - 10;
+	br->description = GOO_CANVAS_TEXT (goo_canvas_text_new (
+	           goo_canvas_get_root_item (GOO_CANVAS (br->canvas)), 
+	           "", 0.0, PREVIEW_HEIGHT - 9.0, 100.0, GOO_CANVAS_ANCHOR_NORTH_WEST,
+	           "font", "sans 9", 
+	           NULL));  
 
-	gnome_canvas_item_new (gnome_canvas_root (GNOME_CANVAS (br->canvas)),
-		gnome_canvas_line_get_type (),
-		"fill_color", "gray",
-		"line_style", GDK_LINE_ON_OFF_DASH,
-		"points", points,
-		NULL);
-
-	gnome_canvas_points_unref (points);
-
-	br->description = GNOME_CANVAS_TEXT (
-		gnome_canvas_item_new (
-			gnome_canvas_root (GNOME_CANVAS (br->canvas)),
-			gnome_canvas_text_get_type (),
-			"x", 0.0,
-			"y", PREVIEW_HEIGHT - 9.0,
-			"anchor", GTK_ANCHOR_NORTH_WEST,
-			"justification", GTK_JUSTIFY_CENTER,
-			"font", "sans 10",
-			"text", "",
-			NULL));
-
-	/*
-	 * Set up dnd.
-	 */
+	/* Set up dnd. */
 	g_signal_connect (G_OBJECT (br->canvas), "drag_data_get",
 		G_CALLBACK (drag_data_get), br);
 
@@ -582,11 +563,13 @@ part_browser_create (SchematicView *schematic_view)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "parts_list"));
 	br->list = w;
 
-	/* Create de ListModel for TreeView, this is a Real model */
+	/* Create the List Model for TreeView, this is a Real model */
 	br->real_model = GTK_TREE_MODEL (gtk_list_store_new (1, G_TYPE_STRING));
 	cell_text = gtk_cell_renderer_text_new ();
 	cell_column = gtk_tree_view_column_new_with_attributes (
-		" ", cell_text, "text", 0, NULL);
+		"", cell_text, 
+	    "text", 0,
+	    NULL);
 
 	/* Create the sort model for the items, this sort the real model */
 	br->sort_model = gtk_tree_model_sort_new_with_model (
@@ -598,7 +581,6 @@ part_browser_create (SchematicView *schematic_view)
 
 	/* Create the filter sorted model. This filter items based on user
 	   request for fast item search */
-
 	br->filter_model = gtk_tree_model_filter_new (br->sort_model, NULL);
 	gtk_tree_model_filter_set_visible_func (
 		GTK_TREE_MODEL_FILTER (br->filter_model),
@@ -606,16 +588,14 @@ part_browser_create (SchematicView *schematic_view)
 
 	/* If we have TreeFilter use it, if not, just use sorting model only */
 	if (br->filter_model)
-		gtk_tree_view_set_model (GTK_TREE_VIEW(w), br->filter_model);
+		gtk_tree_view_set_model (GTK_TREE_VIEW (w), br->filter_model);
 	else
-		gtk_tree_view_set_model (GTK_TREE_VIEW(w), br->sort_model);
+		gtk_tree_view_set_model (GTK_TREE_VIEW (w), br->sort_model);
 
-	gtk_tree_view_append_column (GTK_TREE_VIEW(w), cell_column);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (w), cell_column);
 	update_list (br);
 
-	/*
-	 * Set up TreeView dnd.
-	 */
+	// Set up TreeView dnd.
 	g_signal_connect (G_OBJECT (w), "drag_data_get",
 		G_CALLBACK (drag_data_get), br);
 
@@ -631,7 +611,7 @@ part_browser_create (SchematicView *schematic_view)
 	    "part_browser_vbox"));
 
 	path = gtk_tree_path_new_first ();
-	gtk_tree_view_set_cursor (GTK_TREE_VIEW (w),path, NULL, FALSE);
+	gtk_tree_view_set_cursor (GTK_TREE_VIEW (w), path, NULL, FALSE);
 	gtk_tree_path_free (path);
 
 	gtk_widget_unparent (br->viewport);
@@ -651,20 +631,26 @@ part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,1,2,0,1);
+	gtk_table_attach (GTK_TABLE (w),combo_box,1,2,0,1,
+	                  GTK_EXPAND | GTK_FILL, 
+	                  GTK_SHRINK, 
+	                  0, 0);
+	// ATTENTION: MODIF ????
+	//g_object_set (combo_box, 
+	//              "border-width", 12, 
+	//              NULL);
 
 	libs = oregano.libraries;
 
 	while (libs) {
 		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box),
-			((Library *)libs->data)->name);
+		      ((Library *)libs->data)->name);
 		libs = libs->next;
 		if (!first) {
 			gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),0);
 			first = TRUE;
 		}
 	}
-
 	g_signal_connect (G_OBJECT (combo_box), "changed", 
 		G_CALLBACK (library_switch_cb), br);
 }
@@ -672,12 +658,17 @@ part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 static void
 library_switch_cb (GtkWidget *combo_box, Browser *br)
 {
+	GtkTreePath *path;
 	GList *libs = oregano.libraries;
 
 	br->library = (Library *) g_list_nth_data (libs,
 		gtk_combo_box_get_active (GTK_COMBO_BOX (combo_box)));
 
 	update_list (br);
+	
+	path = gtk_tree_path_new_first ();
+	gtk_tree_view_set_cursor (GTK_TREE_VIEW (br->list), path, NULL, FALSE);
+	gtk_tree_path_free (path);
 }
 
 static void
@@ -723,6 +714,7 @@ part_browser_reparent (gpointer *br, GtkWidget *new_parent)
 {
 	Browser *b;
 	g_return_if_fail (br != NULL);
+
 	b = (Browser *)br;
 	gtk_widget_reparent (GTK_WIDGET (b->viewport), new_parent);
 }

@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -44,6 +44,9 @@
 #include "node-store.h"
 #include "save-schematic.h"
 #include "xml-helper.h"
+
+
+#define NG_DEBUG(s) if (1) g_print ("%s\n", s)
 
 typedef struct {
 	xmlDocPtr  doc;		 /* Xml document. */
@@ -249,7 +252,6 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 {
 	PartPriv *priv;
 	xmlNodePtr node_part;
-	//xmlNodePtr node_pos;
 	gchar *str;
 	SheetPos pos;
 
@@ -290,7 +292,6 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	/* Position. */
 	item_data_get_pos (ITEM_DATA (part), &pos);
 	str = g_strdup_printf ("(%g %g)", pos.x, pos.y);
-	//node_pos = xmlNewChild (node_part, ctxt->ns, BAD_CAST "position", BAD_CAST str);
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "position", BAD_CAST str);
 	g_free (str);
 
@@ -351,8 +352,8 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 	SheetPos pos;
 
 	g_return_if_fail (textbox != NULL);
-
-	g_return_if_fail (IS_TEXTBOX (textbox));
+	if (!IS_TEXTBOX (textbox))
+		return;
 
 	// Create a node for the textbox.
 	node_textbox = xmlNewChild (ctxt->node_textboxes, ctxt->ns,
@@ -488,5 +489,3 @@ schematic_write_xml (Schematic *sm, GError **error)
 		return FALSE;
 	return TRUE;
 }
-
-

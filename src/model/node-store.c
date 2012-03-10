@@ -13,7 +13,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006 Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -85,34 +85,9 @@ enum {
 	LAST_SIGNAL
 };
 
+G_DEFINE_TYPE (NodeStore, node_store, G_TYPE_OBJECT)
+
 static guint node_store_signals [LAST_SIGNAL] = { 0 };
-static GObjectClass *parent_class = NULL;
-
-GType
-node_store_get_type (void)
-{
-	static GType node_store_type = 0;
-
-	if (!node_store_type) {
-		static const GTypeInfo node_store_info = {
-			sizeof (NodeStoreClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) node_store_class_init,
-			NULL,
-			NULL,
-			sizeof (NodeStore),
-			0,
-			(GInstanceInitFunc) node_store_init,
-			NULL
-		};
-
-		node_store_type = g_type_register_static (G_TYPE_OBJECT, "NodeStore",
-			&node_store_info, 0);
-	}
-
-	return node_store_type;
-}
 
 static void
 node_store_finalize (GObject *object)
@@ -137,13 +112,13 @@ node_store_finalize (GObject *object)
 		self->items = NULL;
 	}
 
-	parent_class->finalize (object);
+	G_OBJECT_CLASS (node_store_parent_class)->finalize (object);
 }
 
 static void
 node_store_dispose (GObject *self)
 {
-	parent_class->dispose (self);
+	G_OBJECT_CLASS (node_store_parent_class)->dispose (self);
 }
 
 static void
@@ -152,7 +127,7 @@ node_store_class_init (NodeStoreClass *klass)
 	GObjectClass *gobject_class;
 
 	gobject_class = G_OBJECT_CLASS (klass);
-	parent_class = g_type_class_peek_parent (klass);
+	node_store_parent_class = g_type_class_peek_parent (klass);
 
 	gobject_class->finalize = node_store_finalize;
 	gobject_class->dispose = node_store_dispose;
@@ -432,13 +407,15 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 				p1.x = _x1;
 				p1.y = _y1;
-				if ((node->key.x == p1.x) && (node->key.y == p1.y)) {
+				if ((fabs (node->key.x - p1.x) < 1e-3) && 
+				    (fabs (node->key.y - p1.y) < 1e-3)){
 					can_join = FALSE;
 					break;
 				}
 				p1.x = _x2;
 				p1.y = _y2;
-				if ((node->key.x == p1.x) && (node->key.y == p1.y)) {
+				if ((fabs (node->key.x - p1.x) < 1e-3) && 
+				    (fabs (node->key.y - p1.y) < 1e-3)){    
 					can_join = FALSE;
 					break;
 				}
@@ -457,7 +434,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				wire_update_bbox (ipoint->wire);
 				item_data_register (ITEM_DATA (ipoint->wire));
 
-				/* Done!, return -1 so wire si deleted */
+				/* Done!, return -1 so wire is deleted */
 				return -1;
 			}
 		}
@@ -484,13 +461,15 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 				p.x = _x1;
 				p.y = _y1;
-				if ((node->key.x == p.x) && (node->key.y == p.y)) {
+				if ((fabs (node->key.x - p.x) < 1e-3) && 
+				    (fabs (node->key.y - p.y) < 1e-3)){  
 					can_join = FALSE;
 					break;
 				}
 				p.x = _x2;
 				p.y = _y2;
-				if ((node->key.x == p.x) && (node->key.y == p.y)) {
+				if ((fabs (node->key.x - p.x) < 1e-3) && 
+				    (fabs (node->key.y - p.y) < 1e-3)){  
 					can_join = FALSE;
 					break;
 				}
@@ -633,10 +612,8 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 	wire_y1 = wire_pos.y;
 	wire_y2 = wire_pos.y + wire_length.y;
 
-	/*
-	 * Go through all the parts and see which of their
-	 * pins that intersect the wire.
-	 */
+	// Go through all the parts and see which of their
+	// pins that intersect the wire.
 	for (list = store->parts; list; list = list->next) {
 		part = list->data;
 
@@ -653,10 +630,8 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 			lookup_pos.x = x;
 			lookup_pos.y = y;
 
-			/*
-			 * If there is a wire at this pin's position,
-			 * add it to the return list.
-			 */
+			// If there is a wire at this pin's position,
+			// add it to the return list.
 			if (is_wire_at_pos (wire_x1, wire_y1, wire_x2, wire_y2, lookup_pos)) {
 				node = node_store_get_node (store, lookup_pos);
 
@@ -733,9 +708,9 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
 {
 	GList *list;
 	GSList *ip_list;
-	Wire *wire2;
-	SheetPos pos, wire2_pos, wire2_length;
-	double wire2_x1, wire2_y1, wire2_x2, wire2_y2;
+	Wire *wire;
+	SheetPos pos, wire_pos, wire_length;
+	double wire_x1, wire_y1, wire_x2, wire_y2;
 
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
@@ -745,21 +720,21 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
 	 */
 	ip_list = NULL;
 	for (list = store->wires; list; list = list->next) {
-		wire2 = list->data;
+		wire = list->data;
 
-		wire_get_pos_and_length (wire2, &wire2_pos, &wire2_length);
-		wire2_x1 = wire2_pos.x;
-		wire2_y1 = wire2_pos.y;
-		wire2_x2 = wire2_x1 + wire2_length.x;
-		wire2_y2 = wire2_y1 + wire2_length.y;
+		wire_get_pos_and_length (wire, &wire_pos, &wire_length);
+		wire_x1 = wire_pos.x;
+		wire_y1 = wire_pos.y;
+		wire_x2 = wire_x1 + wire_length.x;
+		wire_y2 = wire_y1 + wire_length.y;
 
-		if (do_wires_intersect (x1, y1, x2, y2, wire2_x1, wire2_y1,
-								wire2_x2, wire2_y2, &pos)) {
+		if (do_wires_intersect (x1, y1, x2, y2, wire_x1, wire_y1,
+								wire_x2, wire_y2, &pos)) {
 			IntersectionPoint *ip;
 
 			ip = g_new0 (IntersectionPoint, 1);
 
-			ip->wire = wire2;
+			ip->wire = wire;
 			ip->pos = pos;
 			ip_list = g_slist_prepend (ip_list, ip);
 		}
@@ -796,8 +771,7 @@ node_hash (gconstpointer key)
 	SheetPos *sp = (SheetPos *) key;
 	int x, y;
 
-	/* hasha på varannan bit? */
-	/* Can anybody translate this?	*/
+	// Hash on any other node?
 
 	x = (int)rint (sp->x) % 256;
 	y = (int)rint (sp->y) % 256;
@@ -978,33 +952,6 @@ node_store_get_items (NodeStore *store)
 	g_return_val_if_fail (IS_NODE_STORE (store), NULL);
 
 	return store->items;
-}
-
-/*
- * Debugging code.
- */
-
-void
-node_store_dump_wires (NodeStore *store)
-{
-	GList *wires;
-
-	NG_DEBUG ("\n------------------- Dump wires -------------------\n");
-
-	for (wires = store->wires; wires; wires = wires->next) {
-		Wire *wire;
-		SheetPos start, length;
-
-		wire = wires->data;
-		wire_get_pos_and_length (wire, &start, &length);
-
-		NG_DEBUG (g_strdup_printf ("(%g %g) -> (%g %g):   %d nodes.\n",
-			 start.x, start.y,
-			 start.x + length.x, start.y + length.y,
-			 g_slist_length (wire->priv->nodes)));
-	}
-
-	NG_DEBUG ("\n");
 }
 
 static void

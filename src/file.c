@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,8 +29,10 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #include <string.h>
 #include <glib/gi18n.h>
+
 #include "file.h"
 #include "schematic.h"
 #include "schematic-view.h"
@@ -150,17 +152,20 @@ dialog_netlist_file (SchematicView *sv)
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
 		NULL);
+	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (dialog), TRUE);
+	gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), 
+	                                                TRUE);
+	
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-		name = gtk_file_chooser_get_filename (
-			GTK_FILE_CHOOSER (dialog));
+		name = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 
 		if (name[strlen (name) - 1] == '/') {
-			g_free (name);
 			name = NULL;
 		} 
-		else
+		else {
 			name = g_strdup (name);
+		}
 	} 
 	else
 		name = NULL;

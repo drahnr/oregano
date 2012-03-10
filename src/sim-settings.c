@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -176,7 +176,6 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 		else gtk_entry_set_text (GTK_ENTRY (sim->priv->w_four_vout), "");
 		g_slist_free (node_slist);
 	}
-
 }
 
 static void
@@ -405,13 +404,13 @@ static void
 trans_enable_cb (GtkWidget *widget, SimSettings *s)
 {
 	gboolean enable;
-
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
 	
 	if (enable)
 		gtk_widget_show (s->priv->w_trans_frame);
 	else
 		gtk_widget_hide (s->priv->w_trans_frame);
+	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 }
 
 static void
@@ -442,6 +441,7 @@ ac_enable_cb (GtkWidget *widget, SimSettings *s)
 		gtk_widget_show (s->priv->w_ac_frame);
 	else
 		gtk_widget_hide (s->priv->w_ac_frame);
+	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 }
 
 static void
@@ -454,6 +454,7 @@ fourier_enable_cb (GtkWidget *widget, SimSettings *s)
 		gtk_widget_show (s->priv->w_fourier_frame);
 	else
 		gtk_widget_hide (s->priv->w_fourier_frame);
+	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 }
 
 static void
@@ -466,6 +467,7 @@ dc_enable_cb (GtkWidget *widget, SimSettings *s)
 		gtk_widget_show (s->priv->w_dcsweep_frame);
 	else
 		gtk_widget_hide (s->priv->w_dcsweep_frame);
+	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 }
 
 static int
@@ -859,6 +861,7 @@ response_callback (GtkButton *button, Schematic *sm)
 	                       GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
 	if (s->priv->dc_vin) 
 		g_free (s->priv->dc_vin);
+
 	tmp = gtk_combo_box_text_get_active_text (
 	                       GTK_COMBO_BOX_TEXT (s->priv->w_dc_vin));
 	node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
@@ -913,6 +916,8 @@ response_callback (GtkButton *button, Schematic *sm)
 		g_free (s->priv->fourier_frequency);
 	s->priv->fourier_frequency = g_strdup (gtk_entry_get_text (
 	                       GTK_ENTRY (s->priv->w_four_freq)));
+
+	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 
 	/* Options */
 	get_options_from_list (s);
@@ -975,7 +980,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		oregano_error (_("Could not create simulation settings dialog"));
 		return;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	else 
+		gtk_builder_set_translation_domain (gui, NULL);
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/sim-settings.ui", 
 	    &perror) <= 0) {
@@ -1075,7 +1081,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "clicked", 
 		G_CALLBACK (response_callback), sm);
 
-	/*  Transient   */
+	// Transient //
+	// ********* //
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "trans_start"));
 	if (s->priv->trans_start) gtk_entry_set_text (GTK_ENTRY (w),
 		s->priv->trans_start);
@@ -1100,6 +1107,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "trans_enable"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->priv->trans_enable);
 	s->priv->w_trans_enable = w;
+	g_signal_connect (G_OBJECT (s->priv->w_trans_enable), "clicked", 
+		G_CALLBACK (trans_enable_cb), s);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "trans_step_enable"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w),
@@ -1119,7 +1128,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (s->priv->w_trans_step_enable), "clicked", 
 		G_CALLBACK (trans_step_enable_cb), s);
 
-	/* AC  */
+	// AC  //
+	// *** //
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "ac_enable"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->priv->ac_enable);
 	s->priv->w_ac_enable=w;
@@ -1131,7 +1141,10 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_destroy (w);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table14"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach_defaults (GTK_TABLE(w), combo_box, 1, 2, 0, 1);
+	gtk_table_attach (GTK_TABLE (w),combo_box, 1, 2, 0, 1,
+	                  GTK_EXPAND | GTK_FILL, 
+	                  GTK_SHRINK, 
+	                  0, 0);
 	s->priv->w_ac_type = combo_box;
 
 	{
@@ -1163,7 +1176,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "changed", 
 		G_CALLBACK (entry_changed_cb), s);
 
-	/*  DC   */
+	//  DC   //
+	// ***** //
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "dc_enable"));
 	s->priv->w_dc_enable = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->priv->dc_enable);
@@ -1192,7 +1206,11 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_destroy (w);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table13"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach_defaults (GTK_TABLE(w), combo_box, 1, 2, 0, 1);
+	
+	gtk_table_attach (GTK_TABLE (w),combo_box, 1, 2, 0, 1,
+	                  GTK_EXPAND | GTK_FILL, 
+	                  GTK_SHRINK, 
+	                  0, 0);
 	s->priv->w_dc_vin = combo_box;
 	if (sources) {
 		for (; sources; sources = sources->next) {
@@ -1225,7 +1243,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	for (ltmp = sources; ltmp; ltmp = ltmp->next) g_free (ltmp->data);
 	g_list_free (sources);
 
-	// Fourier
+	// Fourier //
+	// ******* //
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "fourier_enable"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), 
 	                         s->priv->fourier_enable);
@@ -1246,16 +1265,22 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	text = NULL;
 	slist = g_slist_copy (s->priv->fourier_vout);
-	if (atoi (slist->data) != 0) {
-		text = g_strdup_printf ("V(%d)", atoi (slist->data));
-	}
-	slist = slist->next;
-	while (slist)
-	{
-		if (atoi (slist->data) != 0) {
-			text = g_strdup_printf ("%s V(%d)", text, atoi (slist->data));
-		}
+	if (slist) {
+		if (atoi (slist->data) != 0)
+			text = g_strdup_printf ("V(%d)", atoi (slist->data));
+	
 		slist = slist->next;
+		while (slist)
+		{
+			if (atoi (slist->data) != 0)
+				text = g_strdup_printf ("%s V(%d)", text, atoi (slist->data));
+			slist = slist->next;
+		}
+	
+		if (text) 
+			gtk_entry_set_text (GTK_ENTRY (w), text);
+		else
+			gtk_entry_set_text (GTK_ENTRY (w), "");
 	}
 	if (text) 
 		gtk_entry_set_text (GTK_ENTRY (w), text);
@@ -1269,7 +1294,11 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table12"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach_defaults (GTK_TABLE(w),combo_box,2,3,2,3);
+	
+	gtk_table_attach (GTK_TABLE (w),combo_box, 2, 3, 2, 3,
+	                  GTK_EXPAND | GTK_FILL, 
+	                  GTK_SHRINK, 
+	                  0, 0);
 	
 	s->priv->w_four_combobox = combo_box;
 	node_box = GTK_COMBO_BOX (combo_box);	

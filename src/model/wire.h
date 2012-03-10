@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -72,20 +72,21 @@ struct _WireClass
 	void (*delete) ();
 };
 
-GType wire_get_type (void);
-Wire *wire_new (void);
-NodeStore *wire_get_store (Wire *wire);
-gint wire_set_store (Wire *wire, NodeStore *store);
-gint wire_add_node (Wire *wire, Node *node);
-gint wire_remove_node (Wire *wire, Node *node);
-GSList * wire_get_nodes (Wire *wire);
-void wire_get_start_pos (Wire *wire, SheetPos *pos);
-void wire_get_end_pos (Wire *wire, SheetPos *pos);
-void wire_get_pos_and_length (Wire *wire, SheetPos *pos, SheetPos *length);
-void wire_set_length (Wire *wire, SheetPos *length);
-gint wire_is_visited (Wire *wire);
-void wire_set_visited (Wire *wire, gboolean is_visited);
-void wire_delete (Wire *wire);
-void wire_update_bbox (Wire *wire);
+GType 		wire_get_type (void);
+Wire *		wire_new (void);
+NodeStore *	wire_get_store (Wire *wire);
+gint 		wire_set_store (Wire *wire, NodeStore *store);
+gint 		wire_add_node (Wire *wire, Node *node);
+gint 		wire_remove_node (Wire *wire, Node *node);
+GSList * 	wire_get_nodes (Wire *wire);
+void 		wire_get_start_pos (Wire *wire, SheetPos *pos);
+void 		wire_get_end_pos (Wire *wire, SheetPos *pos);
+void 		wire_get_pos_and_length (Wire *wire, SheetPos *pos, 
+		                             SheetPos *length);
+void 		wire_set_length (Wire *wire, SheetPos *length);
+gint 		wire_is_visited (Wire *wire);
+void 		wire_set_visited (Wire *wire, gboolean is_visited);
+void 		wire_delete (Wire *wire);
+void 		wire_update_bbox (Wire *wire);
 
 #endif

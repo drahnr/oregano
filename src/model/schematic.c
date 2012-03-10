@@ -64,9 +64,7 @@ struct _SchematicPriv {
 	SchematicColors 		 colors;
 	SchematicPrintOptions 	*printoptions;
 
-	/*
-	 * Data for various dialogs.
-	 */
+	// Data for various dialogs.
 	gpointer 				 settings;
 	gpointer 				 sim_settings;
 	gpointer 				 simulation;
@@ -110,6 +108,8 @@ enum {
 	LAST_SIGNAL
 };
 
+G_DEFINE_TYPE (Schematic, schematic, G_TYPE_OBJECT)
+
 static void schematic_init (Schematic *schematic);
 static void schematic_class_init (SchematicClass	*klass);
 static void schematic_finalize (GObject *object);
@@ -127,33 +127,6 @@ static guint schematic_signals[LAST_SIGNAL] = { 0 };
 
 static GList *schematic_list = NULL;
 static int schematic_count_ = 0;
-
-GType
-schematic_get_type (void)
-{
-	static GType schematic_type = 0;
-
-	if (!schematic_type) {
-		static const GTypeInfo schematic_info = {
-			sizeof (SchematicClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) schematic_class_init,
-			NULL,
-			NULL,
-			sizeof (Schematic),
-			0,
-			(GInstanceInitFunc) schematic_init,
-			NULL
-		};
-
-		schematic_type =
-			g_type_register_static (G_TYPE_OBJECT, "Schematic",
-				&schematic_info,0);
-	}
-
-	return schematic_type;
-}
 
 static void
 schematic_class_init (SchematicClass *klass)

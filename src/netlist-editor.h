@@ -30,7 +30,7 @@
 #ifndef __NETLIST_EDIT_H
 #define __NETLIST_EDIT_H
 
-#include <gconf/gconf-client.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksourceview.h>
 

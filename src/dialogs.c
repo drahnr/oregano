@@ -9,7 +9,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,6 +26,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
@@ -77,7 +78,6 @@ oregano_warning (gchar *msg)
 {
     oregano_warning_with_title (msg, NULL);
 }
-
 
 void
 oregano_warning_with_title (gchar *title, gchar *desc)
@@ -155,10 +155,11 @@ dialog_about (void)
 	const char *docs[] = {
 		"Ricardo Markiewicz <rmarkie@fi.uba.ar> (es)",
 		"Jordi Mallach <tradgnome@softcatala.net> (ca)",
+		"Marc Lorber <lorber.marc@wanadoo.fr> (en)",
 		NULL
 	};
 
-	const gchar *copy = _("(c) 2009-2010 Marc Lorber 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
+	const gchar *copy = _("(c) 2009-2012 Marc Lorber 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
 
 	/* Allow only one about box at a time. */
 	if (about) {
@@ -171,9 +172,12 @@ dialog_about (void)
 	gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (about), "Oregano");
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (about), VERSION);
 	gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG (about), copy);
-	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (about), _("Schematic capture and circuit simulation.\n"));
-	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (about), "GNU General Public License");
-	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), "http://arrakis.gforge.lug.fi.uba.ar");
+	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (about), 
+		_("Schematic capture and circuit simulation.\n"));
+	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (about), 
+		"GNU General Public License");
+	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), 
+	    "https://github.com/marc-lorber/oregano");
 	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
 	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
 	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);

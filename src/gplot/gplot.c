@@ -7,7 +7,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -26,6 +26,7 @@
  */
 
 #include <math.h>
+
 #include "gplot-internal.h"
 #include "gplot.h"
 
@@ -33,7 +34,7 @@
 
 static void g_plot_class_init (GPlotClass* class);
 static void g_plot_init (GPlot* plot);
-static gint g_plot_expose (GtkWidget* widget, GdkEventExpose* event);
+static gboolean g_plot_draw (GtkWidget* widget, cairo_t *cr);
 static cairo_t* g_plot_create_cairo (GPlot *);
 static gboolean g_plot_motion_cb (GtkWidget *, GdkEventMotion *, GPlot *);
 static gboolean g_plot_button_press_cb (GtkWidget *, GdkEventButton *, GPlot *);
@@ -118,7 +119,7 @@ g_plot_class_init (GPlotClass* class)
 	widget_class = GTK_WIDGET_CLASS (class);
 	parent_class = g_type_class_peek_parent (class);
 
-	widget_class->expose_event = g_plot_expose;
+	widget_class->draw = g_plot_draw;
 
 	object_class->dispose = g_plot_dispose;
 	object_class->finalize = g_plot_finalize;
@@ -281,10 +282,11 @@ get_unit_text (int div)
 	return g_strdup_printf ("10e%02d", div);
 }
 
-static gint 
-g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
+static gboolean 
+g_plot_draw (GtkWidget* widget, cairo_t *cr)
 {
-	static double dashes[] = {3,  /* ink */
+	static double dashes[] = 
+	   {3,  /* ink */
 		3,  /* skip */
 		3,  /* ink */
 		3   /* skip*/ };
@@ -293,7 +295,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 
 	GPlot *plot;
 	GPlotPriv *priv;
-	cairo_t* cr;
 	guint width;
 	guint height;
 	guint graph_width;
@@ -303,7 +304,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 	gdouble aX, bX, aY, bY;
 	gint div;
 	cairo_text_extents_t extents;
-	GtkAllocation allocation;
 
 	plot = GPLOT (widget);
 	priv = plot->priv;
@@ -312,19 +312,11 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 		g_plot_update_bbox (plot);
 	}
 
-	gtk_widget_get_allocation (widget, &allocation);
-	width = allocation.width;
-	height = allocation.height;
+	width = gtk_widget_get_allocated_width (widget);
+	height = gtk_widget_get_allocated_height (widget);
 
 	graph_width = width - priv->left_border - priv->right_border;
 	graph_height = height - priv->top_border - priv->bottom_border;
-
-	cr = g_plot_create_cairo (plot);
-
-	/* Set a clip region for the expose event */
-	/* TODO :This is useful if we use gtk_widget_queue_draw_area */
-	cairo_rectangle (cr, event->area.x, event->area.y, event->area.width, event->area.height);
-	cairo_clip (cr);
 
 	/* Paint background */
 	cairo_save (cr);
@@ -340,12 +332,10 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 		cairo_rectangle (cr, priv->left_border, priv->right_border, graph_width, graph_height);
 		cairo_stroke (cr);
 	cairo_restore (cr);
-
-	/* TODO : Move this to SizeAllocation functions */
-	gtk_widget_get_allocation (widget, &allocation);
-	priv->viewport_bbox.xmax = allocation.width - priv->right_border;
+	
+	priv->viewport_bbox.xmax = width - priv->right_border;
 	priv->viewport_bbox.xmin = priv->left_border;
-	priv->viewport_bbox.ymax = allocation.height - priv->bottom_border;
+	priv->viewport_bbox.ymax = height - priv->bottom_border;
 	priv->viewport_bbox.ymin = priv->top_border;
 
 	/* Calculating Window to Viewport matrix */
@@ -471,8 +461,6 @@ g_plot_expose (GtkWidget* widget, GdkEventExpose* event)
 			cairo_stroke (cr);
 		cairo_restore (cr);
 	}
-
-	cairo_destroy (cr);
 
 	return FALSE;
 }

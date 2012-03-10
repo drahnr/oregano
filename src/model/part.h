@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -63,9 +63,8 @@ struct _Pin {
 #define PIN(x) ((Pin *)(x))
 
 struct _Part {
-	ItemData parent;
-
-	PartPriv *priv;
+	ItemData 	parent;
+	PartPriv *	priv;
 };
 
 struct _PartClass
@@ -75,19 +74,18 @@ struct _PartClass
 	void (*changed) ();
 };
 
-GType  part_get_type (void);
-Part  *part_new (void);
-Part  *part_new_from_library_part (LibraryPart *library_part);
-int	   part_get_num_pins (Part *part);
-Pin	  *part_get_pins (Part *part);
-int	   part_set_pins (Part *part, GSList *connections);
-int	   part_get_rotation (Part *part);
-IDFlip part_get_flip (Part *part);
-void   part_labels_rotate (Part *part, int rotation);
-
-char   *part_get_property (Part *part, char *name);
-GSList *part_get_properties (Part *part);
-GSList *part_get_labels (Part *part);
+GType  		part_get_type (void);
+Part  *		part_new (void);
+Part  *		part_new_from_library_part (LibraryPart *library_part);
+int	   		part_get_num_pins (Part *part);
+Pin	  *		part_get_pins (Part *part);
+int	   		part_set_pins (Part *part, GSList *connections);
+int	   		part_get_rotation (Part *part);
+IDFlip 		part_get_flip (Part *part);
+void   		part_labels_rotate (Part *part, int rotation);
+char   *	part_get_property (Part *part, char *name);
+GSList *	part_get_properties (Part *part);
+GSList *	part_get_labels (Part *part);
 
 ClipboardData *part_clipboard_dup (Part *part);
 

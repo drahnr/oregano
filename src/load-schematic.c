@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,7 +30,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <libgnomecanvas/libgnomecanvas.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -45,7 +44,8 @@
 #include "textbox.h"
 #include "errors.h"
 
-#define NG_DEBUG(s) if (1) g_print ("%s\n", s)
+
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
 typedef enum {
 	PARSE_START,
@@ -202,7 +202,6 @@ create_textbox (ParseState *state)
 	textbox = textbox_new (NULL);
 	item_data_set_pos (ITEM_DATA (textbox), &state->pos);
 	textbox_set_text (textbox, state->textbox_text);
-
 	schematic_add_item (state->schematic, ITEM_DATA (textbox));
 }
 
@@ -236,7 +235,6 @@ create_part (ParseState *state)
 
 	item_data_set_pos (ITEM_DATA (part), &state->pos);
 	item_data_rotate (ITEM_DATA (part), state->rotation, NULL);
-
 	if (state->flip & ID_FLIP_HORIZ)
 		item_data_flip (ITEM_DATA (part), TRUE, NULL);
 	if (state->flip & ID_FLIP_VERT)

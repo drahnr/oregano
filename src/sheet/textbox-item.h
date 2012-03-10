@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,9 +39,11 @@
 #include "sheet-item.h"
 #include "textbox.h"
 
-#define TEXTBOX_ITEM(obj)	   G_TYPE_CHECK_INSTANCE_CAST (obj, textbox_item_get_type (), TextboxItem)
-#define TEXTBOX_ITEM_CLASS(klass)  G_TYPE_CHECK_CLASS_CAST (klass, textbox_item_get_type (), TextboxItemClass)
-#define IS_TEXTBOX_ITEM(obj)	   G_TYPE_CHECK_INSTANCE_TYPE (obj, textbox_item_get_type ())
+
+#define TYPE_TEXTBOX_ITEM		  (textbox_item_get_type ())
+#define TEXTBOX_ITEM(obj)	   	  G_TYPE_CHECK_INSTANCE_CAST (obj, textbox_item_get_type (), TextboxItem)
+#define TEXTBOX_ITEM_CLASS(klass) G_TYPE_CHECK_CLASS_CAST (klass, textbox_item_get_type (), TextboxItemClass)
+#define IS_TEXTBOX_ITEM(obj)	  G_TYPE_CHECK_INSTANCE_TYPE (obj, textbox_item_get_type ())
 
 typedef struct _TextboxItemPriv TextboxItemPriv;
 
@@ -53,12 +55,12 @@ typedef enum {
 } TextboxDir;
 
 typedef struct {
-	SheetItem parent_object;
-	TextboxItemPriv *priv;
+	SheetItem 			parent_object;
+	TextboxItemPriv *	priv;
 } TextboxItem;
 
 typedef struct {
-	SheetItemClass parent_class;
+	SheetItemClass 		parent_class;
 } TextboxItemClass;
 
 GType        	textbox_item_get_type (void);
@@ -67,6 +69,5 @@ void         	textbox_item_signal_connect_placed (TextboxItem *textbox_item,
              		Sheet *sheet);
 void         	textbox_item_cancel_listen (Sheet *sheet);
 void         	textbox_item_listen (Sheet *sheet);
-
 
 #endif

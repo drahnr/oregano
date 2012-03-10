@@ -78,7 +78,6 @@ netlist_editor_finalize (GObject *object)
 			gtk_widget_destroy (GTK_WIDGET (nle->priv->toplevel));
 			nle->priv->toplevel = NULL;
 		}
-
 		g_free (nle->priv);
 	}
 
@@ -118,90 +117,6 @@ netlist_editor_get_type (void)
 			&netlist_editor_info, 0);
 	}
 	return netlist_editor_type;
-}
-
-void
-netlist_editor_get_config (NetlistEditor * nle)
-{
-	GConfClient *gconf_client;
-	
-	gconf_client = gconf_client_get_default ();
-	
-	if (gconf_client) {	
-		g_object_unref (gconf_client);
-	}
-}
-
-void
-netlist_editor_set_config (NetlistEditor * nle)
-{
-	GConfClient *gconf_client;
-	
-	gconf_client = gconf_client_get_default ();
-	
-	if (gconf_client) {	
-		g_object_unref (gconf_client);
-	}
-}
-
-void
-netlist_editor_print (GtkWidget * widget, NetlistEditor * nle)
-{
-
-}
-
-void
-netlist_editor_simulate (GtkWidget * widget, NetlistEditor * nle)
-{
-	Schematic *sm;
-	gchar *name;
-	GtkTextView *tview;
-	GtkTextBuffer *buffer;
-	GtkTextIter start, end;
-	FILE *fp;
-	GError *error = 0;
-
-	// FIXME: OreganoEngine now override the netlist when start!
-	return;
-
-	tview = nle->priv->view;
-	buffer = gtk_text_view_get_buffer (tview);
-
-	gtk_text_buffer_get_start_iter (buffer, &start);
-	gtk_text_buffer_get_end_iter (buffer, &end);
-
-	sm = schematic_view_get_schematic (nle->priv->sv);
-	//name = nl_generate (sm, NULL, &error);
-
-	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-		    g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
-			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			oregano_error_with_title (_("Could not create a netlist"), error->message);
-			g_clear_error (&error);
-		} else {
-			oregano_error (
-				_("An unexpected error has occurred"));
-		}
-		return;
-	}
-
-	/* Save TextBuffer to 'name' */
-	fp = fopen (name, "wt");
-	if (!fp) {
-		gchar *msg;
-		msg = g_strdup_printf (_("The file %s could not be saved"), name);
-		oregano_error_with_title (_("Could not save temporary netlist file"), msg);
-		g_free (msg);
-		return;
-	}
-	
-	fputs (gtk_text_buffer_get_text (buffer, &start, &end, FALSE), fp);
-	fclose (fp);
-
-	schematic_set_netlist_filename (sm, name);
-	simulation_show (NULL, nle->priv->sv);
-	g_free (name);
 }
 
 void
@@ -287,6 +202,7 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 
 	if (!textbuffer) 
 		return NULL;
+
 	if ((gui = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create the netlist dialog"));
 		return NULL;
@@ -295,7 +211,6 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	
 	nle = NETLIST_EDITOR (g_object_new (netlist_editor_get_type (), NULL));
 	
-	netlist_editor_get_config (nle);
 	if (!g_file_test (OREGANO_UIDIR "/view-netlist.ui", G_FILE_TEST_EXISTS)) {
 		gchar *msg;
 		msg = g_strdup_printf (
@@ -322,6 +237,7 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	scroll = GTK_SCROLLED_WINDOW (gtk_builder_get_object (gui, "netlist-scrolled-window"));
 	
 	source_view = GTK_SOURCE_VIEW (gtk_source_view_new ());
+
 	lm = GTK_SOURCE_LANGUAGE_MANAGER (gtk_source_language_manager_new ());
 
 	setup_language_manager_path (lm);

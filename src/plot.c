@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001	Richard Hult
  * Copyright (C) 2003,2006	Ricardo Markiewicz
- * Copyright (C) 2009-2010	Marc Lorber
+ * Copyright (C) 2009-2011	Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,7 +39,6 @@
 #include "schematic.h"
 #include "dialogs.h"
 #include "plot.h"
-#include "smallicon.h"
 
 #include "gplot.h"
 #include "gplotfunction.h"
@@ -423,14 +422,14 @@ plot_window_create (Plot *plot)
 
 	plot->plot = g_plot_new ();
 
-	gtk_widget_set_size_request (plot->plot, 600, 400);
 	gtk_container_add (GTK_CONTAINER (plot_scrolled), plot->plot);
+	gtk_widget_set_size_request (plot_scrolled, 600, 400);
 
 	g_signal_connect (G_OBJECT (plot->plot), "motion_notify_event",
 		G_CALLBACK (plot_canvas_movement), plot);
 
 	// Creation of the menubar	
-	vbox = gtk_vbox_new (FALSE, 0);
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
     menubar = gtk_menu_bar_new ();
 	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, TRUE, 0);
     gtk_widget_show (menubar);
@@ -485,7 +484,7 @@ plot_window_create (Plot *plot)
 	    2, NULL);
 
 	cell = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (column, cell, TRUE);
+	gtk_tree_view_column_pack_start (column, cell, FALSE);
 	gtk_tree_view_column_set_attributes (column, cell, "text", 1, NULL);
 
 	cell = gtk_cell_renderer_text_new ();
@@ -506,7 +505,11 @@ plot_window_create (Plot *plot)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
 	combo_box = gtk_combo_box_text_new_with_entry ();
 	
-	gtk_table_attach_defaults (GTK_TABLE (w),combo_box,0,1,0,1);
+	gtk_table_attach (GTK_TABLE (w),combo_box,0,1,0,1,
+	                  GTK_SHRINK,
+	                  //GTK_EXPAND | GTK_FILL, 
+	                  GTK_SHRINK, 
+	                  0, 0);
 
 	plot->combo_box = combo_box;
 	plot->window = window;
@@ -556,7 +559,7 @@ plot_show (OreganoEngine *engine)
 			first = sdat;
 		}
 		combo_items = g_list_append (combo_items, str);
-		gtk_combo_box_append_text (GTK_COMBO_BOX (plot->combo_box), str);
+		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (plot->combo_box), str);
 		gtk_combo_box_set_active (GTK_COMBO_BOX (plot->combo_box),0);
 	}
 	
@@ -584,6 +587,7 @@ create_plot_function_from_data (SimulationFunction *func,
 	double data;
 	guint j, len;
 	GraphicType graphic_type = FUNCTIONAL_CURVE;
+	gdouble width = 1.0;
 
 	len = current->data[func->first]->len;
 	X = g_new0 (double, len);
@@ -614,18 +618,20 @@ create_plot_function_from_data (SimulationFunction *func,
 	if (current->type == FOURIER) {
 		graphic_type = FREQUENCY_PULSE;
 		next_pulse++;
+		width = 5.0;
 	}
 	else {
 		next_pulse = 0;
+		width = 1.0;
 	}
 
 	f = g_plot_lines_new (X, Y, len);
-	g_object_set (G_OBJECT (f), "color", 
-	    plot_curve_colors[(next_color++)%n_curve_colors], NULL);
-	g_object_set (G_OBJECT (f), "graph-type", 
-	    graphic_type, NULL);
-	g_object_set (G_OBJECT (f), "shift",
-	    50.0*next_pulse, NULL);
+	g_object_set (G_OBJECT (f), 
+	              "color", plot_curve_colors[(next_color++)%n_curve_colors], 
+	              "graph-type", graphic_type, 
+	              "shift", 50.0*next_pulse, 
+	              "width", width,
+	              NULL);
 
 	return f;
 }
@@ -697,7 +703,6 @@ add_function (GtkMenuItem *menuitem, Plot *plot)
 
 		lst = lst->next;
 	}
-
 
 	gtk_widget_queue_draw (plot->plot);
 }

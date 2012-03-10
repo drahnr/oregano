@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+	<schema path="/apps/oregano/" id="apps.oregano" gettext-domain="oregano">
+		<key type="i" name="engine">
+			<default>1</default>
+			<summary>The spice engine ngspice or gnucap.</summary>
+		</key>
+		<key type="b" name="compress-files">
+			<default>false</default>
+			<summary>oregano files are compressed or not.</summary>
+		</key>
+		<key type="b" name="show-log">
+			<default>false</default>
+			<summary>oregano provides a log window by default.</summary>
+		</key>
+		<key type="b" name="show-splash">
+			<default>false</default>
+			<summary>oregano starts providing a splash window at startup.</summary>
+		</key>
+	</schema>
+</schemalist>

@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -37,12 +37,9 @@
 
 #define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
-/*
- * Create a SheetItem from an ItemData object. This is a bit ugly.
+/* Create a SheetItem from an ItemData object. This is a bit ugly.
  * It could be beautified by having a method that creates the item.
- * E.g. sheet_item->new_from_data (data);
- */
-
+ * E.g. sheet_item->new_from_data (data); */
 SheetItem *
 sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
 {
@@ -50,6 +47,8 @@ sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
 
 	g_return_val_if_fail (data != NULL, NULL);
 	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
+	g_return_val_if_fail (sheet != NULL, NULL);
+	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
 	item = NULL;
 

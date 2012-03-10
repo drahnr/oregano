@@ -1,5 +1,5 @@
-AC_INIT(oregano-0.73, 0.73)
-AM_INIT_AUTOMAKE(oregano, 0.73)
+AC_INIT(AUTHORS)
+AM_INIT_AUTOMAKE(oregano, 0.80)
 
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
@@ -12,6 +12,8 @@ GETTEXT_PACKAGE=oregano
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",
 	[GetText version number])
+
+
 
 AC_ISC_POSIX
 AC_PROG_CC
@@ -47,13 +49,12 @@ fi
 
 # 
 PKG_CHECK_MODULES(OREGANO,
-	glib-2.0 >= 2.20.0 \
-	gtk+-2.0 >= 2.16.0 \
-	gconf-2.0 >=  2.28.0 \
+	gtk+-3.0 >= 3.0 \
 	libxml-2.0 >= 2.6.0 \
-	libgnomecanvas-2.0 >= 2.12.0 \
-	gtksourceview-2.0 >= 2.8 \
-	cairo >= 1.2.0)
+	goocanvas-2.0 >= 2.0 \
+	gtksourceview-3.0 >= 3.0)
+#cairo >= 1.8.0)
+#gconf-2.0 >=  2.28.0 \
 
 
 # Taken from Screem HTML editor configure.in

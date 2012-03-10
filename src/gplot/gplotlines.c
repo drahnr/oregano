@@ -51,8 +51,10 @@ static void g_plot_lines_init (GPlotLines* plot);
 static void g_plot_lines_draw (GPlotFunction *, cairo_t *, GPlotFunctionBBox *);
 static void g_plot_lines_get_bbox (GPlotFunction *, GPlotFunctionBBox *);
 static void g_plot_lines_function_init (GPlotFunctionClass *iface);
-static void g_plot_lines_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
-static void g_plot_lines_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
+static void g_plot_lines_set_property (GObject *object, guint prop_id, 
+                                       const GValue *value, GParamSpec *spec);
+static void g_plot_lines_get_property (GObject *object, guint prop_id, 
+                                       GValue *value, GParamSpec *spec);
 
 static GObjectClass* parent_class = NULL;
 	

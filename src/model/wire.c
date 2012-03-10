@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,7 +30,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <goocanvas.h>
 #include <math.h>
 
 #include "node-store.h"
@@ -50,42 +50,22 @@ static void      wire_flip (ItemData *data, gboolean horizontal,
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
-static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
+static void      wire_print (ItemData *data, cairo_t *cr,
+                    SchematicPrintContext *ctx);
+
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
 enum {
-	CHANGED,
-	DELETE,
-	LAST_SIGNAL
+	ARG_0,
+	ARG_CHANGED,
+	ARG_DELETE,
+	ARG_LAST_SIGNAL
 };
 
-static guint wire_signals [LAST_SIGNAL] = { 0 };
+G_DEFINE_TYPE (Wire, wire, TYPE_ITEM_DATA)
+
+static guint wire_signals [ARG_LAST_SIGNAL] = { 0 };
 static ItemDataClass *parent_class = NULL;
-
-GType
-wire_get_type (void)
-{
-	static GType wire_type = 0;
-
-	if (!wire_type) {
-		static const GTypeInfo wire_info = {
-			sizeof (WireClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) wire_class_init,
-			NULL,
-			NULL,
-			sizeof (Wire),
-			0,
-			(GInstanceInitFunc) wire_init,
-			NULL
-		};
-
-		wire_type = g_type_register_static (TYPE_ITEM_DATA,
-			"Wire", &wire_info, 0);
-	}
-
-	return wire_type;
-}
 
 static void
 wire_finalize (GObject *object)
@@ -122,8 +102,8 @@ wire_class_init (WireClass *klass)
 	object_class->dispose = wire_dispose;
 	object_class->finalize = wire_finalize;
 
-	wire_signals [CHANGED] =
-		g_signal_new ("changed", G_TYPE_FROM_CLASS(object_class),
+	wire_signals [ARG_CHANGED] = g_signal_new ("changed", 
+		    G_TYPE_FROM_CLASS (object_class),
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (WireClass, changed),
 			NULL,
@@ -132,8 +112,8 @@ wire_class_init (WireClass *klass)
 			G_TYPE_NONE,
 			0);
 
-	wire_signals [DELETE] =
-		g_signal_new ("delete", G_TYPE_FROM_CLASS(object_class),
+	wire_signals [ARG_DELETE] = g_signal_new ("delete", 
+		    G_TYPE_FROM_CLASS (object_class),
 			G_SIGNAL_RUN_FIRST,
 			G_STRUCT_OFFSET (WireClass, delete),
 			NULL,
@@ -157,9 +137,7 @@ wire_init (Wire *wire)
 {
 	WirePriv *priv = g_new0 (WirePriv, 1);
 
-	/*
-	 * For debugging purposes.
-	 */
+	// For debugging purposes.
 	priv->length.x = -1;
 	priv->length.y = -1;
 
@@ -233,7 +211,6 @@ wire_get_nodes (Wire *wire)
 void
 wire_get_start_pos (Wire *wire, SheetPos *pos)
 {
-
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
 	g_return_if_fail (pos != NULL);
@@ -337,6 +314,7 @@ wire_clone (ItemData *src)
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS(src));
 	if (id_class->copy == NULL)
 		return NULL;
+
 	new_wire = g_object_new (TYPE_WIRE, NULL);
 	id_class->copy (ITEM_DATA (new_wire), src);
 
@@ -363,17 +341,15 @@ wire_copy (ItemData *dest, ItemData *src)
 	dest_wire->priv->length = src_wire->priv->length;
 }
 
-/* static */ void wire_update_bbox (Wire *wire);
-
 static void
-wire_rotate (ItemData *data, int angle, SheetPos *center)
+wire_rotate (ItemData *data, int angle, SheetPos *center_pos)
 {
-	double affine[6], dx, dy;
-	ArtPoint src, dst;
+	cairo_matrix_t affine;
+	double dx, dy, x, y;
 	Wire *wire;
 	WirePriv *priv;
 	SheetPos b1, b2;
-	SheetPos wire_center_before = {0.0, 0.0}, wire_center_after, delta;
+	SheetPos wire_center_before, wire_center_after, delta;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
@@ -383,7 +359,7 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 
 	wire = WIRE (data);
 
-	if (center) {
+	if (center_pos) {
 		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
 		wire_center_before.x = b1.x + (b2.x - b1.x) / 2;
 		wire_center_before.y = b1.y + (b2.y - b1.y) / 2;
@@ -398,32 +374,31 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 		priv->direction = WIRE_DIR_VERT;
 	}
 
-	art_affine_rotate (affine, angle);
+	cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180.0);
 
 	// Rotate the wire's end point.
-	src.x = priv->length.x;
-	src.y = priv->length.y;
+	x = priv->length.x;
+	y = priv->length.y;
+	
+	cairo_matrix_transform_point (&affine, &x, &y);
 
-	art_affine_point (&dst, &src, affine);
-
-	if (fabs (dst.x) < 1e-2)
-		dst.x = 0.0;
-	if (fabs (dst.y) < 1e-2)
-		dst.y = 0.0;
+	if (fabs (x) < 1e-2)
+		x = 0.0;
+	if (fabs (y) < 1e-2)
+		y = 0.0;
 
 	// 'Normalize'.
-	if (dst.y < 0					||
-        (dst.y == 0 && dst.x < 0)) {
-		priv->length.x = -dst.x;
-		priv->length.y = -dst.y;
-		delta.x = -dst.x;
-		delta.y = -dst.y;
+	if (y < 0 || (y == 0 && x < 0)) {
+		priv->length.x = -x;
+		priv->length.y = -y;
+		delta.x = -x;
+		delta.y = -y;
 
 		item_data_move (ITEM_DATA (wire), &delta);
 	} 
 	else {
-		priv->length.x = dst.x;
-		priv->length.y = dst.y;
+		priv->length.x = x;
+		priv->length.y = y;
 	}
 
 	// Let the views (canvas items) know about the rotation.
@@ -432,7 +407,7 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 	// Update bounding box.
 	wire_update_bbox (wire);
 
-	if (center) {
+	if (center_pos) {
 		SheetPos wire_pos;
 
 		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
@@ -445,12 +420,14 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 
 		item_data_get_pos (ITEM_DATA (wire), &wire_pos);
 
-		src.x = wire_center_before.x - center->x;
-		src.y = wire_center_before.y - center->y;
-		art_affine_point (&dst, &src, affine);
+		x = wire_center_before.x - center_pos->x;
+		y = wire_center_before.y - center_pos->y;
+		dx = dx - x;
+		dy = dy - y;
+		cairo_matrix_transform_point (&affine, &x, &y);
 
-		delta.x = dx - src.x + dst.x;
-		delta.y = dy - src.y + dst.y;
+		delta.x = dx + x + b1.x; 
+		delta.y = dy + y + b1.y; 
 
 		item_data_move (ITEM_DATA (wire), &delta);
 	}
@@ -459,97 +436,8 @@ wire_rotate (ItemData *data, int angle, SheetPos *center)
 static void
 wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 {
-	Wire *wire;
-	WirePriv *priv;
-	SheetPos b1, b2, delta;
-	double affine[6];
-	ArtPoint src, dst;
-	SheetPos wire_center_before = {0.0, 0.0}, wire_center_after = {0.0, 0.0};
-
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_WIRE (data));
-
-	wire = WIRE (data);
-	priv = wire->priv;
-
-	if (horizontal)
-		art_affine_scale (affine, -1, 1);
-	else
-		art_affine_scale (affine, 1, -1);
-
-	// Flip the wire's end point.
-	src.x = priv->length.x;
-	src.y = priv->length.y;
-
-	art_affine_point (&dst, &src, affine);
-
-	if (fabs (dst.x) < 1e-2)
-		dst.x = 0.0;
-	if (fabs (dst.y) < 1e-2)
-		dst.y = 0.0;
-
-	// 'Normalize'.
-	if (dst.y < 0 ||
-	    (dst.y == 0 && dst.x < 0)) {
-		priv->length.x = -dst.x;
-		priv->length.y = -dst.y;
-		delta.x = -dst.x;
-		delta.y = -dst.y;
-
-		item_data_move (ITEM_DATA (wire), &delta);
-	} 
-	else {
-		priv->length.x = dst.x;
-		priv->length.y = dst.y;
-	}
-
-	// Tell the views.
-	g_signal_emit_by_name (G_OBJECT (wire), "flipped", horizontal);
-
-	if (center) {
-		item_data_get_relative_bbox (ITEM_DATA (wire), &b1, &b2);
-		wire_center_before.x = b1.x + (b2.x - b1.x) / 2;
-		wire_center_before.y = b1.y + (b2.y - b1.y) / 2;
-	}
-
-	/*
-	 * Flip the bounding box.
-	 */
-	src.x = b1.x;
-	src.y = b1.y;
-	art_affine_point (&dst, &src, affine);
-	b1.x = dst.x;
-	b1.y = dst.y;
-
-	src.x = b2.x;
-	src.y = b2.y;
-	art_affine_point (&dst, &src, affine);
-	b2.x = dst.x;
-	b2.y = dst.y;
-
-	item_data_set_relative_bbox (ITEM_DATA (wire), &b1, &b2);
-
-	if (center) {
-		SheetPos wire_pos, delta;
-		double dx, dy;
-
-		wire_center_after.x = b1.x + (b2.x - b1.x) / 2;
-		wire_center_after.y = b1.y + (b2.y - b1.y) / 2;
-
-		dx = wire_center_before.x - wire_center_after.x;
-		dy = wire_center_before.y - wire_center_after.y;
-
-		item_data_get_pos (ITEM_DATA (wire), &wire_pos);
-
-		src.x = wire_center_before.x - center->x + wire_pos.x;
-		src.y = wire_center_before.y - center->y + wire_pos.y;
-		art_affine_point (&dst, &src, affine);
-
-		delta.x = dx - src.x + dst.x;
-		delta.y = dy - src.y + dst.y;
-
-		item_data_move (ITEM_DATA (wire), &delta);
-	}
+	// Do nothing!	
+	return;
 }
 
 /* static */
@@ -622,4 +510,3 @@ void wire_delete (Wire *wire)
 
 	g_signal_emit_by_name (G_OBJECT (wire), "delete");
 }
-

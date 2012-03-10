@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,8 +32,9 @@
 
 #ifndef __SHEET_PRIVATE_H
 #define __SHEET_PRIVATE_H
-#include <libgnomecanvas/libgnomecanvas.h>
+
 #include <gtk/gtk.h>
+#include <goocanvas.h>
 
 #include "sheet.h"
 #include "create-wire.h"
@@ -48,7 +49,7 @@ typedef struct {
 	RubberState		 state;
 	int 			 timeout_id;
 	int 			 click_start_state;
-	GnomeCanvasItem *rectangle;
+	GooCanvasItem	*rectangle;
 	double	 		 start_x, start_y;
 } RubberbandInfo;
 	
@@ -58,23 +59,21 @@ struct _SheetPriv {
 	// Keeps the signal handler for floating objects.
 	int 				 float_handler_id;
 
-	int                  scroll_timeout_id;
-
 	double 				 zoom;
 	gulong 				 width;
 	gulong  			 height;
 
-	GnomeCanvasGroup	*selected_group;
-	GnomeCanvasGroup	*floating_group;
+	GooCanvasGroup		*selected_group;
+	GooCanvasGroup		*floating_group;
 	GList				*selected_objects;
 	GList				*floating_objects;
 
 	GList				*items;
 	RubberbandInfo		*rubberband;
 	GList 				*preserve_selection_items;
-	GnomeCanvasClass 	*sheet_parent_class;
+	GooCanvasClass		*sheet_parent_class;
 
-	GList 				*voltmeter_items; // List of GnomeCanvasItem
+	GList 				*voltmeter_items; // List of GooCanvasItem
 	GHashTable 			*voltmeter_nodes;
 
 	CreateWireContext 	*create_wire_context; // Wire context for each schematic

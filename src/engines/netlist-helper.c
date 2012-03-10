@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -600,6 +600,8 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			NG_DEBUG (g_strdup_printf ("Done with pins, i = %d\n", i));
 
 			while (template_split[i] != NULL) {
+				if (template_split[i][0] == '%')
+					break;
 				g_string_append (str, template_split[i]);
 				g_string_append_c (str, ' ');
 				NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));

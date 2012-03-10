@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -56,7 +56,7 @@ cursors_shutdown (void)
 	int i;
 
 	for (i = 0; oregano_cursors[i].type != -1; i++)
-		gdk_cursor_unref (oregano_cursors[i].cursor);
+		g_object_unref (oregano_cursors[i].cursor);
 }
 
 void

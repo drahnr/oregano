@@ -10,7 +10,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,44 +36,15 @@ static void node_item_init		(NodeItem		 *item);
 static void node_item_class_init	(NodeItemClass	 *klass);
 
 struct _NodeItemPriv {
-	GnomeCanvasItem *dot_item;
+	GooCanvasItem *dot_item;
 };
 
-static GnomeCanvasGroupClass *parent_class = NULL;
-
-
-GType
-node_item_get_type (void)
-{
-	static GType item_type = 0;
-
-	if (!item_type)
-	{
-		static const GTypeInfo item_info =
-		{
-			sizeof (NodeItemClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) node_item_class_init,
-			NULL,
-			NULL,
-			sizeof (NodeItem),
-			0,
-			(GInstanceInitFunc) node_item_init,
-			NULL
-		};
-
-		item_type = g_type_register_static (GNOME_TYPE_CANVAS_GROUP, "NodeItem",
-										   &item_info, 0);
-	}
-
-	return item_type;
-}
+G_DEFINE_TYPE (NodeItem, node_item, GOO_TYPE_CANVAS_GROUP)
 
 static void
 node_item_class_init (NodeItemClass *klass)
 {
-	parent_class = g_type_class_peek_parent (klass);
+	node_item_parent_class = g_type_class_peek_parent (klass);
 }
 
 
@@ -91,21 +62,16 @@ node_item_show_dot (NodeItem *item, gboolean show)
 
 	if (show) {
 		if (item->priv->dot_item == NULL) {
-			item->priv->dot_item = gnome_canvas_item_new (
-				GNOME_CANVAS_GROUP (item),
-				gnome_canvas_ellipse_get_type (),
-				"x1", -2.0,
-				"y1", -2.0,
-				"x2", 2.0,
-				"y2", 2.0,
-				"fill_color", "black",
-				NULL);
+			item->priv->dot_item = goo_canvas_ellipse_new (
+			     	GOO_CANVAS_ITEM (item),
+			   		0.0, 0.0, 2.0, 2.0, 
+			   		"fill_color", "black", 
+			        NULL);
 		}
-
-		gnome_canvas_item_show (item->priv->dot_item);
+		g_object_set (item->priv->dot_item, 
+				      "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
 	} 
-	else {
-		if (item->priv->dot_item != NULL)
-			gnome_canvas_item_hide (item->priv->dot_item);
-	}
+	else if (item->priv->dot_item != NULL)
+		g_object_set (item->priv->dot_item, 
+				      "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
 }

@@ -54,6 +54,7 @@
 #include "splash.h"
 
 #include <libintl.h>
+
 OreganoApp oregano;
 static char **startup_files = NULL;
 int oregano_debugging;
@@ -194,7 +195,7 @@ main (int argc, char *argv[])
 					} 
 					else {
 						g_print (_("Format '%s' not supported."), convert_all);
-						exit (1);
+						return (1);
 					}
 					tmp = g_filename_display_basename (startup_files[i]);
 					filename = g_strdup_printf ("%s.%s", tmp, ext);

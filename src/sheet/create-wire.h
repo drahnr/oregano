@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -33,7 +33,7 @@
 #ifndef __CREATE_WIRE_H
 #define __CREATE_WIRE_H
 
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <goocanvas.h>
 
 #include "sheet.h"
 #include "wire.h"
@@ -43,10 +43,9 @@
 typedef struct _CreateWireContext CreateWireContext;
 
 typedef struct {
-	GnomeCanvasLine *line;
-	GnomeCanvasPoints *points;
-
-	WireDir direction;	   /* Direction of the first wire segment. */
+	GooCanvasPolyline *line;
+	GooCanvasPoints *  points;
+	WireDir 		   direction;	 /* Direction of the first wire segment. */
 } CreateWire;
 
 CreateWireContext *	create_wire_initiate (Sheet *sheet);

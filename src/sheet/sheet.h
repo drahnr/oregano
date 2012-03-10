@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,10 +29,11 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+
 #ifndef __SHEET_H
 #define __SHEET_H
 
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <goocanvas.h>
 #include <gtk/gtk.h>
 
 #include "grid.h"
@@ -61,20 +62,19 @@ typedef enum {
 } SheetState;
 
 struct _Sheet {
-	GnomeCanvas		  parent_canvas;
-	SheetState		  state;
-	GnomeCanvasGroup   	 *object_group;
-	Grid			 *grid;
-	SheetPriv		 *priv;
+	GooCanvas		 parent_canvas;
+	SheetState		 state;
+	GooCanvasGroup	*object_group;
+	Grid            *grid;
+	SheetPriv		*priv;
 };
 
 struct _SheetClass {
-	GnomeCanvasClass parent_class;
+	GooCanvasClass				parent_class;
 
 	void (*selection_changed)	(Sheet *sheet);
 	gint (*button_press)		(Sheet *sheet, GdkEventButton *event);
-	void (*context_click)		(Sheet *sheet,
-								 const char *name, gpointer data);
+	void (*context_click)		(Sheet *sheet, const char *name, gpointer data);
 	void (*cancel)				(Sheet *sheet);
 };
 
@@ -83,7 +83,6 @@ GtkWidget *	sheet_new (int width, int height);
 void	   	sheet_scroll (const Sheet *sheet, int dx, int dy);
 void	   	sheet_get_size_pixels (const Sheet *sheet, guint *width, 
 	              guint *height);
-int		   	sheet_get_num_selected_items (const Sheet *sheet);
 gpointer   	sheet_get_first_selected_item (const Sheet *sheet);
 void	   	sheet_change_zoom (const Sheet *sheet, double rate);
 void	   	sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
@@ -98,19 +97,18 @@ void 	   	sheet_prepend_floating_object (Sheet *sheet, SheetItem *item);
 void       	sheet_connect_part_item_to_floating_group (Sheet *sheet, 
                   gpointer *sv);
 void       	sheet_show_node_labels (Sheet *sheet, gboolean show);
-void		sheet_disconnect_destroyed_item (Sheet *sheet);
 void		sheet_add_item (Sheet *sheet, SheetItem *item);
 void 		sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event);
 void 		sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event);
 int			sheet_event_callback (GtkWidget *widget, GdkEvent *event, 
-				  Sheet *sheet);
+				Sheet *sheet);
 void		sheet_select_all (Sheet *sheet, gboolean select);
 void		sheet_rotate_selection (Sheet *sheet);
 void		sheet_delete_selection (Sheet *sheet);
 void		sheet_release_selected_objects (Sheet *sheet);
 GList	*	sheet_get_selection (Sheet *sheet);
 void		sheet_update_parts (Sheet *sheet);
-void		sheet_item_destroy_callback (SheetItem *item, Sheet *sheet);
+void		sheet_destroy_sheet_item (SheetItem *item, Sheet *sheet);
 void		sheet_rotate_ghosts (Sheet *sheet);
 void		sheet_flip_selection (Sheet *sheet, gboolean horizontal);
 void		sheet_flip_ghosts (Sheet *sheet, gboolean horizontal);
@@ -124,5 +122,7 @@ GList	*	sheet_get_items (const Sheet *sheet);
 void		sheet_stop_create_wire (Sheet *sheet);
 void		sheet_initiate_create_wire (Sheet *sheet);
 void		sheet_connect_node_dots_to_signals (Sheet *sheet);
+void		sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet);
+void		sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y); 
 
 #endif

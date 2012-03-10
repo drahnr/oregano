@@ -1,3 +1,7 @@
+Sat, 10 Mar 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* TAF 0.80
+	* Portage of oregano under gtk-3.0 & goocanvas
+
 Fri, 18 Jun 2010 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* TAG 0.73
 	* Add option-DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED \
@@ -12,6 +16,8 @@ Sun, 9 May 2010 Marc Lorber  <Lorber.Marc@wanadoo.fr>
 	* TAG 0.72
 
 	* Removal of libglade and replacement by gtk_builder
+
+	* Update the files header
 
 	* Prepare switch to gnome 3.0
 

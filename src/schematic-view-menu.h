@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -159,7 +159,7 @@ static const char *ui_description =
 "      <menuitem action='About'/>"
 "    </menu>"
 "  </menubar>"
-"  <toolbar name='StandartToolbar'>"
+"  <toolbar name='StandardToolbar'>"
 "    <toolitem action='New'/>"
 "    <toolitem action='Open'/>"
 "    <toolitem action='Save'/>"

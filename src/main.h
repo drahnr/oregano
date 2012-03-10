@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -40,21 +40,16 @@ typedef struct {
 	GList *libraries;
 	GSList *clipboard;
 
-	/**
-	 * list for library paths
-	 */
+	// list for library paths
 	GList *lib_path;
 
-	/**
-	 * list for model paths
-	 */
+	// list for model paths
 	GList *model_path;
 
-	/**
-	 * hash table with model names as keys and paths as data
-	 */
+	// hash table with model names as keys and paths as data
 	GHashTable *models;
 
+	GSettings *settings;
 	gint engine;
 	gboolean compress_files;
 	gboolean show_log;

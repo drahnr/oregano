@@ -1,0 +1,3 @@
+This direcxtory has been added to manage the new gnome settings.
+Therefore the file "apps.oregano.gschema.xml" has been created.
+It is installed into /usr/share/glib-2.0/schemas

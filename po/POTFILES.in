@@ -31,7 +31,6 @@ src/sheet/textbox-item.c
 src/sheet/wire-item.c
 src/stock.c
 src/splash.c
-src/smallicon.c
 src/simulation.c
 src/sim-settings.c
 src/settings.c

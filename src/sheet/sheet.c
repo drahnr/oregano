@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -33,6 +33,9 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
+#include <goocanvas.h>
+#include <goocanvasutils.h>
+
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "node-store.h"
@@ -46,11 +49,10 @@
 static void 	sheet_class_init (SheetClass *klass);
 static void 	sheet_init (Sheet *sheet);
 static void 	sheet_set_property (GObject *object, guint prop_id,
-								const GValue *value, GParamSpec *spec);
+					const GValue *value, GParamSpec *spec);
 static void 	sheet_get_property (GObject *object, guint prop_id,
-								GValue *value, GParamSpec *spec);
+					GValue *value, GParamSpec *spec);
 static void 	sheet_set_zoom (const Sheet *sheet, double zoom);
-static void 	sheet_realized (GtkWidget *widget, gpointer data);
 static GList *	sheet_preserve_selection (Sheet *sheet);
 static void		rotate_items (Sheet *sheet, GList *items);
 static void		flip_items (Sheet *sheet, GList *items, gboolean horizontal);
@@ -66,6 +68,8 @@ static guint 	dot_hash (gconstpointer key);
 #define ZOOM_MIN 0.35
 #define ZOOM_MAX 3
 
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+
 enum {
 	SELECTION_CHANGED,
 	BUTTON_PRESS,
@@ -75,38 +79,12 @@ enum {
 };
 static guint signals[LAST_SIGNAL] = { 0 };
 
-GdkBitmap *stipple;
-char stipple_pattern [] = { 0x02, 0x01 };
-
 enum {
 	ARG_0,
 	ARG_ZOOM
 };
 
-GType
-sheet_get_type ()
-{
-	static GType sheet_type = 0;
-
-	if (!sheet_type) {
-		static const GTypeInfo sheet_info = {
-			sizeof (SheetClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) sheet_class_init,
-			NULL,
-			NULL,
-			sizeof (Sheet),
-			0,
-			(GInstanceInitFunc) sheet_init,
-			NULL
-		};
-
-		sheet_type = g_type_register_static (GNOME_TYPE_CANVAS,
-											"Sheet", &sheet_info, 0);
-	}
-	return sheet_type;
-}
+G_DEFINE_TYPE (Sheet, sheet, GOO_TYPE_CANVAS)
 
 static void
 sheet_class_init (SheetClass *sheet_class)
@@ -117,14 +95,13 @@ sheet_class_init (SheetClass *sheet_class)
 
 	object_class->set_property = sheet_set_property;
 	object_class->get_property = sheet_get_property;
-
 	object_class->finalize = sheet_finalize;
+	sheet_parent_class = g_type_class_peek (GOO_TYPE_CANVAS);
 
 	g_object_class_install_property (object_class, ARG_ZOOM,
 			g_param_spec_double ("zoom", "Sheet::zoom", "the zoom factor",
 								0.01f, 10.0f, 1.0f, G_PARAM_READWRITE));
 	
-
 	/* Signals.  */
 	signals[SELECTION_CHANGED] = g_signal_new ("selection_changed",
 				G_TYPE_FROM_CLASS (object_class),
@@ -133,7 +110,9 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__VOID,
-				G_TYPE_NONE, 0);
+				G_TYPE_NONE, 
+	            0);
+	
 	signals[BUTTON_PRESS] = g_signal_new ("button_press",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -141,8 +120,10 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__POINTER,
-				/* ALL should be boolean? */
-				G_TYPE_NONE, 1, GDK_TYPE_EVENT);
+				G_TYPE_NONE, 
+	            1, 
+	            GDK_TYPE_EVENT);
+	
 	signals[CONTEXT_CLICK] = g_signal_new ("context_click",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -150,7 +131,11 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__POINTER,
-				G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_POINTER);
+				G_TYPE_NONE, 
+	            2, 
+	            G_TYPE_STRING, 
+	            G_TYPE_POINTER);
+	
 	signals[CONTEXT_CLICK] = g_signal_new ("cancel",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -158,8 +143,30 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__VOID,
-				G_TYPE_NONE, 0);
-	stipple = gdk_bitmap_create_from_data (NULL, stipple_pattern, 2, 2);
+				G_TYPE_NONE, 
+	            0);
+}
+
+static 
+cairo_pattern_t*
+create_stipple (const char *color_name, guchar stipple_data[16])
+{
+  cairo_surface_t *surface;
+  cairo_pattern_t *pattern;
+  GdkColor color;
+
+  gdk_color_parse (color_name, &color);
+  stipple_data[2] = stipple_data[14] = color.red >> 8;
+  stipple_data[1] = stipple_data[13] = color.green >> 8;
+  stipple_data[0] = stipple_data[12] = color.blue >> 8;
+  surface = cairo_image_surface_create_for_data (stipple_data,
+						 CAIRO_FORMAT_ARGB32,
+						 2, 2, 8);
+  pattern = cairo_pattern_create_for_surface (surface);
+  cairo_surface_destroy (surface);
+  cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
+
+  return pattern;
 }
 
 static void
@@ -177,7 +184,7 @@ sheet_init (Sheet *sheet)
 	sheet->priv->rubberband = g_new0 (RubberbandInfo, 1);
 	sheet->priv->rubberband->state = RUBBER_NO;
 	sheet->priv->preserve_selection_items = NULL;
-	sheet->priv->sheet_parent_class = g_type_class_ref (GNOME_TYPE_CANVAS);
+	sheet->priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
 	sheet->priv->voltmeter_items = NULL;
 	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash,
 			g_str_equal, g_free, g_free);
@@ -191,9 +198,40 @@ sheet_finalize (GObject *object)
 	Sheet *sheet = SHEET (object);
 
 	if (sheet->priv) {
-			g_hash_table_destroy (sheet->priv->node_dots);
-			g_free (sheet->priv);
+		g_hash_table_destroy (sheet->priv->node_dots);
+		g_free (sheet->priv);
 	}
+	if (G_OBJECT_CLASS (sheet_parent_class)->finalize)
+		(* G_OBJECT_CLASS (sheet_parent_class)->finalize) (object);
+}
+
+void		
+sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
+{
+	GtkWidget     *widget;
+	GtkAdjustment *hadjustment;
+	GtkAdjustment *vadjustment;
+	gdouble value, x1, y1;
+	gint _x, _y;
+
+	gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
+	x1 = (gdouble) _x;
+	y1 = (gdouble) _y;
+	
+	widget = gtk_widget_get_parent (GTK_WIDGET (sheet));
+	hadjustment =  gtk_scrolled_window_get_hadjustment (
+	                 GTK_SCROLLED_WINDOW (widget));
+	value = gtk_adjustment_get_value (hadjustment);
+
+	x1 += value;
+	vadjustment =  gtk_scrolled_window_get_vadjustment (
+	                 GTK_SCROLLED_WINDOW (widget));
+	value = gtk_adjustment_get_value (vadjustment);
+	y1 += value;
+	*x = x1;
+	*y = y1;
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), x, y);
+	snap_to_grid (sheet->grid, x, y);
 }
 
 void
@@ -205,125 +243,104 @@ sheet_get_zoom (const Sheet *sheet, gdouble *zoom)
 static void
 sheet_set_zoom (const Sheet *sheet, double zoom)
 {
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS (sheet), zoom);
+	goo_canvas_set_scale (GOO_CANVAS (sheet), zoom);
 	sheet->priv->zoom = zoom;
 }
 
 void
 sheet_change_zoom (const Sheet *sheet, gdouble rate)
 {
+	gdouble scale;
+	
 	sheet->priv->zoom *= rate;
-
-	gnome_canvas_set_pixels_per_unit (GNOME_CANVAS (sheet), sheet->priv->zoom);
-}
-
-static void
-sheet_realized (GtkWidget *widget, gpointer data)
-{
-	GdkColormap *colormap;
-	GtkStyle  *style;
-
-	// We set the background pixmap to NULL so that X won't clear
-	// exposed areas and thus be faster.
-	gdk_window_set_back_pixmap (gtk_layout_get_bin_window (GTK_LAYOUT(widget)), 
-	                            NULL, FALSE);
-
-	// Set the background to white.
-	style = gtk_style_copy (gtk_widget_get_style (widget));
-	colormap = gtk_widget_get_colormap (widget);	
-	style->bg->red = 65535;
-	style->bg->green = 65535;
-	style->bg->blue = 65535;
-	gdk_colormap_alloc_color (colormap, &style->bg[GTK_STATE_NORMAL], FALSE, 
-	                          TRUE);
-	                         	
-	gtk_widget_set_style (widget, style);
-	g_object_unref (style);
+	scale = goo_canvas_get_scale (GOO_CANVAS (sheet));
+	scale = scale * rate;
+	goo_canvas_set_scale (GOO_CANVAS (sheet), scale);
 }
 
 /* This function defines the drawing sheet on which schematic will be drawn */
 GtkWidget *
 sheet_new (int width, int height)
 {
-	GnomeCanvas *sheet_canvas;
-	GnomeCanvasGroup *sheet_group;
-	GnomeCanvasPoints *points;
+	GooCanvas *sheet_canvas;
+	GooCanvasGroup *sheet_group;
+	GooCanvasPoints *points;
 	Sheet *sheet;
 	GtkWidget *sheet_widget;
-
-	/* Creation of the Canvas with Anti-aliasing */
+  	GooCanvasItem *root;
+	
+	// Creation of the Canvas
 	sheet = SHEET (g_object_new (TYPE_SHEET, NULL));
 
-	g_signal_connect (G_OBJECT (sheet), "realize", 
-	                  G_CALLBACK (sheet_realized), 0);
+	sheet_canvas = GOO_CANVAS (sheet);
+	g_object_set (G_OBJECT (sheet_canvas), 
+                  "bounds-from-origin", FALSE,
+                  "bounds-padding", 4.0,
+	              "background-color-rgb", 0xFFFFFF,
+	              NULL);
 
-	sheet_canvas = GNOME_CANVAS (sheet);
-	sheet_group = GNOME_CANVAS_GROUP (sheet_canvas->root);
+  	root = goo_canvas_get_root_item (sheet_canvas);
+	
+	sheet_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
+	                                root,
+	                                NULL));
 	sheet_widget = GTK_WIDGET (sheet);
 
-	gnome_canvas_set_scroll_region (sheet_canvas,
-									0, 0, width + 20, height + 20);
+	goo_canvas_set_bounds (GOO_CANVAS (sheet_canvas), 0, 0, 
+	    width + 20, height + 20);
 
-	/* Since there is no API for this (yet), tweak it directly. */
-	sheet_canvas->close_enough = 6.0;
+	// Define vicinity around GooCanvasItem
+	//sheet_canvas->close_enough = 6.0;
 
 	sheet->priv->width = width;
 	sheet->priv->height = height;
 
-	/* Create the dot grid. */
-	sheet->grid = GRID (gnome_canvas_item_new (sheet_group, grid_get_type (),
-		"color", "dark gray",
-		"spacing", 10.0,
-		"snap", TRUE,
-		NULL));
+	// Create the dot grid.
+	sheet->grid = grid_create (GOO_CANVAS_ITEM (sheet_group),
+	                           width,
+	                           height);
 
-	grid_show (sheet->grid, TRUE);
+	// Everything outside the sheet should be gray.
+	// top //
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
+	                     0.0, 
+	                     0.0, 
+	                     (double) width + 20.0, 
+	                     20.0, 
+		                 "fill_color", "gray", 
+	                     "line-width", 0.0, 
+	                     NULL);
 
-	/* Everything outside the sheet should be gray. */
-	/* top */
-	gnome_canvas_item_new (sheet_group, gnome_canvas_rect_get_type (),
-		"fill_color", "gray",
-		"outline_color", NULL,
-		"width_pixels", (int)1,
-		"x1", 0.0,
-		"y1", 0.0,
-		"x2", (double)width + 20,
-		"y2", 20.0,
-		NULL);
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
+	                     0.0, 
+	                     (double) height, 
+	                     (double) width + 20.0, 
+	                     (double) height + 20.0, 
+	                     "fill_color", "gray", 
+	                     "line-width", 0.0, 
+	                     NULL);                
 
-	gnome_canvas_item_new (sheet_group,	gnome_canvas_rect_get_type (),
-		"fill_color", "gray",
-		"outline_color", NULL,
-		"width_pixels", (int)1,
-		"x1", 0.0,
-		"y1", (double)height,
-		"x2", (double)width + 20,
-		"y2", (double)height + 20,
-		NULL);
+	// right //
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
+	                     0.0, 
+	                     0.0, 
+	                     20.0, 
+	                     (double) height + 20.0, 
+	                     "fill_color", "gray", 
+	                     "line-width", 0.0, 
+	                     NULL);                  
 
-	/* right */
-	gnome_canvas_item_new (sheet_group, gnome_canvas_rect_get_type (),
-		"fill_color", "gray",
-		"outline_color", NULL,
-		"width_pixels", (int)1,
-		"x1", 0.0,
-		"y1", 0.0,
-		"x2", 20.0,
-		"y2", (double)height + 20,
-		NULL);
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
+	                     (double) width, 
+	                     0.0, 
+	                     (double) width + 20.0, 
+	                     (double) height + 20.0, 
+	                     "fill_color", "gray", 
+	                     "line-width", 0.0, 
+	                     NULL);                 
 
-	gnome_canvas_item_new (sheet_group, gnome_canvas_rect_get_type (),
-		"fill_color", "gray",
-		"outline_color", NULL,
-		"width_pixels", (int)1,
-		"x1", (double)width,
-		"y1", 0.0,
-		"x2", (double)width + 20,
-		"y2", (double)height + 20,
-		NULL);
-
-	/*  Draw a thin black border around the sheet. */
-	points = gnome_canvas_points_new (5);
+	//  Draw a thin black border around the sheet.
+	points = goo_canvas_points_new (5);
 	points->coords[0] = 20.0;
 	points->coords[1] = 20.0;
 	points->coords[2] = width;
@@ -334,39 +351,35 @@ sheet_new (int width, int height)
 	points->coords[7] = height;
 	points->coords[8] = 20.0;
 	points->coords[9] = 20.0;
-	gnome_canvas_item_new (sheet_group, gnome_canvas_line_get_type (),
-		"fill_color", "black",
-		"width_pixels", (int)1,
-		"points", points,
-		NULL);
+	
+	goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet_group),
+	      FALSE, 0,
+	      "line-width", 1.0, 
+	      "points", points, 
+	      NULL);
 
-	gnome_canvas_points_free (points);
+	goo_canvas_points_unref (points);
 
-	/* Finally, create the object group that holds all objects. */
-	sheet->object_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-		gnome_canvas_root (GNOME_CANVAS(sheet_canvas)),
-		GNOME_TYPE_CANVAS_GROUP,
-		"x", 0.0,
-		"y", 0.0,
-		NULL));
+	// Finally, create the object group that holds all objects.
+	sheet->object_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
+	                      root,
+	     				  "x", 0.0, 
+	                      "y", 0.0,
+	                      NULL));
 
-	sheet->priv->selected_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-		sheet->object_group,
-		GNOME_TYPE_CANVAS_GROUP,
-		"x", 0.0,
-		"y", 0.0,
-		NULL));
+	sheet->priv->selected_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
+	     GOO_CANVAS_ITEM (sheet->object_group), 
+	     "x", 0.0, 
+	     "y", 0.0,
+	     NULL));
 
-	sheet->priv->floating_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-		sheet->object_group,
-		gnome_canvas_group_get_type (),
-		"x", 0.0,
-		"y", 0.0,
-		NULL));
-
-	/*
-	 * Hash table that keeps maps coordinate to a specific dot.
-	 */
+	sheet->priv->floating_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
+	     GOO_CANVAS_ITEM (sheet->object_group), 
+	     "x", 0.0, 
+	     "y", 0.0, 
+	     NULL));
+	
+	// Hash table that keeps maps coordinate to a specific dot.
 	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, 
 	                                                NULL);
 	
@@ -412,8 +425,8 @@ sheet_scroll (const Sheet *sheet, int delta_x, int delta_y)
 	gfloat hmax, vmax;
 	const SheetPriv *priv = sheet->priv;
 
-	hadj = gtk_layout_get_hadjustment (GTK_LAYOUT (sheet));
-	vadj = gtk_layout_get_vadjustment (GTK_LAYOUT (sheet));
+	hadj = gtk_container_get_focus_hadjustment (GTK_CONTAINER (sheet));
+	vadj = gtk_container_get_focus_vadjustment (GTK_CONTAINER (sheet));
 
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
 
@@ -474,6 +487,7 @@ sheet_prepend_floating_object (Sheet *sheet, SheetItem *item)
 	sheet->priv->floating_objects = 
 		g_list_prepend (sheet->priv->floating_objects, item);
 }
+
 void
 sheet_connect_part_item_to_floating_group (Sheet *sheet, gpointer *sv)
 {
@@ -487,8 +501,9 @@ sheet_connect_part_item_to_floating_group (Sheet *sheet, gpointer *sv)
 	if (sheet->priv->float_handler_id != 0)
 		return;
 
-	sheet->priv->float_handler_id = g_signal_connect(G_OBJECT (sheet), "event",
-		G_CALLBACK (sheet_item_floating_event), sv);
+	sheet->priv->float_handler_id = g_signal_connect(G_OBJECT (sheet), 
+	        "event", G_CALLBACK (sheet_item_floating_event), 
+	        sv);
 }
 
 void
@@ -518,66 +533,51 @@ sheet_add_item (Sheet *sheet, SheetItem *item)
 }
 
 int    
-sheet_rubberband_timeout_cb (const Sheet *sheet)
+sheet_rubberband_timeout_cb (Sheet *sheet)
 {
-
-	static double x1_old = 0, y1_old = 0, x2_old = 0, y2_old = 0;
-    int _x, _y;
+	static double width_old = 0, height_old = 0;
     double x, y;
-    double x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-    double dx, dy, tx, ty;
+	double height, width;
+	
+    double dx, dy;
     GList *list;
     SheetPos p1, p2;
 
     // Obtains the current pointer position and modifier state.
     // The position is given in coordinates relative to window.
-    gdk_window_get_pointer (gtk_widget_get_window (GTK_WIDGET (sheet)),
-            &_x, &_y, NULL);
-
-    x = _x;
-    y = _y;
-
-    gnome_canvas_get_scroll_offsets (GNOME_CANVAS (sheet), &_x, &_y);
-
-    x += _x;
-    y += _y;
-
-	// Need this for zoomed views
-	gnome_canvas_window_to_world (GNOME_CANVAS (sheet), x, y, &tx, &ty);
-	x = tx;
-	y = ty;
+	sheet_get_pointer (sheet, &x, &y);
 
 	if (x < sheet->priv->rubberband->start_x) {
-		x1 = x;
-		x2 = sheet->priv->rubberband->start_x;
+		width = sheet->priv->rubberband->start_x - x;
 	}
 	else {
-		x1 = sheet->priv->rubberband->start_x;
-		x2 = x;
+		double tmp = x;
+		x = sheet->priv->rubberband->start_x;
+		width = tmp - sheet->priv->rubberband->start_x;
 	}
 
 	if (y < sheet->priv->rubberband->start_y) {
-		y1 = y;
-		y2 = sheet->priv->rubberband->start_y;
+		height = sheet->priv->rubberband->start_y - y;
 	}
 	else {
-		y1 = sheet->priv->rubberband->start_y;
-		y2 = y;
+		double tmp = y;
+		y = sheet->priv->rubberband->start_y;
+		height = tmp - sheet->priv->rubberband->start_y;
 	}
 
-	p1.x = x1;
-	p1.y = y1;
-	p2.x = x2;
-	p2.y = y2;
+	p1.x = x;
+	p1.y = y;
+	p2.x = x + width;
+	p2.y = y + height;
 
 	// Scroll the sheet if needed.
 	// Need FIX
-	{
+	/*{
 		int width, height;
 		int dx = 0, dy = 0;
 		GtkAllocation allocation;
-			
-		gdk_window_get_pointer (gtk_widget_get_window (GTK_WIDGET (sheet)),&_x, &_y, NULL);
+		
+		sheet_get_pointer (sheet, &x, &y);
 
 		gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
 		width = allocation.width;
@@ -595,27 +595,26 @@ sheet_rubberband_timeout_cb (const Sheet *sheet)
 
 		if (!(_x > 0 && _x < width && _y > 0 && _y < height))
 			sheet_scroll (sheet, dx * 5, dy * 5);
-	}
+	}*/
 
-	dx = fabs ((x1 - x2) - (x1_old - x2_old));
-	dy = fabs ((y1 - y2) - (y1_old - y2_old));
+	// Modify the rubberband rectangle if needed
+	dx = fabs (width - width_old);
+	dy = fabs (height - height_old);
 	if (dx > 1.0 || dy > 1.0) {
 		// Save old state
-		x1_old = x1;
-		y1_old = y1;
-		x2_old = x2;
-		y2_old = y2;
+		width_old = width;
+		height_old = height;
 
 		for (list = sheet->priv->items; list; list = list->next) {
 			sheet_item_select_in_area (list->data, &p1, &p2);
 		}
 
-		gnome_canvas_item_set (sheet->priv->rubberband->rectangle,
-			"x1", (double) x1,
-			"y1", (double) y1,
-			"x2", (double) x2,
-			"y2", (double) y2,
-			NULL);
+		g_object_set (sheet->priv->rubberband->rectangle,
+		              "x", (double) x, 
+		              "y", (double) y,
+		              "width", width, 
+		              "height", height,
+		              NULL);
 	}
 	return TRUE;
 }
@@ -636,24 +635,23 @@ sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
 		sheet->priv->preserve_selection_items = NULL;
 	}
 
-	gnome_canvas_item_ungrab (GNOME_CANVAS_ITEM (sheet->grid), 
-	    event->time);
-	gtk_object_destroy (GTK_OBJECT (sheet->priv->rubberband->rectangle));
+	goo_canvas_pointer_ungrab (GOO_CANVAS (sheet),
+	                           GOO_CANVAS_ITEM (sheet->grid), event->time);
+	
+	goo_canvas_item_remove (GOO_CANVAS_ITEM (sheet->priv->rubberband->rectangle));
 }
 
 void 
 sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event)
 {
 	double x, y;
-	double wx, wy;
+	cairo_pattern_t *pattern;
+	static guchar stipple_data[16] = 
+	{0, 0, 0, 255,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 255 };
 
 	x = event->x; //the x coordinate of the pointer relative to the window.
 	y = event->y; //the y coordinate of the pointer relative to the window.
-	
-	// Need this for zoomed views
-	gnome_canvas_window_to_world (GNOME_CANVAS (sheet), x, y, &wx, &wy);
-	x = wx;
-	y = wy;
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
 
 	sheet->priv->rubberband->start_x = x;
 	sheet->priv->rubberband->start_y = y;
@@ -661,23 +659,20 @@ sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event)
 	sheet->priv->rubberband->state = RUBBER_YES;
 	sheet->priv->rubberband->click_start_state = event->state;
 
+	pattern = create_stipple ("lightgrey", stipple_data);
 
-	sheet->priv->rubberband->rectangle = gnome_canvas_item_new (
-			sheet->object_group,
-			gnome_canvas_rect_get_type (),
-			"x1", x,
-			"y1", y,
-			"x2", x,
-			"y2", y,
-			"outline_stipple", stipple,
-			"outline_color", "black",
-			"width_pixels", 1,
-			NULL);
+	sheet->priv->rubberband->rectangle = goo_canvas_rect_new (
+		GOO_CANVAS_ITEM (sheet->object_group), 
+	    x, y, 0.0, 0.0, 
+	    "stroke-color", "black",
+	    "line-width", 0.2,
+	    "fill-pattern", pattern,
+	    NULL);
 
-	gnome_canvas_item_grab (GNOME_CANVAS_ITEM (sheet->grid),
-			(GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK),
-			NULL, event->time);
-
+	goo_canvas_pointer_grab (GOO_CANVAS (sheet), GOO_CANVAS_ITEM (sheet->grid), 
+		(GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK),
+	    NULL, event->time);
+	
 	// Mark all the selected objects to preserve their selected state
 	// if SHIFT is pressed while rubberbanding.
 	if (event->state & GDK_SHIFT_MASK) {
@@ -686,7 +681,7 @@ sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event)
 	}
 
 	sheet->priv->rubberband->timeout_id = g_timeout_add (
-			15,
+			10,
 			(gpointer) sheet_rubberband_timeout_cb,
 			(gpointer) sheet);
 }
@@ -710,129 +705,128 @@ int
 sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 {
 	switch (event->type) {
-	case GDK_3BUTTON_PRESS:
-		/*
-		 * We don't not care about triple clicks on the sheet.
-		 */
-		return FALSE;
-	case GDK_2BUTTON_PRESS:
-		/*
-		 * The sheet does not care about double clicks, but invoke the
-		 * canvas event handler and see if an item picks up the event.
-		 */
-		if ((*GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
+		case GDK_3BUTTON_PRESS:
+			// We don't not care about triple clicks on the sheet.
+			return FALSE;
+		case GDK_2BUTTON_PRESS:
+			// The sheet does not care about double clicks, but invoke the
+		 	// canvas event handler and see if an item picks up the event.
+			if ((*GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
 			     ->button_press_event) (widget, (GdkEventButton *)event))
 			return TRUE;
 		else
 			return FALSE;
-	case GDK_BUTTON_PRESS:
-		/*
-		 * If we are in the middle of something else, don't interfere
-		 * with that.
-		 */
-		if (sheet->state != SHEET_STATE_NONE) {
-			return FALSE;
-		}
-
-		if ((* GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-		     ->button_press_event) 
-		    (widget, (GdkEventButton *) event)) {
-			
-			return TRUE;
-		}
-
-		if (event->button.button == 3) {
-			run_context_menu (
-				schematic_view_get_schematicview_from_sheet (sheet), 
-			    (GdkEventButton *) event);
-			return TRUE;
-		}
-
-		if (event->button.button == 1) {
-			if (!(event->button.state & GDK_SHIFT_MASK))
-				sheet_select_all (sheet, FALSE);
-
-			sheet_setup_rubberband (sheet, (GdkEventButton *) event);
-			return TRUE;
-		}
-		break;
-	case GDK_BUTTON_RELEASE:
-		if (event->button.button == 4 || event->button.button == 5)
-			return TRUE;
-
-		if (event->button.button == 1 &&
-		    sheet->priv->rubberband->state == RUBBER_YES) {
-			sheet_stop_rubberband (sheet, (GdkEventButton *) event);
-			return TRUE;
-		}
-
-		if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-			    ->button_release_event != NULL)
-			return GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-				->button_release_event (widget, (GdkEventButton *) event);
-
-		break;
-
-	case GDK_SCROLL:
-		if (((GdkEventScroll *)event)->direction == GDK_SCROLL_UP) {
-			double zoom;
-			sheet_get_zoom (sheet, &zoom);
-			if (zoom < ZOOM_MAX)
-				sheet_change_zoom (sheet, 1.1);
-			} 
-			else if (((GdkEventScroll *)event)->direction == GDK_SCROLL_DOWN) {
-				double zoom;
-			sheet_get_zoom (sheet, &zoom);
-			if (zoom > ZOOM_MIN)
-				sheet_change_zoom (sheet, 0.9);
-			}
-			break;
-	case GDK_KEY_PRESS:
-			switch (event->key.keyval) {
-			case GDK_R:
-			case GDK_r:
-				if (sheet->state == SHEET_STATE_NONE)
-					sheet_rotate_selection (sheet);
-				break;
-			case GDK_Home:
-				break;
-			case GDK_End:
-				break;
-			case GDK_Left:
-				if (event->key.state & GDK_MOD1_MASK)
-					sheet_scroll (sheet, -20, 0);
-				break;
-			case GDK_Up:
-				if (event->key.state & GDK_MOD1_MASK)
-					sheet_scroll (sheet, 0, -20);
-				break;
-			case GDK_Right:
-				if (event->key.state & GDK_MOD1_MASK)
-					sheet_scroll (sheet, 20, 0);
-				break;
-			case GDK_Down:
-				if (event->key.state & GDK_MOD1_MASK)
-					sheet_scroll (sheet, 0, 20);
-				break;
-			case GDK_Page_Up:
-				if (event->key.state & GDK_MOD1_MASK)
-					sheet_scroll (sheet, 0, -120);
-				break;
-			case GDK_Page_Down:
-				if (event->key.state & GDK_MOD1_MASK)
-					sheet_scroll (sheet, 0, 120);
-				break;
-			case GDK_Escape:
-				g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
-				break;
-			case GDK_Delete:
-				sheet_delete_selection (sheet);
-				break;
-			default:
+		case GDK_BUTTON_PRESS:
+			/* If we are in the middle of something else, don't interfere
+		 	 * with that. */
+			if (sheet->state != SHEET_STATE_NONE) {
 				return FALSE;
 			}
-	default:
-		return FALSE;
+
+			if ((* GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
+		         ->button_press_event) (widget, (GdkEventButton *) event)) {
+				return TRUE;
+			}
+
+			if (event->button.button == 3) {
+				run_context_menu (
+					schematic_view_get_schematicview_from_sheet (sheet), 
+			    	(GdkEventButton *) event);
+				return TRUE;
+			}
+			if (event->button.button == 1) {
+				if (!(event->button.state & GDK_SHIFT_MASK))
+					sheet_select_all (sheet, FALSE);
+
+				sheet_setup_rubberband (sheet, (GdkEventButton *) event);
+				return TRUE;
+			}
+			break;
+		case GDK_BUTTON_RELEASE:
+			if (event->button.button == 4 || event->button.button == 5)
+				return TRUE;
+
+			if (event->button.button == 1 					&&
+		        sheet->priv->rubberband->state == RUBBER_YES) {
+				sheet_stop_rubberband (sheet, (GdkEventButton *) event);
+				return TRUE;
+			}
+
+			if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)->button_release_event != NULL) {
+				return GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
+					->button_release_event (widget, (GdkEventButton *) event);
+			}
+
+			break;
+
+		case GDK_SCROLL:
+			if (((GdkEventScroll *)event)->direction == GDK_SCROLL_UP) {
+				double zoom;
+				sheet_get_zoom (sheet, &zoom);
+				if (zoom < ZOOM_MAX)
+					sheet_change_zoom (sheet, 1.1);
+				} 
+				else if (((GdkEventScroll *)event)->direction == GDK_SCROLL_DOWN) {
+					double zoom;
+				sheet_get_zoom (sheet, &zoom);
+				if (zoom > ZOOM_MIN)
+					sheet_change_zoom (sheet, 0.9);
+				}
+				break;
+		case GDK_MOTION_NOTIFY:
+			if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
+			    ->motion_notify_event != NULL) {
+				return GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
+						->motion_notify_event (widget, (GdkEventMotion *) event);		
+			}
+		case GDK_ENTER_NOTIFY:
+			GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
+						->enter_notify_event (widget, (GdkEventCrossing *) event);
+		case GDK_KEY_PRESS:
+			switch (event->key.keyval) {
+				case GDK_KEY_R:
+				case GDK_KEY_r:
+					if (sheet->state == SHEET_STATE_NONE)
+						sheet_rotate_selection (sheet);
+					break;
+				case GDK_KEY_Home:
+				case GDK_KEY_End:
+					break;
+				case GDK_KEY_Left:
+					if (event->key.state & GDK_MOD1_MASK)
+						sheet_scroll (sheet, -20, 0);
+					break;
+				case GDK_KEY_Up:
+					if (event->key.state & GDK_MOD1_MASK)
+						sheet_scroll (sheet, 0, -20);
+					break;
+				case GDK_KEY_Right:
+					if (event->key.state & GDK_MOD1_MASK)
+						sheet_scroll (sheet, 20, 0);
+					break;
+				case GDK_KEY_Down:
+					if (event->key.state & GDK_MOD1_MASK)
+						sheet_scroll (sheet, 0, 20);
+					break;
+				case GDK_KEY_Page_Up:
+					if (event->key.state & GDK_MOD1_MASK)
+						sheet_scroll (sheet, 0, -120);
+					break;
+				case GDK_KEY_Page_Down:
+					if (event->key.state & GDK_MOD1_MASK)
+						sheet_scroll (sheet, 0, 120);
+					break;
+				case GDK_KEY_Escape:
+					g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
+					break;
+				case GDK_KEY_Delete:
+					sheet_delete_selection (sheet);
+					break;
+				default:
+					return FALSE;
+			}
+		default:
+			return FALSE;
 	}
 
 	return TRUE;
@@ -845,7 +839,6 @@ sheet_select_all (Sheet *sheet, gboolean select)
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
-
 
 	for (list = sheet->priv->items; list; list = list->next)
 		sheet_item_select (SHEET_ITEM (list->data), select);
@@ -920,22 +913,39 @@ sheet_delete_selection (Sheet *sheet)
 		return;
 
 	copy = g_list_copy (sheet->priv->selected_objects);
-
 	for (list = copy; list; list = list->next) {
-		gtk_object_destroy (GTK_OBJECT (list->data));
+		sheet_remove_item_in_sheet (SHEET_ITEM (list->data), sheet);
+		goo_canvas_item_remove (GOO_CANVAS_ITEM (list->data));
 	}
 
-	g_list_free (copy);
 	g_list_free (sheet->priv->selected_objects);
 	sheet->priv->selected_objects = NULL;
+	
+	g_list_free (copy);
 }
 
 void
 sheet_release_selected_objects (Sheet *sheet)
 {
+	GList *list, *copy;
+	GooCanvasGroup *group;
+	gint   item_nbr;
+	
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
+
+	group = sheet->priv->selected_group;
+	copy = g_list_copy (sheet->priv->selected_objects);
 	
+	// Remove all the selected_objects into selected_group
+	for (list = copy; list; list = list->next) {
+		item_nbr = goo_canvas_item_find_child (GOO_CANVAS_ITEM (group),
+		                                      GOO_CANVAS_ITEM (list->data));
+		goo_canvas_item_remove_child (GOO_CANVAS_ITEM (group),
+		                              item_nbr);
+	}
+	g_list_free (copy);
+		
 	g_list_free (sheet->priv->selected_objects);
 	sheet->priv->selected_objects = NULL;
 }
@@ -963,24 +973,6 @@ sheet_update_parts (Sheet *sheet)
 	}
 }
 
-// Tidy up: remove the item from the item list and selected items list.
-void
-sheet_item_destroy_callback (SheetItem *item, Sheet *sheet)
-{
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
-		
-	sheet->priv->items = g_list_remove (sheet->priv->items, item);
-
-	/*
-	 * Remove the object from the selected-list before destroying.
-	 */
-	sheet_remove_selected_object (sheet, item);
-	sheet_remove_floating_object (sheet, item);
-}
-
 void
 sheet_flip_selection (Sheet *sheet, gboolean horizontal)
 {
@@ -1006,8 +998,7 @@ flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 {
 	GList *list, *item_data_list;
 	SheetPos center, b1, b2;
-	SheetPos after, delta;
-	gboolean got_first = FALSE;
+	SheetPos after;
 
 	item_data_list = NULL;
 	for (list = items; list; list = list->next) {
@@ -1017,8 +1008,8 @@ flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
-	center.x = (b2.x - b1.x) / 2 + b1.x;
-	center.y = (b2.y - b1.y) / 2 + b1.y;
+	center.x = (b2.x + b1.x) / 2;
+	center.y = (b2.y + b1.y) / 2;
 
 	for (list = item_data_list; list; list = list->next) {
 		ItemData *item_data = list->data;
@@ -1028,23 +1019,12 @@ flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 
 		item_data_flip (item_data, horizontal, &center);
 
-		/*
-		 * Make sure we snap to grid.
-		 */
-		if (!got_first) {
-			SheetPos off;
+		// Make sure we snap to grid.
+		item_data_get_pos (item_data, &after);
 
-			item_data_get_pos (item_data, &off);
-			item_data_get_pos (item_data, &after);
+		snap_to_grid (sheet->grid, &after.x, &after.y);
 
-			snap_to_grid (sheet->grid, &off.x, &off.y);
-
-			delta.x = off.x - after.x;
-			delta.y = off.y - after.y;
-
-			got_first = TRUE;
-		}
-		item_data_move (item_data, &delta);
+		item_data_move (item_data, &after);
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_register (item_data);
@@ -1062,7 +1042,7 @@ sheet_clear_op_values (Sheet *sheet)
 	g_return_if_fail (IS_SHEET (sheet));
 
 	for (list = sheet->priv->voltmeter_items; list; list = list->next) {
-		gtk_object_destroy (GTK_OBJECT (list->data));
+		g_object_unref (G_OBJECT (list->data));
 	}
 
 	g_list_free (sheet->priv->voltmeter_items);
@@ -1086,17 +1066,23 @@ sheet_provide_object_properties (Sheet *sheet)
 void
 sheet_clear_ghosts (Sheet *sheet)
 {
+	GList *copy, *list;
+	
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
 	if (sheet->priv->floating_objects == NULL) return;
 
 	g_assert (sheet->state != SHEET_STATE_FLOAT);
+	copy = g_list_copy (sheet->priv->floating_objects);
 
-	gnome_canvas_item_set (GNOME_CANVAS_ITEM (sheet->priv->floating_group),
-			"x", 0.0, "y", 0.0, NULL);
+	for (list = copy; list; list = list->next) {
+		g_object_force_floating (G_OBJECT (list->data));
+		g_object_unref (G_OBJECT (list->data));
+	}
 
-	g_list_free (sheet->priv->floating_objects);
+	g_list_free (copy);
+	
 	sheet->priv->floating_objects = NULL;
 }
 
@@ -1128,6 +1114,10 @@ sheet_add_ghost_item (Sheet *sheet, ItemData *data)
 
 	item = sheet_item_factory_create_sheet_item (sheet, data);
 
+	g_object_set (G_OBJECT (item),
+	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+	              NULL);
+
 	sheet_prepend_floating_object (sheet, item);
 }
 
@@ -1148,7 +1138,7 @@ sheet_initiate_create_wire (Sheet *sheet)
 {
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
-	
+
 	sheet->priv->create_wire_context = create_wire_initiate (sheet);
 }
 
@@ -1164,13 +1154,13 @@ node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 
 	node_item = g_hash_table_lookup (sheet->priv->node_dots, pos);
 	if (node_item == NULL) {
-		node_item = NODE_ITEM (gnome_canvas_item_new (
-					gnome_canvas_root (GNOME_CANVAS (sheet)),
-					node_item_get_type (),
-					"x", pos->x,
-					"y", pos->y,
-					NULL));
-	} 
+		node_item = NODE_ITEM (g_object_new (TYPE_NODE_ITEM, NULL));	
+		g_object_set (node_item, "parent", 
+		              goo_canvas_get_root_item (GOO_CANVAS (sheet)),
+		              "x", pos->x,
+					  "y", pos->y,
+					  NULL);
+	}
 
 	node_item_show_dot (node_item, TRUE);
 	key = g_new0 (SheetPos, 1);
@@ -1183,7 +1173,7 @@ node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 static void
 node_dot_removed_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 {
-	gpointer *node_item; // GnomeCanvasItem* 
+	gpointer *node_item; // GooCanvasItem* 
 	gpointer *orig_key;  // SheetPos* 
 	gboolean found;
 
@@ -1197,11 +1187,11 @@ node_dot_removed_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 			(gpointer) &node_item);
 
 	if (found) {
-			gtk_object_destroy (GTK_OBJECT (node_item));
-			g_hash_table_remove (sheet->priv->node_dots, pos);
+		goo_canvas_item_remove (GOO_CANVAS_ITEM (node_item));
+		g_hash_table_remove (sheet->priv->node_dots, pos);
 	} 
 	else
-			g_warning ("No dot to remove!");
+		g_warning ("No dot to remove!");
 }
 
 static guint
@@ -1263,14 +1253,19 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 }
 
 void
-sheet_disconnect_destroyed_item (Sheet *sheet)
+sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 {
 	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
+    g_return_if_fail (IS_SHEET (sheet));
+    g_return_if_fail (item != NULL);
+    g_return_if_fail (IS_SHEET_ITEM (item));
 
-	GList *list;
+    sheet->priv->items = g_list_remove (sheet->priv->items, item);
 
-    for (list = sheet->priv->items; list; list = list->next)
-    	g_signal_handlers_disconnect_by_func (G_OBJECT (list->data),
-    		G_CALLBACK (sheet_item_destroy_callback), sheet);
+    //  Remove the object from the selected-list before destroying.
+    sheet_remove_selected_object (sheet, item);
+    sheet_remove_floating_object (sheet, item);
+
+	// Destroy the item-data (model) associated to the sheet-item
+	g_object_unref (sheet_item_get_data (item));
 }

@@ -13,7 +13,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,7 +34,7 @@
 #define __NODE_ITEM_H__
 
 #include <gtk/gtk.h>
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <goocanvas.h>
 
 #define TYPE_NODE_ITEM	 (node_item_get_type ())
 #define NODE_ITEM(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE_ITEM, NodeItem))
@@ -49,13 +49,13 @@ typedef struct _NodeItemPriv  NodeItemPriv;
 
 struct _NodeItem
 {
-	GnomeCanvasGroup parent;
-	NodeItemPriv *priv;
+	GooCanvasGroup parent;
+	NodeItemPriv  *priv;
 };
 
 struct _NodeItemClass
 {
-	GnomeCanvasGroupClass parent_class;
+	GooCanvasGroupClass parent_class;
 };
 
 

@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,6 +32,8 @@
 
 #include <glib/gi18n.h>
 #include <string.h>
+#include <goocanvas.h>
+#include <math.h>
 
 #include "main.h"
 #include "sheet-item.h"
@@ -49,43 +51,52 @@
 #define NORMAL_COLOR "red"
 #define LABEL_COLOR "dark cyan"
 #define SELECTED_COLOR "green"
-#define O_DEBUG 0
 
-static void 		part_item_class_init (PartItemClass *klass);
-static void 		part_item_init (PartItem *gspart);
-static void 		part_item_destroy (GtkObject *object);
-static void 		part_item_moved (SheetItem *sheet_item);
-static void 		edit_properties (SheetItem *object);
-static void 		selection_changed (PartItem *item, gboolean select,
-						gpointer user_data);
-static int  		select_idle_callback (PartItem *item);
-static int  		deselect_idle_callback (PartItem *item);
-static void 		update_canvas_labels (PartItem *part_item);
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
-static gboolean 	is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
-inline static void 	get_cached_bounds (PartItem *item, SheetPos *p1,
-						SheetPos *p2);
-static void 		show_labels (SheetItem *sheet_item, gboolean show);
-static void 		part_item_paste (Sheet *sheet, ItemData *data);
-static void 		part_rotated_callback (ItemData *data, int angle, SheetItem *item);
-static void 		part_flipped_callback (ItemData *data, gboolean horizontal,
-						SheetItem *sheet_item);
-static void 		part_moved_callback (ItemData *data, SheetPos *pos,
-						SheetItem *item);
-static void 		part_item_place (SheetItem *item, Sheet *sheet);
-static void 		part_item_place_ghost (SheetItem *item, Sheet *sheet);
-static void 		create_canvas_items (GnomeCanvasGroup *group,
-						LibraryPart *library_part);
-static void 		create_canvas_labels (PartItem *item, Part *part);
-static void 		create_canvas_label_nodes (PartItem *item, Part *part);
-static void 		part_item_get_property (GObject *object, guint prop_id,
-						GValue *value, GParamSpec *spec);
-static void 		part_item_set_property (GObject *object, guint prop_id,
-						const GValue *value, GParamSpec *spec);
-static PartItem *	part_item_canvas_new (Sheet *sheet, Part *part);
+static void 		       part_item_class_init (PartItemClass *klass);
+static void 		       part_item_init (PartItem *gspart);
+static void 		       part_item_finalize (GObject *object);
+static void 		       part_item_moved (SheetItem *sheet_item);
+static void 		       edit_properties (SheetItem *object);
+static void 		       selection_changed (PartItem *item, gboolean select,
+								gpointer user_data);
+static int  		       select_idle_callback (PartItem *item);
+static int  		       deselect_idle_callback (PartItem *item);
+static void 			   update_canvas_labels (PartItem *part_item);
+static gboolean 		   is_in_area (SheetItem *object, SheetPos *p1, 
+		                  		SheetPos *p2);
+inline static void 		   get_cached_bounds (PartItem *item, SheetPos *p1, 
+		                   		SheetPos *p2);
+static void 		       show_labels (SheetItem *sheet_item, gboolean show);
+static void 		       part_item_paste (Sheet *sheet, ItemData *data);
+static void 		       part_rotated_callback (ItemData *data, int angle, 
+		                   		SheetItem *item);
+static void 		       part_flipped_callback (ItemData *data, 
+		                 		gboolean horizontal, SheetItem *sheet_item);
+static void 		       part_moved_callback (ItemData *data, SheetPos *pos,
+								SheetItem *item);
+static void 		       part_item_place (SheetItem *item, Sheet *sheet);
+static void 		       part_item_place_ghost (SheetItem *item, Sheet *sheet);
+static void 		       create_canvas_items (GooCanvasGroup *group, 
+		                		LibraryPart *library_part);      
+static void 		       create_canvas_labels (PartItem *item, Part *part);
+static void 		       create_canvas_label_nodes (PartItem *item, Part *part);
+static PartItem *	       part_item_canvas_new (Sheet *sheet, Part *part);
+static void 		       part_item_get_property (GObject *object, 
+		                   		guint prop_id, GValue *value, GParamSpec *spec);
+static void 		       part_item_set_property (GObject *object, 
+		                   		guint prop_id, const GValue *value, 
+		                        GParamSpec *spec);
+static void                part_item_dispose (GObject *object);
+static GooCanvasAnchorType part_item_get_anchor_from_part (Part *part);
+
 
 enum {
 	ARG_0,
+	ARG_DATA,
+	ARG_SHEET,
+	ARG_ACTION_GROUP,
 	ARG_NAME,
 	ARG_SYMNAME,
 	ARG_LIBNAME,
@@ -96,12 +107,10 @@ enum {
 
 struct _PartItemPriv {
 	guint 			  cache_valid : 1;
-	guint 			  highlight : 1;
-	GnomeCanvasGroup *label_group;
+	GooCanvasItem	 *label_group;
 	GSList 			 *label_items;
-	GnomeCanvasGroup *node_group;
+	GooCanvasItem    *node_group;
 	GSList           *label_nodes;
-
 	// Cached bounding box. This is used to make
 	// the rubberband selection a bit faster.
 	SheetPos 		  bbox_start;
@@ -111,7 +120,6 @@ struct _PartItemPriv {
 typedef struct {
 	GtkDialog *dialog;
 	PartItem  *part_item;
-
 	// List of GtkEntry's
 	GList     *widgets;
 } PartPropDialog;
@@ -129,7 +137,7 @@ static const char *part_item_context_menu =
 static GtkActionEntry action_entries[] = {
 	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), 
 		NULL, N_("Modify the object's properties"), 
-		NULL}//G_CALLBACK (object_properties_cmd)}
+		NULL}
 };
 
 enum {
@@ -139,112 +147,22 @@ enum {
 	ANCHOR_EAST
 };
 
-GtkAnchorType part_item_get_anchor_from_part (Part *part)
-{
-	int anchor_h, anchor_v;
-	int angle;
-	IDFlip flip;
-
-	flip = part_get_flip (part);
-	angle = part_get_rotation (part);
-
-	switch (angle) {
-		case 0:
-			anchor_h = ANCHOR_SOUTH;
-			anchor_v = ANCHOR_WEST;
-			break;
-		case 90:
-			anchor_h = ANCHOR_NORTH;
-			anchor_v = ANCHOR_WEST;
-			/* Invert Rotation */
-			if (flip & ID_FLIP_HORIZ)
-				flip = ID_FLIP_VERT;
-			else if (flip & ID_FLIP_VERT)
-				flip = ID_FLIP_HORIZ;
-			break;
-	}
-
-	if (flip & ID_FLIP_HORIZ) {
-		anchor_v = ANCHOR_EAST;
-	}
-	if (flip & ID_FLIP_VERT) {
-		anchor_h = ANCHOR_NORTH;
-	}
-
-	if ((anchor_v == ANCHOR_EAST) && (anchor_h == ANCHOR_NORTH))
-		return GTK_ANCHOR_NORTH_EAST;
-	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_NORTH))
-		return GTK_ANCHOR_NORTH_WEST;
-	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_SOUTH))
-		return GTK_ANCHOR_SOUTH_WEST;
-
-	return GTK_ANCHOR_SOUTH_EAST;
-}
-
-GType
-part_item_get_type ()
-{
-	static GType part_item_type = 0;
-
-	if (!part_item_type) {
-		static const GTypeInfo part_item_info = {
-			sizeof (PartItemClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) part_item_class_init,
-			NULL,
-			NULL,
-			sizeof (PartItem),
-			0,
-			(GInstanceInitFunc) part_item_init,
-			NULL
-		};
-		part_item_type = g_type_register_static (TYPE_SHEET_ITEM,
-			"PartItem", &part_item_info, 0);
-	}
-	return part_item_type;
-}
+G_DEFINE_TYPE (PartItem, part_item, TYPE_SHEET_ITEM)
 
 static void
 part_item_class_init (PartItemClass *part_item_class)
 {
 	GObjectClass *object_class;
-	GtkObjectClass *gtk_object_class;
 	SheetItemClass *sheet_item_class;
 
 	object_class = G_OBJECT_CLASS (part_item_class);
-	gtk_object_class = GTK_OBJECT_CLASS (part_item_class);
 	sheet_item_class = SHEET_ITEM_CLASS (part_item_class);
 	parent_class = g_type_class_peek_parent (part_item_class);
 
+	object_class->finalize = part_item_finalize;
+	object_class->dispose = part_item_dispose;
 	object_class->set_property = part_item_set_property;
 	object_class->get_property = part_item_get_property;
-
-	g_object_class_install_property (object_class, ARG_NAME,
-		g_param_spec_pointer ("name", "PartItem::name", "name",
-			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	
-	g_object_class_install_property (object_class, ARG_SYMNAME,
-		g_param_spec_pointer ("symbol_name", "PartItem::symbol_name",
-			"symbol name", G_PARAM_READABLE | G_PARAM_WRITABLE));
-	
-	g_object_class_install_property (object_class, ARG_REFDES,
-		g_param_spec_pointer ("refdes", "PartItem::refdes", "refdes",
-			G_PARAM_READABLE | G_PARAM_WRITABLE));
-	
-	g_object_class_install_property	(object_class, ARG_LIBNAME,
-		g_param_spec_pointer ("library_name", "PartItem::library_name",
-			"library_name", G_PARAM_READABLE | G_PARAM_WRITABLE));
-	
-	g_object_class_install_property (object_class, ARG_TEMPLATE,
-		g_param_spec_pointer ("template", "PartItem::template",
-			"template", G_PARAM_READABLE | G_PARAM_WRITABLE));
-	
-	g_object_class_install_property (object_class, ARG_MODEL,
-		g_param_spec_pointer ("model", "PartItem::model", "model",
-			G_PARAM_READABLE | G_PARAM_WRITABLE));
-
-	gtk_object_class->destroy = part_item_destroy;
 
 	sheet_item_class->moved = part_item_moved;
 	sheet_item_class->is_in_area = is_in_area;
@@ -264,7 +182,6 @@ part_item_init (PartItem *item)
 
 	priv = g_new0 (PartItemPriv, 1);
 
-	priv->highlight = FALSE;
 	priv->cache_valid = FALSE;
 
 	item->priv = priv;
@@ -277,48 +194,51 @@ static void
 part_item_set_property (GObject *object, guint propety_id, const GValue *value,
 	GParamSpec *pspec)
 {
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (IS_PART_ITEM(object));
+
+	switch (propety_id) {
+	default:
+		g_warning ("PartItem: Invalid argument.\n");
+	}
 }
 
 static void
 part_item_get_property (GObject *object, guint propety_id, GValue *value,
 	GParamSpec *pspec)
 {
-}
-
-static void
-part_item_destroy (GtkObject *object)
-{
-	PartItem *item;
-	PartItemPriv *priv;
-	ArtPoint *old;
-
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (IS_PART_ITEM (object));
 
-	/*
-	 * Free the stored coordinate that lets us rotate circles.
-	 */
-	old = g_object_get_data (G_OBJECT (object), "hack");
-	if (old)
-		g_free (old);
-
-	item = PART_ITEM (object);
-	priv = item->priv;
-
-	if (priv) {
-		if (priv->label_group) {
-			/* GnomeCanvasGroups still use GtkObject */
-			gtk_object_destroy (GTK_OBJECT (priv->label_group));
-			priv->label_group = NULL;
-		}
-
-		g_free (priv);
-		item->priv = NULL;
+	switch (propety_id) {
+	default:
+		pspec->value_type = G_TYPE_INVALID;
+		break;
 	}
+}
 
-	if (GTK_OBJECT_CLASS (parent_class)->destroy) {
-		GTK_OBJECT_CLASS (parent_class)->destroy (object);
+static void
+part_item_dispose (GObject *object)
+{
+	G_OBJECT_CLASS (parent_class)->dispose (object);
+}
+
+static void
+part_item_finalize (GObject *object)
+{
+	PartItemPriv *priv;
+
+	priv = PART_ITEM (object)->priv;
+
+	if (priv->label_nodes) {
+		g_slist_free (priv->label_nodes);
 	}
+	if (priv->label_items) {
+		g_slist_free (priv->label_items);
+	}
+	g_free (priv);
+	priv = NULL;
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -337,11 +257,7 @@ part_item_set_label_items (PartItem *item, GSList *item_list)
 	priv->label_items = item_list;
 }
 
-/*
- * part_item_moved
- *
- * "moved" signal handler. Invalidates the bounding box cache.
- */
+// "moved" signal handler. Invalidates the bounding box cache.
 static void
 part_item_moved (SheetItem *sheet_item)
 {
@@ -354,41 +270,58 @@ part_item_moved (SheetItem *sheet_item)
 PartItem *
 part_item_canvas_new (Sheet *sheet, Part *part)
 {
-	PartItem *item;
+	PartItem *part_item;
 	PartItemPriv *priv;
+	GooCanvasItem *item;
+	ItemData *item_data;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 	g_return_val_if_fail (part != NULL, NULL);
 	g_return_val_if_fail (IS_PART (part), NULL);
 
-	item = PART_ITEM (gnome_canvas_item_new (sheet->object_group,
-		TYPE_PART_ITEM, "data", part, NULL));
+	item = g_object_new (TYPE_PART_ITEM, NULL);
+	
+	g_object_set (item, 
+	              "parent", sheet->object_group, 
+	              NULL);
+	
+	part_item = PART_ITEM (item);
+	g_object_set (part_item, 
+                  "data", part, 
+                  NULL);
+	priv = part_item->priv;
+	
+	priv->label_group = GOO_CANVAS_ITEM (goo_canvas_group_new (
+	        GOO_CANVAS_ITEM (part_item),
+	        "width", -1.0,
+	        "height", -1.0,
+	        NULL));
+	g_object_unref (item);
+	
+	priv->node_group = GOO_CANVAS_ITEM (goo_canvas_group_new (
+	        GOO_CANVAS_ITEM (part_item), 
+	        NULL));
 
-	priv = item->priv;
+	g_object_set (GOO_CANVAS_ITEM (priv->node_group),
+	              "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	              NULL);
 
-	priv->label_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-		GNOME_CANVAS_GROUP (item), GNOME_TYPE_CANVAS_GROUP,
-		"x", 0.0,
-		"y", 0.0,
-		NULL));
+	item_data = ITEM_DATA (part);
+	item_data->rotated_handler_id = g_signal_connect_object (G_OBJECT (part), 
+	                                "rotated",
+									G_CALLBACK (part_rotated_callback), 
+	                                G_OBJECT (part_item), 0);
+	item_data->flipped_handler_id = g_signal_connect_object (G_OBJECT (part), 
+	                                "flipped",
+									G_CALLBACK (part_flipped_callback), 
+	                                G_OBJECT (part_item), 0);
+	item_data->moved_handler_id = g_signal_connect_object (G_OBJECT (part),
+	                                "moved",
+									G_CALLBACK (part_moved_callback), 
+	                                G_OBJECT (part_item), 0);
 
-	priv->node_group = GNOME_CANVAS_GROUP (gnome_canvas_item_new (
-		GNOME_CANVAS_GROUP (item), GNOME_TYPE_CANVAS_GROUP,
-		"x", 0.0,
-		"y", 0.0,
-		NULL));
-		
-	gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->node_group));
-
-	g_signal_connect_object (G_OBJECT (part), "rotated",
-		G_CALLBACK (part_rotated_callback), G_OBJECT(item), 0);
-	g_signal_connect_object (G_OBJECT (part), "flipped",
-		G_CALLBACK (part_flipped_callback), G_OBJECT(item), 0);
-	g_signal_connect_object (G_OBJECT (part), "moved",
-		G_CALLBACK (part_moved_callback), G_OBJECT (item), 0);
-
-	return item;
+	return part_item;
 }
 
 static void
@@ -397,7 +330,7 @@ update_canvas_labels (PartItem *item)
 	PartItemPriv *priv;
 	Part *part;
 	GSList *labels, *label_items;
-	GnomeCanvasItem *canvas_item;
+	GooCanvasItem *canvas_item;
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
@@ -416,7 +349,9 @@ update_canvas_labels (PartItem *item)
 		canvas_item = label_items->data;
 
 		text = part_property_expand_macros (part, label->text);
-		gnome_canvas_item_set (canvas_item, "text", text, NULL);
+		g_object_set (canvas_item, 
+					  "text", text, 
+					  NULL);
 		g_free (text);
 	}
 }
@@ -427,7 +362,7 @@ part_item_update_node_label (PartItem *item)
 	PartItemPriv *priv;
 	Part *part;
 	GSList *labels;
-	GnomeCanvasItem *canvas_item;
+	GooCanvasItem *canvas_item;
 	Pin *pins;
 	gint num_pins;
 
@@ -442,7 +377,6 @@ part_item_update_node_label (PartItem *item)
 	num_pins = part_get_num_pins (part);
 	
 	if (num_pins == 1) {
-	
 		pins = part_get_pins (part);
 		labels = priv->label_nodes;
 		for (labels = priv->label_nodes; labels; labels=labels->next) {
@@ -451,15 +385,15 @@ part_item_update_node_label (PartItem *item)
 			txt = g_strdup_printf ("V(%d)", pins[0].node_nr);
 			canvas_item = labels->data;
 			if (pins[0].node_nr != 0)
-				gnome_canvas_item_set (canvas_item, 
-						       "text", txt,
-						       "fill_color", LABEL_COLOR,
-						       "font", "Sans 8",	
-						       NULL);
+				g_object_set (canvas_item, 
+			              "text", txt,  
+			        	  "fill_color", LABEL_COLOR,
+			        	  "font", "Sans 8", 
+			              NULL);
 			else
-				gnome_canvas_item_set (canvas_item, 
-                                       "text", "", 
-                                       NULL);
+				g_object_set (canvas_item, 
+			              "text", "", 
+			              NULL);
 
 			g_free (txt);
 		}
@@ -527,7 +461,9 @@ edit_properties_point (PartItem *item)
 		oregano_error (_("Could not create part properties dialog."));
 		return;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	else
+		gtk_builder_set_translation_domain (gui, NULL);
+
 	if (!g_file_test(
 		OREGANO_UIDIR "/clamp-properties-dialog.ui",
 		G_FILE_TEST_EXISTS)) {
@@ -540,7 +476,8 @@ edit_properties_point (PartItem *item)
 		return;
 	}
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui", &perror) <= 0) {
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui", 
+	                               &perror) <= 0) {
 		msg = perror->message;
 		oregano_error_with_title (_("Could not create part properties dialog."), msg);
 		g_error_free (perror);
@@ -577,10 +514,12 @@ edit_properties_point (PartItem *item)
 
 			if (!g_ascii_strcasecmp (prop->name, "type")) {
 				if (!g_ascii_strcasecmp (prop->value, "v")) {
-					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), TRUE);
+					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), 
+						TRUE);
 				} 
 				else {
-					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), TRUE);
+					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), 
+						TRUE);
 				}
 			} 
 			else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
@@ -679,7 +618,6 @@ edit_properties (SheetItem *object)
 			g_free (internal);
 			return;
 		}
-		/* Hack!! */
 		if (g_ascii_strcasecmp (internal, "point") == 0) {
 			edit_properties_point (item);
 			return;
@@ -692,13 +630,17 @@ edit_properties (SheetItem *object)
 		oregano_error (_("Could not create part properties dialog."));
 		return;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	else
+		 gtk_builder_set_translation_domain (gui, NULL);
+
 	if (!g_file_test(
 		OREGANO_UIDIR "/part-properties-dialog.ui",	G_FILE_TEST_EXISTS)) {
 		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
+			_("The file %s could not be found. You might need to reinstall "
+			"Oregano to fix this."),
 			OREGANO_UIDIR "/part-properties-dialog.ui");
-		oregano_error_with_title (_("Could not create part properties dialog."), msg);
+		oregano_error_with_title (_("Could not create part properties dialog."), 
+		                          msg);
 		g_free (msg);
 		return;
 	}
@@ -706,7 +648,8 @@ edit_properties (SheetItem *object)
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-properties-dialog.ui", 
 	    &perror) <= 0) {
 		msg = perror->message;
-		oregano_error_with_title (_("Could not create part properties dialog."), msg);
+		oregano_error_with_title (_("Could not create part properties dialog."), 
+		                          msg);
 		g_error_free (perror);
 		return;
 	}
@@ -715,7 +658,8 @@ edit_properties (SheetItem *object)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, "part-properties-dialog"));
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, 
+	                      "part-properties-dialog"));
 
 	prop_table = GTK_TABLE (gtk_builder_get_object (gui, "prop_table"));
 	notebook  = GTK_NOTEBOOK (gtk_builder_get_object (gui, "notebook"));
@@ -745,7 +689,7 @@ edit_properties (SheetItem *object)
 				model_name = g_strdup (prop->value);
 			}
 			
-			/* Find the Refdes and replace by their real value */	
+			// Find the Refdes and replace by their real value
 			temp = prop->name;
 			if (!g_ascii_strcasecmp (temp,  "Refdes")) temp = _("Designation");
 			if (!g_ascii_strcasecmp (temp,  "Template")) temp  = _("Template");
@@ -817,116 +761,97 @@ edit_properties (SheetItem *object)
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
-/* Matrix Multiplication
-   Tried art_affine_multiply, but that didn't work */
-static void matrix_mult(double* a,double* b,double* c)
-{
-  c[0]=a[0]*b[0]+a[1]*b[2];
-  c[2]=a[2]*b[0]+a[3]*b[2];
-  c[1]=a[0]*b[1]+a[1]*b[3];
-  c[3]=a[2]*b[1]+a[3]*b[3];
-}
-
 static void
 part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
-	double affine[6];
-	double affine_scale[6];
-	double affine_rotate[6];
-
-	GList *list;
+	cairo_matrix_t affine;
 	GSList *label_items;
-	GtkAnchorType anchor;
-	GnomeCanvasGroup *group;
-	GnomeCanvasItem *canvas_item;
+	GooCanvasAnchorType anchor;
+	GooCanvasGroup *group;
+	GooCanvasItem *canvas_item;
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
+	int index = 0;
+	int angle_anchor;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_PART_ITEM (sheet_item));
 
 	item = PART_ITEM (sheet_item);
-	group = GNOME_CANVAS_GROUP (item);
+	group = GOO_CANVAS_GROUP (item);
 	part = PART (data);
 
 	priv = item->priv;
+	if (angle != 0)
+		cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180);
+	else
+	  	// angle == 0: Nothing has changed, therefore do nothing
+		cairo_matrix_init_identity (&affine);
 
-	if (angle!=0) {
-		// check if the part is flipped
-		if ((part->priv->flip & 1) && (part->priv->flip & 2)) {
-	    // Nothing to do in this case
-	    	art_affine_rotate (affine, angle);
-		} 
-		else {
-	    	if ((part->priv->flip & 1) || (part->priv->flip & 2)) {
-	      	// mirror over point (0,0)
-	      		art_affine_scale (affine_scale,-1,-1);
-	      		art_affine_rotate (affine_rotate,angle);
-	     		/* Matrix multiplication */
-	      		/* Don't use art_affine_multiply() here !*/
-	      		matrix_mult(affine_rotate,affine_scale,affine);
-	      		affine[4]=affine_rotate[4];
-	      	affine[5]=affine_rotate[5];
-	    	} 
-		 	else
-	      		art_affine_rotate (affine, angle);
-	  	}
-	} 
-	else {
-	  // angle==0: Nothing has changed, therefore do nothing
-	  art_affine_scale (affine,1,1);
+	for (index = 0; index < group->items->len; index++) {
+		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
+
+		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item),
+	                               	   NULL);
+		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item),
+	                               	   &affine);
 	}
 
-	for (list = group->item_list; list; list = list->next) {
-		canvas_item = GNOME_CANVAS_ITEM (list->data);
-
-		gnome_canvas_item_affine_relative (canvas_item, affine);
-	}
-
-	/*
-	 * Get the right anchor for the labels. This is needed since the
-	 * canvas don't know how to rotate text and since we rotate the
-	 * label_group instead of the labels directly.
-	 */
-
-	switch (part_get_rotation (part)) {
-	case 0:
-		anchor = GTK_ANCHOR_SOUTH_WEST;
-		break;
+	// Get the right anchor for the labels. This is needed since the
+	// canvas don't know how to rotate text and since we rotate the
+	// label_group instead of the labels directly.
+	angle_anchor = part_get_rotation (part);
+	switch (angle_anchor) {
 	case 90:
-		anchor = GTK_ANCHOR_NORTH_WEST;
+		anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;
 		break;
 	case 180:
-		anchor = GTK_ANCHOR_NORTH_EAST;
+		anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
 		break;
 	case 270:
-		anchor = GTK_ANCHOR_SOUTH_EAST;
+		anchor = GOO_CANVAS_ANCHOR_SOUTH_EAST;
 		break;
 	default:
-		anchor = GTK_ANCHOR_SOUTH_WEST;
+		anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
 		break;
 	}
 
 	for (label_items = priv->label_items; label_items;
 	     label_items = label_items->next) {
-		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label_items->data),
-			"anchor", anchor,
-			NULL);
+		gdouble x, y;
+		g_object_set (label_items->data, 
+		              "anchor", anchor, 
+		              NULL);
+		g_object_get (label_items->data,
+		              "x", &x,
+		              "y", &y,
+		              NULL);
+
+		goo_canvas_item_set_transform (label_items->data,
+	                               	   NULL);
+		// A bias (1.0, -2.0) is introduced due to ????
+		goo_canvas_item_rotate (label_items->data, -angle, x + 1.0, y - 2.0);
 	}
 
 	for (label_items = priv->label_nodes; label_items;
 	     label_items = label_items->next) {
-		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label_items->data),
-			"anchor", anchor,
-			NULL);
+		gdouble x, y;
+		g_object_set (label_items->data, 
+		              "anchor", anchor, 
+		              NULL);
+		g_object_get (label_items->data,
+		              "x", &x,
+		              "y", &y,
+		              NULL);
+
+		goo_canvas_item_set_transform (label_items->data,
+	                               	   NULL);
+		// A bias (1.0, -2.0) is introduced due to ????
+		goo_canvas_item_rotate (label_items->data, -angle, x + 1.0, y - 2.0);
 	}
 
-	/*
-	 * Invalidate the bounding box cache.
-	 */
+	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
 }
 
@@ -934,189 +859,96 @@ static void
 part_flipped_callback (ItemData *data, gboolean horizontal,
 	SheetItem *sheet_item)
 {
-	GList *list;
 	GSList *label;
-	GtkAnchorType anchor;
-	GnomeCanvasGroup *group;
-	GnomeCanvasItem *canvas_item;
+	GooCanvasAnchorType anchor;
+	GooCanvasItem *canvas_item;
+	GooCanvasGroup *group;
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
-	double affine[6];
-	double affine_rotate[6];
-	double affine_scale[6];
-	int angle;
+	int index = 0;
+	gdouble scale_h = 1.0, scale_v = 1.0, x, y;
+	GooCanvasBounds bounds_before, bounds_after;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_PART_ITEM (sheet_item));
 
 	item = PART_ITEM (sheet_item);
-	group = GNOME_CANVAS_GROUP (item);
 	part = PART (data);
-
 	priv = item->priv;
+	group = GOO_CANVAS_GROUP (item);
 
 	if (horizontal)
-		art_affine_scale (affine, -1, 1);
+		scale_v = -1.0;
 	else
-		art_affine_scale (affine, 1, -1);
-
-	angle = part_get_rotation (part);
-	if (angle!=0) {
-	  switch (angle) {
-	  case 90: art_affine_rotate (affine_rotate, 180);
-	    memcpy (affine_scale, affine, 6*sizeof (double));
-	    break;
-	  case 180: //don't do a thing
-	    art_affine_rotate (affine_rotate, 0);
-	    memcpy (affine_scale, affine, 6*sizeof (double));
-	    break;
-	  case 270: art_affine_rotate (affine_rotate, 0);
-	    // only to reset the memory of affine_scale, just a hack
-	    memcpy (affine_scale, affine, 6*sizeof (double));
-	    // switch the flipping from horizontal to vertical and vice versa
-	    affine_scale[0]=affine[3];
-	    affine_scale[3]=affine[0];
-	  }
-	  matrix_mult (affine_scale, affine_rotate, affine);
-	}
-
-
-	for (list = group->item_list; list; list = list->next) {
-		canvas_item = GNOME_CANVAS_ITEM (list->data);
-
-		gnome_canvas_item_affine_relative (canvas_item, affine);
-	}
-
-	anchor = part_item_get_anchor_from_part (part);
-
-	for (label = item->priv->label_items; label; label = label->next) {
-		gnome_canvas_item_set (
-			GNOME_CANVAS_ITEM (label->data),
-			"anchor", anchor,
-			NULL);
-	}
-
-	/*
-	 * Invalidate the bounding box cache.
-	 */
-	priv->cache_valid = FALSE;
-}
-
-/*
-  Wherefore this function?
-  Formerly, the above defined callback functions were called after
-  reading data from file or from clipboard, in both cases there was neither
-  a change in flip nor rotate, but the above functions only work for
-  data which has changed. The "Not Changed, Just Redraw" was missing here.
- */
-static void
-part_arrange_canvas_item (ItemData *data, SheetItem *sheet_item)
-{
-	double affine[6];
-	double affine_scale[6];
-	double affine_rotate[6];
-	GList *list;
-	GSList *label_items;
-	GtkAnchorType anchor;
-	GnomeCanvasGroup *group;
-	GnomeCanvasItem *canvas_item;
-	PartItem *item;
-	PartItemPriv *priv;
-	Part *part;
-	int angle;
-
-	g_return_if_fail (sheet_item != NULL);
-	g_return_if_fail (IS_PART_ITEM (sheet_item));
-
-	item = PART_ITEM (sheet_item);
-	group = GNOME_CANVAS_GROUP (item);
-	part = PART (data);
-
-	priv = item->priv;
+		scale_h = -1.0;
 	
-	angle=part_get_rotation (part);
+	// Get the group bounds before the flip
+	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item),
+	                            &bounds_before);
 
-	if (angle!=0) {
-		if ((part->priv->flip & ID_FLIP_HORIZ) &&
-	        (part->priv->flip & ID_FLIP_VERT)) {
-	    	art_affine_rotate (affine, angle+180);
-	  	} 
-		else { 
-			if ((part->priv->flip & ID_FLIP_HORIZ) ||
-		        (part->priv->flip & ID_FLIP_VERT)) {
-	      		if (part->priv->flip & ID_FLIP_HORIZ)
-					art_affine_scale (affine_scale, -1, 1);
-	      		else
-					art_affine_scale (affine_scale, 1, -1);
-
-	      	art_affine_rotate (affine_rotate, angle);
-
-	      	matrix_mult (affine_rotate, affine_scale, affine);
-	      	affine[4]=affine_rotate[4];
-	      	affine[5]=affine_rotate[5];
-	    } 
-		else
-	      	art_affine_rotate (affine, angle);
-	  }
-	} 
-	else {
-		art_affine_scale (affine,1,1); //default
-	  	if ((part->priv->flip & ID_FLIP_HORIZ) &&
-	        (part->priv->flip & ID_FLIP_VERT))
-	    		art_affine_scale (affine,-1,-1);
-	  	if ((part->priv->flip & ID_FLIP_HORIZ) &&
-	       !(part->priv->flip & ID_FLIP_VERT))
-	    		art_affine_scale (affine,-1,1);
-	  	if (!(part->priv->flip & ID_FLIP_HORIZ) &&
-	         (part->priv->flip & ID_FLIP_VERT))
-	    	art_affine_scale (affine,1,-1);
+	for (index = 0; index < group->items->len; index++) {
+		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
+		goo_canvas_item_scale (canvas_item, scale_h, scale_v);
 	}
 
-	for (list = group->item_list; list; list = list->next) {
-		canvas_item = GNOME_CANVAS_ITEM (list->data);
-		gnome_canvas_item_affine_relative (canvas_item, affine);
+	// Get the group bounds after the flip
+	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item),
+	                            &bounds_after);
+
+	// Translation to the flip translation
+	x = bounds_after.x1 - bounds_before.x1;
+	y = bounds_after.y1 - bounds_before.y1;	
+	goo_canvas_item_translate (GOO_CANVAS_ITEM (sheet_item), -x, -y);
+	
+	anchor = part_item_get_anchor_from_part (part);
+	switch (anchor) {
+		case GOO_CANVAS_ANCHOR_NORTH_WEST:
+			anchor = GOO_CANVAS_ANCHOR_SOUTH_EAST;
+			break;
+		case GOO_CANVAS_ANCHOR_NORTH_EAST:
+			anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
+			break;
+		case GOO_CANVAS_ANCHOR_SOUTH_EAST:
+			anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;
+			break;
+		default:
+			anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
+	}
+	
+	for (label = priv->label_items; label; label = label->next) {
+		g_object_set (label->data,
+		              "anchor", anchor,
+		              NULL);
+		g_object_get (label->data,
+		              "x", &x,
+		              "y", &y,
+		              NULL);
+		
+		goo_canvas_item_scale (label->data, scale_h, scale_v);
+		if (horizontal) 
+			goo_canvas_item_translate (label->data, 0, -2 * y);
+		else 
+			goo_canvas_item_translate (label->data, -2 * x, 0);
 	}
 
-	/*
-	 * Get the right anchor for the labels. This is needed since the
-	 * canvas don't know how to rotate text and since we rotate the
-	 * label_group instead of the labels directly.
-	 */
-	switch (part_get_rotation (part)) {
-	case 0:
-		anchor = GTK_ANCHOR_SOUTH_WEST;
-		break;
-	case 90:
-		anchor = GTK_ANCHOR_NORTH_WEST;
-		break;
-	case 180:
-		anchor = GTK_ANCHOR_NORTH_EAST;
-		break;
-	case 270:
-		anchor = GTK_ANCHOR_SOUTH_EAST;
-		break;
-	default:
-		anchor = GTK_ANCHOR_SOUTH_WEST;
-		break;
+	for (label = priv->label_nodes; label; label = label->next) {
+		g_object_set (label->data, 
+		              "anchor", anchor, 
+		              NULL);
+		g_object_get (label->data,
+		              "x", &x,
+		              "y", &y,
+		              NULL);
+		
+		goo_canvas_item_scale (label->data, scale_h, scale_v);
+		if (horizontal) 
+			goo_canvas_item_translate (label->data, 0, -2 * y);
+		else 
+			goo_canvas_item_translate (label->data, -2 * x, 0);
 	}
-
-
-	for (label_items = priv->label_items; label_items;
-	     label_items = label_items->next) {
-		gnome_canvas_item_set (GNOME_CANVAS_ITEM (label_items->data),
-			"anchor", anchor, NULL);
-	}
-
-	for (label_items = priv->label_nodes; label_items;
-	     label_items = label_items->next) {
-		gnome_canvas_item_set (GNOME_CANVAS_ITEM (label_items->data),
-			"anchor", anchor, NULL);
-	}
-
-	/*
-	 * Invalidate the bounding box cache.
-	 */
+	
+	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
 }
 
@@ -1145,32 +977,17 @@ selection_changed (PartItem *item, gboolean select, gpointer user_data)
 static int
 select_idle_callback (PartItem *item)
 {
-	PartItemPriv *priv;
-	GnomeCanvasItem *canvas_item;
-	GList *list;
+	GooCanvasItem *canvas_item = NULL;
+	int index;
+	
+	g_return_val_if_fail (item != NULL, FALSE);
 
-	priv = item->priv;
-
-	if (priv->highlight) {
-		g_object_unref (G_OBJECT (item));
-		return FALSE;
+	for (index = 0; index < GOO_CANVAS_GROUP (item)->items->len; index++) {	
+		canvas_item = GOO_CANVAS_ITEM (GOO_CANVAS_GROUP (item)->items->pdata[index]);
+		g_object_set (canvas_item, 
+		              "stroke-color", SELECTED_COLOR, 
+		              NULL);
 	}
-
-	for (list = GNOME_CANVAS_GROUP (item)->item_list; list; list = list->next) {
-		canvas_item = GNOME_CANVAS_ITEM (list->data);
-		if (GNOME_IS_CANVAS_LINE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", SELECTED_COLOR, 
-				NULL);
-		else if (GNOME_IS_CANVAS_ELLIPSE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "outline_color", SELECTED_COLOR, 
-				NULL);
-		else if (GNOME_IS_CANVAS_TEXT  (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", SELECTED_COLOR, 
-				NULL);
-	}
-
-	priv->highlight = TRUE;
-
 	g_object_unref (G_OBJECT (item));
 	return FALSE;
 }
@@ -1178,33 +995,23 @@ select_idle_callback (PartItem *item)
 static int
 deselect_idle_callback (PartItem *item)
 {
-	GList *list;
-	GnomeCanvasItem *canvas_item;
-	PartItemPriv *priv;
+	GooCanvasItem *canvas_item = NULL;
+	int index;
 
-	priv = item->priv;
-
-	if (!priv->highlight) {
-		g_object_unref (G_OBJECT (item));
-		return FALSE;
+	for (index = 0; index < GOO_CANVAS_GROUP (item)->items->len; index++) {
+		canvas_item = GOO_CANVAS_ITEM (GOO_CANVAS_GROUP (item)->items->pdata[index]);
+		
+		if (GOO_IS_CANVAS_TEXT (canvas_item)) {
+			g_object_set (canvas_item, 
+			              "stroke-color", LABEL_COLOR, 
+			              NULL);
+		}
+		else {
+			g_object_set (canvas_item, 
+			              "stroke-color", NORMAL_COLOR, 
+			              NULL);
+		}
 	}
-
-	for (list = GNOME_CANVAS_GROUP (item)->item_list; list;
-	     list = list->next) {
-		canvas_item = GNOME_CANVAS_ITEM (list->data);
-		if (GNOME_IS_CANVAS_LINE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", NORMAL_COLOR, 
-				NULL);
-		else if (GNOME_IS_CANVAS_ELLIPSE (canvas_item))
-			gnome_canvas_item_set (canvas_item, "outline_color", NORMAL_COLOR, 
-				NULL);
-		else if (GNOME_IS_CANVAS_TEXT (canvas_item))
-			gnome_canvas_item_set (canvas_item, "fill_color", LABEL_COLOR, 
-				NULL);
-	}
-
-	priv->highlight = FALSE;
-
 	g_object_unref (G_OBJECT (item));
 	return FALSE;
 }
@@ -1220,11 +1027,11 @@ is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
 	get_cached_bounds (item, &bbox_start, &bbox_end);
 
 	if ((p1->x < bbox_start.x) &&
-		(p2->x > bbox_end.x) &&
+		(p2->x > bbox_end.x)   &&
 		(p1->y < bbox_start.y) &&
-		(p2->y > bbox_end.y))
-		return TRUE;
-
+		(p2->y > bbox_end.y))  {
+			return TRUE;
+	}
 	return FALSE;
 }
 
@@ -1241,15 +1048,17 @@ show_labels (SheetItem *sheet_item, gboolean show)
 	priv = item->priv;
 
 	if (show)
-		gnome_canvas_item_show (GNOME_CANVAS_ITEM (priv->label_group));
+		g_object_set (priv->label_group, 
+				      "visibility", GOO_CANVAS_ITEM_VISIBLE, 
+		              NULL);
 	else
-		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->label_group));
+		g_object_set (priv->label_group, 
+				      "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+		              NULL);
 }
 
-/**
- * Retrieves the bounding box. We use a caching scheme for this
- * since it's too expensive to calculate it every time we need it.
- */
+/* Retrieves the bounding box. We use a caching scheme for this
+ * since it's too expensive to calculate it every time we need it. */
 inline static void
 get_cached_bounds (PartItem *item, SheetPos *p1, SheetPos *p2)
 {
@@ -1258,21 +1067,14 @@ get_cached_bounds (PartItem *item, SheetPos *p1, SheetPos *p2)
 
 	if (!priv->cache_valid) {
 		SheetPos start_pos, end_pos;
-		gdouble x1, y1, x2, y2;
+		GooCanvasBounds bounds;
+		
+		goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (item), &bounds);
 
-		/*
-		 * Hide the labels, then get bounding box, then show them
-		 * again.
-		 */
-		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->label_group));
-		gnome_canvas_item_get_bounds (GNOME_CANVAS_ITEM (item),
-			&x1, &y1, &x2, &y2);
-		gnome_canvas_item_show (GNOME_CANVAS_ITEM (priv->label_group));
-
-		start_pos.x = x1;
-		start_pos.y = y1;
-		end_pos.x = x2;
-		end_pos.y = y2;
+		start_pos.x = bounds.x1;
+		start_pos.y = bounds.y1;
+		end_pos.x = bounds.x2;
+		end_pos.y = bounds.y2;
 
 		priv->bbox_start = start_pos;
 		priv->bbox_end = end_pos;
@@ -1307,109 +1109,120 @@ part_item_new (Sheet *sheet, Part *part)
 	library = priv->library;
 	library_part = library_get_part (library, priv->name);
 
-	/*
-	 * Create the PartItem canvas item.
-	 */
+	// Create the PartItem canvas item.
 	item = part_item_canvas_new (sheet, part);
-
-	create_canvas_items (GNOME_CANVAS_GROUP (item), library_part);
+	create_canvas_items (GOO_CANVAS_GROUP (item), library_part);
 	create_canvas_labels (item, part);
 	create_canvas_label_nodes (item, part);
-
-	part_arrange_canvas_item (ITEM_DATA (part), SHEET_ITEM (item));
+	goo_canvas_item_ensure_updated (GOO_CANVAS_ITEM (item));
 	return item;
 }
 
 void
-part_item_create_canvas_items_for_preview (GnomeCanvasGroup *group,
+part_item_create_canvas_items_for_preview (GooCanvasGroup *group,
 	LibraryPart *library_part)
 {
 	g_return_if_fail (group != NULL);
-	g_return_if_fail (GNOME_IS_CANVAS_GROUP (group));
 	g_return_if_fail (library_part != NULL);
 
 	create_canvas_items (group, library_part);
 }
 
 static void
-create_canvas_items (GnomeCanvasGroup *group, LibraryPart *library_part)
+create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 {
-	GnomeCanvasItem	  *item;
-	GnomeCanvasPoints *points;
-	GSList			  *objects;
-	LibrarySymbol	  *symbol;
-	SymbolObject	  *object;
+	GooCanvasItem   *item;
+	GooCanvasPoints *points;
+	GSList			*objects;
+	LibrarySymbol	*symbol;
+	SymbolObject	*object;
+	gdouble          height, width;
+	GooCanvasBounds  bounds, group_bounds = {0,0,0,0};
+
 
 	g_return_if_fail (group != NULL);
-	g_return_if_fail (GNOME_IS_CANVAS_GROUP (group));
 	g_return_if_fail (library_part != NULL);
 
 	symbol = library_get_symbol (library_part->symbol_name);
 	if (symbol ==  NULL) {
-		g_warning ("Couldn't find the requested symbol %s for part %s in library.\n",
-			library_part->symbol_name,
-			library_part->name);
+		g_warning ("Couldn't find the requested symbol %s for part %s in "
+		           "library.\n",
+			       library_part->symbol_name,
+			       library_part->name);
 		return;
 	}
 
-	for (objects = symbol->symbol_objects; objects;
-	     objects = objects->next) {
+	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
 		object = (SymbolObject *)(objects->data);
 		switch (object->type) {
-		case SYMBOL_OBJECT_LINE:
-			points = object->u.uline.line;
-			item = gnome_canvas_item_new (
-				group,
-				gnome_canvas_line_get_type (),
-				"points", points,
-				"fill_color", NORMAL_COLOR,
-				"width_pixels", 0,
-				"cap_style", GDK_CAP_BUTT,
-				NULL);
-			if (object->u.uline.spline) {
-				gnome_canvas_item_set (
-					item,
-					"smooth", TRUE,
-					"spline_steps", 5,
+			case SYMBOL_OBJECT_LINE:
+				points = object->u.uline.line;
+				item = goo_canvas_polyline_new (GOO_CANVAS_ITEM (group), 
+			        FALSE, 
+			        0,
+			       	"points", points,
+			        "stroke-color", NORMAL_COLOR,
+					"line-width", 0.5,
 					NULL);
-			}
+				if (object->u.uline.spline) {
+					g_object_set (item, 
+				              "smooth", TRUE, 
+				              "spline_steps", 5, 
+				              NULL);
+				}
+				break;
+			case SYMBOL_OBJECT_ARC:
+				item = goo_canvas_ellipse_new (GOO_CANVAS_ITEM (group), 
+					(object->u.arc.x2 + object->u.arc.x1) / 2.0,
+			        (object->u.arc.y1 + object->u.arc.y2) / 2.0,
+			        (object->u.arc.x2 - object->u.arc.x1) / 2.0,
+			        (object->u.arc.y1 - object->u.arc.y2) / 2.0,
+			        "stroke-color", NORMAL_COLOR,
+			        "line_width", 1.0,
+			        NULL);
+				break;
+			case SYMBOL_OBJECT_TEXT:
+				item = goo_canvas_text_new (GOO_CANVAS_ITEM (group), 
+			        object->u.text.str, 
+			     	(double) object->u.text.x, 
+			        (double) object->u.text.y, 
+			        -1,
+			        GOO_CANVAS_ANCHOR_NORTH_EAST, 
+			        "fill_color", LABEL_COLOR,
+			        "font", "Sans 8", 
+			        NULL);
 			break;
-		case SYMBOL_OBJECT_ARC:
-			item = gnome_canvas_item_new (
-				group,
-				gnome_canvas_ellipse_get_type (),
-				"x1", object->u.arc.x1,
-				"y1", object->u.arc.y1,
-				"x2", object->u.arc.x2,
-				"y2", object->u.arc.y2,
-				"outline_color", NORMAL_COLOR,
-				"width_pixels", 0,
-				NULL);
-			break;
-		case SYMBOL_OBJECT_TEXT:
-			item = gnome_canvas_item_new (
-				group,
-				gnome_canvas_text_get_type (),
-				"text",object->u.text.str,
-				"x", (double) object->u.text.x,
-				"y", (double) object->u.text.y,
-				"fill_color", LABEL_COLOR,
-				"font", "Sans 8",
-				NULL);
-		break;
-		default:
-			g_warning ("Unknown symbol object.\n");
-			continue;
+			default:
+				g_warning ("Unknown symbol object.\n");
+				continue;
 		}
+		goo_canvas_item_get_bounds (item, &bounds);
+		if (group_bounds.x1 > bounds.x1) group_bounds.x1 = bounds.x1;
+		if (group_bounds.x2 < bounds.x2) group_bounds.x2 = bounds.x2;
+		if (group_bounds.y1 > bounds.y1) group_bounds.y1 = bounds.y1;
+		if (group_bounds.y2 < bounds.y2) group_bounds.y2 = bounds.y2;
+		
 	}
+	
+	g_object_get (group,
+	              "width", &width,
+	              "height", &height,
+	              NULL);
+	width = group_bounds.x2 - group_bounds.x1;
+	height = group_bounds.y2 - group_bounds.y1;
+	
+	g_object_set (group,
+	              "width", width,
+	              "height", height,
+	              NULL);
 }
 
 static void
 create_canvas_labels (PartItem *item, Part *part)
 {
-	GnomeCanvasItem *canvas_item;
+	GooCanvasItem *canvas_item;
 	GSList *list, *labels, *item_list;
-	GnomeCanvasGroup *group;
+	GooCanvasGroup *group;
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
@@ -1417,7 +1230,7 @@ create_canvas_labels (PartItem *item, Part *part)
 	g_return_if_fail (IS_PART (part));
 
 	labels = part_get_labels (part);
-	group = item->priv->label_group;
+	group = GOO_CANVAS_GROUP (item->priv->label_group);
 	item_list = NULL;
 
 	for (list = labels; list; list = list->next) {
@@ -1426,19 +1239,17 @@ create_canvas_labels (PartItem *item, Part *part)
 
 		text = part_property_expand_macros (part, label->text);
 
-		canvas_item = gnome_canvas_item_new (
-			group,
-			gnome_canvas_text_get_type (),
-			"x", (double) label->pos.x,
-			"y", (double) label->pos.y,
-			"text", text,
-			"anchor", GTK_ANCHOR_SOUTH_WEST,
-			"fill_color", LABEL_COLOR,
-			"font", "Sans 8",
-			NULL);
+		canvas_item = goo_canvas_text_new (GOO_CANVAS_ITEM (group),
+		                text,
+		                (double) label->pos.x,
+		                (double) label->pos.y,
+		                0,
+		                GOO_CANVAS_ANCHOR_SOUTH_WEST,
+		                "fill_color", LABEL_COLOR,
+		                "font", "Sans 8",
+		                NULL);
 
 		item_list = g_slist_prepend (item_list, canvas_item);
-
 		g_free (text);
 	}
 	item_list = g_slist_reverse (item_list);
@@ -1449,14 +1260,14 @@ create_canvas_labels (PartItem *item, Part *part)
 static void
 create_canvas_label_nodes (PartItem *item, Part *part)
 {
-	GnomeCanvasItem *canvas_item;
+	GooCanvasItem *canvas_item;
 	GSList *item_list;
-	GnomeCanvasGroup *group;
+	GooCanvasItem *group;
 	Pin *pins;
 	int num_pins, i;
 	SheetPos p1, p2;
-	GtkAnchorType anchor;
-
+	GooCanvasAnchorType anchor;
+	
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
 	g_return_if_fail (part != NULL);
@@ -1471,79 +1282,88 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 
 	switch (part_get_rotation (part)) {
 		case 0:
-			anchor = GTK_ANCHOR_SOUTH_WEST;
+			anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
 		break;
 		case 90:
-			anchor = GTK_ANCHOR_NORTH_WEST;
+			anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;
 		break;
 		case 180:
-			anchor = GTK_ANCHOR_NORTH_EAST;
+			anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
 		break;
 		case 270:
-			anchor = GTK_ANCHOR_SOUTH_EAST;
+			anchor = GOO_CANVAS_ANCHOR_SOUTH_EAST;
 		break;
 		default:
-			anchor = GTK_ANCHOR_SOUTH_WEST;
+			anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
 	}
 
-	for (i=0; i<num_pins; i++) {
+	for (i = 0; i < num_pins; i++) {
 		int x, y;
-		char *txt;
+		char *text;
 		x = pins[i].offset.x;
 		y = pins[i].offset.y;
 
-		txt = g_strdup_printf ("%d", pins[i].node_nr);
-		canvas_item = gnome_canvas_item_new (group, 
-		    gnome_canvas_text_get_type (),
-			"x", (double) x,
-			"y", (double) y,
-			"text", txt,
-			"anchor", anchor,
-			"fill_color", "black",
-			"font", "Sans 8",
-			NULL);
+		text = g_strdup_printf ("%d", pins[i].node_nr);
+		canvas_item = goo_canvas_text_new (GOO_CANVAS_ITEM (group),
+		                text,
+		                (double) x,
+		                (double) y,
+		                0,
+		                anchor,
+		                "fill_color", "black",
+		                "font", "Sans 8",
+		                NULL);
+		// Shift slightly the label for a Voltmeter
+		if (i == 0) goo_canvas_item_translate (canvas_item, -15.0, -10.0);
 
 		item_list = g_slist_prepend (item_list, canvas_item);
-		g_free (txt);
+		g_free (text);
 	}
 	item_list = g_slist_reverse (item_list);
 	item->priv->label_nodes = item_list;
 }
 
 
-/**
- * This is called when the part data was moved. Update the view accordingly.
- */
+/* This is called when the part data was moved. Update the view accordingly. */
 static void
 part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 {
-	PartItem *part_item;
-
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
+
+	PartItem *part_item;
 
 	if (pos == NULL)
 		return;
 
 	part_item = PART_ITEM (item);
 
-	/*
-	 * Move the canvas item and invalidate the bbox cache.
-	 */
-	gnome_canvas_item_move (GNOME_CANVAS_ITEM (item), pos->x, pos->y);
+	/* Move the canvas item and invalidate the bbox cache. */
+	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (part_item), NULL);
+	goo_canvas_item_translate (GOO_CANVAS_ITEM (part_item), pos->x, pos->y);
+	                        
 	part_item->priv->cache_valid = FALSE;
 }
 
 static void
 part_item_place (SheetItem *item, Sheet *sheet)
 {
-	g_signal_connect (G_OBJECT (item), "event", 
-		G_CALLBACK (sheet_item_event), sheet);
-
+	g_signal_connect (G_OBJECT (item), "button_press_event",
+	    G_CALLBACK (sheet_item_event), sheet);
+		
+	g_signal_connect (G_OBJECT (item), "button_release_event",
+	    G_CALLBACK (sheet_item_event), sheet);
+			
+	g_signal_connect (G_OBJECT (item), "motion_notify_event",
+	    G_CALLBACK (sheet_item_event), sheet);
+		
+	g_signal_connect (G_OBJECT (item), "key_press_event",
+	    G_CALLBACK (sheet_item_event), sheet);
+		
 	g_signal_connect (G_OBJECT (item), "double_clicked",
-		G_CALLBACK (edit_properties), item);
+        G_CALLBACK (edit_properties), item);
 }
 
 static void
@@ -1551,7 +1371,6 @@ part_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
 //	part_item_signal_connect_placed (PART_ITEM (item));
 }
-
 
 void
 part_item_show_node_labels (PartItem *part, gboolean show)
@@ -1561,7 +1380,54 @@ part_item_show_node_labels (PartItem *part, gboolean show)
 	priv = part->priv;
 
 	if (show)
-		gnome_canvas_item_show (GNOME_CANVAS_ITEM (priv->node_group));
+		g_object_set (priv->node_group, 
+				      "visibility", GOO_CANVAS_ITEM_VISIBLE, 
+		              NULL);
 	else
-		gnome_canvas_item_hide (GNOME_CANVAS_ITEM (priv->node_group));
+		g_object_set (priv->node_group, 
+				      "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+		              NULL);
+}
+
+static GooCanvasAnchorType 
+part_item_get_anchor_from_part (Part *part)
+{
+	int anchor_h, anchor_v;
+	int angle;
+	IDFlip flip;
+
+	flip = part_get_flip (part);
+	angle = part_get_rotation (part);
+
+	switch (angle) {
+		case 0:
+			anchor_h = ANCHOR_SOUTH;
+			anchor_v = ANCHOR_WEST;
+			break;
+		case 90:
+			anchor_h = ANCHOR_NORTH;
+			anchor_v = ANCHOR_WEST;
+			/* Invert Rotation */
+			if (flip & ID_FLIP_HORIZ)
+				flip = ID_FLIP_VERT;
+			else if (flip & ID_FLIP_VERT)
+				flip = ID_FLIP_HORIZ;
+			break;
+	}
+
+	if (flip & ID_FLIP_HORIZ) {
+		anchor_v = ANCHOR_EAST;
+	}
+	if (flip & ID_FLIP_VERT) {
+		anchor_h = ANCHOR_NORTH;
+	}
+
+	if ((anchor_v == ANCHOR_EAST) && (anchor_h == ANCHOR_NORTH))
+		return GOO_CANVAS_ANCHOR_NORTH_EAST;
+	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_NORTH))
+		return GOO_CANVAS_ANCHOR_NORTH_WEST;
+	if ((anchor_v == ANCHOR_WEST) && (anchor_h == ANCHOR_SOUTH))
+		return GOO_CANVAS_ANCHOR_SOUTH_WEST;
+
+	return GOO_CANVAS_ANCHOR_SOUTH_EAST;
 }

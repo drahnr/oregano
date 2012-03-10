@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@
 
 static void 		textbox_item_class_init (TextboxItemClass *klass);
 static void 		textbox_item_init (TextboxItem *item);
-static void 		textbox_item_destroy (GtkObject *object);
+static void 		textbox_item_finalize (GObject *object);
 static void 		textbox_item_moved (SheetItem *object);
 static void 		textbox_rotated_callback (ItemData *data, int angle,
 						SheetItem *sheet_item);
@@ -70,14 +70,16 @@ static void 		textbox_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void 		edit_textbox (SheetItem *sheet_item); 
 static void 		edit_cmd (GtkWidget *widget, Sheet *sheet);
 
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+
 typedef struct {
 	GtkDialog *dialog;
-	GtkFontSelection *font;
+	//GtkFontSelection *font;
+	GtkFontChooser *font;
 	GtkEntry *entry;
 } TextboxPropDialog;
 
 static TextboxPropDialog *prop_dialog = NULL;
-static SheetItemClass *textbox_item_parent_class = NULL;
 
 /* Use EDIT!! */
 static const char *textbox_item_context_menu =
@@ -99,55 +101,28 @@ enum {
 
 struct _TextboxItemPriv {
 	guint cache_valid : 1;
-
 	guint highlight : 1;
-	GnomeCanvasItem *text_canvas_item;
-
-	/*
-	 * Cached bounding box. This is used to make
-	 * the rubberband selection a bit faster.
-	 */
+	GooCanvasItem *text_canvas_item;
+	/* Cached bounding box. This is used to make
+	 * the rubberband selection a bit faster.*/
 	SheetPos bbox_start;
 	SheetPos bbox_end;
 };
 
-GType
-textbox_item_get_type ()
-{
-	static GType textbox_item_type = 0;
-
-	if (!textbox_item_type) {
-		static const GTypeInfo textbox_item_info = {
-			sizeof (TextboxItemClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) textbox_item_class_init,
-			NULL,
-			NULL,
-			sizeof (TextboxItem),
-			0,
-			(GInstanceInitFunc) textbox_item_init,
-			NULL
-		};
-
-		textbox_item_type = g_type_register_static (TYPE_SHEET_ITEM,
-			"TextboxItem", &textbox_item_info, 0);
-	}
-	return textbox_item_type;
-}
+G_DEFINE_TYPE (TextboxItem, textbox_item, TYPE_SHEET_ITEM)
 
 static void
 textbox_item_class_init (TextboxItemClass *textbox_item_class)
 {
-	GtkObjectClass *gtk_object_class;
+	GObjectClass *object_class;
 	SheetItemClass *sheet_item_class;
 
-	gtk_object_class = GTK_OBJECT_CLASS (textbox_item_class);
+	object_class = G_OBJECT_CLASS (textbox_item_class);
 	sheet_item_class = SHEET_ITEM_CLASS (textbox_item_class);
 	textbox_item_parent_class =
 		g_type_class_peek_parent (textbox_item_class);
 
-	gtk_object_class->destroy = textbox_item_destroy;
+	object_class->finalize = textbox_item_finalize;
 
 	sheet_item_class->moved = textbox_item_moved;
 	sheet_item_class->paste = textbox_item_paste;
@@ -174,35 +149,21 @@ textbox_item_init (TextboxItem *item)
 }
 
 static void
-textbox_item_destroy (GtkObject *object)
+textbox_item_finalize (GObject *object)
 {
-	TextboxItem *textbox;
-	TextboxItemPriv *priv;
+	TextboxItem *item;
 
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_TEXTBOX_ITEM (object));
+	item = TEXTBOX_ITEM (object);
+	printf ("textbox_item_finalize 1\n");
 
-	textbox = TEXTBOX_ITEM (object);
-	priv = textbox->priv;
-
-	if (priv) {
-		if (priv->text_canvas_item) {
-			gtk_object_destroy (GTK_OBJECT (priv->text_canvas_item));
-		}
-		textbox->priv = NULL;
-		g_free (priv);
-	}
-
- 	if (GTK_OBJECT_CLASS (textbox_item_parent_class)->destroy) {
-		GTK_OBJECT_CLASS (textbox_item_parent_class)->destroy(object);
-	}
+	if (item->priv)
+		g_free (item->priv);
+	
+	G_OBJECT_CLASS (textbox_item_parent_class)->finalize (object);
+	printf ("textbox_item_finalize end\n");
 }
 
-/*
- * textbox_item_moved
- *
- * "moved" signal handler. Invalidates the bounding box cache.
- */
+/* "moved" signal handler. Invalidates the bounding box cache. */
 static void
 textbox_item_moved (SheetItem *object)
 {
@@ -218,7 +179,8 @@ textbox_item_moved (SheetItem *object)
 TextboxItem *
 textbox_item_new (Sheet *sheet, Textbox *textbox)
 {
-	TextboxItem *item;
+	GooCanvasItem *item;
+	TextboxItem *textbox_item;
 	TextboxItemPriv *priv;
 	SheetPos pos;
 
@@ -226,50 +188,53 @@ textbox_item_new (Sheet *sheet, Textbox *textbox)
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
 	item_data_get_pos (ITEM_DATA (textbox), &pos);
+	
+	item = g_object_new (TYPE_TEXTBOX_ITEM, NULL);
+	
+	g_object_set (item, 
+	              "parent", sheet->object_group, 
+	              NULL);
+	
+	textbox_item = TEXTBOX_ITEM (item);
+	g_object_set (textbox_item, 
+	              "data", textbox, 
+	              NULL);
 
-	item = TEXTBOX_ITEM (gnome_canvas_item_new (
-		sheet->object_group,
-		textbox_item_get_type (),
-		"data", textbox,
-		"x", (double) pos.x,
-		"y", (double) pos.y,
-		NULL));
+	priv = textbox_item->priv;
 
-	priv = item->priv;
-
-	priv->text_canvas_item = gnome_canvas_item_new (
-		GNOME_CANVAS_GROUP (item),
-		gnome_canvas_text_get_type (),
-		"x", 0.0,
-		"y", 0.0,
-		"text", textbox_get_text (textbox),
-		"fill_color", NORMAL_COLOR,
-		"anchor", GTK_ANCHOR_SW,
-		"font", TEXTBOX_FONT,
-		NULL);
+	priv->text_canvas_item = goo_canvas_text_new (GOO_CANVAS_ITEM (textbox_item),
+		textbox_get_text (textbox), 0.0, 0.0, 0.0, GOO_CANVAS_ANCHOR_SW, 
+	    "font", TEXTBOX_FONT, 
+	    NULL);
 
 	g_signal_connect_object (G_OBJECT (textbox), "rotated", 
-		G_CALLBACK (textbox_rotated_callback), G_OBJECT (item), 0);
+		G_CALLBACK (textbox_rotated_callback), G_OBJECT (textbox_item), 0);
 	g_signal_connect_object (G_OBJECT (textbox), "flipped", 
-	    G_CALLBACK (textbox_flipped_callback), G_OBJECT (item), 0);
+	    G_CALLBACK (textbox_flipped_callback), G_OBJECT (textbox_item), 0);
 	g_signal_connect_object (G_OBJECT (textbox), "moved", 
-		G_CALLBACK (textbox_moved_callback), G_OBJECT (item), 0);
+		G_CALLBACK (textbox_moved_callback), G_OBJECT (textbox_item), 0);
 	g_signal_connect_object (G_OBJECT (textbox), "text_changed", 
-		G_CALLBACK (textbox_text_changed_callback), G_OBJECT (item), 0);
+		G_CALLBACK (textbox_text_changed_callback), G_OBJECT (textbox_item), 0);
 	g_signal_connect_object (G_OBJECT (textbox), "font_changed", 
-		G_CALLBACK (textbox_font_changed_callback), G_OBJECT (item), 0);
+		G_CALLBACK (textbox_font_changed_callback), G_OBJECT (textbox_item), 0);
 
 	textbox_update_bbox (textbox);
 
-	return item;
+	return textbox_item;
 }
 
 void
 textbox_item_signal_connect_placed (TextboxItem *textbox_item,
 	Sheet *sheet)
 {
-	g_signal_connect (G_OBJECT (textbox_item), "event",
-		G_CALLBACK (sheet_item_event), sheet);
+	g_signal_connect (G_OBJECT (textbox_item), "button_press_event",
+	    G_CALLBACK (sheet_item_event), sheet);
+
+	g_signal_connect (G_OBJECT (textbox_item), "button_release_event",
+	    G_CALLBACK (sheet_item_event), sheet);
+	
+	g_signal_connect (G_OBJECT (textbox_item), "key_press_event",
+	    G_CALLBACK (sheet_item_event), sheet);
 }
 
 static void
@@ -306,8 +271,9 @@ select_idle_callback (TextboxItem *item)
 	TextboxItemPriv *priv = item->priv;
 
 	get_cached_bounds (item, &bbox_start, &bbox_end);
-	gnome_canvas_item_set (GNOME_CANVAS_ITEM (priv->text_canvas_item),
-		"fill_color", SELECTED_COLOR, NULL);
+	g_object_set (priv->text_canvas_item, 
+	              "fill_color", SELECTED_COLOR, 
+	              NULL);
 
 	priv->highlight = TRUE;
 
@@ -319,8 +285,9 @@ deselect_idle_callback (TextboxItem *item)
 {
 	TextboxItemPriv *priv = item->priv;
 
-	gnome_canvas_item_set (GNOME_CANVAS_ITEM (priv->text_canvas_item),
-		"fill_color", NORMAL_COLOR, NULL);
+	g_object_set (priv->text_canvas_item, 
+	              "fill_color", NORMAL_COLOR, 
+	              NULL);
 
 	priv->highlight = FALSE;
 
@@ -420,10 +387,8 @@ textbox_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 
 	textbox_item = TEXTBOX_ITEM (item);
 
-	/*
-	 * Move the canvas item and invalidate the bbox cache.
-	 */
-	gnome_canvas_item_move (GNOME_CANVAS_ITEM (item), pos->x, pos->y);
+	// Move the canvas item and invalidate the bbox cache.
+	goo_canvas_item_translate (GOO_CANVAS_ITEM (item), pos->x, pos->y);
 	textbox_item->priv->cache_valid = FALSE;
 }
 
@@ -440,10 +405,9 @@ textbox_text_changed_callback (ItemData *data,
 
 	textbox_item = TEXTBOX_ITEM (item);
 
-	gnome_canvas_item_set (
-		GNOME_CANVAS_ITEM ( textbox_item->priv->text_canvas_item ),
-		"text", new_text, NULL );
-
+	g_object_set (textbox_item->priv->text_canvas_item, 
+				  "text", new_text, 
+	              NULL );
 }
 
 static void
@@ -460,9 +424,9 @@ textbox_font_changed_callback (ItemData *data,
 
 	textbox_item = TEXTBOX_ITEM (item);
 
-	gnome_canvas_item_set (
-		GNOME_CANVAS_ITEM (textbox_item->priv->text_canvas_item),
-		"font", new_font, NULL);
+	g_object_set (textbox_item->priv->text_canvas_item, 
+	              "font", new_font, 
+	              NULL);
 }
 
 static void
@@ -484,55 +448,56 @@ static gboolean
 create_textbox_event (Sheet *sheet, GdkEvent *event)
 {
 	switch (event->type) {
-	case GDK_3BUTTON_PRESS:
-	case GDK_2BUTTON_PRESS:
-		return TRUE;
+		case GDK_3BUTTON_PRESS:
+		case GDK_2BUTTON_PRESS:
+			return TRUE;
 
-	case GDK_BUTTON_PRESS:
-		if (event->button.button == 4 || event->button.button == 5)
-			return FALSE;
+		case GDK_BUTTON_PRESS:
+			if (event->button.button == 4 || event->button.button == 5)
+				return FALSE;
 
-		if (event->button.button == 1) {
-			if (sheet->state == SHEET_STATE_TEXTBOX_WAIT)
-				sheet->state = SHEET_STATE_TEXTBOX_START;
+			if (event->button.button == 1) {
+				if (sheet->state == SHEET_STATE_TEXTBOX_WAIT)
+					sheet->state = SHEET_STATE_TEXTBOX_START;
+
+				return TRUE;
+			} 
+			else
+				return FALSE;
+
+		case GDK_BUTTON_RELEASE:
+			if (event->button.button == 4 || event->button.button == 5)
+				return FALSE;
+
+			if (sheet->state == SHEET_STATE_TEXTBOX_START) {
+				Textbox *textbox;
+				SheetPos pos;
+
+				sheet->state = SHEET_STATE_NONE;
+
+				pos.x = event->button.x;
+				pos.y = event->button.y;
+				goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), 
+				                                &pos.x, &pos.y);
+				textbox = textbox_new (NULL);
+				
+				textbox_set_text (textbox, _("Label"));
+
+				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
+								ITEM_DATA (textbox));
+				item_data_set_pos (ITEM_DATA (textbox), &pos);
+			
+				schematic_view_reset_tool (
+					schematic_view_get_schematicview_from_sheet (sheet));
+				g_signal_handlers_disconnect_by_func (G_OBJECT (sheet),
+						G_CALLBACK (create_textbox_event), sheet);
+			}
 
 			return TRUE;
-		} 
-		else
+
+		default:
 			return FALSE;
-
-	case GDK_BUTTON_RELEASE:
-		if (event->button.button == 4 || event->button.button == 5)
-			return FALSE;
-
-		if (sheet->state == SHEET_STATE_TEXTBOX_START) {
-			Textbox *textbox;
-			SheetPos pos;
-
-			sheet->state = SHEET_STATE_NONE;
-
-			pos.x = event->button.x;
-			pos.y = event->button.y;
-
-			textbox = textbox_new (NULL);
-			item_data_set_pos (ITEM_DATA (textbox), &pos);
-			textbox_set_text (textbox, _("Label"));
-
-			schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-				ITEM_DATA (textbox));
-
-			
-			schematic_view_reset_tool (
-				schematic_view_get_schematicview_from_sheet (sheet));
-			g_signal_handlers_disconnect_by_func (G_OBJECT (sheet),
-				G_CALLBACK (create_textbox_event), sheet);
 		}
-
-		return TRUE;
-
-	default:
-		return FALSE;
-	}
 
 	return TRUE;
 }
@@ -554,10 +519,7 @@ textbox_item_listen (Sheet *sheet)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	/*
-	 * Connect to a signal handler that will
-	 * let the user create a new textbox.
-	 */
+	// Connect to a signal handler that will let the user create a new textbox.
 	sheet->state = SHEET_STATE_TEXTBOX_WAIT;
 	g_signal_connect (G_OBJECT (sheet), "event",
 		G_CALLBACK (create_textbox_event), sheet);
@@ -589,12 +551,14 @@ edit_textbox (SheetItem *sheet_item)
 {
 	TextboxItem *item;
 	Textbox *textbox;
-	char *msg, *value;
+	char *msg;
+	char *value;
 	GtkBuilder *gui;
 	GError *perror = NULL;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));
+
 	if ((gui = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create textbox properties dialog"));
 		return;
@@ -626,13 +590,18 @@ edit_textbox (SheetItem *sheet_item)
 	prop_dialog = g_new0 (TextboxPropDialog, 1);
 	prop_dialog->dialog = GTK_DIALOG (
 		gtk_builder_get_object (gui, "textbox-properties-dialog"));
-	prop_dialog->font = GTK_FONT_SELECTION (
+	prop_dialog->font = GTK_FONT_CHOOSER (
 		gtk_builder_get_object (gui, "font_selector"));
 	prop_dialog->entry = GTK_ENTRY (gtk_builder_get_object (gui, "entry"));
 
+	//prop_dialog->dialog = GTK_DIALOG (gtk_font_chooser_dialog_new (_("Font Selector"),
+	//  
+
 	value = textbox_get_font (textbox);
-	gtk_font_selection_set_font_name (
-		GTK_FONT_SELECTION (prop_dialog->font), value);
+	//gtk_font_selection_set_font_name (
+	gtk_font_chooser_set_font (
+		//GTK_FONT_SELECTION (prop_dialog->font), value);
+	    GTK_FONT_CHOOSER (prop_dialog->font), value);
 
 	value = textbox_get_text (textbox);
 	gtk_entry_set_text (GTK_ENTRY (prop_dialog->entry), value);

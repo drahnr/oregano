@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,7 +29,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include <libgnomecanvas/libgnomecanvas.h>
+
+#include <goocanvas.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -514,8 +515,8 @@ end_element (ParseState *state, const xmlChar *name)
 		/* Do not count the first string, which simply is a (. */
 		i--;
 
-		/* Construct gnome canvas points. */
-		state->object->u.uline.line = gnome_canvas_points_new (i);
+		/* Construct goo canvas points. */
+		state->object->u.uline.line = goo_canvas_points_new (i);
 		for (j = 0; j < i; j++) {
 			double x, y;
 

@@ -31,10 +31,12 @@
  */
 
 #include <math.h>
+
 #include "grid.h"
-#include "sheet.h"
+
 
 #define ROUND(x) (floor((x)+0.5))
+#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
 enum {
 	ARG_0,
@@ -43,73 +45,36 @@ enum {
 	ARG_SNAP
 };
 
-typedef struct {
-	guint    snap : 1;
-	guint    visible : 1;
-	GdkColor color;
-	gdouble  spacing;
-	gdouble  cached_zoom;
-	cairo_t *cr;
-} GridPriv;
+struct _GridPriv{
+	GooCanvasItem *	canvas_grid;
+	guint 			snap;
+	GdkColor 		color;
+	gdouble 		spacing;
+	gdouble 		cached_zoom;
+	cairo_t *		cairo;
+};
+
+G_DEFINE_TYPE (Grid, grid, GOO_TYPE_CANVAS_GROUP)
 
 static void grid_class_init (GridClass *class);
 static void grid_init (Grid *grid);
-static void grid_destroy (GtkObject *object);
+static void grid_finalize (GObject *object);
 static void grid_set_property (GObject *object, guint prop_id,
-	const GValue *value, GParamSpec *spec);
+				const GValue *value, GParamSpec *spec);
 static void grid_get_property (GObject *object, guint prop_id, GValue *value,
-	GParamSpec *spec);
-static void grid_update (GnomeCanvasItem *item, gdouble *affine,
-	ArtSVP *clip_path, gint flags);
-static void grid_realize (GnomeCanvasItem *item);
-static void grid_unrealize (GnomeCanvasItem *item);
-static void grid_draw (GnomeCanvasItem *grid, GdkDrawable *drawable,
-	gint x, gint y, gint width, gint height);
-static double grid_point (GnomeCanvasItem *item, gdouble x, gdouble y, gint cx,
-	gint cy, GnomeCanvasItem **actual_item);
-
-static GnomeCanvasItemClass *grid_parent_class;
-
-GType
-grid_get_type (void)
-{
-	static GType grid_type = 0;
-
-	if (!grid_type) {
-		static const GTypeInfo grid_info = {
-			sizeof (GridClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) grid_class_init,
-			NULL,
-			NULL,
-			sizeof (Grid),
-			0,
-			(GInstanceInitFunc) grid_init,
-			NULL
-		};
-
-		grid_type = g_type_register_static (GNOME_TYPE_CANVAS_ITEM,
-			"Grid", &grid_info, 0);
-	}
-
-	return grid_type;
-}
+				GParamSpec *spec);
+static void grid_dispose (GObject *object);
 
 static void
 grid_class_init (GridClass *class)
 {
 	GObjectClass *object_class;
-	GtkObjectClass *gtk_object_class;
-	GnomeCanvasItemClass *item_class;
 
 	object_class = G_OBJECT_CLASS (class);
-	gtk_object_class = GTK_OBJECT_CLASS (class);
-	item_class = GNOME_CANVAS_ITEM_CLASS (class);
-	
-	gtk_object_class->destroy = grid_destroy;
-
 	grid_parent_class = g_type_class_peek_parent (class);
+
+	object_class->dispose = grid_dispose;
+	object_class->finalize  = grid_finalize;	
 
 	object_class->set_property = grid_set_property;
 	object_class->get_property = grid_get_property;
@@ -126,12 +91,6 @@ grid_class_init (GridClass *class)
 	g_object_class_install_property (object_class, ARG_SNAP,
 		g_param_spec_boolean ("snap", "Grid::snap", "snap to grid?",
 			TRUE,G_PARAM_READWRITE));
-
-	item_class->update = grid_update;
-	item_class->realize = grid_realize;
-	item_class->unrealize = grid_unrealize;
-	item_class->draw = grid_draw;
-	item_class->point = grid_point;
 }
 
 static void
@@ -145,58 +104,35 @@ grid_init (Grid *grid)
 
 	priv->spacing = 10.0;
 	priv->snap = TRUE;
-	priv->visible = TRUE;
 }
 
 static void
-grid_destroy (GtkObject *object)
-{	
-	if (GTK_OBJECT_CLASS (grid_parent_class)->destroy) {
-		GTK_OBJECT_CLASS (grid_parent_class)->destroy (object);
-	}
+grid_dispose (GObject *object)
+{
+	G_OBJECT_CLASS (grid_parent_class)->dispose (object);
 }
 
-inline void
-snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
+static void
+grid_finalize (GObject *object)
 {
-	GridPriv *priv;
-	gdouble spacing;
+	Grid *grid;
 
-	priv = grid->priv;
-	spacing = priv->spacing;
+	grid = GRID (object);
+	grid->priv = NULL;
 
-	if (priv->snap) {
-		if (x) *x = ROUND ((*x) / spacing) * spacing;
-		if (y) *y = ROUND ((*y) / spacing) * spacing;
-	}
+	G_OBJECT_CLASS (grid_parent_class)->finalize (object);
 }
 
 static void
 grid_set_property (GObject *object, guint prop_id, const GValue *value,
 	GParamSpec *spec)
 {
-	GnomeCanvasItem *item;
 	Grid *grid;
 	GridPriv *priv;
-	GdkColor color;
-
-	item = GNOME_CANVAS_ITEM (object);
 	grid = GRID (object);
 	priv = grid->priv;
 
 	switch (prop_id) {
-	case ARG_COLOR:
-		if (gnome_canvas_get_color (item->canvas,
-			    g_value_get_string (value), &color)) {
-			priv->color = color;
-		} 
-		else {
-			color.pixel = 0;
-			priv->color = color;
-		}
-		if (priv->cr)
-				gdk_cairo_set_source_color (priv->cr, &color);
-		break;
 
 	case ARG_SPACING:
 		priv->spacing = g_value_get_double (value);
@@ -220,7 +156,6 @@ grid_get_property (GObject *object, guint prop_id, GValue *value,
 
 	grid = GRID (object);
 	priv = grid->priv;
-
 	switch (prop_id) {
 	case ARG_SPACING:
 		g_value_set_double (value, priv->spacing);
@@ -235,35 +170,63 @@ grid_get_property (GObject *object, guint prop_id, GValue *value,
 	}
 }
 
+Grid *
+grid_create (GooCanvasItem *root, gdouble width, gdouble height)
+{
+	Grid * grid = NULL;
+
+	grid = g_object_new (TYPE_GRID, NULL);
+
+	g_object_set (G_OBJECT (grid),
+	              "parent", root, 
+	              NULL);
+	
+	grid->priv->canvas_grid = goo_canvas_grid_new (GOO_CANVAS_ITEM (grid),
+	                    0.0,
+	                    0.0,
+	                    width,
+	                    height,
+	                    10.0,
+	                    10.0,
+	                    0.0, 
+	                    0.0, 
+	                    "horz-grid-line-width", 0.05,
+	                    "horz-grid-line-color", "dark gray",
+                        "vert-grid-line-width", 0.05,
+                        "vert-grid-line-color", "dark gray",
+	                    NULL);
+	                    
+	grid_show (grid, TRUE);
+	grid_snap (grid, TRUE);
+	return grid;
+}
+
+inline void
+snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
+{
+	GridPriv *priv;
+	gdouble spacing;
+
+	priv = grid->priv;
+	spacing = priv->spacing;
+
+	if (priv->snap) {
+		if (x) *x = ROUND ((*x) / spacing) * spacing;
+		if (y) *y = ROUND ((*y) / spacing) * spacing;
+	}
+}
+
 void
 grid_show (Grid *grid, gboolean show)
 {
-	GridPriv *priv;
-
-	priv = grid->priv;
-
-	priv->visible = show;
-	gnome_canvas_item_request_update (GNOME_CANVAS_ITEM (grid));
-}
-
-gint
-grid_is_snap (Grid *grid)
-{
-	GridPriv *priv;
-
-	priv = grid->priv;
-
-	return priv->snap;
-}
-
-gint
-grid_is_show (Grid *grid)
-{
-	GridPriv *priv;
-
-	priv = grid->priv;
-
-	return priv->visible;
+	if (show)
+		g_object_set (G_OBJECT (grid), 
+		              "visibility", GOO_CANVAS_ITEM_VISIBLE,
+		              NULL);
+	else
+		g_object_set (G_OBJECT (grid), 
+		              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+		              NULL);
 }
 
 void
@@ -272,121 +235,5 @@ grid_snap (Grid *grid, gboolean snap)
 	GridPriv *priv;
 
 	priv = grid->priv;
-
 	priv->snap = snap;
 }
-
-static void
-grid_update (GnomeCanvasItem *item, gdouble *affine, ArtSVP *clip_path,
-	gint flags)
-{
-	Grid *grid;
-	GridPriv *priv;
-	gdouble zoom;
-
-	grid = GRID (item);
-
-	priv = grid->priv;
-
-	sheet_get_zoom (SHEET (item->canvas), &zoom);
-	priv->cached_zoom = zoom;
-
-	if (grid_parent_class->update)
-		(* grid_parent_class->update) (item, affine, clip_path, flags);
-
-	gdk_cairo_set_source_color (priv->cr, &priv->color);
-	gnome_canvas_update_bbox (item, 0, 0, INT_MAX, INT_MAX);
-}
-
-static void
-grid_realize (GnomeCanvasItem *item)
-{
-	Grid *grid;
-	GridPriv *priv;
-	cairo_surface_t *cairo_surface;
-	guint width, height;
-
-	grid = GRID (item);
-
-	if (grid_parent_class->realize)
-		(* grid_parent_class->realize) (item);
-
-	gtk_layout_get_size (&item->canvas->layout, &width, & height);
-	cairo_surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32,
-	                                            width,
-	                                            height);
-	priv = grid->priv;
-	priv->cr = cairo_create (cairo_surface);
-}
-
-static void
-grid_unrealize (GnomeCanvasItem *item)
-{
-	Grid *grid;
-	GridPriv *priv;
-
-	grid = GRID (item);
-	priv = grid->priv;
-
-	cairo_destroy (priv->cr);
-
-	if (grid_parent_class->unrealize)
-		(* grid_parent_class->unrealize) (item);
-}
-
-inline static gint
-start_coord (long c, long g)
-{
-	long m;
-
-	if (c > 0) {
-		m = c % g;
-		if (m == 0)
-			return m;
-		else
-			return g - m;
-	} 
-	else
-		return (-c) % g;
-}
-
-static void
-grid_draw (GnomeCanvasItem *canvas, GdkDrawable *drawable, gint x, gint y,
-	gint width, gint height)
-{
-	GridPriv *priv;
-	Grid *grid;
-	cairo_t * cr;
-	gdouble gx, gy, sgx, sgy;
-	gdouble spacing;
-
-	grid = GRID (canvas);
-	priv = grid->priv;
-
-	if (!priv->visible)
-		return;
-
-	spacing = priv->spacing * priv->cached_zoom * 10000;
-	cr = priv->cr;
-
-	sgx = start_coord (x * 10000, spacing) - spacing;
-	sgy = start_coord (y * 10000, spacing) - spacing;
-
-	for (gx = sgx; gx <= width * 10000; gx += spacing)
-		for (gy = sgy; gy <= height * 10000; gy += spacing) {
-			cairo_move_to (cr, rint (gx/10000 + 0.45), rint (gy/10000 + 0.45));
-			cairo_stroke (cr);
-		}
-}
-
-static double
-grid_point (GnomeCanvasItem *item, gdouble x, gdouble y, gint cx, gint cy,
-	GnomeCanvasItem **actual_item)
-{
-	/*
-	 * The grid is everywhere. (That's a bug).
-	 */
-	*actual_item = item;
-	return 0.0;
-}
-

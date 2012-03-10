@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2008-2010  Marc Lorber
+ * Copyright (C) 2008-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,7 +32,6 @@
 
 #include <unistd.h>
 #include <glib.h>
-#include <libgnomecanvas/libgnomecanvas.h>
 #include <stdio.h>
 #include <glib/gi18n.h>
 
@@ -169,7 +168,9 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		oregano_error (_("Could not create settings dialog"));
 		return;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	else 
+		gtk_builder_set_translation_domain (gui, NULL);
+
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_settings (sm);
 

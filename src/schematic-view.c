@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -38,7 +38,6 @@
 #include <glib/gi18n.h>
 #include <sys/time.h>
 #include <cairo/cairo-features.h>
-#include <libgnomecanvas/libgnomecanvas.h>
 
 #include "schematic-view.h"
 #include "part-browser.h"
@@ -50,7 +49,6 @@
 #include "cursors.h"
 #include "file.h"
 #include "settings.h"
-#include "smallicon.h"
 #include "errors.h"
 #include "engine.h"
 #include "netlist-editor.h"
@@ -59,6 +57,9 @@
 #include "textbox-item.h"
 
 #define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+
+#define ZOOM_MIN 0.35
+#define ZOOM_MAX 3
 
 enum {
 	CHANGED,
@@ -118,10 +119,11 @@ struct _SchematicViewPriv {
 	LogInfo				*log_info;
 };
 
+G_DEFINE_TYPE (SchematicView, schematic_view, G_TYPE_OBJECT)
+
 /*
  * Class functions and members.
  */
-
 static void schematic_view_init(SchematicView *sv);
 static void schematic_view_class_init(SchematicViewClass *klass);
 static void schematic_view_dispose(GObject *object);
@@ -139,7 +141,6 @@ static int  delete_event (GtkWidget *widget, GdkEvent *event,
 static void data_received (GtkWidget *widget, GdkDragContext *context,
 				gint x, gint y, GtkSelectionData *selection_data, guint info,
 				guint32 time, SchematicView *sv);
-
 static void	item_data_added_callback (Schematic *schematic, ItemData *data, 
     			SchematicView *sv);
 static void	item_selection_changed_callback (SheetItem *item, gboolean selected, 
@@ -674,7 +675,6 @@ cut_cmd (GtkWidget *widget, SchematicView *sv)
 		return;
 
 	copy_cmd (NULL, sv);
-
 	sheet_delete_selection (sv->priv->sheet);
 
 	if (clipboard_is_empty ())
@@ -685,16 +685,10 @@ cut_cmd (GtkWidget *widget, SchematicView *sv)
 		    "/MainMenu/MenuEdit/Paste"), TRUE);
 }
 
-/**
-* Ugly hack (gpointer...) to avoid a .h-file dependancy... :/
-*/
 static void
-paste_objects (gpointer data, gpointer user_data)
+paste_objects (gpointer data, Sheet *sheet)
 {
-	SchematicView *sv;
-
-	sv = SCHEMATIC_VIEW (user_data);
-	sheet_item_paste (sv->priv->sheet, data);
+	sheet_item_paste (sheet, data);
 }
 
 static void
@@ -706,8 +700,7 @@ paste_cmd (GtkWidget *widget, SchematicView *sv)
 		sheet_clear_ghosts (sv->priv->sheet);
 
 	sheet_select_all (sv->priv->sheet, FALSE);
-	clipboard_foreach ((ClipBoardFunction) paste_objects, sv);
-
+	clipboard_foreach ((ClipBoardFunction) paste_objects, sv->priv->sheet);
 	if (sheet_get_floating_objects (sv->priv->sheet))
 		sheet_connect_part_item_to_floating_group (sv->priv->sheet, (gpointer) sv);
 }
@@ -909,9 +902,6 @@ netlist_view_cmd (GtkWidget *widget, SchematicView *sv)
 	netlist_editor_new_from_schematic_view (sv);
 }
 
-#define ZOOM_MIN 0.35
-#define ZOOM_MAX 3
-
 static void
 zoom_check (SchematicView *sv)
 {
@@ -923,9 +913,9 @@ zoom_check (SchematicView *sv)
 	sheet_get_zoom (sv->priv->sheet, &zoom);
 
 	gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, 
-	    "/StandartToolbar/ZoomIn"), zoom < ZOOM_MAX);
+	    "/StandardToolbar/ZoomIn"), zoom < ZOOM_MAX);
 	gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager, 
-	    "/StandartToolbar/ZoomOut"), zoom > ZOOM_MIN);
+	    "/StandardToolbar/ZoomOut"), zoom > ZOOM_MIN);
 }
 
 static void
@@ -980,32 +970,6 @@ simulate_cmd (GtkWidget *widget, SchematicView *sv)
 	return;
 }
 
-GType
-schematic_view_get_type(void)
-{
-	static GType schematic_view_type = 0;
-
-	if (!schematic_view_type) {
-			static const GTypeInfo schematic_view_info = {
-					sizeof (SchematicViewClass),
-					NULL,
-					NULL,
-					(GClassInitFunc) schematic_view_class_init,
-					NULL,
-					NULL,
-					sizeof (SchematicView),
-					0,
-					(GInstanceInitFunc) schematic_view_init,
-					NULL
-			};
-
-			schematic_view_type = g_type_register_static (G_TYPE_OBJECT,
-					"SchematicView", &schematic_view_info, 0);
-	}
-
-	return schematic_view_type;
-}
-
 static void
 schematic_view_class_init (SchematicViewClass *klass)
 {
@@ -1038,7 +1002,6 @@ static void
 schematic_view_init (SchematicView *sv)
 {
 	sv->priv = g_new0 (SchematicViewPriv, 1);
-
 	sv->priv->log_info = g_new0 (LogInfo, 1);
 	sv->priv->empty = TRUE;
 	sv->priv->schematic = NULL;
@@ -1080,9 +1043,6 @@ schematic_view_dispose (GObject *object)
 	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel),
 			G_CALLBACK (set_focus), sv);
 
-	/* Disconnect destroyed item signal */
-	sheet_disconnect_destroyed_item (sv->priv->sheet);
-
 	/* Disconnect destroy event from toplevel */
 	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel),
 			G_CALLBACK (delete_event), sv);
@@ -1098,9 +1058,12 @@ show_help (GtkWidget *widget, SchematicView *sv)
 {
 	GError *error = NULL;
 
-	if (!gtk_show_uri (gtk_widget_get_screen (widget), "ghelp:oregano",
+	GtkWidget *temp;
+	temp = sv->toplevel;
+
+	if (!gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano",
 	              gtk_get_current_event_time (), &error)) {     
-			printf("Error %s\n", error->message);
+			NG_DEBUG (g_strdup_printf ("Error %s\n", error->message));
 			g_error_free (error);
 	}
 }
@@ -1112,9 +1075,8 @@ schematic_view_new (Schematic *schematic)
 {
 	SchematicView *sv;
 	SchematicViewPriv *priv;
-	GtkAdjustment *vadj, *hadj;
 	GtkWidget *w, *hbox, *vbox;
-	GtkWidget *toolbar;
+	GtkWidget *toolbar, *part_browser;
 	GtkActionGroup *action_group;
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
@@ -1162,32 +1124,26 @@ schematic_view_new (Schematic *schematic)
 
 	sv->priv->sheet = SHEET (sheet_new (10000, 10000));
 
-	vbox = gtk_vbox_new (FALSE, 0);
-	hbox = gtk_hbox_new (FALSE, 0);
+	g_signal_connect (G_OBJECT (sv->priv->sheet),
+	    "event", G_CALLBACK (sheet_event_callback), 
+	    sv->priv->sheet);
+
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 
 	w = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w), 
 	    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (w), GTK_SHADOW_IN);
 	gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (sv->priv->sheet));
-
-	vadj = gtk_layout_get_vadjustment (GTK_LAYOUT (sv->priv->sheet));
-	hadj = gtk_layout_get_hadjustment (GTK_LAYOUT (sv->priv->sheet));
-	gtk_adjustment_set_step_increment (vadj, 10);
-	gtk_adjustment_set_step_increment (hadj, 10);
-	gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (w), vadj);
-	gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (w), hadj);
-
-	gtk_box_pack_start (GTK_BOX (hbox), w, TRUE, TRUE, 0);
-
-	g_signal_connect (G_OBJECT (sv->priv->sheet), "event", 
-	    G_CALLBACK (sheet_event_callback), sv->priv->sheet);
-
+	gtk_box_pack_start (GTK_BOX (hbox), w, TRUE, TRUE, 5);
+	
+	part_browser = part_browser_create (sv);
+	gtk_widget_set_hexpand (part_browser, FALSE);
+	gtk_box_pack_start (GTK_BOX (hbox), part_browser, FALSE, FALSE, 5);
+	
 	priv = sv->priv;
 	priv->log_info->log_window = NULL;
-
-	gtk_box_pack_start (GTK_BOX (hbox), part_browser_create (sv), FALSE, 
-	    FALSE, 0);
 
 	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
 	gtk_action_group_set_translation_domain (priv->action_group, 
@@ -1212,7 +1168,7 @@ schematic_view_new (Schematic *schematic)
 	    &error)) {
 		g_message ("building menus failed: %s", error->message);
 		g_error_free (error);
-		exit (EXIT_FAILURE);
+		return NULL;
 	}
 
 	menubar = gtk_ui_manager_get_widget (ui_manager, "/MainMenu");
@@ -1221,7 +1177,7 @@ schematic_view_new (Schematic *schematic)
 	display_recent_files (menubar, sv);
 	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
 
-	toolbar = gtk_ui_manager_get_widget (ui_manager, "/StandartToolbar");
+	toolbar = gtk_ui_manager_get_widget (ui_manager, "/StandardToolbar");
 	gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
 	gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 0);
 
@@ -1330,17 +1286,12 @@ item_data_added_callback (Schematic *schematic, ItemData *data,
 	sheet = sv->priv->sheet;
 
 	item = sheet_item_factory_create_sheet_item (sheet, data);
+
 	if (item != NULL) {
 		sheet_item_place (item, sv->priv->sheet);
 
 		g_object_set (G_OBJECT (item), "action_group", sv->priv->action_group, 
 		    NULL);
-		
-		// Hook onto the destroy signal so that we can perform some
-		// cleaning magic before destroying the item (remove it from
-		// lists etc).
-		g_signal_connect (G_OBJECT (item), "destroy",
-			G_CALLBACK (sheet_item_destroy_callback), sv->priv->sheet);
 
 		g_signal_connect (G_OBJECT (item), "selection_changed",
 			G_CALLBACK (item_selection_changed_callback), sv);
@@ -1510,6 +1461,7 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 						i++;
 						continue;
 					}
+
 					gchar *fname = files[i];
 
 					new_sm = schematic_read (fname, &error);
@@ -1593,7 +1545,7 @@ reset_tool_cb (Sheet *sheet, SchematicView *sv)
 
 	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (
 	    gtk_ui_manager_get_action (sv->priv->ui_manager, 
-		    "/StandartToolbar/Arrow")), 0);
+		    "/StandardToolbar/Arrow")), 0);
 }
 
 gpointer
@@ -1737,7 +1689,6 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 
 	gtk_text_view_set_buffer (sv->priv->log_info->log_text, 
 	        schematic_get_log_text (sm));
-
 
 	gtk_widget_show_all (sv->priv->log_info->log_window);
 }

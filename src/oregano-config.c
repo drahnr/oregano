@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2011  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,7 +32,7 @@
 
 #include <sys/types.h>
 #include <dirent.h>
-#include <gconf/gconf-client.h>
+#include <glib.h>
 #include <string.h>
 #include <glib/gi18n.h>
 
@@ -50,23 +50,17 @@ static void load_library_error (gchar *name);
 void
 oregano_config_load (void)
 {
-	GConfClient * gconf;
-
-	gconf = gconf_client_get_default ();
-
-	oregano.engine = gconf_client_get_int (gconf, "/apps/oregano/engine",
-		NULL);
-	oregano.compress_files = gconf_client_get_bool (gconf, "/apps/oregano/compress_files",
-		NULL);
-	oregano.show_log = gconf_client_get_bool (gconf, "/apps/oregano/show_log",
-		NULL);
-	oregano.show_splash = gconf_client_get_bool (gconf, "/apps/oregano/show_splash",
-		NULL);
-
-	g_object_unref (gconf);
+	oregano.settings = g_settings_new ("apps.oregano");
+	oregano.engine = g_settings_get_int (oregano.settings, 
+			"engine");
+	oregano.compress_files = g_settings_get_boolean (oregano.settings, 
+			"compress-files");
+	oregano.show_log = g_settings_get_boolean (oregano.settings, 
+			"show-log");
+	oregano.show_splash = g_settings_get_boolean (oregano.settings, 
+			"show-splash");
 
 	/* Let's deal with first use -I don't like this- */
-
 	if ((oregano.engine < 0) || (oregano.engine >= OREGANO_ENGINE_COUNT))
 		oregano.engine = 0;
 }
@@ -74,20 +68,14 @@ oregano_config_load (void)
 void
 oregano_config_save (void)
 {
-	GConfClient * gconf;
-
-	gconf = gconf_client_get_default ();
-
-	gconf_client_set_int (gconf, "/apps/oregano/engine", oregano.engine,
-		NULL);
-	gconf_client_set_bool (gconf, "/apps/oregano/compress_files", oregano.compress_files,
-		NULL);
-	gconf_client_set_bool (gconf, "/apps/oregano/show_log", oregano.show_log,
-		NULL);
-	gconf_client_set_bool (gconf, "/apps/oregano/show_splash", oregano.show_splash,
-		NULL);
-
-	g_object_unref (gconf);
+	g_settings_set_int (oregano.settings, "engine", 
+			oregano.engine);
+	g_settings_set_boolean (oregano.settings, "compress-files", 
+			oregano.compress_files);
+	g_settings_set_boolean (oregano.settings, "show-log", 
+			oregano.show_log);
+	g_settings_set_boolean (oregano.settings, "show-splash", 
+			oregano.show_splash);
 }
 
 void
@@ -166,10 +154,11 @@ static void
 load_library_error (gchar *name)
 {
 	gchar *title, *desc;
-		title = g_strdup_printf (_("Could not read the parts library: %s "), name);
-		desc = g_strdup_printf (_(
-			 "The file is probably corrupt. Please reinstall the parts\n"
-			 "library or Oregano and try again."));
+	title = g_strdup_printf (_("Could not read the parts library: %s "), 
+	                         name);
+	desc = g_strdup_printf (_("The file is probably corrupt. Please "
+		                      "reinstall the parts library or Oregano "
+	                          "and try again."));
 	oregano_error_with_title (title, desc);
 	g_free (title);
 	g_free (desc);

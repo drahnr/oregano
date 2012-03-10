@@ -12,7 +12,7 @@
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,7 +30,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <libgnomecanvas/libgnomecanvas.h>
+#include <math.h>
+#include <goocanvas.h>
 
 #include "textbox.h"
 #include "clipboard.h"
@@ -63,39 +64,15 @@ enum {
 	LAST_SIGNAL
 };
 
-static ItemDataClass *parent_class = NULL;
-static guint textbox_signals[LAST_SIGNAL] = { 0 };
-
 struct _TextboxPriv {
 	char *text;
 	char *font;
 };
 
-GType
-textbox_get_type (void)
-{
-	static GType textbox_type = 0;
+G_DEFINE_TYPE (Textbox, textbox, TYPE_ITEM_DATA)
 
-	if (!textbox_type) {
-		static const GTypeInfo textbox_info = {
-			sizeof (TextboxClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) textbox_class_init,
-			NULL,
-			NULL,
-			sizeof (Textbox),
-			0,
-			(GInstanceInitFunc) textbox_init,
-			NULL
-		};
+static guint textbox_signals[LAST_SIGNAL] = { 0 };
 
-		textbox_type = g_type_register_static (TYPE_ITEM_DATA,
-			"Textbox", &textbox_info, 0);
-	}
-
-	return textbox_type;
-}
 
 static void
 textbox_finalize (GObject *object)
@@ -105,13 +82,13 @@ textbox_finalize (GObject *object)
 
 	g_free (priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (textbox_parent_class)->finalize (object);
 }
 
 static void
 textbox_dispose (GObject *object)
 {
-	G_OBJECT_CLASS (parent_class)->dispose (object);
+	G_OBJECT_CLASS (textbox_parent_class)->dispose (object);
 }
 
 static void
@@ -120,7 +97,7 @@ textbox_class_init (TextboxClass *klass)
 	GObjectClass *object_class;
 	ItemDataClass *item_data_class;
 
-	parent_class = g_type_class_peek (TYPE_ITEM_DATA);
+	textbox_parent_class = g_type_class_peek (TYPE_ITEM_DATA);
 	item_data_class = ITEM_DATA_CLASS (klass);
 	object_class = G_OBJECT_CLASS (klass);
 
@@ -208,8 +185,8 @@ textbox_copy (ItemData *dest, ItemData *src)
 	g_return_if_fail (src != NULL);
 	g_return_if_fail (IS_TEXTBOX (src));
 
-	if (parent_class->copy != NULL)
-		parent_class->copy (dest, src);
+	if (ITEM_DATA_CLASS (textbox_parent_class)->copy != NULL)
+		ITEM_DATA_CLASS (textbox_parent_class)->copy (dest, src);
 
 	dest_textbox = TEXTBOX (dest);
 	src_textbox = TEXTBOX (src);
@@ -221,8 +198,8 @@ textbox_copy (ItemData *dest, ItemData *src)
 static void
 textbox_rotate (ItemData *data, int angle, SheetPos *center)
 {
-	double affine[6];
-	ArtPoint src, dst;
+	cairo_matrix_t affine;
+	double x, y;
 	Textbox *textbox;
 	SheetPos b1, b2;
 	SheetPos textbox_center, delta;
@@ -241,7 +218,7 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 		textbox_center.y = b1.y + (b2.y - b1.y) / 2;
 	}
 
-	art_affine_rotate (affine, angle);
+	cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180);
 
 	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (textbox), "rotated", angle);
@@ -251,12 +228,12 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 
 		item_data_get_pos (ITEM_DATA (textbox), &textbox_pos);
 
-		src.x = textbox_center.x - center->x;
-		src.y = textbox_center.y - center->y;
-		art_affine_point (&dst, &src, affine);
+		x = textbox_center.x - center->x;
+		y = textbox_center.y - center->y;
+		cairo_matrix_transform_point (&affine, &x, &y);
 
-		delta.x = -src.x + dst.x;
-		delta.y = -src.y + dst.y;
+		delta.x = x - (textbox_center.x - center->x);
+		delta.y = y - (textbox_center.y - center->y);
 
 		item_data_move (ITEM_DATA (textbox), &delta);
 	}
@@ -265,8 +242,8 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 static void
 textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 {
-	double affine[6];
-	ArtPoint src, dst;
+	cairo_matrix_t affine;
+	double x, y;
 	Textbox *textbox;
 	SheetPos b1, b2;
 	SheetPos textbox_center = {0.0, 0.0}, delta;
@@ -283,9 +260,9 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	}
 
 	if (horizontal)
-		art_affine_scale (affine, -1, 1);
+		cairo_matrix_init_scale (&affine, -1, 1);
 	else
-		art_affine_scale (affine, 1, -1);
+		cairo_matrix_init_scale (&affine, 1, -1);
 
 	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (textbox), "flipped", horizontal);
@@ -295,12 +272,12 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 
 		item_data_get_pos (ITEM_DATA (textbox), &textbox_pos);
 
-		src.x = textbox_center.x - center->x;
-		src.y = textbox_center.y - center->y;
-		art_affine_point (&dst, &src, affine);
+		x = textbox_center.x - center->x;
+		y = textbox_center.y - center->y;
+		cairo_matrix_transform_point (&affine, &x, &y);
 
-		delta.x = -src.x + dst.x;
-		delta.y = -src.y + dst.y;
+		delta.x = x - (textbox_center.x - center->x);
+		delta.y = y - (textbox_center.y - center->y);
 
 		item_data_move (ITEM_DATA (textbox), &delta);
 	}
@@ -352,7 +329,6 @@ textbox_set_text (Textbox *textbox, const char *text)
 	textbox->priv->text = g_strdup (text);
 
 	textbox_update_bbox (textbox);
-
 	g_signal_emit_by_name (G_OBJECT (textbox), "text_changed", text);
 }
 
