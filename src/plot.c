@@ -8,11 +8,11 @@
  *	Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001	Richard Hult
  * Copyright (C) 2003,2006	Ricardo Markiewicz
- * Copyright (C) 2009-2011	Marc Lorber
+ * Copyright (C) 2009-2012	Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,7 +35,7 @@
 #include <glib/gi18n.h>
 
 #include "file.h"
-#include "main.h"
+#include "oregano.h"
 #include "schematic.h"
 #include "dialogs.h"
 #include "plot.h"
@@ -79,7 +79,7 @@ static char *plot_curve_colors[] = {
 typedef struct {
 	GtkWidget 		*window;
 	GtkWidget 		*canvas;
-	GtkWidget 		*coord;  /* shows the coordinates of the mouse */
+	GtkWidget 		*coord;  // shows the coordinates of the mouse
 	GtkWidget 		*combo_box;
 
 	GtkWidget 		*plot;
@@ -96,18 +96,18 @@ typedef struct {
 	gchar 			*xtitle;
 	gchar 			*ytitle;
 
-	gint 			 width;  /* width of the plot, excluding */
-	gint 			 height; /* axes, titles and padding etc */
+	gint 			 width;  // width of the plot, excluding 
+	gint 			 height; // axes, titles and padding etc 
 
 	gdouble 		 plot_min;
 	gdouble			 plot_max;
 	gdouble 		 x_min;
 	gdouble			 x_max;
 
-	gdouble 		 padding_x; /* padding around the plot. Note that */
-	gdouble 		 padding_y; /* titles, axes etc live here */
+	gdouble 		 padding_x; // padding around the plot. Note that 
+	gdouble 		 padding_y; // titles, axes etc live here 
 
-	gint 			 selected; /* the currently selected plot in the clist */
+	gint 			 selected; // the currently selected plot in the clist 
 	gint 			 prev_selected;
 } Plot;
 
@@ -158,7 +158,7 @@ delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot)
 	return FALSE;
 }
 
-/* Call this to close the plot window */
+// Call this to close the plot window 
 static void
 destroy_window (GtkWidget *widget, Plot *plot)
 {
@@ -703,6 +703,7 @@ add_function (GtkMenuItem *menuitem, Plot *plot)
 
 		lst = lst->next;
 	}
+	g_list_free_full (lst, g_object_unref);
 
 	gtk_widget_queue_draw (plot->plot);
 }

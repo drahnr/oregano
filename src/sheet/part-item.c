@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -35,7 +35,7 @@
 #include <goocanvas.h>
 #include <math.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "sheet-item.h"
 #include "part-item.h"
 #include "part-private.h"
@@ -340,7 +340,7 @@ update_canvas_labels (PartItem *item)
 
 	label_items = priv->label_items;
 
-	/* Put the label of each item */
+	// Put the label of each item
 	for (labels = part_get_labels (part); labels;
 	     labels = labels->next, label_items = label_items->next) {
 		char *text;
@@ -373,7 +373,7 @@ part_item_update_node_label (PartItem *item)
 
 	g_return_if_fail (IS_PART (part) );
 
-	/* Put the label of each node */
+	// Put the label of each node
 	num_pins = part_get_num_pins (part);
 	
 	if (num_pins == 1) {
@@ -439,6 +439,8 @@ prop_dialog_response (GtkWidget *dialog, gint response,
 		}
 		g_free (prop_name);
 	}
+	g_slist_free_full (props, g_object_unref);
+	g_list_free_full (widget, g_object_unref);
 
 	update_canvas_labels (item);
 }
@@ -503,7 +505,7 @@ edit_properties_point (PartItem *item)
 
 	chk_db = GTK_CHECK_BUTTON (gtk_builder_get_object (gui, "check_db"));
 	
-	/* Setup GUI from properties */
+	// Setup GUI from properties
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
@@ -545,7 +547,7 @@ edit_properties_point (PartItem *item)
 
 	gtk_dialog_run (prop_dialog->dialog);
 
-	/* Save properties from GUI */
+	// Save properties from GUI
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
@@ -588,6 +590,7 @@ edit_properties_point (PartItem *item)
 			}
 		}
 	}
+	g_slist_free_full (properties, g_object_unref);
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
@@ -758,6 +761,7 @@ edit_properties (SheetItem *object)
 
 	prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
 
+	g_slist_free_full (properties, g_object_unref);
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
@@ -853,6 +857,8 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
+	
+	g_slist_free_full (label_items, g_object_unref);
 }
 
 static void
@@ -950,6 +956,8 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
+
+	g_slist_free_full (label, g_object_unref);
 }
 
 void
@@ -1057,8 +1065,8 @@ show_labels (SheetItem *sheet_item, gboolean show)
 		              NULL);
 }
 
-/* Retrieves the bounding box. We use a caching scheme for this
- * since it's too expensive to calculate it every time we need it. */
+// Retrieves the bounding box. We use a caching scheme for this
+// since it's too expensive to calculate it every time we need it.
 inline static void
 get_cached_bounds (PartItem *item, SheetPos *p1, SheetPos *p2)
 {
@@ -1215,13 +1223,15 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 	              "width", width,
 	              "height", height,
 	              NULL);
+	
+	g_slist_free_full (objects, g_object_unref);
 }
 
 static void
 create_canvas_labels (PartItem *item, Part *part)
 {
 	GooCanvasItem *canvas_item;
-	GSList *list, *labels, *item_list;
+	GSList *list, *item_list;
 	GooCanvasGroup *group;
 
 	g_return_if_fail (item != NULL);
@@ -1229,11 +1239,10 @@ create_canvas_labels (PartItem *item, Part *part)
 	g_return_if_fail (part != NULL);
 	g_return_if_fail (IS_PART (part));
 
-	labels = part_get_labels (part);
 	group = GOO_CANVAS_GROUP (item->priv->label_group);
 	item_list = NULL;
 
-	for (list = labels; list; list = list->next) {
+	for (list = part_get_labels (part); list; list = list->next) {
 		PartLabel *label = list->data;
 		char *text;
 
@@ -1252,6 +1261,8 @@ create_canvas_labels (PartItem *item, Part *part)
 		item_list = g_slist_prepend (item_list, canvas_item);
 		g_free (text);
 	}
+	g_slist_free_full (list, g_object_unref);
+
 	item_list = g_slist_reverse (item_list);
 	part_item_set_label_items (item, item_list);
 }
@@ -1324,7 +1335,7 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 }
 
 
-/* This is called when the part data was moved. Update the view accordingly. */
+// This is called when the part data was moved. Update the view accordingly.
 static void
 part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 {
@@ -1340,7 +1351,7 @@ part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 
 	part_item = PART_ITEM (item);
 
-	/* Move the canvas item and invalidate the bbox cache. */
+	// Move the canvas item and invalidate the bbox cache.
 	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (part_item), NULL);
 	goo_canvas_item_translate (GOO_CANVAS_ITEM (part_item), pos->x, pos->y);
 	                        
@@ -1407,7 +1418,7 @@ part_item_get_anchor_from_part (Part *part)
 		case 90:
 			anchor_h = ANCHOR_NORTH;
 			anchor_v = ANCHOR_WEST;
-			/* Invert Rotation */
+			// Invert Rotation 
 			if (flip & ID_FLIP_HORIZ)
 				flip = ID_FLIP_VERT;
 			else if (flip & ID_FLIP_VERT)

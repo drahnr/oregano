@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2011  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,7 +36,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "sim-settings.h"
 #include "schematic.h"
 #include "schematic-view.h"
@@ -46,7 +46,7 @@
 #include "errors.h"
 
 struct _SimSettingsPriv {
-	/* Transient analysis. */
+	// Transient analysis.
 	GtkWidget *w_main;
 	GtkWidget *w_trans_enable, *w_trans_start, *w_trans_stop;
 	GtkWidget *w_trans_step, *w_trans_step_enable, *w_trans_init_cond,
@@ -58,7 +58,7 @@ struct _SimSettingsPriv {
 	gchar *trans_step;
 	gboolean trans_step_enable;
 
-	/*  AC   */
+	// AC
 	GtkWidget *w_ac_enable, *w_ac_type, *w_ac_npoints, *w_ac_start, *w_ac_stop, 
 		*w_ac_frame;
 	gboolean ac_enable;
@@ -67,14 +67,14 @@ struct _SimSettingsPriv {
 	gchar   *ac_start;
 	gchar   *ac_stop;
 
-	/*  DC  */
+	// DC
 	GtkWidget *w_dc_enable,*w_dc_vin,*w_dc_start,*w_dc_stop,*w_dc_step,
 		*w_dcsweep_frame;
 	gboolean dc_enable;
 	gchar   *dc_vin;
 	gchar   *dc_start,*dc_stop,*dc_step;
 
-	/* Fourier analysis. Replace with something sane later. */
+	// Fourier analysis. Replace with something sane later.
 	GtkWidget *w_four_enable,*w_four_freq,*w_four_vout,*w_four_combobox,
 		*w_four_add,*w_four_rem,*w_fourier_frame;
 	gboolean fourier_enable;
@@ -82,7 +82,7 @@ struct _SimSettingsPriv {
 	gchar *fourier_nb_vout;
 	GSList *fourier_vout;
 
-	/*  Options   */
+	// Options
 	GtkEntry *w_opt_value;
 	GtkTreeView  *w_opt_list;
 	GList *options;
@@ -133,7 +133,7 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 	
 	node_box = GTK_COMBO_BOX_TEXT (sim->priv->w_four_combobox);
 	
-	/* Get the node identifier */
+	// Get the node identifier
 	for (i=0; (i <1000 && result == FALSE); ++i) {
 		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), 
 		               gtk_combo_box_text_get_active_text (node_box)) == 0)
@@ -141,7 +141,7 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 	}
 	result=FALSE;
 	
-	/* Is the node identifier already available? */
+	// Is the node identifier already available?
 	node_slist = g_slist_copy (sim->priv->fourier_vout);
 	while (node_slist) {
 		if ((i-1) == atoi (node_slist->data)) {
@@ -154,12 +154,12 @@ fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 		GSList *node_slist;
 		gchar *text = NULL;
 
-		/* Add Node (i-1) at the end of fourier_vout */
+		// Add Node (i-1) at the end of fourier_vout
 		text = g_strdup_printf ("%d", i-1);
 		sim->priv->fourier_vout = g_slist_append (sim->priv->fourier_vout, 
 		                                          g_strdup_printf ("%d", i-1));
 
-		/* Update the fourier_vout widget */
+		// Update the fourier_vout widget
 		node_slist = g_slist_copy (sim->priv->fourier_vout);
 		if (node_slist->data)
 			text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
@@ -187,7 +187,7 @@ fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 	
 	node_box = GTK_COMBO_BOX_TEXT (sim->priv->w_four_combobox);
 
-	/* Get the node identifier */
+	// Get the node identifier
 	for (i=0; (i < 1000 && result == FALSE); i++) {
 		if (g_strcmp0 (g_strdup_printf ("V(%d)", i), 
 		               gtk_combo_box_text_get_active_text (node_box)) == 0)
@@ -198,7 +198,7 @@ fourier_remove_vout_cb (GtkButton *w, SimSettings *sim)
 		GSList *node_slist;
 		gchar *text = NULL;
 
-		/* Remove current data in the g_slist */
+		// Remove current data in the g_slist 
 		{
 			GSList *tmp, *prev = NULL;
 
@@ -268,11 +268,11 @@ get_options_from_list (SimSettings *s)
 	GtkTreeIter iter;
 	GtkTreeView *cl = s->priv->w_opt_list;
 
-	/*  Empty the list   */
+	//  Empty the list   
 	while (s->priv->options) {
 		so = s->priv->options->data;
 		if (so) {
-			/* Prevent sigfault on NULL */
+			// Prevent sigfault on NULL 
 			if (so->name) g_free (so->name);
 			if (so->value) g_free (so->value);
 			s->priv->options = g_list_remove (s->priv->options,so);
@@ -306,7 +306,7 @@ select_opt_callback (GtkWidget *widget,
 
 	if (event->button != 1) return FALSE;
 
-	/* Get the current selected row */
+	// Get the current selected row 
 	selection = gtk_tree_view_get_selection (sim->priv->w_opt_list);
 	model = gtk_tree_view_get_model (sim->priv->w_opt_list);
 
@@ -335,7 +335,7 @@ option_setvalue (GtkWidget *w, SimSettings *s)
 	value = gtk_entry_get_text (s->priv->w_opt_value);
 	if (!value) return;
 
-	/* Get the current selected row */
+	// Get the current selected row 
 	selection = gtk_tree_view_get_selection (s->priv->w_opt_list);
 	model = gtk_tree_view_get_model (s->priv->w_opt_list);
 
@@ -369,7 +369,7 @@ add_option (GtkWidget *w, SimSettings *s)
 		SimOption *opt = g_new0 (SimOption, 1);
 		opt->name = g_strdup (gtk_entry_get_text (entry));
 		opt->value = g_strdup ("");
-		/* Warning : don't free opt later, is added to the list */
+		// Warning : don't free opt later, is added to the list 
 		sim_settings_add_option (s, opt);
 	
 		gtk_list_store_append (GTK_LIST_STORE (gtk_tree_view_get_model(
@@ -389,7 +389,7 @@ option_remove (GtkWidget *w, SimSettings *s)
 	GtkTreeIter iter;
 	GtkTreeSelection *selection;
 
-	/* Get the current selected row */
+	// Get the current selected row 
 	selection = gtk_tree_view_get_selection (s->priv->w_opt_list);
 	model = gtk_tree_view_get_model (s->priv->w_opt_list);
 
@@ -831,7 +831,7 @@ response_callback (GtkButton *button, Schematic *sm)
 
 	g_object_get (s->notebook, "page", &page, NULL);
 
-	/* Trans */
+	// Trans 
 	s->priv->trans_enable = gtk_toggle_button_get_active (
 	                         GTK_TOGGLE_BUTTON (s->priv->w_trans_enable));
 
@@ -856,7 +856,7 @@ response_callback (GtkButton *button, Schematic *sm)
 	s->priv->trans_init_cond = gtk_toggle_button_get_active (
 	                       GTK_TOGGLE_BUTTON (s->priv->w_trans_init_cond));
 
-	/* DC */
+	// DC 
 	s->priv->dc_enable = gtk_toggle_button_get_active (
 	                       GTK_TOGGLE_BUTTON (s->priv->w_dc_enable));
 	if (s->priv->dc_vin) 
@@ -884,7 +884,7 @@ response_callback (GtkButton *button, Schematic *sm)
 	s->priv->dc_step = g_strdup (gtk_entry_get_text (
 	                       GTK_ENTRY (s->priv->w_dc_step)));
 
-	/* AC */
+	// AC 
 	s->priv->ac_enable = gtk_toggle_button_get_active (
 	                       GTK_TOGGLE_BUTTON (s->priv->w_ac_enable));
 
@@ -908,7 +908,7 @@ response_callback (GtkButton *button, Schematic *sm)
 	s->priv->ac_stop = g_strdup (gtk_entry_get_text(
 	                       GTK_ENTRY (s->priv->w_ac_stop)));
 
-	/* Fourier analysis */
+	// Fourier analysis 
 	s->priv->fourier_enable = gtk_toggle_button_get_active (
 	                       GTK_TOGGLE_BUTTON (s->priv->w_four_enable));
 
@@ -919,13 +919,13 @@ response_callback (GtkButton *button, Schematic *sm)
 
 	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 
-	/* Options */
+	// Options 
 	get_options_from_list (s);
 	gtk_widget_hide (GTK_WIDGET(s->pbox));
 	s->pbox = NULL;
 	s->notebook = NULL;
 
-	/* Schematic is dirty now ;-) */
+	// Schematic is dirty now ;-) 
 	schematic_set_dirty (sm, TRUE);
 	g_free (tmp);
 	g_free (node_ids);
@@ -958,7 +958,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_sim_settings (sm);
 
-	/* Only allow one instance of the property box per schematic. */
+	// Only allow one instance of the property box per schematic. 
 	if (s->pbox) {
 		gdk_window_raise (gtk_widget_get_window (GTK_WIDGET (s->pbox)));
 		return;
@@ -1004,12 +1004,12 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (pbox), "delete_event", 
 		G_CALLBACK (delete_event_cb), s);
 
-	/*  Prepare options list   */
+	//  Prepare options list   
 	s->priv->w_opt_value = GTK_ENTRY (gtk_builder_get_object (gui, "opt_value"));
 	opt_list = s->priv->w_opt_list  = GTK_TREE_VIEW (
 	    gtk_builder_get_object (gui, "option_list"));
 
-	/*  Grab the frames */
+	//  Grab the frames 
 	s->priv->w_trans_frame = GTK_WIDGET (gtk_builder_get_object (gui, 
 	    "trans_frame"));
 	s->priv->w_ac_frame = GTK_WIDGET (gtk_builder_get_object (gui, 
@@ -1019,7 +1019,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s->priv->w_fourier_frame = GTK_WIDGET (gtk_builder_get_object (gui, 
 	    "fourier_frame"));
 	
-	/* Create the Columns */
+	// Create the Columns 
 	cell_option = gtk_cell_renderer_text_new ();
 	cell_value = gtk_cell_renderer_text_new ();
 	column_option = gtk_tree_view_column_new_with_attributes (N_("Option"),
@@ -1027,14 +1027,14 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	column_value = gtk_tree_view_column_new_with_attributes (N_("Value"),
 		cell_value, "text", 1, NULL);
 
-	/* Create the model */
+	// Create the model 
 	opt_model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model (opt_list, GTK_TREE_MODEL (opt_model));
 	gtk_tree_view_append_column (opt_list, column_option);
 	gtk_tree_view_append_column (opt_list, column_value);
 
 	if (s->priv->options == NULL) {
-		/* Load defaults */
+		// Load defaults 
 		for (i = 0; default_options[i].name; i++) {
 			gtk_list_store_append (opt_model, &iter);
 			gtk_list_store_set (opt_model, &iter, 0, 
@@ -1042,7 +1042,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		}
 	} 
 	else {
-		/* Load schematic options */
+		// Load schematic options 
 		list = s->priv->options;
 		while (list) {
 			SimOption *so = list->data;
@@ -1054,7 +1054,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		}
 	}
 
-	/* Set the options already stored */
+	// Set the options already stored 
 	list = s->priv->options;
 	while (list) {
 		SimOption *so = list->data;
@@ -1076,7 +1076,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "clicked", 
 	    G_CALLBACK (add_option), s);
 
-	/* Creation of Close Button */
+	// Creation of Close Button 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "button1"));
 	g_signal_connect (G_OBJECT (w), "clicked", 
 		G_CALLBACK (response_callback), sm);
@@ -1341,6 +1341,9 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	dc_enable_cb (s->priv->w_dc_enable,s);
 	trans_enable_cb (s->priv->w_trans_enable, s);
 	trans_step_enable_cb (s->priv->w_trans_step_enable, s);
+
+	// Cleanup
+	g_list_free_full (list, g_object_unref);
 }
 
 GList *
@@ -1354,7 +1357,7 @@ sim_settings_add_option (SimSettings *s, SimOption *opt)
 {
 	GList *list=s->priv->options;
 
-	/* Remove the option if already in the list. */
+	// Remove the option if already in the list. 
 	while (list) {
 		SimOption *so=list->data;
 		if (so && !strcmp (opt->name,so->name)) {
@@ -1366,4 +1369,5 @@ sim_settings_add_option (SimSettings *s, SimOption *opt)
 		list = list->next;
 	}
 	s->priv->options = g_list_append (s->priv->options, opt);
+	g_list_free_full (list, g_object_unref);
 }

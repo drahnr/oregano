@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -440,7 +440,6 @@ wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	return;
 }
 
-/* static */
 void
 wire_update_bbox (Wire *wire)
 {

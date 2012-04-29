@@ -6,7 +6,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -46,7 +46,6 @@ node_item_class_init (NodeItemClass *klass)
 {
 	node_item_parent_class = g_type_class_peek_parent (klass);
 }
-
 
 static void
 node_item_init (NodeItem *item)

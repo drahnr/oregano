@@ -9,7 +9,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -64,7 +64,7 @@ enum {
 struct _ItemDataPriv {
 	NodeStore *store;
 	SheetPos pos;
-	/* Bounding box.*/
+	// Bounding box.
 	GooCanvasBounds bounds;
 };
 
@@ -166,7 +166,7 @@ item_data_class_init (ItemDataClass *klass)
 		G_TYPE_NONE, 
 	    0);
 
-	/* Methods.*/
+	// Methods.
 	klass->clone = NULL;
 	klass->copy = item_data_copy;
 	klass->rotate = NULL;
@@ -174,7 +174,7 @@ item_data_class_init (ItemDataClass *klass)
 	klass->reg = NULL;
 	klass->unreg = NULL;
 
-	/* Signals.*/
+	// Signals.
 	klass->moved = NULL;
 }
 
@@ -313,7 +313,7 @@ item_data_move (ItemData *item_data, SheetPos *delta)
 	                       "moved", delta);
 }
 
-gpointer /*NodeStore * */
+gpointer // NodeStore * 
 item_data_get_store (ItemData *item_data)
 {
 	g_return_val_if_fail (item_data != NULL, NULL);
@@ -427,6 +427,7 @@ item_data_list_get_absolute_bbox (GList *item_data_list, SheetPos *p1,
 			p2->y = MAX (p2->y, b2.y);
 		}
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 void

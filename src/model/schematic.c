@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2011  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -214,7 +214,7 @@ schematic_init (Schematic *schematic)
 	priv = schematic->priv = g_new0 (SchematicPriv, 1);
 
 	priv->printoptions = NULL;
-	/* Colors */
+	// Colors
 	priv->colors.components.red = 65535;
 	priv->colors.components.green = 0;
 	priv->colors.components.blue = 0;
@@ -277,7 +277,7 @@ schematic_dispose (GObject *object)
 
 	schematic = SCHEMATIC (object);
 
-	/* Disconnect weak item signal */
+	// Disconnect weak item signal
 	for (list=schematic->priv->current_items; list; list=list->next)
 		g_object_weak_unref (G_OBJECT (list->data),
 			item_data_destroy_callback, G_OBJECT (schematic));
@@ -291,6 +291,8 @@ schematic_dispose (GObject *object)
 		g_signal_emit_by_name(G_OBJECT (schematic),
 			"last_schematic_destroyed", NULL);
 	}
+
+	g_list_free_full (list, g_object_unref);
 
 	G_OBJECT_CLASS (parent_class)->dispose (G_OBJECT (schematic));
 }
@@ -315,9 +317,8 @@ schematic_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (G_OBJECT (sm));
 }
 
-/*
- * Get/set functions.
- */
+// Get/set functions.
+// ***************** /
 
 char *
 schematic_get_title (Schematic *schematic)
@@ -524,8 +525,7 @@ schematic_log_clear (Schematic *schematic)
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
 	gtk_text_buffer_set_text (
-		schematic->priv->log,
-		"", -1);
+		schematic->priv->log, "", -1);
 }
 
 GtkTextBuffer*
@@ -570,7 +570,7 @@ schematic_read (char *name, GError **out_error)
 		return NULL;
 	}
 
-	/* Get File Handler */
+	// Get File Handler
 	ft = file_manager_get_handler (fname);
 	if (ft == NULL) {
 		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
@@ -692,6 +692,7 @@ schematic_parts_foreach (Schematic *schematic,
 	for (list = node_store_get_parts (schematic->priv->store); list; list = list->next) {
 		func (list->data, user_data);
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -709,6 +710,7 @@ schematic_wires_foreach (Schematic *schematic,
 	for (list = node_store_get_wires (schematic->priv->store); list; list = list->next) {
 		func (list->data, user_data);
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -726,6 +728,7 @@ schematic_items_foreach (Schematic *schematic,
 	for (list = schematic->priv->current_items; list; list = list->next) {
 		func (list->data, user_data);
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 GList *
@@ -775,9 +778,8 @@ schematic_set_lowest_available_refdes (Schematic *schematic,
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 	g_return_if_fail (prefix != NULL);
 
-	/* If there already is a key, use it, otherwise copy the prefix and
-	 * use as key.
-	 */
+	// If there already is a key, use it, otherwise copy the prefix and
+	// use as key.
 	if (!g_hash_table_lookup_extended (schematic->priv->refdes_values,
 		prefix, &key, &value))
 		key = g_strdup (prefix);
@@ -884,14 +886,14 @@ schematic_export (Schematic *sm, const gchar *filename,
 	}
 	cr = cairo_create (surface);
 
-	/* Background */
+	// Background
 	switch (bg) {
-		case 1: /* White */
+		case 1: // White
 			cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 			cairo_rectangle (cr, 0, 0, img_w, img_h);
 			cairo_fill (cr);
 			break;
-		case 2: /* Black */
+		case 2: // Black
 			cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 			cairo_rectangle (cr, 0, 0, img_w, img_h);
 			cairo_fill (cr);
@@ -906,20 +908,20 @@ schematic_export (Schematic *sm, const gchar *filename,
 	else
 		scale = scaleh;
 
-	/* Preparing ...*/
+	// Preparing...
 	cairo_save (cr);
 	cairo_translate (cr, (img_w - graph_w)/2.0, (img_h - graph_h) / 2.0);
 	cairo_scale (cr, scale, scale);	
 	cairo_translate (cr, -bbox.x0, -bbox.y0);
 	cairo_set_line_width (cr, 0.5);
 
-	/* Render ... */
+	// Render...
 	schematic_render (sm, cr);
 
 	cairo_restore (cr);
 	cairo_show_page (cr);
 
-	/* Saving ... */
+	// Saving...
 	if (format >= 3)
 		cairo_surface_write_to_png (surface, filename);
 	cairo_destroy (cr);
@@ -956,7 +958,7 @@ draw_page (GtkPrintOperation *operation,
 
 	cairo_t *cr = gtk_print_context_get_cairo_context (context);
 
-	/* Draw a red rectangle, as wide as the paper (inside the margins) */
+	// Draw a red rectangle, as wide as the paper (inside the margins)
 	cairo_save (cr);
 		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 		cairo_set_line_width (cr, 0.5);
@@ -977,9 +979,8 @@ draw_page (GtkPrintOperation *operation,
 		cairo_set_line_width (cr, 0.5);
 		cairo_set_source_rgb (cr, 0, 0, 0);
 		cairo_translate (cr, page_w * 0.1, page_h * 0.1);
-		/* 0.4 is the convert factor between Model unit and
-		 * milimeters, unit used in printing
-		 */
+		// 0.4 is the convert factor between Model unit and
+		// milimeters, unit used in printing
 		cairo_scale (cr, 0.4, 0.4);	
 		cairo_translate (cr, -bbox.x0, -bbox.y0);
 		schematic_render (sm, cr);
@@ -1021,7 +1022,7 @@ print_options (GtkPrintOperation *operation, Schematic *sm)
 	sm->priv->printoptions->background = GTK_COLOR_BUTTON (
 					gtk_builder_get_object (gui, "color_background"));
 
-	/* Set default colors */
+	// Set default colors
 	gtk_color_button_set_color (GTK_COLOR_BUTTON (
 					gtk_builder_get_object (gui, "color_components")),
 					&sm->priv->colors.components);

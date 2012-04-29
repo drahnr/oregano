@@ -6,10 +6,10 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -58,7 +58,7 @@ struct _NetlistEditor {
 struct _NetlistEditorClass {
 	GObjectClass parent_class;
 
-	/* Signals go here */
+	// Signals go here
 };
 
 GType netlist_editor_get_type (void);

@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -35,7 +35,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "stock.h"
@@ -66,12 +66,12 @@ struct _SheetItemPriv {
 
 enum {
 	ARG_0,
-	/* GOOGANVASGROUP properties */
+	// GOOGANVASGROUP properties
 	ARG_X,
 	ARG_Y,
 	ARG_WIDTH,
 	ARG_HEIGHT,
-	/* Sheet item properties */
+	// Sheet item properties
 	ARG_DATA,
 	ARG_SHEET,
 	ARG_ACTION_GROUP
@@ -88,8 +88,8 @@ enum {
 
 static guint so_signals[LAST_SIGNAL] = { 0 };
 
-/* This is the upper part of the object popup menu. It contains actions
- * that are the same for all objects, e.g. parts and wires. */
+// This is the upper part of the object popup menu. It contains actions
+// that are the same for all objects, e.g. parts and wires.
 static const char *sheet_item_context_menu =
 "<ui>"
 "  <popup name='ItemMenu'>"
@@ -138,7 +138,7 @@ sheet_item_class_init (SheetItemClass *sheet_item_class)
 	
 	sheet_item_parent_class = g_type_class_peek_parent (sheet_item_class);
 	
-	/* Override from GooCanvasGroup */
+	// Override from GooCanvasGroup
   	g_object_class_override_property (object_class, ARG_X, "x");
   	g_object_class_override_property (object_class, ARG_Y, "y");
   	g_object_class_override_property (object_class, ARG_WIDTH, "width");
@@ -343,7 +343,7 @@ sheet_item_run_menu (SheetItem *item, Sheet *sheet, GdkEventButton *event)
 }
 
 
-/* Event handler for a SheetItem */
+// Event handler for a SheetItem
 gboolean
 sheet_item_event (GooCanvasItem *sheet_item,
 		 GooCanvasItem *sheet_target_item,
@@ -479,6 +479,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 				item_data_move (item_data, &delta);
                 item_data_register (item_data);
             }
+			g_list_free_full (list, g_object_unref);
 				
 			break;
 		}
@@ -511,6 +512,8 @@ sheet_item_event (GooCanvasItem *sheet_item,
                                      priv->selected_group);
 			}
 
+			g_list_free_full (list, g_object_unref);
+			
 			goo_canvas_pointer_grab (canvas, GOO_CANVAS_ITEM (sheet_item),
 	    		GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
 	    		NULL, 
@@ -563,7 +566,6 @@ sheet_item_event (GooCanvasItem *sheet_item,
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 			case GDK_KEY_r:
-				printf ("rotate from key r\n");
 				sheet_rotate_selection (sheet);
 				{
 					gdouble x, y;
@@ -652,14 +654,13 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 	static SheetPos delta;
 	static int control_key_down = 0;
 
-	/* Remember the last position of the mouse cursor. */
+	// Remember the last position of the mouse cursor.
 	static double last_x, last_y;
 
-	/* Mouse cursor position in window coordinates, snapped to the grid
-	   spacing. */
+	// Mouse cursor position in window coordinates, snapped to the grid spacing.
 	double snapped_x, snapped_y;
 
-	/* Move the selected item(s) by this movement. */
+	// Move the selected item(s) by this movement.
 	double dx, dy;
 
 	g_return_val_if_fail (sheet != NULL, FALSE);
@@ -731,6 +732,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				if (!control_key_down)
 					g_object_unref (G_OBJECT (floating_item));
 			}
+			g_list_free_full (list, g_object_unref);
 
 			if (!control_key_down) {
 				g_list_free (sheet->priv->floating_objects);
@@ -774,7 +776,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				g_object_set (G_OBJECT (list->data),
 	              		  	  "visibility", GOO_CANVAS_ITEM_VISIBLE,
 	              		      NULL);
-			}		
+			}	
 			last_x = 0.0;
 			last_y = 0.0;
 		}
@@ -792,7 +794,8 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 		for (list = priv->floating_objects; list; list = list->next) {
 			goo_canvas_item_translate (GOO_CANVAS_ITEM (list->data),
 			                           dx, dy);
-		}			
+		}	
+		g_list_free_full (list, g_object_unref);
 		break;
 
 	case GDK_KEY_PRESS:

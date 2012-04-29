@@ -6,10 +6,10 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -73,7 +73,7 @@ netlist_editor_finalize (GObject *object)
 	NetlistEditor *nle = NETLIST_EDITOR (object);
 
 	if (nle->priv) {
-		/* kill the priv struct */
+		// kill the priv struct
 		if (nle->priv->toplevel) {
 			gtk_widget_destroy (GTK_WIDGET (nle->priv->toplevel));
 			nle->priv->toplevel = NULL;
@@ -154,8 +154,8 @@ netlist_editor_save (GtkWidget * widget, NetlistEditor * nle)
 	}
 }
 
-/* This method append OREGANO_LANGDIR directory where the netlist.lang file
- * is located to the search path of GtkSourceLanguageManager.*/
+// This method append OREGANO_LANGDIR directory where the netlist.lang file
+// is located to the search path of GtkSourceLanguageManager.
 void
 setup_language_manager_path (GtkSourceLanguageManager *lm)
 {
@@ -268,7 +268,6 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	g_signal_connect (G_OBJECT (save), "clicked", 
 		G_CALLBACK (netlist_editor_save), nle);
 	
-
 	//  Set tab, fonts, wrap mode, colors, etc. according
 	//  to preferences 
 	nle->priv->view = GTK_TEXT_VIEW (source_view);
@@ -295,7 +294,7 @@ netlist_editor_new_from_file (gchar * filename)
 		return NULL;
 	if (!(g_file_test (filename, G_FILE_TEST_EXISTS))) {
 		gchar *msg;
-		/* gettext support */
+		// gettext support
 		msg = g_strdup_printf (_("The file %s could not be found."), filename);
 		oregano_error_with_title (_("Could not find the required file"), msg);
 		g_free (msg);

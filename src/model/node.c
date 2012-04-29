@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -166,10 +166,8 @@ node_needs_dot (Node *node)
 			  SEP (end_pos1, end_pos2)     ||
 			  SEP (end_pos1, start_pos2))) {
 
-		   /*
-		      The dot is only needed when the end/start-point of
-		      one of the wires in on the other wire.
-		   */
+		   // The dot is only needed when the end/start-point of
+		   // one of the wires in on the other wire.
 		   if (ON_THE_WIRE (start_pos1, start_pos2, end_pos2) ||
 			   ON_THE_WIRE (  end_pos1, start_pos2, end_pos2) ||
 			   ON_THE_WIRE (start_pos2, start_pos1, end_pos1) ||
@@ -329,4 +327,3 @@ node_set_visited (Node *node, gboolean is_visited)
 
 	node->visited = is_visited;
 }
-

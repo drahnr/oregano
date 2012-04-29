@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -34,7 +34,7 @@
 #include <glib/gi18n.h>
 
 #include "xml-compat.h"
-#include "main.h"
+#include "oregano.h"
 #include "xml-helper.h"
 #include "load-common.h"
 #include "load-schematic.h"
@@ -112,7 +112,7 @@ typedef enum {
 	PARSE_WIRES,
 	PARSE_WIRE,
 	PARSE_WIRE_POINTS,
-/*	PARSE_WIRE_LABEL,*/
+//	PARSE_WIRE_LABEL,
 	PARSE_TEXTBOXES,
 	PARSE_TEXTBOX,
 	PARSE_TEXTBOX_TEXT,
@@ -136,11 +136,11 @@ typedef struct {
 
 	char *textbox_text;
 
-	/* Temporary place holder for a wire */
+	// Temporary place holder for a wire
 	SheetPos wire_start;
 	SheetPos wire_end;
 
-	/* Temporary place holder for a part */
+	// Temporary place holder for a part
 	LibraryPart *part;
 	PartLabel *label;
 	Property *property;
@@ -148,7 +148,7 @@ typedef struct {
 	int rotation;
 	IDFlip flip;
 
-	/*	Temporary place holder for an option */
+	// Temporary place holder for an option
 	SimOption *option;
 } ParseState;
 
@@ -168,30 +168,30 @@ static void create_wire (ParseState *state);
 static void create_part (ParseState *state);
 
 static xmlSAXHandler oreganoSAXParser = {
-	0, /* internalSubset */
-	0, /* isStandalone */
-	0, /* hasInternalSubset */
-	0, /* hasExternalSubset */
-	0, /* resolveEntity */
-	(getEntitySAXFunc) get_entity, /* getEntity */
-	0, /* entityDecl */
-	0, /* notationDecl */
-	0, /* attributeDecl */
-	0, /* elementDecl */
-	0, /* unparsedEntityDecl */
-	0, /* setDocumentLocator */
-	(startDocumentSAXFunc) start_document, /* startDocument */
-	(endDocumentSAXFunc) end_document, /* endDocument */
-	(startElementSAXFunc) start_element, /* startElement */
-	(endElementSAXFunc) end_element, /* endElement */
-	0, /* reference */
-	(charactersSAXFunc) my_characters, /* characters */
-	0, /* ignorableWhitespace */
-	0, /* processingInstruction */
-	0, /*(commentSAXFunc)0,	 comment */
-	(warningSAXFunc) my_warning, /* warning */
-	(errorSAXFunc) my_error, /* error */
-	(fatalErrorSAXFunc) my_fatal_error, /* fatalError */
+	0, // internalSubset 
+	0, // isStandalone 
+	0, // hasInternalSubset 
+	0, // hasExternalSubset 
+	0, // resolveEntity 
+	(getEntitySAXFunc) get_entity, // getEntity 
+	0, // entityDecl 
+	0, // notationDecl 
+	0, // attributeDecl 
+	0, // elementDecl 
+	0, // unparsedEntityDecl 
+	0, // setDocumentLocator 
+	(startDocumentSAXFunc) start_document, // startDocument 
+	(endDocumentSAXFunc) end_document, // endDocument 
+	(startElementSAXFunc) start_element, // startElement 
+	(endElementSAXFunc) end_element, // endElement 
+	0, // reference 
+	(charactersSAXFunc) my_characters, // characters 
+	0, // ignorableWhitespace 
+	0, // processingInstruction 
+	0, //(commentSAXFunc)0,	 comment 
+	(warningSAXFunc) my_warning, // warning 
+	(errorSAXFunc) my_error, // error 
+	(fatalErrorSAXFunc) my_fatal_error, // fatalError 
 };
 
 static void
@@ -721,7 +721,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 	case PARSE_TITLE:
 	case PARSE_AUTHOR:
 	case PARSE_COMMENTS:
-		/* there should be no tags inside these types of tags */
+		// there should be no tags inside these types of tags 
 		g_message ("*** '%s' tag found", name);
 		state->prev_state = state->state;
 		state->state = PARSE_UNKNOWN;
@@ -734,19 +734,15 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		state->unknown_depth++;
 		break;
 	case PARSE_FINISH:
-		/* should not start new elements in this state */
+		// should not start new elements in this state 
 		g_assert_not_reached ();
 		break;
 	case PARSE_TRANSIENT_INIT_COND:
 		break;
 	}
-	/*g_message("Start element %s (state %s)", name, states[state->state]);*/
+	//g_message("Start element %s (state %s)", name, states[state->state]);
 }
 
-
-/*
- *
- */
 static void
 end_element (ParseState *state, const xmlChar *name)
 {
@@ -1017,18 +1013,15 @@ end_element (ParseState *state, const xmlChar *name)
 		state->textbox_text = g_strdup (state->content->str);
 		state->state = PARSE_TEXTBOX;
 		break;
-
-
 	case PARSE_SCHEMATIC:
-		/* The end of the file. */
+		// The end of the file. 
 		state->state = PARSE_FINISH;
 		break;
-
 	case PARSE_ERROR:
 		break;
 	case PARSE_START:
 	case PARSE_FINISH:
-		/* There should not be a closing tag in this state. */
+		// There should not be a closing tag in this state. 
 		g_assert_not_reached ();
 		break;
 	}

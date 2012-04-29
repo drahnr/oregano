@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -35,7 +35,7 @@
 #include <glib/gi18n.h>
 
 #include "xml-compat.h"
-#include "main.h"
+#include "oregano.h"
 #include "xml-helper.h"
 #include "load-common.h"
 #include "load-library.h"
@@ -82,12 +82,12 @@ typedef struct {
 	gint unknown_depth;
 	GString *content;
 
-	/* Temporary placeholder for part */
+	// Temporary placeholder for part 
 	LibraryPart *part;
 	PartLabel *label;
 	Property *property;
 
-	/* Temporary placeholder for symbol */
+	// Temporary placeholder for symbol 
 	LibrarySymbol *symbol;
 	Connection *connection;
 	SymbolObject *object;
@@ -106,30 +106,30 @@ static void my_error (void *user_data, const char *msg, ...);
 static void my_fatal_error (void *user_data, const char *msg, ...);
 
 static xmlSAXHandler oreganoSAXParser = {
-	0, /* internalSubset */
-	0, /* isStandalone */
-	0, /* hasInternalSubset */
-	0, /* hasExternalSubset */
-	0, /* resolveEntity */
-	(getEntitySAXFunc) get_entity, /* getEntity */
-	0, /* entityDecl */
-	0, /* notationDecl */
-	0, /* attributeDecl */
-	0, /* elementDecl */
-	0, /* unparsedEntityDecl */
-	0, /* setDocumentLocator */
-	(startDocumentSAXFunc) start_document, /* startDocument */
-	(endDocumentSAXFunc) end_document, /* endDocument */
-	(startElementSAXFunc)start_element, /* startElement */
-	(endElementSAXFunc)end_element, /* endElement */
-	0, /* reference */
-	(charactersSAXFunc) my_characters, /* characters */
-	0, /* ignorableWhitespace */
-	0, /* processingInstruction */
-	0, /*(commentSAXFunc)0,	 comment */
-	(warningSAXFunc)my_warning, /* warning */
-	(errorSAXFunc)my_error, /* error */
-	(fatalErrorSAXFunc)my_fatal_error, /* fatalError */
+	0, // internalSubset 
+	0, // isStandalone 
+	0, // hasInternalSubset 
+	0, // hasExternalSubset 
+	0, // resolveEntity 
+	(getEntitySAXFunc) get_entity, // getEntity 
+	0, // entityDecl 
+	0, // notationDecl 
+	0, // attributeDecl 
+	0, // elementDecl 
+	0, // unparsedEntityDecl 
+	0, // setDocumentLocator 
+	(startDocumentSAXFunc) start_document, // startDocument 
+	(endDocumentSAXFunc) end_document, // endDocument 
+	(startElementSAXFunc)start_element, // startElement 
+	(endElementSAXFunc)end_element, // endElement 
+	0, // reference 
+	(charactersSAXFunc) my_characters, // characters 
+	0, // ignorableWhitespace 
+	0, // processingInstruction 
+	0, // (commentSAXFunc)0,	 comment 
+	(warningSAXFunc)my_warning, // warning 
+	(errorSAXFunc)my_error, // error 
+	(fatalErrorSAXFunc)my_fatal_error, // fatalError 
 };
 
 LibrarySymbol *
@@ -437,7 +437,7 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 	case PARSE_PART_PROPERTY_VALUE:
 	case PARSE_NAME:
 	case PARSE_AUTHOR:
-		/* there should be no tags inside these types of tags */
+		// there should be no tags inside these types of tags 
 		g_message ("*** '%s' tag found", name);
 		state->prev_state = state->state;
 		state->state = PARSE_UNKNOWN;
@@ -450,11 +450,11 @@ start_element (ParseState *state, const xmlChar *xml_name, const xmlChar **attrs
 		state->unknown_depth++;
 		break;
 	case PARSE_FINISH:
-		/* should not start new elements in this state */
+		// should not start new elements in this state 
 		g_assert_not_reached ();
 		break;
 	}
-	/*g_message("Start element %s (state %s)", name, states[state->state]);*/
+	//g_message("Start element %s (state %s)", name, states[state->state]);
 }
 
 static void
@@ -507,15 +507,15 @@ end_element (ParseState *state, const xmlChar *name)
 		points = g_strsplit (ptr, "(", 0);
 
 		i = 0;
-		/* Count the points. */
+		// Count the points. 
 		while (points[i] != NULL) {
 			i++;
 		}
 
-		/* Do not count the first string, which simply is a (. */
+		// Do not count the first string, which simply is a (. 
 		i--;
 
-		/* Construct goo canvas points. */
+		// Construct goo canvas points. 
 		state->object->u.uline.line = goo_canvas_points_new (i);
 		for (j = 0; j < i; j++) {
 			double x, y;
@@ -619,18 +619,18 @@ end_element (ParseState *state, const xmlChar *name)
 		break;
 
 	case PARSE_LIBRARY:
-		/* The end of the file. */
+		// The end of the file. 
 		state->state = PARSE_FINISH;
 		break;
 	case PARSE_ERROR:
 		break;
 	case PARSE_START:
 	case PARSE_FINISH:
-		/* There should not be a closing tag in this state. */
+		// There should not be a closing tag in this state. 
 		g_assert_not_reached ();
 		break;
 	}
-	/*g_message("End element %s (state %s)", name, states[state->state]);*/
+	//g_message("End element %s (state %s)", name, states[state->state]);
 }
 
 static void

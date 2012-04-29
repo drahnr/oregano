@@ -67,7 +67,6 @@ oregano_SOURCES = 	\
 	load-schematic.c \
 	load-schematic.h \
 	main.c \
-	main.h \
 	netlist-editor.c \
 	netlist-editor.h \
 	oregano-config.c \
@@ -95,7 +94,9 @@ oregano_SOURCES = 	\
 	stock.h \
 	xml-compat.h \
 	xml-helper.c \
-	xml-helper.h
+	xml-helper.h \
+	oregano.c \
+	oregano.h
 
 oregano_LDADD = \
 	$(OREGANO_LIBS)

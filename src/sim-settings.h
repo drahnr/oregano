@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -61,9 +61,6 @@ void sim_settings_show (GtkWidget     *widget,
 
 SimSettings *sim_settings_new (Schematic *sm);
 
-/**
- *
- */
 gdouble sim_settings_get_trans_start (SimSettings *sim_settings);
 
 gdouble sim_settings_get_trans_stop (SimSettings *sim_settings);
@@ -74,9 +71,6 @@ gboolean sim_settings_get_trans (SimSettings *sim_settings);
 
 gdouble sim_settings_get_trans_step_enable (SimSettings *sim_settings);
 
-/**
- *
- */
 gboolean sim_settings_get_trans_init_cond (SimSettings *sim_settings);
 
 void sim_settings_set_trans_start (SimSettings *sim_settings,
@@ -97,9 +91,6 @@ void sim_settings_set_trans_step_enable (SimSettings *sim_settings,
 void sim_settings_set_trans_init_cond (SimSettings *sim_settings,
 									  gboolean     enable);
 
-/**
- *
- */
 gboolean   sim_settings_get_dc (SimSettings *);
 
 gchar *sim_settings_get_dc_vsrc (SimSettings *);
@@ -110,9 +101,6 @@ gdouble sim_settings_get_dc_stop  (SimSettings *);
 
 gdouble sim_settings_get_dc_step  (SimSettings *);
 
-/**
- *
- */
 void sim_settings_set_dc (SimSettings *,
 						  gboolean);
 
@@ -128,9 +116,6 @@ void sim_settings_set_dc_stop  (SimSettings *,
 void sim_settings_set_dc_step  (SimSettings *,
 								gchar *);
 
-/**
- *
- */
 gboolean sim_settings_get_ac (SimSettings *);
 
 gchar *sim_settings_get_ac_type (SimSettings *);
@@ -141,9 +126,6 @@ gdouble sim_settings_get_ac_start (SimSettings *);
 
 gdouble sim_settings_get_ac_stop (SimSettings *);
 
-/**
- *
- */
 void sim_settings_set_ac (SimSettings *,
 						  gboolean);
 
@@ -158,9 +140,7 @@ void sim_settings_set_ac_start (SimSettings *,
 
 void sim_settings_set_ac_stop (SimSettings *,
 							   gchar *);
-/**
- *
- */
+
 void sim_settings_set_fourier (SimSettings *,
 						  gboolean);
 
@@ -170,9 +150,6 @@ void sim_settings_set_fourier_frequency (SimSettings *,
 void sim_settings_set_fourier_vout (SimSettings *,
 								gchar *);
 
-/**
- *
- */
 gboolean sim_settings_get_fourier (SimSettings *);
 
 gint sim_settings_get_fourier_frequency (SimSettings *);
@@ -181,10 +158,6 @@ gchar* sim_settings_get_fourier_vout (SimSettings *);
 
 gchar* sim_settings_get_fourier_nodes (SimSettings *);
 
-
-/**
- *
- */
 GList *sim_settings_get_options (SimSettings *sim_settings);
 
 void sim_settings_add_option (SimSettings *,

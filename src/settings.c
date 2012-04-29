@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -35,7 +35,7 @@
 #include <stdio.h>
 #include <glib/gi18n.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "string.h"
 #include "settings.h"
 #include "schematic.h"
@@ -44,7 +44,7 @@
 #include "oregano-utils.h"
 #include "oregano-config.h"
 
-/* Engines Titles */
+// Engines Types
 static const gchar*
 engine[] = {
 	"gnucap",
@@ -53,7 +53,7 @@ engine[] = {
 
 typedef struct {
 	Schematic *sm;
-	GtkWidget *pbox; /* Property box */
+	GtkWidget *pbox; // Property box
 
 	GtkWidget *w_show_splash;
 	GtkWidget *w_show_log;
@@ -67,20 +67,6 @@ typedef struct {
 GtkWidget *engine_path;	
 GtkWidget *button[2];
 
-static void
-change_modeldir_cb (GtkFileChooser *chooser, gpointer  user_data)
-{
-}
-
-static void
-change_librarydir_cb (GtkFileChooser *chooser, gpointer user_data)
-{
-}
-
-static void
-change_engine_path_cb (GtkFileChooser *chooser, gpointer user_data)
-{
-}
 
 static void
 apply_callback (GtkWidget *w, Settings *s)
@@ -110,15 +96,11 @@ static void
 set_engine_name (GtkWidget *w, Settings *s)
 {
 	int engine_id;
+
 	s->w_engine = w; 
 	engine_id = GPOINTER_TO_INT (
 	               g_object_get_data (G_OBJECT (s->w_engine), "id"));
-	if (g_find_program_in_path (engine[engine_id]) != NULL) {
-		gtk_file_chooser_set_filename (GTK_FILE_CHOOSER(engine_path),
-						g_find_program_in_path (engine[engine_id]));
-	}
-	else
-	{
+	if (g_find_program_in_path (engine[engine_id]) == NULL) {
 		if (gtk_toggle_button_get_active (
 		                GTK_TOGGLE_BUTTON (button[engine_id]))) {
 			GString *msg = g_string_new (
@@ -133,7 +115,8 @@ set_engine_name (GtkWidget *w, Settings *s)
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
 			                              TRUE);
 		}	
-		else gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
+		else
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
 		                                  FALSE);
 	}
 }
@@ -155,13 +138,27 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	gint i;
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
-	GtkWidget *w0 = NULL;
 	GtkBuilder *gui;
 	GError *perror = NULL;
 	gchar *msg;
 	Settings *s;
 	Schematic *sm;
 
+	g_return_if_fail (sv != NULL);
+	
+	// If no engine available, stop oregano
+	if ((g_find_program_in_path (engine[0]) == NULL) &&
+	    (g_find_program_in_path (engine[1]) == NULL)) {
+		gchar *msg;
+		msg = g_strdup_printf (
+		_("No engine allowing analysis is available.\n"
+		  "You might install one, at least! \n"
+		  "Either ngspice or gnucap."));
+		oregano_error_with_title (_("Could not create settings dialog"), msg);
+		g_free (msg);
+		return;
+	}
+	
 	g_return_if_fail (sv != NULL);
 
 	if ((gui = gtk_builder_new ()) == NULL) {
@@ -174,15 +171,14 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_settings (sm);
 
-	/* Only allow one instance of the property box per schematic. */
-	if (GTK_WIDGET(SETTINGS (s)->pbox)) {
+	// Only allow one instance of the property box per schematic.
+	if (GTK_WIDGET (SETTINGS (s)->pbox)) {
 		gdk_window_raise (gtk_widget_get_window (
 		                   GTK_WIDGET (SETTINGS (s)->pbox)));
 		return;
 	}
-
+	
 	if (!g_file_test (OREGANO_UIDIR "/settings.ui", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
 		msg = g_strdup_printf (
 			_("The file %s could not be found. "
 			  "You might need to reinstall Oregano to fix this."),
@@ -191,14 +187,14 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 		g_free (msg);
 		return;
 	}
-
+	
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/settings.ui", 
 	    &perror) <= 0) {
 		msg = perror->message;
 		oregano_error_with_title (_("Could not create settings dialog"), msg);
 		g_error_free (perror);
 		return;
-	}
+	}	
 
 	w = toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
 	if (!w) {
@@ -231,7 +227,7 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_set_sensitive (w, FALSE);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "realtime-enable"));
 	gtk_widget_set_sensitive (w, FALSE);
-	
+
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "engine_table"));
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
 		if (engine_group)
@@ -241,41 +237,36 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 			button[i] = engine_group = 
 		          gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
 
-		/* Check if the engine is available */
 		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
 
 		gtk_table_attach (GTK_TABLE (w), button[i], 0, 1, i, i+1, 
 						  GTK_EXPAND|GTK_FILL, GTK_SHRINK, 6, 6);
 		g_signal_connect (G_OBJECT (button[i]), "clicked", 
 						  G_CALLBACK (set_engine_name), s);
-		s->w_engine = GINT_TO_POINTER (oregano.engine);
 
 	}
-	/* Libraries directory */
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "library-path-entry"));
-	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
-					  GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(w),
-					  OREGANO_LIBRARYDIR);
-	g_signal_connect (G_OBJECT (w), "selection-changed",
-					  G_CALLBACK (change_librarydir_cb), w0);
+	
+	// Is the engine available?
+	// In that case the button is active
+	if (g_find_program_in_path (engine[oregano.engine]) != NULL)
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), 
+		                              TRUE);
+	// Otherwise the button is inactive
+	else
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), 
+		                              FALSE);
 
-	/* Models directory */	
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "model-path-entry"));
-	gtk_file_chooser_set_action (GTK_FILE_CHOOSER(w), 
-					  GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-	gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER(w),
-					  OREGANO_MODELDIR);
-	g_signal_connect (G_OBJECT (w), "selection-changed",
-					  G_CALLBACK (change_modeldir_cb), w0);
-	
-	/* Engine localisation */
-	engine_path = GTK_WIDGET (gtk_builder_get_object (gui, "engine-path"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (
-	                  button[oregano.engine]), TRUE);
-	set_engine_name (button[oregano.engine], s);
-	g_signal_connect (G_OBJECT (engine_path), "file-set",
-					  G_CALLBACK (change_engine_path_cb), s);
-	
+	// If no engine available, stop oregano
+	if ((g_find_program_in_path (engine[0]) == NULL) &&
+	    (g_find_program_in_path (engine[1]) == NULL)) {
+			gchar *msg;
+			msg = g_strdup_printf (
+			_("No engine allowing analysis is available.\n"
+			  "You might install one, at least! \n"
+			  "Either ngspice or gnucap."));
+			oregano_error_with_title (_("Could not create settings dialog"), msg);
+			g_free (msg);
+	}
+
 	gtk_widget_show_all (toplevel);
 }

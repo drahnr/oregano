@@ -9,7 +9,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006 Ricardo Markiewicz
@@ -42,17 +42,13 @@
 #include "wire.h"
 #include "wire-private.h"
 
-/*
- * NODE_EPSILON is used to check for intersection.
- * HASH_EPSILON is used in the hash equality check function.
- */
+// NODE_EPSILON is used to check for intersection.
 #define NODE_EPSILON 1e-10
+// HASH_EPSILON is used in the hash equality check function.
 #define HASH_EPSILON 1e-3
-
-/* Share an endpoint? */
+// Share an endpoint?
 #define SEP(p1x,p1y,p2x,p2y) (IS_EQ(p1x, p2x) && IS_EQ(p1y, p2y))
-
-/* Equals? */
+// Equals?
 #define IS_EQ(a,b) (fabs ((a) - (b)) < NODE_EPSILON)
 
 #define ON_THE_WIRE(p1,start,end) (fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<NODE_EPSILON )
@@ -200,9 +196,7 @@ node_store_get_or_create_node (NodeStore *self, SheetPos pos)
 	node = g_hash_table_lookup (self->nodes, &pos);
 
 	if (!node) {
-		/*
-		 * Create a node at (x, y) and return it.
-		 */
+		// Create a node at (x, y) and return it.
 		node = node_new (pos);
 
 		g_signal_connect_object (G_OBJECT (node), "node_dot_added",
@@ -214,10 +208,8 @@ node_store_get_or_create_node (NodeStore *self, SheetPos pos)
 		g_hash_table_insert (self->nodes, &node->key, node);
 	}
 
-	/*
-	 * If there was a previously stored node here, just
-	 * return that node.
-	 */
+	// If there was a previously stored node here, just
+	// return that node.
 	return node;
 }
 
@@ -247,20 +239,14 @@ node_store_add_part (NodeStore *self, Part *part)
 		x = part_pos.x + pins[i].offset.x;
 		y = part_pos.y + pins[i].offset.y;
 
-		/*
-		 * Use the position of the pin as hash key.
-		 */
+		//Use the position of the pin as hash key.
 		lookup_key.x = x;
 		lookup_key.y = y;
 
-		/*
-		 * Retrieve a node for this position.
-		 */
+		// Retrieve a node for this position.
 		node = node_store_get_or_create_node (self, lookup_key);
 
-		/*
-		 * Add all the wires that intersect this pin to the node store.
-		 */
+		// Add all the wires that intersect this pin to the node store.
 		wire_list = wires_at_pos (self, lookup_key);
 
 		for (list = wire_list; list; list = list->next) {
@@ -310,9 +296,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 		x = pos.x + pins[i].offset.x;
 		y = pos.y + pins[i].offset.y;
 
-		/*
-		 * Use the position of the pin as lookup key.
-		 */
+		// Use the position of the pin as lookup key.
 		lookup_key.x = x;
 		lookup_key.y = y;
 
@@ -323,10 +307,8 @@ node_store_remove_part (NodeStore *self, Part *part)
 				return FALSE;
 			}
 
-			/*
-			 * If the node is empty after removing the pin,
-			 * remove the node as well.
-			 */
+			// If the node is empty after removing the pin,
+			// remove the node as well.
 			if (node_is_empty (node)) {
 				g_hash_table_remove (self->nodes, &lookup_key);
 				g_object_unref (G_OBJECT (node));
@@ -378,9 +360,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	x2 = x1 + length.x;
 	y2 = y1 + length.y;
 
-	/*
-	 * Check for intersection with other wires.
-	 */
+	// Check for intersection with other wires.
 	ip_list = wires_intersect (store, x1, y1, x2, y2);
 
 	for (list = ip_list; list; list = list->next) {
@@ -427,14 +407,14 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				length.x += w_length.x;
 				length.y += w_length.y;
 
-				/* Update the new size and pos of the wire */
+				// Update the new size and pos of the wire
 				item_data_unregister (ITEM_DATA (ipoint->wire));
 				wire_set_length (ipoint->wire, &length);
 				item_data_set_pos (ITEM_DATA (ipoint->wire), &pos);
 				wire_update_bbox (ipoint->wire);
 				item_data_register (ITEM_DATA (ipoint->wire));
 
-				/* Done!, return -1 so wire is deleted */
+				// Done!, return -1 so wire is deleted
 				return -1;
 			}
 		}
@@ -481,23 +461,21 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				length.x += w_length.x;
 				length.y += w_length.y;
 
-				/* Update the new size and pos of the wire */
+				// Update the new size and pos of the wire
 				item_data_unregister (ITEM_DATA (ipoint->wire));
 				wire_set_length (ipoint->wire, &length);
 				item_data_set_pos (ITEM_DATA (ipoint->wire), &pos);
 				wire_update_bbox (ipoint->wire);
 				item_data_register (ITEM_DATA (ipoint->wire));
 
-				/* Done!, return -1 so wire si deleted */
+				// Done!, return -1 so wire si deleted
 				return -1;
 			}
 		}
 
 		node = node_store_get_or_create_node (store, ipoint->pos);
 
-		/*
-		 * Add the wire, and also the wire that is intersected.
-		 */
+		// Add the wire, and also the wire that is intersected.
 		node_add_wire (node, wire);
 		node_add_wire (node, ipoint->wire);
 
@@ -510,17 +488,13 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	}
 	g_slist_free (ip_list);
 
-	/*
-	 * Check for intersection with parts (pins).
-	 */
+	// Check for intersection with parts (pins).
 	ip_list = wire_intersect_parts (store, wire);
 
 	for (list = ip_list; list; list = list->next) {
 		node = list->data;
 
-		/*
-		 * Add the wire to the node (pin) that it intersected.
-		 */
+		// Add the wire to the node (pin) that it intersected.
 		node_add_wire (node, wire);
 		wire_add_node (wire, node);
 
@@ -557,15 +531,11 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 	store->wires = g_list_remove (store->wires, wire);
 	store->items = g_list_remove (store->items, wire);
 
-	/*
-	 * If the nodes that this wire passes through will be
-	 * empty when the wire is removed, remove the node as well.
-	 */
+	// If the nodes that this wire passes through will be
+	// empty when the wire is removed, remove the node as well.
 
-	/*
-	 * We must work on a copy of the nodes list, since it
-	 * changes as we remove nodes.
-	 */
+	// We must work on a copy of the nodes list, since it
+	// changes as we remove nodes.
 	list = g_slist_copy (wire_get_nodes (wire));
 
 	for (; list; list = list->next) {
@@ -642,6 +612,7 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 			}
 		}
 	}
+	g_list_free_full (list, g_object_unref);
 
 	return ip_list;
 }
@@ -672,6 +643,7 @@ wires_at_pos (NodeStore *store, SheetPos pos)
 		if (is_wire_at_pos (x1, y1, x2, y2, pos))
 			wire_list = g_slist_prepend (wire_list, wire);
 	}
+	g_list_free_full (list, g_object_unref);
 
 	return wire_list;
 }
@@ -699,6 +671,7 @@ node_store_is_wire_at_pos (NodeStore *store, SheetPos pos)
 		if (is_wire_at_pos (x1, y1, x2, y2, pos))
 			return TRUE;
 	}
+	g_list_free_full (list, g_object_unref);
 
 	return FALSE;
 }
@@ -715,9 +688,7 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 
-	/*
-	 * Search through all the wires. Is there a better way?
-	 */
+	// Search through all the wires. Is there a better way?
 	ip_list = NULL;
 	for (list = store->wires; list; list = list->next) {
 		wire = list->data;
@@ -739,15 +710,14 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
 			ip_list = g_slist_prepend (ip_list, ip);
 		}
 	}
+	g_list_free_full (list, g_object_unref);
 
 	return ip_list;
 }
 
-/*
- * node_store_get_node
- *
- * Find the node that has an element at a certain position.
- */
+// node_store_get_node
+ 
+// Find the node that has an element at a certain position.
 Node *
 node_store_get_node (NodeStore *store, SheetPos pos)
 {
@@ -843,49 +813,41 @@ is_wire_at_pos (double x1, double y1, double x2, double y2, SheetPos pos)
 	return FALSE;
 }
 
-/*
- * Decides if two wires intersect. Note that wires that share an
- * endpoint are considered intersecting each other. Intersection point
- * is returned in pos.
- */
+// Decides if two wires intersect. Note that wires that share an
+// endpoint are considered intersecting each other. Intersection point
+// is returned in pos.
 static int
 do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
 					double Cy, double Dx, double Dy, SheetPos *pos)
 {
 	double r, s, d;
 
-	/*
-	 * Wires don't intersect if they share an endpoint. NOTE: they do here...
-	 */
-	if (SEP (Ax, Ay, Cx, Cy)) { /* same starting point */
+	// Wires don't intersect if they share an endpoint. NOTE: they do here...
+	if (SEP (Ax, Ay, Cx, Cy)) { // same starting point
 		pos->x = Ax;
 		pos->y = Ay;
 		return TRUE;
 	} 
-	else if (SEP (Ax, Ay, Dx, Dy)) { /* 1st start == 2nd end */
+	else if (SEP (Ax, Ay, Dx, Dy)) { // 1st start == 2nd end
 		pos->x = Ax;
 		pos->y = Ay;
 		return TRUE;
 	} 
-	else if (SEP (Bx, By, Cx, Cy)) { /* 1st end == 2nd start */
+	else if (SEP (Bx, By, Cx, Cy)) { // 1st end == 2nd start
 		pos->x = Bx;
 		pos->y = By;
 		return TRUE;
 	} 
-	else if (SEP (Bx, By, Dx, Dy)) { /* 1st end == 2nd end */
+	else if (SEP (Bx, By, Dx, Dy)) { // 1st end == 2nd end
 		pos->x = Bx;
 		pos->y = By;
 		return TRUE;
 	}
 
-	/*
-	 * Calculate the denominator.
-	 */
+	// Calculate the denominator.
 	d = ((Bx - Ax) * (Dy - Cy) - (By - Ay) * (Dx - Cx));
 
-	/*
-	 * We have two parallell wires if d = 0.
-	 */
+	// We have two parallell wires if d = 0.
 	if (fabs (d) < NODE_EPSILON) {
 		return FALSE;
 	}
@@ -894,31 +856,23 @@ do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
 	r = r / d;
 	s = ((Ay - Cy) * (Bx - Ax) - (Ax - Cx) * (By - Ay)) / d;
 
-	/*
-	 * Check for intersection, which we have for values of
-	 * r and s in [0, 1].
-	 */
+	// Check for intersection, which we have for values of
+	// r and s in [0, 1].
 	if (r >= 0                  &&
 	   (r - 1.0) < NODE_EPSILON &&
 		s >= 0                  &&
 	   (s - 1.0) < NODE_EPSILON) {
 
-		/*
-		 * Calculate the intersection point.
-		 */
+		// Calculate the intersection point.
 		pos->x = Ax + r * (Bx - Ax);
 		pos->y = Ay + r * (By - Ay);
 
-		/*
-		   to be accepted only if it coincides with the start or end
-		   of any of the wires
-		*/
+		// to be accepted only if it coincides with the start or end
+		// of any of the wires
 		if ( SEP (pos->x,pos->y,Ax,Ay) ||
 			 SEP (pos->x,pos->y,Bx,By) ||
 			 SEP (pos->x,pos->y,Cx,Cy) ||
-			 SEP (pos->x,pos->y,Dx,Dy)
-			 )
-
+			 SEP (pos->x,pos->y,Dx,Dy) )
 			return TRUE;
 		else
 		   	return FALSE;
@@ -1018,6 +972,7 @@ node_store_get_bounds (NodeStore *store, NodeRect *rect)
 		rect->x1 = MAX (rect->x1, p2.x);
 		rect->y1 = MAX (rect->y1, p2.y);
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 gint
@@ -1042,6 +997,7 @@ node_store_count_items (NodeStore *store, NodeRect *rect)
 			n++;
 		}
 	}
+	g_list_free_full (list, g_object_unref);
 
 	return n;
 }
@@ -1074,6 +1030,7 @@ node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ct
 		data = ITEM_DATA (list->data);
 		item_data_print (data, cr, ctx);
 	}
+	g_list_free_full (list, g_object_unref);
 
 	g_hash_table_foreach (store->nodes, (GHFunc)draw_dot, cr);
 }
@@ -1106,5 +1063,6 @@ node_store_is_pin_at_pos (NodeStore *store, SheetPos pos)
 			}
 		}
 	}
+	g_list_free_full (p, g_object_unref);
 	return 0;
 }

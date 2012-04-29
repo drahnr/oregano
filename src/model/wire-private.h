@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,9 +34,7 @@
 #define __WIRE_PRIVATE_H
 
 struct _WirePriv {
-	/*
-	 * Used to traverse the wires during netlist generation.
-	 */
+	// Used to traverse the wires during netlist generation.
 	gboolean visited : 1;
 
 	GSList *nodes;

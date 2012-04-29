@@ -5,6 +5,8 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
+ * Web page: https://github.com/marc-lorber/oregano
+ *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
@@ -76,7 +78,7 @@ struct _GPlotPriv {
 	gdouble last_x;
 	gdouble last_y;
 
-	/* Window->Viewport * Transformation Matrix */
+	// Window->Viewport * Transformation Matrix
 	cairo_matrix_t matrix;
 
 	gboolean window_valid;
@@ -110,7 +112,7 @@ g_plot_get_type ()
 }
 
 static void
-g_plot_class_init (GPlotClass* class)
+g_plot_class_init (GPlotClass* class) 
 {
 	GObjectClass* object_class;
 	GtkWidgetClass* widget_class;
@@ -165,6 +167,7 @@ g_plot_dispose (GObject *object)
 	}
 	g_list_free (plot->priv->functions);
 	plot->priv->functions = NULL;
+	g_list_free_full (lst, g_object_unref);
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -172,7 +175,7 @@ g_plot_dispose (GObject *object)
 static int
 get_best_exponent (int div)
 {
-	/* http://en.wikipedia.org/wiki/Micro */
+	// http://en.wikipedia.org/wiki/Micro
 	switch (div) {
 		case -24:
 		case -21:
@@ -201,7 +204,8 @@ get_best_exponent (int div)
 }
 
 void
-draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gboolean vertical, gint *div)
+draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, 
+           gboolean vertical, gint *div)
 {
 	gchar *label;
 	cairo_text_extents_t extents;
@@ -225,7 +229,8 @@ draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gbool
 	else
 		s = (bbox->xmax - bbox->xmin) / 10.0;
 
-	for (i = (vertical?bbox->ymin:bbox->xmin), j = max; i <= (vertical?bbox->ymax:bbox->xmax) + 0.5; i += s, j -= step) {
+	for (i = (vertical?bbox->ymin:bbox->xmin), j = max; 
+	     i <= (vertical?bbox->ymax:bbox->xmax) + 0.5; i += s, j -= step) {
 		label = g_strdup_printf ("%.2f", j / divisor);
 		cairo_text_extents (cr, label, &extents);
 
@@ -258,7 +263,7 @@ draw_axis (cairo_t *cr, GPlotFunctionBBox *bbox, gdouble min, gdouble max, gbool
 static gchar*
 get_unit_text (int div)
 {
-	/* http://en.wikipedia.org/wiki/Micro */
+	// http://en.wikipedia.org/wiki/Micro
 	switch (div) {
 		case -24: return g_strdup ("y");
 		case -21: return g_strdup ("z");
@@ -286,11 +291,11 @@ static gboolean
 g_plot_draw (GtkWidget* widget, cairo_t *cr)
 {
 	static double dashes[] = 
-	   {3,  /* ink */
-		3,  /* skip */
-		3,  /* ink */
-		3   /* skip*/ };
-	static int ndash  = sizeof (dashes)/sizeof(dashes[0]);
+	   {3,  // ink
+		3,  // skip
+		3,  // ink
+		3}; // skip
+	static int ndash  = sizeof (dashes) / sizeof (dashes[0]);
 	static double offset = -0.2;
 
 	GPlot *plot;
@@ -318,14 +323,14 @@ g_plot_draw (GtkWidget* widget, cairo_t *cr)
 	graph_width = width - priv->left_border - priv->right_border;
 	graph_height = height - priv->top_border - priv->bottom_border;
 
-	/* Paint background */
+	// Paint background
 	cairo_save (cr);
 		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
 		cairo_rectangle (cr, 0, 0, width, height);
 		cairo_fill (cr);
 	cairo_restore (cr);
 
-	/* Plot Border */
+	// Plot Border
 	cairo_save (cr);
 		cairo_set_line_width (cr, 0.5);
 		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
@@ -338,12 +343,12 @@ g_plot_draw (GtkWidget* widget, cairo_t *cr)
 	priv->viewport_bbox.ymax = height - priv->bottom_border;
 	priv->viewport_bbox.ymin = priv->top_border;
 
-	/* Calculating Window to Viewport matrix */
-	aX = (priv->viewport_bbox.xmax - priv->viewport_bbox.xmin)
-		/ (priv->window_bbox.xmax - priv->window_bbox.xmin);
+	// Calculating Window to Viewport matrix
+	aX = (priv->viewport_bbox.xmax - priv->viewport_bbox.xmin) /
+		 (priv->window_bbox.xmax - priv->window_bbox.xmin);
 	bX = -aX * priv->window_bbox.xmin + priv->viewport_bbox.xmin;
-	aY = (priv->viewport_bbox.ymax - priv->viewport_bbox.ymin)
-		/ (priv->window_bbox.ymin - priv->window_bbox.ymax);
+	aY = (priv->viewport_bbox.ymax - priv->viewport_bbox.ymin) /
+		 (priv->window_bbox.ymin - priv->window_bbox.ymax);
 	bY = -aY * priv->window_bbox.ymax + priv->viewport_bbox.ymin;
 
 	cairo_matrix_init (&priv->matrix, aX, 0, 0, aY, bX, bY);
@@ -408,7 +413,7 @@ g_plot_draw (GtkWidget* widget, cairo_t *cr)
 			priv->xlabel_unit = get_unit_text (div);
 	cairo_restore (cr);
 
-	/* Axis Labels */
+	// Axis Labels
 	if (priv->xlabel) {
 		char *txt;
 		if (priv->xlabel_unit == NULL)
@@ -461,6 +466,7 @@ g_plot_draw (GtkWidget* widget, cairo_t *cr)
 			cairo_stroke (cr);
 		cairo_restore (cr);
 	}
+	g_list_free_full (lst, g_object_unref);
 
 	return FALSE;
 }
@@ -703,7 +709,7 @@ g_plot_update_bbox (GPlot *p)
 
 	priv = p->priv;
 
-	/* Get functions bbox */
+	// Get functions bbox
 	priv->window_bbox.xmax = -9999999;
 	priv->window_bbox.xmin = 9999999;
 	priv->window_bbox.ymax = -9999999;
@@ -718,6 +724,7 @@ g_plot_update_bbox (GPlot *p)
 		priv->window_bbox.ymin = MIN (priv->window_bbox.ymin, bbox.ymin);
 		lst = lst->next;
 	}
+	g_list_free_full (lst, g_object_unref);
 
 	if (priv->window_bbox.xmin == priv->window_bbox.xmax)
 		priv->window_bbox.xmax += 1;
@@ -804,6 +811,7 @@ g_plot_clear (GPlot *plot)
 	g_list_free (plot->priv->functions);
 	plot->priv->functions = NULL;
 	plot->priv->window_valid = FALSE;
+	g_list_free (lst);
 }
 
 void
@@ -832,5 +840,3 @@ get_order_of_magnitude (gdouble val, gdouble *man, gdouble *pw)
 	*man = val / sx;
 	*pw  = b;
 }
-
-

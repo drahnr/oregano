@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,15 +36,13 @@
 #include "part.h"
 #include "part-property.h"
 
-/**
- * Gets the name of a macro variable.
- *
- * @param str  str
- * @param cls1 returns first conditional clause
- * @param cls2 returns second clause
- * @param sz   returns number of characters parsed
- * @return the name of a macro variable
- */
+// Gets the name of a macro variable.
+//
+// @param str  str
+// @param cls1 returns first conditional clause
+// @param cls2 returns second clause
+// @param sz   returns number of characters parsed
+// @return the name of a macro variable
 static char *get_macro_name (const char *str, char **cls1,
 	char **cls2, size_t *sz)
 {
@@ -62,7 +60,7 @@ static char *get_macro_name (const char *str, char **cls1,
 	qend = str + sln;
 	out = g_string_sized_new (sln);
 
-	/* Get the name */
+	// Get the name
 	for (q = str; (*q) && (*q != ' ') && !(csep = strchr (separators, *q)); q++) {
 		if (q > qend) {
 			g_warning ("Expand macro error.");
@@ -72,15 +70,15 @@ static char *get_macro_name (const char *str, char **cls1,
 		out = g_string_append_c (out, *q);
 	}
 
-	/* if error found, return here */
+	// if error found, return here
 	if (rc)
 		goto error;
 
-	/* Look for conditional clauses */
+	// Look for conditional clauses 
 	if (csep) {
-		/* get the first one */
+		// get the first one 
 		GString *aux;
-		q++; /* skip the separator and store the clause in tmp */
+		q++; // skip the separator and store the clause in tmp 
 		aux = g_string_new ("");
 		for (; (*q) && (*q != *csep); q++)
 			g_string_append_c (aux, *q);
@@ -91,12 +89,12 @@ static char *get_macro_name (const char *str, char **cls1,
 		}
 
 		*cls1 = aux->str;
-		q++; /* skip the end-of-clause separator */
+		q++; // skip the end-of-clause separator 
 		g_string_free (aux, FALSE);
 
-		/* Check for the second one */
+		// Check for the second one 
 		if ((*q) && (csep = strchr (separators, *q))) {
-			q++; /* skip the separator and store in tmp*/
+			q++; // skip the separator and store in tmp
 			aux = g_string_new ("");
 			for (; (*q) && (*q != *csep); q++)
 				g_string_append_c (aux, *q);
@@ -108,7 +106,7 @@ static char *get_macro_name (const char *str, char **cls1,
 			}
 
 			*cls2 = aux->str;
-			q++; /* skip the end-of-clause separator */
+			q++; // skip the end-of-clause separator 
 			g_string_free (aux, FALSE);
 		}
 	}
@@ -144,33 +142,31 @@ part_property_expand_macros (Part *part, char *string)
 	g_return_val_if_fail (string != NULL, NULL);
 
 	cls1 = cls2 = q0 = NULL;
-	/* Rules:
-	   @<id>             value of <id>. If no value, error
-	   &<id>             value of <id> if <id> is defined
-	   ?<id>s...s        text between s...s separators if <id> defined
-	   ?<id>s...ss...s   text between 1st s...s separators if <id> defined
-	   else 2nd s...s clause
-	   ~<id>s...s        text between s...s separators if <id> undefined
-	   ~<id>s...ss...s   text between 1st s...s separators if <id> undefined
-	   else 2nd s...s clause
-	   #<id>s...s        text between s...s separators if <id> defined, but
-	   delete rest of tempalte if <id> undefined
+	// Rules:
+	// @<id>             value of <id>. If no value, error
+	// &<id>             value of <id> if <id> is defined
+	// ?<id>s...s        text between s...s separators if <id> defined
+	// ?<id>s...ss...s   text between 1st s...s separators if <id> defined
+	// else 2nd s...s clause
+	// ~<id>s...s        text between s...s separators if <id> undefined
+	// ~<id>s...ss...s   text between 1st s...s separators if <id> undefined
+	// else 2nd s...s clause
+	// #<id>s...s        text between s...s separators if <id> defined, but
+	// delete rest of tempalte if <id> undefined
 
-	   Separatos can be any of (, . ; / |) For an opening-closing pair of
-	   separators the same character ahs to be used.
+	// Separators can be any of (, . ; / |) For an opening-closing pair of
+	// separators the same character ahs to be used.
 
-	   Examples: R^@refdes %1 %2 @value
-	   V^@refdes %+ %- SIN(@offset @ampl @freq 0 0)
-	   ?DC|DC @DC|
-	*/
+	// Examples: R^@refdes %1 %2 @value
+	// V^@refdes %+ %- SIN(@offset @ampl @freq 0 0)
+	// ?DC|DC @DC|
+	
 	tmp0 = temp = g_strdup (string);
 
 	out = g_string_new ("");
 
 	for (temp = string; *temp;) {
-		/*
-		 * Look for any of the macro char codes.
-		 */
+		// Look for any of the macro char codes.
 		if (strchr (mcode, *temp)) {
 			qn = get_macro_name (temp + 1, &cls1, &cls2, &sln);
 			if (qn == NULL)

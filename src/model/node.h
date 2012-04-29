@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -51,16 +51,12 @@ typedef struct _NodeClass NodeClass;
 struct _Node {
 	GObject parent;
 
-	/*
-	 * Used for traversing all nodes in the netlist generation.
-	 */
+	// Used for traversing all nodes in the netlist generation.
 	guint visited : 1;
 
 	char *netlist_node_name;
 
-	/*
-	 * The number of wires and pins in this node.
-	 */
+	// The number of wires and pins in this node.
 	guint16 pin_count;
 	guint16 wire_count;
 
@@ -73,8 +69,6 @@ struct _Node {
 struct _NodeClass
 {
 	GObjectClass parent_class;
-
-/*	void (*something) (Node *node);*/
 };
 
 GType node_get_type (void);

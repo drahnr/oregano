@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -61,27 +61,19 @@ Schematic	   *schematic_view_get_schematic_from_sheet (Sheet *sheet);
 SchematicView  *schematic_view_get_schematicview_from_sheet (Sheet *sheet);
 void			run_context_menu (SchematicView *sv, GdkEventButton *event);
 
-/*
- * Signal emission wrappers.
- */
+// Signal emission wrappers.
 void		   	schematic_view_reset_tool (SchematicView *sv);
 
-/*
- * Misc.
- */
+// Misc.
 void 			schematic_view_set_browser (SchematicView *sv, gpointer p);
 gpointer	   	schematic_view_get_browser (SchematicView *sv);
 void		   	schematic_view_set_parent (SchematicView *sv, GtkDialog *dialog);
 
-/*
- * Logging.
- */
+// Logging.
 void		   	schematic_view_log_show (SchematicView *sv, gboolean explicit);
 gboolean	   	schematic_view_get_log_window_exists (SchematicView *sv);
 
-/*
- * Windows services.
- */
+// Windows services.
 GtkWidget	*	schematic_view_get_toplevel (SchematicView *sv);
 
 #endif /* __SCHEMATIC_VIEW_H */

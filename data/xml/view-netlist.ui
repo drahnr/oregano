@@ -1,13 +1,14 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 2.6 -->
-  <!-- interface-naming-policy toplevel-contextual -->
+  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="toplevel">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">Netlist View</property>
     <child>
       <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <child>
           <object class="GtkScrolledWindow" id="netlist-scrolled-window">
             <property name="width_request">500</property>
@@ -15,30 +16,33 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">8</property>
-            <property name="hscrollbar_policy">automatic</property>
-            <property name="vscrollbar_policy">automatic</property>
             <property name="shadow_type">in</property>
             <child>
               <placeholder/>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="border_width">5</property>
             <property name="spacing">3</property>
             <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="btn_save">
                 <property name="label">gtk-save</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -50,10 +54,12 @@
             <child>
               <object class="GtkButton" id="btn_close">
                 <property name="label">gtk-close</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
+                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -65,6 +71,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>

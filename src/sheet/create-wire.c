@@ -11,7 +11,7 @@
  * The name is not really right. This part handles creation of wires and
  * acts as glue between NodeStore/Wire and Sheet/WireItem.
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -68,15 +68,13 @@ static Wire *	create_wire_and_place_item (Sheet *sheet, SheetPos start_pos,
 static void 	cancel_wire (CreateWireContext *cwc);
 static void 	exit_wire_mode (CreateWireContext *cwc);
 
-/*
- * Initiates wire creation by disconnecting the signal handler that
- * starts the wire-drawing and then connecting the drawing handler.
- * This is an event handler.
- *
- * @param sheet a sheet (the canvas)
- * @param event the event
- * @param cwc   context
- */
+// Initiates wire creation by disconnecting the signal handler that
+// starts the wire-drawing and then connecting the drawing handler.
+// This is an event handler.
+//
+// @param sheet a sheet (the canvas)
+// @param event the event
+// @param cwc   context
 static int
 create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 	CreateWireContext *cwc)
@@ -152,10 +150,10 @@ create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 	return TRUE;
 }
 
-/* This needs to be called in order to start a wire creation.
- * It sets up the initial event handler that basically just
- * takes care of the first button-1 press that starts the
- * drawing mode. */
+// This needs to be called in order to start a wire creation.
+// It sets up the initial event handler that basically just
+// takes care of the first button-1 press that starts the
+// drawing mode. */
 CreateWireContext *
 create_wire_initiate (Sheet *sheet)
 {
@@ -212,13 +210,13 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 
 				case 1:
 
-					/* Button-1 fixates the first segment of the wire,
-					 * letting the user continue drawing wires, with the
-					 * former second segment as the first segment of the
-					 * new wire. There are a few exceptions though; if the
-					 * button press happens at another wire or a pin of a
-					 * part, then we fixate the wire and cancel the drawing
-					 * mode. */
+					// Button-1 fixates the first segment of the wire,
+					// letting the user continue drawing wires, with the
+					// former second segment as the first segment of the
+					// new wire. There are a few exceptions though; if the
+					// button press happens at another wire or a pin of a
+					// part, then we fixate the wire and cancel the drawing
+					// mode.
 					g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
 					new_x = event->button.x;
 					new_y = event->button.y;
@@ -322,8 +320,8 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 
 			pos.x = new_x;
 			pos.y = new_y;
-			/* Check if the pre-wire intersect another wire, and
-			 * draw a small red circle to indicate the connection */
+			// Check if the pre-wire intersect another wire, and
+			// draw a small red circle to indicate the connection
 			intersect = 0;
 			intersect = node_store_is_wire_at_pos (store, pos);
 			intersect += node_store_is_pin_at_pos (store, pos);
@@ -417,9 +415,9 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 		end_pos.y = p2.y;
 	}
 
-	/* If the wire connects to something, then fixate
-	 * the second segment too and exit wire drawing mode.
-	 * Also fixate both segments when explicitly asked to. */
+	// If the wire connects to something, then fixate
+	// the second segment too and exit wire drawing mode.
+	// Also fixate both segments when explicitly asked to. */
 	p2.x = x;
 	p2.y = y;
 	if (always_fixate_both 						||
@@ -454,8 +452,8 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 	if (cancel)
 		return;
 
-	/* Start a new "floating" wire, using the same CreateWire that was used
-	 * for the old wire. */
+	// Start a new "floating" wire, using the same CreateWire that was used
+	// for the old wire. 
 	create_wire->points->coords[0] = create_wire->points->coords[2];
 	create_wire->points->coords[1] = create_wire->points->coords[3];
 	create_wire->points->coords[2] = x;
@@ -466,16 +464,16 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, int x, int y)
 	              "points", create_wire->points,
 	              NULL);
 
-	/* If the finished wire's first segment was horizontal, you get the
-	 * best "feeling" if the new wire is vertical. Based on the author's
-	 * feeling =) */
+	// If the finished wire's first segment was horizontal, you get the
+	// best "feeling" if the new wire is vertical. Based on the author's
+	// feeling =)
 	if (create_wire->direction == WIRE_DIR_HORIZ)
 		create_wire->direction = WIRE_DIR_VERT;
 	else
 		create_wire->direction = WIRE_DIR_HORIZ;
 
-	/* Raise the floting wire so that we can see it when it is overlapping
-	 * other wires. */
+	// Raise the floting wire so that we can see it when it is overlapping
+	// other wires.
 	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire->line), NULL);
 }
 
@@ -530,7 +528,7 @@ cancel_wire (CreateWireContext *cwc)
 
 	g_free (create_wire);
 
-	/* Setup the sheet for a new wire creation process. */
+	// Setup the sheet for a new wire creation process.
 }
 
 static void
@@ -569,8 +567,8 @@ create_wire_exit (CreateWireContext *cwc)
 	}
 }
 
-/* Signal handler for the "cancel" signal that the sheet emits
- * when <escape> is pressed. */
+// Signal handler for the "cancel" signal that the sheet emits
+// when <escape> is pressed.
 static int
 create_wire_cancel (Sheet *sheet, CreateWireContext *cwc)
 {

@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -55,8 +55,6 @@ static void 		textbox_moved_callback (ItemData *data, SheetPos *pos,
 						SheetItem *item);
 static void 		textbox_text_changed_callback (ItemData *data, 
 		                gchar *new_text, SheetItem *item);
-static void 		textbox_font_changed_callback (ItemData *data, 
-		                gchar *new_font, SheetItem *item);
 static void 		textbox_item_paste (Sheet *sheet, ItemData *data);
 static void 		selection_changed (TextboxItem *item, gboolean select,
 						gpointer user_data);
@@ -74,14 +72,11 @@ static void 		edit_cmd (GtkWidget *widget, Sheet *sheet);
 
 typedef struct {
 	GtkDialog *dialog;
-	//GtkFontSelection *font;
-	GtkFontChooser *font;
 	GtkEntry *entry;
 } TextboxPropDialog;
 
 static TextboxPropDialog *prop_dialog = NULL;
 
-/* Use EDIT!! */
 static const char *textbox_item_context_menu =
 "<ui>"
 "  <popup name='ItemMenu'>"
@@ -103,8 +98,8 @@ struct _TextboxItemPriv {
 	guint cache_valid : 1;
 	guint highlight : 1;
 	GooCanvasItem *text_canvas_item;
-	/* Cached bounding box. This is used to make
-	 * the rubberband selection a bit faster.*/
+	// Cached bounding box. This is used to make
+	// the rubberband selection a bit faster.
 	SheetPos bbox_start;
 	SheetPos bbox_end;
 };
@@ -154,16 +149,14 @@ textbox_item_finalize (GObject *object)
 	TextboxItem *item;
 
 	item = TEXTBOX_ITEM (object);
-	printf ("textbox_item_finalize 1\n");
 
 	if (item->priv)
 		g_free (item->priv);
 	
 	G_OBJECT_CLASS (textbox_item_parent_class)->finalize (object);
-	printf ("textbox_item_finalize end\n");
 }
 
-/* "moved" signal handler. Invalidates the bounding box cache. */
+// "moved" signal handler. Invalidates the bounding box cache.
 static void
 textbox_item_moved (SheetItem *object)
 {
@@ -183,6 +176,7 @@ textbox_item_new (Sheet *sheet, Textbox *textbox)
 	TextboxItem *textbox_item;
 	TextboxItemPriv *priv;
 	SheetPos pos;
+	ItemData *item_data;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
@@ -203,20 +197,33 @@ textbox_item_new (Sheet *sheet, Textbox *textbox)
 	priv = textbox_item->priv;
 
 	priv->text_canvas_item = goo_canvas_text_new (GOO_CANVAS_ITEM (textbox_item),
-		textbox_get_text (textbox), 0.0, 0.0, 0.0, GOO_CANVAS_ANCHOR_SW, 
-	    "font", TEXTBOX_FONT, 
+	    textbox_get_text (textbox), 0.0, 0.0, -1, GOO_CANVAS_ANCHOR_SW,
+	    "font", TEXTBOX_FONT,
+	    "fill-color", NORMAL_COLOR,
 	    NULL);
 
-	g_signal_connect_object (G_OBJECT (textbox), "rotated", 
-		G_CALLBACK (textbox_rotated_callback), G_OBJECT (textbox_item), 0);
-	g_signal_connect_object (G_OBJECT (textbox), "flipped", 
-	    G_CALLBACK (textbox_flipped_callback), G_OBJECT (textbox_item), 0);
-	g_signal_connect_object (G_OBJECT (textbox), "moved", 
-		G_CALLBACK (textbox_moved_callback), G_OBJECT (textbox_item), 0);
-	g_signal_connect_object (G_OBJECT (textbox), "text_changed", 
-		G_CALLBACK (textbox_text_changed_callback), G_OBJECT (textbox_item), 0);
-	g_signal_connect_object (G_OBJECT (textbox), "font_changed", 
-		G_CALLBACK (textbox_font_changed_callback), G_OBJECT (textbox_item), 0);
+	item_data = ITEM_DATA (textbox);
+
+	item_data->rotated_handler_id = g_signal_connect_object (G_OBJECT (textbox), 
+	    "rotated", 
+		G_CALLBACK (textbox_rotated_callback), 
+	    G_OBJECT (textbox_item), 
+	    0);
+	item_data->flipped_handler_id = g_signal_connect_object (G_OBJECT (textbox), 
+	    "flipped", 
+	    G_CALLBACK (textbox_flipped_callback), 
+	    G_OBJECT (textbox_item), 
+	    0);
+	item_data->moved_handler_id = g_signal_connect_object (G_OBJECT (textbox), 
+	    "moved", 
+		G_CALLBACK (textbox_moved_callback), 
+	    G_OBJECT (textbox_item), 
+	    0);
+	textbox->text_changed_handler_id = g_signal_connect_object (G_OBJECT (textbox), 
+	    "text_changed", 
+		G_CALLBACK (textbox_text_changed_callback), 
+	    G_OBJECT (textbox_item), 
+	    0);
 
 	textbox_update_bbox (textbox);
 
@@ -322,10 +329,8 @@ is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
 	return FALSE;
 }
 
-/**
- * Retrieves the bounding box. We use a caching scheme for this
- * since it's too expensive to calculate it every time we need it.
- */
+// Retrieves the bounding box. We use a caching scheme for this
+// since it's too expensive to calculate it every time we need it.
 inline static void
 get_cached_bounds (TextboxItem *item, SheetPos *p1, SheetPos *p2)
 {
@@ -369,9 +374,7 @@ textbox_item_paste (Sheet *sheet, ItemData *data)
 	sheet_add_ghost_item (sheet, data);
 }
 
-/**
- * This is called when the textbox data was moved. Update the view accordingly.
- */
+// This is called when the textbox data was moved. Update the view accordingly.
 static void
 textbox_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 {
@@ -408,25 +411,7 @@ textbox_text_changed_callback (ItemData *data,
 	g_object_set (textbox_item->priv->text_canvas_item, 
 				  "text", new_text, 
 	              NULL );
-}
-
-static void
-textbox_font_changed_callback (ItemData *data,
-	gchar *new_font, SheetItem *item)
-{
-	TextboxItem *textbox_item;
-
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (data));
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_TEXTBOX_ITEM (item));
-	g_return_if_fail (new_font != NULL);
-
-	textbox_item = TEXTBOX_ITEM (item);
-
-	g_object_set (textbox_item->priv->text_canvas_item, 
-	              "font", new_font, 
-	              NULL);
+	goo_canvas_item_ensure_updated (GOO_CANVAS_ITEM (textbox_item));
 }
 
 static void
@@ -475,10 +460,7 @@ create_textbox_event (Sheet *sheet, GdkEvent *event)
 
 				sheet->state = SHEET_STATE_NONE;
 
-				pos.x = event->button.x;
-				pos.y = event->button.y;
-				goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), 
-				                                &pos.x, &pos.y);
+				sheet_get_pointer (sheet, &pos.x, &pos.y);
 				textbox = textbox_new (NULL);
 				
 				textbox_set_text (textbox, _("Label"));
@@ -525,25 +507,19 @@ textbox_item_listen (Sheet *sheet)
 		G_CALLBACK (create_textbox_event), sheet);
 }
 
-/*
- * Go through the properties and commit the changes.
- */
-static void
-edit_dialog_ok(TextboxItem *item)
+// Go through the properties and commit the changes.
+void
+edit_dialog_ok (TextboxItem *item)
 {
-	Textbox *textbox;
 	const gchar *value;
+	Textbox *textbox;
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_TEXTBOX_ITEM (item));
 
 	textbox = TEXTBOX (sheet_item_get_data (SHEET_ITEM (item)));
-
 	value = gtk_entry_get_text (GTK_ENTRY (prop_dialog->entry));
-
 	textbox_set_text (textbox, value);
-	textbox_set_font (textbox,
-		gtk_font_selection_get_font_name (prop_dialog->font));
 }
 
 static void
@@ -552,7 +528,7 @@ edit_textbox (SheetItem *sheet_item)
 	TextboxItem *item;
 	Textbox *textbox;
 	char *msg;
-	char *value;
+	const char *value;
 	GtkBuilder *gui;
 	GError *perror = NULL;
 
@@ -590,30 +566,16 @@ edit_textbox (SheetItem *sheet_item)
 	prop_dialog = g_new0 (TextboxPropDialog, 1);
 	prop_dialog->dialog = GTK_DIALOG (
 		gtk_builder_get_object (gui, "textbox-properties-dialog"));
-	prop_dialog->font = GTK_FONT_CHOOSER (
-		gtk_builder_get_object (gui, "font_selector"));
+
 	prop_dialog->entry = GTK_ENTRY (gtk_builder_get_object (gui, "entry"));
-
-	//prop_dialog->dialog = GTK_DIALOG (gtk_font_chooser_dialog_new (_("Font Selector"),
-	//  
-
-	value = textbox_get_font (textbox);
-	//gtk_font_selection_set_font_name (
-	gtk_font_chooser_set_font (
-		//GTK_FONT_SELECTION (prop_dialog->font), value);
-	    GTK_FONT_CHOOSER (prop_dialog->font), value);
 
 	value = textbox_get_text (textbox);
 	gtk_entry_set_text (GTK_ENTRY (prop_dialog->entry), value);
 
-	gtk_dialog_set_default_response (
-		GTK_DIALOG (prop_dialog->dialog), GTK_RESPONSE_OK);
-
 	gtk_dialog_run (GTK_DIALOG (prop_dialog->dialog));
-
 	edit_dialog_ok (item);
 
-	/* Clean the dialog */
+	// Clean / destroy the dialog
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 	prop_dialog = NULL;
 }
@@ -626,4 +588,5 @@ edit_cmd (GtkWidget *widget, Sheet *sheet)
 	list = sheet_get_selection (sheet);
 	if ((list != NULL) && IS_TEXTBOX_ITEM (list->data)) 
 		edit_textbox (list->data);
+	g_list_free_full (list, g_object_unref);
 }

@@ -3,8 +3,6 @@ Sat, 29 Apr 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* Verification of all the xml files for gtk_builder to be consistent with
 	  gtk-3.0.
 	* Implementation of gsettings
-	* Update header file to refer to github
-	* Update "main" process to feature g_application_run
 
 Sat, 10 Mar 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* TAF 0.80

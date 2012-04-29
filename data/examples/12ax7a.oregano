@@ -24,88 +24,84 @@
     </ogo:ac>
     <ogo:dc-sweep>
       <ogo:enabled>false</ogo:enabled>
-      <ogo:vsrc1/>
+      <ogo:vsrc1>5</ogo:vsrc1>
       <ogo:start1>0</ogo:start1>
       <ogo:stop1>0</ogo:stop1>
       <ogo:step1>0</ogo:step1>
-      <ogo:vsrc2/>
-      <ogo:start2>0</ogo:start2>
-      <ogo:stop2>0</ogo:stop2>
-      <ogo:step2>0</ogo:step2>
     </ogo:dc-sweep>
     <ogo:fourier>
       <ogo:enabled>true</ogo:enabled>
-      <ogo:freq>0</ogo:freq>
-      <ogo:vout>0</ogo:vout>
+      <ogo:freq>1000</ogo:freq>
+      <ogo:vout>5 7</ogo:vout>
     </ogo:fourier>
     <ogo:options>
       <ogo:option>
         <ogo:name>TEMP</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>GMIN</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>ABSTOL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>CHGTOL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>RELTOL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>VNTOL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>ITL1</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>ITL2</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>ITL4</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>PIVREL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>PIVTOL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>TNOM</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>TRTOL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>DEFAD</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>DEFAS</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>DEFL</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
       <ogo:option>
         <ogo:name>DEFW</ogo:name>
-        <ogo:value/>
+        <ogo:value></ogo:value>
       </ogo:option>
     </ogo:options>
   </ogo:simulation-settings>

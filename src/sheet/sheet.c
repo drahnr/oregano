@@ -7,8 +7,8 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ 
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -102,7 +102,7 @@ sheet_class_init (SheetClass *sheet_class)
 			g_param_spec_double ("zoom", "Sheet::zoom", "the zoom factor",
 								0.01f, 10.0f, 1.0f, G_PARAM_READWRITE));
 	
-	/* Signals.  */
+	// Signals.
 	signals[SELECTION_CHANGED] = g_signal_new ("selection_changed",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -258,7 +258,7 @@ sheet_change_zoom (const Sheet *sheet, gdouble rate)
 	goo_canvas_set_scale (GOO_CANVAS (sheet), scale);
 }
 
-/* This function defines the drawing sheet on which schematic will be drawn */
+// This function defines the drawing sheet on which schematic will be drawn 
 GtkWidget *
 sheet_new (int width, int height)
 {
@@ -519,6 +519,7 @@ sheet_show_node_labels (Sheet *sheet, gboolean show)
 			if (part_get_num_pins (PART (sheet_item_get_data (SHEET_ITEM(item->data))))==1)
 				part_item_show_node_labels (PART_ITEM (item->data), show);
         }
+	g_list_free_full (item, g_object_unref);
 }
 
 void
@@ -616,6 +617,7 @@ sheet_rubberband_timeout_cb (Sheet *sheet)
 		              "height", height,
 		              NULL);
 	}
+	g_list_free_full (list, g_object_unref);
 	return TRUE;
 }
 
@@ -639,6 +641,7 @@ sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
 	                           GOO_CANVAS_ITEM (sheet->grid), event->time);
 	
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (sheet->priv->rubberband->rectangle));
+	g_list_free_full (list, g_object_unref);
 }
 
 void 
@@ -698,6 +701,7 @@ sheet_preserve_selection (Sheet *sheet)
 	}
 	// Return the list so that we can remove the preserve_selection
 	// flags later.
+	g_list_free_full (list, g_object_unref);
 	return sheet->priv->selected_objects;
 }
 
@@ -717,8 +721,8 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 		else
 			return FALSE;
 		case GDK_BUTTON_PRESS:
-			/* If we are in the middle of something else, don't interfere
-		 	 * with that. */
+			// If we are in the middle of something else, don't interfere
+		 	// with that.
 			if (sheet->state != SHEET_STATE_NONE) {
 				return FALSE;
 			}
@@ -845,6 +849,7 @@ sheet_select_all (Sheet *sheet, gboolean select)
 
 	if (!select)
 		sheet_release_selected_objects (sheet);
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -899,6 +904,7 @@ rotate_items (Sheet *sheet, GList *items)
 	}
 
 	g_list_free (item_data_list);
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -922,6 +928,7 @@ sheet_delete_selection (Sheet *sheet)
 	sheet->priv->selected_objects = NULL;
 	
 	g_list_free (copy);
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -947,6 +954,7 @@ sheet_release_selected_objects (Sheet *sheet)
 	g_list_free (copy);
 		
 	g_list_free (sheet->priv->selected_objects);
+	g_list_free_full (list, g_object_unref);
 	sheet->priv->selected_objects = NULL;
 }
 
@@ -971,6 +979,7 @@ sheet_update_parts (Sheet *sheet)
 		if (IS_PART_ITEM (list->data))
 			part_item_update_node_label (PART_ITEM (list->data));
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -1031,6 +1040,7 @@ flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 	}
 
 	g_list_free (item_data_list);
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -1051,6 +1061,7 @@ sheet_clear_op_values (Sheet *sheet)
 	g_hash_table_destroy (sheet->priv->voltmeter_nodes);
 	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash,
 			g_str_equal, g_free, NULL);
+	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -1084,6 +1095,7 @@ sheet_clear_ghosts (Sheet *sheet)
 	g_list_free (copy);
 	
 	sheet->priv->floating_objects = NULL;
+	g_list_free_full (list, g_object_unref);
 }
 
 guint
@@ -1249,7 +1261,7 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 	for (; list; list = list->next)
 		node_dot_added_callback (sm, list->data, sheet);
 
-	g_list_free (list);
+	g_list_free_full (list, g_object_unref);
 }
 
 void

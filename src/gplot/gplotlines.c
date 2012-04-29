@@ -5,9 +5,11 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
+ * Web page: https://github.com/marc-lorber/oregano 
+ *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -76,17 +78,17 @@ struct _GPlotLinesPriv {
 	gdouble points;
 	gboolean visible;
 
-	/** Line width */
+	// Line width
 	gdouble width;
 
-	/** Line Color */
+	// Line Color
 	gchar *color_string;
 	GdkColor color;
 
-	/** Graphic type */
+	// Graphic type
 	GraphicType graphic_type;
 
-	/** Shift for pulse drawings */
+	// Shift for pulse drawings
 	gdouble shift;
 };
 
@@ -224,7 +226,6 @@ g_plot_lines_set_property (GObject *object, guint prop_id, const GValue *value,
 	}
 }
 
-
 static void
 g_plot_lines_get_property (GObject *object, guint prop_id, GValue *value,
 	GParamSpec *spec)
@@ -274,7 +275,7 @@ g_plot_lines_get_bbox (GPlotFunction *f, GPlotFunctionBBox *bbox)
 
 	plot = GPLOT_LINES (f);
 	if (!plot->priv->bbox_valid) {
-		/* Update bbox */
+		// Update bbox
 		guint point;
 		gdouble *x;
 		gdouble *y;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="toplevel">
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
@@ -291,6 +291,9 @@
                         <property name="column_spacing">10</property>
                         <property name="row_spacing">5</property>
                         <child>
+                          <placeholder/>
+                        </child>
+                        <child>
                           <object class="GtkLabel" id="label37">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -465,9 +468,6 @@
                             <property name="top_attach">2</property>
                             <property name="bottom_attach">3</property>
                           </packing>
-                        </child>
-                        <child>
-                          <placeholder/>
                         </child>
                         <child>
                           <placeholder/>

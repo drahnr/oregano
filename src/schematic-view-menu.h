@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2011  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -33,7 +33,7 @@
 #ifndef _SCHEMATIC_VIEW_MENU_
 #define _SCHEMATIC_VIEW_MENU_
 static GtkActionEntry entries[] = {
-	/* Name, ICON, Text, CTRL, DESC, CALLBACK */
+	// Name, ICON, Text, CTRL, DESC, CALLBACK 
 	{"MenuFile", NULL, N_("_File")},
 	{"MenuEdit", NULL, N_("_Edit")},
 	{"MenuTools", NULL, N_("_Tools")},
@@ -42,7 +42,7 @@ static GtkActionEntry entries[] = {
 	{"MenuZoom", NULL, N_("_Zoom")},
 	{"New", GTK_STOCK_NEW, N_("_New"), "<control>N", N_("Create a new schematic"), G_CALLBACK (new_cmd)},
 	{"Open", GTK_STOCK_OPEN, N_("_Open"), "<control>O", N_("Open a schematic"), G_CALLBACK (open_cmd)},
-	{"DisplayRecentFiles", NULL, N_("_Recent Files"), NULL, NULL, NULL}, //G_CALLBACK (display_recent_files)},
+	{"DisplayRecentFiles", NULL, N_("_Recent Files"), NULL, NULL, NULL}, 
 	{"Save", GTK_STOCK_SAVE, N_("_Save"), "<control>S", N_("Save a schematic"), G_CALLBACK (save_cmd)},
 	{"SaveAs", GTK_STOCK_SAVE_AS, N_("Save _As..."), "<control><shift>S", N_("Save a schematic with other name"), G_CALLBACK (save_as_cmd)},
 	{"PrintProperties", NULL, N_("Print Properties"), NULL, N_("Set print properties"), G_CALLBACK (page_properties_cmd)},

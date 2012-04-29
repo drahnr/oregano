@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
@@ -62,7 +62,7 @@ struct _SheetItem {
 struct _SheetItemClass {
 	GooCanvasGroupClass parent_class;
 
-	/* Methods. */
+	// Methods.
 	gboolean (*is_in_area)		 (SheetItem *item, SheetPos *p1, SheetPos *p2);
 	void	 (*show_labels)		 (SheetItem *sheet_item, gboolean show);
 	void	 (*edit_properties)	 (SheetItem *item);
@@ -70,7 +70,7 @@ struct _SheetItemClass {
 	void	 (*place)			 (SheetItem *item, Sheet *sheet);
 	void	 (*place_ghost)		 (SheetItem *item, Sheet *sheet);
 
-	/* Signal handlers. */
+	// Signal handlers.
 	void	 (*moved)			 (SheetItem *item);
 	void	 (*selection_changed)(SheetItem *item);
 	void	 (*mouse_over)		 (SheetItem *item);

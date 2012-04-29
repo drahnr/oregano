@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
@@ -32,9 +32,7 @@
 #ifndef __ITEM_DATA_H
 #define __ITEM_DATA_H
 
-/*
- * Base class for schematic model.
- */
+// Base class for schematic model.
 
 #include <cairo/cairo.h>
 
@@ -69,10 +67,10 @@ struct _ItemDataClass
 {
 	GObjectClass parent_class;
 
-	/* Signals. */
+	// Signals.
 	void 		(*moved) 				(ItemData *data, SheetPos *delta);
 
-	/* Methods. */
+	// Methods.
 	ItemData *	(*clone) 				(ItemData *src);
 	void 		(*copy) 				(ItemData *dest, ItemData *src);
 	void 		(*rotate)				(ItemData *data, int angle, 
@@ -92,71 +90,71 @@ struct _ItemDataClass
 };
 
 GType	  item_data_get_type (void);
-/** Create a new ItemData object  */
+// Create a new ItemData object
 ItemData *item_data_new (void);
 
-/** Clone an ItemData
- * \param src A valid ItemData */
+// Clone an ItemData
+//    param src A valid ItemData
 ItemData *	item_data_clone (ItemData *src);
 
-/** Get Item position */
+// Get Item position
 void 		item_data_get_pos (ItemData *item_data, SheetPos *pos);
 
-/** Set Item position */
+// Set Item position
 void 		item_data_set_pos (ItemData *item_data, SheetPos *pos);
 
-/** Move an ItemData
- *  \param delta offset to move the item */
+//  Move an ItemData
+//  \param delta offset to move the item
 void 		item_data_move (ItemData *item_data, SheetPos *delta);
 
-/** Get the bounding box of an item data *
- *  Retrieve the bounding box of the item relative to position
- *  \param p1 Where to store the upper-left point
- *  \param p2 Where to store the lower-right point */
+// Get the bounding box of an item data 
+//Retrieve the bounding box of the item relative to position
+//  \param p1 Where to store the upper-left point
+//  \param p2 Where to store the lower-right point
 void 		item_data_get_relative_bbox (ItemData *data, SheetPos *p1, 
 		                                 SheetPos *p2);
 
-/** Set the relative bounding box */
+// Set the relative bounding box
 void 		item_data_set_relative_bbox (ItemData *data, SheetPos *p1, 
 		                                 SheetPos *p2);
-/** Get absolute bounding box
- *  This function is like item_data_get_relative_bbox but it add
- *  the item position to the bbox vertex */
+// Get absolute bounding box
+//  This function is like item_data_get_relative_bbox but it add
+//  the item position to the bbox vertex
 void 		item_data_get_absolute_bbox (ItemData *data, SheetPos *p1, 
 		                                 SheetPos *p2);
 
-/** Get the absolute bounding box of a list of items
- *  This return a bbox that enclose all item in a list */
+// Get the absolute bounding box of a list of items
+//  This return a bbox that enclose all item in a list
 void 		item_data_list_get_absolute_bbox (GList *item_data_list, 
 		                                      SheetPos *p1, SheetPos *p2);
 
-/** Rotate an item */
+// Rotate an item
 void 		item_data_rotate (ItemData *data, int angle, SheetPos *center);
 
-/** Flip an item */
+// Flip an item
 void 		item_data_flip (ItemData *data, gboolean horizontal, 
 		                    SheetPos *center);
 
-/** Get the Store associated for this item *
- *  Store is a class that hold all items in a schematic */
+// Get the Store associated for this item
+//  Store is a class that hold all items in a schematic
 gpointer 	item_data_get_store (ItemData *item_data);
 
-/** Unregister item in its Store */
+//  Unregister item in its Store
 void 		item_data_unregister (ItemData *data);
 
-/** Register item in its Store */
+//  Register item in its Store
 int 		item_data_register (ItemData *data);
 
-/** Get the prefix of a part reference */
+//  Get the prefix of a part reference
 char *		item_data_get_refdes_prefix (ItemData *data);
 
 gboolean 	item_data_has_properties (ItemData *date);
 
-/** Set property */
+//  Set property
 void 		item_data_set_property (ItemData *data, char *property, 
 		                            char *value);
-/** Print Item data *
- * This method implement the Cairo stuff for schematic print of an item. */
+//  Print Item data
+// This method implement the Cairo stuff for schematic print of an item.
 void 		item_data_print (ItemData *data, cairo_t *cr, 
 		                     SchematicPrintContext *ctx);
 

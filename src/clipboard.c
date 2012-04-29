@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -32,7 +32,7 @@
 
 #include <glib.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "sheet-item.h"
 #include "clipboard.h"
 
@@ -101,9 +101,7 @@ clipboard_add_object (GObject *item)
 	if (id_class->clone == NULL)
 		return;
 
-	/*
-	 * Duplicate the data for the object and add to the clipboard.
-	 */
+	// Duplicate the data for the object and add to the clipboard.
 	clone = id_class->clone (item_data);
 
 	cb_data = g_new0 (ClipboardData, 1);

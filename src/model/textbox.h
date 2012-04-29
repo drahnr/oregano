@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -49,14 +49,15 @@ typedef struct _TextboxClass TextboxClass;
 typedef struct _TextboxPriv TextboxPriv;
 
 struct _Textbox {
-	ItemData parent;
+	ItemData     parent;
 	TextboxPriv *priv;
+	gulong	     text_changed_handler_id;
+	gulong       font_changed_handler_id;
 };
 
 struct _TextboxClass
 {
 	ItemDataClass parent_class;
-
 	Textbox *(*dup) (Textbox *textbox);
 };
 
@@ -67,6 +68,5 @@ char    *textbox_get_text (Textbox *textbox);
 void     textbox_set_font (Textbox *textbox, char *font);
 char    *textbox_get_font (Textbox *textbox);
 void     textbox_update_bbox (Textbox *textbox);
-
 
 #endif

@@ -1,34 +1,40 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 2.6 -->
-  <!-- interface-naming-policy toplevel-contextual -->
+  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="main">
     <property name="visible">True</property>
+    <property name="can_focus">False</property>
     <property name="title" translatable="yes">window1</property>
     <child>
       <object class="GtkHBox" id="widget">
         <property name="visible">True</property>
+        <property name="can_focus">False</property>
         <property name="border_width">8</property>
         <property name="spacing">8</property>
         <property name="homogeneous">True</property>
         <child>
           <object class="GtkFrame" id="frame3">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">none</property>
             <child>
               <object class="GtkAlignment" id="alignment1">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="left_padding">12</property>
                 <child>
                   <object class="GtkVBox" id="vbox3">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkCheckButton" id="checkbutton1">
                         <property name="label" translatable="yes">Use colors</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
@@ -52,27 +58,33 @@
             <child type="label">
               <object class="GtkLabel" id="label9">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">&lt;b&gt;General&lt;/b&gt;</property>
                 <property name="use_markup">True</property>
               </object>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkFrame" id="frame4">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
             <property name="label_xalign">0</property>
             <property name="shadow_type">none</property>
             <child>
               <object class="GtkAlignment" id="alignment2">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="left_padding">12</property>
                 <child>
                   <object class="GtkTable" id="table2">
                     <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <property name="border_width">6</property>
                     <property name="n_rows">5</property>
                     <property name="n_columns">2</property>
@@ -80,9 +92,11 @@
                     <property name="row_spacing">8</property>
                     <child>
                       <object class="GtkColorButton" id="color_components">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -94,6 +108,7 @@
                     <child>
                       <object class="GtkLabel" id="label11">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Components</property>
                       </object>
@@ -104,6 +119,7 @@
                     <child>
                       <object class="GtkLabel" id="label12">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Labels</property>
                       </object>
@@ -117,6 +133,7 @@
                     <child>
                       <object class="GtkLabel" id="label13">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Wires</property>
                       </object>
@@ -130,6 +147,7 @@
                     <child>
                       <object class="GtkLabel" id="label14">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Text</property>
                       </object>
@@ -142,9 +160,11 @@
                     </child>
                     <child>
                       <object class="GtkColorButton" id="color_labels">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -157,9 +177,11 @@
                     </child>
                     <child>
                       <object class="GtkColorButton" id="color_wires">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -172,9 +194,11 @@
                     </child>
                     <child>
                       <object class="GtkColorButton" id="color_text">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -188,6 +212,7 @@
                     <child>
                       <object class="GtkLabel" id="label15">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes">Background</property>
                       </object>
@@ -200,9 +225,11 @@
                     </child>
                     <child>
                       <object class="GtkColorButton" id="color_background">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="use_alpha">True</property>
                       </object>
                       <packing>
@@ -221,12 +248,15 @@
             <child type="label">
               <object class="GtkLabel" id="label10">
                 <property name="visible">True</property>
+                <property name="can_focus">False</property>
                 <property name="label" translatable="yes">&lt;b&gt;Colors&lt;/b&gt;</property>
                 <property name="use_markup">True</property>
               </object>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>

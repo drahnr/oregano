@@ -8,11 +8,11 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2011  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,7 +36,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "oregano-config.h"
 #include "load-library.h"
 #include "dialogs.h"
@@ -60,7 +60,7 @@ oregano_config_load (void)
 	oregano.show_splash = g_settings_get_boolean (oregano.settings, 
 			"show-splash");
 
-	/* Let's deal with first use -I don't like this- */
+	// Let's deal with first use -I don't like this-
 	if ((oregano.engine < 0) || (oregano.engine >= OREGANO_ENGINE_COUNT))
 		oregano.engine = 0;
 }
@@ -109,7 +109,7 @@ oregano_lookup_libraries (Splash *sp)
 			strcmp (libentry->d_name,"default.oreglib")) {
 			fname = g_build_filename (OREGANO_LIBRARYDIR, libentry->d_name, NULL);
 
-			/* do the following only if splash is enabled */
+			// do the following only if splash is enabled
 			if (sp) {
 				char txt[50];
 				sprintf (txt, _("Loading %s ..."), libentry->d_name);
@@ -130,10 +130,6 @@ oregano_lookup_libraries (Splash *sp)
 	closedir (libdir);
 }
 
-/*
- * Helpers
- */
-
 static gboolean
 is_oregano_library_name (gchar *name)
 {
@@ -142,7 +138,7 @@ is_oregano_library_name (gchar *name)
 	if (dot == NULL || dot[1] == '\0')
 		return FALSE;
 
-	dot++;	/* Points to the extension. */
+	dot++;	// Points to the extension.
 
 	if (strcmp (dot, OREGLIB_EXT) == 0)
 		return TRUE;

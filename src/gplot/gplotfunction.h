@@ -5,6 +5,8 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
+ * Web page: https://github.com/marc-lorber/oregano
+ * 
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2010  Marc Lorber
@@ -30,8 +32,8 @@
 
 #include <gtk/gtk.h>
 
-#define GPLOT_FUNCTION(obj)            G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_FUNCTION, GPlotFunction)
-#define IS_GPLOT_FUNCTION(obj)         G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_FUNCTION)
+#define GPLOT_FUNCTION(obj)     G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_FUNCTION, GPlotFunction)
+#define IS_GPLOT_FUNCTION(obj)  G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_FUNCTION)
 
 typedef struct _GPlotFunctionBBox {
 	gdouble xmin;

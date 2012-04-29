@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -35,7 +35,7 @@
 #include <glib/gi18n.h>
 #include <goocanvas.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "load-library.h"
 #include "schematic.h"
 #include "schematic-view.h"
@@ -258,18 +258,18 @@ update_preview (Browser *br)
 	              "height", -1.0,
 	              NULL);
 	
-	/* Get the coordonates */
+	// Get the coordonates */
 	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (br->preview), &bounds);
 	x1 = bounds.x1;
 	x2 = bounds.x2;
 	y1 = bounds.y1;
 	y2 = bounds.y2;
 
-	/* Translate in such a way that the canvas centre remains in (0, 0) */
+	// Translate in such a way that the canvas centre remains in (0, 0) 
 	cairo_matrix_init_translate (&transf, -(x2 + x1) / 2.0f + PREVIEW_WIDTH / 2,
 	                             -(y2 + y1) / 2.0f + PREVIEW_HEIGHT / 2);
 
-	/* Compute the scale of the widget */
+	// Compute the scale of the widget 
 	if ((x2 - x1 != 0) || (y2 - y1 != 0)) {
 		if ((x2 - x1) < (y2 - y1))
 			scale = 0.60f * PREVIEW_HEIGHT / (y2 - y1);
@@ -282,14 +282,14 @@ update_preview (Browser *br)
 	cairo_matrix_init_scale (&affine, scale, scale);
 	cairo_matrix_multiply (&transf, &transf, &affine);
 
-	/* Apply the transformation */
+	// Apply the transformation 
 	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (br->preview), &transf);
 	
-	/* Compute the motion to centre the Preview widget */
+	// Compute the motion to centre the Preview widget 
 	new_x = 100 + (PREVIEW_WIDTH - x1 - x2) / 2;
 	new_y = (PREVIEW_HEIGHT - y1 - y2) / 2 - 10;
 
-	/* Apply the transformation */
+	// Apply the transformation 
 	if (scale > 5.0) scale = 3.0;
 	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (br->preview), 
 	                                      new_x,
@@ -339,9 +339,7 @@ add_part (gpointer key, LibraryPart *part, Browser *br)
 	gtk_list_store_set (model, &iter, 0, part->name, -1);
 }
 
-/*
- * Read the available parts from the library and put them in the browser clist.
- */
+// Read the available parts from the library and put them in the browser clist.
 static void
 update_list (Browser *br)
 {
@@ -353,12 +351,10 @@ update_list (Browser *br)
 }
 
 
-/*
- * Show a part browser. If one already exists, just bring it up, otherwise
- * create it.  We can afford to keep it in memory all the time, and we don't
- * have to delete it and build it every time it is needed. If already shown,
- * hide it.
- */
+// Show a part browser. If one already exists, just bring it up, otherwise
+// create it.  We can afford to keep it in memory all the time, and we don't
+// have to delete it and build it every time it is needed. If already shown,
+// hide it.
 void
 part_browser_toggle_show (SchematicView *schematic_view)
 {
@@ -433,12 +429,12 @@ drag_data_get (GtkWidget *widget, GdkDragContext *context,
 
 	data->library_name = br->library->name;
 
-	/* Get the current selected row */
+	// Get the current selected row 
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (br->list));
 
 	if (!gtk_tree_selection_get_selected (selection, NULL, &iter)) {
-		/* No selection, Action canceled */
+		// No selection, Action canceled 
 		return;
 	}
 
@@ -456,11 +452,9 @@ drag_data_get (GtkWidget *widget, GdkDragContext *context,
 	g_free (data);
 }
 
-/*
- * part_browser_create
- *
- * Creates a new part browser. This is only called once per schematic window.
- */
+// part_browser_create
+//
+// Creates a new part browser. This is only called once per schematic window.
 GtkWidget *
 part_browser_create (SchematicView *schematic_view)
 {
@@ -536,7 +530,7 @@ part_browser_create (SchematicView *schematic_view)
 	           "font", "sans 9", 
 	           NULL));  
 
-	/* Set up dnd. */
+	// Set up dnd. 
 	g_signal_connect (G_OBJECT (br->canvas), "drag_data_get",
 		G_CALLBACK (drag_data_get), br);
 
@@ -550,20 +544,20 @@ part_browser_create (SchematicView *schematic_view)
 	g_signal_connect (G_OBJECT (br->filter_entry), "activate",
 		G_CALLBACK (part_search_activate), br);
 
-	/* Buttons. */
+	// Buttons. 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "place_button"));
 	g_signal_connect (G_OBJECT (w), "clicked",
 		G_CALLBACK (place_cmd), br);
 
-	/* Update the libraries option menu */
+	// Update the libraries option menu 
 	br->library = g_list_nth_data (oregano.libraries, 0);
 	part_browser_setup_libs (br, gui);
 
-	/* Parts list. */
+	// Parts list. 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "parts_list"));
 	br->list = w;
 
-	/* Create the List Model for TreeView, this is a Real model */
+	// Create the List Model for TreeView, this is a Real model 
 	br->real_model = GTK_TREE_MODEL (gtk_list_store_new (1, G_TYPE_STRING));
 	cell_text = gtk_cell_renderer_text_new ();
 	cell_column = gtk_tree_view_column_new_with_attributes (
@@ -571,7 +565,7 @@ part_browser_create (SchematicView *schematic_view)
 	    "text", 0,
 	    NULL);
 
-	/* Create the sort model for the items, this sort the real model */
+	// Create the sort model for the items, this sort the real model 
 	br->sort_model = gtk_tree_model_sort_new_with_model (
 		GTK_TREE_MODEL (br->real_model));
 
@@ -579,14 +573,14 @@ part_browser_create (SchematicView *schematic_view)
 		GTK_TREE_SORTABLE (br->sort_model),
 		0, GTK_SORT_ASCENDING);
 
-	/* Create the filter sorted model. This filter items based on user
-	   request for fast item search */
+	// Create the filter sorted model. This filter items based on user
+	//   request for fast item search 
 	br->filter_model = gtk_tree_model_filter_new (br->sort_model, NULL);
 	gtk_tree_model_filter_set_visible_func (
 		GTK_TREE_MODEL_FILTER (br->filter_model),
 		part_list_filter_func, br, NULL);
 
-	/* If we have TreeFilter use it, if not, just use sorting model only */
+	// If we have TreeFilter use it, if not, just use sorting model only 
 	if (br->filter_model)
 		gtk_tree_view_set_model (GTK_TREE_VIEW (w), br->filter_model);
 	else
@@ -631,14 +625,10 @@ part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach (GTK_TABLE (w),combo_box,1,2,0,1,
+	gtk_table_attach (GTK_TABLE (w), combo_box, 1, 2, 0, 1,
 	                  GTK_EXPAND | GTK_FILL, 
 	                  GTK_SHRINK, 
 	                  0, 0);
-	// ATTENTION: MODIF ????
-	//g_object_set (combo_box, 
-	//              "border-width", 12, 
-	//              NULL);
 
 	libs = oregano.libraries;
 

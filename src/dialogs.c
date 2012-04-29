@@ -5,7 +5,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -31,7 +31,7 @@
 #include <gtk/gtk.h>
 
 #include "dialogs.h"
-#include "main.h"
+#include "oregano.h"
 
 #include "pixmaps/logo.xpm"
 
@@ -161,7 +161,7 @@ dialog_about (void)
 
 	const gchar *copy = _("(c) 2009-2012 Marc Lorber 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
 
-	/* Allow only one about box at a time. */
+	// Allow only one about box at a time.
 	if (about) {
 		gdk_window_raise (gtk_widget_get_window (about));
 		return;

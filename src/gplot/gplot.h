@@ -4,10 +4,12 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ * 
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
- * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

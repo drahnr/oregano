@@ -8,11 +8,11 @@
  *	Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001	Richard Hult
  * Copyright (C) 2003,2006	Ricardo Markiewicz
- * Copyright (C) 2009,2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,7 +34,7 @@
 #include <locale.h>
 #include <glib/gi18n.h>
 
-#include "main.h"
+#include "oregano.h"
 #include "simulation.h"
 #include "schematic.h"
 #include "schematic-view.h"
@@ -66,7 +66,6 @@ delete_event_cb (GtkWidget *widget, GdkEvent *event, gpointer data)
 	return FALSE;
 }
 
-/* TODO : This gpointer sucks */
 gpointer
 simulation_new (Schematic *sm)
 {
@@ -98,7 +97,7 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_simulation (sm);
 
-	/* Only allow one instance of the dialog box per schematic.  */
+	// Only allow one instance of the dialog box per schematic.
 	if (s->dialog) {
 		gdk_window_raise (gtk_widget_get_window (GTK_WIDGET (s->dialog)));
 		return;
@@ -173,7 +172,7 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 		g_source_remove (s->progress_timeout_id);
 		s->progress_timeout_id = 0;
 
-		/* Make sure that the progress bar is completed, just for good looks. */
+		// Make sure that the progress bar is completed, just for good looks.
 		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 1.0);
 	}
 
@@ -187,8 +186,8 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 
 	sheet_clear_op_values (schematic_view_get_sheet (s->sv));
 
-	/* I don't need the engine anymore. The plot
-	 * window owns its reference to the engine */
+	// I don't need the engine anymore. The plot window owns its reference to 
+	// the engine
 	g_object_unref (s->engine);
 	s->engine = NULL;
 

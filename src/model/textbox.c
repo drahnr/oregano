@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -40,9 +40,7 @@
 
 #define TEXTBOX_DEFAULT_FONT "Arial 10"
 
-/*
- * Private declarations
- */
+// Private declarations
 
 static void textbox_class_init (TextboxClass *klass);
 static void textbox_init (Textbox *textbox);
@@ -283,34 +281,16 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	}
 }
 
-/* static */
 void
 textbox_update_bbox (Textbox *textbox)
 {
-	PangoFontDescription *font;
 	SheetPos b1, b2;
-	TextboxPriv *priv;
-
-	priv = textbox->priv;
-
-	font = pango_font_description_from_string (priv->font);
-	/* TODO : Find out how to do this with Pango. */
-	/* gdk_string_extents (font,
-		priv->text,
-		&lbearing,
-		&rbearing,
-		&width,
-		&ascent,
-		&descent);
-		gdk_font_unref (font);
-	*/
 	b1.x = 0.0;
 	b1.y = 0.0-5; // - font->ascent;
 	b2.x = 0.0+5; // + rbearing;
 	b2.y = 0.0+5; // + font->descent;
 
 	item_data_set_relative_bbox (ITEM_DATA (textbox), &b1, &b2);
-	pango_font_description_free (font);
 }
 
 static gboolean

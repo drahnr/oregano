@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -37,9 +37,9 @@
 
 #define NG_DEBUG(s) if (0) g_print ("%s\n", s)
 
-/* Create a SheetItem from an ItemData object. This is a bit ugly.
- * It could be beautified by having a method that creates the item.
- * E.g. sheet_item->new_from_data (data); */
+// Create a SheetItem from an ItemData object. This is a bit ugly.
+// It could be beautified by having a method that creates the item.
+// E.g. sheet_item->new_from_data (data);
 SheetItem *
 sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
 {

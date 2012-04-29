@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://arrakis.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -95,8 +95,8 @@ struct _WireItemPriv {
 	GooCanvasRect	  *	resize1;	// Resize box of the wire
 	GooCanvasRect	  *	resize2;	// Resize box of the wire
 
-	/* Cached bounding box. This is used to make
-	 * the rubberband selection a bit faster. */
+	// Cached bounding box. This is used to make
+	// the rubberband selection a bit faster.
 	SheetPos 			bbox_start;
 	SheetPos 			bbox_end;
 };
@@ -134,8 +134,7 @@ wire_item_set_property (GObject *object, guint property_id, const GValue *value,
 
         switch (property_id) {
         default:
-                g_warning ("PartItem: Invalid argument.\n");
-
+        	g_warning ("PartItem: Invalid argument.\n");
         }
 }
 
@@ -148,8 +147,8 @@ wire_item_get_property (GObject *object, guint property_id, GValue *value,
 
         switch (property_id) {
         default:
-                pspec->value_type = G_TYPE_INVALID;
-                break;
+        	pspec->value_type = G_TYPE_INVALID;
+            break;
         }
 }
 
@@ -181,7 +180,7 @@ wire_item_finalize (GObject *object)
 	G_OBJECT_CLASS (wire_item_parent_class)->finalize (object);
 }
 
-/* "moved" signal handler. Invalidates the bounding box cache. */
+// "moved" signal handler. Invalidates the bounding box cache.
 static void
 wire_item_moved (SheetItem *object)
 {
@@ -295,7 +294,7 @@ wire_item_event (WireItem *wire_item,
 	GooCanvas *canvas;
 	static double last_x, last_y;
 	double dx, dy, zoom;
-	/* The selected group's bounding box in window resp. canvas coordinates. */
+	// The selected group's bounding box in window resp. canvas coordinates.
 	double snapped_x, snapped_y;
 	SheetPos pos;
 
@@ -336,8 +335,10 @@ wire_item_event (WireItem *wire_item,
 						item_data_unregister (ITEM_DATA (wire)); 
 						return TRUE;
 					}
-                    if ((x > (length.x-RESIZER_SIZE)) && (x < (length.x+RESIZER_SIZE))  &&
-						(y > (length.y-RESIZER_SIZE)) && (y < (length.y+RESIZER_SIZE))) {
+                    if ((x > (length.x-RESIZER_SIZE)) && 
+                        (x < (length.x+RESIZER_SIZE)) &&
+						(y > (length.y-RESIZER_SIZE)) && 
+                        (y < (length.y+RESIZER_SIZE))) {
 						gtk_widget_grab_focus (GTK_WIDGET (sheet));
 						sheet->state = SHEET_STATE_DRAG_START;
 						wire_item->priv->resize_state = WIRE_RESIZER_2;
@@ -610,8 +611,8 @@ selection_changed ( WireItem *item, gboolean select, gpointer user)
 	}
 }
 
-/* This function returns the position of the canvas item. It has
- * nothing to do with where the wire is stored in the sheet node store. */
+// This function returns the position of the canvas item. It has
+// nothing to do with where the wire is stored in the sheet node store.
 void
 wire_item_get_start_pos (WireItem *item, SheetPos *pos)
 {
@@ -622,7 +623,7 @@ wire_item_get_start_pos (WireItem *item, SheetPos *pos)
 	g_object_get (G_OBJECT (item), "x", &pos->x, "y", &pos->y, NULL);
 }
 
-/* This function returns the length of the canvas item. */
+// This function returns the length of the canvas item.
 void
 wire_item_get_length (WireItem *item, SheetPos *pos)
 {
@@ -639,9 +640,9 @@ wire_item_get_length (WireItem *item, SheetPos *pos)
 	              "points", &points, 
 	              NULL);
 
-	/* This is not strictly neccessary, since the first point is always
-	 * (0,0) but it's more correct and good to have if this changes in the
-	 * future. */
+	// This is not strictly neccessary, since the first point is always
+	// (0,0) but it's more correct and good to have if this changes in the
+	// future.
 	pos->x = points->coords[2] - points->coords[0];
 	pos->y = points->coords[3] - points->coords[1];
 	goo_canvas_points_unref (points);
@@ -666,8 +667,8 @@ is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
 	return FALSE;
 }
 
-/* Retrieves the bounding box. We use a caching scheme for this
- * since it's too expensive to calculate it every time we need it. */
+// Retrieves the bounding box. We use a caching scheme for this
+// since it's too expensive to calculate it every time we need it.
 inline static void
 get_boundingbox (WireItem *item, SheetPos *p1, SheetPos *p2)
 {
@@ -723,6 +724,7 @@ node_traverse (Node *node)
 		Wire *wire = wires->data;
 		wire_traverse (wire);
 	}
+	g_slist_free_full (wires, g_object_unref);
 }
 
 static void
@@ -745,6 +747,7 @@ wire_traverse (Wire *wire)
 
 		node_traverse (node);
 	}
+	g_slist_free_full (nodes, g_object_unref);
 }
 
 static void
@@ -776,6 +779,7 @@ mouse_over_wire_callback (WireItem *item, Sheet *sheet)
 
 	wire = WIRE (sheet_item_get_data (SHEET_ITEM (item)));
 	wire_traverse (wire);
+	g_list_free_full (wires, g_object_unref);
 }
 
 static void
@@ -811,9 +815,7 @@ unhighlight_wire (WireItem *item)
 	return FALSE;
 }
 
-/**
- * This is called when the wire data was moved. Update the view accordingly.
- */
+// This is called when the wire data was moved. Update the view accordingly.
 static void
 wire_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 {

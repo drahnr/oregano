@@ -5,11 +5,11 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: http://oregano.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
- * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -61,21 +61,21 @@ oregano_ngspice_get_type (void)
 	if (type == 0) {
 		static const GTypeInfo info = {
 			sizeof (OreganoNgSpiceClass),
-			NULL,   										/* base_init */
-			NULL,   										/* base_finalize */
-			(GClassInitFunc) ngspice_class_init,   			/* class_init */ 
-			NULL,   										/* class_finalize */
-			NULL,   										/* class_data */
+			NULL,   									// base_init
+			NULL,   									// base_finalize
+			(GClassInitFunc) ngspice_class_init,   		// class_init
+			NULL,   									// class_finalize
+			NULL,   									// class_data
 			sizeof (OreganoNgSpice),
-			0,      										/* n_preallocs */
-			(GInstanceInitFunc) ngspice_instance_init,    	/* instance_init */
+			0,      									// n_preallocs
+			(GInstanceInitFunc) ngspice_instance_init,  // instance_init
 			NULL
 		};
 
 		static const GInterfaceInfo ngspice_info = {
-			(GInterfaceInitFunc) ngspice_interface_init,/* interface_init */
-			NULL,               						/* interface_finalize */
-			NULL                						/* interface_data */
+			(GInterfaceInitFunc) ngspice_interface_init,// interface_init
+			NULL,               						// interface_finalize
+			NULL                						// interface_data
 		};
 
 		type = g_type_register_static (G_TYPE_OBJECT, "OreganoNgSpice", &info, 0);
@@ -102,13 +102,13 @@ ngspice_finalize (GObject *object)
 {
 	SimulationData *data;
 	OreganoNgSpice *ngspice;
-	GList *lst;
+	GList *list;
 	int i;
 
 	ngspice = OREGANO_NGSPICE (object);
-	lst = ngspice->priv->analysis;
-	while (lst) {
-		data = SIM_DATA (lst->data);
+	list = ngspice->priv->analysis;
+	while (list) {
+		data = SIM_DATA (list->data);
 		g_free (data->var_names);
 		g_free (data->var_units);
 		for (i=0; i<data->n_variables; i++)
@@ -117,11 +117,12 @@ ngspice_finalize (GObject *object)
 		g_free (data->min_data);
 		g_free (data->max_data);
 		
-		g_free (lst->data);
-		lst = lst->next;
+		g_free (list->data);
+		list = list->next;
 	}
 	g_list_free (ngspice->priv->analysis);
 	ngspice->priv->analysis = NULL;
+	g_list_free_full (list, g_object_unref);
 
 	parent_class->finalize (object);
 }
@@ -151,7 +152,8 @@ ngspice_is_available (OreganoEngine *self)
 }
 
 static void
-ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError **error)
+ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, 
+                          GError **error)
 {
 	OreganoNgSpice *ngspice;
 	Netlist output;
@@ -176,7 +178,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	
 	list = sim_settings_get_options (output.settings);
 		
-	/* Prints title */	
+	// Prints title	
 	fputs ("* ",file);
 	fputs (output.title ? output.title : "Title: <unset>", file);
 	fputs ("\n"
@@ -185,12 +187,12 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 		"*\tngspice - NETLIST"
 		"\n", file);
 
-	/* Prints Options */
+	// Prints Options
 	fputs (".options OUT=120 ",file);
 
 	while (list) {
 		so = list->data;
-		/* Prevent send NULL text */
+		// Prevent send NULL text
 		if (so->value) {
 			if (strlen(so->value) > 0) {
 				g_fprintf (file,"%s=%s ",so->name,so->value);
@@ -200,7 +202,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 	}
 	fputc ('\n',file);
 
-	/* Include of subckt models */
+	// Include of subckt models
 	fputs ("*------------- Models -------------------------\n",file);
 	list = output.models;
 	while (list) {
@@ -210,12 +212,12 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 		list = list->next;
 	}
 
-	/* Prints template parts */ 
+	// Prints template parts 
 	fputs ("*------------- Circuit Description-------------\n",file);
 	fputs (output.template->str, file);
 	fputs ("\n*----------------------------------------------\n",file);
 
-	/* Prints Transient Analysis */
+	// Prints Transient Analysis
 	if (sim_settings_get_trans (output.settings)) {
 		gdouble st = 0;
 		gdouble start = sim_settings_get_trans_start (output.settings);
@@ -243,7 +245,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 		fputs ("\n", file);
 	}
 
-	/*	Print dc Analysis */
+	//	Print DC Analysis
 	if (sim_settings_get_dc (output.settings)) {
 		fputs (".dc ",file);
 		if (sim_settings_get_dc_vsrc (output.settings)) {
@@ -256,7 +258,7 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 		}
 	}
 
-	/* Prints ac Analysis*/
+	// Prints AC Analysis
 	if (sim_settings_get_ac (output.settings)) {
 		g_fprintf (file, ".ac %s %d %g %g\n",
 			sim_settings_get_ac_type (output.settings),
@@ -265,13 +267,16 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, GError *
 			sim_settings_get_ac_stop (output.settings));
 	}
 	
-	/* Prints analysis using a Fourier transform*/
+	// Prints analysis using a Fourier transform
 	if (sim_settings_get_fourier (output.settings)) {	
 		g_fprintf (file, ".four %d %s\n",
 		    sim_settings_get_fourier_frequency (output.settings), 
 		    sim_settings_get_fourier_nodes (output.settings));
 	}
-	/* Debug op analysis. */
+
+	g_list_free_full (list, g_object_unref);
+	
+	// Debug op analysis.
 	fputs (".op\n", file);
 	fputs ("\n.END\n", file);
 	fclose (file);
@@ -299,7 +304,7 @@ ngspice_stop (OreganoEngine *self)
 static void
 ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
-	/* check for status, see man waitpid(2) */
+	// check for status, see man waitpid(2)
 	if (WIFEXITED (status)) {
 		gchar *line;
 		gsize len;
@@ -309,7 +314,7 @@ ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 		}
 		g_free (line);
 
-		/* Free stuff */
+		// Free stuff
 		g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
 		g_source_remove (ngspice->priv->child_iochannel_watch);
 		g_spawn_close_pid (ngspice->priv->child_pid);
@@ -388,32 +393,32 @@ ngspice_start (OreganoEngine *self)
 		return;
 	}
 	
-	/* Open the file storing the output of ngspice */
+	// Open the file storing the output of ngspice
 	ngspice->priv->inputfp = fopen ("/tmp/netlist.lst", "w");
 	
 	error = NULL;
 	if (g_spawn_async_with_pipes (
-			NULL, /* Working directory */
+			NULL, // Working directory
 			argv,
 			NULL,
 			G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
 			NULL,
 			NULL,
 			&ngspice->priv->child_pid,
-			NULL, /* STDIN */
-			&ngspice->priv->child_stdout, /* STDOUT */
-			&ngspice->priv->child_error,  /* STDERR*/
+			NULL, // STDIN
+			&ngspice->priv->child_stdout, // STDOUT
+			&ngspice->priv->child_error,  // STDERR
 			&error)) {
-		/* Add a watch for process status */
+		// Add a watch for process status
 		g_child_watch_add (ngspice->priv->child_pid, (GChildWatchFunc)ngspice_watch_cb, ngspice);
-		/* Add a GIOChannel to read from process stdout */
+		// Add a GIOChannel to read from process stdout
 		ngspice->priv->child_iochannel = g_io_channel_unix_new (ngspice->priv->child_stdout);
-		/* Watch the I/O Channel to read child strout */
+		// Watch the I/O Channel to read child strout
 		ngspice->priv->child_iochannel_watch = g_io_add_watch (ngspice->priv->child_iochannel,
 			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)ngspice_child_stdout_cb, ngspice);
-		/* Add a GIOChannel to read from process stderr */
+		// Add a GIOChannel to read from process stderr
 		ngspice->priv->child_ioerror = g_io_channel_unix_new (ngspice->priv->child_error);
-		/* Watch the I/O error channel to read the child sterr */
+		// Watch the I/O error channel to read the child sterr
 		ngspice->priv->child_ioerror_watch = g_io_add_watch (ngspice->priv->child_ioerror,
 			G_IO_IN|G_IO_PRI|G_IO_HUP|G_IO_NVAL, (GIOFunc)ngspice_child_stderr_cb, ngspice);
 		

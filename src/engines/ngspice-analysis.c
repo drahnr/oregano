@@ -4,9 +4,9 @@
  * Authors:
  *  Marc Lorber <Lorber.Marc@wanadoo.fr>
  *
- * Web page: http://oregano.lug.fi.uba.ar/
+ * Web page: https://github.com/marc-lorber/oregano
  *
- * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2009-2012  Marc Lorber
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -68,7 +68,6 @@ static gchar *analysis_names[] = {
 
 typedef struct {
 	gchar *name;
-	//gchar *unit;
 } NGSPICE_Variable;
 
 static NGSPICE_Variable *
@@ -151,11 +150,10 @@ parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	fgets (buf, 255, priv->inputfp);
 	fgets (buf, 255, priv->inputfp);
 	
-	/* Calculates the number of variables */
+	// Calculates the number of variables
 	variables = get_variables (buf, &n);
 
 	n=n-1;
-	//printf ("n = %d\n", n);
 	sdata->var_names   = (char**) g_new0 (gpointer, n);
 	sdata->var_units   = (char**) g_new0 (gpointer, n);
 	sdata->var_names[0] = g_strdup ("Voltage sweep");
@@ -177,7 +175,7 @@ parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sdata->min_data = g_new (double, n);
 	sdata->max_data = g_new (double, n);
 
-	/* Read the data */
+	// Read the data
 	for (i=0; i<2; i++) {
 		sdata->min_data[i] = G_MAXDOUBLE;
 		sdata->max_data[i] = -G_MAXDOUBLE;
@@ -237,8 +235,8 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sdata->type  = ANALYSIS_UNKNOWN;
 	sdata->functions = NULL;
 
-	/* Identify the number of analysis from the number of clamp */
-	/* ASCII format of ngspice only returns 3 columns at a time */
+	// Identify the number of analysis from the number of clamp
+	// ASCII format of ngspice only returns 3 columns at a time
 	nodes_list = netlist_helper_get_voltmeters_list (priv->schematic, &error);
 	for ( ; nodes_list; nodes_list = nodes_list->next ) {
 		nodes_nb++;
@@ -299,7 +297,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sdata->min_data = g_new (double, nodes_nb+1);
 	sdata->max_data = g_new (double, nodes_nb+1);
 
-	/* Read the data */
+	// Read the data
 	for (i=0; i < nodes_nb +1; i++) {
 		sdata->min_data[i] = G_MAXDOUBLE;
 		sdata->max_data[i] = -G_MAXDOUBLE;
@@ -397,21 +395,21 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	while (!found) {
 		gdouble val0 = 0.;
 		for (i=0; i<nodes_nb+1; i++) {
-			/* 0 = time */
-			/* From node 1 to node 3 */
+			// 0 = time
+			// From node 1 to node 3
 			if (i < n) {
 				gdouble val=0;
 				val = g_array_index (val_tmp1[i], gdouble, sdata->got_points);
 				if (i == 0) val0 = val;
 				sdata->data[i] = g_array_append_val (sdata->data[i], val);
 			}
-			/* From node 4 to node 6 */
+			// From node 4 to node 6
 			else if (i < n+m-1) {
 				gdouble val=0;
 				val = g_array_index (val_tmp2[i-n+1], gdouble, sdata->got_points);
 				sdata->data[i] = g_array_append_val (sdata->data[i], val);
 			}
-			/* From node 7 to node 9 */
+			// From node 7 to node 9
 			else {
 				gdouble val=0;
 				val = g_array_index (val_tmp3[i-n-m+2], gdouble, sdata->got_points);
@@ -442,7 +440,7 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 
 
-	/* New analysis */
+	// New analysis
 	data = g_new0 (Analysis, 1);
 	sdata = SIM_DATA (data);
 	priv->current = sdata;
@@ -490,7 +488,7 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sdata->min_data = g_new (double, n);
 	sdata->max_data = g_new (double, n);
 
-	/* Read the data */
+	// Read the data
 	for (i=0; i<n; i++) {
 		sdata->min_data[i] = G_MAXDOUBLE;;
 		sdata->max_data[i] = -G_MAXDOUBLE;
@@ -587,11 +585,12 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	}
 
 	if (transient_enabled) {
-		if (g_str_has_prefix(analysis_names[analysis_type], "Transient Analysis")) {
+		if (g_str_has_prefix (analysis_names[analysis_type], 
+		                      "Transient Analysis")) {
 			parse_transient_analysis (ngspice, buf);
 		}
 		else {
-			oregano_warning (_("Analysis expected not found"));
+			oregano_warning (_("Transient analysis expected not found"));
 		}
 	}
 		
@@ -611,7 +610,7 @@ ngspice_parse (OreganoNgSpice *ngspice)
 			parse_fourier_analysis (ngspice, buf);
 		}
 		else {
-			oregano_warning (_("Analysis expected not found"));
+			oregano_warning (_("Fourier analysis expected not found"));
 		}
 	}
 	fgets (buf, 255, priv->inputfp);
@@ -633,8 +632,6 @@ ngspice_parse (OreganoNgSpice *ngspice)
 			oregano_warning (_("DC Sweep expected but not found"));
 		}
 	}
-
-	
 		
 	fclose (priv->inputfp);
 }
