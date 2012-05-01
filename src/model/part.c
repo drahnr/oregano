@@ -559,11 +559,11 @@ part_rotate (ItemData *data, int angle, SheetPos *center)
 		priv->pins[i].offset.y = y;
 	}
 
-	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-	part_center_before.x = b1.x + (b2.x - b1.x) / 2;
-	part_center_before.y = b1.y + (b2.y - b1.y) / 2;
-
 	// Rotate the bounding box.
+	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
+	part_center_before.x = (b1.x + b2.x) / 2;
+	part_center_before.y = (b1.y + b2.y) / 2;
+
 	x = b1.x;
 	y = b1.y;
 	cairo_matrix_transform_point (&affine, &x, &y);
@@ -581,8 +581,8 @@ part_rotate (ItemData *data, int angle, SheetPos *center)
 	if (center) {
 		SheetPos part_pos;
 
-		part_center_after.x = b1.x + (b2.x - b1.x) / 2;
-		part_center_after.y = b1.y + (b2.y - b1.y) / 2;
+		part_center_after.x = (b1.x + b2.x) / 2;
+		part_center_after.y = (b1.y + b2.y) / 2;
 
 		dx = part_center_before.x - part_center_after.x;
 		dy = part_center_before.y - part_center_after.y;
@@ -711,8 +711,8 @@ gboolean emit_flipped_signal_when_handler_connected (gpointer data)
 
 		if (center) {
 			item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-			part_center_before.x = b1.x + (b2.x - b1.x) / 2;
-			part_center_before.y = b1.y + (b2.y - b1.y) / 2;
+			part_center_before.x = (b1.x + b2.x) / 2;
+			part_center_before.y = (b1.y + b2.y) / 2;
 		}
 
 		// Flip the bounding box.
