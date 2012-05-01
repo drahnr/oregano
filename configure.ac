@@ -1,5 +1,5 @@
 AC_INIT(AUTHORS)
-AM_INIT_AUTOMAKE(oregano, 0.80)
+AM_INIT_AUTOMAKE(oregano, 0.81)
 
 AM_CONFIG_HEADER(config.h)
 AM_MAINTAINER_MODE
@@ -21,20 +21,13 @@ AC_ISC_POSIX
 AC_PROG_CC
 AC_HEADER_STDC
 
-dnl AC_PROG_INTLTOOL([0.35.0])
-AC_PROG_INTLTOOL([0.35.0], [no-xml])
+AC_PROG_INTLTOOL([0.40.1])
 
 AM_PROG_LIBTOOL
 
 # Just run true if these don't exist
 AC_PATH_PROG(UPDATE_MIME_DATABASE, update-mime-database, true)
 AC_PATH_PROG(UPDATE_DESKTOP_DATABASE, update-desktop-database, true)
-
-AC_ARG_ENABLE(update-mimedb,
-   AC_HELP_STRING([--disable-update-mimedb],
-                   [disable the update-mime-database after install [default=no]]),,
-    enable_update_mimedb=yes)
-AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x$enable_update_mimedb = xyes)
 
 ALL_LINGUAS="ca de es fr it ja pt_BR ro ru sv"
 AM_GLIB_GNU_GETTEXT
@@ -60,9 +53,11 @@ PKG_CHECK_MODULES(OREGANO,
 
 
 # Taken from Screem HTML editor configure.in
-AC_ARG_ENABLE(update_mime,
-	AC_HELP_STRING([--disable-update-mime Do not run update-mime-database when installing]), UPDATE_MIME=$enableval,UPDATE_MIME=yes)
-	AM_CONDITIONAL(UPDATE_MIME, test x"$UPDATE_MIME" = x"yes")
+AC_ARG_ENABLE(update-mimedb,
+   AC_HELP_STRING([--disable-update-mimedb],
+   [disable the update-mime-database after install [default=no]]),,
+    enable_update_mimedb=yes)
+AM_CONDITIONAL(ENABLE_UPDATE_MIMEDB, test x$enable_update_mimedb = xyes)
 
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
@@ -95,12 +90,10 @@ docs/Makefile
 stamp.h
 ])
 
-echo "
-
-Configuration:
-	Source code location:			 ${srcdir}
-	Compiler:				 ${CC}
-
-	Install location:			 ${prefix}
-
-Type make to build Oregano."
+echo "Configuration:"
+echo "	Source code location:			 ${srcdir}"
+echo "	Compiler:				 ${CC}"
+echo ""
+echo "	Install location:			 ${prefix}"
+echo ""
+echo "Type make to build Oregano."
