@@ -809,7 +809,6 @@ v_clamp_cmd (SchematicView *sv)
 	sheet_clear_ghosts (sv->priv->sheet);
 	sheet_add_ghost_item (sv->priv->sheet, ITEM_DATA (part));
 	sheet_connect_part_item_to_floating_group (sheet, (gpointer) sv);
-	g_list_free_full (lib, g_object_unref);
 }
 
 static void
