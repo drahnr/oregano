@@ -605,9 +605,7 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 			if (is_wire_at_pos (wire_x1, wire_y1, wire_x2, wire_y2, lookup_pos)) {
 				node = node_store_get_node (store, lookup_pos);
 
-				if (node == NULL)
-					g_warning ("Bug: Found no node at pin at (%g %g).\n", x, y);
-				else
+				if (node != NULL)
 					ip_list = g_slist_prepend (ip_list, node);
 			}
 		}
