@@ -1339,21 +1339,25 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 static void
 part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 {
+	PartItem *part_item;
+	gdouble x, y;
+	
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
 
-	PartItem *part_item;
-
 	if (pos == NULL)
 		return;
 
 	part_item = PART_ITEM (item);
+	x = pos->x;
+	y = pos->y;
 
 	// Move the canvas item and invalidate the bbox cache.
 	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (part_item), NULL);
-	goo_canvas_item_translate (GOO_CANVAS_ITEM (part_item), pos->x, pos->y);
+	snap_to_grid (sheet_item_get_sheet (item)->grid, &x, & y);
+	goo_canvas_item_translate (GOO_CANVAS_ITEM (part_item), x, y);
 	                        
 	part_item->priv->cache_valid = FALSE;
 }
