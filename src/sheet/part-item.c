@@ -1340,7 +1340,6 @@ static void
 part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 {
 	PartItem *part_item;
-	gdouble x, y;
 	
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -1351,13 +1350,15 @@ part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
 		return;
 
 	part_item = PART_ITEM (item);
-	x = pos->x;
-	y = pos->y;
 
 	// Move the canvas item and invalidate the bbox cache.
-	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (part_item), NULL);
-	snap_to_grid (sheet_item_get_sheet (item)->grid, &x, & y);
-	goo_canvas_item_translate (GOO_CANVAS_ITEM (part_item), x, y);
+	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (item),
+	                               NULL);
+	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),
+	                                      pos->x,
+	                                      pos->y,
+	                                      1.0,
+	                                      0.0);
 	                        
 	part_item->priv->cache_valid = FALSE;
 }

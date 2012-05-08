@@ -257,12 +257,11 @@ item_data_set_pos (ItemData *item_data, SheetPos *pos)
 		return;
 
 	priv = item_data->priv;
-
-	delta.x = pos->x - priv->pos.x;
-	delta.y = pos->y - priv->pos.y;
-
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
+
+	delta.x = pos->x;
+	delta.y = pos->y;
 
 	signal_struct = g_new0 (SignalStruct, 1);
 	signal_struct->item_data = item_data;
@@ -285,7 +284,7 @@ emit_moved_signal_when_handler_connected (gpointer data)
 	delta.y = signal_struct->delta.y;
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), 
-	                                                   item_data->moved_handler_id);
+	                         item_data->moved_handler_id);
 	if (handler_connected) {
 		g_signal_emit_by_name (G_OBJECT (item_data), 
 		                       "moved", &delta);
@@ -298,6 +297,7 @@ void
 item_data_move (ItemData *item_data, SheetPos *delta)
 {
 	ItemDataPriv *priv;
+	SignalStruct *signal_struct;
 
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -306,11 +306,17 @@ item_data_move (ItemData *item_data, SheetPos *delta)
 		return;
 
 	priv = item_data->priv;
-	priv->pos.x = delta->x;
-	priv->pos.y = delta->y;
-
-	g_signal_emit_by_name (G_OBJECT (item_data), 
-	                       "moved", delta);
+	priv->pos.x += delta->x;
+	priv->pos.y += delta->y;
+	delta->x = priv->pos.x;
+	delta->y = priv->pos.y;
+	
+	signal_struct = g_new0 (SignalStruct, 1);
+	signal_struct->item_data = item_data;
+	signal_struct->delta = (* delta);
+	g_timeout_add (10,
+	               (gpointer) emit_moved_signal_when_handler_connected, 
+	               (gpointer) signal_struct);
 }
 
 gpointer // NodeStore * 

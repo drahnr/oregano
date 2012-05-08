@@ -738,6 +738,7 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			    	(GdkEventButton *) event);
 				return TRUE;
 			}
+
 			if (event->button.button == 1) {
 				if (!(event->button.state & GDK_SHIFT_MASK))
 					sheet_select_all (sheet, FALSE);
@@ -1167,8 +1168,8 @@ node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 	node_item = g_hash_table_lookup (sheet->priv->node_dots, pos);
 	if (node_item == NULL) {
 		node_item = NODE_ITEM (g_object_new (TYPE_NODE_ITEM, NULL));	
-		g_object_set (node_item, "parent", 
-		              goo_canvas_get_root_item (GOO_CANVAS (sheet)),
+		g_object_set (node_item, 
+		              "parent", goo_canvas_get_root_item (GOO_CANVAS (sheet)),
 		              "x", pos->x,
 					  "y", pos->y,
 					  NULL);
@@ -1185,8 +1186,8 @@ node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 static void
 node_dot_removed_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 {
-	gpointer *node_item; // GooCanvasItem* 
-	gpointer *orig_key;  // SheetPos* 
+	GooCanvasItem *node_item;
+	SheetPos * orig_key;
 	gboolean found;
 
 	g_return_if_fail (sheet != NULL);

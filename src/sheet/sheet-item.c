@@ -358,7 +358,6 @@ sheet_item_event (GooCanvasItem *sheet_item,
 	double snapped_x, snapped_y;
 	// Move the selected item(s) by this movement.
 	double dx, dy;
-	SheetPos delta;
 	
 	
 	g_return_val_if_fail (sheet_item != NULL, FALSE);
@@ -377,10 +376,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 			g_signal_stop_emission_by_name (G_OBJECT (sheet_item),
 			                                "button_press_event");
 			sheet->state = SHEET_STATE_DRAG_START;
-
-			last_x = event->button.x_root;
-			last_y = event->button.y_root;
-			snap_to_grid (sheet->grid, &last_x, &last_y);
+			sheet_get_pointer (sheet, &last_x, &last_y);
 			break;
 		case 3:
 			g_signal_stop_emission_by_name (G_OBJECT (sheet_item), 
@@ -391,9 +387,8 @@ sheet_item_event (GooCanvasItem *sheet_item,
 
 			// Bring up a context menu for right button clicks.
 			if (!SHEET_ITEM (sheet_item)->priv->selected &&
-				!((event->button.state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK)) {
+				!((event->button.state & GDK_SHIFT_MASK) == GDK_SHIFT_MASK))
 					sheet_select_all (sheet, FALSE);
-			}
 
 			sheet_item_select (SHEET_ITEM (sheet_item), TRUE);
 
@@ -451,10 +446,10 @@ sheet_item_event (GooCanvasItem *sheet_item,
 				return TRUE;
 			}
 
+			// Get the mouse motion
 			sheet_get_pointer (sheet, &snapped_x, &snapped_y);
-
-			delta.x = snapped_x - last_x;
-			delta.y = snapped_y - last_y;
+			snapped_x -= last_x;
+			snapped_y -= last_y;
 
 			sheet->state = SHEET_STATE_NONE;
 			goo_canvas_pointer_ungrab (canvas, GOO_CANVAS_ITEM (sheet_item),
@@ -472,17 +467,45 @@ sheet_item_event (GooCanvasItem *sheet_item,
 				SheetPos pos;
 
                 item_data = SHEET_ITEM (list->data)->priv->data;
-				item_data_get_pos (item_data, &pos);
-				delta.x = pos.x + snapped_x - last_x;
-				delta.y = pos.y + snapped_y - last_y;
-				snap_to_grid (sheet->grid, &delta.x, &delta.y);
-				item_data_move (item_data, &delta);
+				pos.x = snapped_x;
+				pos.y = snapped_y;
+				item_data_move (item_data, &pos);
                 item_data_register (item_data);
             }
 			g_list_free_full (list, g_object_unref);
 				
 			break;
 		}
+			
+	case GDK_KEY_PRESS:
+		switch (event->key.keyval) {
+			case GDK_KEY_r:
+				sheet_rotate_selection (sheet);
+				{
+					gdouble x, y;
+					GooCanvasBounds bounds;
+					
+					sheet_get_pointer (sheet, &x, &y);
+
+                    // Center the objects around the mouse pointer.
+					goo_canvas_item_get_bounds (
+						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
+
+					dx = x - (bounds.x1 + bounds.x2) / 2;
+					dy = y - (bounds.y1 + bounds.y2) / 2;
+                    snap_to_grid (sheet->grid, &dx, &dy);
+
+					goo_canvas_item_translate (
+						GOO_CANVAS_ITEM (priv->floating_group), dx, dy);
+
+                    last_x = snapped_x;
+                    last_y = snapped_y;
+				}
+				break;
+			default:
+				return FALSE;
+		}
+		return TRUE;
 
 	case GDK_MOTION_NOTIFY:
 		if (sheet->state != SHEET_STATE_DRAG &&
@@ -562,36 +585,6 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		goo_canvas_item_translate (GOO_CANVAS_ITEM (priv->selected_group), 
 			                       dx, dy);
 		return TRUE;
-			
-	case GDK_KEY_PRESS:
-		switch (event->key.keyval) {
-			case GDK_KEY_r:
-				sheet_rotate_selection (sheet);
-				{
-					gdouble x, y;
-					GooCanvasBounds bounds;
-					
-					sheet_get_pointer (sheet, &x, &y);
-
-                    // Center the objects around the mouse pointer.
-					goo_canvas_item_get_bounds (
-						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
-
-					dx = x - (bounds.x1 + bounds.x2) / 2;
-					dy = y - (bounds.y1 + bounds.y2) / 2;
-                    snap_to_grid (sheet->grid, &dx, &dy);
-
-					goo_canvas_item_translate (
-						GOO_CANVAS_ITEM (priv->floating_group), dx, dy);
-
-                    last_x = snapped_x;
-                    last_y = snapped_y;
-				}
-				break;
-			default:
-				return FALSE;
-		}
-		return TRUE;	
 	
 	default:
 		return FALSE;
@@ -651,7 +644,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 {
 	SheetPriv *priv;
 	GList *list;
-	static SheetPos delta;
+	static SheetPos pos;
 	static int control_key_down = 0;
 
 	// Remember the last position of the mouse cursor.
@@ -671,8 +664,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 	switch (event->type) {
 	case GDK_BUTTON_RELEASE:
-		g_signal_stop_emission_by_name (G_OBJECT (sheet), 
-		                                "event");
+		g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
 		break;
 
 	case GDK_BUTTON_PRESS:
@@ -691,8 +683,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			// Continue adding if CTRL is pressed
 			if (!control_key_down) {
 				sheet->state = SHEET_STATE_NONE;
-				g_signal_stop_emission_by_name (G_OBJECT (sheet),
-				                                "event");
+				g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
 				if (g_signal_handler_is_connected (G_OBJECT (sheet), 
 				    	sheet->priv->float_handler_id))
 					g_signal_handler_disconnect (G_OBJECT (sheet), 
@@ -700,14 +691,9 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 				sheet->priv->float_handler_id = 0;
 			}
-			
-			delta.x = event->button.x;
-			delta.y = event->button.y;
 
 			// Get pointer position independantly of the zoom
-			goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), 
-			                              &delta.x, &delta.y);
-			snap_to_grid (sheet->grid, &delta.x, &delta.y);
+			sheet_get_pointer (sheet, &pos.x, &pos.y);
 			
 			for (list = priv->floating_objects; list; list = list->next) {
 				SheetItem *floating_item;
@@ -725,10 +711,9 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 
 				g_object_ref (G_OBJECT (floating_data));
-
+				item_data_set_pos (floating_data, &pos);
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
 									floating_data);
-				item_data_move (floating_data, &delta);
 				if (!control_key_down)
 					g_object_unref (G_OBJECT (floating_item));
 			}
@@ -737,7 +722,15 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			if (!control_key_down) {
 				g_list_free (sheet->priv->floating_objects);
 				sheet->priv->floating_objects = NULL;
-			} 
+			}
+			else
+				g_object_set (G_OBJECT (sheet->priv->floating_group),
+				              "x", pos.x,
+				              "y", pos.y,
+				              NULL);
+
+			pos.x = 0.0; 
+			pos.y = 0.0; 
 			break;
 
 		case 3:
@@ -764,7 +757,6 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 		if (sheet->state == SHEET_STATE_FLOAT_START) {
 			sheet->state = SHEET_STATE_FLOAT;
-
 
 			// Reparent the selected objects so that we can move them 
 			// efficiently.

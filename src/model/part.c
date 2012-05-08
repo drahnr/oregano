@@ -255,11 +255,10 @@ part_new_from_library_part (LibraryPart *library_part)
 
 	pins = symbol->connections;
 
-	if ( pins )
+	if (pins)
 		part_set_pins (part, pins);
 
-	g_object_set (
-		G_OBJECT (part),
+	g_object_set (G_OBJECT (part),
 		"Part::properties", library_part->properties,
 		"Part::labels", library_part->labels,
 		NULL);
@@ -580,6 +579,7 @@ part_rotate (ItemData *data, int angle, SheetPos *center)
 
 	if (center) {
 		SheetPos part_pos;
+		gfloat tmp_x, tmp_y;
 
 		part_center_after.x = (b1.x + b2.x) / 2;
 		part_center_after.y = (b1.y + b2.y) / 2;
@@ -589,12 +589,12 @@ part_rotate (ItemData *data, int angle, SheetPos *center)
 
 		item_data_get_pos (ITEM_DATA (part), &part_pos);
 
-		x = part_center_before.x - center->x + part_pos.x;
-		y = part_center_before.y - center->y + part_pos.y;
+		tmp_x = x = part_center_before.x - center->x + part_pos.x;
+		tmp_y = y = part_center_before.y - center->y + part_pos.y;
 		cairo_matrix_transform_point (&affine, &x, &y);
 
-		delta.x = part_pos.x + dx + x;
-		delta.y = part_pos.y + dy + x;
+		delta.x = dx + x - tmp_x;
+		delta.y = dy + y - tmp_y;
 
 		item_data_move (ITEM_DATA (part), &delta);
 	}

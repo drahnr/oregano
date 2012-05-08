@@ -7,7 +7,7 @@ Sat, 29 Apr 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* Update "main" process to feature g_application_run
 
 Sat, 10 Mar 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
-	* TAF 0.80
+	* TAG 0.80
 	* Portage of oregano under gtk-3.0 & goocanvas
 
 Fri, 18 Jun 2010 Marc Lorber <Lorber.Marc@wanadoo.fr>
@@ -41,7 +41,7 @@ Sun, 17 Jan 2010 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* Upgrade of the oregano help
 
 	* Clear separation of header file for libraries between external interface
-           internal interfaces:*
+          and internal interfaces:*
 		==> Creation of engine-internal.h
 		==> Creation of gplot-internal.h
 

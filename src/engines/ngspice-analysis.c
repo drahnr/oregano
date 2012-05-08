@@ -112,7 +112,6 @@ get_variables (gchar *str, gint *count)
 
 void
 parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
-
 {
 	static SimulationData *sdata;
 	static Analysis *data;
@@ -208,7 +207,6 @@ parse_dc_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 
 void
 parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
-
 {
 	static SimulationData *sdata;
 	static Analysis *data;
@@ -217,9 +215,9 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	static gchar buf[256];
 	gboolean found = FALSE;	
 	NGSPICE_Variable *variables;
-	gint i, n=0, m=0, p=0; 
+	gint i, n = 0, m = 0, p = 0; 
 	gdouble val[10];
-	GSList *nodes_list=NULL;
+	GSList *nodes_list = NULL;
 	GError *error = NULL;
 	gint nodes_nb=0;
 	GArray **val_tmp1; 
@@ -266,7 +264,7 @@ parse_transient_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 	sdata->var_names   = (char**) g_new0 (gpointer, nodes_nb + 1);
 	sdata->var_units   = (char**) g_new0 (gpointer, nodes_nb + 1);
 	variables = get_variables (buf, &n);
-	n=n-1;
+	n = n - 1;
 	sdata->var_names[0] = g_strdup (_("Time"));
 	sdata->var_units[0] = g_strdup (_("time"));
 	for (i = 1; i < n; i++) {
@@ -541,7 +539,6 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 
 void
 ngspice_parse (OreganoNgSpice *ngspice)
-
 {
 	OreganoNgSpicePriv *priv = ngspice->priv;
 	SimSettings *sim_settings;

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Oregano 0.69\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-28 11:53+0200\n"
+"POT-Creation-Date: 2012-05-07 07:28+0200\n"
 "PO-Revision-Date: 2012-04-28 11:54+0200\n"
 "Last-Translator: Marc Lorber <Lorber.Marc@wanadoo.fr>\n"
 "Language-Team: français <>\n"
@@ -70,7 +70,7 @@ msgstr "Pas"
 msgid "<b>Fourier</b>"
 msgstr "<b>Fourier</b>"
 
-#: ../data/xml/sim-settings.ui.h:7 ../src/engines/ngspice-analysis.c:469
+#: ../data/xml/sim-settings.ui.h:7 ../src/engines/ngspice-analysis.c:465
 msgid "Frequency"
 msgstr "Fréquence"
 
@@ -166,8 +166,8 @@ msgstr "<b>Référence du point de test</b>"
 msgid "Export ..."
 msgstr "Exporter..."
 
-#: ../data/xml/export.ui.h:2 ../data/xml/properties.ui.h:4
-#: ../data/xml/textbox-properties-dialog.ui.h:2
+#: ../data/xml/export.ui.h:2 ../data/xml/page-properties.ui.h:2
+#: ../data/xml/properties.ui.h:4 ../data/xml/textbox-properties-dialog.ui.h:2
 msgid "    "
 msgstr "    "
 
@@ -226,6 +226,26 @@ msgstr "Fenêtre du journal d'Oregano"
 #: ../data/xml/log-window.ui.h:2
 msgid "Clear"
 msgstr "Effacer"
+
+#: ../data/xml/page-properties.ui.h:1 ../src/schematic-view-menu.h:48
+msgid "Print Properties"
+msgstr "Propriétés d'impression"
+
+#: ../data/xml/page-properties.ui.h:3
+msgid "Fit to page"
+msgstr "Adapter à taille de la page"
+
+#: ../data/xml/page-properties.ui.h:4
+msgid "Center Horizontally"
+msgstr "Centrer horizontalement"
+
+#: ../data/xml/page-properties.ui.h:5
+msgid "Center Vertically"
+msgstr "Centrer verticalement"
+
+#: ../data/xml/page-properties.ui.h:6
+msgid "<b>Alignment</b>"
+msgstr "<b>Alignement</b>"
 
 #: ../data/xml/part-browser.ui.h:1
 msgid "Parts"
@@ -406,9 +426,9 @@ msgid "Could not create part properties dialog."
 msgstr "Création du dialogue des propriétés du composant impossible."
 
 #: ../src/sheet/part-item.c:473 ../src/sheet/part-item.c:642
-#: ../src/sheet/textbox-item.c:556 ../src/settings.c:183
-#: ../src/schematic-view.c:301 ../src/schematic-view.c:1641
-#: ../src/part-browser.c:497 ../src/netlist-editor.c:217
+#: ../src/sheet/textbox-item.c:550 ../src/settings.c:183
+#: ../src/schematic-view.c:295 ../src/schematic-view.c:1626
+#: ../src/part-browser.c:491 ../src/netlist-editor.c:217
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -443,7 +463,7 @@ msgstr "Bobine d'induction"
 msgid "Could not create plot window."
 msgstr "Création de la fenêtre de tracé impossible."
 
-#: ../src/sheet/plot-add-function.c:62 ../src/schematic-view.c:1108
+#: ../src/sheet/plot-add-function.c:62 ../src/schematic-view.c:1098
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstall Oregano to fix "
@@ -516,20 +536,20 @@ msgstr "_Éditer le texte"
 msgid "Edit the text"
 msgstr "Éditer le texte"
 
-#: ../src/sheet/textbox-item.c:470
+#: ../src/sheet/textbox-item.c:466
 msgid "Label"
 msgstr "Étiquette"
 
-#: ../src/sheet/textbox-item.c:545 ../src/sheet/textbox-item.c:559
-#: ../src/sheet/textbox-item.c:567
+#: ../src/sheet/textbox-item.c:539 ../src/sheet/textbox-item.c:553
+#: ../src/sheet/textbox-item.c:561
 msgid "Could not create textbox properties dialog"
 msgstr "Création impossible du dialogue des propriétés des boîtes de texte"
 
-#: ../src/splash.c:54 ../src/splash.c:64 ../src/splash.c:72
+#: ../src/splash.c:57 ../src/splash.c:67 ../src/splash.c:75
 msgid "Could not create splash message."
 msgstr "Impossible de créer le message de bienvenue"
 
-#: ../src/splash.c:62
+#: ../src/splash.c:65
 #, c-format
 msgid ""
 "The files %s or %s could not be found. You might need to reinstall Oregano "
@@ -538,17 +558,17 @@ msgstr ""
 "Les fichiers %s ou %s sont introuvables. Vous devez essayer de réinstaller "
 "Oregano pour corriger ce problème."
 
-#: ../src/simulation.c:94 ../src/simulation.c:109 ../src/simulation.c:117
-#: ../src/simulation.c:124
+#: ../src/simulation.c:93 ../src/simulation.c:108 ../src/simulation.c:116
+#: ../src/simulation.c:123
 msgid "Could not create simulation dialog"
 msgstr "Création impossible du dialogue de simulation"
 
-#: ../src/simulation.c:161
+#: ../src/simulation.c:160
 #, c-format
 msgid "Progress: <b>%s</b>"
 msgstr "Avancement : <b>%s</b>"
 
-#: ../src/simulation.c:217
+#: ../src/simulation.c:216
 msgid ""
 "<span weight=\"bold\" size=\"large\">The simulation was aborted due to an "
 "error.</span>\n"
@@ -560,7 +580,7 @@ msgstr ""
 "\n"
 "Voulez-vous afficher le journal des erreurs ?"
 
-#: ../src/simulation.c:228
+#: ../src/simulation.c:227
 msgid "The simulation was aborted due to an error"
 msgstr "La simulation s'est terminée prématurément à la suite d'une erreur"
 
@@ -591,7 +611,7 @@ msgid "Value"
 msgstr "Valeur"
 
 #: ../src/sim-settings.c:1192 ../src/sim-settings.c:1313
-#: ../src/schematic-view.c:738 ../src/schematic-view.c:893
+#: ../src/schematic-view.c:731 ../src/schematic-view.c:882
 #: ../src/netlist-editor.c:340
 msgid "Could not create a netlist"
 msgstr "Création de la liste des connexions impossible"
@@ -616,7 +636,7 @@ msgstr ""
 msgid "Warning"
 msgstr "Avertissement"
 
-#: ../src/settings.c:154 ../src/settings.c:265
+#: ../src/settings.c:154 ../src/settings.c:264
 #, c-format
 msgid ""
 "No engine allowing analysis is available.\n"
@@ -628,16 +648,16 @@ msgstr ""
 "Soit ngspice, soit gnucap."
 
 #: ../src/settings.c:157 ../src/settings.c:165 ../src/settings.c:186
-#: ../src/settings.c:195 ../src/settings.c:202 ../src/settings.c:268
+#: ../src/settings.c:194 ../src/settings.c:201 ../src/settings.c:267
 msgid "Could not create settings dialog"
 msgstr "Création impossible du dialogue des paramètres"
 
-#: ../src/schematic-view.c:190 ../src/schematic-view.c:201
-#: ../src/schematic-view.c:208
+#: ../src/schematic-view.c:184 ../src/schematic-view.c:195
+#: ../src/schematic-view.c:202
 msgid "Could not create properties dialog"
 msgstr "Création du dialogue des propriétés impossible"
 
-#: ../src/schematic-view.c:197
+#: ../src/schematic-view.c:191
 #, c-format
 msgid ""
 "The file %s could not be found. You might need to reinstallOregano to fix "
@@ -646,16 +666,16 @@ msgstr ""
 "Le fichier %s est introuvable. Vous devriez réinstaller Oregano pour "
 "corriger ce problème."
 
-#: ../src/schematic-view.c:258
+#: ../src/schematic-view.c:252
 msgid "Export to..."
 msgstr "Exporter vers..."
 
-#: ../src/schematic-view.c:294 ../src/schematic-view.c:305
-#: ../src/schematic-view.c:312
+#: ../src/schematic-view.c:288 ../src/schematic-view.c:299
+#: ../src/schematic-view.c:306
 msgid "Could not create export dialog."
 msgstr "Création du dialogue des propriétés impossible"
 
-#: ../src/schematic-view.c:357
+#: ../src/schematic-view.c:351
 msgid ""
 "<span weight=\"bold\" size=\"large\">No filename has been chosen</span>\n"
 "\n"
@@ -665,42 +685,42 @@ msgstr ""
 "\n"
 "Activer la fenêtre de sélection afin d'en choisir un."
 
-#: ../src/schematic-view.c:434 ../src/schematic-view.c:489
+#: ../src/schematic-view.c:427 ../src/schematic-view.c:482
 msgid "Could not load file"
 msgstr "Chargement du fichier impossible"
 
-#: ../src/schematic-view.c:482
+#: ../src/schematic-view.c:475
 msgid "Unrecognized mime type"
 msgstr "Le type mime est non reconnue"
 
-#: ../src/schematic-view.c:504
+#: ../src/schematic-view.c:497
 msgid "Unknown type of file can't open"
 msgstr "Type de fichier inconnu"
 
-#: ../src/schematic-view.c:564 ../src/schematic-view.c:1216
-#: ../src/schematic-view.c:1222
+#: ../src/schematic-view.c:557 ../src/schematic-view.c:1206
+#: ../src/schematic-view.c:1212
 msgid "Untitled.oregano"
 msgstr "SansTitre.oregano"
 
-#: ../src/schematic-view.c:570
+#: ../src/schematic-view.c:563
 msgid "Could not save schematic file"
 msgstr "Enregistrement du fichier de schéma impossible"
 
-#: ../src/schematic-view.c:743 ../src/schematic-view.c:897
+#: ../src/schematic-view.c:736 ../src/schematic-view.c:887
 #: ../src/netlist-editor.c:344
 msgid "An unexpected error has occurred"
 msgstr "Une erreur inattendue s'est produite"
 
-#: ../src/schematic-view.c:1100 ../src/schematic-view.c:1110
-#: ../src/schematic-view.c:1118
+#: ../src/schematic-view.c:1090 ../src/schematic-view.c:1100
+#: ../src/schematic-view.c:1108
 msgid "Could not create main window."
 msgstr "Création de la fenêtre principale impossible."
 
-#: ../src/schematic-view.c:1223
+#: ../src/schematic-view.c:1213
 msgid "Untitled.netlist"
 msgstr "SansTitre.netlist"
 
-#: ../src/schematic-view.c:1351
+#: ../src/schematic-view.c:1339
 #, c-format
 msgid ""
 "<span weight=\"bold\" size=\"large\">Save changes to schematic %s before "
@@ -713,15 +733,15 @@ msgstr ""
 "\n"
 "Voulez-vous l'enregistrer ?"
 
-#: ../src/schematic-view.c:1364
+#: ../src/schematic-view.c:1352
 msgid "Close _without Saving"
 msgstr "Fermeture _sans enregistrement"
 
-#: ../src/schematic-view.c:1625 ../src/schematic-view.c:1651
+#: ../src/schematic-view.c:1613 ../src/schematic-view.c:1636
 msgid "Could not create the log window."
 msgstr "Création de la fenêtre de journal impossible"
 
-#: ../src/schematic-view.c:1643
+#: ../src/schematic-view.c:1628
 msgid "Could not create the log window"
 msgstr "Création de la fenêtre de journal impossible"
 
@@ -770,7 +790,6 @@ msgstr "Ouvrir un schéma"
 msgid "_Recent Files"
 msgstr "Fichiers _récemment modifié"
 
-#. G_CALLBACK (display_recent_files)},
 #: ../src/schematic-view-menu.h:46
 msgid "_Save"
 msgstr "_Enregistrer"
@@ -786,10 +805,6 @@ msgstr "Enregistrer _comme..."
 #: ../src/schematic-view-menu.h:47
 msgid "Save a schematic with other name"
 msgstr "Enregistrer le schéma sous un autre nom"
-
-#: ../src/schematic-view-menu.h:48
-msgid "Print Properties"
-msgstr "Propriétés d'impression"
 
 #: ../src/schematic-view-menu.h:48
 msgid "Set print properties"
@@ -1023,20 +1038,20 @@ msgstr "Point de mesure"
 msgid "Add voltage clamp"
 msgstr "Ajouter un point de mesure"
 
-#: ../src/plot.c:129 ../src/engines/gnucap.c:677 ../src/engines/gnucap.c:688
-#: ../src/engines/ngspice-analysis.c:162 ../src/engines/ngspice-analysis.c:164
-#: ../src/engines/ngspice-analysis.c:276 ../src/engines/ngspice-analysis.c:338
-#: ../src/engines/ngspice-analysis.c:371 ../src/engines/ngspice-analysis.c:475
+#: ../src/plot.c:129 ../src/engines/gnucap.c:665 ../src/engines/gnucap.c:676
+#: ../src/engines/ngspice-analysis.c:159 ../src/engines/ngspice-analysis.c:161
+#: ../src/engines/ngspice-analysis.c:272 ../src/engines/ngspice-analysis.c:334
+#: ../src/engines/ngspice-analysis.c:367 ../src/engines/ngspice-analysis.c:471
 msgid "voltage"
 msgstr "tension"
 
-#: ../src/plot.c:135 ../src/engines/gnucap.c:671
-#: ../src/engines/ngspice-analysis.c:273
+#: ../src/plot.c:135 ../src/engines/gnucap.c:659
+#: ../src/engines/ngspice-analysis.c:269
 msgid "time"
 msgstr "temps"
 
-#: ../src/plot.c:138 ../src/engines/gnucap.c:682
-#: ../src/engines/ngspice-analysis.c:473
+#: ../src/plot.c:138 ../src/engines/gnucap.c:670
+#: ../src/engines/ngspice-analysis.c:469
 msgid "frequency"
 msgstr "fréquence"
 
@@ -1079,26 +1094,55 @@ msgstr "Fichier"
 msgid "TRANSFER"
 msgstr "TRANSFERT"
 
-#: ../src/part-browser.c:180 ../src/part-browser.c:404
+#: ../src/part-browser.c:180 ../src/part-browser.c:400
 msgid "Unable to load required part"
 msgstr "Il est impossible de charger le composant demandé"
 
-#: ../src/part-browser.c:481 ../src/part-browser.c:501
-#: ../src/part-browser.c:509
+#: ../src/part-browser.c:475 ../src/part-browser.c:495
+#: ../src/part-browser.c:503
 msgid "Could not create part browser"
 msgstr "Création du navigateur de composants impossible"
+
+#: ../src/oregano.c:144
+#, c-format
+msgid ""
+"You seem to be running Oregano without having it installed properly on your "
+"system.\n"
+"\n"
+"Please install Oregano and try again."
+msgstr ""
+"Il semble que vous utilisez Oregano sans qu'il soit correctement installé "
+"sur votre\n"
+"système.\n"
+"Veuillez réinstaller Oregano et essayer de nouveau."
+
+#: ../src/oregano.c:163
+msgid ""
+"Could not find a parts library.\n"
+"\n"
+"This is probably due to a faulty installation of Oregano. Please check your "
+"installation."
+msgstr ""
+"Aucune bibliothèque de composants trouvée.\n"
+"\n"
+"Ce problème est probablement dû à une installation défectueuse d'Oregano. "
+"Veuillez vérifier votre installation."
+
+#: ../src/oregano.c:204
+msgid "Welcome to Oregano"
+msgstr "Oregano"
 
 #: ../src/oregano-config.c:115
 #, c-format
 msgid "Loading %s ..."
 msgstr "Chargement de %s ..."
 
-#: ../src/oregano-config.c:157
+#: ../src/oregano-config.c:153
 #, c-format
 msgid "Could not read the parts library: %s "
 msgstr "Lecture de la bibliothèque de composants impossible : %s"
 
-#: ../src/oregano-config.c:159
+#: ../src/oregano-config.c:155
 #, c-format
 msgid ""
 "The file is probably corrupt. Please reinstall the parts library or Oregano "
@@ -1108,11 +1152,11 @@ msgstr ""
 "Veuillez réinstaller cette bibliothèque\n"
 "ou Oregano et essayer de nouveau."
 
-#: ../src/engines/netlist-helper.c:462
+#: ../src/engines/netlist-helper.c:461
 msgid "No ground node. Aborting.\n"
 msgstr "Pas de noeud de masse. Abandon.\n"
 
-#: ../src/engines/netlist-helper.c:467
+#: ../src/engines/netlist-helper.c:466
 #, c-format
 msgid ""
 "Possibly due to a faulty circuit schematic. Please check that\n"
@@ -1121,11 +1165,11 @@ msgstr ""
 "Ceci peut être dû à une erreur de schéma. Veuillez vous\n"
 "assurer que vous avez un noeud de masse et essayer à nouveau."
 
-#: ../src/engines/netlist-helper.c:472
+#: ../src/engines/netlist-helper.c:471
 msgid "No test clamps found. Aborting.\n"
 msgstr "Pas de point de test. Abandon.\n"
 
-#: ../src/engines/netlist-helper.c:477
+#: ../src/engines/netlist-helper.c:476
 #, c-format
 msgid ""
 "Possibly due to a faulty circuit schematic. Please check that\n"
@@ -1135,32 +1179,32 @@ msgstr ""
 "assurer que vous avez un ou plusieurs points de test et\n"
 "essayez à nouveau."
 
-#: ../src/engines/netlist-helper.c:585
+#: ../src/engines/netlist-helper.c:580
 #, c-format
 msgid "Couldn't find part, pin_nr %d."
 msgstr "Impossible de trouver le composant, contact %d"
 
-#: ../src/engines/netlist-helper.c:586
+#: ../src/engines/netlist-helper.c:581
 msgid "Problem of library:"
 msgstr "Problème de bibliothèque"
 
-#: ../src/engines/gnucap.c:384 ../src/engines/ngspice.c:332
+#: ../src/engines/gnucap.c:375 ../src/engines/ngspice.c:332
 msgid "### Too few or none analysis found ###\n"
 msgstr "### Pas assez ou aucune analyse trouvée ###\n"
 
-#: ../src/engines/gnucap.c:453
+#: ../src/engines/gnucap.c:444
 msgid "Unable to execute GnuCap."
 msgstr "Il est impossible d'exécuter « GnuCap »"
 
-#: ../src/engines/gnucap.c:470 ../src/engines/ngspice.c:447
+#: ../src/engines/gnucap.c:461 ../src/engines/ngspice.c:447
 msgid "None"
 msgstr "Aucun"
 
-#: ../src/engines/gnucap.c:728
+#: ../src/engines/gnucap.c:716
 msgid "Unknown analysis"
 msgstr "Analyse inconnue"
 
-#: ../src/engines/gnucap.c:778
+#: ../src/engines/gnucap.c:766
 msgid "abort"
 msgstr "arrêt"
 
@@ -1220,27 +1264,27 @@ msgstr ""
 msgid "Unable to execute NgSpice."
 msgstr "Il est impossible d'exécuter « NgSpice »"
 
-#: ../src/engines/ngspice-analysis.c:248
+#: ../src/engines/ngspice-analysis.c:244
 msgid "Only the 9 first nodes will be considered"
 msgstr "Seuls les 9 premiers noeuds seront pris en charge"
 
-#: ../src/engines/ngspice-analysis.c:272
+#: ../src/engines/ngspice-analysis.c:268
 msgid "Time"
 msgstr "Temps"
 
-#: ../src/engines/ngspice-analysis.c:585
+#: ../src/engines/ngspice-analysis.c:580
 msgid "No analysis found"
 msgstr "Aucune analyse trouvée"
 
-#: ../src/engines/ngspice-analysis.c:595
+#: ../src/engines/ngspice-analysis.c:590
 msgid "Transient analysis expected not found"
 msgstr "L'analyse transitoire attendue est non trouvée"
 
-#: ../src/engines/ngspice-analysis.c:615
+#: ../src/engines/ngspice-analysis.c:610
 msgid "Fourier analysis expected not found"
 msgstr "L'analyse de Fourier attendue est non trouvée"
 
-#: ../src/engines/ngspice-analysis.c:634
+#: ../src/engines/ngspice-analysis.c:629
 msgid "DC Sweep expected but not found"
 msgstr "Analyse de balayage en courant continue non trouvée"
 
@@ -1308,7 +1352,7 @@ msgstr "Enregistrer fichier"
 msgid "Netlist File"
 msgstr "Fichier netlist"
 
-#: ../src/dialogs.c:162
+#: ../src/dialogs.c:164
 msgid ""
 "(c) 2009-2012 Marc Lorber 2003-2006 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
@@ -1316,7 +1360,7 @@ msgstr ""
 "(c) 2009-2012 Marc Lorber 2003-2006 LUGFi\n"
 "(c) 1999-2001 Richard Hult"
 
-#: ../src/dialogs.c:176
+#: ../src/dialogs.c:178
 msgid "Schematic capture and circuit simulation.\n"
 msgstr "Dessin de schémas et simulation de circuits.\n"
 
@@ -1325,27 +1369,27 @@ msgstr "Dessin de schémas et simulation de circuits.\n"
 msgid "Couldn't find the requested symbol%s for part %s in library.\n"
 msgstr "Le symbole demandé %s pour le composant %s est introuvable.\n"
 
-#: ../src/model/schematic.c:571
+#: ../src/model/schematic.c:569
 #, c-format
 msgid "File %s does not exists."
 msgstr "Le fichier %s n'existe pas."
 
-#: ../src/model/schematic.c:579 ../src/model/schematic.c:618
+#: ../src/model/schematic.c:577 ../src/model/schematic.c:616
 #, c-format
 msgid "Unknown file format for %s."
 msgstr "Format de fichier inconnu pour %s."
 
-#: ../src/model/schematic.c:598
+#: ../src/model/schematic.c:596
 #, c-format
 msgid "Load fails!."
 msgstr "Échec du chargement."
 
-#: ../src/model/schematic.c:999 ../src/model/schematic.c:1003
-#: ../src/model/schematic.c:1009
+#: ../src/model/schematic.c:997 ../src/model/schematic.c:1001
+#: ../src/model/schematic.c:1007
 msgid "Error loading print-options.ui"
 msgstr "Il est impossible de charger « print-options.ui »"
 
-#: ../src/model/schematic.c:1083
+#: ../src/model/schematic.c:1081
 msgid "Schematic"
 msgstr "Schéma"
 
@@ -1376,36 +1420,11 @@ msgstr "Schéma"
 #~ msgid "[FILES]"
 #~ msgstr "[Fichiers]"
 
-#~ msgid ""
-#~ "You seem to be running Oregano without having it installed properly on "
-#~ "your system.\n"
-#~ "\n"
-#~ "Please install Oregano and try again."
-#~ msgstr ""
-#~ "Il semble que vous utilisez Oregano sans qu'il soit correctement installé "
-#~ "sur votre\n"
-#~ "système.\n"
-#~ "Veuillez réinstaller Oregano et essayer de nouveau."
-
-#~ msgid ""
-#~ "Could not find a parts library.\n"
-#~ "\n"
-#~ "This is probably due to a faulty installation of Oregano. Please check "
-#~ "your installation."
-#~ msgstr ""
-#~ "Aucune bibliothèque de composants trouvée.\n"
-#~ "\n"
-#~ "Ce problème est probablement dû à une installation défectueuse d'Oregano. "
-#~ "Veuillez vérifier votre installation."
-
 #~ msgid "Format '%s' not supported."
 #~ msgstr "Le format « %s » n'est pas supporté"
 
 #~ msgid "Done.\n"
 #~ msgstr "Effectué.\n"
-
-#~ msgid "Welcome to Oregano"
-#~ msgstr "Oregano"
 
 #, fuzzy
 #~ msgid "Analysis expected not found 2"
@@ -1579,18 +1598,6 @@ msgstr "Schéma"
 #~ msgid "TODO : Add FINDPATH for Engines"
 #~ msgstr ""
 #~ "A_faire : Ajouter le moyen de trouver le chemin des moteurs « SPICE »"
-
-#~ msgid "<b>Alignment</b>"
-#~ msgstr "<b>Alignement</b>"
-
-#~ msgid "Center Horizontally"
-#~ msgstr "Centrer horizontalement"
-
-#~ msgid "Center Vertically"
-#~ msgstr "Centrer verticalement"
-
-#~ msgid "Fit to page"
-#~ msgstr "Adapter à taille de la page"
 
 #~ msgid "Could not create the page properties dialog"
 #~ msgstr "Création du dialogue des propriétés de la page impossible"
