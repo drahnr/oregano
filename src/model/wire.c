@@ -361,8 +361,8 @@ wire_rotate (ItemData *data, int angle, SheetPos *center_pos)
 
 	if (center_pos) {
 		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
-		wire_center_before.x = b1.x + (b2.x - b1.x) / 2;
-		wire_center_before.y = b1.y + (b2.y - b1.y) / 2;
+		wire_center_before.x = (b1.x + b2.x) / 2;
+		wire_center_before.y = (b1.y + b2.y) / 2;
 	}
 
 	priv = wire->priv;
@@ -412,8 +412,8 @@ wire_rotate (ItemData *data, int angle, SheetPos *center_pos)
 
 		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
 
-		wire_center_after.x = b1.x + (b2.x - b1.x) / 2;
-		wire_center_after.y = b1.y + (b2.y - b1.y) / 2;
+		wire_center_after.x = (b1.x + b2.x) / 2;
+		wire_center_after.y = (b1.y + b2.y) / 2;
 
 		dx = wire_center_before.x - wire_center_after.x;
 		dy = wire_center_before.y - wire_center_after.y;

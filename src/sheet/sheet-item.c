@@ -365,7 +365,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 
 	priv = sheet->priv;
 
-	canvas = goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (sheet_item));
+	canvas = GOO_CANVAS (sheet);
 	
 	switch (event->type) {
 	case GDK_BUTTON_PRESS:
@@ -373,14 +373,12 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		gtk_widget_grab_focus (GTK_WIDGET (sheet));
 		switch (event->button.button) {
 		case 1:
-			g_signal_stop_emission_by_name (G_OBJECT (sheet_item),
-			                                "button_press_event");
+			g_signal_stop_emission_by_name (sheet_item, "button_press_event");
 			sheet->state = SHEET_STATE_DRAG_START;
 			sheet_get_pointer (sheet, &last_x, &last_y);
 			break;
 		case 3:
-			g_signal_stop_emission_by_name (G_OBJECT (sheet_item), 
-			                                "button_press_event");
+			g_signal_stop_emission_by_name (sheet_item, "button_press_event");
 
 			if (sheet->state != SHEET_STATE_NONE)
 				return TRUE;
@@ -409,9 +407,8 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		case 1:
 			if (sheet->state == SHEET_STATE_DRAG_START)
 				sheet->state = SHEET_STATE_NONE;
-			g_signal_stop_emission_by_name (G_OBJECT (sheet_item), 
-			                                "button_press_event");
-			g_signal_emit_by_name (G_OBJECT (sheet_item), "double_clicked");
+			g_signal_stop_emission_by_name (sheet_item, "button_press_event");
+			g_signal_emit_by_name (sheet_item, "double_clicked");
 			break;
 
 		default:
@@ -420,8 +417,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		break;
 
 	case GDK_3BUTTON_PRESS:
-		g_signal_stop_emission_by_name (G_OBJECT (sheet_item), 
-		                                "button_press_event");
+		g_signal_stop_emission_by_name (sheet_item, "button_press_event");
 		return TRUE;
 
 	case GDK_BUTTON_RELEASE:
@@ -431,8 +427,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 				sheet->state != SHEET_STATE_DRAG_START)
 				return TRUE;
 
-			g_signal_stop_emission_by_name (G_OBJECT (sheet_item), 
-			                                "button-release-event");
+			g_signal_stop_emission_by_name (sheet_item, "button-release-event");
 
 			if (sheet->state == SHEET_STATE_DRAG_START) {
 				sheet->state = SHEET_STATE_NONE;
@@ -543,10 +538,8 @@ sheet_item_event (GooCanvasItem *sheet_item,
 	    		event->button.time);
 		}
 
-		// Set last_x & last_y to the pointer position		
-		snapped_x = event->button.x_root;
-		snapped_y = event->button.y_root;
-		snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
+		// Set last_x & last_y to the pointer position
+		sheet_get_pointer (sheet, &snapped_x, &snapped_y);
 
 		dx = snapped_x - last_x;
 		dy = snapped_y - last_y;
@@ -611,10 +604,8 @@ sheet_item_cancel_floating (Sheet *sheet)
 	    sheet->state != SHEET_STATE_FLOAT_START)
 		return;
 
-	if (g_signal_handler_is_connected (G_OBJECT (sheet), 
-	      sheet->priv->float_handler_id))
-		g_signal_handler_disconnect(G_OBJECT (sheet), 
-		  sheet->priv->float_handler_id);
+	if (g_signal_handler_is_connected (sheet, sheet->priv->float_handler_id))
+		g_signal_handler_disconnect (sheet, sheet->priv->float_handler_id);
 
 	g_object_unref (G_OBJECT (group));
 
@@ -664,7 +655,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 	switch (event->type) {
 	case GDK_BUTTON_RELEASE:
-		g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
+		g_signal_stop_emission_by_name (sheet, "event");
 		break;
 
 	case GDK_BUTTON_PRESS:
@@ -683,11 +674,11 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			// Continue adding if CTRL is pressed
 			if (!control_key_down) {
 				sheet->state = SHEET_STATE_NONE;
-				g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
-				if (g_signal_handler_is_connected (G_OBJECT (sheet), 
+				g_signal_stop_emission_by_name (sheet, "event");
+				if (g_signal_handler_is_connected (sheet, 
 				    	sheet->priv->float_handler_id))
-					g_signal_handler_disconnect (G_OBJECT (sheet), 
-					    sheet->priv->float_handler_id);
+					g_signal_handler_disconnect (sheet, 
+          				sheet->priv->float_handler_id);
 
 				sheet->priv->float_handler_id = 0;
 			}
@@ -735,8 +726,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 		case 3:
 			// Cancel the "float-placement" for button-3 clicks.
-			g_signal_stop_emission_by_name (G_OBJECT (sheet), 
-			                                "event");
+			g_signal_stop_emission_by_name (sheet, "event");
 			sheet_item_cancel_floating (sheet);
 			break;
 		}
@@ -744,8 +734,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 	case GDK_2BUTTON_PRESS:
 	case GDK_3BUTTON_PRESS:
-		g_signal_stop_emission_by_name (G_OBJECT (sheet), 
-		                                "event");
+		g_signal_stop_emission_by_name (sheet, "event");
 		return TRUE;
 
 	case GDK_MOTION_NOTIFY:
@@ -753,7 +742,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			sheet->state != SHEET_STATE_FLOAT_START)
 			return FALSE;
 
-		g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
+		g_signal_stop_emission_by_name (sheet, "event");
 
 		if (sheet->state == SHEET_STATE_FLOAT_START) {
 			sheet->state = SHEET_STATE_FLOAT;
@@ -837,7 +826,7 @@ sheet_item_select (SheetItem *item, gboolean select)
 		return FALSE;
 	}
 
-	g_signal_emit_by_name (G_OBJECT (item), "selection_changed", select);
+	g_signal_emit_by_name (item, "selection_changed", select);
 	item->priv->selected = select;
 
 	return TRUE;

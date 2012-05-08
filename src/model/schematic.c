@@ -194,7 +194,7 @@ node_dot_added_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	g_signal_emit_by_name (G_OBJECT (schematic), "node_dot_added", pos);
+	g_signal_emit_by_name (schematic, "node_dot_added", pos);
 }
 
 static void
@@ -203,7 +203,7 @@ node_dot_removed_callback (NodeStore *store, SheetPos *pos, Schematic *schematic
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	g_signal_emit_by_name (G_OBJECT (schematic), "node_dot_removed", pos);
+	g_signal_emit_by_name (schematic, "node_dot_removed", pos);
 }
 
 static void
@@ -238,11 +238,11 @@ schematic_init (Schematic *schematic)
 	    "weight", PANGO_WEIGHT_BOLD, 
 	    NULL);
 
-	g_signal_connect_object (G_OBJECT (priv->store), "node_dot_added",
+	g_signal_connect_object (priv->store, "node_dot_added",
 		G_CALLBACK (node_dot_added_callback), G_OBJECT (schematic), 
 	    G_CONNECT_AFTER);
 
-	g_signal_connect_object (G_OBJECT (priv->store), "node_dot_removed",
+	g_signal_connect_object (priv->store, "node_dot_removed",
 		G_CALLBACK (node_dot_removed_callback), G_OBJECT (schematic),
 		G_CONNECT_AFTER);
 
@@ -288,8 +288,7 @@ schematic_dispose (GObject *object)
 	schematic_list = g_list_remove (schematic_list, schematic);
 
 	if (schematic_count_ == 0) {
-		g_signal_emit_by_name(G_OBJECT (schematic),
-			"last_schematic_destroyed", NULL);
+		g_signal_emit_by_name (schematic, "last_schematic_destroyed", NULL);
 	}
 
 	g_list_free_full (list, g_object_unref);
@@ -359,8 +358,7 @@ schematic_set_title (Schematic *schematic, const gchar *title)
 		g_free (schematic->priv->title);
 	schematic->priv->title = g_strdup (title);
 
-	g_signal_emit_by_name (G_OBJECT (schematic),
-		"title_changed", schematic->priv->title);
+	g_signal_emit_by_name (schematic, "title_changed", schematic->priv->title);
 }
 
 void
@@ -514,8 +512,7 @@ schematic_log_show (Schematic *schematic)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	g_signal_emit_by_name (G_OBJECT (schematic),
-		"log_updated", schematic->priv->log);
+	g_signal_emit_by_name (schematic, "log_updated", schematic->priv->log);
 }
 
 void
@@ -645,11 +642,10 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_object_set (G_OBJECT (data), 
 	              "store", store, 
 	              NULL);
-	if (item_data_register (data) == -1) {
+	
+	if (item_data_register (data) == -1)
 		// Item does not be added
-		g_object_unref (G_OBJECT (data));
 		return;
-	}
 
 	// Some items need a reference designator. Find a good one.
 	prefix = item_data_get_refdes_prefix (data);
@@ -667,13 +663,12 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_object_weak_ref (G_OBJECT (data), item_data_destroy_callback, 
 		G_OBJECT (sm));
 
-	g_signal_connect_object (G_OBJECT (data), 
-	                         "moved", G_CALLBACK (item_moved_callback), 
+	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback), 
 	                         sm, 0);
 
 	sm->priv->dirty = TRUE;
 
-	g_signal_emit_by_name (G_OBJECT (sm), 
+	g_signal_emit_by_name (sm, 
 	                       "item_data_added", data);
 }
 

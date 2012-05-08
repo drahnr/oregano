@@ -215,7 +215,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	
 	wire_item = WIRE_ITEM (item);
 	g_object_set (wire_item, 
-	              "data", wire, 
+	              "data", wire,
 	              NULL);
 
 	priv = wire_item->priv;
@@ -231,7 +231,8 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	    		"line-width", 1.0,
 	    		NULL));
 	g_object_set (priv->resize1, 
-				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	              NULL);
 
 	priv->resize2 = GOO_CANVAS_RECT (goo_canvas_rect_new (
 				GOO_CANVAS_ITEM (wire_item),
@@ -244,7 +245,8 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	    		"line-width", 1.0, 
 	    		NULL));
 	g_object_set (priv->resize2, 
-				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	              NULL);
 
 	points = goo_canvas_points_new (2);                                 
 	points->coords[0] = 0;
@@ -263,20 +265,20 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	goo_canvas_points_unref (points);
 
 	ITEM_DATA (wire)->rotated_handler_id = 
-		g_signal_connect_data (G_OBJECT (wire), "rotated",
+		g_signal_connect_data (wire, "rotated",
 		G_CALLBACK (wire_rotated_callback), G_OBJECT (wire_item), NULL, 0);
 	
-	g_signal_connect_data (G_OBJECT (wire), "flipped",
+	g_signal_connect_data (wire, "flipped",
 		G_CALLBACK (wire_flipped_callback), G_OBJECT (wire_item), NULL, 0);
 	
 	ITEM_DATA (wire)->moved_handler_id = 
-		g_signal_connect_object (G_OBJECT (wire), "moved",
+		g_signal_connect_object (wire, "moved",
 		G_CALLBACK (wire_moved_callback),  G_OBJECT (wire_item), 0);
 
-	g_signal_connect (G_OBJECT (wire), "changed", 
+	g_signal_connect (wire, "changed", 
 		G_CALLBACK (wire_changed_callback), wire_item);
 
-	g_signal_connect (G_OBJECT (wire), "delete", 
+	g_signal_connect (wire, "delete", 
 	    G_CALLBACK (wire_delete_callback), wire_item);
 	                                   
 	wire_update_bbox (wire);
@@ -298,6 +300,7 @@ wire_item_event (WireItem *wire_item,
 	double snapped_x, snapped_y;
 	SheetPos pos;
 
+	
 	canvas = GOO_CANVAS (sheet);
 	g_object_get (G_OBJECT (wire_item), 
 	              "data", &wire, 
@@ -310,13 +313,10 @@ wire_item_event (WireItem *wire_item,
 		case GDK_BUTTON_PRESS:
 			switch (event->button.button) {
 				case 1: {
-					g_signal_stop_emission_by_name (G_OBJECT (wire_item), 
-					                                "button_press_event");
 					double x, y;
-					x = event->button.x;
-					y = event->button.y;
-					goo_canvas_convert_from_pixels (GOO_CANVAS (sheet),
-					                                &x, &y);
+					g_signal_stop_emission_by_name (wire_item, 
+					                                "button_press_event");
+					sheet_get_pointer (sheet, &x, &y);
 					x = x - start_pos.x;
 					y = y - start_pos.y;
 					if ((x > -RESIZER_SIZE) && (x < RESIZER_SIZE)  &&
@@ -325,11 +325,7 @@ wire_item_event (WireItem *wire_item,
 						sheet->state = SHEET_STATE_DRAG_START;
 						wire_item->priv->resize_state = WIRE_RESIZER_1;
 
-						x = event->button.x;
-						y = event->button.y;
-						goo_canvas_convert_from_pixels (GOO_CANVAS (sheet),
-						                                &x, &y);
-						snap_to_grid (sheet->grid, &x, &y);
+						sheet_get_pointer (sheet, &x, &y);
 						last_x = x;
 						last_y = y;
 						item_data_unregister (ITEM_DATA (wire)); 
@@ -343,11 +339,7 @@ wire_item_event (WireItem *wire_item,
 						sheet->state = SHEET_STATE_DRAG_START;
 						wire_item->priv->resize_state = WIRE_RESIZER_2;
 
-						x = event->button.x;
-						y = event->button.y;
-						goo_canvas_convert_from_pixels (GOO_CANVAS (sheet),
-						                                &x, &y);
-						snap_to_grid (sheet->grid, &x, &y);
+						sheet_get_pointer (sheet, &x, &y);
 						last_x = x;
 						last_y = y;
 						item_data_unregister (ITEM_DATA (wire));
@@ -368,14 +360,13 @@ wire_item_event (WireItem *wire_item,
 
 			if (sheet->state == SHEET_STATE_DRAG_START || 
 			    sheet->state == SHEET_STATE_DRAG) 	   {
+
+				g_signal_stop_emission_by_name (wire_item, 
+				                                "motion-notify-event");
 					
 				sheet->state = SHEET_STATE_DRAG;
 				
-				snapped_x = event->button.x_root;
-				snapped_y = event->button.y_root;
-				goo_canvas_convert_from_pixels (GOO_CANVAS (sheet),
-				                                &snapped_x, &snapped_y);
-				snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
+				sheet_get_pointer (sheet, &snapped_x, &snapped_y);
 		
 				dx = snapped_x - last_x;
 				dy = snapped_y - last_y;
@@ -437,8 +428,8 @@ wire_item_event (WireItem *wire_item,
 				if (wire_item->priv->resize_state == WIRE_RESIZER_NONE) {
 					break;
 				}
-					
-				g_signal_stop_emission_by_name (G_OBJECT (wire_item), 
+				
+				g_signal_stop_emission_by_name (wire_item, 
 				                                "button-release-event");
 				   
 				goo_canvas_pointer_ungrab (canvas, GOO_CANVAS_ITEM (wire_item),
@@ -459,26 +450,26 @@ wire_item_event (WireItem *wire_item,
 }
 
 void
-wire_item_signal_connect_placed (WireItem *wire, Sheet *sheet)
+wire_item_signal_connect_placed (WireItem *wire_item, Sheet *sheet)
 {
 	ItemData *item;
 
-	item = sheet_item_get_data (SHEET_ITEM (wire));
+	item = sheet_item_get_data (SHEET_ITEM (wire_item));
 
-	g_signal_connect (G_OBJECT (wire), "button-press-event",
+	g_signal_connect (wire_item, "button-press-event",
 	    G_CALLBACK (wire_item_event), sheet);
 
-	g_signal_connect (G_OBJECT (wire), "button-release-event",
+	g_signal_connect (wire_item, "button-release-event",
 	    G_CALLBACK (wire_item_event), sheet);
 	
-	g_signal_connect (G_OBJECT (wire), "motion-notify-event",
+	g_signal_connect (wire_item, "motion-notify-event",
 	    G_CALLBACK (wire_item_event), sheet);
 		
-	g_signal_connect (G_OBJECT (wire), "mouse_over",
+	g_signal_connect (wire_item, "mouse_over",
 		G_CALLBACK (mouse_over_wire_callback), sheet);
 
-	g_signal_connect (G_OBJECT (item), "highlight",
-		G_CALLBACK (highlight_wire_callback), wire);
+	g_signal_connect (item, "highlight",
+		G_CALLBACK (highlight_wire_callback), wire_item);
 }
 
 static void
@@ -620,7 +611,10 @@ wire_item_get_start_pos (WireItem *item, SheetPos *pos)
 	g_return_if_fail (IS_WIRE_ITEM (item));
 	g_return_if_fail (pos != NULL);
 
-	g_object_get (G_OBJECT (item), "x", &pos->x, "y", &pos->y, NULL);
+	g_object_get (G_OBJECT (item), 
+	              "x", &pos->x, 
+	              "y", &pos->y, 
+	              NULL);
 }
 
 // This function returns the length of the canvas item.
@@ -740,7 +734,7 @@ wire_traverse (Wire *wire)
 
 	wire_set_visited (wire, TRUE);
 
-	g_signal_emit_by_name(G_OBJECT (wire), "highlight");
+	g_signal_emit_by_name (wire, "highlight");
 
 	for (nodes = wire_get_nodes (wire); nodes; nodes = nodes->next) {
 		Node *node = nodes->data;
