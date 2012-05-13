@@ -577,7 +577,7 @@ static void
 close_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (can_close (sv)) {
-		g_object_unref (G_OBJECT (sv));
+		g_application_quit (g_application_get_default ());
 	}
 }
 
@@ -773,6 +773,7 @@ quit_cmd (GtkWidget *widget, SchematicView *sv)
 
 	g_list_free (copy);
 	g_list_free_full (list, g_object_unref);
+	g_application_quit (g_application_get_default ());
 }
 
 static void
@@ -1008,17 +1009,19 @@ schematic_view_finalize (GObject *object)
 {
 	SchematicView *sv = SCHEMATIC_VIEW (object);
 
+	
 	if (sv->priv) {
 		g_free (sv->priv);
 		sv->priv = NULL;
 	}
 
 	if (sv->toplevel) {
-		gtk_widget_destroy (GTK_WIDGET (sv->toplevel));
+		g_object_unref (G_OBJECT (sv->toplevel));
 		sv->toplevel = NULL;
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+	g_application_quit (g_application_get_default ());
 }
 
 static void
@@ -1199,6 +1202,11 @@ schematic_view_new (Schematic *schematic)
 
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool",
 		G_CALLBACK (reset_tool_cb), G_OBJECT (sv), 0);
+
+	// Set the window size to something reasonable. Stolen from Gnumeric.
+    gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 
+                                 3 * (gdk_screen_width () - 50) / 4, 
+                                 3 * (gdk_screen_height () - 50) / 4);
 
 	schematic_view_load (sv, schematic);
 

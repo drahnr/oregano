@@ -214,7 +214,8 @@ sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
 	gdouble value, x1, y1;
 	gint _x, _y;
 
-	gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
+	gdk_window_get_device_position (GDK_WINDOW (sheet), GDK_SOURCE_MOUSE,
+	                                &_x, &_y, NULL);
 	x1 = (gdouble) _x;
 	y1 = (gdouble) _y;
 	

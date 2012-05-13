@@ -1,3 +1,36 @@
+Sun, 13 May 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* Modification of part-browser.c to fix a warning while quitting
+	  oregano
+	* Modification of schematic-view.c to complete g_application_
+	  services involvement
+	* Modification of schematic-view.c to reintegrate a patch from
+	  gnumeric increasing the size of the sheet.
+	* Modification of sheet.c to exchange gtk_widget_get_pointer
+	  becoming obsolete i gtk-3.4
+
+Tue, 8 May 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* Fix a bug in schematic.c: unref a data useful in the program.
+	* Simplification of code for wire.c
+	* Simplification of code for create-wire.c
+	* Simplification of code for sheet-item.c
+	* Simplification of code wire-item.c
+
+Mon, 7 May 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* Update POTFILES.in to manage page-properties.ui & oregano.c
+	* Add POTFILES.skip (patch from Maximiliano Curia)
+	* Modification of item-data.c & part.c & part-item.c to fix the 
+          node management
+	* Modification of sheet-item.c to simplify the code
+	* Modification of sheet.c to correct way of coding (removal of
+	  gpointer in interface)
+
+Tue, 1 May 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* schematic-view.c modified to fix a bug
+	* part-item.c modified to fix a bug regarding location of a part
+	* configure.ac modified to fix warnings
+	* node-store.c modified to remove an useless warning
+	* part.c modified to simplify code
+
 Sat, 29 Apr 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* TAG 0.81
 	* Verification of all the xml files for gtk_builder to be consistent with

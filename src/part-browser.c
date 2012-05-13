@@ -222,6 +222,8 @@ update_preview (Browser *br)
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (br->list));
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (br->list));
 
+	if (!GTK_IS_TREE_SELECTION (selection)) return;
+	
 	if (!gtk_tree_selection_get_selected (selection, NULL, &iter)) {
 		return;
 	}
