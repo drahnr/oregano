@@ -1,3 +1,6 @@
+Thu, 17 May 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
+	* Replacement of obsolete code in sheet.c: gtk_widget_get_pointer.
+	  The creplaced code is based on what has been implemented in evince.
 Sun, 13 May 2012 Marc Lorber <Lorber.Marc@wanadoo.fr>
 	* Modification of part-browser.c to fix a warning while quitting
 	  oregano
