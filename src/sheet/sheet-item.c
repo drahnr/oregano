@@ -39,7 +39,6 @@
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "stock.h"
-#include "config.h"
 #include "clipboard.h"
 
 static void sheet_item_class_init (SheetItemClass * klass);
