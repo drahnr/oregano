@@ -2,14 +2,16 @@
  * netlist-editor.c
  *
  *
- * Author:
+ * Authors:
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -207,19 +209,9 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 		oregano_error (_("Could not create the netlist dialog"));
 		return NULL;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (gui, NULL);
 	
 	nle = NETLIST_EDITOR (g_object_new (netlist_editor_get_type (), NULL));
-	
-	if (!g_file_test (OREGANO_UIDIR "/view-netlist.ui", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
-		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_UIDIR "/view-netlist.ui");
-		oregano_error_with_title (_("Could not create the netlist dialog"), msg);
-		g_free (msg);
-		return NULL;
-	}
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/view-netlist.ui", 
 	    &perror) <= 0) {

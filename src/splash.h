@@ -43,7 +43,7 @@ struct _Splash {
 	gboolean can_destroy;
 };
 
-Splash *oregano_splash_new ();
+Splash *oregano_splash_new (GError **error);
 gboolean oregano_splash_free (Splash *);
 void oregano_splash_step (Splash *, char *s);
 void oregano_splash_done (Splash *, char *s);

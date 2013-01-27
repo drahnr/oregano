@@ -1,7 +1,8 @@
 /*
  * main.c
  *
- * Author:
+ *
+ * Authors:
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>

@@ -2,14 +2,16 @@
  * errors.h
  *
  *
- * Author:
+ * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  * 
  * Copyright (C) 2003-2008  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -42,6 +44,7 @@ typedef enum {
 	OREGANO_SIMULATE_ERROR_IO_ERROR,
 	OREGANO_SCHEMATIC_BAD_FILE_FORMAT,
 	OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+	OREGANO_UI_ERROR_NO_BUILDER,
 } OREGANO_ERRORS;
 
 #endif

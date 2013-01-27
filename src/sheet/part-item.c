@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -136,7 +138,7 @@ static const char *part_item_context_menu =
 
 static GtkActionEntry action_entries[] = {
 	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), 
-		NULL, N_("Modify the object's properties"), 
+		NULL, N_("Modify object properties"),
 		NULL}
 };
 
@@ -450,9 +452,8 @@ edit_properties_point (PartItem *item)
 {
 	GSList *properties;
 	Part *part;
-	char *msg;
 	GtkBuilder *gui;
-	GError *perror = NULL;
+	GError *error = NULL;
 	GtkRadioButton *radio_v, *radio_c;
 	GtkRadioButton *ac_r, *ac_m, *ac_i, *ac_p;
 	GtkCheckButton *chk_db;
@@ -462,27 +463,13 @@ edit_properties_point (PartItem *item)
 	if ((gui = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create part properties dialog."));
 		return;
-	} 
-	else
-		gtk_builder_set_translation_domain (gui, NULL);
-
-	if (!g_file_test(
-		OREGANO_UIDIR "/clamp-properties-dialog.ui",
-		G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall "
-			  "Oregano to fix this."),
-			OREGANO_UIDIR "/clamp-properties-dialog.ui");
-		oregano_error_with_title (_("Could not create part properties dialog."), msg);
-		g_free (msg);
-		return;
 	}
+	gtk_builder_set_translation_domain (gui, NULL);
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui", 
-	                               &perror) <= 0) {
-		msg = perror->message;
-		oregano_error_with_title (_("Could not create part properties dialog."), msg);
-		g_error_free (perror);
+	                               &error) <= 0) {
+		oregano_error_with_title (_("Could not create part properties dialog."), error->message);
+		g_error_free (error);
 		return;
 	}	
 
@@ -602,7 +589,7 @@ edit_properties (SheetItem *object)
 	Part *part;
 	char *internal, *msg;
 	GtkBuilder *gui;
-	GError *perror = NULL;
+	GError *error = NULL;
 	GtkTable *prop_table;
 	GtkNotebook *notebook;
 	gint response, y = 0;
@@ -636,24 +623,13 @@ edit_properties (SheetItem *object)
 	else
 		 gtk_builder_set_translation_domain (gui, NULL);
 
-	if (!g_file_test(
-		OREGANO_UIDIR "/part-properties-dialog.ui",	G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall "
-			"Oregano to fix this."),
-			OREGANO_UIDIR "/part-properties-dialog.ui");
-		oregano_error_with_title (_("Could not create part properties dialog."), 
-		                          msg);
-		g_free (msg);
-		return;
-	}
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-properties-dialog.ui", 
-	    &perror) <= 0) {
-		msg = perror->message;
+	    &error) <= 0) {
+		msg = error->message;
 		oregano_error_with_title (_("Could not create part properties dialog."), 
 		                          msg);
-		g_error_free (perror);
+		g_error_free (error);
 		return;
 	}
 

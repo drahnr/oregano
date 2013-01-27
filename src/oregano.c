@@ -1,11 +1,13 @@
 /*
  * oregano.c
  *
- * Author:
- *         Richard Hult <rhult@hem.passagen.se>
- *         Ricardo Markiewicz <rmarkie@fi.uba.ar>
- *         Andres de Barbara <adebarbara@fi.uba.ar>
- *         Marc Lorber <lorber.marc@wanadoo.fr>
+ *
+ * Authors:
+ *  Richard Hult <rhult@hem.passagen.se>
+ *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  *
@@ -15,6 +17,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -79,7 +82,7 @@ static void
 oregano_class_init (OreganoClass *klass)
 { 
 	G_APPLICATION_CLASS (klass)->activate = oregano_activate;
-    G_APPLICATION_CLASS (klass)->open = oregano_open;
+	G_APPLICATION_CLASS (klass)->open = oregano_open;
 	G_OBJECT_CLASS (klass)->finalize = oregano_finalize;
 }
 
@@ -137,26 +140,26 @@ oregano_application (GApplication *app, GFile *file)
 
 	gchar *msg;
 	Splash *splash = NULL;
-
-	if (!g_file_test (OREGANO_UIDIR "/splash.ui",
-		G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-			_("You seem to be running Oregano without "
-			  "having it installed properly on your system.\n\n"
-			  "Please install Oregano and try again."));
-
-		oregano_error (msg);
-		g_free (msg);
-		return;
-	}
+	GError *error = NULL;
 
 	// Keep non localized input for ngspice 
 	setlocale (LC_NUMERIC, "C");
+
 	if (oregano.show_splash) {
-		splash = oregano_splash_new ();
+		splash = oregano_splash_new (&error);
+		if (error) {
+			msg = g_strdup_printf (_("Failed to spawn splash-screen \'%s\''. Code %i - %s"),
+			                       OREGANO_UIDIR "splash.ui",
+			                       error->message, error->code);
+			oregano_error (msg);
+			g_free (msg);
+			g_error_free (error);
+			//non fatal issue
+		}
 	}
 	//splash == NULL if showing splash is disabled
 	oregano_lookup_libraries (splash);
+
 
 	if (oregano.libraries == NULL) {
 		oregano_error (
@@ -200,7 +203,7 @@ oregano_application (GApplication *app, GFile *file)
 		NULL,
 		NULL);
 
-	if (oregano.show_splash)
+	if (oregano.show_splash && splash)
 		oregano_splash_done (splash, _("Welcome to Oregano"));
 
 	cursors_shutdown ();

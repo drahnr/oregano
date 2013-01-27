@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -184,17 +186,7 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 		oregano_error (_("Could not create properties dialog"));
 		return;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
-
-	if (!g_file_test (OREGANO_UIDIR "/properties.ui", G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-		    _("The file %s could not be found. You might need to reinstall"
-			    "Oregano to fix this."),
-			OREGANO_UIDIR "/properties.ui");
-
-		oregano_error_with_title (_("Could not create properties dialog"), msg);
-		return;
-	}
+	gtk_builder_set_translation_domain (gui, NULL);
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/properties.ui", 
 	    &perror) <= 0) {
@@ -288,18 +280,7 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 		oregano_error (_("Could not create export dialog."));
 		return;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
-	
-	if (!g_file_test (OREGANO_UIDIR "/export.ui", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
-		msg = g_strdup_printf (_("The file %s could not be found. You might "
-		    "need to reinstall Oregano to fix this."), 
-		    OREGANO_UIDIR "/export.xml");
-
-		oregano_error_with_title (_("Could not create export dialog."), msg);
-		g_free (msg);
-		return;
-	}
+	gtk_builder_set_translation_domain (gui, NULL);
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/export.ui", &perror) <= 0) {
 		msg = perror->message;
@@ -1093,17 +1074,7 @@ schematic_view_new (Schematic *schematic)
 		oregano_error (_("Could not create main window."));
 		return NULL;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
-
-	if (!g_file_test (OREGANO_UIDIR "/oregano-main.ui",
-		    G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-			_("The file %s could not be found. You might need to reinstall "
-			  "Oregano to fix this"), OREGANO_UIDIR "/oregano-main.ui");
-		oregano_error_with_title (_("Could not create main window."), msg);
-		g_free (msg);
-		return NULL;
-	}
+	gtk_builder_set_translation_domain (gui, NULL);
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/oregano-main.ui", 
 	    &error) <= 0) {
@@ -1628,15 +1599,6 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 		// Create the log window if not already done.
 		if (!explicit && !oregano.show_log)
 			return;
-
-		if (!g_file_test (OREGANO_UIDIR "/log-window.ui", G_FILE_TEST_EXISTS)) {
-			msg = g_strdup_printf (
-				_("The file %s could not be found. You might need to reinstall Oregano to fix this."),
-					OREGANO_UIDIR "/log-window.ui");
-			oregano_error_with_title ( _("Could not create the log window"), msg);
-			g_free (msg);
-			return;
-		}
 
 		if (gtk_builder_add_from_file (sv->priv->log_info->log_gui, 
 		    OREGANO_UIDIR "/log-window.ui", &perror) <= 0) {

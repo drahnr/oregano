@@ -2,15 +2,17 @@
  * splash.c
  *
  *
- * Author:
+ * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  * 
  * Web page: https://github.com/marc-lorber/oregano
  *
- * Copyright (C) 1999-2001	Richard Hult
- * Copyright (C) 2003,2006	Ricardo Markiewicz
+ * Copyright (C) 1999-2001  Richard Hult
+ * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,6 +36,7 @@
 
 #include "splash.h"
 #include "dialogs.h"
+#include "errors.h"
 
 static void
 oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
@@ -45,35 +48,22 @@ oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
 }
 
 Splash *
-oregano_splash_new ()
+oregano_splash_new (GError **error)
 {
 	GtkBuilder *gui;
-	GError *perror = NULL;
 	Splash *sp;
 	GtkEventBox *event;
-	gchar *msg;
 	
 	if ((gui = gtk_builder_new ()) == NULL) {
-		oregano_error (_("Could not create splash message."));
+		g_set_error_literal (error, OREGANO_ERROR,
+		                    OREGANO_UI_ERROR_NO_BUILDER,
+		                      _("Failed to spawn builder"));
 		return NULL;
 	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (gui, NULL);
+
 	
-	if (!g_file_test (OREGANO_UIDIR "/splash.ui", G_FILE_TEST_EXISTS) ||
-	     !g_file_test (OREGANO_UIDIR "/splash.xpm", G_FILE_TEST_EXISTS)) {
-		msg = g_strdup_printf (
-			_("The files %s or %s could not be found. You might need to reinstall Oregano to fix this."),
-			OREGANO_UIDIR "/splash.ui",  OREGANO_UIDIR "/splash.xpm");
-		oregano_error_with_title (_("Could not create splash message."), msg);
-		g_free (msg);
-		return NULL;
-	}
-	
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/splash.ui", 
-	    &perror) <= 0) {
-		msg = perror->message;
-		oregano_error_with_title (_("Could not create splash message."), msg);
-		g_error_free (perror);
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/splash.ui", error) <= 0) {
 		return NULL;
 	}
 

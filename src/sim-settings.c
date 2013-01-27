@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -964,27 +966,13 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	if (!g_file_test (OREGANO_UIDIR "/sim-settings.ui", G_FILE_TEST_EXISTS)) {
-		gchar *msg;
-		msg = g_strdup_printf (
-			_("The file %s could not be found." 
-			  "You might need to reinstall Oregano to fix this."),
-			OREGANO_UIDIR "/sim-settings.ui");
-		oregano_error_with_title (
-		             _("Could not create simulation settings dialog"), msg);
-		g_free (msg);
-		return;
-	}
-
 	if ((gui = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create simulation settings dialog"));
 		return;
-	} 
-	else 
-		gtk_builder_set_translation_domain (gui, NULL);
+	}
+	gtk_builder_set_translation_domain (gui, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/sim-settings.ui", 
-	    &perror) <= 0) {
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/sim-settings.ui", &perror) <= 0) {
 		msg = perror->message;
 		oregano_error_with_title (
 		              _("Could not create simulation settings dialog"), msg);
