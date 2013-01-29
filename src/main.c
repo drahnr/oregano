@@ -35,6 +35,8 @@
 
 #include "oregano.h"
 
+#include "schematic.h"
+
 int
 main (int argc, char *argv[])
 {
@@ -48,10 +50,20 @@ main (int argc, char *argv[])
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
-  gtk_init (&argc, &argv);	
-  app = oregano_new ();
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
+	gtk_init (&argc, &argv);
+	/*
+	 * required, as we possibly need signal
+	 * information within oregano.c _before_ the
+	 * first Schematic instance exists
+	 */
+	g_type_class_ref (TYPE_SCHEMATIC);
 
-  return status;
+	app = oregano_new ();
+
+	status = g_application_run (G_APPLICATION (app), argc, argv);
+
+	g_object_unref (app);
+	g_type_class_unref (TYPE_SCHEMATIC);
+
+	return status;
 }
