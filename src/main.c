@@ -42,7 +42,7 @@ main (int argc, char *argv[])
 {
 	Oregano *app;
 	int status;
-
+	gpointer class = NULL;
 
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -56,14 +56,13 @@ main (int argc, char *argv[])
 	 * information within oregano.c _before_ the
 	 * first Schematic instance exists
 	 */
-	g_type_class_ref (TYPE_SCHEMATIC);
-
+	class = g_type_class_ref (TYPE_SCHEMATIC);
 	app = oregano_new ();
 
 	status = g_application_run (G_APPLICATION (app), argc, argv);
 
 	g_object_unref (app);
-	g_type_class_unref (TYPE_SCHEMATIC);
+	g_type_class_unref (class);
 
 	return status;
 }
