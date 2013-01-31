@@ -1010,7 +1010,7 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 	cairo_save (cr);
 
-	gdk_cairo_set_source_color (cr, &ctx->colors.components);
+	gdk_cairo_set_source_rgba (cr, &ctx->colors.components);
 	rotation = part_get_rotation (part);
 	if (rotation != 0) {
 	  cairo_translate (cr, x0, y0);
@@ -1091,7 +1091,7 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	}
 
 	// We don't want to rotate labels text, only the (x,y) coordinate
-	gdk_cairo_set_source_color (cr, &ctx->colors.labels);
+	gdk_cairo_set_source_rgba (cr, &ctx->colors.labels);
 	for (labels = part_get_labels (part); labels; labels = labels->next) {
 		gdouble x, y;
 		PartLabel *label = (PartLabel *)labels->data;

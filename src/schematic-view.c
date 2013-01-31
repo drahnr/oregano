@@ -1058,7 +1058,7 @@ schematic_view_new (Schematic *schematic)
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
 	GtkWidget *menubar;
-	GtkTable *table;
+	GtkGrid *grid;
 	GError *error = NULL;
 	GtkBuilder *gui;
 	gchar *msg;
@@ -1085,8 +1085,7 @@ schematic_view_new (Schematic *schematic)
 	}
 
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
-	table = GTK_TABLE (gtk_builder_get_object (gui, "table1"));
-
+	grid = GTK_GRID (gtk_builder_get_object (gui, "grid1"));
 	sv->priv->sheet = SHEET (sheet_new (10000, 10000));
 
 	g_signal_connect (G_OBJECT (sv->priv->sheet),
@@ -1148,8 +1147,8 @@ schematic_view_new (Schematic *schematic)
 
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
-	gtk_table_attach_defaults (table, vbox, 0, 1, 0, 1);
 
+	gtk_grid_attach (grid, vbox, 0,0, 1,1);
 	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), 
 	    GTK_WIDGET (sv->priv->sheet)); 
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));

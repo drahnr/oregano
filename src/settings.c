@@ -229,8 +229,7 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 
 		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
 
-		gtk_table_attach (GTK_TABLE (w), button[i], 0, 1, i, i+1, 
-						  GTK_EXPAND|GTK_FILL, GTK_SHRINK, 6, 6);
+		gtk_grid_attach (GTK_GRID (w), button[i], 0, i, 1, 1);
 		g_signal_connect (G_OBJECT (button[i]), "clicked", 
 						  G_CALLBACK (set_engine_name), s);
 

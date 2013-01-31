@@ -1127,12 +1127,9 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	// Initialilisation of the various AC types
 	w =  GTK_WIDGET (gtk_builder_get_object (gui, "ac_type"));
 	gtk_widget_destroy (w);
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "table14"));
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid14"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach (GTK_TABLE (w),combo_box, 1, 2, 0, 1,
-	                  GTK_EXPAND | GTK_FILL, 
-	                  GTK_SHRINK, 
-	                  0, 0);
+	gtk_grid_attach (GTK_GRID (w), combo_box, 1,0, 1,1);
 	s->priv->w_ac_type = combo_box;
 
 	{
@@ -1192,13 +1189,10 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "dc_vin1"));
 	gtk_widget_destroy (w);
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "table13"));
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid13"));
 	combo_box = gtk_combo_box_text_new ();
 	
-	gtk_table_attach (GTK_TABLE (w),combo_box, 1, 2, 0, 1,
-	                  GTK_EXPAND | GTK_FILL, 
-	                  GTK_SHRINK, 
-	                  0, 0);
+	gtk_grid_attach (GTK_GRID (w), combo_box, 1,0, 1,1);
 	s->priv->w_dc_vin = combo_box;
 	if (sources) {
 		for (; sources; sources = sources->next) {
@@ -1280,13 +1274,10 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "fourier_select_out"));
 	gtk_widget_destroy (w);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "table12"));
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid12"));
 	combo_box = gtk_combo_box_text_new ();
 	
-	gtk_table_attach (GTK_TABLE (w),combo_box, 2, 3, 2, 3,
-	                  GTK_EXPAND | GTK_FILL, 
-	                  GTK_SHRINK, 
-	                  0, 0);
+	gtk_grid_attach (GTK_GRID (w), combo_box, 2,2, 1,1);
 	
 	s->priv->w_four_combobox = combo_box;
 	node_box = GTK_COMBO_BOX (combo_box);	

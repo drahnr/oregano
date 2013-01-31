@@ -496,7 +496,7 @@ wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	wire_get_end_pos (wire, &end_pos);
 
 	cairo_save (cr);
-		gdk_cairo_set_source_color (cr, &ctx->colors.wires);
+		gdk_cairo_set_source_rgba (cr, &ctx->colors.wires);
 		cairo_move_to (cr, start_pos.x, start_pos.y);
 		cairo_line_to (cr, end_pos.x, end_pos.y);
 		cairo_stroke (cr);

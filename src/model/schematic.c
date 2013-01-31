@@ -823,17 +823,20 @@ schematic_render (Schematic *sm, cairo_t *cr)
 	node_store_print_items (store, cr, &schematic_print_context);
 }
 
-GdkColor
-convert_to_grayscale (GdkColor *source)
+GdkRGBA
+convert_to_grayscale (GdkRGBA *source)
 {
-	GdkColor color;
-	int factor;
+	GdkRGBA color;
+	gdouble factor;
 
-	factor = (source->red + source->green + source->blue)/3;
+	factor = source->red * 0.299 +
+	         source->green * 0.587 +
+	         source->blue * 0.114;
+
 	color.red = factor;
 	color.green = factor;
 	color.blue = factor;
-	color.pixel = source->pixel;
+	color.alpha = source->alpha;
 
 	return color;
 }
@@ -1016,19 +1019,19 @@ print_options (GtkPrintOperation *operation, Schematic *sm)
 					gtk_builder_get_object (gui, "color_background"));
 
 	// Set default colors
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (
 					gtk_builder_get_object (gui, "color_components")),
 					&sm->priv->colors.components);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (
 					gtk_builder_get_object (gui, "color_labels")),
 					&sm->priv->colors.labels);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (
 					gtk_builder_get_object (gui, "color_wires")),
 					&sm->priv->colors.wires);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (
 					gtk_builder_get_object (gui, "color_text")),
 					&sm->priv->colors.text);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (
 					gtk_builder_get_object (gui, "color_background")),
 					&sm->priv->colors.background);
 
@@ -1040,11 +1043,11 @@ read_print_options (GtkPrintOperation *operation, GtkWidget *widget, Schematic *
 {
 	SchematicPrintOptions *colors = sm->priv->printoptions;
 
-	gtk_color_button_get_color (colors->components, &sm->priv->colors.components);
-	gtk_color_button_get_color (colors->labels, &sm->priv->colors.labels);
-	gtk_color_button_get_color (colors->wires, &sm->priv->colors.wires);
-	gtk_color_button_get_color (colors->text, &sm->priv->colors.text);
-	gtk_color_button_get_color (colors->background, &sm->priv->colors.background);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (colors->components), &sm->priv->colors.components);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (colors->labels), &sm->priv->colors.labels);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (colors->wires), &sm->priv->colors.wires);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (colors->text), &sm->priv->colors.text);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER (colors->background), &sm->priv->colors.background);
 
 	g_free (sm->priv->printoptions);
 	sm->priv->printoptions = NULL;

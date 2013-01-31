@@ -615,12 +615,9 @@ part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "library_optionmenu"));
 	gtk_widget_destroy (w);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid1"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_table_attach (GTK_TABLE (w), combo_box, 1, 2, 0, 1,
-	                  GTK_EXPAND | GTK_FILL, 
-	                  GTK_SHRINK, 
-	                  0, 0);
+	gtk_grid_attach (GTK_GRID (w), combo_box, 1,0, 1,1);
 
 	libs = oregano.libraries;
 

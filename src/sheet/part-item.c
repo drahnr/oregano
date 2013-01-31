@@ -590,7 +590,7 @@ edit_properties (SheetItem *object)
 	char *internal, *msg;
 	GtkBuilder *gui;
 	GError *error = NULL;
-	GtkTable *prop_table;
+	GtkGrid *prop_grid;
 	GtkNotebook *notebook;
 	gint response, y = 0;
 	gboolean has_model;
@@ -640,7 +640,7 @@ edit_properties (SheetItem *object)
 	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, 
 	                      "part-properties-dialog"));
 
-	prop_table = GTK_TABLE (gtk_builder_get_object (gui, "prop_table"));
+	prop_grid = GTK_GRID (gtk_builder_get_object (gui, "prop_grid"));
 	notebook  = GTK_NOTEBOOK (gtk_builder_get_object (gui, "notebook"));
 
 	g_signal_connect (prop_dialog->dialog, "destroy",
@@ -681,19 +681,9 @@ edit_properties (SheetItem *object)
 			gtk_entry_set_text (GTK_ENTRY (entry),  prop->value);
 			g_object_set_data (G_OBJECT (entry),  "user",  g_strdup (prop->name));
 
-			gtk_table_attach (
-				prop_table, label,
-				0, 1, y, y+1,
-				GTK_FILL|GTK_SHRINK,
-				GTK_FILL|GTK_SHRINK,
-				8, 8);
+			gtk_grid_attach (prop_grid, label, 0,y, 1,1);
 			
-			gtk_table_attach (
-				prop_table, entry,
-				1, 2, y, y+1,
-				GTK_EXPAND|GTK_FILL,
-				GTK_FILL|GTK_SHRINK,
-				8, 8);
+			gtk_grid_attach (prop_grid, entry, 1,y, 1,1);
 			
 			y++;
 			gtk_widget_show (label);

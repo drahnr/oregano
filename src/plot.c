@@ -494,14 +494,10 @@ plot_window_create (Plot *plot)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "analysis_combobox"));
 	gtk_widget_destroy (w);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "table1"));
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid1"));
 	combo_box = gtk_combo_box_text_new_with_entry ();
 	
-	gtk_table_attach (GTK_TABLE (w),combo_box,0,1,0,1,
-	                  GTK_SHRINK,
-	                  //GTK_EXPAND | GTK_FILL, 
-	                  GTK_SHRINK, 
-	                  0, 0);
+	gtk_grid_attach (GTK_GRID (w), combo_box, 0,0, 1,1);
 
 	plot->combo_box = combo_box;
 	plot->window = window;
