@@ -77,7 +77,7 @@ static void         wire_item_get_property (GObject *object, guint prop_id,
 static void         wire_item_set_property (GObject *object, guint prop_id,
                     	const GValue *value, GParamSpec *spec);
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 enum {
 	WIRE_RESIZER_NONE,

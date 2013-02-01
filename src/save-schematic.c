@@ -46,7 +46,7 @@
 #include "xml-helper.h"
 
 
-#define NG_DEBUG(s) if (1) g_print ("%s\n", s)
+#include "debug.h"
 
 typedef struct {
 	xmlDocPtr  doc;		 // Xml document. 

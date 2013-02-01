@@ -47,7 +47,7 @@
 #include "sheet-pos.h"
 #include "sheet.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 typedef struct _Browser Browser;
 struct _Browser {

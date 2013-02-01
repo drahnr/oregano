@@ -47,7 +47,7 @@
 #include "schematic-print-context.h"
 #include "dialogs.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static void part_class_init (PartClass *klass);
 

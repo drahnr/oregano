@@ -35,7 +35,7 @@
 #include "node.h"
 #include "part.h"
 
-#define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
+#include "debug.h"
 
 static void node_class_init (NodeClass *klass);
 static void node_init (Node *node);

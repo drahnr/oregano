@@ -84,7 +84,7 @@ struct _OreganoGnuCapPriv {
 	guint buf_count;
 };
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static void gnucap_class_init (OreganoGnuCapClass *klass);
 static void gnucap_finalize (GObject *object);
@@ -612,7 +612,7 @@ gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 
 		//Got a complete line
 		s = buf;
-		NG_DEBUG (g_strdup_printf ("%s", s));
+		NG_DEBUG ("%s", s);
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
 			gdouble np1;

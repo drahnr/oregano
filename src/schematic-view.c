@@ -58,7 +58,7 @@
 #include "sheet-item-factory.h"
 #include "textbox-item.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 #define ZOOM_MIN 0.35
 #define ZOOM_MAX 3
@@ -1040,7 +1040,7 @@ show_help (GtkWidget *widget, SchematicView *sv)
 
 	if (!gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano",
 	             gtk_get_current_event_time (), &error)) {     
-		NG_DEBUG (g_strdup_printf ("Error %s\n", error->message));
+		NG_DEBUG ("Error %s\n", error->message);
 		g_error_free (error);
 	}
 }

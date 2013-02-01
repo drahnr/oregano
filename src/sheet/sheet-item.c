@@ -53,7 +53,7 @@ static void sheet_item_run_menu (SheetItem *item, Sheet *sheet,
 static void sheet_item_reparent (SheetItem *item, GooCanvasGroup *group);
 static void sheet_item_dispose (GObject *object);
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 struct _SheetItemPriv {
 	guint 				selected : 1;

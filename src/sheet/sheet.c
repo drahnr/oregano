@@ -68,7 +68,7 @@ static guint 	dot_hash (gconstpointer key);
 #define ZOOM_MIN 0.35
 #define ZOOM_MAX 3
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 enum {
 	SELECTION_CHANGED,

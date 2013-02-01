@@ -70,7 +70,7 @@ static void 		textbox_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void 		edit_textbox (SheetItem *sheet_item); 
 static void 		edit_cmd (GtkWidget *widget, Sheet *sheet);
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 typedef struct {
 	GtkDialog *dialog;

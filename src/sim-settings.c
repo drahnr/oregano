@@ -123,7 +123,7 @@ static SimOption default_options[] = {
 		{NULL, NULL}
 };
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static void
 fourier_add_vout_cb (GtkButton *w, SimSettings *sim)

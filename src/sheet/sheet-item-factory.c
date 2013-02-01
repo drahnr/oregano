@@ -35,7 +35,7 @@
 #include "part-item.h"
 #include "textbox-item.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 // Create a SheetItem from an ItemData object. This is a bit ugly.
 // It could be beautified by having a method that creates the item.

@@ -53,7 +53,7 @@ static gboolean  wire_has_properties (ItemData *data);
 static void      wire_print (ItemData *data, cairo_t *cr,
                     SchematicPrintContext *ctx);
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 enum {
 	ARG_0,

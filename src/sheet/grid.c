@@ -35,7 +35,7 @@
 
 
 #define ROUND(x) (floor((x)+0.5))
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 enum {
 	ARG_0,

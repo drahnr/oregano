@@ -47,7 +47,7 @@
 #include "errors.h"
 #include "dialogs.h"
 
-#define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
+#include "debug.h"
 
 static void 	netlist_helper_node_foreach_reset (gpointer key, gpointer value, 
     				gpointer user_data);
@@ -547,7 +547,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			}
 
 			template = part_property_expand_macros (part, tmp);
-			NG_DEBUG (g_strdup_printf ("Template: '%s'\n" "macro   : '%s'\n", tmp, template));
+			NG_DEBUG ("Template: '%s'\n" "macro   : '%s'\n", tmp, template);
 			if (tmp != NULL) g_free (tmp);
 
 			tmp = netlist_helper_linebreak (template);
@@ -568,10 +568,10 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			while (template_split[i] != NULL && template_split[i][0] != '%') {
 				g_string_append (str, template_split[i++]);
 				g_string_append_c (str , ' ');
-				NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
+				NG_DEBUG ("str: %s\n", str->str);
 			}
 
-			NG_DEBUG (g_strdup_printf ("Reading %d pins.\n)", num_pins));
+			NG_DEBUG ("Reading %d pins.\n)", num_pins);
 
 			for (pin_nr = 0; pin_nr < num_pins; pin_nr++) {
 				gint node_nr = 0;
@@ -589,7 +589,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 					pins[pin_nr].node_nr = atoi (node2real[node_nr]);
 					g_string_append (str, tmp);
 					g_string_append_c (str, ' ');
-					NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
+					NG_DEBUG ("str: %s\n", str->str);
 					i++;
 				}
 
@@ -599,24 +599,24 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 					g_string_append (str, template_split[i]);
 					g_string_append_c (str, ' ');
-					NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
+					NG_DEBUG ("str: %s\n", str->str);
 					i++;
 				}
 			}
 
-			NG_DEBUG (g_strdup_printf ("Done with pins, i = %d\n", i));
+			NG_DEBUG ("Done with pins, i = %d\n", i);
 
 			while (template_split[i] != NULL) {
 				if (template_split[i][0] == '%')
 					break;
 				g_string_append (str, template_split[i]);
 				g_string_append_c (str, ' ');
-				NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
+				NG_DEBUG ("str: %s\n", str->str);
 				i++;
 			}
 
 			g_strfreev (template_split);
-			NG_DEBUG (g_strdup_printf ("str: %s\n", str->str));
+			NG_DEBUG ("str: %s\n", str->str);
 			out->template = g_string_append (out->template, str->str);
 			out->template = g_string_append_c (out->template, '\n');
 			g_string_free (str, TRUE);

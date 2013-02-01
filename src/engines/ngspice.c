@@ -40,7 +40,7 @@
 #include "engine-internal.h"
 #include "ngspice-analysis.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static void ngspice_class_init (OreganoNgSpiceClass *klass);
 static void ngspice_finalize (GObject *object);

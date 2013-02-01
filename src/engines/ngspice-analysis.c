@@ -63,7 +63,7 @@ static gchar *analysis_names[] = {
 #define CPU_TIME		"CPU time since last call:"
 
 #define TAGS_COUNT (sizeof (analysis_tags) / sizeof (struct analysis_tag))
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 #define IS_THIS_ITEM(str,item)  	(!strncmp (str,item,strlen(item)))
 
 typedef struct {
@@ -532,7 +532,7 @@ parse_fourier_analysis (OreganoNgSpice *ngspice, gchar * tmp)
 			sdata->got_points++;
 			sdata->got_var = n;
 		}
-		NG_DEBUG (g_strdup_printf ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]));
+		NG_DEBUG ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]);
 	}
 	return;
 }
@@ -569,7 +569,7 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	}
 	tmp = &buf[0];
 	tmp = g_strchug (tmp);
-	NG_DEBUG (g_strdup_printf ("0 buf = %s\n", buf));
+	NG_DEBUG ("0 buf = %s\n", buf);
 
 	for (i = 0; analysis_names[i]; i++) {
 		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
@@ -592,7 +592,7 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	}
 		
 	fgets (buf, 255, priv->inputfp);
-	NG_DEBUG (g_strdup_printf ("1 buf = %s\n", buf));
+	NG_DEBUG ("1 buf = %s\n", buf);
 	tmp = &buf[0];
 	tmp = g_strchug (tmp);
 
@@ -611,7 +611,7 @@ ngspice_parse (OreganoNgSpice *ngspice)
 		}
 	}
 	fgets (buf, 255, priv->inputfp);
-	NG_DEBUG (g_strdup_printf ("2 buf = %s\n", buf));
+	NG_DEBUG ("2 buf = %s\n", buf);
 	tmp = &buf[0];
 	tmp = g_strchug (tmp);
 

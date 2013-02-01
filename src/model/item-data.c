@@ -36,7 +36,7 @@
 #include "item-data.h"
 #include "node-store.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static void item_data_class_init (ItemDataClass *klass);
 static void item_data_init (ItemData *item_data);

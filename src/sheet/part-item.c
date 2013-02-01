@@ -54,7 +54,7 @@
 #define LABEL_COLOR "dark cyan"
 #define SELECTED_COLOR "green"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static void 		       part_item_class_init (PartItemClass *klass);
 static void 		       part_item_init (PartItem *gspart);

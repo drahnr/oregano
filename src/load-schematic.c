@@ -45,7 +45,7 @@
 #include "errors.h"
 
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 typedef enum {
 	PARSE_START,

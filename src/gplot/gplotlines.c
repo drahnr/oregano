@@ -94,7 +94,7 @@ struct _GPlotLinesPriv {
 
 #define TYPE_GPLOT_LINES            (g_plot_lines_get_type ())
 #define TYPE_GPLOT_GRAPHIC_TYPE		(g_plot_lines_graphic_get_type ())
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 G_DEFINE_TYPE_WITH_CODE (GPlotLines, g_plot_lines, G_TYPE_OBJECT,
 	G_IMPLEMENT_INTERFACE (TYPE_GPLOT_FUNCTION,
@@ -347,7 +347,7 @@ g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox *bbox)
 		for (point = 1; point < points; point++) {
 			x1 = x[point-1]+plot->priv->shift;
 			y1 = 0;
-			NG_DEBUG (g_strdup_printf ("gplotlines: x= %lf\ty= %lf\n", x1, y1));
+			NG_DEBUG ("gplotlines: x= %lf\ty= %lf\n", x1, y1);
 			cairo_line_to (cr, x1, y1);
 			cairo_move_to (cr, x[point]+ plot->priv->shift, y[point]);
 		}

@@ -53,7 +53,7 @@
 
 #define ON_THE_WIRE(p1,start,end) (fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<NODE_EPSILON )
 
-#define NG_DEBUG(s) if (0) g_print ("NG: %s\n", s)
+#include "debug.h"
 
 static void	   node_store_class_init (NodeStoreClass *klass);
 static void	   node_store_init (NodeStore *store);
@@ -727,9 +727,9 @@ node_store_get_node (NodeStore *store, SheetPos pos)
 	node = g_hash_table_lookup (store->nodes, &pos);
 
 	if (!node) {
-		NG_DEBUG (g_strdup_printf ("No node at (%g, %g)\n", pos.x, pos.y));}
+		NG_DEBUG ("No node at (%g, %g)\n", pos.x, pos.y);}
 	else {
-		NG_DEBUG (g_strdup_printf ("Found node at (%g, %g)\n", pos.x, pos.y));}
+		NG_DEBUG ("Found node at (%g, %g)\n", pos.x, pos.y);}
 	return node;
 }
 
@@ -806,7 +806,7 @@ is_wire_at_pos (double x1, double y1, double x2, double y2, SheetPos pos)
 		}
 	}
 
-	NG_DEBUG (g_strdup_printf ("no match: (%g %g) -> (%g %g), (%g %g)\n", x1, y1, x2, y2, pos.x, pos.y));
+	NG_DEBUG ("no match: (%g %g) -> (%g %g), (%g %g)\n", x1, y1, x2, y2, pos.x, pos.y);
 
 	return FALSE;
 }

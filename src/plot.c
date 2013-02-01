@@ -62,7 +62,7 @@
 
 #define PLOT_AXIS_COLOR "black"
 #define PLOT_CURVE_COLOR "medium sea green"
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
 static guint next_color = 0;
 static guint next_pulse = 0;
@@ -226,7 +226,7 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 		next_pulse++;
 		width = 5.0;
 		shift_step = X[1] / 20;
-		NG_DEBUG (g_strdup_printf ("shift_step = %lf\n", shift_step));
+		NG_DEBUG ("shift_step = %lf\n", shift_step);
 	}
 	else {
 		next_pulse = 0;
@@ -242,7 +242,7 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 	    shift_step*next_pulse, NULL);
 	g_object_set (G_OBJECT (f), "width",
 	    width, NULL);
-	NG_DEBUG (g_strdup_printf ("plot: create_plot_function_from_simulation_data: shift = %lf\n", 0.1*next_pulse));
+	NG_DEBUG ("plot: create_plot_function_from_simulation_data: shift = %lf\n", 0.1*next_pulse);
 
 	return f;
 }
