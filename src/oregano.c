@@ -150,7 +150,7 @@ oregano_application (GApplication *app, GFile *file)
 		if (error) {
 			msg = g_strdup_printf (_("Failed to spawn splash-screen \'%s\''. Code %i - %s"),
 			                       OREGANO_UIDIR "splash.ui",
-			                       error->message, error->code);
+			                       error->code, error->message);
 			oregano_error (msg);
 			g_free (msg);
 			g_error_free (error);
