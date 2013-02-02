@@ -1,17 +1,17 @@
-# oregano - An electrical engineering tool
+# oregano - an electrical engineering tool
 
 ### About
 oregano is an application for schematic capture and simulation of
 electronic circuits. The actual simulation is performed by Berkeley
-Spice, or GNUcap or the new generation ngspice.
+Spice, GNUcap or the new generation ngspice.
 
-oregano is licensed under the terms of the GNU GPL included in the
+oregano is licensed under the terms of the GNU GPL-2.0 included in the
 file COPYING.
 
 ### Requirements
 
-You need gtk+-3.0 >= 3.0.1, gtksourceview-3.0, goocanvas-2.0 and libxml2 in order to build  oregano. 
-They are usually included in your favorite distributions repositories and can otherwise be found at ftp.gnome.org or mirrors.
+You need `gtk+-3.0`, `gtksourceview-3.0`, `goocanvas-2.0` and `libxml2` in order to build oregano.
+These are usually included in your favorite distributions repositories and can otherwise be found at the [gnome public ftp](ftp://ftp.gnome.org) server.
 
 ### Building
 
@@ -27,10 +27,24 @@ or the following for a release build
 
 For additional options, consult
 
-    waf configure --help
+    waf --help
+
+### Installation
+
+For installation to the default directories, it is usually required to run
+
+    waf install
+
+with root privileges.
+
+After installation oregano can be started by running `oregano.bin` from terminal.
 
 ### Web
 
-Currently there are multiple forks at github, development will be streamlined as soon as possible in order to speed up development
+The [official website is on github](https://github.com/drahnr/oregano).
 
-https://github.com/drahnr/oregano
+### Bugs
+
+For bug and issue tracking as well as feature requests, the github built in [issue tracker](https://github.com/drahnr/oregano/issue) is used.
+
+
