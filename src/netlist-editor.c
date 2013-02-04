@@ -39,6 +39,7 @@
 #include "simulation.h"
 #include "file.h"
 #include "dialogs.h"
+#include "oregano.h"
 
 static void netlist_editor_finalize (GObject *object);
 static void netlist_editor_dispose (GObject *object);
@@ -321,7 +322,7 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 
 	sm = schematic_view_get_schematic (sv);
 
-	engine = oregano_engine_factory_create_engine (OREGANO_ENGINE_GNUCAP, sm);
+	engine = oregano_engine_factory_create_engine (oregano.engine, sm);
 	oregano_engine_generate_netlist (engine, name, &error);
 	g_object_unref (engine);
 
