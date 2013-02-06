@@ -535,14 +535,14 @@ sheet_show_node_labels (Sheet *sheet, gboolean show)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	GList *item;
+	GList *item = NULL;
 
 	for (item = sheet->priv->items; item; item=item->next) {
     	if (IS_PART_ITEM (item->data))
 			if (part_get_num_pins (PART (sheet_item_get_data (SHEET_ITEM(item->data))))==1)
 				part_item_show_node_labels (PART_ITEM (item->data), show);
         }
-	g_list_free_full (item, g_object_unref);
+	//g_list_free_full (item, g_object_unref); //FIXME
 }
 
 void
@@ -557,15 +557,15 @@ sheet_add_item (Sheet *sheet, SheetItem *item)
 }
 
 int    
-sheet_rubberband_timeout_cb (Sheet *sheet)
+sheet_motion_rubberband (Sheet *sheet, GdkEventMotion *event)
 {
 	static double width_old = 0, height_old = 0;
-    double x, y;
+	double x, y;
 	double height, width;
 	
-    double dx, dy;
-    GList *list;
-    SheetPos p1, p2;
+	double dx, dy;
+	GList *list = NULL;
+	SheetPos p1, p2;
 
     // Obtains the current pointer position and modifier state.
     // The position is given in coordinates relative to window.
@@ -639,17 +639,17 @@ sheet_rubberband_timeout_cb (Sheet *sheet)
 		              "width", width, 
 		              "height", height,
 		              NULL);
+
+		//g_list_free_full (list, g_object_unref); //FIXME
 	}
-	g_list_free_full (list, g_object_unref);
 	return TRUE;
 }
 
 void
 sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
 {
-	GList *list;
+	GList *list = NULL;
 
-	g_source_remove (sheet->priv->rubberband->timeout_id);
 	sheet->priv->rubberband->state = RUBBER_NO;
 
 	if (sheet->priv->preserve_selection_items != NULL) {
@@ -664,7 +664,7 @@ sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
 	                           GOO_CANVAS_ITEM (sheet->grid), event->time);
 	
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (sheet->priv->rubberband->rectangle));
-	g_list_free_full (list, g_object_unref);
+	//g_list_free_full (list, g_object_unref); //FIXME
 }
 
 void 
@@ -706,10 +706,6 @@ sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event)
 			g_list_copy (sheet_preserve_selection (sheet));
 	}
 
-	sheet->priv->rubberband->timeout_id = g_timeout_add (
-			10,
-			(gpointer) sheet_rubberband_timeout_cb,
-			(gpointer) sheet);
 }
 
 GList *
@@ -802,6 +798,10 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				}
 				break;
 		case GDK_MOTION_NOTIFY:
+			if (sheet->priv->rubberband->state == RUBBER_YES) {
+				sheet_motion_rubberband (sheet, (GdkEventMotion *) event);
+				return TRUE;
+			}
 			if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
 			    ->motion_notify_event != NULL) {
 				return GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)

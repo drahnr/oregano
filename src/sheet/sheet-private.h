@@ -47,7 +47,6 @@ typedef enum {
 
 typedef struct {
 	RubberState		 state;
-	int 			 timeout_id;
 	int 			 click_start_state;
 	GooCanvasItem	*rectangle;
 	double	 		 start_x, start_y;
