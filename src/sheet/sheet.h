@@ -44,8 +44,8 @@ typedef struct _SheetPriv  SheetPriv;
 typedef struct _SheetClass SheetClass;
 typedef struct _SheetItem  SheetItem;
 
-#define TYPE_SHEET			(sheet_get_type ())
-#define SHEET(obj)			(G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_SHEET, Sheet))
+#define TYPE_SHEET		(sheet_get_type ())
+#define SHEET(obj)		(G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_SHEET, Sheet))
 #define SHEET_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST (klass, TYPE_SHEET, SheetClass))
 #define IS_SHEET(obj)		(G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_SHEET))
 
@@ -70,19 +70,18 @@ struct _Sheet {
 };
 
 struct _SheetClass {
-	GooCanvasClass				parent_class;
+	GooCanvasClass			parent_class;
 
 	void (*selection_changed)	(Sheet *sheet);
 	gint (*button_press)		(Sheet *sheet, GdkEventButton *event);
 	void (*context_click)		(Sheet *sheet, const char *name, gpointer data);
-	void (*cancel)				(Sheet *sheet);
+	void (*cancel)			(Sheet *sheet);
 };
 
 GType	   	sheet_get_type (void);
 GtkWidget *	sheet_new (int width, int height);
 void	   	sheet_scroll (const Sheet *sheet, int dx, int dy);
-void	   	sheet_get_size_pixels (const Sheet *sheet, guint *width, 
-	              guint *height);
+void	   	sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
 gpointer   	sheet_get_first_selected_item (const Sheet *sheet);
 void	   	sheet_change_zoom (const Sheet *sheet, double rate);
 void	   	sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
@@ -94,14 +93,12 @@ void 	   	sheet_remove_selected_object (const Sheet *sheet, SheetItem *item);
 void 	   	sheet_prepend_selected_object (Sheet *sheet, SheetItem *item);
 void 	   	sheet_remove_floating_object (const Sheet *sheet, SheetItem *item);
 void 	   	sheet_prepend_floating_object (Sheet *sheet, SheetItem *item);
-void       	sheet_connect_part_item_to_floating_group (Sheet *sheet, 
-                  gpointer *sv);
+void       	sheet_connect_part_item_to_floating_group (Sheet *sheet, gpointer *sv);
 void       	sheet_show_node_labels (Sheet *sheet, gboolean show);
 void		sheet_add_item (Sheet *sheet, SheetItem *item);
 void 		sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event);
 void 		sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event);
-int			sheet_event_callback (GtkWidget *widget, GdkEvent *event, 
-				Sheet *sheet);
+int		sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet);
 void		sheet_select_all (Sheet *sheet, gboolean select);
 void		sheet_rotate_selection (Sheet *sheet);
 void		sheet_delete_selection (Sheet *sheet);

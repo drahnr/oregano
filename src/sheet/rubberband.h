@@ -1,5 +1,5 @@
 /*
- * sheet-private.h
+ * rubberband.h
  *
  *
  * Authors:
@@ -7,12 +7,16 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Description: Handles the user interaction when doing area/rubberband selections.
+ *
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,42 +34,36 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __SHEET_PRIVATE_H
-#define __SHEET_PRIVATE_H
+#ifndef __INPUT_CONTEXT_RUBBERBAND_H
+#define __INPUT_CONTEXT_RUBBERBAND_H
 
-#include <gtk/gtk.h>
 #include <goocanvas.h>
+#include <glib.h>
+
+#include "coords.h"
+
+
+typedef enum {
+	RUBBERBAND_DISABLED,
+	RUBBERBAND_START, 
+	RUBBERBAND_ACTIVE
+} RubberbandState;
+
+typedef struct _RubberbandInfo RubberbandInfo;
 
 #include "sheet.h"
-#include "create-wire.h"
-#include "rubberband.h"
-	
-struct _SheetPriv {
-	// Keeps the current signal handler for wire creation.	
-	int 			 wire_handler_id;
-	// Keeps the signal handler for floating objects.
-	int 			 float_handler_id;
 
-	double 			 zoom;
-	gulong 			 width;
-	gulong  		 height;
-
-	GooCanvasGroup		*selected_group;
-	GooCanvasGroup		*floating_group;
-	GList			*selected_objects;
-	GList			*floating_objects;
-
-	GList			*items;
-	RubberbandInfo		*rubberband_info;
-	GList 			*preserve_selection_items;
-	GooCanvasClass		*sheet_parent_class;
-
-	GList 			*voltmeter_items; // List of GooCanvasItem
-	GHashTable 		*voltmeter_nodes;
-
-	CreateWireContext 	*create_wire_context; // Wire context for each schematic
-
-	GHashTable 		*node_dots;
+struct _RubberbandInfo {
+	RubberbandState state;
+	Coords start;
+	Coords end;
+	GooCanvasRect *rectangle;
 };
 
-#endif
+RubberbandInfo* rubberband_info_new (Sheet *sheet);
+void rubberband_info_destroy (RubberbandInfo *rubberband);
+gboolean rubberband_start (Sheet *sheet, GdkEvent *event);
+gboolean rubberband_update (Sheet *sheet, GdkEvent *event);
+gboolean rubberband_finish (Sheet *sheet, GdkEvent *event);
+
+#endif /* __INPUT_CONTEXT_RUBBERBAND_H */

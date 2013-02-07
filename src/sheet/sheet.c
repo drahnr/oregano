@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- 
- * Web page: https://github.com/marc-lorber/oregano
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
+ *
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -147,27 +149,6 @@ sheet_class_init (SheetClass *sheet_class)
 	            0);
 }
 
-static 
-cairo_pattern_t*
-create_stipple (const char *color_name, guchar stipple_data[16])
-{
-  cairo_surface_t *surface;
-  cairo_pattern_t *pattern;
-  GdkColor color;
-
-  gdk_color_parse (color_name, &color);
-  stipple_data[2] = stipple_data[14] = color.red >> 8;
-  stipple_data[1] = stipple_data[13] = color.green >> 8;
-  stipple_data[0] = stipple_data[12] = color.blue >> 8;
-  surface = cairo_image_surface_create_for_data (stipple_data,
-						 CAIRO_FORMAT_ARGB32,
-						 2, 2, 8);
-  pattern = cairo_pattern_create_for_surface (surface);
-  cairo_surface_destroy (surface);
-  cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
-
-  return pattern;
-}
 
 static void
 sheet_init (Sheet *sheet)
@@ -181,8 +162,7 @@ sheet_init (Sheet *sheet)
 	sheet->priv->float_handler_id = 0;
 	
 	sheet->priv->items = NULL;
-	sheet->priv->rubberband = g_new0 (RubberbandInfo, 1);
-	sheet->priv->rubberband->state = RUBBER_NO;
+	sheet->priv->rubberband_info = rubberband_info_new (sheet);
 	sheet->priv->preserve_selection_items = NULL;
 	sheet->priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
 	sheet->priv->voltmeter_items = NULL;
@@ -556,157 +536,6 @@ sheet_add_item (Sheet *sheet, SheetItem *item)
 	sheet->priv->items = g_list_prepend (sheet->priv->items, item);
 }
 
-int    
-sheet_motion_rubberband (Sheet *sheet, GdkEventMotion *event)
-{
-	static double width_old = 0, height_old = 0;
-	double x, y;
-	double height, width;
-	
-	double dx, dy;
-	GList *list = NULL;
-	SheetPos p1, p2;
-
-    // Obtains the current pointer position and modifier state.
-    // The position is given in coordinates relative to window.
-	sheet_get_pointer (sheet, &x, &y);
-
-	if (x < sheet->priv->rubberband->start_x) {
-		width = sheet->priv->rubberband->start_x - x;
-	}
-	else {
-		double tmp = x;
-		x = sheet->priv->rubberband->start_x;
-		width = tmp - sheet->priv->rubberband->start_x;
-	}
-
-	if (y < sheet->priv->rubberband->start_y) {
-		height = sheet->priv->rubberband->start_y - y;
-	}
-	else {
-		double tmp = y;
-		y = sheet->priv->rubberband->start_y;
-		height = tmp - sheet->priv->rubberband->start_y;
-	}
-
-	p1.x = x;
-	p1.y = y;
-	p2.x = x + width;
-	p2.y = y + height;
-
-	// Scroll the sheet if needed.
-	// Need FIX
-	/*{
-		int width, height;
-		int dx = 0, dy = 0;
-		GtkAllocation allocation;
-		
-		sheet_get_pointer (sheet, &x, &y);
-
-		gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
-		width = allocation.width;
-		height = allocation.height;
-
-		if (_x < 0)
-			dx = -1;
-		else if (_x > width)
-			dx = 1;
-
-		if (_y < 0)
-			dy = -1;
-		else if (_y > height)
-			dy = 1;
-
-		if (!(_x > 0 && _x < width && _y > 0 && _y < height))
-			sheet_scroll (sheet, dx * 5, dy * 5);
-	}*/
-
-	// Modify the rubberband rectangle if needed
-	dx = fabs (width - width_old);
-	dy = fabs (height - height_old);
-	if (dx > 1.0 || dy > 1.0) {
-		// Save old state
-		width_old = width;
-		height_old = height;
-
-		for (list = sheet->priv->items; list; list = list->next) {
-			sheet_item_select_in_area (list->data, &p1, &p2);
-		}
-
-		g_object_set (sheet->priv->rubberband->rectangle,
-		              "x", (double) x, 
-		              "y", (double) y,
-		              "width", width, 
-		              "height", height,
-		              NULL);
-
-		//g_list_free_full (list, g_object_unref); //FIXME
-	}
-	return TRUE;
-}
-
-void
-sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
-{
-	GList *list = NULL;
-
-	sheet->priv->rubberband->state = RUBBER_NO;
-
-	if (sheet->priv->preserve_selection_items != NULL) {
-		for (list = sheet->priv->preserve_selection_items; list; list = list->next)
-			sheet_item_set_preserve_selection (SHEET_ITEM (list->data), FALSE);
-		
-		g_list_free (sheet->priv->preserve_selection_items);
-		sheet->priv->preserve_selection_items = NULL;
-	}
-
-	goo_canvas_pointer_ungrab (GOO_CANVAS (sheet),
-	                           GOO_CANVAS_ITEM (sheet->grid), event->time);
-	
-	goo_canvas_item_remove (GOO_CANVAS_ITEM (sheet->priv->rubberband->rectangle));
-	//g_list_free_full (list, g_object_unref); //FIXME
-}
-
-void 
-sheet_setup_rubberband (Sheet *sheet, GdkEventButton *event)
-{
-	double x, y;
-	cairo_pattern_t *pattern;
-	static guchar stipple_data[16] = 
-	{0, 0, 0, 255,  0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 255 };
-
-	x = event->x; //the x coordinate of the pointer relative to the window.
-	y = event->y; //the y coordinate of the pointer relative to the window.
-	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
-
-	sheet->priv->rubberband->start_x = x;
-	sheet->priv->rubberband->start_y = y;
-
-	sheet->priv->rubberband->state = RUBBER_YES;
-	sheet->priv->rubberband->click_start_state = event->state;
-
-	pattern = create_stipple ("lightgrey", stipple_data);
-
-	sheet->priv->rubberband->rectangle = goo_canvas_rect_new (
-		GOO_CANVAS_ITEM (sheet->object_group), 
-	    x, y, 0.0, 0.0, 
-	    "stroke-color", "black",
-	    "line-width", 0.2,
-	    "fill-pattern", pattern,
-	    NULL);
-
-	goo_canvas_pointer_grab (GOO_CANVAS (sheet), GOO_CANVAS_ITEM (sheet->grid), 
-		(GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK),
-	    NULL, event->time);
-	
-	// Mark all the selected objects to preserve their selected state
-	// if SHIFT is pressed while rubberbanding.
-	if (event->state & GDK_SHIFT_MASK) {
-		sheet->priv->preserve_selection_items = 
-			g_list_copy (sheet_preserve_selection (sheet));
-	}
-
-}
 
 GList *
 sheet_preserve_selection (Sheet *sheet)
@@ -714,7 +543,7 @@ sheet_preserve_selection (Sheet *sheet)
 	g_return_val_if_fail (sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
 	
-	GList *list;
+	GList *list = NULL;
 	for (list = sheet->priv->selected_objects; list; list = list->next) {
 		sheet_item_set_preserve_selection (SHEET_ITEM (list->data), TRUE);
 	}
@@ -762,7 +591,7 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				if (!(event->button.state & GDK_SHIFT_MASK))
 					sheet_select_all (sheet, FALSE);
 
-				sheet_setup_rubberband (sheet, (GdkEventButton *) event);
+				rubberband_start (sheet, event);
 				return TRUE;
 			}
 			break;
@@ -770,9 +599,8 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			if (event->button.button == 4 || event->button.button == 5)
 				return TRUE;
 
-			if (event->button.button == 1 					&&
-		        sheet->priv->rubberband->state == RUBBER_YES) {
-				sheet_stop_rubberband (sheet, (GdkEventButton *) event);
+			if (event->button.button == 1 && sheet->priv->rubberband_info->state == RUBBERBAND_ACTIVE) {
+				rubberband_finish (sheet, event);
 				return TRUE;
 			}
 
@@ -798,8 +626,8 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				}
 				break;
 		case GDK_MOTION_NOTIFY:
-			if (sheet->priv->rubberband->state == RUBBER_YES) {
-				sheet_motion_rubberband (sheet, (GdkEventMotion *) event);
+			if (sheet->priv->rubberband_info->state == RUBBERBAND_ACTIVE) {
+				rubberband_update (sheet, event);
 				return TRUE;
 			}
 			if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
