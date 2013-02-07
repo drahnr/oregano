@@ -63,16 +63,16 @@ static GSList *wires_intersect (NodeStore *store, double x1, double y1,
 					double x2, double y2);
 static GSList *wire_intersect_parts (NodeStore *store, Wire *wire);
 static int     is_wire_at_pos (double x1, double y1, double x2, double y2,
-					SheetPos pos);
-static GSList *wires_at_pos (NodeStore *store, SheetPos pos);
+					Coords pos);
+static GSList *wires_at_pos (NodeStore *store, Coords pos);
 static int	   do_wires_intersect (double Ax, double Ay, double Bx, double By,
-					double Cx, double Cy, double Dx, double Dy, SheetPos *pos);
+					double Cx, double Cy, double Dx, double Dy, Coords *pos);
 static void	   node_store_finalize (GObject *self);
 static void	   node_store_dispose (GObject *self);
 
 typedef struct {
 	Wire *wire;
-	SheetPos pos;
+	Coords pos;
 } IntersectionPoint;
 
 enum {
@@ -168,7 +168,7 @@ node_store_new (void)
 }
 
 static void
-node_dot_added_callback (Node *node, SheetPos *pos, NodeStore *store)
+node_dot_added_callback (Node *node, Coords *pos, NodeStore *store)
 {
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
@@ -177,7 +177,7 @@ node_dot_added_callback (Node *node, SheetPos *pos, NodeStore *store)
 }
 
 static void
-node_dot_removed_callback (Node *node, SheetPos *pos, NodeStore *store)
+node_dot_removed_callback (Node *node, Coords *pos, NodeStore *store)
 {
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
@@ -186,7 +186,7 @@ node_dot_removed_callback (Node *node, SheetPos *pos, NodeStore *store)
 }
 
 Node *
-node_store_get_or_create_node (NodeStore *self, SheetPos pos)
+node_store_get_or_create_node (NodeStore *self, Coords pos)
 {
 	Node *node;
 
@@ -218,8 +218,8 @@ node_store_add_part (NodeStore *self, Part *part)
 {
 	GSList *wire_list, *list;
 	Node *node;
-	SheetPos lookup_key;
-	SheetPos part_pos;
+	Coords lookup_key;
+	Coords part_pos;
 	gdouble x, y;
 	int i, num_pins;
 
@@ -274,8 +274,8 @@ int
 node_store_remove_part (NodeStore *self, Part *part)
 {
 	Node *node;
-	SheetPos lookup_key;
-	SheetPos pos;
+	Coords lookup_key;
+	Coords pos;
 	gdouble x, y;
 	int i, num_pins;
 	Pin *pins;
@@ -346,7 +346,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	GSList *ip_list, *list;
 	IntersectionPoint *ipoint;
 	Node *node;
-	SheetPos pos, length;
+	Coords pos, length;
 
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
@@ -367,7 +367,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 		ipoint = list->data;
 
 		if (IS_EQ (x1, x2) && ((ipoint->pos.y == y1) || (ipoint->pos.y == y2))) {
-			SheetPos w_pos, w_length;
+			Coords w_pos, w_length;
 			gboolean can_join;
 			GSList *nodes;
 
@@ -382,7 +382,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			can_join = TRUE;
 			nodes = wire_get_nodes (wire);
 			for (; nodes; nodes = nodes->next) {
-				SheetPos p1;
+				Coords p1;
 				Node *node = (Node *)nodes->data;
 
 				p1.x = _x1;
@@ -421,7 +421,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 		else if (IS_EQ (y1, y2)          && 
 		         ((ipoint->pos.x == x1)  || 
 				  (ipoint->pos.x == x2))) {
-			SheetPos w_pos, w_length;
+			Coords w_pos, w_length;
 			gboolean can_join;
 			GSList *nodes;
 
@@ -436,7 +436,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			can_join = TRUE;
 			nodes = wire_get_nodes (wire);
 			for (; nodes; nodes = nodes->next) {
-				SheetPos p;
+				Coords p;
 				Node *node = (Node *)nodes->data;
 
 				p.x = _x1;
@@ -514,7 +514,7 @@ int
 node_store_remove_wire (NodeStore *store, Wire *wire)
 {
 	GSList *list;
-	SheetPos lookup_key, pos, length;
+	Coords lookup_key, pos, length;
 
 	g_return_val_if_fail (store != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
@@ -562,8 +562,8 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 	GList *list;
 	GSList *ip_list;
 	Node *node;
-	SheetPos lookup_pos;
-	SheetPos part_pos, wire_pos, wire_length;
+	Coords lookup_pos;
+	Coords part_pos, wire_pos, wire_length;
 	Part *part;
 	double x, y, wire_x1, wire_y1, wire_x2, wire_y2;
 	int i, num_pins;
@@ -616,12 +616,12 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 }
 
 static GSList *
-wires_at_pos (NodeStore *store, SheetPos pos)
+wires_at_pos (NodeStore *store, Coords pos)
 {
 	GList *list;
 	GSList *wire_list;
 	Wire *wire;
-	SheetPos wire_pos, wire_length;
+	Coords wire_pos, wire_length;
 	double x1, y1, x2, y2;
 
 	g_return_val_if_fail (store != NULL, FALSE);
@@ -647,11 +647,11 @@ wires_at_pos (NodeStore *store, SheetPos pos)
 }
 
 int
-node_store_is_wire_at_pos (NodeStore *store, SheetPos pos)
+node_store_is_wire_at_pos (NodeStore *store, Coords pos)
 {
 	GList *list;
 	Wire *wire;
-	SheetPos wire_pos, wire_length;
+	Coords wire_pos, wire_length;
 	double x1, y1, x2, y2;
 
 	g_return_val_if_fail (store != NULL, FALSE);
@@ -680,7 +680,7 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
 	GList *list;
 	GSList *ip_list;
 	Wire *wire;
-	SheetPos pos, wire_pos, wire_length;
+	Coords pos, wire_pos, wire_length;
 	double wire_x1, wire_y1, wire_x2, wire_y2;
 
 	g_return_val_if_fail (store != NULL, FALSE);
@@ -717,7 +717,7 @@ wires_intersect (NodeStore *store, double x1, double y1, double x2, double y2)
  
 // Find the node that has an element at a certain position.
 Node *
-node_store_get_node (NodeStore *store, SheetPos pos)
+node_store_get_node (NodeStore *store, Coords pos)
 {
 	Node *node;
 
@@ -736,7 +736,7 @@ node_store_get_node (NodeStore *store, SheetPos pos)
 static guint
 node_hash (gconstpointer key)
 {
-	SheetPos *sp = (SheetPos *) key;
+	Coords *sp = (Coords *) key;
 	int x, y;
 
 	// Hash on any other node?
@@ -750,10 +750,10 @@ node_hash (gconstpointer key)
 static int
 node_equal (gconstpointer a, gconstpointer b)
 {
-	SheetPos *spa, *spb;
+	Coords *spa, *spb;
 
-	spa = (SheetPos *) a;
-	spb = (SheetPos *) b;
+	spa = (Coords *) a;
+	spb = (Coords *) b;
 
 	if (fabs (spa->y - spb->y) > HASH_EPSILON) {
 		if (fabs (spa->y - spb->y) < 2.0)
@@ -782,7 +782,7 @@ node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data)
 }
 
 static int
-is_wire_at_pos (double x1, double y1, double x2, double y2, SheetPos pos)
+is_wire_at_pos (double x1, double y1, double x2, double y2, Coords pos)
 {
 	double k, x0, y0;
 
@@ -816,7 +816,7 @@ is_wire_at_pos (double x1, double y1, double x2, double y2, SheetPos pos)
 // is returned in pos.
 static int
 do_wires_intersect (double Ax, double Ay, double Bx, double By, double Cx,
-					double Cy, double Dx, double Dy, SheetPos *pos)
+					double Cy, double Dx, double Dy, Coords *pos)
 {
 	double r, s, d;
 
@@ -951,7 +951,7 @@ void
 node_store_get_bounds (NodeStore *store, NodeRect *rect)
 {
 	GList *list;
-	SheetPos p1, p2;
+	Coords p1, p2;
 
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
@@ -977,7 +977,7 @@ gint
 node_store_count_items (NodeStore *store, NodeRect *rect)
 {
 	GList *list;
-	SheetPos p1, p2;
+	Coords p1, p2;
 	ItemData *data;
 	gint n;
 
@@ -1001,7 +1001,7 @@ node_store_count_items (NodeStore *store, NodeRect *rect)
 }
 
 static void
-draw_dot (SheetPos *key, Node *value, cairo_t *cr)
+draw_dot (Coords *key, Node *value, cairo_t *cr)
 {
 	if (node_needs_dot (value)) {
 		cairo_save (cr);
@@ -1034,10 +1034,10 @@ node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ct
 }
 
 int
-node_store_is_pin_at_pos (NodeStore *store, SheetPos pos)
+node_store_is_pin_at_pos (NodeStore *store, Coords pos)
 {
 	int num_pins;
-	SheetPos part_pos;
+	Coords part_pos;
 	GList *p;
 	Part *part;
 	Pin *pins;

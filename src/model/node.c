@@ -124,7 +124,7 @@ node_init (Node *node)
 }
 
 Node *
-node_new (SheetPos pos)
+node_new (Coords pos)
 {
 	Node *node;
 
@@ -141,8 +141,8 @@ gboolean
 node_needs_dot (Node *node)
 {
 	Wire *wire1, *wire2;
-	SheetPos start_pos1, length1, end_pos1;
-	SheetPos start_pos2, length2, end_pos2;
+	Coords start_pos1, length1, end_pos1;
+	Coords start_pos2, length2, end_pos2;
 
 	if ((node->pin_count > 2) || (node->wire_count > 2))
 		return TRUE;

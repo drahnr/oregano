@@ -34,7 +34,7 @@
 
 #include <gtk/gtk.h>
 
-#include "sheet-pos.h"
+#include "coords.h"
 #include "part.h"
 
 #define TYPE_NODE			 (node_get_type ())
@@ -63,7 +63,7 @@ struct _Node {
 	GSList *pins;
 	GSList *wires;
 
-	SheetPos key;
+	Coords key;
 };
 
 struct _NodeClass
@@ -72,7 +72,7 @@ struct _NodeClass
 };
 
 GType node_get_type (void);
-Node *node_new (SheetPos pos);
+Node *node_new (Coords pos);
 gint node_is_empty (Node *node);
 
 gint node_add_pin (Node *node, Pin *pin);

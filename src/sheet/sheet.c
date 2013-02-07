@@ -56,9 +56,9 @@ static void 	sheet_set_zoom (const Sheet *sheet, double zoom);
 static GList *	sheet_preserve_selection (Sheet *sheet);
 static void		rotate_items (Sheet *sheet, GList *items);
 static void		flip_items (Sheet *sheet, GList *items, gboolean horizontal);
-static void 	node_dot_added_callback (Schematic *schematic, SheetPos *pos, 
+static void 	node_dot_added_callback (Schematic *schematic, Coords *pos, 
 					Sheet *sheet);
-static void 	node_dot_removed_callback (Schematic *schematic, SheetPos *pos, 
+static void 	node_dot_removed_callback (Schematic *schematic, Coords *pos, 
     				Sheet *sheet);
 static void		sheet_finalize (GObject *object);
 static int 		dot_equal (gconstpointer a, gconstpointer b);
@@ -900,7 +900,7 @@ static void
 rotate_items (Sheet *sheet, GList *items)
 {
 	GList *list, *item_data_list;
-	SheetPos center, b1, b2;
+	Coords center, b1, b2;
 
 	item_data_list = NULL;
 	for (list = items; list; list = list->next) {
@@ -1030,8 +1030,8 @@ static void
 flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 {
 	GList *list, *item_data_list;
-	SheetPos center, b1, b2;
-	SheetPos after;
+	Coords center, b1, b2;
+	Coords after;
 
 	item_data_list = NULL;
 	for (list = items; list; list = list->next) {
@@ -1179,11 +1179,11 @@ sheet_initiate_create_wire (Sheet *sheet)
 }
 
 static void
-node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
+node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet)
 {
 	NodeItem *node_item;
 
-	SheetPos *key;
+	Coords *key;
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
@@ -1199,7 +1199,7 @@ node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 	}
 
 	node_item_show_dot (node_item, TRUE);
-	key = g_new0 (SheetPos, 1);
+	key = g_new0 (Coords, 1);
 	key->x = pos->x;
 	key->y = pos->y;
 
@@ -1207,10 +1207,10 @@ node_dot_added_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 }
 
 static void
-node_dot_removed_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
+node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet)
 {
 	GooCanvasItem *node_item;
-	SheetPos * orig_key;
+	Coords * orig_key;
 	gboolean found;
 
 	g_return_if_fail (sheet != NULL);
@@ -1233,7 +1233,7 @@ node_dot_removed_callback (Schematic *schematic, SheetPos *pos, Sheet *sheet)
 static guint
 dot_hash (gconstpointer key)
 {
-	SheetPos *sp = (SheetPos *) key;
+	Coords *sp = (Coords *) key;
 	int x, y;
 
 	x = (int)rint (sp->x) % 256;
@@ -1247,13 +1247,13 @@ dot_hash (gconstpointer key)
 static int
 dot_equal (gconstpointer a, gconstpointer b)
 {
-	SheetPos *spa, *spb;
+	Coords *spa, *spb;
 
 	g_return_val_if_fail (a!=NULL, 0);
 	g_return_val_if_fail (b!=NULL, 0);
 
-	spa = (SheetPos *) a;
-	spb = (SheetPos *) b;
+	spa = (Coords *) a;
+	spb = (Coords *) b;
 
 	if (fabs (spa->y - spb->y) > HASH_EPSILON)
 		return 0;

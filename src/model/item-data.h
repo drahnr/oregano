@@ -36,7 +36,7 @@
 
 #include <cairo/cairo.h>
 
-#include "sheet-pos.h"
+#include "coords.h"
 #include "schematic-print-context.h"
 
 #define TYPE_ITEM_DATA			  (item_data_get_type ())
@@ -68,15 +68,15 @@ struct _ItemDataClass
 	GObjectClass parent_class;
 
 	// Signals.
-	void 		(*moved) 				(ItemData *data, SheetPos *delta);
+	void 		(*moved) 				(ItemData *data, Coords *delta);
 
 	// Methods.
 	ItemData *	(*clone) 				(ItemData *src);
 	void 		(*copy) 				(ItemData *dest, ItemData *src);
 	void 		(*rotate)				(ItemData *data, int angle, 
-							             SheetPos *center);
+							             Coords *center);
 	void 		(*flip) 				(ItemData *data, gboolean horizontal, 
-				            			 SheetPos *center);
+				            			 Coords *center);
 	void 		(*unreg)				(ItemData *data);
 	int 		(*reg)		 			(ItemData *data);
 
@@ -98,42 +98,42 @@ ItemData *item_data_new (void);
 ItemData *	item_data_clone (ItemData *src);
 
 // Get Item position
-void 		item_data_get_pos (ItemData *item_data, SheetPos *pos);
+void 		item_data_get_pos (ItemData *item_data, Coords *pos);
 
 // Set Item position
-void 		item_data_set_pos (ItemData *item_data, SheetPos *pos);
+void 		item_data_set_pos (ItemData *item_data, Coords *pos);
 
 //  Move an ItemData
 //  \param delta offset to move the item
-void 		item_data_move (ItemData *item_data, SheetPos *delta);
+void 		item_data_move (ItemData *item_data, Coords *delta);
 
 // Get the bounding box of an item data 
 //Retrieve the bounding box of the item relative to position
 //  \param p1 Where to store the upper-left point
 //  \param p2 Where to store the lower-right point
-void 		item_data_get_relative_bbox (ItemData *data, SheetPos *p1, 
-		                                 SheetPos *p2);
+void 		item_data_get_relative_bbox (ItemData *data, Coords *p1, 
+		                                 Coords *p2);
 
 // Set the relative bounding box
-void 		item_data_set_relative_bbox (ItemData *data, SheetPos *p1, 
-		                                 SheetPos *p2);
+void 		item_data_set_relative_bbox (ItemData *data, Coords *p1, 
+		                                 Coords *p2);
 // Get absolute bounding box
 //  This function is like item_data_get_relative_bbox but it add
 //  the item position to the bbox vertex
-void 		item_data_get_absolute_bbox (ItemData *data, SheetPos *p1, 
-		                                 SheetPos *p2);
+void 		item_data_get_absolute_bbox (ItemData *data, Coords *p1, 
+		                                 Coords *p2);
 
 // Get the absolute bounding box of a list of items
 //  This return a bbox that enclose all item in a list
 void 		item_data_list_get_absolute_bbox (GList *item_data_list, 
-		                                      SheetPos *p1, SheetPos *p2);
+		                                      Coords *p1, Coords *p2);
 
 // Rotate an item
-void 		item_data_rotate (ItemData *data, int angle, SheetPos *center);
+void 		item_data_rotate (ItemData *data, int angle, Coords *center);
 
 // Flip an item
 void 		item_data_flip (ItemData *data, gboolean horizontal, 
-		                    SheetPos *center);
+		                    Coords *center);
 
 // Get the Store associated for this item
 //  Store is a class that hold all items in a schematic

@@ -58,7 +58,7 @@ typedef struct {
 GType 		wire_item_get_type (void);
 WireItem *	wire_item_new (Sheet *sheet, Wire *wire);
 void 		wire_item_initiate (Sheet *sheet);
-void 		wire_item_get_start_pos (WireItem *item, SheetPos *pos);
-void 		wire_item_get_length (WireItem *item, SheetPos *pos);
+void 		wire_item_get_start_pos (WireItem *item, Coords *pos);
+void 		wire_item_get_length (WireItem *item, Coords *pos);
 
 #endif

@@ -35,11 +35,11 @@
 
 #include <glib.h>
 
-#include "sheet-pos.h"
+#include "coords.h"
 
 // Note: this must be synced with Pin in part.h for now.
 typedef struct {
-	SheetPos pos;
+	Coords pos;
 } Connection;
 
 typedef struct {

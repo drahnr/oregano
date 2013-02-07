@@ -45,7 +45,7 @@ typedef struct _CreateWireContext CreateWireContext;
 typedef struct {
 	GooCanvasPolyline *line;
 	GooCanvasPoints *  points;
-	WireDir 		   direction;	 // Direction of the first wire segment.
+	WireDir	direction;	 // Direction of the first wire segment.
 } CreateWire;
 
 CreateWireContext *	create_wire_initiate (Sheet *sheet);

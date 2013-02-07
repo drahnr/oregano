@@ -68,9 +68,9 @@ static void part_copy (ItemData *dest, ItemData *src);
 
 static ItemData *part_clone (ItemData *src);
 
-static void part_rotate (ItemData *data, int angle, SheetPos *center);
+static void part_rotate (ItemData *data, int angle, Coords *center);
 
-static void part_flip (ItemData *data, gboolean horizontal, SheetPos *center);
+static void part_flip (ItemData *data, gboolean horizontal, Coords *center);
 
 static void part_update_bbox (Part *part);
 
@@ -109,7 +109,7 @@ typedef struct {
 typedef struct {
 	Part *    part;
 	gboolean  horizontal;
-	SheetPos *center;
+	Coords *center;
 } SignalFlippedStruct;
 
 G_DEFINE_TYPE (Part, part, TYPE_ITEM_DATA)
@@ -489,7 +489,7 @@ part_set_pins (Part *part, GSList *pins)
 
 	for (list = pins, i = 0; list; list = list->next, i++) {
 		// Note that this is slightly hackish. The list contains
-		// Connections which only have the SheetPos field.
+		// Connections which only have the Coords field.
 		Pin *pin = list->data;
 
 		priv->pins[i].pin_nr = i;
@@ -516,14 +516,14 @@ part_get_labels (Part *part)
 }
 
 static void
-part_rotate (ItemData *data, int angle, SheetPos *center)
+part_rotate (ItemData *data, int angle, Coords *center)
 {
 	cairo_matrix_t affine;
 	double dx, dy, x, y;
 	Part *part;
 	PartPriv *priv;
 	int i, tot_rotation;
-	SheetPos b1, b2, part_center_before, part_center_after, delta;
+	Coords b1, b2, part_center_before, part_center_after, delta;
 	SignalRotatedStruct *signal_struct;
 
 	g_return_if_fail (data != NULL);
@@ -578,7 +578,7 @@ part_rotate (ItemData *data, int angle, SheetPos *center)
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
 	if (center) {
-		SheetPos part_pos;
+		Coords part_pos;
 		gfloat tmp_x, tmp_y;
 
 		part_center_after.x = (b1.x + b2.x) / 2;
@@ -630,7 +630,7 @@ emit_rotated_signal_when_handler_connected (gpointer data)
 }
 
 static void
-part_flip (ItemData *data, gboolean horizontal, SheetPos *center)
+part_flip (ItemData *data, gboolean horizontal, Coords *center)
 {
 	Part *part;
 	PartPriv *priv;
@@ -690,11 +690,11 @@ gboolean emit_flipped_signal_when_handler_connected (gpointer data)
 	gboolean handler_connected;
 	SignalFlippedStruct *signal_struct = (SignalFlippedStruct *) data;
 	gboolean horizontal;
-	SheetPos *center;
+	Coords *center;
 	Part *part;
 	
-	SheetPos part_center_before = {0.0, 0.0}, part_center_after = {0.0, 0.0};
-	SheetPos b1, b2;
+	Coords part_center_before = {0.0, 0.0}, part_center_after = {0.0, 0.0};
+	Coords b1, b2;
 	cairo_matrix_t affine;
 	double x, y;
 	
@@ -731,7 +731,7 @@ gboolean emit_flipped_signal_when_handler_connected (gpointer data)
 		item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
 		if (center) {
-			SheetPos part_pos, delta;
+			Coords part_pos, delta;
 			double dx, dy;
 
 			part_center_after.x = b1.x + (b2.x - b1.x) / 2;
@@ -837,7 +837,7 @@ part_update_bbox (Part *part)
 	GooCanvasPoints *points;
 	int i;
 
-	SheetPos b1, b2;
+	Coords b1, b2;
 
 	symbol = library_get_symbol (part->priv->symbol_name);
 	if (symbol == NULL) {
@@ -989,7 +989,7 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	int i, rotation;
 	Part *part;
 	PartPriv *priv;
-	SheetPos pos;
+	Coords pos;
 	IDFlip flip;
 	GooCanvasPoints *line;
 

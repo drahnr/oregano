@@ -258,7 +258,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				Node *opposite_node;
 				Pin opposite_pin;
 				gint pin_nr, opposite_pin_nr;
-				SheetPos pos;
+				Coords pos;
 				Pin *jumper_pins;
 				gint num_pins;
 
@@ -681,8 +681,8 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 				} 
 				else {
 					Node *node;
-					SheetPos lookup_key;
-					SheetPos part_pos;
+					Coords lookup_key;
+					Coords part_pos;
 	
 					item_data_get_pos (ITEM_DATA (p->data), &part_pos);
 

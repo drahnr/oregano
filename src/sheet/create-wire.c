@@ -37,7 +37,7 @@
 #include <stdlib.h>
 
 #include "cursors.h"
-#include "sheet-pos.h"
+#include "coords.h"
 #include "node-store.h"
 #include "wire-item.h"
 #include "create-wire.h"
@@ -63,8 +63,8 @@ static int 		create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
 static int 		create_wire_cancel (Sheet *sheet, CreateWireContext *cwc);
 static void 	fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both,
 					gdouble x, gdouble y);
-static Wire *	create_wire_and_place_item (Sheet *sheet, SheetPos start_pos,
-					SheetPos end_pos);
+static Wire *	create_wire_and_place_item (Sheet *sheet, Coords start_pos,
+					Coords end_pos);
 static void 	cancel_wire (CreateWireContext *cwc);
 static void 	exit_wire_mode (CreateWireContext *cwc);
 
@@ -182,7 +182,7 @@ create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
 	CreateWire *wire = cwc->create_wire;
 	Schematic *s;
 	NodeStore *store;
-	SheetPos pos;
+	Coords pos;
 	int intersect;
 
 	s = schematic_view_get_schematic_from_sheet (cwc->sheet);
@@ -352,7 +352,7 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both,
              gdouble x, gdouble y)
 {
 	CreateWire *create_wire = cwc->create_wire;
-	SheetPos p1, p2, start_pos, end_pos, start_pos2, end_pos2;
+	Coords p1, p2, start_pos, end_pos, start_pos2, end_pos2;
 	gboolean cancel = FALSE;
 	NodeStore *store;
 	Schematic *schematic;
@@ -452,11 +452,11 @@ fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both,
 }
 
 Wire *
-create_wire_and_place_item (Sheet *sheet, SheetPos start_pos,
-	SheetPos end_pos)
+create_wire_and_place_item (Sheet *sheet, Coords start_pos,
+	Coords end_pos)
 {
 	Wire *wire;
-	SheetPos length;
+	Coords length;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);

@@ -761,7 +761,7 @@ static void
 v_clamp_cmd (SchematicView *sv)
 {
 	LibraryPart *library_part;
-	SheetPos pos;
+	Coords pos;
 	Sheet *sheet;
 	Part *part;
 	GList *lib;

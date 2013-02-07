@@ -36,7 +36,7 @@
 typedef struct {
 	gchar *name;
 	gchar *text;
-	SheetPos pos;
+	Coords pos;
 } PartLabel;
 
 #endif
