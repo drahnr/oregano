@@ -41,6 +41,8 @@
 #include "dialogs.h"
 #include "oregano.h"
 
+#include "debug.h"
+
 static void netlist_editor_finalize (GObject *object);
 static void netlist_editor_dispose (GObject *object);
 static void netlist_editor_class_init (NetlistEditorClass *klass);
@@ -181,7 +183,7 @@ setup_language_manager_path (GtkSourceLanguageManager *lm)
 	new_langs = g_new (char*, lang_files_count + 2);
 
 	for (i = 0; lang_files[i]; i++)
-		new_langs[i] = lang_files[i];
+		new_langs[i] = g_strdup (lang_files[i]);
 
 	new_langs[lang_files_count] = g_strdup (OREGANO_LANGDIR);
 	new_langs[lang_files_count+1] = NULL;
@@ -241,6 +243,7 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	lang = gtk_source_language_manager_get_language (lm, "netlist");
 
 	if (lang) {
+		NG_DEBUG ("\"%s\" from \"%s\"", gtk_source_language_get_name (lang), OREGANO_LANGDIR "/netlist.lang");
 		gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (textbuffer), lang);
 		gtk_source_buffer_set_highlight_syntax (GTK_SOURCE_BUFFER (textbuffer), TRUE);
 		gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER (textbuffer), TRUE);
