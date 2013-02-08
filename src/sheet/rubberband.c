@@ -207,44 +207,45 @@ rubberband_start (Sheet *sheet, GdkEvent *event)
 gboolean
 rubberband_update (Sheet *sheet, GdkEvent *event) {
 	GList *list;
-	double x, y,
-	       dx, dy,
+	Coords cur, cmin, cmax;
+	double dx, dy,
 	       width, height,
 	       width_ng, height_ng;
 	RubberbandInfo *rubberband_info;
 	
 	rubberband_info = sheet->priv->rubberband_info;
-	sheet_get_pointer (sheet, &x, &y);
+	sheet_get_pointer (sheet, &(cur.x), &(cur.y));
 	
 	width  = fabs(rubberband_info->end.x - rubberband_info->start.x);
 	height = fabs(rubberband_info->end.y - rubberband_info->start.y);
 	
-	width_ng  = fabs(x - rubberband_info->start.x);
-	height_ng = fabs(y - rubberband_info->start.y);
+	width_ng  = fabs(cur.x - rubberband_info->start.x);
+	height_ng = fabs(cur.y - rubberband_info->start.y);
 	
 	dx = fabs (width_ng - width);
 	dy = fabs (height_ng - height);
-	NG_DEBUG ("motion :: dx=%lf, dy=%lf :: x=%lf, y=%lf :: w_ng=%lf, h_ng=%lf", dx, dy, x, y, width_ng, height_ng);
+	NG_DEBUG ("motion :: dx=%lf, dy=%lf :: x=%lf, y=%lf :: w_ng=%lf, h_ng=%lf", dx, dy, cur.x, cur.y, width_ng, height_ng);
 		
 	// TODO FIXME scroll window if needed (use http://developer.gnome.org/goocanvas/stable/GooCanvas.html#goo-canvas-scroll-to)
 	
 	if (dx > 0.5 || dy > 0.5) { //a 0.5 change in pixel coords would be the least visible, silently ignore everything else
-		rubberband_info->end.x = x;
-		rubberband_info->end.y = y;
-		x = MIN(rubberband_info->start.x,rubberband_info->end.x);
-		y = MIN(rubberband_info->start.y,rubberband_info->end.y);
-
-#if 0
+		rubberband_info->end.x = cur.x;
+		rubberband_info->end.y = cur.y;
+		cmin.x = MIN(rubberband_info->start.x, rubberband_info->end.x);
+		cmin.y = MIN(rubberband_info->start.y, rubberband_info->end.y);
+		cmax.x = cmin.x + width_ng;
+		cmax.y = cmin.y + height_ng;
+#if 1
 		for (list = sheet->priv->items; list; list = list->next) {
 			sheet_item_select_in_area (list->data,
-			                           &(rubberband_info->start),
-			                           &(rubberband_info->end));
+			                           &cmin,
+			                           &cmax);
 		}
 #endif
 
 		g_object_set (GOO_CANVAS_ITEM (rubberband_info->rectangle),
-		              "x", x, 
-		              "y", y,
+		              "x", cmin.x,
+		              "y", cmin.y,
 		              "width", width_ng, 
 		              "height", height_ng,
 		              "visibility", GOO_CANVAS_ITEM_VISIBLE,
