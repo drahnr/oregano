@@ -48,6 +48,9 @@
 #include "sheet-item-factory.h"
 #include "schematic-view.h"
 
+#include "rubberband.h"
+#include "create-wire.h"
+
 static void 	sheet_class_init (SheetClass *klass);
 static void 	sheet_init (Sheet *sheet);
 static void 	sheet_set_property (GObject *object, guint prop_id,
@@ -162,7 +165,8 @@ sheet_init (Sheet *sheet)
 	sheet->priv->float_handler_id = 0;
 	
 	sheet->priv->items = NULL;
-	sheet->priv->rubberband_info = rubberband_info_new (sheet);
+	sheet->priv->rubberband_info = NULL;
+	sheet->priv->create_wire_info = NULL;
 	sheet->priv->preserve_selection_items = NULL;
 	sheet->priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
 	sheet->priv->voltmeter_items = NULL;
@@ -366,26 +370,29 @@ sheet_new (int width, int height)
 	// Finally, create the object group that holds all objects.
 	sheet->object_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	                      root,
-	     				  "x", 0.0, 
+	                      "x", 0.0,
 	                      "y", 0.0,
 	                      NULL));
 
 	sheet->priv->selected_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
-	     GOO_CANVAS_ITEM (sheet->object_group), 
-	     "x", 0.0, 
+	     GOO_CANVAS_ITEM (sheet->object_group),
+	     "x", 0.0,
 	     "y", 0.0,
 	     NULL));
 
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
-	     GOO_CANVAS_ITEM (sheet->object_group), 
-	     "x", 0.0, 
-	     "y", 0.0, 
+	     GOO_CANVAS_ITEM (sheet->object_group),
+	     "x", 0.0,
+	     "y", 0.0,
 	     NULL));
 	
 	// Hash table that keeps maps coordinate to a specific dot.
-	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, 
-	                                                NULL);
-	
+	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, NULL);
+
+	//this requires object_group to be setup properly
+	sheet->priv->rubberband_info = rubberband_info_new (sheet);
+	sheet->priv->create_wire_info = create_wire_info_new (sheet);
+
 	return sheet_widget;
 }
 
@@ -494,9 +501,9 @@ sheet_prepend_floating_object (Sheet *sheet, SheetItem *item)
 void
 sheet_connect_part_item_to_floating_group (Sheet *sheet, gpointer *sv)
 {
-	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
-	g_return_if_fail (sv != NULL);
+	g_return_if_fail (sv);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
 	sheet->state = SHEET_STATE_FLOAT_START;
@@ -990,11 +997,8 @@ sheet_stop_create_wire (Sheet *sheet)
 {
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
-	
-	if (sheet->priv->create_wire_context) {
-		create_wire_exit (sheet->priv->create_wire_context);
-		sheet->priv->create_wire_context = NULL;
-	}
+
+	create_wire_cleanup (sheet);
 }
 
 void
@@ -1003,14 +1007,13 @@ sheet_initiate_create_wire (Sheet *sheet)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	sheet->priv->create_wire_context = create_wire_initiate (sheet);
+	create_wire_setup (sheet);
 }
 
 static void
 node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet)
 {
 	NodeItem *node_item;
-
 	Coords *key;
 
 	g_return_if_fail (sheet != NULL);
@@ -1019,11 +1022,11 @@ node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet)
 	node_item = g_hash_table_lookup (sheet->priv->node_dots, pos);
 	if (node_item == NULL) {
 		node_item = NODE_ITEM (g_object_new (TYPE_NODE_ITEM, NULL));	
-		g_object_set (node_item, 
+		g_object_set (node_item,
 		              "parent", goo_canvas_get_root_item (GOO_CANVAS (sheet)),
 		              "x", pos->x,
-					  "y", pos->y,
-					  NULL);
+		              "y", pos->y,
+		              NULL);
 	}
 
 	node_item_show_dot (node_item, TRUE);
@@ -1132,4 +1135,118 @@ sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 
 	// Destroy the item-data (model) associated to the sheet-item
 	g_object_unref (sheet_item_get_data (item));
+}
+
+
+inline static guint32
+extract_time (GdkEvent *event)
+{
+	if (event) {
+		switch (event->type) {
+		/* only added relevant events */
+		case GDK_MOTION_NOTIFY:
+			return ((GdkEventMotion *)event)->time;
+		case GDK_3BUTTON_PRESS:
+		case GDK_2BUTTON_PRESS:
+		case GDK_BUTTON_RELEASE:
+		case GDK_BUTTON_PRESS:
+			return ((GdkEventButton *)event)->time;
+		case GDK_KEY_PRESS:
+			return ((GdkEventKey *)event)->time;
+		case GDK_ENTER_NOTIFY:
+		case GDK_LEAVE_NOTIFY:
+			return ((GdkEventCrossing *)event)->time;
+		case GDK_PROPERTY_NOTIFY:
+			return ((GdkEventProperty *)event)->time;
+		case GDK_DRAG_ENTER:
+		case GDK_DRAG_LEAVE:
+		case GDK_DRAG_MOTION:
+		case GDK_DRAG_STATUS:
+		case GDK_DROP_START:
+		case GDK_DROP_FINISHED:
+			return ((GdkEventDND *)event)->time;
+		default:
+			return 0;
+		}
+	}
+	return 0;
+}
+
+/*
+ * helpful for debugging to not freeze your pc
+ * if oregano segfaults while running inside
+ * a gdb session
+ */
+//#define DEBUG_DISABLE_GRABBING
+
+gboolean
+sheet_pointer_grab (Sheet *sheet, GdkEvent *event)
+{
+	g_return_val_if_fail (sheet, FALSE);
+	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
+#ifndef DEBUG_DISABLE_GRABBING
+	if (sheet->priv->pointer_grabbed==0 &&
+	    goo_canvas_pointer_grab (GOO_CANVAS (sheet),
+	                             GOO_CANVAS_ITEM (sheet->grid),
+	                             GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK,
+	                         NULL,
+	                         extract_time (event))==GDK_GRAB_SUCCESS) {
+		sheet->priv->pointer_grabbed = 1;
+	}
+	return (sheet->priv->pointer_grabbed == 1);
+#else
+	return TRUE;
+#endif
+}
+
+
+void
+sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event)
+{
+	g_return_if_fail (sheet);
+	g_return_if_fail (IS_SHEET (sheet));
+#ifndef DEBUG_DISABLE_GRABBING
+	if (sheet->priv->pointer_grabbed) {
+		sheet->priv->pointer_grabbed = 0;
+		goo_canvas_pointer_ungrab (GOO_CANVAS (sheet),
+		                           GOO_CANVAS_ITEM (sheet->grid),
+		                           extract_time (event));
+	}
+#endif
+}
+
+
+gboolean
+sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
+{
+	g_return_val_if_fail (sheet, FALSE);
+	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
+#ifndef DEBUG_DISABLE_GRABBING
+	if (sheet->priv->keyboard_grabbed==0 &&
+	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet),
+		                      GOO_CANVAS_ITEM (sheet->grid),
+	                              TRUE, /*do not reroute signals through sheet->grid*/
+		                      extract_time (event))==GDK_GRAB_SUCCESS) {
+		sheet->priv->keyboard_grabbed = 1;
+	}
+	return (sheet->priv->keyboard_grabbed == 1);
+#else
+	return TRUE;
+#endif
+}
+
+
+void
+sheet_keyboard_ungrab (Sheet *sheet, GdkEvent *event)
+{
+	g_return_if_fail (sheet);
+	g_return_if_fail (IS_SHEET (sheet));
+#ifndef DEBUG_DISABLE_GRABBING
+	if (sheet->priv->keyboard_grabbed) {
+		sheet->priv->keyboard_grabbed = 0;
+		goo_canvas_keyboard_ungrab (GOO_CANVAS (sheet),
+		                            GOO_CANVAS_ITEM (sheet->grid),
+		                            extract_time (event));
+	}
+#endif
 }

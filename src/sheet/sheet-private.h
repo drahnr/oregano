@@ -63,9 +63,12 @@ struct _SheetPriv {
 	GList 			*voltmeter_items; // List of GooCanvasItem
 	GHashTable 		*voltmeter_nodes;
 
-	CreateWireContext 	*create_wire_context; // Wire context for each schematic
+	CreateWireInfo		*create_wire_info; // Wire context for each schematic
 
 	GHashTable 		*node_dots;
+
+	guint8			 keyboard_grabbed:1;
+	guint8			 pointer_grabbed:1;
 };
 
 #endif

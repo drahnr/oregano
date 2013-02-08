@@ -126,7 +126,7 @@ rubberband_info_new (Sheet *sheet) {
 	cairo_pattern_set_matrix (pattern, &matrix);
 	
 	rubberband_info->rectangle = GOO_CANVAS_RECT (goo_canvas_rect_new (
-	    GOO_CANVAS_ITEM (goo_canvas_get_root_item (GOO_CANVAS (sheet))),
+	    GOO_CANVAS_ITEM (sheet->object_group),
 	    10.0, 10.0,
 	    10.0, 10.0, 
 	    "stroke-color", "black",
@@ -188,17 +188,7 @@ rubberband_start (Sheet *sheet, GdkEvent *event)
 	}
 #endif
 
-#if 1
-	if (
-	goo_canvas_pointer_grab (GOO_CANVAS (sheet),
-	                         GOO_CANVAS_ITEM (sheet->grid), 
-	                         GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
-	                         NULL,
-	                         event->button.time) != GDK_GRAB_SUCCESS) {
-		g_warning ("failed to grab pointer device for goo canvas\n");
-		return FALSE;
-	}
-#endif
+	sheet_pointer_grab (sheet, event);
 	return TRUE;
 }
 
@@ -272,9 +262,8 @@ rubberband_finish (Sheet *sheet, GdkEvent *event) {
 	}
 #endif
 	
-	goo_canvas_pointer_ungrab (GOO_CANVAS (sheet),
-	                           GOO_CANVAS_ITEM (sheet->grid),
-	                           event->button.time);
+	sheet_pointer_ungrab (sheet, event);
+
 	g_object_set (rubberband_info->rectangle,
 	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);

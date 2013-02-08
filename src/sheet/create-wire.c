@@ -1,21 +1,24 @@
 /*
  * create-wire.c
  *
+ *
  * Authors:
  * Richard Hult <rhult@hem.passagen.se>
  * Ricardo Markiewicz <rmarkie@fi.uba.ar>
  * Andres de Barbara <adebarbara@fi.uba.ar>
  * Marc Lorber <lorber.marc@wanadoo.fr>
+ * Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Description: Handles the user interaction when creating wires.
  * The name is not really right. This part handles creation of wires and
  * acts as glue between NodeStore/Wire and Sheet/WireItem.
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2012-2013  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -42,512 +45,540 @@
 #include "wire-item.h"
 #include "create-wire.h"
 #include "wire.h"
+#include "sheet-private.h"
 
-#define NG_DEBUG(s) if (0) g_print ("%s\n", s)
+#include "debug.h"
 
-struct _CreateWireContext {
-	guint 				active : 1;
-	gint 				start_handler_id;
-	gint 				draw_handler_id;
-	gint 				create_wire_cancel_id;
-	gdouble 			old_x, old_y;
-	Sheet *				sheet;
-	GooCanvasItem	*	dot_item;
-	CreateWire *		create_wire;
-};
 
-static int 		create_wire_event (Sheet *sheet, const GdkEvent *event,
-					CreateWireContext *cwc);
-static int 		create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
-					CreateWireContext *cwc);
-static int 		create_wire_cancel (Sheet *sheet, CreateWireContext *cwc);
-static void 	fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both,
-					gdouble x, gdouble y);
-static Wire *	create_wire_and_place_item (Sheet *sheet, Coords start_pos,
-					Coords end_pos);
-static void 	cancel_wire (CreateWireContext *cwc);
-static void 	exit_wire_mode (CreateWireContext *cwc);
-
-// Initiates wire creation by disconnecting the signal handler that
-// starts the wire-drawing and then connecting the drawing handler.
-// This is an event handler.
-//
-// @param sheet a sheet (the canvas)
-// @param event the event
-// @param cwc   context
-static int
-create_wire_pre_create_event (Sheet *sheet, const GdkEvent *event,
-	CreateWireContext *cwc)
-{
-	GooCanvasPoints	*points;
+CreateWireInfo *
+create_wire_info_new (Sheet *sheet) {
+	CreateWireInfo *create_wire_info;
 	GooCanvasLineDash *dash;
-	CreateWire *wire;
-	double new_x, new_y;
+	
+	create_wire_info = g_new0 (CreateWireInfo, 1);
 
-	if (cwc->active)
-		return FALSE;
-
-	if (event->button.button == 2 || event->button.button > 3)
-		return FALSE;
-
-	if (event->type == GDK_2BUTTON_PRESS ||
-		event->type == GDK_3BUTTON_PRESS)
-		return FALSE;
-
-	g_signal_stop_emission_by_name (G_OBJECT (sheet), "event");
-
-	if (event->type != GDK_BUTTON_PRESS) 
-		return FALSE;
-
-	// Button 3 resets the sheet mode.
-	if (event->button.button == 3) {
-		exit_wire_mode (cwc);
-		return TRUE;
-	}
-
-	// Button 1 starts a new wire. Start by deselecting all objects.
-	sheet_select_all (sheet, FALSE);
-
-	sheet_get_pointer (sheet, &new_x, &new_y);
-
-	points = goo_canvas_points_new (3);
-	points->coords[0] = new_x;
-	points->coords[1] = new_y;
-	points->coords[2] = new_x;
-	points->coords[3] = new_y;
-	points->coords[4] = new_x;
-	points->coords[5] = new_y;
-
-	wire = g_new0 (CreateWire, 1);
-	cwc->create_wire = wire;
-	cwc->old_x = new_x;
-	cwc->old_y = new_y;
-
+	create_wire_info->state = WIRE_DISABLED;
+	
+	create_wire_info->direction = WIRE_DIR_HORIZ;
+//	create_wire_info->direction_auto_toggle = WIRE_DIRECTION_AUTO_TOGGLE_OFF;
+	
+	create_wire_info->points = goo_canvas_points_new (3);
+	create_wire_info->points->coords[0] = 0.;
+	create_wire_info->points->coords[1] = 0.;
+	create_wire_info->points->coords[2] = 0.;
+	create_wire_info->points->coords[3] = 0.;
+	create_wire_info->points->coords[4] = 0.;
+	create_wire_info->points->coords[5] = 0.;
+	
 	dash = goo_canvas_line_dash_new (2, 5.0, 5.0);
+
+	create_wire_info->line = GOO_CANVAS_POLYLINE (
+	    goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->grid), 
+	                             FALSE, 0,
+	                             "points", create_wire_info->points,
+	                             "stroke-color-rgba", 0x92BA52C3,
+	                             "line-dash", dash,
+	                             "line-width", 2.0,
+	                             "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+	                             NULL));
+	goo_canvas_line_dash_unref (dash);
 	
-	wire->line = GOO_CANVAS_POLYLINE (
-		goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->object_group),
-	        FALSE, 0, 
-		    "points", points,
-		    "stroke-color", "red",
-		    "line-dash", dash,
-			"line-width", 1.0,
-			NULL));
+	create_wire_info->dot = GOO_CANVAS_ELLIPSE (
+	           goo_canvas_ellipse_new (GOO_CANVAS_ITEM (sheet->object_group),
+	                                  -3.0,-3.0,
+	                                   6.0, 6.0,
+	                                   "fill-color", "red",
+	                                   "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+	                                   NULL));
+
+
+	return create_wire_info;
+}
+
+
+
+void
+create_wire_info_destroy (CreateWireInfo *create_wire_info) {
+	g_return_if_fail (create_wire_info);
+
+	goo_canvas_item_remove (GOO_CANVAS_ITEM (create_wire_info->dot));
+	goo_canvas_item_remove (GOO_CANVAS_ITEM (create_wire_info->line));
+	goo_canvas_points_unref (create_wire_info->points);
+	g_free (create_wire_info);
+}
+
+
+
+inline static gboolean
+create_wire_start (Sheet *sheet, GdkEvent *event)
+{
+	double x, y;
+	GooCanvasPoints *points;
+	GooCanvasPolyline *line;
+	CreateWireInfo *create_wire_info;
+
+	//g_signal_stop_emission_by_name (sheet, "event");
+
+	create_wire_info = sheet->priv->create_wire_info;
+#if 0
+	//TODO save and restore the selection?
+	sheet_select_all (sheet, FALSE);
+#endif
+	points = create_wire_info->points;
+	line = create_wire_info->line;
 	
-	goo_canvas_line_dash_unref (dash);        
+	g_assert (points);
+	g_assert (line);
+	
+	x = event->button.x;
+	y = event->button.y;
+	
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
+	snap_to_grid (sheet->grid, &x, &y);
 
-	wire->points = points;
-	wire->direction = WIRE_DIR_NONE;
+#if 0
+	Coords p;
+	sheet_get_pointer (sheet, &p.x, &p.y);
+	NG_DEBUG ("diff_x=%lf; diff_y=%lf;", p.x-x, p.y-y);
+#endif
 
-	cwc->draw_handler_id = g_signal_connect (sheet, "event",
-		G_CALLBACK (create_wire_event), cwc);
+	// start point
+	points->coords[0] = x;
+	points->coords[1] = y;
+	// mid point
+	points->coords[2] = x;
+	points->coords[3] = y;
+	// end point
+	points->coords[4] = x;
+	points->coords[5] = y;
 
-	cwc->active = TRUE;
+	g_object_set (G_OBJECT (line),
+	              "points", points,
+	              "visibility", GOO_CANVAS_ITEM_VISIBLE,
+	              NULL);
+	
+	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
+	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->dot), NULL);
+
+	create_wire_info->state = WIRE_ACTIVE;
+	sheet_pointer_grab (sheet, event);
+	sheet_keyboard_grab (sheet, event);
+	return TRUE;
+}
+
+
+
+inline static gboolean
+create_wire_update (Sheet *sheet, GdkEvent *event)
+{
+	CreateWireInfo *create_wire_info;
+	double new_x, new_y,
+	       x1, y1;
+	gint32 snapped_x, snapped_y;
+	Coords pos;
+
+	Schematic *schematic;
+	NodeStore *store;
+
+	//g_signal_stop_emission_by_name (sheet, "event");
+
+	create_wire_info = sheet->priv->create_wire_info;
+
+	schematic = schematic_view_get_schematic_from_sheet (sheet);
+	g_assert (schematic);
+
+	store = schematic_get_store (schematic);
+	g_assert (store);
+
+	new_x = event->button.x;
+	new_y = event->button.y;
+	
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &new_x, &new_y);
+	snap_to_grid (sheet->grid, &new_x, &new_y);
+	
+#if 0
+	Coords p;
+	sheet_get_pointer (sheet, &p.x, &p.y);
+	NG_DEBUG ("diff_x=%lf; diff_y=%lf;", p.x-new_x, p.y-new_y);
+#endif
+
+	snapped_x = (gint32)new_x;
+	snapped_y = (gint32)new_y;
+	
+	/* start pos (do not update,
+	 * was fixed in _start func and will not change 
+	 * until _discard or _fixate)
+	 */
+	x1 = create_wire_info->points->coords[0];
+	y1 = create_wire_info->points->coords[1];
+
+	// mid pos
+	if (create_wire_info->direction == WIRE_DIR_VERT) {
+		create_wire_info->points->coords[2] = x1;
+		create_wire_info->points->coords[3] = snapped_y;
+	} else if (create_wire_info->direction == WIRE_DIR_HORIZ) {
+		create_wire_info->points->coords[2] = snapped_x;
+		create_wire_info->points->coords[3] = y1;
+	} else {
+		create_wire_info->points->coords[2] = x1;
+		create_wire_info->points->coords[3] = y1;
+	}
+	NG_DEBUG ("update ~._.~ start=(%lf,%lf) → end=(%i,%i)", x1, y1, snapped_x, snapped_y);
+	// end pos
+	create_wire_info->points->coords[4] = snapped_x;
+	create_wire_info->points->coords[5] = snapped_y;
+	
+	g_assert (create_wire_info->line);
+	//required to trigger goocanvas update of the line object
+	g_object_set (G_OBJECT (create_wire_info->line),
+	              "points", create_wire_info->points,
+	              NULL);
+	pos.x = (gdouble)snapped_x;
+	pos.y = (gdouble)snapped_y;
+	/* Check if the pre-wire intersect another wire, and
+	 * draw a small red circle to indicate the connection
+	 */
+	g_assert (create_wire_info->dot);
+
+	guint8 is_pin = node_store_is_pin_at_pos (store, pos);
+	guint8 is_wire = node_store_is_wire_at_pos (store, pos);
+
+	//FIXME XXX is_pin && is_wire fail quite often, but creating a new wire succeeds, as the black bubbles turn up
+	if (is_pin || is_wire) {
+		g_object_set (G_OBJECT (create_wire_info->dot),
+		              "x", new_x-3.0,
+		              "y", new_y-3.0,
+		              "width", 6.0,
+		              "height", 6.0,
+		              "visibility", GOO_CANVAS_ITEM_VISIBLE,
+		              NULL);
+	} else {
+		g_object_set (G_OBJECT(create_wire_info->dot),
+		              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+		              NULL);
+
+	}
+	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
+	return TRUE;
+}
+
+
+
+inline static gboolean
+create_wire_discard (Sheet *sheet, GdkEvent *event)
+{
+	CreateWireInfo *create_wire_info;
+
+	//g_signal_stop_emission_by_name (sheet, "event");
+	NG_DEBUG ("wire got discarded");
+	sheet_keyboard_ungrab (sheet, event);
+	sheet_pointer_ungrab (sheet, event);
+
+	
+	create_wire_info = sheet->priv->create_wire_info;
+	g_object_set (G_OBJECT(create_wire_info->dot),
+	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+	              NULL);
+	
+	
+	g_object_set (G_OBJECT(create_wire_info->line),
+	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+	              NULL);
+	
+	create_wire_info->state = WIRE_START;
 
 	return TRUE;
 }
 
-// This needs to be called in order to start a wire creation.
-// It sets up the initial event handler that basically just
-// takes care of the first button-1 press that starts the
-// drawing mode. */
-CreateWireContext *
-create_wire_initiate (Sheet *sheet)
+
+inline static Wire *
+create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 {
-	CreateWireContext *cwc;
-
-	g_return_val_if_fail (sheet != NULL, NULL);
-	g_return_val_if_fail (IS_SHEET (sheet), NULL);
-
-	cwc = g_new0 (CreateWireContext, 1);
-	cwc->sheet = sheet;
-	cwc->active = FALSE;
-	cwc->dot_item = NULL;
-
-	cwc->start_handler_id = g_signal_connect (sheet, "event",
-	    G_CALLBACK (create_wire_pre_create_event), cwc);
-
-	cwc->create_wire_cancel_id = g_signal_connect (sheet, "cancel",
-		G_CALLBACK (create_wire_cancel), cwc);
-
-	return cwc;
-}
-
-static int
-create_wire_event (Sheet *sheet, const GdkEvent *event, CreateWireContext *cwc)
-{
-	int x1, y1, x2, y2;
-	gdouble snapped_x, snapped_y;
-	gboolean diagonal;
-	CreateWire *wire = cwc->create_wire;
-	Schematic *s;
-	NodeStore *store;
-	Coords pos;
-	int intersect;
-
-	s = schematic_view_get_schematic_from_sheet (cwc->sheet);
-	store = schematic_get_store (s);
-
-	if (event->type == GDK_2BUTTON_PRESS ||	
-		event->type == GDK_3BUTTON_PRESS) {
-		return FALSE;
-	}
-
-	switch (event->type) {
-		case GDK_BUTTON_PRESS:
-			switch (event->button.button) {
-				case 2:
-				case 4:
-				case 5:
-					// Don't care about middle button or mouse wheel.
-					return FALSE;
-					break;
-
-				case 1:
-
-					// Button-1 fixates the first segment of the wire,
-					// letting the user continue drawing wires, with the
-					// former second segment as the first segment of the
-					// new wire. There are a few exceptions though; if the
-					// button press happens at another wire or a pin of a
-					// part, then we fixate the wire and cancel the drawing
-					// mode.
-					g_signal_stop_emission_by_name (sheet, "event");
-					sheet_get_pointer (sheet, &snapped_x, &snapped_y);
-					fixate_wire (cwc, FALSE, snapped_x, snapped_y);
-					break;
-
-				case 3:
-					g_signal_stop_emission_by_name (sheet, "event");
-					cancel_wire (cwc);
-					break;
-			}
-			break;
-
-		case GDK_BUTTON_RELEASE:
-			g_signal_stop_emission_by_name (sheet, "event");		
-
-			switch (event->button.button) {
-				case 1:
-				case 2:
-				case 4:
-				case 5:
-					// Don't care about middle button or mouse wheel.
-					return FALSE;
-					break;
-			}
-			return TRUE;
-
-		case GDK_MOTION_NOTIFY:
-			g_signal_stop_emission_by_name (sheet, "event");
-
-			diagonal = event->button.state & GDK_SHIFT_MASK;
-			if (!diagonal && wire->direction == WIRE_DIR_DIAG)
-				wire->direction = WIRE_DIR_NONE;
-
-			sheet_get_pointer (sheet, &snapped_x, &snapped_y);
-
-			x1 = wire->points->coords[0];
-			y1 = wire->points->coords[1];
-
-			if (x1 == snapped_x && y1 == snapped_y) {
-				wire->direction = WIRE_DIR_NONE;
-			} 
-			else {
-				if (wire->direction == WIRE_DIR_NONE) {
-					if (abs (y1 - snapped_y) < abs (x1 - snapped_x)) {
-						wire->direction = WIRE_DIR_HORIZ;
-					} 
-					else {
-						wire->direction = WIRE_DIR_VERT;
-					}
-				}
-			}
-
-			x2 = snapped_x;
-			y2 = snapped_y;
-
-			if (diagonal) {
-				wire->direction = WIRE_DIR_DIAG;
-				x2 = x1;
-				y2 = y1;
-			}
-
-			if (wire->direction == WIRE_DIR_HORIZ) {
-				y2 = y1;
-			} 
-			else if (wire->direction == WIRE_DIR_VERT) {
-				x2 = x1;
-			}
-
-			if (wire->direction == WIRE_DIR_HORIZ && x2 == x1) {
-				x2 = snapped_x;
-				y2 = snapped_y;
-			} 
-			else if (wire->direction == WIRE_DIR_VERT && y2 == y1) {
-				x2 = snapped_x;
-				y2 = snapped_y;
-			}
-			
-			wire->points->coords[2] = x2;
-			wire->points->coords[3] = y2;
-			wire->points->coords[4] = snapped_x;
-			wire->points->coords[5] = snapped_y;
-
-			g_object_set (G_OBJECT (wire->line),
-						  "points", wire->points, 
-			              NULL);
-
-			pos.x = snapped_x;
-			pos.y = snapped_y;
-			// Check if the pre-wire intersect another wire, and
-			// draw a small red circle to indicate the connection
-			intersect = 0;
-			intersect = node_store_is_wire_at_pos (store, pos);
-			intersect += node_store_is_pin_at_pos (store, pos);
-			if (intersect) {
-				if (cwc->dot_item) {
-					g_object_set (G_OBJECT (cwc->dot_item),
-				   				  "x", -3.0 + snapped_x,
-				    			  "y", -3.0 + snapped_y,
-				    			  "width", 6.0,
-				    			  "height", 6.0,
-								  NULL);
-
-					g_object_set (cwc->dot_item, 
-				                  "visibility", GOO_CANVAS_ITEM_VISIBLE, 
-					              NULL);
-				} 
-				else {
-					cwc->dot_item = goo_canvas_ellipse_new (
-				    	GOO_CANVAS_ITEM (sheet->object_group),
-				    	snapped_x, snapped_y, 3.0, 3.0, 
-				    	"fill_color", "red", 
-					    NULL);
-				    
-					g_object_set (cwc->dot_item, 
-				                  "visibility", GOO_CANVAS_ITEM_VISIBLE, 
-					              NULL);
-				}
-			} 
-			else {
-				if (cwc->dot_item) 
-					g_object_set (cwc->dot_item, 
-				                  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
-					              NULL);
-			}
-
-			cwc->old_x = snapped_x;
-			cwc->old_y = snapped_y;
-			break;
-
-		default:
-			return FALSE;
-		}
-		return TRUE;
-}
-
-static void
-fixate_wire (CreateWireContext *cwc, gboolean always_fixate_both, 
-             gdouble x, gdouble y)
-{
-	CreateWire *create_wire = cwc->create_wire;
-	Coords p1, p2, start_pos, end_pos, start_pos2, end_pos2;
-	gboolean cancel = FALSE;
-	NodeStore *store;
-	Schematic *schematic;
-
-	g_return_if_fail (cwc != NULL);
-	g_return_if_fail (create_wire != NULL);
-
-	schematic = schematic_view_get_schematic_from_sheet (cwc->sheet);
-	store = schematic_get_store (schematic);
-
-	p1.x = create_wire->points->coords[0];
-	p1.y = create_wire->points->coords[1];
-	p2.x = create_wire->points->coords[2];
-	p2.y = create_wire->points->coords[3];
-
-	if (create_wire->direction == WIRE_DIR_DIAG) {
-		p1.x = p2.x;
-		p1.y = p2.y;
-		p2.x = create_wire->points->coords[4];
-		p2.y = create_wire->points->coords[5];
-		create_wire->points->coords[2] = p2.x;
-		create_wire->points->coords[3] = p2.y;
-		create_wire->points->num_points = 2;
-	}
-
-	// If the user clicks when wire length is zero, cancel the wire.
-	if (p1.x == p2.x && p1.y == p2.y) {
-		cancel_wire (cwc);
-		return;
-	}
-
-	if (create_wire->direction != WIRE_DIR_DIAG) {
-		start_pos.x = MIN (p1.x, p2.x);
-		start_pos.y = MIN (p1.y, p2.y);
-		end_pos.x = MAX (p1.x, p2.x);
-		end_pos.y = MAX (p1.y, p2.y);
-	} 
-	else {
-		start_pos.x = p1.x;
-		start_pos.y = p1.y;
-		end_pos.x = p2.x;
-		end_pos.y = p2.y;
-	}
-
-	// If the wire connects to something, then fixate
-	// the second segment too and exit wire drawing mode.
-	// Also fixate both segments when explicitly asked to. */
-	p2.x = x;
-	p2.y = y;
-	if (always_fixate_both 						||
-		node_store_get_node (store, p2) 		||
-		node_store_is_wire_at_pos (store, p2)) {
-		if (create_wire->points->num_points == 3) {
-			p1.x = create_wire->points->coords[2];
-			p1.y = create_wire->points->coords[3];
-
-			if (create_wire->direction != WIRE_DIR_DIAG) {
-				start_pos2.x = MIN (p1.x, p2.x);
-				start_pos2.y = MIN (p1.y, p2.y);
-				end_pos2.x = MAX (p1.x, p2.x);
-				end_pos2.y = MAX (p1.y, p2.y);
-			} 
-			else {
-				start_pos2.x = p1.x;
-				start_pos2.y = p1.y;
-				end_pos2.x = p2.x;
-				end_pos2.y = p2.y;
-			}
-
-			create_wire_and_place_item (cwc->sheet,
-				start_pos2, end_pos2);
-		}
-		cancel_wire (cwc);
-		cancel = TRUE;
-	}
-
-	create_wire_and_place_item (cwc->sheet, start_pos, end_pos);
-
-	if (cancel)
-		return;
-
-	// Start a new "floating" wire, using the same CreateWire that was used
-	// for the old wire. 
-	create_wire->points->coords[0] = create_wire->points->coords[2];
-	create_wire->points->coords[1] = create_wire->points->coords[3];
-	create_wire->points->coords[2] = x;
-	create_wire->points->coords[3] = y;
-	create_wire->points->num_points = 2;
-
-	g_object_set (G_OBJECT (create_wire->line),
-	              "points", create_wire->points,
-	              NULL);
-
-	// Raise the floting wire so that we can see it when it is overlapping
-	// other wires.
-	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire->line), NULL);
-}
-
-Wire *
-create_wire_and_place_item (Sheet *sheet, Coords start_pos,
-	Coords end_pos)
-{
-	Wire *wire;
+	Wire *wire = NULL;
 	Coords length;
 
-	g_return_val_if_fail (sheet != NULL, NULL);
-	g_return_val_if_fail (IS_SHEET (sheet), NULL);
+	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning...");
+	g_assert (sheet);
+	g_assert (IS_SHEET (sheet));
 
 	wire = wire_new ();
 	item_data_set_pos (ITEM_DATA (wire), &start_pos);
-
+	
 	length.x = end_pos.x - start_pos.x;
 	length.y = end_pos.y - start_pos.y;
 	wire_set_length (wire, &length);
 
 	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), 
 	                    ITEM_DATA (wire));
+	
+	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
 
 	return wire;
 }
 
-static void
-cancel_wire (CreateWireContext *cwc)
+inline static gboolean
+create_wire_fixate (Sheet *sheet, GdkEvent *event)
 {
-	CreateWire *create_wire;
+	NodeStore *store;
+	Schematic *schematic;
 
-	create_wire = cwc->create_wire;
+	Coords p1, p2, start_pos, end_pos, mid_pos;
+	CreateWireInfo *create_wire_info;
+	Wire *wire = NULL;
+	gboolean b_start_eq_mid, b_mid_eq_end, b_finish;
+	double x, y;
 
-	g_return_if_fail (create_wire != NULL);
+	//g_signal_stop_emission_by_name (sheet, "event");
 
-	g_signal_handler_disconnect (G_OBJECT (cwc->sheet), cwc->draw_handler_id);
-	cwc->draw_handler_id = 0;
-	cwc->active = FALSE;
+	x = event->button.x; 
+	y = event->button.y;
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
+	snap_to_grid (sheet->grid, &x, &y);
 
-	goo_canvas_points_unref (create_wire->points);
+	create_wire_info = sheet->priv->create_wire_info;
+	g_assert (create_wire_info);
+	g_assert (create_wire_info->points);
+	g_assert (create_wire_info->line);
 
-	if (cwc->dot_item) {
-		goo_canvas_item_remove (GOO_CANVAS_ITEM (cwc->dot_item));
-		cwc->dot_item = NULL;
+	p1.x = create_wire_info->points->coords[0];
+	p1.y = create_wire_info->points->coords[1];
+	
+	p2.x = x;
+	p2.y = y;
+	
+	NG_DEBUG ("x: %lf ?= %lf | y: %lf ?= %lf", p1.x, p2.x, p1.y, p2.y);
+
+	// if we are back at the starting point of our wire,
+	// and the user tries to fixate, just ignore it
+	// and mark the event as handled
+	if (coords_equal(&p1, &p2))
+		return TRUE;
+
+	schematic = schematic_view_get_schematic_from_sheet (sheet);
+	g_assert (schematic);	
+	store = schematic_get_store (schematic);
+	g_assert (store);
+	
+	start_pos.x = create_wire_info->points->coords[0];
+	start_pos.y = create_wire_info->points->coords[1];
+	
+	mid_pos.x = create_wire_info->points->coords[2];
+	mid_pos.y = create_wire_info->points->coords[3];
+	
+	end_pos.x = create_wire_info->points->coords[4];
+	end_pos.y = create_wire_info->points->coords[5];
+
+
+	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", start_pos.x, start_pos.y, mid_pos.x, mid_pos.y, coords_equal(&start_pos, &mid_pos));
+	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y, coords_equal(&mid_pos, &end_pos));
+
+#if 0
+	/* check for wires _before_ spawning wires, otherwise we will end up with 1 anyways*/
+	b_finish = node_store_get_node (store, end_pos) || node_store_is_wire_at_pos (store, end_pos); 
+#endif
+	b_start_eq_mid = coords_equal(&start_pos, &mid_pos);
+	b_mid_eq_end = coords_equal(&mid_pos, &end_pos);
+
+	if (!b_mid_eq_end && !b_start_eq_mid) {
+		NG_DEBUG ("we should get exactly 2 wires");
 	}
-	goo_canvas_item_remove (GOO_CANVAS_ITEM (create_wire->line));
 
-	g_free (create_wire);
+	if (!b_start_eq_mid) {
+		wire = create_wire_spawn (sheet, start_pos, mid_pos);
+		g_assert (wire);
+		g_assert (IS_WIRE (wire));
+	} else {
+		NG_DEBUG ("looks like start == midpos");
+	}
+	
+	if (!b_mid_eq_end) {
+		wire = create_wire_spawn (sheet, mid_pos, end_pos);
+		g_assert (wire);
+		g_assert (IS_WIRE (wire));
+	} else {
+		NG_DEBUG ("looks like midpos == endpos");
+	}
 
-	// Setup the sheet for a new wire creation process.
+	/* check if target location is either wire or node, 
+	 * if so,
+	 * set state to START and fixate both ends of the current wire
+	 */
+#if 0
+	/*
+	 * should we really auto finish if the target is a wire or node? kinda inconsequent
+	 */
+	if (b_finish)
+		return create_wire_discard (sheet,event);
+#endif
+	/*
+	 * update all position/cursor data for the next wire
+	 * (consider this is a implicit START call, with less bloat)
+	 */
+	x = create_wire_info->points->coords[4];
+	y = create_wire_info->points->coords[5];
+	create_wire_info->points->coords[0] = x;
+	create_wire_info->points->coords[1] = y;
+	create_wire_info->points->coords[2] = x;
+	create_wire_info->points->coords[3] = y;
+
+	//required to trigger goocanvas update of the line object
+	g_object_set (G_OBJECT (create_wire_info->line),
+	              "points", create_wire_info->points,
+	              NULL);
+
+	//toggle wire direction
+	if (create_wire_info->direction==WIRE_DIR_VERT)
+		create_wire_info->direction = WIRE_DIR_HORIZ;
+	else
+		create_wire_info->direction = WIRE_DIR_VERT;
+
+	
+	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
+
+	/*
+         * do NOT ungrab sheet here, as we are still creating another wire
+         * this should be changed if on fixate means that we are back in state WIRE_START
+         */
+	return TRUE;
 }
 
-static void
-exit_wire_mode (CreateWireContext *cwc)
+
+
+gboolean
+create_wire_setup (Sheet *sheet)
 {
-	if (cwc->draw_handler_id != 0)
-		cancel_wire (cwc);
+	CreateWireInfo *create_wire_info;
 
-	if (cwc->start_handler_id != 0) {
-		g_signal_handler_disconnect (G_OBJECT (cwc->sheet),
-			cwc->start_handler_id);
-		cwc->start_handler_id = 0;
-	}
-
-	if (cwc->create_wire_cancel_id != 0) {
-		g_signal_handler_disconnect (G_OBJECT (cwc->sheet),
-			cwc->create_wire_cancel_id);
-		cwc->create_wire_cancel_id = 0;
-	}
-	schematic_view_reset_tool (
-	          schematic_view_get_schematicview_from_sheet (cwc->sheet));
-
-	g_free (cwc);
-}
-
-void
-create_wire_exit (CreateWireContext *cwc)
-{
-	if (cwc->draw_handler_id != 0)
-		cancel_wire (cwc);
-
-	if (cwc->start_handler_id != 0) {
-		g_signal_handler_disconnect (G_OBJECT (cwc->sheet),
-			cwc->start_handler_id);
-		cwc->start_handler_id = 0;
-	}
-}
-
-// Signal handler for the "cancel" signal that the sheet emits
-// when <escape> is pressed.
-static int
-create_wire_cancel (Sheet *sheet, CreateWireContext *cwc)
-{
-	g_return_val_if_fail (sheet != NULL, FALSE);
+	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
 
-	if (cwc->active)
-		cancel_wire (cwc);
-	else
-		exit_wire_mode (cwc);
+	create_wire_info = sheet->priv->create_wire_info;
+	g_return_val_if_fail (create_wire_info, FALSE);
+
+	if (create_wire_info->state == WIRE_DISABLED) {
+		create_wire_info->event_handler_id = g_signal_connect (sheet, "event", 
+		                                                G_CALLBACK (create_wire_event), NULL);
+#if 0 /* this is also handled by event */
+		create_wire_info->cancel_handler_id = g_signal_connect (sheet, "cancel",
+		                                                 G_CALLBACK (create_wire_discard), NULL);
+#endif
+	}
+
+	create_wire_info->state = WIRE_START;
+	return TRUE;
+}
+
+
+
+gboolean
+create_wire_orientationtoggle (Sheet *sheet)
+{
+	CreateWireInfo *create_wire_info;
+	GooCanvasPoints *points;
+	g_return_val_if_fail (sheet, FALSE);
+	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
+
+	NG_DEBUG ("toggle orientation")
+	create_wire_info = sheet->priv->create_wire_info;
+	g_return_val_if_fail (create_wire_info, FALSE);
+
+	points = create_wire_info->points;
+	
+	switch (create_wire_info->direction) {
+		case WIRE_DIR_HORIZ:
+			create_wire_info->direction = WIRE_DIR_VERT;
+			points->coords[2] = points->coords[0];
+			points->coords[3] = points->coords[5];
+			g_object_set (G_OBJECT (create_wire_info->line),
+			              "points", points,
+			              NULL);
+			break;
+		case WIRE_DIR_VERT:
+			create_wire_info->direction = WIRE_DIR_HORIZ;
+			points->coords[2] = points->coords[4];
+			points->coords[3] = points->coords[1];
+			g_object_set (G_OBJECT (create_wire_info->line),
+			              "points", points,
+			              NULL);
+			break;
+		default:
+			break;
+	}
+	return TRUE;
+}
+
+
+
+gboolean
+create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
+{	
+	CreateWireInfo *create_wire_info;
+	g_return_val_if_fail (sheet, FALSE);
+	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
+	
+	create_wire_info = sheet->priv->create_wire_info;
+	g_return_val_if_fail (create_wire_info, FALSE);
+
+	switch (event->type) {
+	case GDK_3BUTTON_PRESS:
+	case GDK_2BUTTON_PRESS:
+	case GDK_BUTTON_RELEASE:
+		break;
+	case GDK_BUTTON_PRESS:
+		switch (event->button.button) {
+		case 1:
+			if (create_wire_info->state == WIRE_START)
+				return create_wire_start (sheet, event);
+			else if (create_wire_info->state == WIRE_ACTIVE)
+				return create_wire_fixate (sheet, event);
+			break;
+		case 3:
+			if (create_wire_info->state == WIRE_ACTIVE)
+				return create_wire_discard (sheet, event);
+			break;
+		default:
+			break;
+		}
+		break;
+	case GDK_MOTION_NOTIFY:
+		if (create_wire_info->state == WIRE_ACTIVE)
+			return create_wire_update (sheet, event);
+		break;
+	case GDK_KEY_PRESS:
+		NG_DEBUG ("keypress 0");
+		if (create_wire_info->state != WIRE_ACTIVE)
+			return FALSE;
+		NG_DEBUG ("keypress 1");
+		switch (event->key.keyval) {
+			case GDK_KEY_Escape:
+				return create_wire_discard (sheet, event);
+			case GDK_KEY_R:
+			case GDK_KEY_r:
+				return create_wire_orientationtoggle (sheet);
+			default:
+				break;
+		}
+	default:
+		break;
+	}
+	return FALSE;
+}
+
+
+gboolean
+create_wire_cleanup (Sheet *sheet) {
+	CreateWireInfo *create_wire_info;
+	
+	create_wire_info = sheet->priv->create_wire_info;
+	if (create_wire_info && create_wire_info->state!=WIRE_DISABLED) {
+		g_object_set (G_OBJECT(create_wire_info->line),
+		              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+		              NULL);
+		create_wire_info->state = WIRE_DISABLED;
+		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->event_handler_id);
+		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->cancel_handler_id);
+	}
 
 	return TRUE;
 }
+
