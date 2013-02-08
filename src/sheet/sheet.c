@@ -639,25 +639,23 @@ sheet_rubberband_timeout_cb (Sheet *sheet)
 		              "width", width, 
 		              "height", height,
 		              NULL);
-		if (list) {
-			g_list_free_full (list, g_object_unref);
-		}
 	}
-	return FALSE;
+	g_list_free_full (list, g_object_unref);
+	return TRUE;
 }
 
 void
 sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
 {
-	GList *list = NULL;
+	GList *list;
 
 	g_source_remove (sheet->priv->rubberband->timeout_id);
 	sheet->priv->rubberband->state = RUBBER_NO;
 
 	if (sheet->priv->preserve_selection_items != NULL) {
-		for (list = sheet->priv->preserve_selection_items; list; list = list->next) {
+		for (list = sheet->priv->preserve_selection_items; list; list = list->next)
 			sheet_item_set_preserve_selection (SHEET_ITEM (list->data), FALSE);
-		}
+		
 		g_list_free (sheet->priv->preserve_selection_items);
 		sheet->priv->preserve_selection_items = NULL;
 	}
@@ -666,10 +664,7 @@ sheet_stop_rubberband (Sheet *sheet, GdkEventButton *event)
 	                           GOO_CANVAS_ITEM (sheet->grid), event->time);
 	
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (sheet->priv->rubberband->rectangle));
-
-	if (list) {
-		g_list_free_full (list, g_object_unref);
-	}
+	g_list_free_full (list, g_object_unref);
 }
 
 void 
