@@ -55,7 +55,7 @@ struct _CreateWireInfo {
 	GooCanvasEllipse	*dot;
 	WireDir			 direction;
 	gulong			 event_handler_id;
-	gulong			 cancel_handler_id;
+//	gulong			 cancel_handler_id;
 };
 
 CreateWireInfo* create_wire_info_new (Sheet *sheet);

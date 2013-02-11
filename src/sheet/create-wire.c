@@ -243,7 +243,6 @@ create_wire_update (Sheet *sheet, GdkEvent *event)
 	guint8 is_pin = node_store_is_pin_at_pos (store, pos);
 	guint8 is_wire = node_store_is_wire_at_pos (store, pos);
 
-	//FIXME XXX is_pin && is_wire fail quite often, but creating a new wire succeeds, as the black bubbles turn up
 	if (is_pin || is_wire) {
 		g_object_set (G_OBJECT (create_wire_info->dot),
 		              "x", new_x-3.0,
@@ -458,10 +457,9 @@ create_wire_setup (Sheet *sheet)
 	if (create_wire_info->state == WIRE_DISABLED) {
 		create_wire_info->event_handler_id = g_signal_connect (sheet, "event", 
 		                                                G_CALLBACK (create_wire_event), NULL);
-#if 0 /* this is also handled by event */
-		create_wire_info->cancel_handler_id = g_signal_connect (sheet, "cancel",
-		                                                 G_CALLBACK (create_wire_discard), NULL);
-#endif
+// this is also handled by event
+//		create_wire_info->cancel_handler_id = g_signal_connect (sheet, "cancel",
+//		                                                 G_CALLBACK (create_wire_discard), NULL);
 	}
 
 	create_wire_info->state = WIRE_START;
@@ -576,7 +574,7 @@ create_wire_cleanup (Sheet *sheet) {
 		              NULL);
 		create_wire_info->state = WIRE_DISABLED;
 		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->event_handler_id);
-		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->cancel_handler_id);
+//		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->cancel_handler_id);
 	}
 
 	return TRUE;
