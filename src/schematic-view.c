@@ -558,7 +558,7 @@ static void
 close_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (can_close (sv)) {
-		g_application_quit (g_application_get_default ());
+		gtk_widget_destroy (sv);
 	}
 }
 
@@ -1002,7 +1002,6 @@ schematic_view_finalize (GObject *object)
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
-	g_application_quit (g_application_get_default ());
 }
 
 static void
