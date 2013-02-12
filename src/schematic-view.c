@@ -558,7 +558,7 @@ static void
 close_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (can_close (sv)) {
-		gtk_widget_destroy (sv);
+		g_object_unref (G_OBJECT (sv));
 	}
 }
 
