@@ -558,7 +558,8 @@ static void
 close_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (can_close (sv)) {
-		g_object_unref (G_OBJECT (sv));
+		NG_DEBUG (" --- not dirty (anymore), do close schematic_view: %p -- vs -- toplevel: %p", sv, schematic_view_get_toplevel (sv));
+		gtk_widget_destroy (GTK_WIDGET (schematic_view_get_toplevel (sv)));
 	}
 }
 
