@@ -1,4 +1,4 @@
-data/oregano.desktop.in.in
+data/oregano.desktop.in
 data/mime/oregano.xml.in
 
 [type: gettext/glade]data/xml/oregano-main.ui
