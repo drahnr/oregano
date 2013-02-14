@@ -11,7 +11,7 @@ import os
 from waflib import Logs as logs
 	
 def options(ctx):
-	ctx.load('compiler_c gnu_dirs glib2')
+	ctx.load('compiler_c gnu_dirs glib2 intltool')
 	ctx.add_option('--destdir', action='store', default='', help='A global prefix prepended for all and every position string. Be aware that changerooting into that destdir will leave you with an unasable binary due to messy paths ui, partslib, model, locale and lang directories', dest='destdir')
 	ctx.add_option('--prefix', action='store', default='/usr', help='The prefix which will be utilized for the install target, except those which are dependant of a subsequent prefix')
 	ctx.add_option('--prefix-ui', action='store', default='/usr/share', help='Prefix for gtkbuilder ui files')
@@ -29,7 +29,9 @@ def options(ctx):
 
 
 def configure(ctx):
-	ctx.load('compiler_c gnu_dirs glib2')
+	ctx.load('compiler_c gnu_dirs glib2 intltool')
+	ctx.env.appname = APPNAME
+	ctx.env.version = VERSION
 
 	ctx.define('VERSION', VERSION)
 	ctx.define('GETTEXT_PACKAGE', APPNAME)
@@ -106,25 +108,6 @@ def locate(regex, root=os.curdir, exclpattern="((.*/)?\.(git|svn|cvs).*)|(.*/.+~
 	return lst
 
 
-def translate(ctx):
-	f = open ('po/potfiles.in', 'w+')
-
-	lst = locate('.*/.+\.c')
-	for item in lst:
-		f.write("%s\n" % item)
-
-#TODO gtkbuilder extension (.ui) not recognized properly by xgettext
-# Bug #7
-#	f.write ("\n\n")
-#	lst = locate('.*/.+\.ui')
-#	for item in lst:
-#		f.write("%s\n" % item)
-#		f.write("[type: gettext/glade]%s\n" % item)
-
-	f.close ()
-	os.system ('xgettext -k_ -E -f po/potfiles.in --package-name='+APPNAME+' --package-version '+VERSION+' -o po/'+APPNAME+'.pot')
-
-
 def docs(ctx):
 	logs.info("TODO: docs generation is not yet supported")
 
@@ -155,19 +138,22 @@ def post(ctx):
 def build(bld):
 	bld.add_pre_fun(pre)
 	bld.add_post_fun(post)
+	bld.recurse(['po','data'])
 
 	if bld.cmd != 'install':
 		if not bld.variant:
-			bld.fatal('Do "waf debug" or "waf release"')
+			bld.variant = 'debug'
+			logs.warn ('Defaulting to \'debug\' build variant')
+			logs.warn ('Do "waf debug" or "waf release" to avoid this warning')
 		if os.geteuid()==0:
-			bld.fatal ('Do not run "' + ctx.cmd + '" as root, just don\'t!. Aborting.')
+			logs.fatal ('Do not run "' + ctx.cmd + '" as root, just don\'t!. Aborting.')
 	else:
 		if not os.geteuid()==0:
 			logs.warn ('You most likely need root privileges to install '+APPNAME+' properly.')
 
 	exe = bld.program(
  		features = ['c', 'cprogram', 'glib2'],
-		target = APPNAME+'.bin',
+		target = APPNAME,
 		source = bld.path.ant_glob(['src/*.c', 'src/engines/*.c', 'src/gplot/*.c', 'src/model/*.c', 'src/sheet/*.c']),
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
@@ -177,14 +163,7 @@ def build(bld):
 	for item in exe.includes:
 		logs.debug(item)
 
-	bld.install_files (bld.env.path_mime, locate('(\./)?data/mime/.+\.(keys|xml)'))
-	bld.install_files (bld.env.path_icons, locate('(\./)?data/mime/.+\.(png|svg)'))
-	bld.install_files (bld.env.path_lang, locate('(\./)?data/.*\.lang'))
 
-	bld.install_files (bld.env.path_model, locate('(\./)?data/models/.+\.model'))
-	bld.install_files (bld.env.path_examples, locate('(\./)?data/examples/.+'))
-	bld.install_files (bld.env.path_partslib, locate('(\./)?data/libraries/.+\.oreglib'))
-	bld.install_files (bld.env.path_ui, locate('(\./)?data/xml/.+\.ui'))
 
 
 
