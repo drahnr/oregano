@@ -181,8 +181,6 @@ oregano_application (GApplication *app, GFile *file)
 		schematic = schematic_read (fname, &error);
 		if (schematic) {
 			schematic_view = schematic_view_new (schematic);
-			gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (schematic_view)),
-		                            GTK_APPLICATION (app));
 
 			gtk_widget_show_all (schematic_view_get_toplevel (schematic_view));
 			schematic_set_filename (schematic, fname);
@@ -192,8 +190,6 @@ oregano_application (GApplication *app, GFile *file)
 	else {
 		schematic = schematic_new ();
 		schematic_view = schematic_view_new (schematic);
-		gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (schematic_view)),
-		                            GTK_APPLICATION (app));
 		gtk_widget_show_all (schematic_view_get_toplevel (schematic_view));
 	}
 
