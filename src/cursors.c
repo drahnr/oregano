@@ -31,6 +31,7 @@
  */
 
 #include "cursors.h"
+#include "debug.h"
 
 OreganoCursor oregano_cursors[] = {
 	{ NULL, GDK_LEFT_PTR },
@@ -60,8 +61,10 @@ cursors_shutdown (void)
 {
 	int i;
 
-	for (i = 0; oregano_cursors[i].type != -1; i++)
-		g_object_unref (oregano_cursors[i].cursor);
+	for (i = 0; oregano_cursors[i].type != -1; i++) {
+		if (oregano_cursors[i].cursor)
+			g_object_unref (oregano_cursors[i].cursor);
+	}
 }
 
 void
