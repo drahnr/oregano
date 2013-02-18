@@ -44,7 +44,7 @@
 #include "part-browser.h"
 #include "part-item.h"
 #include "dialogs.h"
-#include "sheet-pos.h"
+#include "coords.h"
 #include "sheet.h"
 
 #include "debug.h"
@@ -156,7 +156,7 @@ place_cmd (GtkWidget *widget, Browser *br)
 {
 	LibraryPart *library_part;
 	char *part_name;
-	SheetPos pos;
+	Coords pos;
 	Sheet *sheet;
 	Part *part;
 	GtkTreeModel *model;
@@ -382,7 +382,7 @@ void
 part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 {
 	LibraryPart *library_part;
-	SheetPos pos;
+	Coords pos;
 	DndData *data;
 	Sheet *sheet;
 	Part *part;

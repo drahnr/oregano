@@ -32,7 +32,7 @@
 #include <math.h>
 
 #include "grid.h"
-
+#include "speedy.h"
 
 #define ROUND(x) (floor((x)+0.5))
 #include "debug.h"
@@ -209,9 +209,9 @@ snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 	priv = grid->priv;
 	spacing = priv->spacing;
 
-	if (priv->snap) {
-		if (x) *x = ROUND ((*x) / spacing) * spacing;
-		if (y) *y = ROUND ((*y) / spacing) * spacing;
+	if (__likely(priv->snap)) {
+		if (__likely(x)) *x = ROUND ((*x) / spacing) * spacing;
+		if (__likely(y)) *y = ROUND ((*y) / spacing) * spacing;
 	}
 }
 

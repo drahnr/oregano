@@ -38,46 +38,37 @@
 
 #include "sheet.h"
 #include "create-wire.h"
-
-typedef enum {
-	RUBBER_NO = 0,
-	RUBBER_YES,
-	RUBBER_START
-} RubberState;
-
-typedef struct {
-	RubberState		 state;
-	int 			 click_start_state;
-	GooCanvasItem	*rectangle;
-	double	 		 start_x, start_y;
-} RubberbandInfo;
+#include "rubberband.h"
 	
 struct _SheetPriv {
 	// Keeps the current signal handler for wire creation.	
-	int 				 wire_handler_id;
+	int 			 wire_handler_id;
 	// Keeps the signal handler for floating objects.
-	int 				 float_handler_id;
+	int 			 float_handler_id;
 
-	double 				 zoom;
-	gulong 				 width;
-	gulong  			 height;
+	double 			 zoom;
+	gulong 			 width;
+	gulong  		 height;
 
 	GooCanvasGroup		*selected_group;
 	GooCanvasGroup		*floating_group;
-	GList				*selected_objects;
-	GList				*floating_objects;
+	GList			*selected_objects;
+	GList			*floating_objects;
 
-	GList				*items;
-	RubberbandInfo		*rubberband;
-	GList 				*preserve_selection_items;
+	GList			*items;
+	RubberbandInfo		*rubberband_info;
+	GList 			*preserve_selection_items;
 	GooCanvasClass		*sheet_parent_class;
 
-	GList 				*voltmeter_items; // List of GooCanvasItem
-	GHashTable 			*voltmeter_nodes;
+	GList 			*voltmeter_items; // List of GooCanvasItem
+	GHashTable 		*voltmeter_nodes;
 
-	CreateWireContext 	*create_wire_context; // Wire context for each schematic
+	CreateWireInfo		*create_wire_info; // Wire context for each schematic
 
-	GHashTable 			*node_dots;
+	GHashTable 		*node_dots;
+
+	guint8			 keyboard_grabbed:1;
+	guint8			 pointer_grabbed:1;
 };
 
 #endif

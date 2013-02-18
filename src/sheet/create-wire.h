@@ -40,15 +40,29 @@
 #include "wire-item.h"
 #include "schematic-view.h"
 
-typedef struct _CreateWireContext CreateWireContext;
+typedef enum {
+	WIRE_START,
+	WIRE_ACTIVE,
+	WIRE_DISABLED
+} WireState;
 
-typedef struct {
-	GooCanvasPolyline *line;
-	GooCanvasPoints *  points;
-	WireDir 		   direction;	 // Direction of the first wire segment.
-} CreateWire;
+typedef struct _CreateWireInfo CreateWireInfo;
 
-CreateWireContext *	create_wire_initiate (Sheet *sheet);
-void 				create_wire_exit (CreateWireContext *cwc);
+struct _CreateWireInfo {
+	WireState		 state;
+	GooCanvasPolyline	*line;
+	GooCanvasPoints		*points;
+	GooCanvasEllipse	*dot;
+	WireDir			 direction;
+	gulong			 event_handler_id;
+//	gulong			 cancel_handler_id;
+};
+
+CreateWireInfo* create_wire_info_new (Sheet *sheet);
+void create_wire_destroy (CreateWireInfo *wire_info);
+gboolean create_wire_setup (Sheet *sheet);
+gboolean create_wire_orientationtoggle (Sheet *sheet);
+gboolean create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data);
+gboolean create_wire_cleanup (Sheet *sheet);
 
 #endif

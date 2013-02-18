@@ -33,7 +33,7 @@
 #include "xml-compat.h"
 #include "oregano.h"
 #include "schematic.h"
-#include "sheet-pos.h"
+#include "coords.h"
 #include "load-library.h"
 #include "part.h"
 #include "textbox.h"
@@ -253,7 +253,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	PartPriv *priv;
 	xmlNodePtr node_part;
 	gchar *str;
-	SheetPos pos;
+	Coords pos;
 
 	priv = part->priv;
 
@@ -323,7 +323,7 @@ write_xml_wire (Wire *wire, parseXmlContext *ctxt)
 {
 	xmlNodePtr node_wire;
 	gchar *str;
-	SheetPos start_pos, end_pos;
+	Coords start_pos, end_pos;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -349,7 +349,7 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 {
 	xmlNodePtr node_textbox;
 	gchar *str;
-	SheetPos pos;
+	Coords pos;
 
 	g_return_if_fail (textbox != NULL);
 	if (!IS_TEXTBOX (textbox))

@@ -63,7 +63,7 @@ enum {
 
 struct _ItemDataPriv {
 	NodeStore *store;
-	SheetPos pos;
+	Coords pos;
 	// Bounding box.
 	GooCanvasBounds bounds;
 };
@@ -73,7 +73,7 @@ struct _ItemDataPriv {
 // has been connected.
 typedef struct {
 	ItemData *item_data;
-	SheetPos  delta;
+	Coords  delta;
 } SignalStruct;
 
 G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT)
@@ -233,7 +233,7 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 }
 
 void
-item_data_get_pos (ItemData *item_data, SheetPos *pos)
+item_data_get_pos (ItemData *item_data, Coords *pos)
 {
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -243,10 +243,10 @@ item_data_get_pos (ItemData *item_data, SheetPos *pos)
 }
 
 void
-item_data_set_pos (ItemData *item_data, SheetPos *pos)
+item_data_set_pos (ItemData *item_data, Coords *pos)
 {
 	ItemDataPriv *priv;
-	SheetPos delta;
+	Coords delta;
 	SignalStruct *signal_struct;
 
 	g_return_if_fail (pos != NULL);
@@ -276,7 +276,7 @@ emit_moved_signal_when_handler_connected (gpointer data)
 {
 	gboolean handler_connected;
 	SignalStruct *signal_struct = (SignalStruct *) data;
-	SheetPos delta;
+	Coords delta;
 	ItemData *item_data;
 
 	item_data = signal_struct->item_data;
@@ -294,7 +294,7 @@ emit_moved_signal_when_handler_connected (gpointer data)
 }
 
 void
-item_data_move (ItemData *item_data, SheetPos *delta)
+item_data_move (ItemData *item_data, Coords *delta)
 {
 	ItemDataPriv *priv;
 	SignalStruct *signal_struct;
@@ -356,7 +356,7 @@ item_data_copy (ItemData *dest, ItemData *src)
 }
 
 void
-item_data_get_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
+item_data_get_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -373,7 +373,7 @@ item_data_get_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
 }
 
 void
-item_data_get_absolute_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
+item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -392,7 +392,7 @@ item_data_get_absolute_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
 }
 
 void
-item_data_set_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
+item_data_set_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -409,11 +409,11 @@ item_data_set_relative_bbox (ItemData *data, SheetPos *p1, SheetPos *p2)
 }
 
 void
-item_data_list_get_absolute_bbox (GList *item_data_list, SheetPos *p1,
-	SheetPos *p2)
+item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
+	Coords *p2)
 {
 	GList *list;
-	SheetPos b1, b2;
+	Coords b1, b2;
 
 	if (item_data_list == NULL)
 		return;
@@ -437,7 +437,7 @@ item_data_list_get_absolute_bbox (GList *item_data_list, SheetPos *p1,
 }
 
 void
-item_data_rotate (ItemData *data, int angle, SheetPos *center)
+item_data_rotate (ItemData *data, int angle, Coords *center)
 {
 	ItemDataClass *id_class;
 
@@ -451,7 +451,7 @@ item_data_rotate (ItemData *data, int angle, SheetPos *center)
 }
 
 void
-item_data_flip (ItemData *data, gboolean horizontal, SheetPos *center)
+item_data_flip (ItemData *data, gboolean horizontal, Coords *center)
 {
 	ItemDataClass *id_class;
 

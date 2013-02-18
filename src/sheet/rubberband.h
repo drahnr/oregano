@@ -1,18 +1,22 @@
 /*
- * load-common.h
+ * rubberband.h
  *
  *
- * Author:
+ * Authors:
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Description: Handles the user interaction when doing area/rubberband selections.
+ *
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
- * Copyright (C) 2003,2004  Ricardo Markiewicz
+ * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,49 +34,36 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __LOAD_COMMON_H
-#define __LOAD_COMMON_H
+#ifndef __INPUT_CONTEXT_RUBBERBAND_H
+#define __INPUT_CONTEXT_RUBBERBAND_H
 
+#include <goocanvas.h>
 #include <glib.h>
 
 #include "coords.h"
 
-// Note: this must be synced with Pin in part.h for now.
-typedef struct {
-	Coords pos;
-} Connection;
 
-typedef struct {
-	gchar *name;
-	gchar *value;
-} Property;
+typedef enum {
+	RUBBERBAND_DISABLED,
+	RUBBERBAND_START, 
+	RUBBERBAND_ACTIVE
+} RubberbandState;
 
-typedef struct {
-	gchar *name;
-	gchar *author;
-	gchar *version;
+typedef struct _RubberbandInfo RubberbandInfo;
 
-	GSList *parts_list;
+#include "sheet.h"
 
-	GHashTable  *part_hash;
-	GHashTable  *symbol_hash;
-} Library;
+struct _RubberbandInfo {
+	RubberbandState state;
+	Coords start;
+	Coords end;
+	GooCanvasRect *rectangle;
+};
 
-typedef struct {
-	gchar  *name;
+RubberbandInfo* rubberband_info_new (Sheet *sheet);
+void rubberband_info_destroy (RubberbandInfo *rubberband);
+gboolean rubberband_start (Sheet *sheet, GdkEvent *event);
+gboolean rubberband_update (Sheet *sheet, GdkEvent *event);
+gboolean rubberband_finish (Sheet *sheet, GdkEvent *event);
 
-	gchar  *description;
-
-	Library* library;
-
-	gchar  *symbol_name;
-	int		symbol_rotation;
-
-	gchar  *refdes;
-	gchar  *template;
-	gchar  *model;
-	GSList *labels;
-	GSList *properties;
-} LibraryPart;
-
-#endif
+#endif /* __INPUT_CONTEXT_RUBBERBAND_H */
