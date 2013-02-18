@@ -9,19 +9,10 @@ out = 'build'
 
 import os
 from waflib import Logs as logs
+from waflib import Utils as utils
 	
 def options(ctx):
 	ctx.load('compiler_c gnu_dirs glib2 intltool')
-	ctx.add_option('--destdir', action='store', default='', help='A global prefix prepended for all and every position string. Be aware that changerooting into that destdir will leave you with an unasable binary due to messy paths ui, partslib, model, locale and lang directories', dest='destdir')
-	ctx.add_option('--prefix', action='store', default='/usr', help='The prefix which will be utilized for the install target, except those which are dependant of a subsequent prefix')
-	ctx.add_option('--prefix-ui', action='store', default='/usr/share', help='Prefix for gtkbuilder ui files')
-	ctx.add_option('--prefix-partslib', action='store', default='/usr/share', help='Prefix for the parts library shipped with citronell')
-	ctx.add_option('--prefix-model', action='store', default='/usr/share', help='Prefix for custom models which will be used by oregano in addition to the parts library')
-	ctx.add_option('--prefix-locale', action='store', default='/usr/share', help='Prefix for the localisation/translation files')
-	ctx.add_option('--prefix-lang', action='store', default='/usr/share', help='Prefix for the gtksourceview hightlighting rules file')
-	ctx.add_option('--prefix-icons', action='store', default='/usr/share', help='Prefix for icons')
-	ctx.add_option('--prefix-mime', action='store', default='/usr/share', help='Prefix for mime register magic')
-	ctx.add_option('--prefix-examples', action='store', default='/usr/share', help='Prefix for the examples subdirectory')
 
 	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds')
 	ctx.add_option('--gnomelike', action='store_true', default=True, help='Determines if gnome shemas and gnome iconcache should be installed')
@@ -36,32 +27,28 @@ def configure(ctx):
 	ctx.define('VERSION', VERSION)
 	ctx.define('GETTEXT_PACKAGE', APPNAME)
 
-	ctx.env.path_prefix = os.path.join (ctx.options.destdir, ctx.options.prefix, '')
-	ctx.define('OREGANO_PREFIX', ctx.env.path_prefix)
 
-	ctx.env.path_ui = os.path.join (ctx.options.destdir, ctx.options.prefix_ui, 'oregano/ui/')
+	#things the applications needs to know about, for easier re-use in subdir wscript(s)
+	ctx.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', ctx.env)
+	ctx.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', ctx.env)
+	ctx.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', ctx.env)
+	ctx.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', ctx.env)
+	ctx.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', ctx.env)
+#	ctx.env.path_icons = '${DATADIR}/oregano/icons/'
+#	ctx.env.path_mime = '${DATADIR}/oregano/mime/'
+#	ctx.env.path_locale = '${DATADIR}/oregano/locale/'
+
+	#define the above paths so the application does know about files locations
 	ctx.define('OREGANO_UIDIR', ctx.env.path_ui)
-
-	ctx.env.path_model = os.path.join (ctx.options.destdir, ctx.options.prefix_model, 'oregano/models/')
 	ctx.define('OREGANO_MODELDIR', ctx.env.path_model)
-
-	ctx.env.path_locale = os.path.join (ctx.options.destdir, ctx.options.prefix_locale, 'oregano/locale/')
-	ctx.define('OREGANO_LOCALEDIR', ctx.env.path_locale)
-
-	ctx.env.path_partslib = os.path.join (ctx.options.destdir, ctx.options.prefix_partslib, 'oregano/library/')
 	ctx.define('OREGANO_LIBRARYDIR', ctx.env.path_partslib)
-
-	ctx.env.path_lang = os.path.join (ctx.options.destdir, ctx.options.prefix_lang, 'oregano/language-specs/')
 	ctx.define('OREGANO_LANGDIR', ctx.env.path_lang)
-
-	ctx.env.path_icons = os.path.join (ctx.options.destdir, ctx.options.prefix_icons, 'oregano/icons/')
-	ctx.define('OREGANO_ICONDIR', ctx.env.path_icons)
-
-	ctx.env.path_mime = os.path.join (ctx.options.destdir, ctx.options.prefix_mime, 'oregano/mime/')
-	ctx.define('OREGANO_MIMEDIR', ctx.env.path_mime)
-
-	ctx.env.path_examples = os.path.join (ctx.options.destdir, ctx.options.prefix_examples, 'oregano/examples/')
 	ctx.define('OREGANO_EXAMPLEDIR', ctx.env.path_examples)
+#	ctx.define('OREGANO_ICONDIR', ctx.env.path_icons)
+#	ctx.define('OREGANO_MIMEDIR', ctx.env.path_mime)
+#	ctx.define('OREGANO_LOCALEDIR', ctx.env.path_locale)
+
+
 
 
 	ctx.check_cc(lib='m', uselib_store='M', mandatory=True)
@@ -112,17 +99,9 @@ def docs(ctx):
 	logs.info("TODO: docs generation is not yet supported")
 
 
-#def test(ctx):
-#	print('test2 ' + ctx.path.abspath())
-#	ctx.recurse('src')
 
 
 
-#def dist(ctx):
-#	ctx.base_name = APPNAME
-#	ctx.algo = 'tar.xz'
-#	ctx.excl = ['.*', '*~'],
-#	ctx.files = cts.path.ant_glob('**/wscript')
 
 def pre(ctx):
 	if ctx.cmd != 'install':
@@ -140,7 +119,7 @@ def build(bld):
 	bld.add_post_fun(post)
 	bld.recurse(['po','data'])
 
-	if bld.cmd != 'install':
+	if bld.cmd != 'install' and bld.cmd != 'uninstall':
 		if not bld.variant:
 			bld.variant = 'debug'
 			logs.warn ('Defaulting to \'debug\' build variant')
@@ -149,7 +128,8 @@ def build(bld):
 			logs.fatal ('Do not run "' + ctx.cmd + '" as root, just don\'t!. Aborting.')
 	else:
 		if not os.geteuid()==0:
-			logs.warn ('You most likely need root privileges to install '+APPNAME+' properly.')
+			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
+
 
 	exe = bld.program(
  		features = ['c', 'cprogram', 'glib2'],
@@ -158,7 +138,8 @@ def build(bld):
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = ['data/settings/apps.oregano.gschema.xml']
+		settings_schema_files = ['data/settings/apps.oregano.gschema.xml'],
+		install_path = "${BINDIR}"
 	)
 	for item in exe.includes:
 		logs.debug(item)
