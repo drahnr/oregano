@@ -101,6 +101,12 @@ def docs(ctx):
 
 
 
+def dist(ctx):
+	ctx.base_name = APPNAME+'-'+VERSION
+	ctx.algo = 'tar.xz'
+	ctx.excl = ['.*', '*~','./build','*.'+ctx.algo],
+	ctx.files = ctx.path.ant_glob('**/wscript')
+
 
 
 def pre(ctx):
