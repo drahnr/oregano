@@ -37,7 +37,7 @@ For installation to the default directories, it is usually required to run
 
 with root privileges.
 
-After installation oregano can be started by running `oregano.bin` from terminal.
+After installation oregano can be started by running `oregano` from terminal.
 
 ### Web
 
@@ -46,5 +46,4 @@ The [official website is on github](https://github.com/drahnr/oregano).
 ### Bugs
 
 For bug and issue tracking as well as feature requests, the github built in [issue tracker](https://github.com/drahnr/oregano/issue) is used.
-
 
