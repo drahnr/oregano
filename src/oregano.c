@@ -165,8 +165,7 @@ oregano_application (GApplication *app, GFile *file)
 	if (oregano.libraries == NULL) {
 		oregano_error (
 			_("Could not find a parts library.\n\n"
-			  "This is probably due to a faulty installation "
-			  "of Oregano. Please check your installation."));
+		          "Supposed to be in " OREGANO_LIBRARYDIR ));
 		return;
 	}
 
