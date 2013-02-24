@@ -558,7 +558,8 @@ static void
 close_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (can_close (sv)) {
-		g_application_quit (g_application_get_default ());
+		NG_DEBUG (" --- not dirty (anymore), do close schematic_view: %p -- vs -- toplevel: %p", sv, schematic_view_get_toplevel (sv));
+		gtk_widget_destroy (GTK_WIDGET (schematic_view_get_toplevel (sv)));
 	}
 }
 
@@ -1002,7 +1003,6 @@ schematic_view_finalize (GObject *object)
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
-	g_application_quit (g_application_get_default ());
 }
 
 static void
@@ -1189,6 +1189,9 @@ schematic_view_new (Schematic *schematic)
 	}
 	schematic_set_filename (sv->priv->schematic, _("Untitled.oregano"));
 	schematic_set_netlist_filename (sv->priv->schematic, _("Untitled.netlist"));
+
+	gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (sv)),
+		                            g_application_get_default ());
 
 	return sv;
 }

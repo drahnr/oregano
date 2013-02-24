@@ -75,7 +75,8 @@ static void oregano_open (GApplication *application, GFile **files,
 static void
 oregano_finalize (GObject *object)
 {
-    G_OBJECT_CLASS (oregano_parent_class)->finalize (object);
+	cursors_shutdown ();
+	G_OBJECT_CLASS (oregano_parent_class)->finalize (object);
 }
 
 static void
@@ -120,7 +121,7 @@ oregano_open (GApplication  *application, GFile **files, gint n_files,
   	gint i;
 
   	for (i = 0; i < n_files; i++)	
-    	oregano_application (application, files[i]);
+		oregano_application (application, files[i]);
 }
 
 static gboolean
@@ -164,8 +165,7 @@ oregano_application (GApplication *app, GFile *file)
 	if (oregano.libraries == NULL) {
 		oregano_error (
 			_("Could not find a parts library.\n\n"
-			  "This is probably due to a faulty installation "
-			  "of Oregano. Please check your installation."));
+		          "Supposed to be in " OREGANO_LIBRARYDIR ));
 		return;
 	}
 
@@ -180,8 +180,6 @@ oregano_application (GApplication *app, GFile *file)
 		schematic = schematic_read (fname, &error);
 		if (schematic) {
 			schematic_view = schematic_view_new (schematic);
-			gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (schematic_view)),
-		                            GTK_APPLICATION (app));
 
 			gtk_widget_show_all (schematic_view_get_toplevel (schematic_view));
 			schematic_set_filename (schematic, fname);
@@ -191,8 +189,6 @@ oregano_application (GApplication *app, GFile *file)
 	else {
 		schematic = schematic_new ();
 		schematic_view = schematic_view_new (schematic);
-		gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (schematic_view)),
-		                            GTK_APPLICATION (app));
 		gtk_widget_show_all (schematic_view_get_toplevel (schematic_view));
 	}
 
@@ -205,6 +201,4 @@ oregano_application (GApplication *app, GFile *file)
 
 	if (oregano.show_splash && splash)
 		oregano_splash_done (splash, _("Welcome to Oregano"));
-
-	cursors_shutdown ();
 }

@@ -1,14 +1,13 @@
 [Desktop Entry]
 _Name=Oregano
 _GenericName=Electrical Engineering Tool
-_X-GNOME-FullName=Oregano Electrical Engineering Tool
 _Comment=Schematic, capture and simulation of electronic circuits
 Exec=oregano %F
-Icon=gnome-oregano.svg
+Icon=oregano.svg
 Terminal=false
 X-MultipleArgs=false
 Type=Application
-Categories=GNOME;GTK;Science;Education;Physics;
+Categories=GTK;Science;Education;Physics;
 Encoding=UTF-8
 StartupNotify=true
 MimeType=application/x-oregano;

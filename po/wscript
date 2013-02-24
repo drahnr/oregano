@@ -1,0 +1,12 @@
+#! /usr/bin/env python
+# encoding: utf-8
+
+from waflib import Logs as logs
+
+def build(bld):
+	bld(
+		features='intltool_po',
+		appname=bld.env.appname,
+		podir='.',
+		install_path="${LOCALEDIR}")
+
