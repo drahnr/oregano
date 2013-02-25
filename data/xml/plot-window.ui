@@ -4,7 +4,7 @@
   <object class="GtkWindow" id="main_window">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkGrid" id="plot_table">
+      <object class="GtkGrid" id="plot_grid">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
@@ -25,7 +25,7 @@
                     <property name="border_width">4</property>
                     <property name="spacing">2</property>
                     <child>
-                      <object class="GtkGrid" id="table1">
+                      <object class="GtkGrid" id="grid1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>

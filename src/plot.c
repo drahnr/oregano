@@ -407,7 +407,7 @@ plot_window_create (Plot *plot)
 		return NULL;
 	}
 
-	outer_table = GTK_WIDGET (gtk_builder_get_object (gui, "plot_table"));
+	outer_table = GTK_WIDGET (gtk_builder_get_object (gui, "plot_grid"));
 	plot_scrolled = plot->canvas = GTK_WIDGET (gtk_builder_get_object (gui, 
 	    "plot_scrolled"));
 	plot->coord  = GTK_WIDGET (gtk_builder_get_object (gui, "pos_label"));
