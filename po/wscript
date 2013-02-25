@@ -1,11 +1,59 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
+
 import os
 from waflib import Logs as logs
 
-def makepot(ctx):
+import re
+def locate(regex, roots=os.curdir, exclpattern="((.*/)?\.(git|svn|cvs).*)|(.*/.+~)|(.*/intl/.*)"):
+	lst = []
+	for root in roots if not isinstance(roots, str) else [roots]:
+		for dir_, dirnames, filenames in os.walk(root):
+			for filename in filenames:
+				abspath = os.path.join(dir_, filename)
+				if not re.match(exclpattern, abspath):
+					if re.match(regex, abspath):
+						if (abspath[0:2]=="./"):
+							lst.append(abspath[2:])
+						else:
+							lst.append(abspath)
+	return lst
+
+
+def spawn_pot(ctx):
+
+	f = open ('po/POTFILES.in', 'w+')
+
+	f.write ("data/mime/oregano-mimetypes.xml.in\n")
+	f.write ("data/oregano.desktop.in\n")
+	f.write ("\n")
+
+	lst = locate('.+\.ui$', roots='data')
+	for item in lst:
+		f.write("[type: gettext/glade]%s\n" % item)
+	f.write ("\n")
+
+	lst = locate('.+\.c$', roots='src')
+	for item in lst:
+		f.write("%s\n" % item)
+	f.write ("\n")
+
+	lst = locate('.+\.h$', roots=['src','data'])
+	for item in lst:
+		f.write("%s\n" % item)
+	f.close ()
+
 	os.system ('cd po && intltool-update --headers --verbose')
+
+	os.system ('xgettext -k_ -kN_ -E -f po/potfiles.in --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o po/'+ctx.env.appname+'.pot')
+
+
+def update_po(ctx):
+	lst = locate('po/.+\.po$')
+	for item in lst:
+		os.system ('msgmerge -U '+item+' po/'+ctx.env.appname+'.pot')
+
 
 def build(bld):
 	bld(

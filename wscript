@@ -79,7 +79,6 @@ def configure(ctx):
 
 
 
-
 import re
 def locate(regex, root=os.curdir, exclpattern="((.*/)?\.(git|svn|cvs).*)|(.*/.+~)|(.*/intl/.*)"):
 	lst = []
@@ -97,36 +96,6 @@ def locate(regex, root=os.curdir, exclpattern="((.*/)?\.(git|svn|cvs).*)|(.*/.+~
 
 def docs(ctx):
 	logs.info("TODO: docs generation is not yet supported")
-
-
-def makepot(ctx):
-	f = open ('po/POTFILES.in', 'w+')
-
-	lst = locate('.*/.+\.ui$')
-	for item in lst:
-		f.write("[type: gettext/glade]%s\n" % item)
-
-	f.close ()
-	ctx.recurse(['po'])
-
-	f = open ('po/potfiles.in', 'w+')
-	lst = locate('.*/.+\.c$')
-	for item in lst:
-		f.write("%s\n" % item)
-
-	f.write ("\n")
-	lst = locate('.*/.+\.h$')
-	for item in lst:
-		f.write("%s\n" % item)
-
-	f.close ()
-	os.system ('xgettext -k_ -kN_ -E -f po/potfiles.in --package-name='+APPNAME+' --package-version '+VERSION+' -o po/'+APPNAME+'.pot')
-
-def updatepo(ctx):
-	lst = locate('.*/.+\.po$')
-	for item in lst:
-		os.system ('msgmerge -U '+item+' po/'+APPNAME+'.pot')
-
 
 
 def dist(ctx):
@@ -191,3 +160,24 @@ class release(BuildContext):
 class debug(BuildContext):
 	      cmd = 'debug'
 	      variant = 'debug'
+
+
+
+def spawn_pot(ctx):
+	ctx.recurse ('po')
+
+
+def update_po(ctx):
+	ctx.recurse ('po')
+
+# we need to subclass BuildContext instead of Context
+# in order to access ctx.env.some_variable
+class spawnpot(BuildContext):
+        cmd = 'spawnpot'
+        fun = 'spawn_pot'
+
+class updatepo(BuildContext):
+        cmd = 'updatepo'
+        fun = 'update_po'
+
+

@@ -1,3 +1,5 @@
 *~
 .lock*
 build
+po/build
+src/build
