@@ -35,6 +35,8 @@ def spawn_pot(ctx):
 	f.write ("\n")
 	f.close()
 
+	os.system ('cd po && intltool-update --headers --verbose')
+
 	f = open ('po/potfiles.in','w+')
 	lst = locate('.+\.c$', roots='src')
 	for item in lst:
@@ -45,10 +47,6 @@ def spawn_pot(ctx):
 	for item in lst:
 		f.write("%s\n" % item)
 	f.close ()
-
-
-
-	os.system ('cd po && intltool-update --headers --verbose')
 
 	os.system ('xgettext -k_ -kN_ -E -f po/potfiles.in --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o po/'+ctx.env.appname+'.pot')
 
