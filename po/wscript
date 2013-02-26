@@ -33,7 +33,9 @@ def spawn_pot(ctx):
 	for item in lst:
 		f.write("[type: gettext/glade]%s\n" % item)
 	f.write ("\n")
+	f.close()
 
+	f = open ('po/potfiles.in','w+')
 	lst = locate('.+\.c$', roots='src')
 	for item in lst:
 		f.write("%s\n" % item)
@@ -43,6 +45,8 @@ def spawn_pot(ctx):
 	for item in lst:
 		f.write("%s\n" % item)
 	f.close ()
+
+
 
 	os.system ('cd po && intltool-update --headers --verbose')
 
