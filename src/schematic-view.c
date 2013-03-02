@@ -384,13 +384,13 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *new_sm;
 	SchematicView *new_sv;
-	char *fname, *uri = NULL;
+	char *buf, *fname, *uri = NULL;
 	GList *list;
 	GError *error = NULL;
 
 	fname = dialog_open_file (sv);
-	if (fname == NULL)
-			return;
+	if (!fname)
+		return;
 
 	// Repaint the other schematic windows before loading the new file.
 	new_sv = NULL;
@@ -405,18 +405,38 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 
 	new_sm = schematic_read(fname, &error);
 	if (error != NULL) {
-		oregano_error_with_title (_("Could not load file"), error->message);
+		buf = g_strdup_printf(_("Could not load file \"file://%s\""), fname);
+		oregano_error_with_title (buf, error->message);
 		g_error_free (error);
+		g_free (buf);
 	}
 
 	if (new_sm) {
 		GtkRecentManager *manager;
-		gchar *uri;
-		
+		GtkRecentInfo *rc;
+
 		manager = gtk_recent_manager_get_default ();
 		uri = g_strdup_printf ("file://%s", fname);
-		if (!gtk_recent_manager_has_item (manager, uri)	&&
-		    (!(uri==NULL))) 	gtk_recent_manager_add_item (manager, uri);
+
+		if (uri) {
+			rc = gtk_recent_manager_lookup_item (manager, uri, &error);
+			if (error) {
+				g_error_free (error);
+				error = NULL;
+			} else {
+				gtk_recent_manager_remove_item (manager, uri, &error);
+				if (error) {
+					g_warning ("open_cmd -- %s - %i\n", error->message, error->code);
+					g_error_free (error);
+					error = NULL;
+				}
+			}
+			gtk_recent_manager_add_item (manager, uri);
+			if (rc)
+				gtk_recent_info_unref (rc);
+		}
+
+
 		if (!new_sv)
 			new_sv = schematic_view_new (new_sm);
 		else
@@ -425,11 +445,10 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 		gtk_widget_show_all (new_sv->toplevel);
 		schematic_set_filename (new_sm, fname);
 		schematic_set_title (new_sm, g_path_get_basename(fname));
-	}
 
-	g_list_free_full (list, g_object_unref);
+		g_free (uri);
+	}
 	g_free (fname);
-	g_free (uri);
 }
 
 
@@ -437,19 +456,29 @@ static void
 oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 {
 	gchar *uri;
-    const gchar *mime;
-    GtkRecentInfo *item;
+	const gchar *mime;
+	GtkRecentInfo *item;
 	GtkRecentManager *manager;
 	Schematic *new_sm;
 	SchematicView *new_sv = NULL;
 	GError *error = NULL;
 
 	uri = gtk_recent_chooser_get_current_uri (GTK_RECENT_CHOOSER (chooser));
-	if (!uri) return;
+	if (!uri)
+		return;
 
 	manager = gtk_recent_manager_get_default ();
 	item = gtk_recent_manager_lookup_item (manager, uri, NULL);
-	if (!item) return;
+	if (!item)
+		return;
+	//remove and re-add in order to update the ordering
+	gtk_recent_manager_remove_item (manager, uri, &error);
+	if (error) {
+		g_warning ("recent_open -- %s - %i\n", error->message, error->code);
+		g_error_free (error);
+		error = NULL;
+	}
+	gtk_recent_manager_add_item (manager, uri);
 
 	mime = gtk_recent_info_get_mime_type (item);
 	if (!mime) {
