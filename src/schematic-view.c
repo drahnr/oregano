@@ -415,8 +415,8 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 		
 		manager = gtk_recent_manager_get_default ();
 		uri = g_strdup_printf ("file://%s", fname);
-		if (!gtk_recent_manager_has_item (manager, uri)	&&
-		    (!(uri==NULL))) 	gtk_recent_manager_add_item (manager, uri);
+		if (!gtk_recent_manager_has_item (manager, uri)	&& uri)
+			gtk_recent_manager_add_item (manager, uri);
 		if (!new_sv)
 			new_sv = schematic_view_new (new_sm);
 		else

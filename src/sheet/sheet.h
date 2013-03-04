@@ -80,10 +80,10 @@ struct _SheetClass {
 
 GType	   	sheet_get_type (void);
 GtkWidget *	sheet_new (int width, int height);
-void	   	sheet_scroll (const Sheet *sheet, int dx, int dy);
+void	   	sheet_scroll_pixel (const Sheet *sheet, int dx, int dy);
 void	   	sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
 gpointer   	sheet_get_first_selected_item (const Sheet *sheet);
-void	   	sheet_change_zoom (const Sheet *sheet, double rate);
+void	   	sheet_change_zoom (Sheet *sheet, double rate);
 void	   	sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
 void	   	sheet_delete_selected_items (const Sheet *sheet);
 void	   	sheet_rotate_selected_items (const Sheet *sheet);
@@ -120,7 +120,8 @@ void		sheet_stop_create_wire (Sheet *sheet);
 void		sheet_initiate_create_wire (Sheet *sheet);
 void		sheet_connect_node_dots_to_signals (Sheet *sheet);
 void		sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet);
-void		sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y); 
+gboolean	sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y);
+gboolean	sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y);
 gboolean	sheet_pointer_grab (Sheet *sheet, GdkEvent *event);
 void		sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event);
 gboolean	sheet_keyboard_grab (Sheet *sheet, GdkEvent *event);

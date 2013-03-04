@@ -38,6 +38,7 @@
 #include <goocanvas.h>
 #include <goocanvasutils.h>
 
+#include "speedy.h"
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "node-store.h"
@@ -59,14 +60,12 @@ static void 	sheet_get_property (GObject *object, guint prop_id,
 					GValue *value, GParamSpec *spec);
 static void 	sheet_set_zoom (const Sheet *sheet, double zoom);
 static GList *	sheet_preserve_selection (Sheet *sheet);
-static void		rotate_items (Sheet *sheet, GList *items);
-static void		flip_items (Sheet *sheet, GList *items, gboolean horizontal);
-static void 	node_dot_added_callback (Schematic *schematic, Coords *pos, 
-					Sheet *sheet);
-static void 	node_dot_removed_callback (Schematic *schematic, Coords *pos, 
-    				Sheet *sheet);
-static void		sheet_finalize (GObject *object);
-static int 		dot_equal (gconstpointer a, gconstpointer b);
+static void	rotate_items (Sheet *sheet, GList *items);
+static void	flip_items (Sheet *sheet, GList *items, gboolean horizontal);
+static void 	node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
+static void 	node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
+static void	sheet_finalize (GObject *object);
+static int 	dot_equal (gconstpointer a, gconstpointer b);
 static guint 	dot_hash (gconstpointer key);
 
 
@@ -182,63 +181,83 @@ sheet_finalize (GObject *object)
 	Sheet *sheet = SHEET (object);
 
 	if (sheet->priv) {
-		g_hash_table_destroy (sheet->priv->node_dots);
+		if (sheet->priv->node_dots)
+			g_hash_table_destroy (sheet->priv->node_dots);
 		g_free (sheet->priv);
 	}
 	if (G_OBJECT_CLASS (sheet_parent_class)->finalize)
 		(* G_OBJECT_CLASS (sheet_parent_class)->finalize) (object);
 }
 
-void		
-sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
+
+/*
+ * position within the sheet in pixel coordinates
+ * coordinates are clamped to grid if grid is enabled
+ * see snap_to_grid
+ * zero point : top left corner of the window (not widget!)
+ * x : horizontal, left to right
+ * y : vertical, top to bottom
+ * returns wether the position could be detected properly
+ */
+gboolean
+sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 {
-	GtkWidget        *widget;
-	GtkAdjustment    *hadjustment;
-	GtkAdjustment    *vadjustment;
-	gdouble           value, x1, y1;
-	gint              _x, _y;
+	GtkAdjustment *hadj, *vadj;
+	gdouble x1, y1;
+	gint _x, _y;
 	GdkDeviceManager *device_manager;
-    GdkDevice        *device_pointer;
-    GdkRectangle      allocation;
+	GdkDevice *device_pointer;
+	GdkRectangle allocation;
 
 
-	// gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
+	// deprecated gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
 	// replaced by a code copied from evince
-	
-    if (!gtk_widget_get_realized (GTK_WIDGET (sheet)))
-    	return;
-	
+
+	if (__unlikely (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
+		NG_DEBUG ("widget not realized");
+		return FALSE;
+	}
+
 	device_manager = gdk_display_get_device_manager (
-	                gtk_widget_get_display (GTK_WIDGET (sheet)));
-    device_pointer = gdk_device_manager_get_client_pointer (device_manager);
-    gdk_window_get_device_position (gtk_widget_get_window (GTK_WIDGET (sheet)),
-                    device_pointer,
-                    &_x, &_y, NULL);
-	if (!gtk_widget_get_has_window (GTK_WIDGET (sheet)))
-    	return;
+			gtk_widget_get_display (GTK_WIDGET (sheet)));
+	device_pointer = gdk_device_manager_get_client_pointer (device_manager);
+	//FIXME add another check based on the following functions return val
+	gdk_window_get_device_position (gtk_widget_get_window (GTK_WIDGET (sheet)),
+					device_pointer,
+					&_x, &_y, NULL);
+
+	if (!gtk_widget_get_has_window (GTK_WIDGET (sheet))) {
+		NG_DEBUG ("some weird gtk window shit failed");
+		return FALSE;
+	}
 	
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
-	
+
 	_x -= allocation.x;
 	_y -= allocation.y;
 
 	x1 = (gdouble) _x;
 	y1 = (gdouble) _y;
-	
-	widget = gtk_widget_get_parent (GTK_WIDGET (sheet));
-	hadjustment =  gtk_scrolled_window_get_hadjustment (
-	                 GTK_SCROLLED_WINDOW (widget));
-	value = gtk_adjustment_get_value (hadjustment);
 
-	x1 += value;
-	vadjustment =  gtk_scrolled_window_get_vadjustment (
-	                 GTK_SCROLLED_WINDOW (widget));
-	value = gtk_adjustment_get_value (vadjustment);
-	y1 += value;
+	if (!sheet_get_adjustments (sheet, &hadj, &vadj))
+	      return FALSE;
+
+	x1 += gtk_adjustment_get_value (hadj);
+	y1 += gtk_adjustment_get_value (vadj);
+
 	*x = x1;
 	*y = y1;
+	return TRUE;
+}
+
+gboolean
+sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
+{
+	if (!sheet_get_pointer_pixel (sheet, x, y))
+		return FALSE;
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), x, y);
 	snap_to_grid (sheet->grid, x, y);
+	return TRUE;
 }
 
 void
@@ -254,16 +273,138 @@ sheet_set_zoom (const Sheet *sheet, double zoom)
 	sheet->priv->zoom = zoom;
 }
 
-void
-sheet_change_zoom (const Sheet *sheet, gdouble rate)
+
+/*
+ * gets the sheets parent adjustments
+ * returns TRUE on success
+ */
+gboolean
+sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdjustment **vadj)
 {
-	gdouble scale;
-	
-	sheet->priv->zoom *= rate;
-	scale = goo_canvas_get_scale (GOO_CANVAS (sheet));
-	scale = scale * rate;
-	goo_canvas_set_scale (GOO_CANVAS (sheet), scale);
+	GtkWidget *parent;
+	GtkScrolledWindow *scrolled;
+
+	if (__unlikely (!sheet))
+		return FALSE;
+	if (__unlikely (!vadj || !hadj))
+		return FALSE;
+
+	parent = gtk_widget_get_parent (GTK_WIDGET (sheet));
+	if (__unlikely (!parent || !GTK_IS_SCROLLED_WINDOW (parent)))
+		return FALSE;
+	scrolled = GTK_SCROLLED_WINDOW (parent);
+
+	*hadj = gtk_scrolled_window_get_hadjustment (scrolled);
+	if (__unlikely (!*hadj || !GTK_IS_ADJUSTMENT (*hadj)))
+		return FALSE;
+
+	*vadj = gtk_scrolled_window_get_vadjustment (scrolled);
+	if (__unlikely (!*vadj || !GTK_IS_ADJUSTMENT (*vadj)))
+		return FALSE;
+
+	return TRUE;
 }
+
+
+/*
+ * change the zoom by factor <rate>
+ * zoom origin when zooming in is the cursor
+ * zoom origin when zooming out is the center of the current viewport
+ * sane <rate> values are in range of [0.5 .. 2]
+ */
+void
+sheet_change_zoom (Sheet *sheet, gdouble rate)
+{
+	g_return_if_fail (sheet);
+	g_return_if_fail (IS_SHEET (sheet));
+//////////////////////////////////////////////7
+
+	gdouble x, y;
+	gdouble rx, ry;
+	gdouble px, py;
+	gdouble dx, dy;
+	gdouble cx, cy;
+	gdouble dcx, dcy;
+	GtkAdjustment *hadj, *vadj;
+	GooCanvas *canvas;
+
+	canvas = GOO_CANVAS (sheet);
+
+	// if we scroll out, just scroll to the center
+	if (rate < 1.) {
+		goo_canvas_set_scale (canvas, rate * goo_canvas_get_scale (canvas));
+		return;
+	}
+
+	// top left corner in pixels
+	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
+		x = gtk_adjustment_get_value (hadj);
+		y = gtk_adjustment_get_value (vadj);
+	} else {
+		x = y = 0.;
+	}
+
+	// get pointer position in pixels
+	sheet_get_pointer_pixel (sheet, &px, &py);
+
+	// get the page size in pixels
+	dx = gtk_adjustment_get_page_size (hadj);
+	dy = gtk_adjustment_get_page_size (vadj);
+	// calculate the center of the widget in pixels
+	cx = x + dx/2;
+	cy = y + dy/2;
+	
+	// calculate the delta between the center and the pointer in pixels
+	// this is required as the center is the zoom target
+	dcx = px - cx;
+	dcy = py - cy;
+
+	// increase the top left position in pixels by our calculated delta
+	x += dcx;
+	y += dcy;
+
+	//convert to canvas coords
+	goo_canvas_convert_from_pixels (canvas, &x, &y);
+
+	//the center of the canvas is now our cursor position
+	goo_canvas_scroll_to (canvas, x, y);
+
+	//calculate a correction term
+	//for the case that we can not scroll the pane far enough to
+	//compensate the whole off-due-to-wrong-center-error
+	rx = gtk_adjustment_get_value (hadj);
+	ry = gtk_adjustment_get_value (vadj);
+	goo_canvas_convert_from_pixels (canvas, &rx, &ry);
+	//the correction term in goo coordinates, to be subtracted from the backscroll distance
+	rx -= x;
+	ry -= y;
+
+	// no the center is our cursor position and we can safely call scale
+	goo_canvas_set_scale (canvas, rate * goo_canvas_get_scale (canvas));
+
+	// top left corner in pixels after scaling
+	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
+		x = gtk_adjustment_get_value (hadj);
+		y = gtk_adjustment_get_value (vadj);
+	} else {
+		x = y = 0.;
+	}
+	// not sure if the below part is required, could be zer0
+	NG_DEBUG ("rx %lf\n", rx);
+	NG_DEBUG ("ry %lf\n", ry);
+	NG_DEBUG ("dcx %lf\n", dcx);
+	NG_DEBUG ("dcy %lf\n", dcy);
+	NG_DEBUG ("\n\n");
+	// gtk_adjustment_get_page_size is constant
+	x -= (dcx) / sheet->priv->zoom;
+	y -= (dcy) / sheet->priv->zoom;
+	goo_canvas_convert_from_pixels (canvas, &x, &y);
+
+	goo_canvas_scroll_to (canvas, x-rx, y-ry);
+
+	gtk_widget_queue_draw (GTK_WIDGET (canvas));
+}
+
 
 // This function defines the drawing sheet on which schematic will be drawn 
 GtkWidget *
@@ -281,8 +422,8 @@ sheet_new (int width, int height)
 
 	sheet_canvas = GOO_CANVAS (sheet);
 	g_object_set (G_OBJECT (sheet_canvas), 
-                  "bounds-from-origin", FALSE,
-                  "bounds-padding", 4.0,
+	              "bounds-from-origin", FALSE,
+	              "bounds-padding", 4.0,
 	              "background-color-rgb", 0xFFFFFF,
 	              NULL);
 
@@ -314,7 +455,7 @@ sheet_new (int width, int height)
 	                     0.0, 
 	                     (double) width + 20.0, 
 	                     20.0, 
-		                 "fill_color", "gray", 
+	                     "fill_color", "gray", 
 	                     "line-width", 0.0, 
 	                     NULL);
 
@@ -325,7 +466,7 @@ sheet_new (int width, int height)
 	                     (double) height + 20.0, 
 	                     "fill_color", "gray", 
 	                     "line-width", 0.0, 
-	                     NULL);                
+	                     NULL);
 
 	// right //
 	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
@@ -335,7 +476,7 @@ sheet_new (int width, int height)
 	                     (double) height + 20.0, 
 	                     "fill_color", "gray", 
 	                     "line-width", 0.0, 
-	                     NULL);                  
+	                     NULL);
 
 	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
 	                     (double) width, 
@@ -344,7 +485,7 @@ sheet_new (int width, int height)
 	                     (double) height + 20.0, 
 	                     "fill_color", "gray", 
 	                     "line-width", 0.0, 
-	                     NULL);                 
+	                     NULL);
 
 	//  Draw a thin black border around the sheet.
 	points = goo_canvas_points_new (5);
@@ -369,10 +510,10 @@ sheet_new (int width, int height)
 
 	// Finally, create the object group that holds all objects.
 	sheet->object_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
-	                      root,
-	                      "x", 0.0,
-	                      "y", 0.0,
-	                      NULL));
+	                     root,
+	                     "x", 0.0,
+	                     "y", 0.0,
+	                     NULL));
 
 	sheet->priv->selected_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	     GOO_CANVAS_ITEM (sheet->object_group),
@@ -426,38 +567,47 @@ sheet_get_property (GObject *object,
 	}
 }
 
+/*
+ * scroll to <dx,dy> in pixels relative to the current coords
+ * note that pixels are _not_ affected by zoom
+ */
 void
-sheet_scroll (const Sheet *sheet, int delta_x, int delta_y)
+sheet_scroll_pixel (const Sheet *sheet, int delta_x, int delta_y)
 {
 	GtkAdjustment *hadj, *vadj;
 	GtkAllocation allocation;
 	gfloat vnew, hnew;
 	gfloat hmax, vmax;
+	gfloat x1, y1;
 	const SheetPriv *priv = sheet->priv;
 
-	hadj = gtk_container_get_focus_hadjustment (GTK_CONTAINER (sheet));
-	vadj = gtk_container_get_focus_vadjustment (GTK_CONTAINER (sheet));
+	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
+		x1 = gtk_adjustment_get_value (hadj);
+		y1 = gtk_adjustment_get_value (vadj);
+	} else {
+		x1 = y1 = 0.f;
+	}
 
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
 
 	if (priv->width > allocation.width)
 		hmax = (gfloat) (priv->width - allocation.width);
 	else
-		hmax = 0.0;
+		hmax = 0.f;
 
 	if (priv->height > allocation.height)
 		vmax = (gfloat) (priv->height -  allocation.height);
 	else
-		vmax = 0.0;
+		vmax = 0.f;
 
-	hnew = CLAMP (gtk_adjustment_get_value (hadj) + (gfloat) delta_x, 0.0, hmax);
-	vnew = CLAMP (gtk_adjustment_get_value (vadj) + (gfloat) delta_y, 0.0, vmax);
+	hnew = CLAMP (x1 + (gfloat) delta_x, 0.f, hmax);
+	vnew = CLAMP (y1 + (gfloat) delta_y, 0.f, vmax);
 
-	if (hnew != gtk_adjustment_get_value (hadj)) {
+	if (hnew != x1) {
 		gtk_adjustment_set_value (hadj, hnew);
 		g_signal_emit_by_name (G_OBJECT (hadj), "value_changed");
 	}
-	if (vnew != gtk_adjustment_get_value (vadj)) {
+	if (vnew != y1) {
 		gtk_adjustment_set_value (vadj, vnew);
 		g_signal_emit_by_name (G_OBJECT (vadj), "value_changed");
 	}
@@ -657,27 +807,27 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 					break;
 				case GDK_KEY_Left:
 					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll (sheet, -20, 0);
+						sheet_scroll_pixel (sheet, -20, 0);
 					break;
 				case GDK_KEY_Up:
 					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll (sheet, 0, -20);
+						sheet_scroll_pixel (sheet, 0, -20);
 					break;
 				case GDK_KEY_Right:
 					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll (sheet, 20, 0);
+						sheet_scroll_pixel (sheet, 20, 0);
 					break;
 				case GDK_KEY_Down:
 					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll (sheet, 0, 20);
+						sheet_scroll_pixel (sheet, 0, 20);
 					break;
 				case GDK_KEY_Page_Up:
 					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll (sheet, 0, -120);
+						sheet_scroll_pixel (sheet, 0, -120);
 					break;
 				case GDK_KEY_Page_Down:
 					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll (sheet, 0, 120);
+						sheet_scroll_pixel (sheet, 0, 120);
 					break;
 				case GDK_KEY_Escape:
 					g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
