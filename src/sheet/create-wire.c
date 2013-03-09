@@ -315,6 +315,7 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	return wire;
 }
 
+#define FINISH_ON_WIRE_CLICK 0
 inline static gboolean
 create_wire_fixate (Sheet *sheet, GdkEvent *event)
 {
@@ -324,7 +325,10 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	Coords p1, p2, start_pos, end_pos, mid_pos;
 	CreateWireInfo *create_wire_info;
 	Wire *wire = NULL;
-	gboolean b_start_eq_mid, b_mid_eq_end, b_finish;
+	gboolean b_start_eq_mid, b_mid_eq_end;
+#if FINISH_ON_WIRE_CLICK
+	gboolean b_finish;
+#endif
 	double x, y;
 
 	//g_signal_stop_emission_by_name (sheet, "event");
@@ -371,7 +375,7 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", start_pos.x, start_pos.y, mid_pos.x, mid_pos.y, coords_equal(&start_pos, &mid_pos));
 	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y, coords_equal(&mid_pos, &end_pos));
 
-#if 0
+#if FINISH_ON_WIRE_CLICK
 	/* check for wires _before_ spawning wires, otherwise we will end up with 1 anyways*/
 	b_finish = node_store_get_node (store, end_pos) || node_store_is_wire_at_pos (store, end_pos); 
 #endif
@@ -402,9 +406,9 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	 * if so,
 	 * set state to START and fixate both ends of the current wire
 	 */
-#if 0
+#if FINISH_ON_WIRE_CLICK
 	/*
-	 * should we really auto finish if the target is a wire or node? kinda inconsequent
+	 * auto-finish if the target is a wire or node
 	 */
 	if (b_finish)
 		return create_wire_discard (sheet,event);

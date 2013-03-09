@@ -1219,7 +1219,7 @@ schematic_view_new (Schematic *schematic)
 	schematic_set_netlist_filename (sv->priv->schematic, _("Untitled.netlist"));
 
 	gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (sv)),
-		                            g_application_get_default ());
+		                            GTK_APPLICATION (g_application_get_default ()));
 
 	return sv;
 }

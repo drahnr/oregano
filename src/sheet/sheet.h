@@ -126,4 +126,5 @@ gboolean	sheet_pointer_grab (Sheet *sheet, GdkEvent *event);
 void		sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event);
 gboolean	sheet_keyboard_grab (Sheet *sheet, GdkEvent *event);
 void		sheet_keyboard_ungrab (Sheet *sheet, GdkEvent *event);
+gboolean	sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdjustment **vadj);
 #endif

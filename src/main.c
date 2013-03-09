@@ -40,6 +40,11 @@
 int
 main (int argc, char *argv[])
 {
+	// keep in mind the app is a subclass of GtkApplication
+	// which is a subclass of GApplication
+	// so casts from g_application_get_default to
+	// GtkApplication as well as GApplication or Oregano
+	// are explicitly allowed
 	Oregano *app;
 	int status;
 	gpointer class = NULL;
