@@ -117,7 +117,7 @@ static void schematic_class_init (SchematicClass	*klass);
 static void schematic_finalize (GObject *object);
 static void schematic_dispose (GObject *object);
 static void item_data_destroy_callback (gpointer s, GObject *data);
-static void item_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm);
+static void item_moved_callback (ItemData *data, Coords *pos, Schematic *sm);
 
 static int  schematic_get_lowest_available_refdes (Schematic *schematic,
 				char *prefix);
@@ -191,7 +191,7 @@ schematic_class_init (SchematicClass *klass)
 }
 
 static void
-node_dot_added_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
+node_dot_added_callback (NodeStore *store, Coords *pos, Schematic *schematic)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
@@ -200,7 +200,7 @@ node_dot_added_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
 }
 
 static void
-node_dot_removed_callback (NodeStore *store, SheetPos *pos, Schematic *schematic)
+node_dot_removed_callback (NodeStore *store, Coords *pos, Schematic *schematic)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
@@ -804,7 +804,7 @@ schematic_set_dirty (Schematic *sm, gboolean b)
 }
 
 static void
-item_moved_callback (ItemData *data, SheetPos *pos, Schematic *sm)
+item_moved_callback (ItemData *data, Coords *pos, Schematic *sm)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));

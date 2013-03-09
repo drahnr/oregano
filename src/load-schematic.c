@@ -38,7 +38,7 @@
 #include "xml-helper.h"
 #include "load-common.h"
 #include "load-schematic.h"
-#include "sheet-pos.h"
+#include "coords.h"
 #include "part-label.h"
 #include "sim-settings.h"
 #include "textbox.h"
@@ -137,14 +137,14 @@ typedef struct {
 	char *textbox_text;
 
 	// Temporary place holder for a wire
-	SheetPos wire_start;
-	SheetPos wire_end;
+	Coords wire_start;
+	Coords wire_end;
 
 	// Temporary place holder for a part
 	LibraryPart *part;
 	PartLabel *label;
 	Property *property;
-	SheetPos pos;
+	Coords pos;
 	int rotation;
 	IDFlip flip;
 
@@ -208,7 +208,7 @@ create_textbox (ParseState *state)
 static void
 create_wire (ParseState *state)
 {
-	SheetPos start_pos, length;
+	Coords start_pos, length;
 	Wire *wire;
 
 	start_pos.x = state->wire_start.x;

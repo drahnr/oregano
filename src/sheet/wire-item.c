@@ -34,7 +34,7 @@
 #include <string.h>
 
 #include "cursors.h"
-#include "sheet-pos.h"
+#include "coords.h"
 #include "wire-item.h"
 #include "node-store.h"
 #include "wire.h"
@@ -56,7 +56,7 @@ static void 		wire_rotated_callback (ItemData *data, int angle,
 						SheetItem *sheet_item);
 static void 		wire_flipped_callback (ItemData *data, gboolean horizontal,
 						SheetItem *sheet_item);
-static void 		wire_moved_callback (ItemData *data, SheetPos *pos,
+static void 		wire_moved_callback (ItemData *data, Coords *pos,
 						SheetItem *item);
 static void 		wire_changed_callback (Wire *, WireItem *item);
 static void 		wire_delete_callback (Wire *, WireItem *item);
@@ -65,8 +65,8 @@ static void 		selection_changed (WireItem *item, gboolean select,
 						gpointer user_data);
 static int 			select_idle_callback (WireItem *item);
 static int 			deselect_idle_callback (WireItem *item);
-static gboolean 	is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
-inline static void 	get_boundingbox (WireItem *item, SheetPos *p1, SheetPos *p2);
+static gboolean 	is_in_area (SheetItem *object, Coords *p1, Coords *p2);
+inline static void 	get_boundingbox (WireItem *item, Coords *p1, Coords *p2);
 static void 		mouse_over_wire_callback (WireItem *item, Sheet *sheet);
 static void 		highlight_wire_callback (Wire *wire, WireItem *item);
 static int 			unhighlight_wire (WireItem *item);
@@ -97,8 +97,8 @@ struct _WireItemPriv {
 
 	// Cached bounding box. This is used to make
 	// the rubberband selection a bit faster.
-	SheetPos 			bbox_start;
-	SheetPos 			bbox_end;
+	Coords 			bbox_start;
+	Coords 			bbox_end;
 };
 
 G_DEFINE_TYPE (WireItem, wire_item, TYPE_SHEET_ITEM)
@@ -200,7 +200,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	WireItem *wire_item;
 	GooCanvasPoints *points;
 	WireItemPriv *priv;
-	SheetPos start_pos, length;
+	Coords start_pos, length;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
@@ -291,14 +291,14 @@ wire_item_event (WireItem *wire_item,
 		 GooCanvasItem *sheet_target_item,
          GdkEvent *event, Sheet *sheet)
 {
-	SheetPos start_pos, length;
+	Coords start_pos, length;
 	Wire *wire;
 	GooCanvas *canvas;
 	static double last_x, last_y;
 	double dx, dy, zoom;
 	// The selected group's bounding box in window resp. canvas coordinates.
 	double snapped_x, snapped_y;
-	SheetPos pos;
+	Coords pos;
 
 	
 	canvas = GOO_CANVAS (sheet);
@@ -477,7 +477,7 @@ wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
 	WireItem *wire_item;
 	GooCanvasPoints *points;
-	SheetPos start_pos, length;
+	Coords start_pos, length;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_WIRE_ITEM (sheet_item));
@@ -518,7 +518,7 @@ wire_flipped_callback (ItemData *data,
 	GooCanvasPoints *points;
 	WireItem *item;
 	WireItemPriv *priv;
-	SheetPos start_pos, length;
+	Coords start_pos, length;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_WIRE_ITEM (sheet_item));
@@ -605,7 +605,7 @@ selection_changed ( WireItem *item, gboolean select, gpointer user)
 // This function returns the position of the canvas item. It has
 // nothing to do with where the wire is stored in the sheet node store.
 void
-wire_item_get_start_pos (WireItem *item, SheetPos *pos)
+wire_item_get_start_pos (WireItem *item, Coords *pos)
 {
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_WIRE_ITEM (item));
@@ -619,7 +619,7 @@ wire_item_get_start_pos (WireItem *item, SheetPos *pos)
 
 // This function returns the length of the canvas item.
 void
-wire_item_get_length (WireItem *item, SheetPos *pos)
+wire_item_get_length (WireItem *item, Coords *pos)
 {
 	WireItemPriv *priv;
 	GooCanvasPoints *points;
@@ -643,10 +643,10 @@ wire_item_get_length (WireItem *item, SheetPos *pos)
 }
 
 static gboolean
-is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
+is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 {
 	WireItem *item;
-	SheetPos bbox_start, bbox_end;
+	Coords bbox_start, bbox_end;
 
 	item = WIRE_ITEM (object);
 
@@ -664,13 +664,13 @@ is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
 // Retrieves the bounding box. We use a caching scheme for this
 // since it's too expensive to calculate it every time we need it.
 inline static void
-get_boundingbox (WireItem *item, SheetPos *p1, SheetPos *p2)
+get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
 {
 	WireItemPriv *priv;
 	priv = item->priv;
 
 	if (!priv->cache_valid) {
-		SheetPos start_pos, end_pos;
+		Coords start_pos, end_pos;
 		GooCanvasBounds bounds; //, canvas_bounds;
 
 		goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (item), &bounds);
@@ -684,8 +684,8 @@ get_boundingbox (WireItem *item, SheetPos *p1, SheetPos *p2)
 		priv->cache_valid = TRUE;
 	}
 
-	memcpy (p1, &priv->bbox_start, sizeof (SheetPos));
-	memcpy (p2, &priv->bbox_end, sizeof (SheetPos));
+	memcpy (p1, &priv->bbox_start, sizeof (Coords));
+	memcpy (p2, &priv->bbox_end, sizeof (Coords));
 }
 
 static void
@@ -811,7 +811,7 @@ unhighlight_wire (WireItem *item)
 
 // This is called when the wire data was moved. Update the view accordingly.
 static void
-wire_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
+wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
 	WireItem *wire_item;
 
@@ -850,7 +850,7 @@ wire_item_place_ghost (SheetItem *item, Sheet *sheet)
 static void
 wire_changed_callback (Wire *wire, WireItem *item)
 {
-	SheetPos start_pos, length;
+	Coords start_pos, length;
 	GooCanvasPoints *points;
 	
 	wire_get_pos_and_length (wire, &start_pos, &length);

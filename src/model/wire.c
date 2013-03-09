@@ -44,9 +44,9 @@ static void      wire_class_init (WireClass *klass);
 static void      wire_init (Wire *wire);
 static void      wire_copy (ItemData *dest, ItemData *src);
 static ItemData *wire_clone (ItemData *src);
-static void      wire_rotate (ItemData *data, int angle, SheetPos *center);
+static void      wire_rotate (ItemData *data, int angle, Coords *center);
 static void      wire_flip (ItemData *data, gboolean horizontal,
-					SheetPos *center);
+					Coords *center);
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
@@ -209,7 +209,7 @@ wire_get_nodes (Wire *wire)
 }
 
 void
-wire_get_start_pos (Wire *wire, SheetPos *pos)
+wire_get_start_pos (Wire *wire, Coords *pos)
 {
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -219,7 +219,7 @@ wire_get_start_pos (Wire *wire, SheetPos *pos)
 }
 
 void
-wire_get_end_pos (Wire *wire, SheetPos *pos)
+wire_get_end_pos (Wire *wire, Coords *pos)
 {
 	WirePriv *priv;
 
@@ -236,7 +236,7 @@ wire_get_end_pos (Wire *wire, SheetPos *pos)
 }
 
 void
-wire_get_pos_and_length (Wire *wire, SheetPos *pos, SheetPos *length)
+wire_get_pos_and_length (Wire *wire, Coords *pos, Coords *length)
 {
 	WirePriv *priv;
 
@@ -251,7 +251,7 @@ wire_get_pos_and_length (Wire *wire, SheetPos *pos, SheetPos *length)
 }
 
 void
-wire_set_length (Wire *wire, SheetPos *length)
+wire_set_length (Wire *wire, Coords *length)
 {
 	WirePriv *priv;
 
@@ -342,14 +342,14 @@ wire_copy (ItemData *dest, ItemData *src)
 }
 
 static void
-wire_rotate (ItemData *data, int angle, SheetPos *center_pos)
+wire_rotate (ItemData *data, int angle, Coords *center_pos)
 {
 	cairo_matrix_t affine;
 	double dx, dy, x, y;
 	Wire *wire;
 	WirePriv *priv;
-	SheetPos b1, b2;
-	SheetPos wire_center_before, wire_center_after, delta;
+	Coords b1, b2;
+	Coords wire_center_before, wire_center_after, delta;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
@@ -408,7 +408,7 @@ wire_rotate (ItemData *data, int angle, SheetPos *center_pos)
 	wire_update_bbox (wire);
 
 	if (center_pos) {
-		SheetPos wire_pos;
+		Coords wire_pos;
 
 		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
 
@@ -434,7 +434,7 @@ wire_rotate (ItemData *data, int angle, SheetPos *center_pos)
 }
 
 static void
-wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
+wire_flip (ItemData *data, gboolean horizontal, Coords *center)
 {
 	// Do nothing!	
 	return;
@@ -443,7 +443,7 @@ wire_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 void
 wire_update_bbox (Wire *wire)
 {
-	SheetPos b1, b2, pos, length;
+	Coords b1, b2, pos, length;
 
 	wire_get_pos_and_length (wire, &pos, &length);
 
@@ -484,7 +484,7 @@ wire_register (ItemData *data)
 static void
 wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
-	SheetPos start_pos, end_pos;
+	Coords start_pos, end_pos;
 	Wire *wire;
 
 	g_return_if_fail (data != NULL);

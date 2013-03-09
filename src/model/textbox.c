@@ -46,14 +46,14 @@ static void textbox_class_init (TextboxClass *klass);
 static void textbox_init (Textbox *textbox);
 static void textbox_copy (ItemData *dest, ItemData *src);
 static ItemData *textbox_clone (ItemData *src);
-static void textbox_rotate (ItemData *data, int angle, SheetPos *center);
+static void textbox_rotate (ItemData *data, int angle, Coords *center);
 static void textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 static int textbox_register (ItemData *data);
 static void textbox_unregister (ItemData *data);
 static gboolean textbox_has_properties (ItemData *data);
 
 static void textbox_flip (ItemData *data, gboolean horizontal,
-	SheetPos *center);
+	Coords *center);
 
 
 enum {
@@ -194,13 +194,13 @@ textbox_copy (ItemData *dest, ItemData *src)
 }
 
 static void
-textbox_rotate (ItemData *data, int angle, SheetPos *center)
+textbox_rotate (ItemData *data, int angle, Coords *center)
 {
 	cairo_matrix_t affine;
 	double x, y;
 	Textbox *textbox;
-	SheetPos b1, b2;
-	SheetPos textbox_center, delta;
+	Coords b1, b2;
+	Coords textbox_center, delta;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_TEXTBOX (data));
@@ -222,7 +222,7 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 	g_signal_emit_by_name (G_OBJECT (textbox), "rotated", angle);
 
 	if (center) {
-		SheetPos textbox_pos;
+		Coords textbox_pos;
 
 		item_data_get_pos (ITEM_DATA (textbox), &textbox_pos);
 
@@ -238,13 +238,13 @@ textbox_rotate (ItemData *data, int angle, SheetPos *center)
 }
 
 static void
-textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
+textbox_flip (ItemData *data, gboolean horizontal, Coords *center)
 {
 	cairo_matrix_t affine;
 	double x, y;
 	Textbox *textbox;
-	SheetPos b1, b2;
-	SheetPos textbox_center = {0.0, 0.0}, delta;
+	Coords b1, b2;
+	Coords textbox_center = {0.0, 0.0}, delta;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_TEXTBOX (data));
@@ -266,7 +266,7 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 	g_signal_emit_by_name (G_OBJECT (textbox), "flipped", horizontal);
 
 	if (center) {
-		SheetPos textbox_pos;
+		Coords textbox_pos;
 
 		item_data_get_pos (ITEM_DATA (textbox), &textbox_pos);
 
@@ -284,7 +284,7 @@ textbox_flip (ItemData *data, gboolean horizontal, SheetPos *center)
 void
 textbox_update_bbox (Textbox *textbox)
 {
-	SheetPos b1, b2;
+	Coords b1, b2;
 	b1.x = 0.0;
 	b1.y = 0.0-5; // - font->ascent;
 	b2.x = 0.0+5; // + rbearing;
@@ -358,7 +358,7 @@ textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	int i;
 	Textbox *textbox;
 	TextboxPriv *priv;
-	SheetPos pos;
+	Coords pos;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_TEXTBOX (data));

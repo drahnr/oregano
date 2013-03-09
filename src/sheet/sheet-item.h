@@ -37,7 +37,7 @@
 #include <goocanvas.h>
 
 #include "sheet.h"
-#include "sheet-pos.h"
+#include "coords.h"
 
 #define TYPE_SHEET_ITEM			 (sheet_item_get_type())
 #define SHEET_ITEM(obj)			 (G_TYPE_CHECK_INSTANCE_CAST(obj, sheet_item_get_type (), SheetItem))
@@ -63,7 +63,7 @@ struct _SheetItemClass {
 	GooCanvasGroupClass parent_class;
 
 	// Methods.
-	gboolean (*is_in_area)		 (SheetItem *item, SheetPos *p1, SheetPos *p2);
+	gboolean (*is_in_area)		 (SheetItem *item, Coords *p1, Coords *p2);
 	void	 (*show_labels)		 (SheetItem *sheet_item, gboolean show);
 	void	 (*edit_properties)	 (SheetItem *item);
 	void	 (*paste)			 (Sheet *sheet, ItemData *data);
@@ -90,12 +90,12 @@ ItemData *	sheet_item_get_data (SheetItem *item);
 void 		sheet_item_paste (Sheet *sheet, 
 				ClipboardData *data);
 void 		sheet_item_rotate (SheetItem *sheet_item, int angle, 
-		        SheetPos *center);
+		        Coords *center);
 gboolean 	sheet_item_get_selected (SheetItem *item);
 gboolean 	sheet_item_get_preserve_selection (SheetItem *item);
 void 		sheet_item_set_preserve_selection (SheetItem *item, gboolean   set);
-void 		sheet_item_select_in_area (SheetItem *item, SheetPos  *p1,
-		    	SheetPos  *p2);
+void 		sheet_item_select_in_area (SheetItem *item, Coords  *p1,
+		    	Coords  *p2);
 void 		sheet_item_place (SheetItem *item, Sheet *sheet);
 void 		sheet_item_place_ghost (SheetItem *item, Sheet *sheet);
 void 		sheet_item_add_menu (SheetItem *item, const char *menu, 

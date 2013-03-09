@@ -66,17 +66,17 @@ static void 		       selection_changed (PartItem *item, gboolean select,
 static int  		       select_idle_callback (PartItem *item);
 static int  		       deselect_idle_callback (PartItem *item);
 static void 			   update_canvas_labels (PartItem *part_item);
-static gboolean 		   is_in_area (SheetItem *object, SheetPos *p1, 
-		                  		SheetPos *p2);
-inline static void 		   get_cached_bounds (PartItem *item, SheetPos *p1, 
-		                   		SheetPos *p2);
+static gboolean 		   is_in_area (SheetItem *object, Coords *p1, 
+		                  		Coords *p2);
+inline static void 		   get_cached_bounds (PartItem *item, Coords *p1, 
+		                   		Coords *p2);
 static void 		       show_labels (SheetItem *sheet_item, gboolean show);
 static void 		       part_item_paste (Sheet *sheet, ItemData *data);
 static void 		       part_rotated_callback (ItemData *data, int angle, 
 		                   		SheetItem *item);
 static void 		       part_flipped_callback (ItemData *data, 
 		                 		gboolean horizontal, SheetItem *sheet_item);
-static void 		       part_moved_callback (ItemData *data, SheetPos *pos,
+static void 		       part_moved_callback (ItemData *data, Coords *pos,
 								SheetItem *item);
 static void 		       part_item_place (SheetItem *item, Sheet *sheet);
 static void 		       part_item_place_ghost (SheetItem *item, Sheet *sheet);
@@ -115,8 +115,8 @@ struct _PartItemPriv {
 	GSList           *label_nodes;
 	// Cached bounding box. This is used to make
 	// the rubberband selection a bit faster.
-	SheetPos 		  bbox_start;
-	SheetPos 		  bbox_end;
+	Coords 		  bbox_start;
+	Coords 		  bbox_end;
 };
 
 typedef struct {
@@ -991,10 +991,10 @@ deselect_idle_callback (PartItem *item)
 }
 
 static gboolean
-is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
+is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 {
 	PartItem *item;
-	SheetPos bbox_start, bbox_end;
+	Coords bbox_start, bbox_end;
 
 	item = PART_ITEM (object);
 
@@ -1034,13 +1034,13 @@ show_labels (SheetItem *sheet_item, gboolean show)
 // Retrieves the bounding box. We use a caching scheme for this
 // since it's too expensive to calculate it every time we need it.
 inline static void
-get_cached_bounds (PartItem *item, SheetPos *p1, SheetPos *p2)
+get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
 {
 	PartItemPriv *priv;
 	priv = item->priv;
 
 	if (!priv->cache_valid) {
-		SheetPos start_pos, end_pos;
+		Coords start_pos, end_pos;
 		GooCanvasBounds bounds;
 		
 		goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (item), &bounds);
@@ -1055,8 +1055,8 @@ get_cached_bounds (PartItem *item, SheetPos *p1, SheetPos *p2)
 		priv->cache_valid = TRUE;
 	}
 
-	memcpy (p1, &priv->bbox_start, sizeof (SheetPos));
-	memcpy (p2, &priv->bbox_end, sizeof (SheetPos));
+	memcpy (p1, &priv->bbox_start, sizeof (Coords));
+	memcpy (p2, &priv->bbox_end, sizeof (Coords));
 }
 
 static void
@@ -1242,7 +1242,7 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 	GooCanvasItem *group;
 	Pin *pins;
 	int num_pins, i;
-	SheetPos p1, p2;
+	Coords p1, p2;
 	GooCanvasAnchorType anchor;
 	
 	g_return_if_fail (item != NULL);
@@ -1303,7 +1303,7 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 
 // This is called when the part data was moved. Update the view accordingly.
 static void
-part_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
+part_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
 	PartItem *part_item;
 	

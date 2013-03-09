@@ -243,7 +243,7 @@ sheet_item_set_property (GObject *object, guint prop_id, const GValue *value,
 {
 	GooCanvasItemSimple *simple = (GooCanvasItemSimple*) object;
 	SheetItem *sheet_item; 
-	SheetPos pos;
+	Coords pos;
 
 	sheet_item = SHEET_ITEM (object);
 		
@@ -458,7 +458,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 
 			for (list = priv->selected_objects; list; list = list->next) {
             	ItemData *item_data;
-				SheetPos pos;
+				Coords pos;
 
                 item_data = SHEET_ITEM (list->data)->priv->data;
 				pos.x = snapped_x;
@@ -634,7 +634,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 {
 	SheetPriv *priv;
 	GList *list;
-	static SheetPos pos;
+	static Coords pos;
 	static int control_key_down = 0;
 
 	// Remember the last position of the mouse cursor.
@@ -832,7 +832,7 @@ sheet_item_select (SheetItem *item, gboolean select)
 }
 
 void
-sheet_item_select_in_area (SheetItem *item, SheetPos *p1, SheetPos *p2)
+sheet_item_select_in_area (SheetItem *item, Coords *p1, Coords *p2)
 {
 	SheetItemClass *sheet_item_class;
 	gboolean in_area;
@@ -882,7 +882,7 @@ sheet_item_edit_properties (SheetItem *item)
 }
 
 void
-sheet_item_rotate (SheetItem *sheet_item, int angle, SheetPos *center)
+sheet_item_rotate (SheetItem *sheet_item, int angle, Coords *center)
 {
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_SHEET_ITEM (sheet_item));

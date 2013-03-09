@@ -39,7 +39,7 @@ struct _WirePriv {
 
 	GSList *nodes;
 
-	SheetPos length;
+	Coords length;
 	WireDir direction;
 };
 

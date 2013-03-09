@@ -36,7 +36,7 @@
 
 #include <gtk/gtk.h>
 
-#include "sheet-pos.h"
+#include "coords.h"
 #include "clipboard.h"
 #include "load-common.h"
 
@@ -54,7 +54,7 @@ typedef struct _PartPriv PartPriv;
 #include "item-data.h"
 
 struct _Pin {
-	SheetPos offset;
+	Coords offset;
 	guint pin_nr;
 	gint node_nr; // Node number into the netlist
 	Part *part;

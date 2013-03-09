@@ -36,7 +36,7 @@
 #include <glib/gi18n.h>
 
 #include "cursors.h"
-#include "sheet-pos.h"
+#include "coords.h"
 #include "textbox-item.h"
 #include "textbox.h"
 #include "dialogs.h"
@@ -53,7 +53,7 @@ static void 		textbox_rotated_callback (ItemData *data, int angle,
 						SheetItem *sheet_item);
 static void 		textbox_flipped_callback (ItemData *data, 
 		                gboolean horizontal, SheetItem *sheet_item);
-static void 		textbox_moved_callback (ItemData *data, SheetPos *pos,
+static void 		textbox_moved_callback (ItemData *data, Coords *pos,
 						SheetItem *item);
 static void 		textbox_text_changed_callback (ItemData *data, 
 		                gchar *new_text, SheetItem *item);
@@ -62,9 +62,9 @@ static void 		selection_changed (TextboxItem *item, gboolean select,
 						gpointer user_data);
 static int  		select_idle_callback (TextboxItem *item);
 static int  		deselect_idle_callback (TextboxItem *item);
-static gboolean 	is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2);
-inline static void 	get_cached_bounds (TextboxItem *item, SheetPos *p1,
-						SheetPos *p2);
+static gboolean 	is_in_area (SheetItem *object, Coords *p1, Coords *p2);
+inline static void 	get_cached_bounds (TextboxItem *item, Coords *p1,
+						Coords *p2);
 static void 		textbox_item_place (SheetItem *item, Sheet *sheet);
 static void 		textbox_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void 		edit_textbox (SheetItem *sheet_item); 
@@ -102,8 +102,8 @@ struct _TextboxItemPriv {
 	GooCanvasItem *text_canvas_item;
 	// Cached bounding box. This is used to make
 	// the rubberband selection a bit faster.
-	SheetPos bbox_start;
-	SheetPos bbox_end;
+	Coords bbox_start;
+	Coords bbox_end;
 };
 
 G_DEFINE_TYPE (TextboxItem, textbox_item, TYPE_SHEET_ITEM)
@@ -177,7 +177,7 @@ textbox_item_new (Sheet *sheet, Textbox *textbox)
 	GooCanvasItem *item;
 	TextboxItem *textbox_item;
 	TextboxItemPriv *priv;
-	SheetPos pos;
+	Coords pos;
 	ItemData *item_data;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
@@ -276,7 +276,7 @@ textbox_flipped_callback (ItemData *data,
 static int
 select_idle_callback (TextboxItem *item)
 {
-	SheetPos bbox_start, bbox_end;
+	Coords bbox_start, bbox_end;
 	TextboxItemPriv *priv = item->priv;
 
 	get_cached_bounds (item, &bbox_start, &bbox_end);
@@ -313,10 +313,10 @@ selection_changed (TextboxItem *item, gboolean select, gpointer user_data)
 }
 
 static gboolean
-is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
+is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 {
 	TextboxItem *item;
-	SheetPos bbox_start, bbox_end;
+	Coords bbox_start, bbox_end;
 
 	item = TEXTBOX_ITEM (object);
 
@@ -334,16 +334,16 @@ is_in_area (SheetItem *object, SheetPos *p1, SheetPos *p2)
 // Retrieves the bounding box. We use a caching scheme for this
 // since it's too expensive to calculate it every time we need it.
 inline static void
-get_cached_bounds (TextboxItem *item, SheetPos *p1, SheetPos *p2)
+get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
 {
 	PangoFontDescription *font;
-	SheetPos pos;
+	Coords pos;
 
 	TextboxItemPriv *priv;
 	priv = item->priv;
 
 	if (!priv->cache_valid) {
-		SheetPos start_pos, end_pos;
+		Coords start_pos, end_pos;
 
 		font = pango_font_description_from_string (TEXTBOX_FONT);
 
@@ -361,8 +361,8 @@ get_cached_bounds (TextboxItem *item, SheetPos *p1, SheetPos *p2)
 		pango_font_description_free (font);
 	}
 
-	memcpy (p1, &priv->bbox_start, sizeof (SheetPos));
-	memcpy (p2, &priv->bbox_end, sizeof (SheetPos));
+	memcpy (p1, &priv->bbox_start, sizeof (Coords));
+	memcpy (p2, &priv->bbox_end, sizeof (Coords));
 }
 
 static void
@@ -378,7 +378,7 @@ textbox_item_paste (Sheet *sheet, ItemData *data)
 
 // This is called when the textbox data was moved. Update the view accordingly.
 static void
-textbox_moved_callback (ItemData *data, SheetPos *pos, SheetItem *item)
+textbox_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
 	TextboxItem *textbox_item;
 
@@ -458,7 +458,7 @@ create_textbox_event (Sheet *sheet, GdkEvent *event)
 
 			if (sheet->state == SHEET_STATE_TEXTBOX_START) {
 				Textbox *textbox;
-				SheetPos pos;
+				Coords pos;
 
 				sheet->state = SHEET_STATE_NONE;
 

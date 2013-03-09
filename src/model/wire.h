@@ -35,7 +35,7 @@
 
 #include <gtk/gtk.h>
 
-#include "sheet-pos.h"
+#include "coords.h"
 #include "clipboard.h"
 
 #define TYPE_WIRE            (wire_get_type ())
@@ -79,11 +79,11 @@ gint 		wire_set_store (Wire *wire, NodeStore *store);
 gint 		wire_add_node (Wire *wire, Node *node);
 gint 		wire_remove_node (Wire *wire, Node *node);
 GSList * 	wire_get_nodes (Wire *wire);
-void 		wire_get_start_pos (Wire *wire, SheetPos *pos);
-void 		wire_get_end_pos (Wire *wire, SheetPos *pos);
-void 		wire_get_pos_and_length (Wire *wire, SheetPos *pos, 
-		                             SheetPos *length);
-void 		wire_set_length (Wire *wire, SheetPos *length);
+void 		wire_get_start_pos (Wire *wire, Coords *pos);
+void 		wire_get_end_pos (Wire *wire, Coords *pos);
+void 		wire_get_pos_and_length (Wire *wire, Coords *pos, 
+		                             Coords *length);
+void 		wire_set_length (Wire *wire, Coords *length);
 gint 		wire_is_visited (Wire *wire);
 void 		wire_set_visited (Wire *wire, gboolean is_visited);
 void 		wire_delete (Wire *wire);

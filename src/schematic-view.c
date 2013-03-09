@@ -436,7 +436,6 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 				gtk_recent_info_unref (rc);
 		}
 
-
 		if (!new_sv)
 			new_sv = schematic_view_new (new_sm);
 		else
@@ -791,7 +790,7 @@ static void
 v_clamp_cmd (SchematicView *sv)
 {
 	LibraryPart *library_part;
-	SheetPos pos;
+	Coords pos;
 	Sheet *sheet;
 	Part *part;
 	GList *lib;
