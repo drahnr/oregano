@@ -515,15 +515,16 @@ part_get_labels (Part *part)
 	return priv->labels;
 }
 
+#define ROTATE_WORKAROUND 1
 static void
 part_rotate (ItemData *data, int angle, Coords *center)
 {
 	cairo_matrix_t affine;
-	double dx, dy, x, y;
+	double x, y;
 	Part *part;
 	PartPriv *priv;
 	int i, tot_rotation;
-	Coords b1, b2, part_center_before, part_center_after, delta;
+	Coords b1, b2;
 	SignalRotatedStruct *signal_struct;
 
 	g_return_if_fail (data != NULL);
@@ -560,45 +561,12 @@ part_rotate (ItemData *data, int angle, Coords *center)
 
 	// Rotate the bounding box.
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-	part_center_before.x = (b1.x + b2.x) / 2;
-	part_center_before.y = (b1.y + b2.y) / 2;
 
-	x = b1.x;
-	y = b1.y;
-	cairo_matrix_transform_point (&affine, &x, &y);
-	b1.x = x;
-	b1.y = y;
-
-	x = b2.x;
-	y = b2.y;
-	cairo_matrix_transform_point (&affine, &x, &y);
-	b2.x = x;
-	b2.y = y;
+	cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
+	cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
 
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
-	if (center) {
-		Coords part_pos;
-		gfloat tmp_x, tmp_y;
-
-		part_center_after.x = (b1.x + b2.x) / 2;
-		part_center_after.y = (b1.y + b2.y) / 2;
-
-		dx = part_center_before.x - part_center_after.x;
-		dy = part_center_before.y - part_center_after.y;
-
-		item_data_get_pos (ITEM_DATA (part), &part_pos);
-
-		tmp_x = x = part_center_before.x - center->x + part_pos.x;
-		tmp_y = y = part_center_before.y - center->y + part_pos.y;
-		cairo_matrix_transform_point (&affine, &x, &y);
-
-		delta.x = dx + x - tmp_x;
-		delta.y = dy + y - tmp_y;
-
-		item_data_move (ITEM_DATA (part), &delta);
-	}
-	
 	// Let the views (canvas items) know about the rotation.
 	signal_struct = g_new0 (SignalRotatedStruct, 1);
 	signal_struct->part = part;
