@@ -232,12 +232,8 @@ part_item_finalize (GObject *object)
 
 	priv = PART_ITEM (object)->priv;
 
-	if (priv->label_nodes) {
-		g_slist_free (priv->label_nodes);
-	}
-	if (priv->label_items) {
-		g_slist_free (priv->label_items);
-	}
+	g_slist_free (priv->label_nodes);
+	g_slist_free (priv->label_items);
 	g_free (priv);
 	priv = NULL;
 	G_OBJECT_CLASS (parent_class)->finalize (object);

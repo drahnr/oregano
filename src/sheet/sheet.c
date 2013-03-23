@@ -514,19 +514,22 @@ sheet_new (int width, int height)
 	                     "x", 0.0,
 	                     "y", 0.0,
 	                     NULL));
+	NG_DEBUG ("root group %p", sheet->object_group);
 
 	sheet->priv->selected_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	     GOO_CANVAS_ITEM (sheet->object_group),
 	     "x", 0.0,
 	     "y", 0.0,
 	     NULL));
+	NG_DEBUG ("selected group %p", sheet->priv->selected_group);
 
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	     GOO_CANVAS_ITEM (sheet->object_group),
 	     "x", 0.0,
 	     "y", 0.0,
 	     NULL));
-	
+	NG_DEBUG ("floating group %p", sheet->priv->floating_group);
+
 	// Hash table that keeps maps coordinate to a specific dot.
 	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, NULL);
 
@@ -679,7 +682,6 @@ sheet_show_node_labels (Sheet *sheet, gboolean show)
 			if (part_get_num_pins (PART (sheet_item_get_data (SHEET_ITEM(item->data))))==1)
 				part_item_show_node_labels (PART_ITEM (item->data), show);
         }
-	//g_list_free_full (item, g_object_unref); //FIXME
 }
 
 void
@@ -706,7 +708,6 @@ sheet_preserve_selection (Sheet *sheet)
 	}
 	// Return the list so that we can remove the preserve_selection
 	// flags later.
-	g_list_free_full (list, g_object_unref);
 	return sheet->priv->selected_objects;
 }
 
@@ -858,7 +859,6 @@ sheet_select_all (Sheet *sheet, gboolean select)
 
 	if (!select)
 		sheet_release_selected_objects (sheet);
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -913,7 +913,6 @@ rotate_items (Sheet *sheet, GList *items)
 	}
 
 	g_list_free (item_data_list);
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -963,7 +962,6 @@ sheet_release_selected_objects (Sheet *sheet)
 	g_list_free (copy);
 		
 	g_list_free (sheet->priv->selected_objects);
-	g_list_free_full (list, g_object_unref);
 	sheet->priv->selected_objects = NULL;
 }
 
@@ -988,7 +986,6 @@ sheet_update_parts (Sheet *sheet)
 		if (IS_PART_ITEM (list->data))
 			part_item_update_node_label (PART_ITEM (list->data));
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -1049,7 +1046,6 @@ flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 	}
 
 	g_list_free (item_data_list);
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -1070,7 +1066,6 @@ sheet_clear_op_values (Sheet *sheet)
 	g_hash_table_destroy (sheet->priv->voltmeter_nodes);
 	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash,
 			g_str_equal, g_free, NULL);
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -1104,7 +1099,6 @@ sheet_clear_ghosts (Sheet *sheet)
 	g_list_free (copy);
 	
 	sheet->priv->floating_objects = NULL;
-	g_list_free_full (list, g_object_unref);
 }
 
 guint
@@ -1266,7 +1260,6 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 	for (; list; list = list->next)
 		node_dot_added_callback (sm, list->data, sheet);
 
-	g_list_free_full (list, g_object_unref);
 }
 
 void
