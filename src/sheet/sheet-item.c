@@ -609,15 +609,14 @@ sheet_item_cancel_floating (Sheet *sheet)
 	if (g_signal_handler_is_connected (sheet, sheet->priv->float_handler_id))
 		g_signal_handler_disconnect (sheet, sheet->priv->float_handler_id);
 
-	g_object_unref (G_OBJECT (group));
 
-	// If the state is _START, the items are not yet put in the
-	// object_group. This means we have to destroy them one by one.
-	if (sheet->state == SHEET_STATE_FLOAT_START) {
-		for (list = sheet->priv->floating_objects; list; list = list->next) {
-			g_object_unref (G_OBJECT (list->data));
-		}
+	// TODO verfiy that the following has no nasty sideffects
+	for (list = sheet->priv->floating_objects; list; list = list->next) {
+		goo_canvas_item_remove(list->data); //remove from canvas and free
 	}
+	g_list_free (sheet->priv->floating_objects);
+	sheet->priv->floating_objects = NULL;
+	goo_canvas_item_remove (group);
 
 	// Create a new empty group to prepare next floating group
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (
@@ -626,9 +625,9 @@ sheet_item_cancel_floating (Sheet *sheet)
 			"y", 0.0, 
 			NULL)); 
 
+	// sheet_clear_ghosts (sheet);
 	sheet->priv->float_handler_id = 0;
 	sheet->state = SHEET_STATE_NONE;
-	sheet_clear_ghosts (sheet);
 }
 
 // Event handler for a "floating" group of objects.

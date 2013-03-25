@@ -936,9 +936,10 @@ sheet_delete_selection (Sheet *sheet)
 	sheet->priv->selected_objects = NULL;
 	
 	g_list_free (copy);
-	g_list_free_full (list, g_object_unref);
 }
 
+
+//FIXME this looks weird
 void
 sheet_release_selected_objects (Sheet *sheet)
 {
