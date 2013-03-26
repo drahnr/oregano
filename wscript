@@ -69,6 +69,7 @@ def configure(ctx):
 	ctx.setenv('debug', env=ctx.env.derive())
 	ctx.env.CFLAGS = ['-ggdb', '-Wall']
 	ctx.define('DEBUG',1)
+	ctx.define('DEBUG_DISABLE_GRABBING',1)
 
 	ctx.setenv('release', env=ctx.env.derive())
 	ctx.env.CFLAGS = ['-O2', '-Wall']
