@@ -2,17 +2,19 @@
  * load-schematic.c
  *
  *
- * Author:
+ * Authors:
  *  Richard Hult <rhult@hem.passagen.se>
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -200,9 +202,8 @@ create_textbox (ParseState *state)
 	Textbox *textbox;
 
 	textbox = textbox_new (NULL);
-	item_data_set_pos (ITEM_DATA (textbox), &state->pos);
 	textbox_set_text (textbox, state->textbox_text);
-	schematic_add_item (state->schematic, ITEM_DATA (textbox));
+	schematic_add_item (state->schematic, ITEM_DATA (textbox), &state->pos);
 }
 
 static void
@@ -217,10 +218,9 @@ create_wire (ParseState *state)
 	length.y = state->wire_end.y - start_pos.y;
 
 	wire = wire_new ();
-	item_data_set_pos (ITEM_DATA (wire), &state->wire_start);
 	wire_set_length (wire, &length);
 
-	schematic_add_item (state->schematic, ITEM_DATA (wire));
+	schematic_add_item (state->schematic, ITEM_DATA (wire), &state->wire_start);
 }
 
 static void
@@ -233,14 +233,13 @@ create_part (ParseState *state)
 	if (!part)
 		return;
 
-	item_data_set_pos (ITEM_DATA (part), &state->pos);
 	item_data_rotate (ITEM_DATA (part), state->rotation, NULL);
 	if (state->flip & ID_FLIP_HORIZ)
 		item_data_flip (ITEM_DATA (part), TRUE, NULL);
 	if (state->flip & ID_FLIP_VERT)
 		item_data_flip (ITEM_DATA (part), FALSE, NULL);
 
-	schematic_add_item (state->schematic, ITEM_DATA (part));
+	schematic_add_item (state->schematic, ITEM_DATA (part), &state->pos);
 }
 
 int

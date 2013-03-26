@@ -8,12 +8,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -70,7 +72,7 @@ static ItemData *part_clone (ItemData *src);
 
 static void part_rotate (ItemData *data, int angle, Coords *center);
 
-static void part_flip (ItemData *data, gboolean horizontal, Coords *center);
+static void part_flip (ItemData *data, IDFlip direction, Coords *center);
 
 static void part_update_bbox (Part *part);
 
@@ -82,8 +84,6 @@ static void part_set_property (ItemData *data, char *property, char *value);
 
 static char *part_get_refdes_prefix (ItemData *data);
 static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
-static gboolean emit_rotated_signal_when_handler_connected (gpointer data);
-static gboolean emit_flipped_signal_when_handler_connected (gpointer data);
 
 enum {
 	ARG_0,
@@ -96,21 +96,6 @@ enum {
 	LAST_SIGNAL
 };
 
-// Structure defined to cover exchange between g_timeout_add and the
-// function in charge to emit the rotated signal only once the handler
-// has been connected.
-typedef struct {
-	Part *part;
-} SignalRotatedStruct;
-
-// Structure defined to cover exchange between g_timeout_add and the
-// function in charge to emit the flipped signal only once the handler
-// has been connected.
-typedef struct {
-	Part *    part;
-	gboolean  horizontal;
-	Coords *center;
-} SignalFlippedStruct;
 
 G_DEFINE_TYPE (Part, part, TYPE_ITEM_DATA)
 
@@ -515,7 +500,7 @@ part_get_labels (Part *part)
 	return priv->labels;
 }
 
-#define ROTATE_WORKAROUND 1
+
 static void
 part_rotate (ItemData *data, int angle, Coords *center)
 {
@@ -525,9 +510,9 @@ part_rotate (ItemData *data, int angle, Coords *center)
 	PartPriv *priv;
 	int i, tot_rotation;
 	Coords b1, b2;
-	SignalRotatedStruct *signal_struct;
+	gboolean handler_connected;
 
-	g_return_if_fail (data != NULL);
+	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
 
 	if (angle == 0)
@@ -566,26 +551,7 @@ part_rotate (ItemData *data, int angle, Coords *center)
 	cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
 
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
-
-	// Let the views (canvas items) know about the rotation.
-	signal_struct = g_new0 (SignalRotatedStruct, 1);
-	signal_struct->part = part;
-	g_timeout_add (10, 
-	               (gpointer) emit_rotated_signal_when_handler_connected, 
-	               (gpointer) signal_struct);
-}
-
-static gboolean
-emit_rotated_signal_when_handler_connected (gpointer data)
-{
-	gboolean handler_connected;
-	SignalRotatedStruct *signal_struct = (SignalRotatedStruct *) data;
-	int angle = 0;
-	Part *part;
 	
-
-	part = signal_struct->part;
-	angle = part->priv->rotation;
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part), 
 	                    	ITEM_DATA (part)->rotated_handler_id);
@@ -593,41 +559,42 @@ emit_rotated_signal_when_handler_connected (gpointer data)
 		g_signal_emit_by_name (G_OBJECT (part), 
 		                       "rotated", angle);
 	}
-
-	return !handler_connected;
 }
 
 static void
-part_flip (ItemData *data, gboolean horizontal, Coords *center)
+part_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 	Part *part;
 	PartPriv *priv;
 	int i;
 	cairo_matrix_t affine;
 	double x, y;
-	SignalFlippedStruct *signal_struct;
-	
-	g_return_if_fail (data != NULL);
+	gboolean handler_connected;
+	Coords b1, b2;
+	Coords part_center_before, part_center_after;
+
+	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
 
 	part = PART (data);
 	priv = part->priv;
 
-	if (horizontal && !(priv->flip & ID_FLIP_HORIZ))
-		priv->flip = priv->flip | ID_FLIP_HORIZ;
-	else if (horizontal && (priv->flip & ID_FLIP_HORIZ))
-		priv->flip = priv->flip & ~ID_FLIP_HORIZ;
-	else if (!horizontal && !(priv->flip & ID_FLIP_VERT))
-		priv->flip = priv->flip | ID_FLIP_VERT;
-	else if (!horizontal && (priv->flip & ID_FLIP_VERT))
-		priv->flip = priv->flip & ~ID_FLIP_VERT;
-
-	if (horizontal)
+	switch (direction) {
+	case ID_FLIP_HORIZ:
+		priv->flip ^= ID_FLIP_HORIZ;
 		cairo_matrix_init_scale (&affine, 1.0, -1.0);
-	else
+		break;
+	case ID_FLIP_VERT:
+		priv->flip ^= ID_FLIP_VERT;
 		cairo_matrix_init_scale (&affine, -1.0, 1.0);
+		break;
+	case ID_FLIP_NONE:
+		return;
+	default:
+		g_warning ("unknown flip value\n");
+	}
 	
-	//Flip the pins.
+	// flip the pins
 	for (i = 0; i < priv->num_pins; i++) {
 		x = priv->pins[i].offset.x;
 		y = priv->pins[i].offset.y;
@@ -642,40 +609,11 @@ part_flip (ItemData *data, gboolean horizontal, Coords *center)
 		priv->pins[i].offset.y = y;
 	}
 
-	// Tell the views.		
-	signal_struct = g_new0 (SignalFlippedStruct, 1);
-	signal_struct->part = part;
-	signal_struct->horizontal = horizontal;
-	signal_struct->center = center;
-	g_timeout_add (10,
-	               (gpointer) emit_flipped_signal_when_handler_connected, 
-	               (gpointer) signal_struct);
-}
-
-static 
-gboolean emit_flipped_signal_when_handler_connected (gpointer data)
-{
-	gboolean handler_connected;
-	SignalFlippedStruct *signal_struct = (SignalFlippedStruct *) data;
-	gboolean horizontal;
-	Coords *center;
-	Part *part;
-	
-	Coords part_center_before = {0.0, 0.0}, part_center_after = {0.0, 0.0};
-	Coords b1, b2;
-	cairo_matrix_t affine;
-	double x, y;
-	
-
-	part = signal_struct->part;
-	horizontal = signal_struct->horizontal;
-	center = signal_struct->center;
-	
+	// tell the view
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part), 
 	                                                   ITEM_DATA(part)->flipped_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part), 
-		                       "flipped", horizontal);
+		g_signal_emit_by_name (G_OBJECT (part), "flipped", direction);
 
 		if (center) {
 			item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
@@ -683,18 +621,9 @@ gboolean emit_flipped_signal_when_handler_connected (gpointer data)
 			part_center_before.y = (b1.y + b2.y) / 2;
 		}
 
-		// Flip the bounding box.
-		x = b1.x;
-    	y = b1.y;
-    	cairo_matrix_transform_point (&affine, &x, &y);
-    	b1.x = x;
-    	b1.y = y;
-
-		x = b2.x;
-    	y = b2.y;
-    	cairo_matrix_transform_point (&affine, &x, &y);
-    	b2.x = x;
-    	b2.y = y;
+		// flip the bounding box.
+		cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
+		cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
 			
 		item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
@@ -702,8 +631,8 @@ gboolean emit_flipped_signal_when_handler_connected (gpointer data)
 			Coords part_pos, delta;
 			double dx, dy;
 
-			part_center_after.x = b1.x + (b2.x - b1.x) / 2;
-			part_center_after.y = b1.y + (b2.y - b1.y) / 2;
+			part_center_after.x = (b1.x + b2.x) / 2;
+			part_center_after.y = (b1.y + b2.y) / 2;
 
 			dx = part_center_before.x - part_center_after.x;
 			dy = part_center_before.y - part_center_after.y;
@@ -716,7 +645,6 @@ gboolean emit_flipped_signal_when_handler_connected (gpointer data)
 		}
 	}
 
-	return !handler_connected;
 }
 
 static ItemData *
@@ -980,35 +908,22 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 	gdk_cairo_set_source_rgba (cr, &ctx->colors.components);
 	rotation = part_get_rotation (part);
-	if (rotation != 0) {
-	  cairo_translate (cr, x0, y0);
+	flip = part_get_flip (part);
 
-	  flip = part_get_flip (part);
-	  if (flip) {
-	    if ((flip & ID_FLIP_HORIZ) && !(flip & ID_FLIP_VERT))
-	      cairo_scale (cr, -1, 1);
-	    if (!(flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
-	      cairo_scale (cr, 1, -1);
-	    if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
-	      rotation+=180;
-	  }
+	//FIXME flipping creates a huge offset
+	cairo_translate (cr, x0, y0);
 
-	  cairo_rotate (cr, rotation*M_PI/180);
-	  cairo_translate (cr, -x0, -y0);
-	} 
-	else {
-	  flip = part_get_flip (part);
-	  if (flip) {
-	    cairo_translate (cr, x0, y0);	  
-	    if ((flip & ID_FLIP_HORIZ) && !(flip & ID_FLIP_VERT))
-	      cairo_scale (cr, -1, 1);
-	    if (!(flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
-	      cairo_scale (cr, 1, -1);
-	    if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
-	      cairo_scale (cr,-1,-1);
-	    cairo_translate (cr, -x0, -y0);
-	  }
-	}
+	if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
+		rotation += 180;
+	else if (flip == ID_FLIP_HORIZ)
+		cairo_scale (cr, -1, 1);
+	else if (flip == ID_FLIP_VERT)
+		cairo_scale (cr, 1, -1);
+
+	if (rotation %= 360)
+		cairo_rotate (cr, rotation*M_PI/180);
+
+	cairo_translate (cr, -x0, -y0);
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
 		object = (SymbolObject *)(objects->data);
@@ -1035,8 +950,8 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 				gdouble y2 = object->u.arc.y2;
 				gdouble width, height, x, y;
 
-				x = (x2 - x1) / 2 + x1;
-				y = (y2 - y1) / 2 + y1;
+				x = (x2 + x1) / 2;
+				y = (y2 + y1) / 2;
 				width = x2 - x1;
 				height = y2 - y1;
 

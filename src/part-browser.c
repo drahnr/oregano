@@ -185,13 +185,12 @@ place_cmd (GtkWidget *widget, Browser *br)
 
 	pos.x = pos.y = 0;
 	item_data_set_pos (ITEM_DATA (part), &pos);
+	sheet_connect_part_item_to_floating_group (sheet, (gpointer) br->schematic_view);
 
 	sheet_select_all (sheet, FALSE);
 	sheet_clear_ghosts (sheet);
 	sheet_add_ghost_item (sheet, ITEM_DATA (part));
 
-	sheet_connect_part_item_to_floating_group (sheet, 
-	     (gpointer) br->schematic_view);
 }
 
 static int
@@ -406,12 +405,13 @@ part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 	}
 
 	item_data_set_pos (ITEM_DATA (part), &pos);
+	sheet_connect_part_item_to_floating_group (sheet, (gpointer) data->schematic_view);
 
 	sheet_select_all (sheet, FALSE);
 	sheet_clear_ghosts (schematic_view_get_sheet (data->schematic_view));
 	sheet_add_ghost_item (sheet, ITEM_DATA (part));
 
-	sheet_connect_part_item_to_floating_group (sheet, (gpointer) data->schematic_view);
+
 }
 
 static void

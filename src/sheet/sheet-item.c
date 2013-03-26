@@ -616,7 +616,7 @@ sheet_item_cancel_floating (Sheet *sheet)
 	}
 	g_list_free (sheet->priv->floating_objects);
 	sheet->priv->floating_objects = NULL;
-	goo_canvas_item_remove (group);
+	goo_canvas_item_remove (GOO_CANVAS_ITEM (group));
 
 	// Create a new empty group to prepare next floating group
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (
@@ -703,9 +703,8 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 
 				g_object_ref (G_OBJECT (floating_data));
-				item_data_set_pos (floating_data, &pos);
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-									floating_data);
+									floating_data, &pos);
 				if (!control_key_down)
 					g_object_unref (G_OBJECT (floating_item));
 			}

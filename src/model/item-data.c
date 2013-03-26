@@ -8,12 +8,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,7 +47,6 @@ static void item_data_set_gproperty (GObject *object, guint prop_id,
 static void item_data_get_gproperty (GObject *object, guint prop_id,
 									GValue *value, GParamSpec *spec);
 static void item_data_copy (ItemData *dest, ItemData *src);
-static gboolean emit_moved_signal_when_handler_connected (gpointer data);
 
 enum {
 	ARG_0,
@@ -67,14 +68,6 @@ struct _ItemDataPriv {
 	// Bounding box.
 	GooCanvasBounds bounds;
 };
-
-// Structure defined to cover exchange between g_timeout_add and the
-// function in charge to emit the moved signal only once the handler
-// has been connected.
-typedef struct {
-	ItemData *item_data;
-	Coords  delta;
-} SignalStruct;
 
 G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT)
 
@@ -247,10 +240,8 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 {
 	ItemDataPriv *priv;
 	Coords delta;
-	SignalStruct *signal_struct;
-
-	g_return_if_fail (pos != NULL);
-	g_return_if_fail (item_data != NULL);
+	g_return_if_fail (pos);
+	g_return_if_fail (item_data);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 
 	if (pos == NULL)
@@ -263,41 +254,17 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	delta.x = pos->x;
 	delta.y = pos->y;
 
-	signal_struct = g_new0 (SignalStruct, 1);
-	signal_struct->item_data = item_data;
-	signal_struct->delta = delta;
-	g_timeout_add (10,
-	               (gpointer) emit_moved_signal_when_handler_connected, 
-	               (gpointer) signal_struct);
-}
-
-static gboolean
-emit_moved_signal_when_handler_connected (gpointer data)
-{
-	gboolean handler_connected;
-	SignalStruct *signal_struct = (SignalStruct *) data;
-	Coords delta;
-	ItemData *item_data;
-
-	item_data = signal_struct->item_data;
-	delta.x = signal_struct->delta.x;
-	delta.y = signal_struct->delta.y;
-
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), 
-	                         item_data->moved_handler_id);
-	if (handler_connected) {
+	if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id)) {
 		g_signal_emit_by_name (G_OBJECT (item_data), 
 		                       "moved", &delta);
 	}
-
-	return !handler_connected;
 }
 
 void
 item_data_move (ItemData *item_data, Coords *delta)
 {
 	ItemDataPriv *priv;
-	SignalStruct *signal_struct;
+	Coords target;
 
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -306,17 +273,9 @@ item_data_move (ItemData *item_data, Coords *delta)
 		return;
 
 	priv = item_data->priv;
-	priv->pos.x += delta->x;
-	priv->pos.y += delta->y;
-	delta->x = priv->pos.x;
-	delta->y = priv->pos.y;
-	
-	signal_struct = g_new0 (SignalStruct, 1);
-	signal_struct->item_data = item_data;
-	signal_struct->delta = (* delta);
-	g_timeout_add (10,
-	               (gpointer) emit_moved_signal_when_handler_connected, 
-	               (gpointer) signal_struct);
+	target.x = priv->pos.x + delta->x;
+	target.y = priv->pos.y + delta->y;
+	item_data_set_pos (item_data, &target);
 }
 
 gpointer // NodeStore * 
@@ -451,7 +410,7 @@ item_data_rotate (ItemData *data, int angle, Coords *center)
 }
 
 void
-item_data_flip (ItemData *data, gboolean horizontal, Coords *center)
+item_data_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 	ItemDataClass *id_class;
 
@@ -460,7 +419,7 @@ item_data_flip (ItemData *data, gboolean horizontal, Coords *center)
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->flip) {
-		id_class->flip (data, horizontal, center);
+		id_class->flip (data, direction, center);
 	}
 }
 

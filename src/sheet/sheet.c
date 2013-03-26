@@ -157,9 +157,10 @@ sheet_init (Sheet *sheet)
 {
 	sheet->priv = g_new0 (SheetPriv, 1);
 	sheet->priv->zoom = 1.0;
-	sheet->priv->selected_objects = NULL;
 	sheet->priv->selected_group = NULL;
 	sheet->priv->floating_group = NULL;
+	sheet->priv->floating_objects = NULL;
+	sheet->priv->selected_objects = NULL;
 	sheet->priv->wire_handler_id = 0;
 	sheet->priv->float_handler_id = 0;
 	

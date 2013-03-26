@@ -75,8 +75,7 @@ struct _ItemDataClass
 	void 		(*copy) 				(ItemData *dest, ItemData *src);
 	void 		(*rotate)				(ItemData *data, int angle, 
 							             Coords *center);
-	void 		(*flip) 				(ItemData *data, gboolean horizontal, 
-				            			 Coords *center);
+	void 		(*flip) 		(ItemData *data, IDFlip direction, Coords *center);
 	void 		(*unreg)				(ItemData *data);
 	int 		(*reg)		 			(ItemData *data);
 
@@ -132,8 +131,7 @@ void 		item_data_list_get_absolute_bbox (GList *item_data_list,
 void 		item_data_rotate (ItemData *data, int angle, Coords *center);
 
 // Flip an item
-void 		item_data_flip (ItemData *data, gboolean horizontal, 
-		                    Coords *center);
+void 		item_data_flip (ItemData *data, IDFlip direction, Coords *center);
 
 // Get the Store associated for this item
 //  Store is a class that hold all items in a schematic

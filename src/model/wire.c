@@ -45,13 +45,11 @@ static void      wire_init (Wire *wire);
 static void      wire_copy (ItemData *dest, ItemData *src);
 static ItemData *wire_clone (ItemData *src);
 static void      wire_rotate (ItemData *data, int angle, Coords *center);
-static void      wire_flip (ItemData *data, gboolean horizontal,
-					Coords *center);
+static void      wire_flip (ItemData *data, IDFlip direction, Coords *center);
 static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
-static void      wire_print (ItemData *data, cairo_t *cr,
-                    SchematicPrintContext *ctx);
+static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 
 #include "debug.h"
 
@@ -434,7 +432,7 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 }
 
 static void
-wire_flip (ItemData *data, gboolean horizontal, Coords *center)
+wire_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 	// Do nothing!	
 	return;

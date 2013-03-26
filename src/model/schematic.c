@@ -629,27 +629,33 @@ schematic_save_file (Schematic *sm, GError **error)
 }
 
 void
-schematic_add_item (Schematic *sm, ItemData *data)
+schematic_add_item (Schematic *sm, ItemData *data, Coords *pos)
 {
 	NodeStore *store;
 	char *prefix = NULL, *refdes = NULL;
 	int num;
 
-	g_return_if_fail (sm != NULL);
+	g_return_if_fail (sm);
 	g_return_if_fail (IS_SCHEMATIC (sm));
-	g_return_if_fail (data != NULL);
+	g_return_if_fail (data);
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	store = sm->priv->store;
 	g_object_set (G_OBJECT (data), 
 	              "store", store, 
 	              NULL);
-	
-	if (item_data_register (data) == -1)
-		// Item does not be added
-		return;
 
-	// Some items need a reference designator. Find a good one.
+	// no signal handler connected yet, and that is good!
+	item_data_set_pos (data, pos);
+	// item data will call the child register function
+	// for parts e.g. this ends up in <node_store_add_part>
+	// which requires a valid position to add the node dots
+	if (item_data_register (data) == -1) {
+		NG_DEBUG ("registering item-data %p failed\n", data);
+		return;
+	}
+
+	// Some items need a reference designator, so get a good one
 	prefix = item_data_get_refdes_prefix (data);
 	if (prefix != NULL) {
 		num = schematic_get_lowest_available_refdes (sm, prefix);
@@ -662,16 +668,18 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_free (refdes);
 
 	sm->priv->current_items = g_list_prepend (sm->priv->current_items, data);
-	g_object_weak_ref (G_OBJECT (data), item_data_destroy_callback, 
-		G_OBJECT (sm));
-
-	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback), 
-	                         sm, 0);
+	g_object_weak_ref (G_OBJECT (data), item_data_destroy_callback, G_OBJECT (sm));
 
 	sm->priv->dirty = TRUE;
+	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback),
+	                         sm, 0);
 
-	g_signal_emit_by_name (sm, 
-	                       "item_data_added", data);
+	// set the items position, _without_ emitting the moved signal
+	item_data_set_pos (data, pos);
+	// causes a canvas item to be generated
+	g_signal_emit_by_name (sm, "item_data_added", data);
+	// broadcasts a position update which moves the item to the proper position
+	g_signal_emit_by_name (data, "moved", pos);
 }
 
 void

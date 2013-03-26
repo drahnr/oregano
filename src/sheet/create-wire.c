@@ -301,14 +301,15 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	g_assert (IS_SHEET (sheet));
 
 	wire = wire_new ();
-	item_data_set_pos (ITEM_DATA (wire), &start_pos);
 	
 	length.x = end_pos.x - start_pos.x;
 	length.y = end_pos.y - start_pos.y;
 	wire_set_length (wire, &length);
 
-	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), 
-	                    ITEM_DATA (wire));
+	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
+	                    ITEM_DATA (wire), &start_pos);
+
+
 	
 	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
 

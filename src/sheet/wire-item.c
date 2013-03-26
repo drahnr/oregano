@@ -54,7 +54,7 @@ static void 		wire_item_finalize (GObject *object);
 static void 		wire_item_moved (SheetItem *object);
 static void 		wire_rotated_callback (ItemData *data, int angle,
 						SheetItem *sheet_item);
-static void 		wire_flipped_callback (ItemData *data, gboolean horizontal,
+static void 		wire_flipped_callback (ItemData *data, IDFlip horizontal,
 						SheetItem *sheet_item);
 static void 		wire_moved_callback (ItemData *data, Coords *pos,
 						SheetItem *item);
@@ -513,7 +513,7 @@ wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 static void
 wire_flipped_callback (ItemData *data,
-	gboolean horizontal, SheetItem *sheet_item)
+	IDFlip direction, SheetItem *sheet_item)
 {
 	GooCanvasPoints *points;
 	WireItem *item;

@@ -52,8 +52,7 @@ static int textbox_register (ItemData *data);
 static void textbox_unregister (ItemData *data);
 static gboolean textbox_has_properties (ItemData *data);
 
-static void textbox_flip (ItemData *data, gboolean horizontal,
-	Coords *center);
+static void textbox_flip (ItemData *data, IDFlip direction, Coords *center);
 
 
 enum {
@@ -238,7 +237,7 @@ textbox_rotate (ItemData *data, int angle, Coords *center)
 }
 
 static void
-textbox_flip (ItemData *data, gboolean horizontal, Coords *center)
+textbox_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 	cairo_matrix_t affine;
 	double x, y;
@@ -257,13 +256,13 @@ textbox_flip (ItemData *data, gboolean horizontal, Coords *center)
 		textbox_center.y = b1.y + (b2.y - b1.y) / 2;
 	}
 
-	if (horizontal)
+	if (direction == ID_FLIP_HORIZ)
 		cairo_matrix_init_scale (&affine, -1, 1);
 	else
 		cairo_matrix_init_scale (&affine, 1, -1);
 
 	// Let the views (canvas items) know about the rotation.
-	g_signal_emit_by_name (G_OBJECT (textbox), "flipped", horizontal);
+	g_signal_emit_by_name (G_OBJECT (textbox), "flipped", direction);
 
 	if (center) {
 		Coords textbox_pos;

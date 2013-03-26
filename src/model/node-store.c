@@ -231,20 +231,20 @@ node_store_add_part (NodeStore *self, Part *part)
 	Coords part_pos;
 	gdouble x, y;
 	int i, num_pins;
+	Pin *pins;
+
 	NG_DEBUG ("-0-");
 	g_return_val_if_fail (self, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (self), FALSE);
 	g_return_val_if_fail (part, FALSE);
 	g_return_val_if_fail (IS_PART (part), FALSE);
-	NG_DEBUG ("-1-");
-	num_pins = part_get_num_pins (part);
-	NG_DEBUG ("-2-");
-	item_data_get_pos (ITEM_DATA (part), &part_pos);
-	NG_DEBUG ("-3-");
-	for (i = 0; i < num_pins; i++) {
-		Pin *pins;
 
-		pins = part_get_pins (part);
+	num_pins = part_get_num_pins (part);
+	pins = part_get_pins (part);
+
+	item_data_get_pos (ITEM_DATA (part), &part_pos);
+
+	for (i = 0; i < num_pins; i++) {
 		x = part_pos.x + pins[i].offset.x;
 		y = part_pos.y + pins[i].offset.y;
 

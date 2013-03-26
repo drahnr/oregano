@@ -49,22 +49,16 @@ static void 		textbox_item_class_init (TextboxItemClass *klass);
 static void 		textbox_item_init (TextboxItem *item);
 static void 		textbox_item_finalize (GObject *object);
 static void 		textbox_item_moved (SheetItem *object);
-static void 		textbox_rotated_callback (ItemData *data, int angle,
-						SheetItem *sheet_item);
-static void 		textbox_flipped_callback (ItemData *data, 
-		                gboolean horizontal, SheetItem *sheet_item);
-static void 		textbox_moved_callback (ItemData *data, Coords *pos,
-						SheetItem *item);
-static void 		textbox_text_changed_callback (ItemData *data, 
-		                gchar *new_text, SheetItem *item);
+static void 		textbox_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item);
+static void 		textbox_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item);
+static void 		textbox_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
+static void 		textbox_text_changed_callback (ItemData *data, gchar *new_text, SheetItem *item);
 static void 		textbox_item_paste (Sheet *sheet, ItemData *data);
-static void 		selection_changed (TextboxItem *item, gboolean select,
-						gpointer user_data);
+static void 		selection_changed (TextboxItem *item, gboolean select, gpointer user_data);
 static int  		select_idle_callback (TextboxItem *item);
 static int  		deselect_idle_callback (TextboxItem *item);
 static gboolean 	is_in_area (SheetItem *object, Coords *p1, Coords *p2);
-inline static void 	get_cached_bounds (TextboxItem *item, Coords *p1,
-						Coords *p2);
+inline static void 	get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2);
 static void 		textbox_item_place (SheetItem *item, Sheet *sheet);
 static void 		textbox_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void 		edit_textbox (SheetItem *sheet_item); 
@@ -260,12 +254,11 @@ textbox_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 }
 
 static void
-textbox_flipped_callback (ItemData *data,
-	gboolean horizontal, SheetItem *sheet_item)
+textbox_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 {
 	TextboxItem *item;
 
-	g_return_if_fail (sheet_item != NULL);
+	g_return_if_fail (sheet_item);
 	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));
 
 	item = TEXTBOX_ITEM (sheet_item);
@@ -468,8 +461,7 @@ create_textbox_event (Sheet *sheet, GdkEvent *event)
 				textbox_set_text (textbox, _("Label"));
 
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-								ITEM_DATA (textbox));
-				item_data_set_pos (ITEM_DATA (textbox), &pos);
+								ITEM_DATA (textbox), &pos);
 			
 				schematic_view_reset_tool (
 					schematic_view_get_schematicview_from_sheet (sheet));
