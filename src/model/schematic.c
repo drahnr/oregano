@@ -9,7 +9,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -671,16 +671,20 @@ schematic_add_item (Schematic *sm, ItemData *data, Coords *pos)
 	g_object_weak_ref (G_OBJECT (data), item_data_destroy_callback, G_OBJECT (sm));
 
 	sm->priv->dirty = TRUE;
-	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback),
-	                         sm, 0);
 
 	// set the items position, _without_ emitting the moved signal
 	item_data_set_pos (data, pos);
+
+	// connect the moved signal
+	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback), sm, 0);
+
 	// causes a canvas item to be generated
 	g_signal_emit_by_name (sm, "item_data_added", data);
+
 	// broadcasts a position update which moves the item to the proper position
 	g_signal_emit_by_name (data, "moved", pos);
 }
+
 
 void
 schematic_parts_foreach (Schematic *schematic,

@@ -239,7 +239,6 @@ void
 item_data_set_pos (ItemData *item_data, Coords *pos)
 {
 	ItemDataPriv *priv;
-	Coords delta;
 	g_return_if_fail (pos);
 	g_return_if_fail (item_data);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -251,12 +250,9 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
 
-	delta.x = pos->x;
-	delta.y = pos->y;
-
 	if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id)) {
-		g_signal_emit_by_name (G_OBJECT (item_data), 
-		                       "moved", &delta);
+		NG_DEBUG ("moved emitted");
+		g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
 	}
 }
 
@@ -275,6 +271,8 @@ item_data_move (ItemData *item_data, Coords *delta)
 	priv = item_data->priv;
 	target.x = priv->pos.x + delta->x;
 	target.y = priv->pos.y + delta->y;
+
+	NG_DEBUG ("xxxx %lf,,%lf\n", target.x, target.y);
 	item_data_set_pos (item_data, &target);
 }
 

@@ -233,11 +233,12 @@ create_part (ParseState *state)
 	if (!part)
 		return;
 
+	item_data_set_pos (ITEM_DATA (part), &state->pos);
 	item_data_rotate (ITEM_DATA (part), state->rotation, NULL);
 	if (state->flip & ID_FLIP_HORIZ)
-		item_data_flip (ITEM_DATA (part), TRUE, NULL);
+		item_data_flip (ITEM_DATA (part), ID_FLIP_HORIZ, NULL);
 	if (state->flip & ID_FLIP_VERT)
-		item_data_flip (ITEM_DATA (part), FALSE, NULL);
+		item_data_flip (ITEM_DATA (part), ID_FLIP_VERT, NULL);
 
 	schematic_add_item (state->schematic, ITEM_DATA (part), &state->pos);
 }

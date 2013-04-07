@@ -308,15 +308,15 @@ part_item_canvas_new (Sheet *sheet, Part *part)
 	item_data = ITEM_DATA (part);
 	item_data->rotated_handler_id = g_signal_connect_object (G_OBJECT (part), 
 	                                "rotated",
-									G_CALLBACK (part_rotated_callback), 
+	                                G_CALLBACK (part_rotated_callback),
 	                                G_OBJECT (part_item), 0);
 	item_data->flipped_handler_id = g_signal_connect_object (G_OBJECT (part), 
 	                                "flipped",
-									G_CALLBACK (part_flipped_callback), 
+	                                G_CALLBACK (part_flipped_callback),
 	                                G_OBJECT (part_item), 0);
 	item_data->moved_handler_id = g_signal_connect_object (G_OBJECT (part),
 	                                "moved",
-									G_CALLBACK (part_moved_callback), 
+	                                G_CALLBACK (part_moved_callback),
 	                                G_OBJECT (part_item), 0);
 
 	return part_item;
@@ -438,7 +438,6 @@ prop_dialog_response (GtkWidget *dialog, gint response,
 		g_free (prop_name);
 	}
 	g_slist_free_full (props, g_object_unref);
-	g_list_free_full (widget, g_object_unref);
 
 	update_canvas_labels (item);
 }
@@ -499,12 +498,10 @@ edit_properties_point (PartItem *item)
 
 			if (!g_ascii_strcasecmp (prop->name, "type")) {
 				if (!g_ascii_strcasecmp (prop->value, "v")) {
-					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), 
-						TRUE);
+					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), TRUE);
 				} 
 				else {
-					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), 
-						TRUE);
+					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), TRUE);
 				}
 			} 
 			else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
@@ -758,8 +755,6 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
 
-		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item),
-	                               	   NULL);
 		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item),
 	                               	   &affine);
 	}
@@ -1103,7 +1098,7 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 {
 	GooCanvasItem   *item;
 	GooCanvasPoints *points;
-	GSList			*objects;
+	GSList		*objects;
 	LibrarySymbol	*symbol;
 	SymbolObject	*object;
 	gdouble          height, width;
@@ -1128,7 +1123,7 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 			case SYMBOL_OBJECT_LINE:
 				points = object->u.uline.line;
 				item = goo_canvas_polyline_new (GOO_CANVAS_ITEM (group), 
-			        FALSE, 
+			        FALSE,
 			        0,
 			       	"points", points,
 			        "stroke-color", NORMAL_COLOR,
@@ -1314,8 +1309,6 @@ part_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 	part_item = PART_ITEM (item);
 
 	// Move the canvas item and invalidate the bbox cache.
-	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (item),
-	                               NULL);
 	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),
 	                                      pos->x,
 	                                      pos->y,
