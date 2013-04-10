@@ -531,8 +531,6 @@ sheet_item_event (GooCanvasItem *sheet_item,
 				sheet_item_reparent (SHEET_ITEM (list->data), 
                                      priv->selected_group);
 			}
-
-			g_list_free_full (list, g_object_unref);
 			
 			goo_canvas_pointer_grab (canvas, GOO_CANVAS_ITEM (sheet_item),
 	    		GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
@@ -710,7 +708,6 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				if (!keep)
 					g_object_unref (G_OBJECT (floating_item));
 			}
-			g_list_free_full (list, g_object_unref);
 
 			if (keep) {
 				g_object_set (G_OBJECT (sheet->priv->floating_group),

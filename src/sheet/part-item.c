@@ -814,8 +814,6 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
-	
-	g_slist_free_full (label_items, g_object_unref);
 }
 
 static void
