@@ -42,10 +42,8 @@
 
 static void item_data_class_init (ItemDataClass *klass);
 static void item_data_init (ItemData *item_data);
-static void item_data_set_gproperty (GObject *object, guint prop_id,
-									const GValue *value, GParamSpec *spec);
-static void item_data_get_gproperty (GObject *object, guint prop_id,
-									GValue *value, GParamSpec *spec);
+static void item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
+static void item_data_get_gproperty (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
 static void item_data_copy (ItemData *dest, ItemData *src);
 
 enum {

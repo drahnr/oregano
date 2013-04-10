@@ -1274,9 +1274,9 @@ sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 
     sheet->priv->items = g_list_remove (sheet->priv->items, item);
 
-    //  Remove the object from the selected-list before destroying.
-    sheet_remove_selected_object (sheet, item);
-    sheet_remove_floating_object (sheet, item);
+	//  Remove the object from the selected-list before destroying.
+	sheet_remove_selected_object (sheet, item);
+	sheet_remove_floating_object (sheet, item);
 
 	// Destroy the item-data (model) associated to the sheet-item
 	g_object_unref (sheet_item_get_data (item));

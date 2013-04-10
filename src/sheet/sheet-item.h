@@ -51,12 +51,12 @@ typedef struct _SheetItemPriv SheetItemPriv;
 #include "clipboard.h"
 
 struct _SheetItem {
-	GooCanvasGroup canvas_group;
-	gdouble 	   width;
-	gdouble        height;
-	gdouble        x;
-	gdouble		   y;
-	SheetItemPriv *priv;
+	GooCanvasGroup	 canvas_group;
+	gdouble		 width;
+	gdouble		 height;
+	gdouble 	 x;
+	gdouble		 y;
+	SheetItemPriv	*priv;
 };
 
 struct _SheetItemClass {
@@ -66,13 +66,13 @@ struct _SheetItemClass {
 	gboolean (*is_in_area)		 (SheetItem *item, Coords *p1, Coords *p2);
 	void	 (*show_labels)		 (SheetItem *sheet_item, gboolean show);
 	void	 (*edit_properties)	 (SheetItem *item);
-	void	 (*paste)			 (Sheet *sheet, ItemData *data);
-	void	 (*place)			 (SheetItem *item, Sheet *sheet);
+	void	 (*paste)		 (Sheet *sheet, ItemData *data);
+	void	 (*place)		 (SheetItem *item, Sheet *sheet);
 	void	 (*place_ghost)		 (SheetItem *item, Sheet *sheet);
 
 	// Signal handlers.
-	void	 (*moved)			 (SheetItem *item);
-	void	 (*selection_changed)(SheetItem *item);
+	void	 (*moved)		 (SheetItem *item);
+	void	 (*selection_changed)	 (SheetItem *item);
 	void	 (*mouse_over)		 (SheetItem *item);
 };
 
@@ -80,25 +80,22 @@ GType		sheet_item_get_type (void);
 void 		sheet_item_select_all (Sheet *sheet, gboolean select);
 gboolean	sheet_item_select (SheetItem *item, gboolean  select);
 Sheet	*	sheet_item_get_sheet (SheetItem *item);
-gboolean    sheet_item_event (GooCanvasItem *sheet_item, 
-                GooCanvasItem *sheet_target_item, GdkEvent *event, 
-                Sheet *sheet);
+gboolean    	sheet_item_event (GooCanvasItem *sheet_item, 
+                                  GooCanvasItem *sheet_target_item, GdkEvent *event, 
+                                  Sheet *sheet);
 int 		sheet_item_floating_event (Sheet *sheet, const GdkEvent *event);
 void 		sheet_item_cancel_floating (Sheet *sheet);
 void 		sheet_item_edit_properties (SheetItem *item);
 ItemData *	sheet_item_get_data (SheetItem *item);
-void 		sheet_item_paste (Sheet *sheet, 
-				ClipboardData *data);
-void 		sheet_item_rotate (SheetItem *sheet_item, int angle, 
-		        Coords *center);
+void 		sheet_item_paste (Sheet *sheet, ClipboardData *data);
+void 		sheet_item_rotate (SheetItem *sheet_item, int angle, Coords *center);
 gboolean 	sheet_item_get_selected (SheetItem *item);
 gboolean 	sheet_item_get_preserve_selection (SheetItem *item);
-void 		sheet_item_set_preserve_selection (SheetItem *item, gboolean   set);
-void 		sheet_item_select_in_area (SheetItem *item, Coords  *p1,
-		    	Coords  *p2);
+void 		sheet_item_set_preserve_selection (SheetItem *item, gboolean set);
+void 		sheet_item_select_in_area (SheetItem *item, Coords *p1, Coords *p2);
 void 		sheet_item_place (SheetItem *item, Sheet *sheet);
 void 		sheet_item_place_ghost (SheetItem *item, Sheet *sheet);
 void 		sheet_item_add_menu (SheetItem *item, const char *menu, 
-    			const GtkActionEntry *action_entries, int nb_entries);
+    		                     const GtkActionEntry *action_entries, int nb_entries);
 
 #endif
