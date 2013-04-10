@@ -203,7 +203,8 @@ create_textbox (ParseState *state)
 
 	textbox = textbox_new (NULL);
 	textbox_set_text (textbox, state->textbox_text);
-	schematic_add_item (state->schematic, ITEM_DATA (textbox), &state->pos);
+	item_data_set_pos (ITEM_DATA (textbox), &state->pos);
+	schematic_add_item (state->schematic, ITEM_DATA (textbox));
 }
 
 static void
@@ -220,7 +221,8 @@ create_wire (ParseState *state)
 	wire = wire_new ();
 	wire_set_length (wire, &length);
 
-	schematic_add_item (state->schematic, ITEM_DATA (wire), &state->wire_start);
+	item_data_set_pos (ITEM_DATA (wire), &state->wire_start);
+	schematic_add_item (state->schematic, ITEM_DATA (wire));
 }
 
 static void
@@ -240,7 +242,7 @@ create_part (ParseState *state)
 	if (state->flip & ID_FLIP_VERT)
 		item_data_flip (ITEM_DATA (part), ID_FLIP_VERT, NULL);
 
-	schematic_add_item (state->schematic, ITEM_DATA (part), &state->pos);
+	schematic_add_item (state->schematic, ITEM_DATA (part));
 }
 
 int

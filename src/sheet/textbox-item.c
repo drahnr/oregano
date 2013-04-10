@@ -460,9 +460,10 @@ create_textbox_event (Sheet *sheet, GdkEvent *event)
 				
 				textbox_set_text (textbox, _("Label"));
 
+				item_data_set_pos (ITEM_DATA (textbox), &pos);
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-								ITEM_DATA (textbox), &pos);
-			
+								ITEM_DATA (textbox));
+
 				schematic_view_reset_tool (
 					schematic_view_get_schematicview_from_sheet (sheet));
 				g_signal_handlers_disconnect_by_func (G_OBJECT (sheet),

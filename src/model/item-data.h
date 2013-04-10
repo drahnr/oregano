@@ -68,24 +68,22 @@ struct _ItemDataClass
 	GObjectClass parent_class;
 
 	// Signals.
-	void 		(*moved) 				(ItemData *data, Coords *delta);
+	void 		(*moved) 		(ItemData *data, Coords *delta);
 
 	// Methods.
-	ItemData *	(*clone) 				(ItemData *src);
-	void 		(*copy) 				(ItemData *dest, ItemData *src);
-	void 		(*rotate)				(ItemData *data, int angle, 
-							             Coords *center);
+	ItemData *	(*clone) 		(ItemData *src);
+	void 		(*copy) 		(ItemData *dest, ItemData *src);
+	void 		(*rotate)		(ItemData *data, int angle, Coords *center);
 	void 		(*flip) 		(ItemData *data, IDFlip direction, Coords *center);
-	void 		(*unreg)				(ItemData *data);
-	int 		(*reg)		 			(ItemData *data);
+	void 		(*unreg)		(ItemData *data);
+	int 		(*reg)			(ItemData *data);
+	void		(*freshen)		(ItemData *data);
 
 	char* 		(*get_refdes_prefix) 	(ItemData *data);
-	void 		(*set_property) 		(ItemData *data, char *property, 
-						                 char *value);
-	gboolean 	(*has_properties) 		(ItemData *data);
+	void 		(*set_property) 	(ItemData *data, char *property, char *value);
+	gboolean 	(*has_properties) 	(ItemData *data);
 
-	void 		(*print) 				(ItemData *data, cairo_t *cr, 
-			               				 SchematicPrintContext *ctx);
+	void 		(*print) 		(ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 };
 
 GType	  item_data_get_type (void);
@@ -156,5 +154,8 @@ void 		item_data_set_property (ItemData *data, char *property,
 void 		item_data_print (ItemData *data, cairo_t *cr, 
 		                     SchematicPrintContext *ctx);
 
+// Refresh the canvas representation of the item based on the itemdata's
+// properties
+void		item_data_freshen (ItemData *data);
 
 #endif

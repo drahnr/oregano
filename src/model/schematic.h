@@ -94,7 +94,7 @@ void	   schematic_set_netlist_filename (Schematic *schematic, char *filename);
 int		   schematic_count (void);
 double	   schematic_get_zoom (Schematic *schematic);
 void	   schematic_set_zoom (Schematic *schematic, double zoom);
-void	   schematic_add_item (Schematic *sm, ItemData *data, Coords *pos);
+void	   schematic_add_item (Schematic *sm, ItemData *data);
 void	   schematic_parts_foreach (Schematic *schematic,
 				ForeachItemDataFunc func, gpointer user_data);
 void	   schematic_wires_foreach (Schematic *schematic,

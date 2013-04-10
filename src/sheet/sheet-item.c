@@ -8,7 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -637,7 +637,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 	SheetPriv *priv;
 	GList *list;
 	static Coords pos;
-	static int control_key_down = 0;
+	static int keep = 0;
 
 	// Remember the last position of the mouse cursor.
 	static double last_x, last_y;
@@ -670,10 +670,11 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			return FALSE;
 
 		case 1:
-			control_key_down = event->button.state & GDK_CONTROL_MASK;
+			// do not free the floating items, but use them like a stamp
+			keep = event->button.state & GDK_CONTROL_MASK;
 
 			// Continue adding if CTRL is pressed
-			if (!control_key_down) {
+			if (!keep) {
 				sheet->state = SHEET_STATE_NONE;
 				g_signal_stop_emission_by_name (sheet, "event");
 				if (g_signal_handler_is_connected (sheet, 
@@ -693,33 +694,33 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				
 				// Create a real item.
 				floating_item = list->data;
-				if (!control_key_down) {
+				if (!keep) {
 					floating_data = sheet_item_get_data (floating_item);
 					g_object_set (floating_item,
-	              		"visibility", GOO_CANVAS_ITEM_INVISIBLE,
-	              		NULL);
-				}
-				else
+					              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+					              NULL);
+				} else {
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
-
+				}
 				g_object_ref (G_OBJECT (floating_data));
-				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-									floating_data, &pos);
-				if (!control_key_down)
+
+				item_data_set_pos (floating_data, &pos);
+				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), floating_data);
+
+				if (!keep)
 					g_object_unref (G_OBJECT (floating_item));
 			}
 			g_list_free_full (list, g_object_unref);
 
-			if (!control_key_down) {
-				g_list_free (sheet->priv->floating_objects);
-				sheet->priv->floating_objects = NULL;
-			}
-			else
+			if (keep) {
 				g_object_set (G_OBJECT (sheet->priv->floating_group),
 				              "x", pos.x,
 				              "y", pos.y,
 				              NULL);
-
+			} else {
+				g_list_free (sheet->priv->floating_objects);
+				sheet->priv->floating_objects = NULL;
+			}
 			pos.x = 0.0; 
 			pos.y = 0.0; 
 			break;

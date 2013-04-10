@@ -628,8 +628,16 @@ schematic_save_file (Schematic *sm, GError **error)
 	return FALSE; // Save fails!
 }
 
+
+
+/**
+ * \brief add an ItemData object to a Schematic
+ *
+ * @param sm the schematic the item will be added to
+ * @param data fully initilalized ItemData object
+ */
 void
-schematic_add_item (Schematic *sm, ItemData *data, Coords *pos)
+schematic_add_item (Schematic *sm, ItemData *data)
 {
 	NodeStore *store;
 	char *prefix = NULL, *refdes = NULL;
@@ -645,8 +653,6 @@ schematic_add_item (Schematic *sm, ItemData *data, Coords *pos)
 	              "store", store, 
 	              NULL);
 
-	// no signal handler connected yet, and that is good!
-	item_data_set_pos (data, pos);
 	// item data will call the child register function
 	// for parts e.g. this ends up in <node_store_add_part>
 	// which requires a valid position to add the node dots
@@ -672,17 +678,11 @@ schematic_add_item (Schematic *sm, ItemData *data, Coords *pos)
 
 	sm->priv->dirty = TRUE;
 
-	// set the items position, _without_ emitting the moved signal
-	item_data_set_pos (data, pos);
-
-	// connect the moved signal
+	// if the item gets moved mark the schematic as dirty
 	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback), sm, 0);
 
 	// causes a canvas item to be generated
 	g_signal_emit_by_name (sm, "item_data_added", data);
-
-	// broadcasts a position update which moves the item to the proper position
-	g_signal_emit_by_name (data, "moved", pos);
 }
 
 

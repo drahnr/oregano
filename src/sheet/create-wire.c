@@ -306,11 +306,9 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	length.y = end_pos.y - start_pos.y;
 	wire_set_length (wire, &length);
 
-	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-	                    ITEM_DATA (wire), &start_pos);
+	item_data_set_pos (ITEM_DATA (wire), &start_pos);
+	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), ITEM_DATA (wire));
 
-
-	
 	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
 
 	return wire;

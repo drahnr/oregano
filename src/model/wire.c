@@ -50,6 +50,7 @@ static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
 static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
+static void	 wire_freshen (ItemData *data);
 
 #include "debug.h"
 
@@ -128,6 +129,7 @@ wire_class_init (WireClass *klass)
 	item_data_class->reg = wire_register;
 	item_data_class->has_properties = wire_has_properties;
 	item_data_class->print = wire_print;
+	item_data_class->freshen = wire_freshen;
 }
 
 static void
@@ -477,6 +479,16 @@ wire_register (ItemData *data)
 
 	store = item_data_get_store (data);
 	return node_store_add_wire (store, WIRE (data));
+}
+
+static void
+wire_freshen (ItemData *data)
+{
+	Coords loc;
+	g_return_if_fail (IS_WIRE (data));
+
+	item_data_get_pos (data, &loc);
+	g_signal_emit_by_name ((GObject *)data, "moved", &loc);
 }
 
 static void

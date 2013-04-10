@@ -1298,6 +1298,7 @@ item_data_added_callback (Schematic *schematic, ItemData *data,
 		sv->priv->empty = FALSE;
 		if (sv->priv->tool == SCHEMATIC_TOOL_PART)
 			schematic_view_reset_tool (sv);
+		item_data_freshen (data); // refresh _after_ we added it to the Sheet
 	}
 }
 
