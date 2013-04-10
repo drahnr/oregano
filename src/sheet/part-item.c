@@ -75,7 +75,7 @@ static void 		       part_item_paste (Sheet *sheet, ItemData *data);
 static void 		       part_rotated_callback (ItemData *data, int angle, 
 		                   		SheetItem *item);
 static void 		       part_flipped_callback (ItemData *data, 
-		                 		gboolean horizontal, SheetItem *sheet_item);
+				                      IDFlip direction, SheetItem *sheet_item);
 static void 		       part_moved_callback (ItemData *data, Coords *pos,
 								SheetItem *item);
 static void 		       part_item_place (SheetItem *item, Sheet *sheet);
@@ -746,11 +746,10 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 	part = PART (data);
 
 	priv = item->priv;
-	if (angle != 0)
-		cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180);
-	else
-	  	// angle == 0: Nothing has changed, therefore do nothing
-		cairo_matrix_init_identity (&affine);
+
+
+	cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180);
+
 
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
@@ -816,9 +815,10 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 	priv->cache_valid = FALSE;
 }
 
+
+
 static void
-part_flipped_callback (ItemData *data, gboolean horizontal,
-	SheetItem *sheet_item)
+part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 {
 	GSList *label;
 	GooCanvasAnchorType anchor;
@@ -839,14 +839,16 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 	priv = item->priv;
 	group = GOO_CANVAS_GROUP (item);
 
-	if (horizontal)
+	if (direction == ID_FLIP_VERT) {
 		scale_v = -1.0;
-	else
+	} else if (direction == ID_FLIP_HORIZ) {
 		scale_h = -1.0;
+	}/* else {
+		scale_h = scale_v = 1.0;
+	}*/
 	
 	// Get the group bounds before the flip
-	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item),
-	                            &bounds_before);
+	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item), &bounds_before);
 
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
@@ -887,7 +889,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 		              NULL);
 		
 		goo_canvas_item_scale (label->data, scale_h, scale_v);
-		if (horizontal) 
+		if (direction)
 			goo_canvas_item_translate (label->data, 0, -2 * y);
 		else 
 			goo_canvas_item_translate (label->data, -2 * x, 0);
@@ -903,7 +905,7 @@ part_flipped_callback (ItemData *data, gboolean horizontal,
 		              NULL);
 		
 		goo_canvas_item_scale (label->data, scale_h, scale_v);
-		if (horizontal) 
+		if (direction)
 			goo_canvas_item_translate (label->data, 0, -2 * y);
 		else 
 			goo_canvas_item_translate (label->data, -2 * x, 0);
