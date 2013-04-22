@@ -72,12 +72,9 @@ inline static void 		   get_cached_bounds (PartItem *item, Coords *p1,
 		                   		Coords *p2);
 static void 		       show_labels (SheetItem *sheet_item, gboolean show);
 static void 		       part_item_paste (Sheet *sheet, ItemData *data);
-static void 		       part_rotated_callback (ItemData *data, int angle, 
-		                   		SheetItem *item);
-static void 		       part_flipped_callback (ItemData *data, 
-				                      IDFlip direction, SheetItem *sheet_item);
-static void 		       part_moved_callback (ItemData *data, Coords *pos,
-								SheetItem *item);
+static void 		       part_rotated_callback (ItemData *data, int angle, SheetItem *item);
+static void 		       part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item);
+static void 		       part_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void 		       part_item_place (SheetItem *item, Sheet *sheet);
 static void 		       part_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void 		       create_canvas_items (GooCanvasGroup *group, 
@@ -816,7 +813,15 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 }
 
 
-
+/*
+ * handles the update of the canvas item when a part gets flipped (within the backend alias model)
+ * @data the part in form of a ItemData pointer
+ * @direction the new direction FIXME recheck this
+ * @sheet_item the corresponding sheet_item to the model item @data
+ *
+ * FIXME the implementations is just weird
+ * TODO find a way to get the center of a text canvas item
+ */
 static void
 part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 {
@@ -910,11 +915,9 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 		else 
 			goo_canvas_item_translate (label->data, -2 * x, 0);
 	}
-	
+
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
-
-	g_slist_free_full (label, g_object_unref);
 }
 
 void
@@ -992,10 +995,10 @@ is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 	get_cached_bounds (item, &bbox_start, &bbox_end);
 
 	if ((p1->x < bbox_start.x) &&
-		(p2->x > bbox_end.x)   &&
-		(p1->y < bbox_start.y) &&
-		(p2->y > bbox_end.y))  {
-			return TRUE;
+	    (p2->x > bbox_end.x)   &&
+	    (p1->y < bbox_start.y) &&
+	    (p2->y > bbox_end.y))  {
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -1074,7 +1077,7 @@ part_item_new (Sheet *sheet, Part *part)
 	library = priv->library;
 	library_part = library_get_part (library, priv->name);
 
-	// Create the PartItem canvas item.
+	// Create the PartItem canvas item
 	item = part_item_canvas_new (sheet, part);
 	create_canvas_items (GOO_CANVAS_GROUP (item), library_part);
 	create_canvas_labels (item, part);
@@ -1334,7 +1337,7 @@ part_item_place (SheetItem *item, Sheet *sheet)
 	    G_CALLBACK (sheet_item_event), sheet);
 		
 	g_signal_connect (G_OBJECT (item), "double_clicked",
-        G_CALLBACK (edit_properties), item);
+            G_CALLBACK (edit_properties), item);
 }
 
 static void
@@ -1371,19 +1374,19 @@ part_item_get_anchor_from_part (Part *part)
 	angle = part_get_rotation (part);
 
 	switch (angle) {
-		case 0:
-			anchor_h = ANCHOR_SOUTH;
-			anchor_v = ANCHOR_WEST;
-			break;
-		case 90:
-			anchor_h = ANCHOR_NORTH;
-			anchor_v = ANCHOR_WEST;
-			// Invert Rotation 
-			if (flip & ID_FLIP_HORIZ)
-				flip = ID_FLIP_VERT;
-			else if (flip & ID_FLIP_VERT)
-				flip = ID_FLIP_HORIZ;
-			break;
+	case 0:
+		anchor_h = ANCHOR_SOUTH;
+		anchor_v = ANCHOR_WEST;
+		break;
+	case 90:
+		anchor_h = ANCHOR_NORTH;
+		anchor_v = ANCHOR_WEST;
+		// Invert Rotation 
+		if (flip & ID_FLIP_HORIZ)
+			flip = ID_FLIP_VERT;
+		else if (flip & ID_FLIP_VERT)
+			flip = ID_FLIP_HORIZ;
+		break;
 	}
 
 	if (flip & ID_FLIP_HORIZ) {

@@ -1275,8 +1275,7 @@ item_selection_changed_callback (SheetItem *item, gboolean selected,
 
 // An ItemData got added; create an Item and set up the neccessary handlers.
 static void
-item_data_added_callback (Schematic *schematic, ItemData *data,
-	SchematicView *sv)
+item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *sv)
 {
 	Sheet *sheet;
 	SheetItem *item;
@@ -1298,7 +1297,10 @@ item_data_added_callback (Schematic *schematic, ItemData *data,
 		sv->priv->empty = FALSE;
 		if (sv->priv->tool == SCHEMATIC_TOOL_PART)
 			schematic_view_reset_tool (sv);
-		item_data_freshen (data); // refresh _after_ we added it to the Sheet
+
+		// refresh _after_ we added it to the Sheet
+		// this is required to properly display rotation, flip and others
+		item_data_freshen (data);
 	}
 }
 
