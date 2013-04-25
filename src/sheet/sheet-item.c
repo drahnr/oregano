@@ -683,7 +683,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				sheet->priv->float_handler_id = 0;
 			}
 
-			// Get pointer position independantly of the zoom
+			// Get pointer position in canvas coordinates
 			sheet_get_pointer (sheet, &pos.x, &pos.y);
 			
 			for (list = priv->floating_objects; list; list = list->next) {
@@ -797,8 +797,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
                     snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
 
 					goo_canvas_item_translate (
-						GOO_CANVAS_ITEM (priv->floating_group), snapped_x, 
-					    snapped_y);
+					    GOO_CANVAS_ITEM (priv->floating_group), snapped_x, snapped_y);
 
                     last_x = snapped_x;
                     last_y = snapped_y;

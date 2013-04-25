@@ -504,6 +504,10 @@ part_get_labels (Part *part)
 }
 
 
+/**
+ * rotate an item by an @angle increment (may be negative)
+ * @angle the increment the item should be rotated around (usually 90° steps)
+ */
 static void
 part_rotate (ItemData *data, int angle, Coords *center)
 {
@@ -527,10 +531,14 @@ part_rotate (ItemData *data, int angle, Coords *center)
 
 	tot_rotation = (priv->rotation + angle) % 360;
 	
+
+	// use the cairo matrix funcs to transform the pin positions relative to the item center
+	// this is only indirectly related to displaying
+	cairo_matrix_init_rotate (&affine, (double)angle * M_PI / 180.);
+
+
 	priv->rotation = tot_rotation;
 	angle = tot_rotation;
-
-	cairo_matrix_init_rotate (&affine, (double) (angle* M_PI / 180));
 
 	// Rotate the pins.
 	for (i = 0; i < priv->num_pins; i++) {
@@ -547,7 +555,7 @@ part_rotate (ItemData *data, int angle, Coords *center)
 		priv->pins[i].offset.y = y;
 	}
 
-	// Rotate the bounding box.
+	// Rotate the bounding box
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
 	cairo_matrix_transform_point (&affine, &b1.x, &b1.y);

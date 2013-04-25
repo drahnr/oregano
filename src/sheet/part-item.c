@@ -721,6 +721,10 @@ edit_properties (SheetItem *object)
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
+/**
+ * a part got rotated
+ * @angle the angle the item is rotated towards the default (0) rotation
+ */
 static void
 part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
@@ -750,13 +754,11 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
-
-		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item),
-	                               	   &affine);
+		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item), &affine);
 	}
 
 	// Get the right anchor for the labels. This is needed since the
-	// canvas don't know how to rotate text and since we rotate the
+	// canvas doesn't know how to rotate text and since we rotate the
 	// label_group instead of the labels directly.
 	angle_anchor = part_get_rotation (part);
 	switch (angle_anchor) {
@@ -785,8 +787,7 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 		              "y", &y,
 		              NULL);
 
-		goo_canvas_item_set_transform (label_items->data,
-	                               	   NULL);
+		goo_canvas_item_set_transform (label_items->data, NULL);
 		// A bias (1.0, -2.0) is introduced due to ????
 		goo_canvas_item_rotate (label_items->data, -angle, x + 1.0, y - 2.0);
 	}
@@ -802,8 +803,7 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 		              "y", &y,
 		              NULL);
 
-		goo_canvas_item_set_transform (label_items->data,
-	                               	   NULL);
+		goo_canvas_item_set_transform (label_items->data, NULL);
 		// A bias (1.0, -2.0) is introduced due to ????
 		goo_canvas_item_rotate (label_items->data, -angle, x + 1.0, y - 2.0);
 	}
