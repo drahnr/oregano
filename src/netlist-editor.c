@@ -7,7 +7,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://github.com/drahnr/oregano
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
@@ -32,7 +32,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <glib/gi18n.h>
+#include <glib.h>
+#include <gtk/gtk.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
+#include <gtksourceview/gtksourcebuffer.h>
 
 #include "netlist-editor.h"
 #include "netlist-helper.h"

@@ -99,8 +99,6 @@ oregano_init (Oregano *object)
 Oregano *
 oregano_new (void)
 {
-    g_type_init ();
-
     return g_object_new (oregano_get_type (),
                          "application-id", "org.gnome.oregano",
                          "flags", G_APPLICATION_HANDLES_OPEN,
