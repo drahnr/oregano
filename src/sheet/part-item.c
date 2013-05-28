@@ -813,14 +813,11 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 }
 
 
-/*
+/**
  * handles the update of the canvas item when a part gets flipped (within the backend alias model)
  * @data the part in form of a ItemData pointer
- * @direction the new direction FIXME recheck this
+ * @direction the new flip state
  * @sheet_item the corresponding sheet_item to the model item @data
- *
- * FIXME the implementations is just weird
- * TODO find a way to get the center of a text canvas item
  */
 static void
 part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
@@ -833,7 +830,8 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 	PartItemPriv *priv;
 	Part *part;
 	int index = 0;
-	gdouble scale_h = 1.0, scale_v = 1.0, x, y;
+	gdouble scale_h, scale_v, x, y;
+	Coords trans; //translation
 	GooCanvasBounds bounds_before, bounds_after;
 
 	g_return_if_fail (sheet_item != NULL);
@@ -844,31 +842,43 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 	priv = item->priv;
 	group = GOO_CANVAS_GROUP (item);
 
-	if (direction == ID_FLIP_VERT) {
-		scale_v = -1.0;
-	} else if (direction == ID_FLIP_HORIZ) {
-		scale_h = -1.0;
-	}/* else {
-		scale_h = scale_v = 1.0;
-	}*/
+	scale_h = (direction & ID_FLIP_HORIZ) ? -1. : 1.;
+	scale_v = (direction & ID_FLIP_VERT) ? -1. : 1.;
 	
 	// Get the group bounds before the flip
 	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item), &bounds_before);
 
+	NG_DEBUG ("before x1=%lf x2=%lf y1=%lf y2=%lf", bounds_before.x1, bounds_before.x2, bounds_before.y1, bounds_before.y2);
+
+	cairo_matrix_t morph;
+
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
+		//FIXME replace this by transform to _set_ and not to mpy the scale
+#if 1
+		goo_canvas_item_get_transform (canvas_item, &morph);
+		morph.xx = scale_h;
+		morph.yy = scale_v;
+		goo_canvas_item_set_transform (canvas_item, &morph);
+#else
 		goo_canvas_item_scale (canvas_item, scale_h, scale_v);
+#endif
 	}
 
 	// Get the group bounds after the flip
 	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item),
 	                            &bounds_after);
+	NG_DEBUG ("after x1=%lf x2=%lf y1=%lf y2=%lf", bounds_after.x1, bounds_after.x2, bounds_after.y1, bounds_after.y2);
 
 	// Translation to the flip translation
-	x = bounds_after.x1 - bounds_before.x1;
-	y = bounds_after.y1 - bounds_before.y1;	
-	goo_canvas_item_translate (GOO_CANVAS_ITEM (sheet_item), -x, -y);
+	trans.x = (bounds_after.x1 - bounds_before.x1);
+	trans.y = (bounds_after.y1 - bounds_before.y1);
 	
+	Coords pos;
+	item_data_get_pos (data, &pos);
+
+	goo_canvas_item_translate (GOO_CANVAS_ITEM (sheet_item), trans.x, trans.y);
+
 	anchor = part_item_get_anchor_from_part (part);
 	switch (anchor) {
 		case GOO_CANVAS_ANCHOR_NORTH_WEST:
@@ -883,7 +893,7 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 		default:
 			anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
 	}
-	
+
 	for (label = priv->label_items; label; label = label->next) {
 		g_object_set (label->data,
 		              "anchor", anchor,
@@ -892,12 +902,17 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 		              "x", &x,
 		              "y", &y,
 		              NULL);
-		
+#if 1
+		goo_canvas_item_get_transform (label->data, &morph);
+		morph.xx = scale_h;
+		morph.yy = scale_v;
+		morph.x0 = trans.x;
+		morph.y0 = trans.y;
+		goo_canvas_item_set_transform (label->data, &morph);
+#else
 		goo_canvas_item_scale (label->data, scale_h, scale_v);
-		if (direction)
-			goo_canvas_item_translate (label->data, 0, -2 * y);
-		else 
-			goo_canvas_item_translate (label->data, -2 * x, 0);
+#endif
+//		goo_canvas_item_translate (label->data, trans.x, trans.y);
 	}
 
 	for (label = priv->label_nodes; label; label = label->next) {
@@ -909,11 +924,17 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 		              "y", &y,
 		              NULL);
 		
+#if 1
+		goo_canvas_item_get_transform (label->data, &morph);
+		morph.xx = scale_h;
+		morph.yy = scale_v;
+		morph.x0 = trans.x;
+		morph.y0 = trans.y;
+		goo_canvas_item_set_transform (label->data, &morph);
+#else
 		goo_canvas_item_scale (label->data, scale_h, scale_v);
-		if (direction)
-			goo_canvas_item_translate (label->data, 0, -2 * y);
-		else 
-			goo_canvas_item_translate (label->data, -2 * x, 0);
+		goo_canvas_item_translate (label->data, trans.x, trans.y);
+#endif
 	}
 
 	// Invalidate the bounding box cache.

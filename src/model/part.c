@@ -572,6 +572,11 @@ part_rotate (ItemData *data, int angle, Coords *center)
 	}
 }
 
+/**
+ * flip a part in a given @direction
+ * @direction gives the direction the item will be flipped
+ * @center currently ignored
+ */
 static void
 part_flip (ItemData *data, IDFlip direction, Coords *center)
 {
@@ -580,8 +585,10 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	int i;
 	cairo_matrix_t affine;
 	double x, y;
+	guint8 b_v, b_h;
 	gboolean handler_connected;
-	Coords b1, b2;
+	Coords pos;
+	Coords b1, b2, delta;
 	Coords part_center_before, part_center_after;
 
 	g_return_if_fail (data);
@@ -590,21 +597,22 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	part = PART (data);
 	priv = part->priv;
 
-	switch (direction) {
-	case ID_FLIP_HORIZ:
-		priv->flip ^= ID_FLIP_HORIZ;
-		cairo_matrix_init_scale (&affine, 1.0, -1.0);
-		break;
-	case ID_FLIP_VERT:
-		priv->flip ^= ID_FLIP_VERT;
-		cairo_matrix_init_scale (&affine, -1.0, 1.0);
-		break;
-	case ID_FLIP_NONE:
-		return;
-	default:
-		g_warning ("unknown flip value\n");
-	}
-	
+	item_data_get_pos (data, &pos);
+
+	direction &= (ID_FLIP_HORIZ | ID_FLIP_VERT);
+
+	b_h = ((direction & ID_FLIP_HORIZ) != 0);
+	b_v = ((direction & ID_FLIP_VERT) != 0);
+
+	priv->flip ^= direction;
+
+	// create a transformation _relativ_ to the current _state_
+	// reverse axis and fix the created offset by adding 2*pos.x or .y
+	cairo_matrix_init_scale (&affine,
+	                         b_v ? -1. : +1.,
+	                         b_h ? -1. : +1.);
+	cairo_matrix_translate (&affine, (b_v ? 2*pos.x : 0.), (b_h ? 2*pos.y : 0.));
+
 	// flip the pins
 	for (i = 0; i < priv->num_pins; i++) {
 		x = priv->pins[i].offset.x;
@@ -623,37 +631,20 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	// tell the view
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part), 
 	                                                   ITEM_DATA(part)->flipped_handler_id);
+	#define DEBUG_THIS 1
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part), "flipped", direction);
+		g_signal_emit_by_name (G_OBJECT (part), "flipped", priv->flip);
 
-		if (center) {
-			item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-			part_center_before.x = (b1.x + b2.x) / 2;
-			part_center_before.y = (b1.y + b2.y) / 2;
-		}
+		// TODO - proper boundingbox center calculation
 
 		// flip the bounding box.
 		cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
 		cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
-			
+
 		item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
+		item_data_set_pos (ITEM_DATA (part), &pos);
 
-		if (center) {
-			Coords part_pos, delta;
-			double dx, dy;
-
-			part_center_after.x = (b1.x + b2.x) / 2;
-			part_center_after.y = (b1.y + b2.y) / 2;
-
-			dx = part_center_before.x - part_center_after.x;
-			dy = part_center_before.y - part_center_after.y;
-
-			item_data_get_pos (ITEM_DATA (part), &part_pos);
-
-			delta.x = dx + part_pos.x;
-			delta.y = dy + part_pos.y;
-			item_data_move (ITEM_DATA (part), &delta);
-		}
+		// TODO - proper recenter to boundingbox center
 	}
 
 }
@@ -836,7 +827,6 @@ static void
 part_freshen (ItemData *data)
 {
 	Part *part;
-	NodeStore *store;
 	Coords loc = {0., 0.};
 	int angle = 0;
 	IDFlip flip = ID_FLIP_NONE;
@@ -945,9 +935,6 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	rotation = part_get_rotation (part);
 	flip = part_get_flip (part);
 
-	//FIXME flipping creates a huge offset
-	cairo_translate (cr, x0, y0);
-
 	if ((flip & ID_FLIP_HORIZ) && (flip & ID_FLIP_VERT))
 		rotation += 180;
 	else if (flip == ID_FLIP_HORIZ)
@@ -957,8 +944,6 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 	if (rotation %= 360)
 		cairo_rotate (cr, rotation*M_PI/180);
-
-	cairo_translate (cr, -x0, -y0);
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
 		object = (SymbolObject *)(objects->data);

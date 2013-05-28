@@ -515,7 +515,8 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
  * freshen the canvas representation of a item-data derived object
  *
  * depending on the actual subclass, this emits signals like "moved", "rotated" etc.
- * which will trigger callbacks which redo the item transformations
+ * which will trigger callbacks which will refresh the items view representation
+ * based on its model representation
  *
  * @param data determines which item to refresh
  *

@@ -61,7 +61,7 @@ static void 	sheet_get_property (GObject *object, guint prop_id,
 static void 	sheet_set_zoom (const Sheet *sheet, double zoom);
 static GList *	sheet_preserve_selection (Sheet *sheet);
 static void	rotate_items (Sheet *sheet, GList *items);
-static void	flip_items (Sheet *sheet, GList *items, gboolean horizontal);
+static void	flip_items (Sheet *sheet, GList *items, IDFlip direction);
 static void 	node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void 	node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void	sheet_finalize (GObject *object);
@@ -991,57 +991,59 @@ sheet_update_parts (Sheet *sheet)
 }
 
 void
-sheet_flip_selection (Sheet *sheet, gboolean horizontal)
+sheet_flip_selection (Sheet *sheet, IDFlip direction)
 {
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
 	if (sheet->priv->selected_objects != NULL)
-		flip_items (sheet, sheet->priv->selected_objects, horizontal);
+		flip_items (sheet, sheet->priv->selected_objects, direction);
 }
 
 void
-sheet_flip_ghosts (Sheet *sheet, gboolean horizontal)
+sheet_flip_ghosts (Sheet *sheet, IDFlip direction)
 {
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
 	if (sheet->priv->floating_objects != NULL)
-		flip_items (sheet, sheet->priv->floating_objects, horizontal);
+		flip_items (sheet, sheet->priv->floating_objects, direction);
 }
 
 static void
-flip_items (Sheet *sheet, GList *items, gboolean horizontal)
+flip_items (Sheet *sheet, GList *items, IDFlip direction)
 {
-	GList *list, *item_data_list;
+	GList *iter, *item_data_list;
 	Coords center, b1, b2;
 	Coords after;
 
 	item_data_list = NULL;
-	for (list = items; list; list = list->next) {
+	for (iter = items; iter; iter = iter->next) {
 		item_data_list = g_list_prepend (item_data_list,
-					sheet_item_get_data (list->data));
+					sheet_item_get_data (iter->data));
 	}
 
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
+	// FIXME center is currently not used by item_data_flip (part.c implentation)
 	center.x = (b2.x + b1.x) / 2;
 	center.y = (b2.y + b1.y) / 2;
 
-	for (list = item_data_list; list; list = list->next) {
-		ItemData *item_data = list->data;
+	// FIXME - registering an item after flipping it still creates an offset as the position is still 0
+	for (iter = item_data_list; iter; iter = iter->next) {
+		ItemData *item_data = iter->data;
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_unregister (item_data);
 
-		item_data_flip (item_data, horizontal, &center);
+		item_data_flip (item_data, direction, &center);
 
 		// Make sure we snap to grid.
 		item_data_get_pos (item_data, &after);
 
 		snap_to_grid (sheet->grid, &after.x, &after.y);
 
-		item_data_move (item_data, &after);
+		item_data_set_pos (item_data, &after);
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_register (item_data);
@@ -1053,13 +1055,13 @@ flip_items (Sheet *sheet, GList *items, gboolean horizontal)
 void
 sheet_clear_op_values (Sheet *sheet)
 {
-	GList *list;
+	GList *iter;
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	for (list = sheet->priv->voltmeter_items; list; list = list->next) {
-		g_object_unref (G_OBJECT (list->data));
+	for (iter = sheet->priv->voltmeter_items; iter; iter = iter->next) {
+		g_object_unref (G_OBJECT (iter->data));
 	}
 
 	g_list_free (sheet->priv->voltmeter_items);
