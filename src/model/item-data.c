@@ -56,6 +56,7 @@ enum {
 	MOVED,
 	ROTATED,
 	FLIPPED,
+	CHANGED, // used to notify the view to reset and recalc the transformation
 	HIGHLIGHT,
 	LAST_SIGNAL
 };
@@ -146,6 +147,16 @@ item_data_class_init (ItemDataClass *klass)
 		G_TYPE_NONE, 
 	    1, 
 	    G_TYPE_INT);
+
+	item_data_signals [CHANGED] = g_signal_new ("changed",
+		G_TYPE_FROM_CLASS (object_class),
+		G_SIGNAL_RUN_FIRST,
+		0,
+	    NULL,
+	    NULL,
+		g_cclosure_marshal_VOID__VOID,
+		G_TYPE_NONE,
+		0);
 
 	item_data_signals [HIGHLIGHT] = g_signal_new ("highlight",
 		G_TYPE_FROM_CLASS (object_class),
@@ -238,6 +249,8 @@ void
 item_data_set_pos (ItemData *item_data, Coords *pos)
 {
 	ItemDataPriv *priv;
+	gboolean handler_connected;
+
 	g_return_if_fail (pos);
 	g_return_if_fail (item_data);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -249,9 +262,14 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
 
-	if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id)) {
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
+	if (handler_connected) {
 		NG_DEBUG ("moved emitted");
 		g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
+	}
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (item_data), "changed");
 	}
 }
 

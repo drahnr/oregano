@@ -93,15 +93,8 @@ enum {
 	ARG_LABELS,
 };
 
-enum {
-	CHANGED,
-	LAST_SIGNAL
-};
-
-
 G_DEFINE_TYPE (Part, part, TYPE_ITEM_DATA)
 
-static guint part_signals [LAST_SIGNAL] = { 0 };
 static ItemDataClass *parent_class = NULL;
 
 static void
@@ -185,15 +178,6 @@ part_class_init (PartClass *klass)
 	item_data_class->has_properties = part_has_properties;
 	item_data_class->print = part_print;
 
-	part_signals[CHANGED] =
-		g_signal_new ("changed", G_TYPE_FROM_CLASS (object_class),
-			G_SIGNAL_RUN_FIRST,
-			G_STRUCT_OFFSET (PartClass, changed),
-			NULL,
-			NULL,
-			g_cclosure_marshal_VOID__VOID,
-			G_TYPE_NONE,
-			0);
 }
 
 static void
@@ -563,14 +547,21 @@ part_rotate (ItemData *data, int angle, Coords *center)
 
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	
-
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (part), 
-	                    	ITEM_DATA (part)->rotated_handler_id);
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
+	                                   ITEM_DATA (part)->rotated_handler_id);
 	if (handler_connected) {
 		g_signal_emit_by_name (G_OBJECT (part), 
 		                       "rotated", angle);
 	}
+
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
+	                                   ITEM_DATA (part)->changed_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (part), 
+		                       "changed");
+	}
 }
+
 
 /**
  * flip a part in a given @direction
@@ -588,8 +579,9 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	guint8 b_v, b_h;
 	gboolean handler_connected;
 	Coords pos;
-	Coords b1, b2, delta;
-	Coords part_center_before, part_center_after;
+	Coords b1, b2;
+	//TODO properly recenter after flipping
+	//Coords part_center_before, part_center_after, delta;
 
 	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
@@ -631,7 +623,6 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	// tell the view
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part), 
 	                                                   ITEM_DATA(part)->flipped_handler_id);
-	#define DEBUG_THIS 1
 	if (handler_connected) {
 		g_signal_emit_by_name (G_OBJECT (part), "flipped", priv->flip);
 
@@ -645,6 +636,11 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 		item_data_set_pos (ITEM_DATA (part), &pos);
 
 		// TODO - proper recenter to boundingbox center
+	}
+	if (g_signal_handler_is_connected (G_OBJECT (part), 
+	                                   ITEM_DATA (part)->changed_handler_id)) {
+		g_signal_emit_by_name (G_OBJECT (part), 
+		                       "changed");
 	}
 
 }

@@ -246,7 +246,7 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	lang = gtk_source_language_manager_get_language (lm, "netlist");
 
 	if (lang) {
-		NG_DEBUG ("\"%s\" from \"%s\"", gtk_source_language_get_name (lang), OREGANO_LANGDIR "/netlist.lang");
+		g_message ("Loading syntax highlighting %s from %s", gtk_source_language_get_name (lang), OREGANO_LANGDIR "/netlist.lang");
 		gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (textbuffer), lang);
 		gtk_source_buffer_set_highlight_syntax (GTK_SOURCE_BUFFER (textbuffer), TRUE);
 		gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER (textbuffer), TRUE);

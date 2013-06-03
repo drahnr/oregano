@@ -75,6 +75,8 @@ static void 		       part_item_paste (Sheet *sheet, ItemData *data);
 static void 		       part_rotated_callback (ItemData *data, int angle, SheetItem *item);
 static void 		       part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item);
 static void 		       part_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
+static void 		       part_changed_callback (ItemData *data, SheetItem *sheet_item);
+
 static void 		       part_item_place (SheetItem *item, Sheet *sheet);
 static void 		       part_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void 		       create_canvas_items (GooCanvasGroup *group, 
@@ -314,6 +316,10 @@ part_item_canvas_new (Sheet *sheet, Part *part)
 	item_data->moved_handler_id = g_signal_connect_object (G_OBJECT (part),
 	                                "moved",
 	                                G_CALLBACK (part_moved_callback),
+	                                G_OBJECT (part_item), 0);
+	item_data->changed_handler_id = g_signal_connect_object (G_OBJECT (part),
+	                                "changed",
+	                                G_CALLBACK (part_changed_callback),
 	                                G_OBJECT (part_item), 0);
 
 	return part_item;
@@ -721,149 +727,162 @@ edit_properties (SheetItem *object)
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
-/**
- * a part got rotated
- * @angle the angle the item is rotated towards the default (0) rotation
- */
-static void
-part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
+
+
+
+inline static GooCanvasAnchorType
+angle_to_anchor (int angle)
 {
-	cairo_matrix_t affine;
-	GSList *label_items;
 	GooCanvasAnchorType anchor;
-	GooCanvasGroup *group;
-	GooCanvasItem *canvas_item;
-	PartItem *item;
-	PartItemPriv *priv;
-	Part *part;
-	int index = 0;
-	int angle_anchor;
-
-	g_return_if_fail (sheet_item != NULL);
-	g_return_if_fail (IS_PART_ITEM (sheet_item));
-
-	item = PART_ITEM (sheet_item);
-	group = GOO_CANVAS_GROUP (item);
-	part = PART (data);
-
-	priv = item->priv;
-
-
-	cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180);
-
-
-	for (index = 0; index < group->items->len; index++) {
-		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
-		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item), &affine);
-	}
-
 	// Get the right anchor for the labels. This is needed since the
 	// canvas doesn't know how to rotate text and since we rotate the
 	// label_group instead of the labels directly.
-	angle_anchor = part_get_rotation (part);
-	switch (angle_anchor) {
-	case 90:
-		anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;
-		break;
-	case 180:
+
+	while (angle<0)
+		angle+=360;
+	angle %= 360;
+
+	if (90-45 < angle && angle < 90+45) {
+		anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;	
+	} else if (180-45 < angle && angle < 180+45) {
 		anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
-		break;
-	case 270:
+	} else if (270-45 < angle && angle < 270+45) {
 		anchor = GOO_CANVAS_ANCHOR_SOUTH_EAST;
-		break;
-	default:
+	} else/* if (360-45 < angle && angle < 0+45) */{
 		anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
-		break;
 	}
-
-	for (label_items = priv->label_items; label_items;
-	     label_items = label_items->next) {
-		gdouble x, y;
-		g_object_set (label_items->data, 
-		              "anchor", anchor, 
-		              NULL);
-		g_object_get (label_items->data,
-		              "x", &x,
-		              "y", &y,
-		              NULL);
-
-		goo_canvas_item_set_transform (label_items->data, NULL);
-		// A bias (1.0, -2.0) is introduced due to ????
-		goo_canvas_item_rotate (label_items->data, -angle, x + 1.0, y - 2.0);
-	}
-
-	for (label_items = priv->label_nodes; label_items;
-	     label_items = label_items->next) {
-		gdouble x, y;
-		g_object_set (label_items->data, 
-		              "anchor", anchor, 
-		              NULL);
-		g_object_get (label_items->data,
-		              "x", &x,
-		              "y", &y,
-		              NULL);
-
-		goo_canvas_item_set_transform (label_items->data, NULL);
-		// A bias (1.0, -2.0) is introduced due to ????
-		goo_canvas_item_rotate (label_items->data, -angle, x + 1.0, y - 2.0);
-	}
-
-	// Invalidate the bounding box cache.
-	priv->cache_valid = FALSE;
+	
+	return anchor;
 }
 
 
 /**
- * handles the update of the canvas item when a part gets flipped (within the backend alias model)
- * @data the part in form of a ItemData pointer
- * @direction the new flip state
- * @sheet_item the corresponding sheet_item to the model item @data
+ * whenever the model changes, this one gets called to update the view representation
+ * @attention this recalculates the matrix every time, this makes sure no errors stack up
+ * @attention further reading on matrix manipulations
+ * @attention http://www.cairographics.org/matrix_transform/
+ * @param data the model item, a bare C struct derived from ItemData
+ * @param sheet_item the view item, derived from goo_canvas_group/item
  */
 static void
-part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
+part_changed_callback (ItemData *data, SheetItem *sheet_item)
 {
-	GSList *label;
+	//TODO add static vars in order to skip the redraw if nothing changed
+	//TODO may happen once in a while and the check is really cheap
+	cairo_matrix_t matrix_rotate, matrix_mirror;
+	GSList *iter;
 	GooCanvasAnchorType anchor;
-	GooCanvasItem *canvas_item;
 	GooCanvasGroup *group;
+	GooCanvasItem *canvas_item;
 	PartItem *item;
 	PartItemPriv *priv;
 	Part *part;
 	int index = 0;
-	gdouble scale_h, scale_v, x, y;
-	Coords trans; //translation
-	GooCanvasBounds bounds_before, bounds_after;
+
+
+
+	// states
+	int angle;
+	IDFlip flip;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_PART_ITEM (sheet_item));
 
 	item = PART_ITEM (sheet_item);
-	part = PART (data);
-	priv = item->priv;
 	group = GOO_CANVAS_GROUP (item);
+	part = PART (data);
 
-	scale_h = (direction & ID_FLIP_HORIZ) ? -1. : 1.;
-	scale_v = (direction & ID_FLIP_VERT) ? -1. : 1.;
+	priv = item->priv;
+
+	// init the states
+	angle = part_get_rotation (part);
+	flip = part_get_flip (part);
+
+#if 1
+	// ### 1. rotate
+
+	cairo_matrix_init_rotate (&matrix_rotate, (double)angle * M_PI / 180);
+
+	// rotate all items in the canvas group
+	for (index = 0; index < group->items->len; index++) {
+		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
+		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item), &matrix_rotate);
+	}
+
+	// revert the rotation of all labels and change their anchor to not overlap too badly
+	// this assures that the text is always horizontal and properly aligned
+	anchor = angle_to_anchor (angle);
+	for (iter = priv->label_items; iter;
+	     iter = iter->next) {
+		gdouble x, y;
+		g_object_set (iter->data,
+		              "anchor", anchor,
+		              NULL);
+		g_object_get (iter->data,
+		              "x", &x,
+		              "y", &y,
+		              NULL);
+
+		goo_canvas_item_set_transform (iter->data, NULL);
+		goo_canvas_item_rotate (iter->data, -angle, x, y); // TODO check if we really need this, probably only if we got goo_canvas_items with child labels
+	}
+	// same for label nodes
+	for (iter = priv->label_nodes; iter;
+	     iter = iter->next) {
+		gdouble x, y;
+		g_object_set (iter->data,
+		              "anchor", anchor, 
+		              NULL);
+		g_object_get (iter->data,
+		              "x", &x,
+		              "y", &y,
+		              NULL);
+
+		goo_canvas_item_set_transform (iter->data, NULL);
+		goo_canvas_item_rotate (iter->data, -angle, x, y); // TODO check if we really need this, probably only if we got goo_canvas_items with child labels
+	}
+#endif
+
+
+
+	// ### 2. flip
+#if 1
+	gdouble scale_h, scale_v, x, y;
+	Coords trans;
+
+	//save some cycles by transforming the bounding box directly instead of recomputing
+	GooCanvasBounds bounds_before, bounds_after;
+	cairo_matrix_t matrix_1_translate, matrix_2_scale, matrix_3_translate;
+
+	// convert the flip direction to binary, used in the matrix setup
+	scale_h = (flip & ID_FLIP_HORIZ) ? -1. : 1.;
+	scale_v = (flip & ID_FLIP_VERT) ? -1. : 1.;
+
+	// matrix setup
+	//  1 move to 0,0
+	//  2 invert x and/or y direction(s) as necessary
+	//  3 move back to origin coordinates
+	cairo_matrix_init_translate (&matrix_1_translate, -trans.x, -trans.y);
+	cairo_matrix_init_scale     (&matrix_2_scale, scale_h, scale_v);
+	cairo_matrix_init_translate (&matrix_3_translate, +trans.x, +trans.y);
+
+	cairo_matrix_multiply (&matrix_mirror, &matrix_1_translate, &matrix_2_scale);
+	cairo_matrix_multiply (&matrix_mirror, &matrix_mirror, &matrix_3_translate);
+
+
 	
 	// Get the group bounds before the flip
 	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item), &bounds_before);
 
 	NG_DEBUG ("before x1=%lf x2=%lf y1=%lf y2=%lf", bounds_before.x1, bounds_before.x2, bounds_before.y1, bounds_before.y2);
 
-	cairo_matrix_t morph;
 
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
 		//FIXME replace this by transform to _set_ and not to mpy the scale
-#if 1
-		goo_canvas_item_get_transform (canvas_item, &morph);
-		morph.xx = scale_h;
-		morph.yy = scale_v;
-		goo_canvas_item_set_transform (canvas_item, &morph);
-#else
 		goo_canvas_item_scale (canvas_item, scale_h, scale_v);
-#endif
 	}
+
 
 	// Get the group bounds after the flip
 	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item),
@@ -879,66 +898,82 @@ part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 
 	goo_canvas_item_translate (GOO_CANVAS_ITEM (sheet_item), trans.x, trans.y);
 
-	anchor = part_item_get_anchor_from_part (part);
-	switch (anchor) {
-		case GOO_CANVAS_ANCHOR_NORTH_WEST:
-			anchor = GOO_CANVAS_ANCHOR_SOUTH_EAST;
-			break;
-		case GOO_CANVAS_ANCHOR_NORTH_EAST:
-			anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
-			break;
-		case GOO_CANVAS_ANCHOR_SOUTH_EAST:
-			anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;
-			break;
-		default:
-			anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
-	}
-
-	for (label = priv->label_items; label; label = label->next) {
-		g_object_set (label->data,
+	for (iter = priv->label_items; iter; iter = iter->next) {
+		g_object_set (iter->data,
 		              "anchor", anchor,
 		              NULL);
-		g_object_get (label->data,
-		              "x", &x,
-		              "y", &y,
+		g_object_get (iter->data,
+		              "x", &trans.x,
+		              "y", &trans.y,
 		              NULL);
-#if 1
-		goo_canvas_item_get_transform (label->data, &morph);
+#if 0
+		goo_canvas_item_get_transform (iter->data, &morph);
 		morph.xx = scale_h;
 		morph.yy = scale_v;
 		morph.x0 = trans.x;
 		morph.y0 = trans.y;
-		goo_canvas_item_set_transform (label->data, &morph);
+		goo_canvas_item_set_transform (iter->data, &morph);
 #else
-		goo_canvas_item_scale (label->data, scale_h, scale_v);
+		goo_canvas_item_scale (iter->data, scale_h, scale_v);
 #endif
 //		goo_canvas_item_translate (label->data, trans.x, trans.y);
 	}
 
-	for (label = priv->label_nodes; label; label = label->next) {
-		g_object_set (label->data, 
+	for (iter = priv->label_nodes; iter; iter = iter->next) {
+		g_object_set (iter->data,
 		              "anchor", anchor, 
 		              NULL);
-		g_object_get (label->data,
+		g_object_get (iter->data,
 		              "x", &x,
 		              "y", &y,
 		              NULL);
 		
-#if 1
-		goo_canvas_item_get_transform (label->data, &morph);
+#if 0
+		goo_canvas_item_get_transform (iter->data, &morph);
 		morph.xx = scale_h;
 		morph.yy = scale_v;
 		morph.x0 = trans.x;
 		morph.y0 = trans.y;
-		goo_canvas_item_set_transform (label->data, &morph);
+		goo_canvas_item_set_transform (iter->data, &morph);
 #else
-		goo_canvas_item_scale (label->data, scale_h, scale_v);
-		goo_canvas_item_translate (label->data, trans.x, trans.y);
+		goo_canvas_item_scale (iter->data, scale_h, scale_v);
+		goo_canvas_item_translate (iter->data, trans.x, trans.y);
 #endif
 	}
 
+#endif
+
+
+
+
+
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
+}
+
+/**
+ * a part got rotated
+ *
+ * @angle the angle the item is rotated towards the default (0) rotation
+ *
+ */
+static void
+part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
+{
+	g_warning ("ROTATED callback called - LEGACY\n");
+}
+
+
+/**
+ * handles the update of the canvas item when a part gets flipped (within the backend alias model)
+ * @data the part in form of a ItemData pointer
+ * @direction the new flip state
+ * @sheet_item the corresponding sheet_item to the model item @data
+ */
+static void
+part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
+{
+	g_warning ("FLIPPED callback called - LEGACY\n");
 }
 
 void

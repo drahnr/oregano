@@ -7,6 +7,7 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://github.com/drahnr/oregano
  *
