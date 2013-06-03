@@ -529,8 +529,8 @@ item_data_changed (ItemData *data)
 {
 	ItemDataClass *id_class;
 
-	g_return_val_if_fail (data != NULL, NULL);
-	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->changed == NULL)
