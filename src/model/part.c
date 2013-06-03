@@ -80,7 +80,7 @@ static void part_unregister (ItemData *data);
 
 static int part_register (ItemData *data);
 
-static void part_freshen (ItemData *data);
+static void part_changed (ItemData *data);
 
 static void part_set_property (ItemData *data, char *property, char *value);
 
@@ -178,7 +178,7 @@ part_class_init (PartClass *klass)
 	item_data_class->flip = part_flip;
 	item_data_class->unreg = part_unregister;
 	item_data_class->reg = part_register;
-	item_data_class->freshen = part_freshen;
+	item_data_class->changed = part_changed;
 
 	item_data_class->get_refdes_prefix = part_get_refdes_prefix;
 	item_data_class->set_property = part_set_property;
@@ -824,7 +824,7 @@ part_register (ItemData *data)
 
 
 static void
-part_freshen (ItemData *data)
+part_changed (ItemData *data)
 {
 	Part *part;
 	Coords loc = {0., 0.};
@@ -842,6 +842,7 @@ part_freshen (ItemData *data)
 	g_signal_emit_by_name ((GObject *)data, "moved", &loc);
 	g_signal_emit_by_name ((GObject *)data, "flipped", flip);
 	g_signal_emit_by_name ((GObject *)data, "rotated", angle);
+	g_signal_emit_by_name ((GObject *)data, "changed");
 }
 
 

@@ -77,7 +77,7 @@ struct _ItemDataClass
 	void 		(*flip) 		(ItemData *data, IDFlip direction, Coords *center);
 	void 		(*unreg)		(ItemData *data);
 	int 		(*reg)			(ItemData *data);
-	void		(*freshen)		(ItemData *data);
+	void		(*changed)		(ItemData *data);
 
 	char* 		(*get_refdes_prefix) 	(ItemData *data);
 	void 		(*set_property) 	(ItemData *data, char *property, char *value);

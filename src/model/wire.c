@@ -50,7 +50,7 @@ static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
 static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
-static void	 wire_freshen (ItemData *data);
+static void	 wire_changed (ItemData *data);
 
 #include "debug.h"
 
@@ -129,7 +129,7 @@ wire_class_init (WireClass *klass)
 	item_data_class->reg = wire_register;
 	item_data_class->has_properties = wire_has_properties;
 	item_data_class->print = wire_print;
-	item_data_class->freshen = wire_freshen;
+	item_data_class->changed = wire_changed;
 }
 
 static void
@@ -272,8 +272,7 @@ wire_set_length (Wire *wire, Coords *length)
 		wire->priv->direction = WIRE_DIR_DIAG;
 	}
 
-	g_signal_emit_by_name (G_OBJECT (wire), 
-	                       "changed");
+	g_signal_emit_by_name (G_OBJECT (wire), "changed");
 }
 
 gint
@@ -482,13 +481,14 @@ wire_register (ItemData *data)
 }
 
 static void
-wire_freshen (ItemData *data)
+wire_changed (ItemData *data)
 {
 	Coords loc;
 	g_return_if_fail (IS_WIRE (data));
 
 	item_data_get_pos (data, &loc);
 	g_signal_emit_by_name ((GObject *)data, "moved", &loc);
+	g_signal_emit_by_name ((GObject *)data, "changed");
 }
 
 static void

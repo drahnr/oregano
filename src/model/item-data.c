@@ -164,7 +164,7 @@ item_data_class_init (ItemDataClass *klass)
 	klass->flip = NULL;
 	klass->reg = NULL;
 	klass->unreg = NULL;
-	klass->freshen = NULL;
+	klass->changed = NULL;
 
 	// Signals.
 	klass->moved = NULL;
@@ -512,11 +512,12 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 
 /**
- * freshen the canvas representation of a item-data derived object
+ * changed
  *
  * depending on the actual subclass, this emits signals like "moved", "rotated" etc.
  * which will trigger callbacks which will refresh the items view representation
  * based on its model representation
+ * no matter what changed (if anything at all changed) a changed signal will _always_ be emitted
  *
  * @param data determines which item to refresh
  *
@@ -524,7 +525,7 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
  * this function does _not_ request a redraw explicitly
  */
 void
-item_data_freshen (ItemData *data)
+item_data_changed (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -532,8 +533,8 @@ item_data_freshen (ItemData *data)
 	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
-	if (id_class->freshen == NULL)
+	if (id_class->changed == NULL)
 		return;
 
-	return id_class->freshen (data);
+	return id_class->changed (data);
 }

@@ -1300,7 +1300,7 @@ item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *s
 
 		// refresh _after_ we added it to the Sheet
 		// this is required to properly display rotation, flip and others
-		item_data_freshen (data);
+		item_data_changed (data);
 	}
 }
 
