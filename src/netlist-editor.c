@@ -36,6 +36,7 @@
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
 #include <gtksourceview/gtksourcebuffer.h>
+#include <gtksourceview/gtksourcelanguage.h>
 
 #include "netlist-editor.h"
 #include "netlist-helper.h"
@@ -246,12 +247,12 @@ netlist_editor_new (GtkSourceBuffer * textbuffer) {
 	lang = gtk_source_language_manager_get_language (lm, "netlist");
 
 	if (lang) {
-		g_message ("Loading syntax highlighting %s from %s", gtk_source_language_get_name (lang), OREGANO_LANGDIR "/netlist.lang");
+		const gchar *name =  gtk_source_language_get_name (lang);
+		g_message ("Loading syntax highlighting %s from %s", name, OREGANO_LANGDIR "/netlist.lang");
 		gtk_source_buffer_set_language (GTK_SOURCE_BUFFER (textbuffer), lang);
 		gtk_source_buffer_set_highlight_syntax (GTK_SOURCE_BUFFER (textbuffer), TRUE);
 		gtk_source_buffer_set_highlight_matching_brackets (GTK_SOURCE_BUFFER (textbuffer), TRUE);
-	} 
-	else {
+	} else {
 		g_warning ("Can't load netlist.lang in %s", OREGANO_LANGDIR "/netlist.lang");
 	}
 

@@ -530,17 +530,12 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 
 /**
- * changed
- *
- * depending on the actual subclass, this emits signals like "moved", "rotated" etc.
- * which will trigger callbacks which will refresh the items view representation
- * based on its model representation
- * no matter what changed (if anything at all changed) a changed signal will _always_ be emitted
+ * changed, forcefully emits a changed signal to recalculate the morph matrix
  *
  * @param data determines which item to refresh
  *
  * \note
- * this function does _not_ request a redraw explicitly
+ * this function does _not_ request a redraw
  */
 void
 item_data_changed (ItemData *data)

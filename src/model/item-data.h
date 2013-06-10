@@ -158,7 +158,7 @@ void 		item_data_print (ItemData *data, cairo_t *cr,
 		                     SchematicPrintContext *ctx);
 
 // Refresh the canvas representation of the item based on the itemdata's
-// properties
-void		item_data_freshen (ItemData *data);
+// properties (or its subclasses)
+void		item_data_changed (ItemData *data);
 
 #endif
