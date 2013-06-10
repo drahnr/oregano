@@ -54,7 +54,8 @@ typedef struct _ItemDataPriv ItemDataPriv;
 typedef enum {
 	ID_FLIP_NONE 	= 0,
 	ID_FLIP_HORIZ 	= 1 << 0,
-	ID_FLIP_VERT 	= 1 << 1
+	ID_FLIP_VERT 	= 1 << 1,
+	ID_FLIP_MASK	= 3
 } IDFlip;
 
 struct _ItemData {
