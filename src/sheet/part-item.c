@@ -755,6 +755,7 @@ angle_to_anchor (int angle)
 	return anchor;
 }
 
+#define DEGSANITY(x) do {while (rotation<0) x+=360; x%=360;} while (0)
 #define DEG2RAD(x) ((double)x*M_PI/180.)
 #define RAD2DEG(x) ((double)x*180./M_PI)
 /**
@@ -801,20 +802,25 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	flip = part_get_flip (part);
 	rotation = part_get_rotation (part);
 
+	DEGSANITY (rotation);
 
 	scale_h = (flip & ID_FLIP_HORIZ) ? -1. : 1.;
 	scale_v = (flip & ID_FLIP_VERT) ? -1. : 1.;
 
 
 	item_data_get_pos (data, &pos);
-	cairo_matrix_t morph;
-#if 0
+	cairo_matrix_t morph, inv;
+	cairo_status_t done;
+
 	cairo_matrix_init_scale (&morph, scale_h, scale_v);
 	cairo_matrix_rotate (&morph, DEG2RAD (rotation));
-#else
-	cairo_matrix_init_rotate (&morph, DEG2RAD (rotation));
-	cairo_matrix_scale (&morph, scale_h, scale_v);
-#endif
+
+	inv = morph;
+	done = cairo_matrix_invert (&inv);
+	if (done != CAIRO_STATUS_SUCCESS) {
+		g_warning ("Failed to invert matrix. This should never happen. Never!");
+		return;
+	}
 
 	// rotate all items in the canvas group
 	for (index = 0; index < group->items->len; index++) {
@@ -825,9 +831,8 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	// revert the rotation of all labels and change their anchor to not overlap too badly
 	// this assures that the text is always horizontal and properly aligned
 	anchor = angle_to_anchor (rotation);
-	for (iter = priv->label_items; iter;
-	     iter = iter->next) {
-		gdouble x, y;
+
+	for (iter = priv->label_items; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor,
 		              NULL);
@@ -836,14 +841,12 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 		              "y", &y,
 		              NULL);
 
-		goo_canvas_item_set_transform (iter->data, NULL);
-/*		goo_canvas_item_rotate (iter->data, -angle, x, y);
-		goo_canvas_item_scale (iter->data, scale_h, scale_v);*/
+
+		goo_canvas_item_set_transform (iter->data, &inv);
+
 	}
 	// same for label nodes
-	for (iter = priv->label_nodes; iter;
-	     iter = iter->next) {
-		gdouble x, y;
+	for (iter = priv->label_nodes; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor, 
 		              NULL);
@@ -852,9 +855,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 		              "y", &y,
 		              NULL);
 
-		goo_canvas_item_set_transform (iter->data, NULL);
-/*		goo_canvas_item_rotate (iter->data, -angle, x, y);
-		goo_canvas_item_scale (iter->data, scale_h, scale_v);*/
+		goo_canvas_item_set_transform (iter->data, &inv);
 	}
 
 
