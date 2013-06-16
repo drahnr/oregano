@@ -811,8 +811,8 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	cairo_matrix_t morph, inv;
 	cairo_status_t done;
 
-	cairo_matrix_init_scale (&morph, scale_h, scale_v);
-	cairo_matrix_rotate (&morph, DEG2RAD (rotation));
+	cairo_matrix_init_rotate (&morph, DEG2RAD (rotation));
+	cairo_matrix_scale (&morph, scale_h, scale_v);
 
 	inv = morph;
 	done = cairo_matrix_invert (&inv);
