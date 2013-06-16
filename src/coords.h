@@ -80,4 +80,10 @@ coords_sum (Coords *a, Coords *b);
 Coords
 coords_sub (Coords *a, Coords *b);
 
+
+/*
+ * calculates the average of two points
+ */
+Coords
+coords_average (const Coords *a, const Coords *b);
 #endif /* __COORDS_H */

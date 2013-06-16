@@ -48,6 +48,7 @@
 #include "stock.h"
 #include "dialogs.h"
 #include "sheet.h"
+#include "oregano-utils.h"
 
 
 #define NORMAL_COLOR "red"
@@ -755,9 +756,7 @@ angle_to_anchor (int angle)
 	return anchor;
 }
 
-#define DEGSANITY(x) do {while (rotation<0) x+=360; x%=360;} while (0)
-#define DEG2RAD(x) ((double)x*M_PI/180.)
-#define RAD2DEG(x) ((double)x*180./M_PI)
+
 /**
  * whenever the model changes, this one gets called to update the view representation
  * @attention this recalculates the matrix every time, this makes sure no errors stack up

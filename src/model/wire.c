@@ -39,6 +39,7 @@
 #include "wire-private.h"
 #include "clipboard.h"
 #include "schematic-print-context.h"
+#include "oregano-utils.h"
 
 static void      wire_class_init (WireClass *klass);
 static void      wire_init (Wire *wire);
@@ -50,7 +51,7 @@ static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
 static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
-static void	 wire_changed (ItemData *data);
+static void      wire_changed (ItemData *data);
 
 #include "debug.h"
 
@@ -360,8 +361,7 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	if (center_pos) {
 		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
-		wire_center_before.x = (b1.x + b2.x) / 2;
-		wire_center_before.y = (b1.y + b2.y) / 2;
+		wire_center_before = coords_average(&b1,&b2);
 	}
 
 	priv = wire->priv;
