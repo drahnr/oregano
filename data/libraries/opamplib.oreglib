@@ -4,7 +4,9 @@
   <ogo:description>OpAmp Library</ogo:description>
   <ogo:version>0.26</ogo:version>
   <ogo:author>Hector Bellesi / Dietmar Eberhard, Dietmar.Eberhard@ipm.fhg.de</ogo:author>  
-<ogo:last-updated>19-Aug-2001</ogo:last-updated>   <ogo:symbols>
+<ogo:last-updated>19-Aug-2001</ogo:last-updated>   
+
+<ogo:symbols>
 
    <ogo:symbol>
       <ogo:name>LF353b</ogo:name>
@@ -96,7 +98,6 @@
       </ogo:connections>
     </ogo:symbol>
 
-
    <ogo:symbol>
       <ogo:name>LF353a</ogo:name>
       <ogo:objects>
@@ -153,7 +154,6 @@
         <ogo:connection>(60 20 2)</ogo:connection>
       </ogo:connections>
     </ogo:symbol>
-
 
    <ogo:symbol>
       <ogo:name>LM741</ogo:name>
@@ -2777,10 +2777,6 @@
       </ogo:properties>
     </ogo:part>
 
-
-
-
-
-
   </ogo:parts>
+
 </ogo:library>
