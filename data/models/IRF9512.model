@@ -1,0 +1,6 @@
+.model IRF9512 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=.3715 Kp=10.54u W=.2 L=2u Vto=-3.923
++ Rd=.6523 Rds=444.4K Cbd=331.8p Pb=.8 Mj=.5 Fc=.5 Cgso=2.547n
++ Cgdo=311p Rg=4.087 Is=3.748E-18 N=3 Tt=2250n)
+* IR  pid=IRF9512 case=TO220
+

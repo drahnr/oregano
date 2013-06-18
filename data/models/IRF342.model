@@ -1,0 +1,6 @@
+.model IRF342 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=5.186m Kp=20.79u W=.68 L=2u Vto=3.503
++ Rd=.35 Rds=1.778MEG Cbd=820p Pb=.8 Mj=.5 Fc=.5 Cgso=1.608n
++ Cgdo=168.2p Rg=.7553 Is=53.7p N=1 Tt=570n)
+* IR pid=IRF342 case=TO3
+

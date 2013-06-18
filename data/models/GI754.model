@@ -1,0 +1,4 @@
+.model GI754 D (IS=3.62E-08 N=1.67 BV=5.33E+02 IBV=2.50E-05
++ RS=1.84E-03 CJO=9.28E-10 VJ=.29 M=.55 TT=6.91E-06)
+* General Instrument 400 Volt 6.00 Amp 5.50 us Si Rectifier
+

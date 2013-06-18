@@ -1,0 +1,4 @@
+.model HP2837 D (IS=2.2N RS=25 N=1.08 BV=75 IBV=10U
++ CJO=1.6P VJ=.6 M=.5 EG=.69 TT=72P)
+* 400 Volt .5 Amp Si Schottky Diode
+

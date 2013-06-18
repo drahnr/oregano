@@ -1,0 +1,4 @@
+.model HP3486 D (IS=5U RS=50 N=1.08 BV=2.5 IBV=35U
++ CJO=.2P VJ=.35 M=.5 EG=.69 TT=72P)
+* H-P HSCH-3486 400 Volt .5 Amp Si Schottky
+

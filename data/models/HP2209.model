@@ -1,0 +1,4 @@
+.model HP2209 D (IS=.3N RS=5 N=1.08 BV=5 IBV=10U
++ CJO=.2P VJ=.65 M=.5 EG=.69 TT=72P)
+* 400 Volt .5 Amp Si Schottky
+

@@ -1,0 +1,6 @@
+.model IRF520 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=.1459 Kp=20.79u W=.73 L=2u Vto=3.59
++ Rd=80.23m Rds=444.4K Cbd=622.1p Pb=.8 Mj=.5 Fc=.5 Cgso=517.9p
++ Cgdo=137.3p Rg=6.675 Is=2.438p N=1 Tt=137n)
+* IR pid=IRF520 case=TO220
+

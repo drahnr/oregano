@@ -1,0 +1,4 @@
+.MODEL BAS20 D IS=8.402E-9 N=2.011 RS=.5125 XTI=3
++ EG=1.11 BV=435 IBV=4.139E-3 TT=41.84E-9 CJO=3P
+* Zetex 6.2 Volt .2 Watt Rectifier Diode
+

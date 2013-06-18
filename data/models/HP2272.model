@@ -1,0 +1,4 @@
+.model HP2272 D (IS=.3U RS=9 N=1.08 BV=10 IBV=10U
++ CJO=.25P VJ=.5 M=.5 EG=.69 TT=72P)
+* H-P 5082-2272 400 Volt .5 Amp Si Schottky
+

@@ -1,0 +1,7 @@
+.model BCX41    NPN(IS=211.1f XTI=3 EG=1.11 VAF=100 BF=171 ISE=1.975p NE=1.629
++ IKF=.7668 Nk=.5103 Xtb=1.5 Br=24.68 Isc=109.7p Nc=1.588
++ Ikr=3.115 Rc=.463 Cjc=29.15p Mjc=.3333 Vjc=.5 Fc=.5 Cje=87.45p
++ Mje=.3333 Vje=.5 Tr=10n Tf=1.461n Itf=8.247 Xtf=568.2 Vtf=10)
+* MFG=SIEMENS pid=bcx41 case=SOT23
+* 11-02-18 hjr
+

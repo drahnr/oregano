@@ -1,0 +1,4 @@
+.model FE1A D (IS=2.51N RS=28.2M N=1.42 BV=50 IBV=1U
++ CJO=42.4P VJ=.75 M=.333 TT=21.6N)
+* Diotec 50 Volt 1 Amp 15M us Si Diode
+

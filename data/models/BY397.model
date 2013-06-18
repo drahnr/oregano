@@ -1,0 +1,4 @@
+.model BY397 D (IS=22U RS=42M N=3.35 BV=200 IBV=10U
++ CJO=100P VJ=.75 M=.333 TT=585N)
+* Diotec 200 Volt 3 Amp .5 us Si Diode
+

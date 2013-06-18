@@ -1,0 +1,4 @@
+.model HP5816 D (IS=62P RS=4 N=1.08 BV=4 IBV=10U
++ CJO=.2P VJ=.65 M=.5 EG=.69 TT=72P)
+* H-P HSCH-5816 400 Volt .5 Amp Si Schottky
+

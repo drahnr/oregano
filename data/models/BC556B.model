@@ -1,0 +1,7 @@
+.model BC556B   PNP(IS=1.02f XTI=3 EG=1.11 VAF=52.31 BF=306.5 ISE=10.27f
++ NE=1.764 IKF=91.85m Nk=.5351 Xtb=1.5 Br=7.437 Isc=1.02f Nc=1.63
++ Ikr=1.7 Rc=1.162 Cjc=9.81p Mjc=.332 Vjc=.4865 Fc=.5 Cje=30p
++ Mje=.3333 Vje=.5 Tr=10n Tf=611.6p Itf=1.37 Xtf=25.92 Vtf=10)
+* MFG=PHILIPS pid=bc556b case=TO92
+* 11-02-18 hjr
+

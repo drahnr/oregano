@@ -1,0 +1,4 @@
+.model HP9XXX D (IS=.16N RS=5 N=1.2 BV=5 IBV=10U
++ CJO=.04P VJ=.65 M=.5 EG=1.43 TT=72P)
+* H-P HSCH-9XXX 400 Volt .5 Amp Si Schottky
+

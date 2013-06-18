@@ -1,0 +1,8 @@
+.model BC558B   PNP(IS=1.02f XTI=3 EG=1.11 VAF=52.31 BF=306.5 ISE=10.27f
++ NE=1.764 IKF=91.85m Nk=.5351 Xtb=1.5 Br=6.48 Isc=1.472f
++ Nc=1.294 Ikr=.5584 Rc=1.086 Cjc=9.81p Mjc=.332 Vjc=.4865 Fc=.5
++ Cje=30p Mje=.3333 Vje=.5 Tr=10n Tf=611.6p Itf=1.373 Xtf=26.05
++ Vtf=10)
+* MFG=PHILIPS pid=bc558b case=TO92
+* 11-02-18 hjr
+

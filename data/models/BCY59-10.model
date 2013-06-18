@@ -1,0 +1,7 @@
+.model BCY59-10 NPN(IS=64.04f XTI=3 EG=1.11 VAF=35.7 BF=676 ISE=444.3f NE=1.771
++ IKF=.1013 Nk=.6259 Xtb=1.5 Br=1 Isc=38.48n Nc=4.097 Ikr=5.942
++ Rc=1.19 Cjc=11.15p Mjc=.3333 Vjc=.5 Fc=.5 Cje=16.78p Mje=.3333
++ Vje=.5 Tr=609.8n Tf=423.5p Itf=3.794 Xtf=108.1 Vtf=10)
+* MFG=PHILIPS pid=bcy59-10 case=TO18
+* 11-02-18 hjr
+

@@ -1,0 +1,8 @@
+.model BSX20    NPN(IS=20.75f XTI=3 EG=1.11 VAF=100 BF=113.4 ISE=224.4f
++ NE=1.439 IKF=76.38m Nk=.5276 Xtb=1.8 Br=2.025 Isc=163.1p
++ Nc=1.438 Ikr=5.567 Rc=1.156 Cjc=3.334p Mjc=.2086 Vjc=.5 Fc=.5
++ Cje=4.118p Mje=.3794 Vje=.5 Tr=45.49n Tf=236.7p Itf=1.912
++ Xtf=43.51 Vtf=10)
+* MFG=PHILIPS pid=bsx20 case=TO18
+* 11-02-18 hjr
+

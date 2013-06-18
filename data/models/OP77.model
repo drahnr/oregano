@@ -1,6 +1,6 @@
-* OP77 SPICE Macro-model              
+* OP77 SPICE Macro-model
 *  05/02 Rev A
-* SB, ADSiV apps                                    
+* SB, ADSiV apps
 * Typical values, Vsy=±15V
 * Copyright 2002 by Analog Devices
 *
@@ -93,7 +93,7 @@ G4  98 24     23 28  1
 * POLE AT 2568 MHz
 *
 R14 27 98     1
-C8  27 98    62E-12  
+C8  27 98    62E-12
 G5  98 27     24 28  1
 *
 * COMMON-MODE GAIN NETWORK WITH ZERO AT 1 kHZ
@@ -108,7 +108,7 @@ EPSY 98 72 POLY(1) (99,50) 0 1
 RPS3 72 73 1E6
 CPS3 72 73 3E-9
 RPS4 73 98 1
- 
+
 * OUTPUT STAGE
 *
 R15 28 99     100E3

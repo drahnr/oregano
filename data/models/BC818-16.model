@@ -1,0 +1,7 @@
+.model BC818-16 NPN(IS=32.53f XTI=3 EG=1.11 VAF=100 BF=190.4 ISE=299f NE=1.583
++ IKF=.7695 Nk=.5467 Xtb=1.5 Br=6.313 Isc=138f Nc=2.053 Ikr=.187
++ Rc=.4216 Cjc=24.29p Mjc=.3333 Vjc=.5 Fc=.5 Cje=71.14p Mje=.3333
++ Vje=.5 Tr=10n Tf=660.1p Itf=2.204 Xtf=66.65 Vtf=10)
+* MFG=SIEMENS  pid=bc818-16 case=SOT23
+* 11-02-18 hjr
+

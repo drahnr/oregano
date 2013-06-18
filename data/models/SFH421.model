@@ -1,0 +1,4 @@
+.MODEL SFH421 D (IS=11P RS=1.57 N=2.18 BV=5 IBV=10N
++ CJO=25P VJ=.75 M=.333 TT=864N)
+* Siemens 5 Volt .1 Amp .6 us GaAs Diode
+

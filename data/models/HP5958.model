@@ -1,0 +1,4 @@
+.model HP5958 D (IS=1P RS=4 N=1.08 BV=5 IBV=10U
++ CJO=.4P VJ=.85 M=.5 EG=.69 TT=72P)
+* H-P HSCH-5958 400 Volt .5 Amp Si Schottky
+

@@ -1,0 +1,8 @@
+.model BC547C   NPN(IS=7.049f XTI=3 EG=1.11 VAF=24.76 BF=543.1 ISE=78.17f
++ NE=1.679 IKF=94.96m Nk=.5381 Xtb=1.5 Br=1 Isc=27.51f Nc=1.775
++ Ikr=3.321 Rc=.9706 Cjc=5.25p Mjc=.3147 Vjc=.5697 Fc=.5
++ Cje=11.5p Mje=.6715 Vje=.5 Tr=10n Tf=410.7p Itf=1.12 Xtf=26.19
++ Vtf=10)
+* MFG=PHILIPS pid=bc547c case=TO92
+* 11-02-18 hjr
+

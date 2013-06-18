@@ -1,0 +1,7 @@
+.model BCX71H   PNP(IS=26.39f XTI=3 EG=1.11 VAF=79.03 BF=243.9 ISE=236.2f
++ NE=1.831 IKF=.4069 Nk=.5 Xtb=1.5 Br=8.138 Isc=92.15p Nc=2.252
++ Ikr=.3702 Rc=2.597 Cjc=11.51p Mjc=.3626 Vjc=.5 Fc=.5 Cje=8.397p
++ Mje=.3865 Vje=.5 Tr=10n Tf=590.5p Itf=.642 Xtf=225.6 Vtf=1)
+* MFG=SIEMENS pid=bcx71h case=SOT23
+* 11-02-18 hjr
+

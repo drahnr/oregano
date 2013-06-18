@@ -1,0 +1,8 @@
+.model BCW65A   NPN(IS=44.97f XTI=3 EG=1.11 VAF=100 BF=242.4 ISE=44.98f
++ NE=1.302 IKF=1.006 Nk=.7057 Xtb=1.5 Br=5.128 Isc=6.206p
++ Nc=1.474 Ikr=6.858 Rc=.4184 Cjc=14.57p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=71.14p Mje=.3333 Vje=.5 Tr=10n Tf=707.7p Itf=5.249
++ Xtf=23.37 Vtf=10)
+* MFG=SIEMENS pid=bcw65a case=SOT23
+* 11-02-18 hjr
+

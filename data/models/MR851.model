@@ -1,0 +1,4 @@
+.MODEL MR851 D (IS=3.91N RS=14.6M N=1.67 BV=100 IBV=100N
++ CJO=124P VJ=.75 M=.333 TT=518N)
+* Motorola 100 Volt 3 Amp .2 us Si Diode
+

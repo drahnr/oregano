@@ -1,0 +1,4 @@
+.MODEL MR856 D (IS=3.91N RS=14.6M N=1.67 BV=600 IBV=100N
++ CJO=124P VJ=.75 M=.333 TT=519N)
+* Motorola 600 Volt 3 Amp .2 us Si Diode
+

@@ -1,0 +1,4 @@
+.MODEL BAS16Z D IS=1.795E-9 N=1.874 RS=1.263 XTI=3
++ EG=1.11 BV=153.1 IBV=17.26E-3 TT=7.358E-9 CJO=3P
+* Zetex 6.2 Volt .2 Watt Rectifier Diode
+

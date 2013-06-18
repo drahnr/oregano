@@ -1,0 +1,5 @@
+.model 2SC2240 NPN(Is=99.13f Xti=3 Eg=1.11 Vaf=422.2 Bf=352.8 Ise=1.179p Ne=1.782 
++ Ikf=.4704 Nk=.9631 Xtb=1.5 Var=100 Br=1.663 Isc=555.1p Nc=1.796 Ikr=5.85 Rc=.2032 
++ Cjc=7.561p Mjc=.2472 Vjc=.3905 Fc=.5 Cje=5p Mje=.3333 Vje=.75 Tr=10n Tf=1.295n Itf=1 
++ Xtf=0 Vtf=10)
+

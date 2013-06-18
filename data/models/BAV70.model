@@ -1,0 +1,4 @@
+.MODEL BAV70 D IS=4.856E-9 N=2.01 RS=1.358 XTI=3
++ EG=1.11 BV=162 IBV=2.587E-3 TT=4.184E-9 CJO=3P
+* Zetex 6.2 Volt .2 Watt Rectifier Diode
+

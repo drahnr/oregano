@@ -1,0 +1,8 @@
+.model BC178A   PNP(IS=336.7f XTI=3 EG=1.11 VAF=44.61 BF=187 ISE=336.8f
++ NE=1.459 IKF=.2059 Nk=.5081 Xtb=1.5 Br=4.068 Isc=1.121n
++ Nc=1.953 Ikr=10.05 Rc=1.86 Cjc=11p Mjc=.2223 Vjc=.5 Fc=.5
++ Cje=33p Mje=.3333 Vje=.5 Tr=10n Tf=845.5p Itf=1.701 Xtf=19.04
++ Vtf=10)
+* MFG=PHILIPS pid=bc178a case=TO18
+* 11-02-18 hjr
+

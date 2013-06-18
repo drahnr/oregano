@@ -1,0 +1,6 @@
+.model IRF421 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=57.8m Kp=21.11u W=.26 L=2u Vto=3.827
++ Rd=1.595 Rds=2MEG Cbd=394.1p Pb=.8 Mj=.5 Fc=.5 Cgso=1.577n
++ Cgdo=117.1p Rg=.2379 Is=267.9p N=1 Tt=560n)
+* IR pid=IRF421 case=TO3
+

@@ -1,0 +1,7 @@
+.model BSX61    NPN(IS=377.1f XTI=3 EG=1.11 VAF=100 BF=3.39K ISE=1.529p
++ NE=1.314 IKF=1.57 Nk=.8664 Xtb=1.5 Br=13.35 Isc=153.1n Nc=2.243
++ Ikr=2.079 Rc=.4756 Cjc=19.04p Mjc=.2126 Vjc=.5 Fc=.5 Cje=45.81p
++ Mje=.3426 Vje=.5147 Tr=10n Tf=300p Itf=3.281 Xtf=51.95 Vtf=10)
+* MFG=PHILIPS pid=bsx61 case=TO39
+* 11-02-18 hjr
+

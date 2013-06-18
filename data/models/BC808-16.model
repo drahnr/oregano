@@ -1,0 +1,7 @@
+.model BC808-16 PNP(IS=32.53f XTI=3 EG=1.11 VAF=100 BF=209 ISE=318.3f NE=1.542
++ IKF=.6049 Nk=.6086 Xtb=1.5 Br=6.501 Isc=179.5f Nc=1.832
++ Ikr=.1402 Rc=.4026 Cjc=24.29p Mjc=.3333 Vjc=.5 Fc=.5 Cje=71.14p
++ Mje=.3333 Vje=.5 Tr=10n Tf=703p Itf=13.36 Xtf=1.289K Vtf=10)
+* MFG=SIEMENS pid=bc808-16 case=SOT23
+* 11-02-18 hjr
+

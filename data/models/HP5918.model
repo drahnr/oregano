@@ -1,0 +1,4 @@
+.model HP5918 D (IS=1.5N RS=4 N=1.08 BV=5 IBV=10U
++ CJO=.4P VJ=.65 M=.5 EG=.69 TT=72P)
+* H-P HSCH-5918 400 Volt .5 Amp Si Schottky
+

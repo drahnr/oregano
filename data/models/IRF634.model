@@ -1,0 +1,6 @@
+.model IRF634 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=48.25m Kp=20.44u W=.32 L=2u Vto=3.888
++ Rd=.2991 Rds=1.111MEG Cbd=824p Pb=.8 Mj=.5 Fc=.5 Cgso=2.386n
++ Cgdo=304.6p Rg=1.085 Is=11.36p N=1 Tt=250n)
+* IR pid=IRF634 case=TO220
+

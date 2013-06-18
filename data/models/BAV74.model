@@ -1,0 +1,4 @@
+.MODEL BAV74 D IS=4.739E-9 N=1.849 RS=.4418 XTI=3
++ EG=1.11 BV=99.08 IBV=25.88E-3 TT=2.02E-9 CJO=3P
+* Zetex 6.2 Volt .2 Watt Rectifier Diode
+

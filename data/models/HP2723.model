@@ -1,0 +1,4 @@
+.model HP2723 D (IS=.3N RS=7 N=1.08 BV=4 IBV=10U
++ CJO=.1P VJ=.65 M=.5 EG=.69 TT=72P)
+* 400 Volt .5 Amp Si Schottky Diode
+

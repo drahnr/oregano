@@ -1,0 +1,7 @@
+.model BFX34    NPN(IS=3.31p XTI=3 EG=1.11 VAF=100 BF=361 ISE=465.3p NE=1.745
++ IKF=1.936 Nk=.5128 Xtb=1.5 Br=1.239 Isc=62.67p Nc=1.486
++ Ikr=.9787 Rc=.1321 Cjc=87.45p Mjc=.3333 Vjc=.5 Fc=.5 Cje=521.7p
++ Mje=.3333 Vje=.5 Tr=10n Tf=1.489n Itf=17.31 Xtf=13.82 Vtf=10)
+* MFG=PHILIPS pid=bfx34 case=TO39
+* 11-02-18 hjr
+

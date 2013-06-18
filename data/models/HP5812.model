@@ -1,0 +1,4 @@
+.model HP5812 D (IS=62P RS=8 N=1.08 BV=4 IBV=10U
++ CJO=.13P VJ=.65 M=.5 EG=.69 TT=72P)
+* H-P HSCH-5812 400 Volt .5 Amp Si Schottky
+

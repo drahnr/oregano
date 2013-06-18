@@ -1,0 +1,8 @@
+.model BC560A   PNP(IS=1.02f XTI=3 EG=1.11 VAF=74.76 BF=175.1 ISE=10.26f
++ NE=1.641 IKF=88.84m Nk=.4971 Xtb=1.5 Br=4.329 Isc=71.92f
++ Nc=1.401 Ikr=9.634 Rc=1.071 Cjc=9.81p Mjc=.332 Vjc=.4865 Fc=.5
++ Cje=30p Mje=.3333 Vje=.5 Tr=10n Tf=822.7p Itf=3.991 Xtf=174.7
++ Vtf=10)
+* MFG=PHILIPS pid=bc560a case=TO92
+* 11-02-18 hjr
+

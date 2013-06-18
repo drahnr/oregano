@@ -1,0 +1,7 @@
+.model BSX19    NPN(IS=20.75f XTI=3 EG=1.11 VAF=100 BF=738K ISE=14.86p NE=1.709
++ IKF=1.366m Nk=.4817 Xtb=1.5 Br=507 Isc=45.28p Nc=1.452
++ Ikr=2.923 Rc=.8978 Cjc=3.334p Mjc=.2086 Vjc=.5 Fc=.5 Cje=4.118p
++ Mje=.3794 Vje=.5 Tr=4n Tf=280.7p Itf=321.5 Xtf=8.541K Vtf=10)
+* MFG=PHILIPS pid=bsx19 case=TO18
+* 11-02-18 hjr
+

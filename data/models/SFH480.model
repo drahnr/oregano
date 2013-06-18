@@ -1,0 +1,4 @@
+.MODEL SFH480 D (IS=.123F RS=1.72 N=1.34 BV=5 IBV=10N
++ CJO=25P VJ=.75 M=.333 TT=864N)
+* Siemens 5 Volt .2 Amp .6 us GaAs Diode
+

@@ -1,0 +1,4 @@
+.MODEL LD274 D (IS=4.64N RS=.633 N=2.85 BV=5 IBV=10N
++ CJO=25P VJ=.75 M=.333 TT=1.44U)
+* Siemens 5 Volt .1 Amp 1 us GaAs Diode
+

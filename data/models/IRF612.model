@@ -1,0 +1,6 @@
+.model IRF612 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=.5804 Kp=20.77u W=.45 L=2u Vto=3.886
++ Rd=.8781 Rds=888.9K Cbd=220.5p Pb=.8 Mj=.5 Fc=.5 Cgso=517.7p
++ Cgdo=61.68p Rg=.2597 Is=5.254p N=1 Tt=295n)
+* IR pid=IRFC210 case=TO220
+

@@ -1,0 +1,8 @@
+.model BC548A   NPN(IS=7.049f XTI=3 EG=1.11 VAF=127.9 BF=253 ISE=96.26f
++ NE=1.556 IKF=77.05m Nk=.5305 Xtb=1.5 Br=1 Isc=130.8f Nc=1.602
++ Ikr=3.321 Rc=.8766 Cjc=5.25p Mjc=.3147 Vjc=.5697 Fc=.5
++ Cje=11.5p Mje=.6715 Vje=.5 Tr=10n Tf=409.5p Itf=1.994 Xtf=40.12
++ Vtf=10)
+* MFG=PHILIPS pid=bc548a case=TO92
+* 11-02-18 hjr
+

@@ -1,0 +1,4 @@
+.MODEL MR852 D (IS=3.91N RS=14.6M N=1.67 BV=200 IBV=100N
++ CJO=124P VJ=.75 M=.333 TT=520N)
+* Motorola 200 Volt 3 Amp .2 us Si Diode
+

@@ -1,0 +1,7 @@
+.model BC857C   PNP(IS=336.7f XTI=3 EG=1.11 VAF=29.03 BF=462.2 ISE=1.648p
++ NE=2.405 IKF=.1165 Nk=.5254 Xtb=1.5 Br=7.16 Isc=196p Nc=1.815
++ Ikr=9.677 Rc=2.791 Cjc=11.51p Mjc=.3626 Vjc=.5 Fc=.5 Cje=8.397p
++ Mje=.3865 Vje=.5 Tr=10n Tf=605.4p Itf=3.088 Xtf=41.48 Vtf=10)
+* MFG=SIEMENS pid=bc857c case=SOT23
+* 11-02-18 hjr
+

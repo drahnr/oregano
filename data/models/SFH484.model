@@ -1,0 +1,4 @@
+.MODEL SFH484 D (IS=46.4F RS=1.66 N=1.67 BV=5 IBV=10N
++ CJO=25P VJ=.75 M=.333 TT=864N)
+* Siemens 5 Volt .1 Amp .6 us GaAs Diode
+

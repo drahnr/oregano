@@ -1,0 +1,7 @@
+.model BSX46-16 NPN(IS=66.19f XTI=3 EG=1.11 VAF=100 BF=600.9 ISE=93.12f NE=1.31
++ IKF=.1347 Nk=.5522 Xtb=1.2 Br=889.8 Isc=3.42n Nc=1.74 Ikr=12.98
++ Rc=.5886 Cjc=48.58p Mjc=.3333 Vjc=.5 Fc=.5 Cje=94.85p Mje=.3333
++ Vje=.5 Tr=10n Tf=1.361n Itf=2.994 Xtf=146.2 Vtf=10)
+* MFG=PHILIPS pid=bsx46-16 case=TO39
+* 11-02-18 hjr
+

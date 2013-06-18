@@ -1,0 +1,4 @@
+.model HP5932 D (IS=40N RS=10 N=1.08 BV=5 IBV=10U
++ CJO=.12P VJ=.5 M=.5 EG=.69 TT=72P)
+* H-P HSCH-5932 400 Volt .5 Amp Si Schottky
+

@@ -1,0 +1,8 @@
+.model BCY78-7  PNP(IS=55.58p XTI=3 EG=1.11 VAF=106.8 BF=188.5 ISE=230.7p
++ NE=2.751 IKF=74.06m Nk=.5019 Xtb=1.5 Br=2.429 Isc=34.94n
++ Nc=2.499 Ikr=1.387 Rc=2.829 Cjc=16p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=16.78p Mje=.3333 Vje=.5 Tr=283n Tf=762.6p Itf=5.95
++ Xtf=180.6 Vtf=10)
+* MFG=PHILIPS pid=bcy78-7 case=TO18
+* 11-02-18 hjr
+

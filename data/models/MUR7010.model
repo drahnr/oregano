@@ -1,0 +1,4 @@
+.model MUR7010 D (IS=12.9U RS=1.73M N=2.01 BV=100 IBV=25U
++ CJO=470P VJ=.275 M=.125 TT=75.4N)
+* Motorola 100 Volt 70 Amp 60M us Si Diode
+

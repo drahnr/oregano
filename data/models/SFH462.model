@@ -1,0 +1,4 @@
+.MODEL SFH462 D (IS=3.20E-20 RS=5.05 N=1.67 BV=3 IBV=10N
++ CJO=30P VJ=.75 M=.333 TT=144N)
+* Siemens 3 Volt 50M Amp .1 us GaAs Diode
+

@@ -1,0 +1,4 @@
+.model HP2824 D (IS=1.1N RS=10 N=1.08 BV=25 IBV=10U
++ CJO=.8P VJ=.6 M=.5 EG=.69 TT=72P)
+* 400 Volt .5 Amp Si Schottky Diode
+

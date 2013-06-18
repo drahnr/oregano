@@ -1,0 +1,8 @@
+.model BC557A   PNP(IS=1.02f XTI=3 EG=1.11 VAF=73.79 BF=174.7 ISE=10.73f
++ NE=1.644 IKF=.1023 Nk=.5033 Xtb=1.5 Br=4.432 Isc=14.74f
++ Nc=1.296 Ikr=2.237 Rc=1.039 Cjc=9.81p Mjc=.332 Vjc=.4865 Fc=.5
++ Cje=30p Mje=.3333 Vje=.5 Tr=10n Tf=830.3p Itf=.8981 Xtf=10.32
++ Vtf=10)
+* MFG=PHILIPS pid=bc557a case=TO92
+* 11-02-18 hjr
+

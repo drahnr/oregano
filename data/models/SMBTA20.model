@@ -1,0 +1,7 @@
+.model SMBTA20  NPN(IS=3.31f XTI=3 EG=1.11 VAF=100 BF=315.3 ISE=30.83f NE=1.744
++ IKF=67.18m Nk=.3523 Xtb=1.5 Br=5.232 Isc=1.227p Nc=1.561
++ Ikr=.6492 Rc=1.623 Cjc=12.2p Mjc=.3333 Vjc=.5 Fc=.5 Cje=8.614p
++ Mje=.3333 Vje=.5 Tr=10n Tf=591p Itf=1.423 Xtf=51.17 Vtf=10)
+* MFG=SIEMENS pid=smbta20 case=SOT23
+* 11-02-18 hjr
+

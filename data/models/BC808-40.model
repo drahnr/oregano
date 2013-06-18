@@ -1,0 +1,8 @@
+.model BC808-40 PNP(IS=32.53f XTI=3 EG=1.11 VAF=100 BF=460.8 ISE=301.2f
++ NE=1.615 IKF=.4967 Nk=.5594 Xtb=1.5 Br=6.87 Isc=283.2f Nc=1.97
++ Ikr=9.135m Rc=.3759 Cjc=24.29p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=71.14p Mje=.3333 Vje=.5 Tr=10n Tf=704.3p Itf=13.89
++ Xtf=1.333K Vtf=10)
+* MFG=SIEMENS pid=bc808-40 case=SOT23
+* 11-02-18 hjr
+

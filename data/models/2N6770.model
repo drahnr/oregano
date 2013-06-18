@@ -1,0 +1,6 @@
+.model 2N6770 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=28.45m Kp=20.65u W=2 L=2u Vto=3.31
++ Rd=.264 Rds=4MEG Cbd=2.941n Pb=.8 Mj=.5 Fc=.5 Cgso=1.832n
++ Cgdo=172.7p Rg=1.385 Is=289.1p N=1 Tt=580n)
+* IR pid=2N6770 case=TO3
+

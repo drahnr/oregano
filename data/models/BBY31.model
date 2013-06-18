@@ -1,0 +1,5 @@
+.MODEL BBY31 D IS=10.01E-15 N=1.095 RS=.2082 XTI=3
++ EG=1.11 CJO=27.36E-12 M=.9 VJ=2.099 FC=.5 BV=45.12
++ IBV=92.44E-3 TT=145.7E-9
+* Zetex 6.2 Volt .2 Watt Rectifier Diode
+

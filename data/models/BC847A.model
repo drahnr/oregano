@@ -1,0 +1,8 @@
+.model BC847A   NPN(IS=7.049f XTI=3 EG=1.11 VAF=106.8 BF=182.9 ISE=85.16f
++ NE=1.709 IKF=.1196 Nk=.5227 Xtb=1.5 Br=3.988 Isc=10.68f
++ Nc=2.417 Ikr=2.721 Rc=1.374 Cjc=7.287p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=9.485p Mje=.3333 Vje=.5 Tr=10n Tf=662.3p Itf=1.577
++ Xtf=14.27 Vtf=10)
+* MFG=SIEMENS pid=bc847a case=SOT23
+* 11-02-18 hjr
+

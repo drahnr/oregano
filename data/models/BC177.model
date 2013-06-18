@@ -1,0 +1,7 @@
+.model BC177    PNP(IS=336.7f XTI=3 EG=1.11 VAF=55.46 BF=154.4 ISE=412.1f
++ NE=1.429 IKF=.2994 Nk=.7028 Xtb=1.5 Br=3.99 Isc=1.03n Nc=1.958
++ Ikr=9.726 Rc=1.833 Cjc=11p Mjc=.2223 Vjc=.5 Fc=.5 Cje=33p
++ Mje=.3333 Vje=.5 Tr=10n Tf=847.7p Itf=2.198 Xtf=23.26 Vtf=10)
+* MFG=PHILIPS pid=bc177 case=TO18
+* 11-02-18 hjr
+

@@ -1,0 +1,5 @@
+.MODEL BBY40 D IS=7.417E-15 N=1.058 RS=.1259 XTI=3
++ EG=1.11 CJO=64.39E-12 M=.9 VJ=2.566 FC=.5 BV=45.12
++ IBV=.1232 TT=215E-9
+* Zetex 6.2 Volt .2 Watt Rectifier Diode
+

@@ -1,0 +1,6 @@
+.model IRF350 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=9.448m Kp=20.75u W=.73 L=2u Vto=3.234
++ Rd=.2206 Rds=1.778MEG Cbd=2.206n Pb=.8 Mj=.5 Fc=.5 Cgso=9.529n
++ Cgdo=178.5p Rg=3.531 Is=19.74p N=1 Tt=700n)
+* IR pid=IRF350 case=TO3
+

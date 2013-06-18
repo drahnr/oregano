@@ -1,0 +1,4 @@
+.model DD600 D (IS=177P RS=446 N=23.2 BV=6K IBV=200N
++ CJO=2.14P VJ=.75 M=.333 TT=50.4N)
+* Diotec 6000 Volt 20M Amp 35M us Si Diode
+

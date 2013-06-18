@@ -1,0 +1,6 @@
+.model IRF430 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=2.514m Kp=20.56u W=.33 L=2u Vto=3.783
++ Rd=.944 Rds=2.222MEG Cbd=677.2p Pb=.8 Mj=.5 Fc=.5 Cgso=1.725n
++ Cgdo=136.7p Rg=1.159 Is=46.85p N=1 Tt=585n)
+* IR pid=IRF430 case=TO3
+

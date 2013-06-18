@@ -1,0 +1,4 @@
+.model HP2263 D (IS=.3N RS=10 N=1.08 BV=5 IBV=10U
++ CJO=.3P VJ=.65 M=.5 EG=.69 TT=72P)
+* H-P 5082-2263 400 Volt .5 Amp Si Schottky Diode
+

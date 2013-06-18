@@ -1,0 +1,7 @@
+.model BC369    PNP(IS=13.01f XTI=3 EG=1.11 VAF=100 BF=191.1 ISE=105f NE=1.695
++ IKF=2.253 Nk=.5176 Xtb=1.5 Br=9.046MEG Isc=853.3f Nc=9.905
++ Ikr=116.1 Rc=.1694 Cjc=87.73p Mjc=.3333 Vjc=.5 Fc=.5 Cje=261p
++ Mje=.3333 Vje=.5 Tr=10n Tf=998.5p Itf=14.84 Xtf=15.37 Vtf=10)
+* MFG=PHILIPS pid=bc369 case=TO92
+* 11-02-18 hjr
+

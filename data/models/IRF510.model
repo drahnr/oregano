@@ -1,0 +1,6 @@
+.model IRF510 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=.4508 Kp=20.68u W=.64 L=2u Vto=3.697
++ Rd=21.08m Rds=444.4K Cbd=366.5p Pb=.8 Mj=.5 Fc=.5 Cgso=600.5p
++ Cgdo=62.71p Rg=2.977 Is=202.9f N=1 Tt=135n)
+* IR pid=IRF510 case=TO220
+

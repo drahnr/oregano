@@ -1,0 +1,4 @@
+.MODEL SFH420 D (IS=1.45N RS=.747 N=2.85 BV=5 IBV=10N
++ CJO=25P VJ=.75 M=.333 TT=720N)
+* Siemens 5 Volt .1 Amp .5 us GaAs Diode
+

@@ -1,0 +1,6 @@
+.model IRF460 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=2.341m Kp=20.84u W=2 L=2u Vto=3.402
++ Rd=.2303 Rds=2.222MEG Cbd=4.169n Pb=.8 Mj=.5 Fc=.5 Cgso=1.805n
++ Cgdo=129.1p Rg=1.695 Is=99.92p N=1 Tt=480n)
+* IR pid=IRF460 case=TO3
+

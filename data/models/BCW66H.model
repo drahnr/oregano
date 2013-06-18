@@ -1,0 +1,8 @@
+.model BCW66H   NPN(IS=44.97f XTI=3 EG=1.11 VAF=100 BF=500.5 ISE=45.03f
++ NE=1.363 IKF=1.017 Nk=.7023 Xtb=1.5 Br=5.448 Isc=1.983p
++ Nc=1.344 Ikr=6.609 Rc=.4217 Cjc=14.57p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=71.14p Mje=.3333 Vje=.5 Tr=10n Tf=697.1p Itf=2.639
++ Xtf=24.55 Vtf=10)
+* MFG=SIEMENS pid=bcw65h case=SOT23
+* 11-02-18 hjr
+

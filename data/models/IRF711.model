@@ -1,0 +1,6 @@
+.model IRF711 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=.1934 Kp=21.18u W=.2 L=2u Vto=3.553
++ Rd=3.03 Rds=1.556MEG Cbd=232p Pb=.8 Mj=.5 Fc=.5 Cgso=1.164n
++ Cgdo=118.2p Rg=.5139 Is=22.24p N=1 Tt=510n)
+* IR pid=IRF711 case=TO220
+

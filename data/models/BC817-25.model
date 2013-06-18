@@ -1,0 +1,7 @@
+.model BC817-25 NPN(IS=32.53f XTI=3 EG=1.11 VAF=100 BF=294.4 ISE=318.5f
++ NE=1.642 IKF=.8311 Nk=.5663 Xtb=1.5 Br=5.855 Isc=199.7f Nc=2.09
++ Ikr=.1075 Rc=.4196 Cjc=24.29p Mjc=.3333 Vjc=.5 Fc=.5 Cje=71.14p
++ Mje=.3333 Vje=.5 Tr=10n Tf=660.8p Itf=2.569 Xtf=88.29 Vtf=10)
+* MFG=SIEMENS pid=bc817-25 case=SOT23
+* 11-02-18 hjr
+

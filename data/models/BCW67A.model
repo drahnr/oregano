@@ -1,0 +1,7 @@
+.model BCW67A   PNP(IS=44.97f XTI=3 EG=1.11 VAF=100 BF=256.4 ISE=424.6f NE=1.46
++ IKF=.5694 Nk=.6383 Xtb=1.5 Br=13.26 Isc=1.56p Nc=1.654
++ Ikr=9.432 Rc=.554 Cjc=14.57p Mjc=.3333 Vjc=.5 Fc=.5 Cje=71.14p
++ Mje=.3333 Vje=.5 Tr=10n Tf=655p Itf=.8418 Xtf=10.72 Vtf=10)
+* MFG=SIEMENS pid=bcw67a case=SOT23
+* 11-02-18 hjr
+

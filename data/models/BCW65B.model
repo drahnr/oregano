@@ -1,0 +1,8 @@
+.model BCW65B   NPN(IS=44.97f XTI=3 EG=1.11 VAF=100 BF=364.7 ISE=44.99f
++ NE=1.337 IKF=1.029 Nk=.7096 Xtb=1.5 Br=5.792 Isc=1.332p
++ Nc=1.307 Ikr=6.716 Rc=.421 Cjc=14.57p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=71.14p Mje=.3333 Vje=.5 Tr=10n Tf=707.9p Itf=5.32 Xtf=23.35
++ Vtf=10)
+* MFG=SIEMENS pid=bcw65b case=SOT23
+* 11-02-18 hjr
+

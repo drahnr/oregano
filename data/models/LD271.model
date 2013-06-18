@@ -1,0 +1,4 @@
+.MODEL LD271 D (IS=16.3P RS=.755 N=2.01 BV=5 IBV=10N
++ CJO=40P VJ=.75 M=.333 TT=1.44U)
+* Siemens 5 Volt .13 Amp 1 us GaAs Diode
+

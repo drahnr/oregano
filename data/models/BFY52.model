@@ -1,0 +1,8 @@
+.model BFY52    NPN(IS=160.8p XTI=3 EG=1.11 VAF=281.4 BF=24.98K ISE=19.66n
++ NE=2.048 IKF=.1072 Nk=.6601 Xtb=1.5 Br=2.015 Isc=91.99n
++ Nc=1.566 Ikr=1.721 Rc=.4963 Cjc=16p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=48p Mje=.3333 Vje=.5 Tr=815.2n Tf=792.7p Itf=214.9
++ Xtf=2.303K Vtf=10)
+* MFG=PHILIPS pid=bfy52 case=TO39
+* 11-02-18 hjr
+

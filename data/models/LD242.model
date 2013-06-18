@@ -1,0 +1,4 @@
+.MODEL LD242 D (IS=1.59N RS=.522 N=2.68 BV=5 IBV=10N
++ CJO=40P VJ=.75 M=.333 TT=1.44U)
+* Siemens 5 Volt .3 Amp 1 us GaAs Diode
+

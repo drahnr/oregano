@@ -1,0 +1,5 @@
+.model IRF710   NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.006u W=1.2 L=2u Rs=10m Vto=3.779
+ +  Rd=5.631 Rds=1.6MEG Cgso=140.2p Cgdo=8.901p Cbd=253.3p Mj=.9417
+ +  Pb=3 Fc=.5 Rg=16.66 Is=201E-18 N=.8377 Rb=1n)
+ 

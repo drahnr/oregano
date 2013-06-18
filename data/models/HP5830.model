@@ -1,0 +1,4 @@
+.model HP5830 D (IS=46N RS=12 N=1.08 BV=4 IBV=10U
++ CJO=.09P VJ=.5 M=.5 EG=.69 TT=72P)
+* H-P HSCH-5830 400 Volt .5 Amp Si Schottky
+

@@ -1,0 +1,4 @@
+.model HP2787 D (IS=1.2N RS=35 N=1.08 BV=5 IBV=10U
++ CJO=.12P VJ=.6 M=.5 EG=.69 TT=72P)
+* H-P 5082-2787 400 Volt .5 Amp Si Schottky
+

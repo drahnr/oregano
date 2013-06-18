@@ -1,0 +1,4 @@
+.MODEL SFH483 D (IS=617F RS=1.69 N=1.84 BV=5 IBV=10N
++ CJO=25P VJ=.75 M=.333 TT=864N)
+* Siemens 5 Volt .2 Amp .6 us GaAs Diode
+

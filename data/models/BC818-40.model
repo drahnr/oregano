@@ -1,0 +1,7 @@
+.model BC818-40 NPN(IS=32.53f XTI=3 EG=1.11 VAF=100 BF=407.8 ISE=333.4f
++ NE=1.692 IKF=.9448 Nk=.6041 Xtb=1.5 Br=6.39 Isc=268.8f Nc=2.125
++ Ikr=.1193 Rc=.4205 Cjc=24.29p Mjc=.3333 Vjc=.5 Fc=.5 Cje=71.14p
++ Mje=.3333 Vje=.5 Tr=10n Tf=662p Itf=3.238 Xtf=134.9 Vtf=10)
+* MFG=SIEMENS pid=bc818-40 case=SOT23
+* 11-02-18 hjr
+

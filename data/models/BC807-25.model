@@ -1,0 +1,8 @@
+.model BC807-25 PNP(IS=32.53f XTI=3 EG=1.11 VAF=100 BF=340 ISE=288.9f NE=1.568
++ IKF=.4118 Nk=.5241 Xtb=1.5 Br=6.333 Isc=262.4f Nc=1.87
++ Ikr=32.84m Rc=.3998 Cjc=24.29p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=71.14p Mje=.3333 Vje=.5 Tr=10n Tf=704.1p Itf=14.26
++ Xtf=1.332K Vtf=10)
+* MFG=SIEMENS pid=bc807-25 case=SOT23
+* 11-02-18 hjr
+

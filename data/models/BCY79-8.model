@@ -1,0 +1,7 @@
+.model BCY79-8  PNP(IS=55.58p XTI=3 EG=1.11 VAF=79.03 BF=272.6 ISE=223.2p
++ NE=2.939 IKF=77.89m Nk=.5 Xtb=1.5 Br=2.429 Isc=34.94n Nc=2.499
++ Ikr=1.387 Rc=2.829 Cjc=16p Mjc=.3333 Vjc=.5 Fc=.5 Cje=16.78p
++ Mje=.3333 Vje=.5 Tr=272.7n Tf=762.4p Itf=5.969 Xtf=203.6 Vtf=10
+* MFG=PHILIPS pid=bcy79-8 case=TO18
+* 11-02-18 hjr
+

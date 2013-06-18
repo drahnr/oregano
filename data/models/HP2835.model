@@ -1,0 +1,4 @@
+.model HP2835 D (IS=22N RS=5 N=1.08 BV=9 IBV=10U
++ CJO=.7P VJ=.56 M=.5 EG=.69 TT=72P)
+* H-P 5082-2835 400 Volt .5 Amp Si Schottky
+

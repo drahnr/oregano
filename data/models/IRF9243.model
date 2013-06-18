@@ -1,0 +1,6 @@
+.model IRF9243 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=80.81m Kp=10.53u W=1.9 L=2u
++ Vto=-3.807 Rd=.4515 Rds=666.7K Cbd=1.436n Pb=.8 Mj=.5 Fc=.5
++ Cgso=4.915n Cgdo=69.19p Rg=.6812 Is=1.825f N=2 Tt=325n)
+* IR  pid=IRF9243 case=TO3
+

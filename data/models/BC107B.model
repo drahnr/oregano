@@ -1,0 +1,7 @@
+.model BC107B   NPN(IS=7.049f XTI=3 EG=1.11 VAF=59.59 BF=381.7 ISE=59.74f
++ NE=1.522 IKF=3.289 Nk=.5 Xtb=1.5 Br=2.359 Isc=192.9p Nc=1.954
++ Ikr=7.807 Rc=1.427 Cjc=5.38p Mjc=.329 Vjc=.6218 Fc=.5 Cje=11.5p
++ Mje=.2718 Vje=.5 Tr=10n Tf=438p Itf=5.716 Xtf=14.51 Vtf=10)
+* MFG=PHILIPS pid=bc107b case=TO18
+* 11-02-18 hjr
+

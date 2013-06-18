@@ -1,0 +1,4 @@
+.model HP2292 D (IS=.2N RS=9 N=1.08 BV=10 IBV=10U
++ CJO=.3P VJ=.65 M=.5 EG=.69 TT=72P)
+* H-P 5082-2292 400 Volt .5 Amp Si Schottky
+

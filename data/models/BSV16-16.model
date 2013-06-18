@@ -1,0 +1,7 @@
+.model BSV16-16 PNP(IS=70.49f XTI=3 EG=1.11 VAF=100 BF=180.1 ISE=735.8f NE=1.64
++ IKF=.6947 Nk=.596 Xtb=1.5 Br=18.45 Isc=715.1f Nc=1.23 Ikr=1.222
++ Rc=.8335 Cjc=47.58p Mjc=.3333 Vjc=.5 Fc=.5 Cje=212.4p Mje=.3333
++ Vje=.5 Tr=262.5n Tf=1.981n Itf=14.46 Xtf=75.99 Vtf=10)
+* MFG=PHILIPS pid=bsv16-16 case=TO39
+* 11-02-18 hjr
+

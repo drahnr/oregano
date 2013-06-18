@@ -1,0 +1,5 @@
+.model BSS149   NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.036u W=.92 L=2u Rs=20m Vto=-1.056
+ +  Rd=.5 Rds=714.3 Cgso=4p Cgdo=1p Cbd=42.39p Mj=.6344 Pb=.3905
+ +  Fc=.5 Rg=0 Is=1f N=1 Rb=1m)
+

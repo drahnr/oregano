@@ -1,0 +1,5 @@
+.model IRF254   NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.04u W=28 L=2u Rs=10m Vto=3.686 Rd=0
+ +  Rds=1MEG Cgso=43.18p Cgdo=7.89p Cbd=5.886n Mj=1.089 Pb=2.532
+ +  Fc=.5 Rg=7.008 Is=562.2n N=1.833 Rb=6.906m)
+ 

@@ -1,0 +1,4 @@
+.model RC184A D (IS=5.43U RS=201U N=2.22 BV=400 IBV=7M
++ CJO=8.22N VJ=.75 M=.333 TT=17.2U)
+* IR 400 Volt 200 Amp 12 us Si Diode
+

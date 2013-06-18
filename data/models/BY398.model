@@ -1,0 +1,4 @@
+.model BY398 D (IS=22U RS=42M N=3.35 BV=400 IBV=10U
++ CJO=96P VJ=.75 M=.333 TT=580N)
+* Diotec 400 Volt 3 Amp .5 us Si Diode
+

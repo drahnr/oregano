@@ -1,0 +1,6 @@
+.model 2N6851 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=.1181 Kp=10.32u W=.93 L=2u Vto=-3.252
++ Rd=.5495 Rds=888.9MEG Cbd=891.4p Pb=.8 Mj=.5 Fc=.5 Cgso=3.804n
++ Cgdo=90.23p Rg=.9239 Is=2.072p N=4 Tt=815n)
+* IR pid=2N6851 case=TO39
+

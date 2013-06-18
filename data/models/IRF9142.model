@@ -1,0 +1,6 @@
+.model IRF9142 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=70.6m Kp=10.15u W=1.9 L=2u Vto=-3.67
++ Rd=.1307 Rds=444.4K Cbd=2.141n Pb=.8 Mj=.5 Fc=.5 Cgso=877.2p
++ Cgdo=369.3p Rg=.811 Is=202.1E-18 N=2 Tt=140n)
+* IR  pid=IRF9142 case=TO3
+

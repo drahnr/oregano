@@ -1,0 +1,4 @@
+.model HP2831 D (IS=.3U RS=6 N=1.08 BV=10 IBV=10U
++ CJO=.4P VJ=.5 M=.5 EG=.69 TT=72P)
+* 400 Volt .5 Amp Si Schottky Diode
+

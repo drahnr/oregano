@@ -1,0 +1,6 @@
+.model IRF322 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=44.6m Kp=20.94u W=.23 L=2u Vto=3.710
++ Rd=1.074 Rds=1.778MEG Cbd=435.6p Pb=.8 Mj=.5 Fc=.5 Cgso=1.705n
++ Cgdo=149.2p Rg=1.351 Is=1.425n N=1 Tt=535n)
+* IR pid=IRF322 case=TO3
+

@@ -1,0 +1,6 @@
+.model 2N6847 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=.286 Kp=10.37u W=.97 L=2u Vto=-3.661
++ Rd=.9789 Rds=888.9MEG Cbd=440.2p Pb=.8 Mj=.5 Fc=.5 Cgso=1.897n
++ Cgdo=46.53p Rg=1.002 Is=279.9f N=4 Tt=900n)
+* IR pid=2N6847 case=TO39
+

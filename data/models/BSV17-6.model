@@ -1,0 +1,7 @@
+.model BSV17-6  PNP(IS=70.49f XTI=3 EG=1.11 VAF=100 BF=78.81 ISE=795.9f NE=1.5
++ IKF=.9977 Nk=.6579 Xtb=1.5 Br=18.45 Isc=715.1f Nc=1.23
++ Ikr=1.222 Rc=.8335 Cjc=35.44p Mjc=.3333 Vjc=.5 Fc=.5 Cje=212.4p
++ Mje=.3333 Vje=.5 Tr=391.7n Tf=1.986n Itf=14.75 Xtf=94.3 Vtf=10)
+* MFG=PHILIPS pid=bsv17-6 case=TO39
+* 11-02-18 hjr
+

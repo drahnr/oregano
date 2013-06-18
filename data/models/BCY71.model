@@ -1,0 +1,7 @@
+.model BCY71    PNP(IS=22.48f XTI=3 EG=1.11 VAF=68.32 BF=323.6 ISE=291.5f
++ NE=1.906 IKF=.1158 Nk=.5113 Xtb=1.5 Br=1 Isc=1.181p Nc=1.234
++ Ikr=9.81 Rc=2.019 Cjc=23.19p Mjc=.2354 Vjc=.5 Fc=.5 Cje=9p
++ Mje=.3117 Vje=.5 Tr=809.2n Tf=275.3p Itf=17.79 Xtf=214.9 Vtf=10
+* MFG=PHILIPS pid=bcy71 case=TO18
+* 11-02-18 hjr
+

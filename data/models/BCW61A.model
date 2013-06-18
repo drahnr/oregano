@@ -1,0 +1,8 @@
+.model BCW61A   PNP(IS=26.39f XTI=3 EG=1.11 VAF=106.8 BF=166.5 ISE=249.1f
++ NE=1.806 IKF=1.217 Nk=.5 Xtb=1.5 Br=8.744 Isc=82.16p Nc=2.283
++ Ikr=29.82m Rc=2.543 Cjc=11.51p Mjc=.3626 Vjc=.5 Fc=.5
++ Cje=8.397p Mje=.3865 Vje=.5 Tr=10n Tf=590.5p Itf=.603 Xtf=225
++ Vtf=1)
+* MFG=SIEMENS pid=bcw61a case=SOT23
+* 11-02-18 hjr
+

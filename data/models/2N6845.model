@@ -1,0 +1,6 @@
+.model 2N6845 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=.284 Kp=10.43u W=.68 L=2u Vto=-3.533
++ Rd=.1672 Rds=444.4MEG Cbd=899.2p Pb=.8 Mj=.5 Fc=.5 Cgso=2.288n
++ Cgdo=138.5p Rg=7.701 Is=793.1f N=3 Tt=425n)
+* IR pid=2N6845 case=TO39
+

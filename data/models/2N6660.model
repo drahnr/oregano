@@ -1,0 +1,5 @@
+.model 2N6660  NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.047u W=.32 L=2u Rs=20m Vto=1.8
+ +  Rd=.4672 Rds=6MEG Cgso=1.885p Cgdo=7.564p Cbd=118p Mj=.5 Pb=.8
+ +  Fc=.5 Rg=209.5 Is=10f N=1 Rb=1m)
+ 

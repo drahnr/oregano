@@ -1,0 +1,5 @@
+.model 2N7000  NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.073u W=.12 L=2u Rs=20m Vto=1.73
+ +  Rd=.5489 Rds=48MEG Cgso=73.61p Cgdo=6.487p Cbd=74.46p Mj=.5
+ +  Pb=.8 Fc=.5 Rg=546.2 Is=10f N=1 Rb=1m)
+ 

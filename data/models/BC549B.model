@@ -1,0 +1,8 @@
+.model BC549B   NPN(IS=7.049f XTI=3 EG=1.11 VAF=59.93 BF=375.6 ISE=56.03f
++ NE=1.553 IKF=87.07m Nk=.4901 Xtb=1.5 Br=2.886 Isc=7.371p
++ Nc=1.508 Ikr=5.426 Rc=1.175 Cjc=5.5p Mjc=.3132 Vjc=.4924 Fc=.5
++ Cje=11.5p Mje=.6558 Vje=.5 Tr=10n Tf=417.3p Itf=1.512 Xtf=39.51
++ Vtf=10)
+* MFG=PHILIPS pid=bc549b case=TO92
+* 11-02-18 hjr
+

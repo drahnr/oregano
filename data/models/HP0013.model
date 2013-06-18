@@ -1,0 +1,4 @@
+.model HP0013 D (IS=70N RS=10 N=1.08 BV=4 IBV=10U
++ CJO=.15P VJ=.5 M=.5 EG=.69 TT=72P)
+* H-P 5082-0013 400 Volt .5 Amp Si Schottky
+

@@ -1,0 +1,6 @@
+.model 2N6804 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=.153 Kp=10.46u W=1.2 L=2u Vto=-3.68
++ Rd=66.52m Rds=444.4MEG Cbd=1.281n Pb=.8 Mj=.5 Fc=.5 Cgso=1.798n
++ Cgdo=134.9p Rg=4.931 Is=5.477p N=3 Tt=295n)
+* IR pid=2N6804 case=TO3
+

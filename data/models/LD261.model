@@ -1,0 +1,4 @@
+.MODEL LD261 D (IS=599P RS=.667 N=2.51 BV=5 IBV=10N
++ CJO=40P VJ=.75 M=.333 TT=1.44U)
+* Siemens 5 Volt 60M Amp 1 us GaAs Diode
+

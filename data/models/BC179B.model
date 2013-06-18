@@ -1,0 +1,8 @@
+.model BC179B   PNP(IS=336.7f XTI=3 EG=1.11 VAF=30.75 BF=271.9 ISE=2.821p
++ NE=1.925 IKF=.2462 Nk=.5416 Xtb=1.5 Br=3.009 Isc=1.753n
++ Nc=2.075 Ikr=8.143 Rc=1.803 Cjc=11p Mjc=.2223 Vjc=.5 Fc=.5
++ Cje=33p Mje=.3333 Vje=.5 Tr=10n Tf=846p Itf=1.546 Xtf=18.27
++ Vtf=10)
+* MFG=PHILIPS  pid=bc179b case=TO18
+* 11-02-18 hjr
+

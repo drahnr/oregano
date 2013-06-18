@@ -1,0 +1,7 @@
+.model SMBTA05  NPN(IS=9.744f XTI=3 EG=1.11 VAF=100 BF=104 ISE=96.9f NE=1.615
++ IKF=.6711 Nk=.5215 Xtb=1.5 Br=7.835 Isc=6.488p Nc=1.471
++ Ikr=1.021 Rc=.3037 Cjc=12p Mjc=.3333 Vjc=.5 Fc=.5 Cje=36p
++ Mje=.3333 Vje=.5 Tr=10n Tf=1.333n Itf=30.41 Xtf=484.6 Vtf=10)
+* MFG=SIEMENS pid=smbta05 case=SOT23
+* 11-02-18 hjr
+

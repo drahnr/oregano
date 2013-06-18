@@ -1,0 +1,5 @@
+.model BSS129   NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.023u W=.18 L=2u Rs=0 Vto=-1.236
+ +  Rd=10E-21 Rds=3.429K Cgso=4p Cgdo=1p Cbd=134.4p Mj=.4522
+ +  Pb=.3905 Fc=.5 Rg=0 Is=3.348p N=1.161 Rb=2.414)
+ 

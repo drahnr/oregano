@@ -1,0 +1,4 @@
+.model MUR7015 D (IS=12.9U RS=1.73M N=2.01 BV=150 IBV=25U
++ CJO=480P VJ=.275 M=.133 TT=76.4N)
+* Motorola 150 Volt 70 Amp 60M us Si Diode
+

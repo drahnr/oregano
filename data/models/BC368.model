@@ -1,0 +1,8 @@
+.model BC368    NPN(IS=14.06f XTI=3 EG=1.11 VAF=100 BF=187.6 ISE=137.2f
++ NE=1.468 IKF=4.103 Nk=.5507 Xtb=1.5 Br=4.541 Isc=44.13f
++ Nc=1.471 Ikr=1.701 Rc=91m Cjc=52.24p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=156p Mje=.3333 Vje=.5 Tr=10n Tf=964.8p Itf=595.3 Xtf=1.001K
++ Vtf=10)
+* MFG=PHILIPS pid=bc368 case=TO92
+* 11-02-18 hjr
+

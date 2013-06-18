@@ -1,0 +1,7 @@
+.model BCW60B   NPN(IS=26.39f XTI=3 EG=1.11 VAF=79.03 BF=243.1 ISE=274.6f
++ NE=1.859 IKF=1.798 Nk=.5 Xtb=1.5 Br=8.91 Isc=13.41p Nc=1.847
++ Ikr=7.019 Rc=3.011 Cjc=11.51p Mjc=.3626 Vjc=.5 Fc=.5 Cje=8.397p
++ Mje=.3865 Vje=.5 Tr=10n Tf=596.8p Itf=2.553 Xtf=234.7 Vtf=10)
+* MFG=SIEMENS pid=bcw60b case=SOT23
+* 11-02-18 hjr
+

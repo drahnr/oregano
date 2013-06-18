@@ -1,0 +1,4 @@
+.model DD300 D (IS=178P RS=477 N=23.2 BV=3K IBV=100N
++ CJO=2.14P VJ=.75 M=.333 TT=50.4N)
+* Diotec 3000 Volt 20M Amp 35M us Si Diode
+

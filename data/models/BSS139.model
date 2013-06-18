@@ -1,0 +1,5 @@
+.model BSS139   NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
+ +  Tox=2u Uo=600 Phi=.6 Kp=1.076u W=.12 L=2u Rs=1 Vto=-1.66 Rd=80
+ +  Rds=2.273K Cgso=4p Cgdo=1p Cbd=14.47p Mj=.3502 Pb=2.061 Fc=.5
+ +  Rg=0 Is=10f N=1 Rb=1m)
+ 

@@ -1,0 +1,8 @@
+.model BSX45-10 NPN(IS=66.19f XTI=3 EG=1.11 VAF=100 BF=367.1 ISE=752.8f
++ NE=1.418 IKF=.1276 Nk=.5462 Xtb=1.5 Br=967.1 Isc=3.662n
++ Nc=1.779 Ikr=2.449 Rc=.5938 Cjc=60.73p Mjc=.3333 Vjc=.5 Fc=.5
++ Cje=94.85p Mje=.3333 Vje=.5 Tr=10n Tf=1.358n Itf=1.081
++ Xtf=22.58 Vtf=10)
+* MFG=PHILIPS pid=bsx45-10 case=TO39
+* 11-02-18 hjr
+

@@ -1,0 +1,7 @@
+.model BC848B   NPN(IS=7.049f XTI=3 EG=1.11 VAF=62.37 BF=279.1 ISE=59.16f
++ NE=1.81 IKF=.2201 Nk=.6305 Xtb=1.5 Br=3.816 Isc=16.17f Nc=2.394
++ Ikr=1.859 Rc=1.508 Cjc=7.287p Mjc=.3333 Vjc=.5 Fc=.5 Cje=9.485p
++ Mje=.3333 Vje=.5 Tr=10n Tf=664p Itf=4.664 Xtf=147 Vtf=10)
+* MFG=SIEMENS pid=bc848b case=SOT23
+* 11-02-18 hjr
+

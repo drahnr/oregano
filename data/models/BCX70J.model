@@ -1,0 +1,7 @@
+.model BCX70J   NPN(IS=26.39f XTI=3 EG=1.11 VAF=62.37 BF=331.9 ISE=278.6f
++ NE=2.004 IKF=2.57 Nk=.5 Xtb=1.5 Br=9.451 Isc=15.74p Nc=1.797
++ Ikr=2.344 Rc=3.117 Cjc=11.51p Mjc=.3626 Vjc=.5 Fc=.5 Cje=8.397p
++ Mje=.3865 Vje=.5 Tr=10n Tf=597.1p Itf=2.501 Xtf=233.9 Vtf=10)
+* MFG=SIEMENS pid=bcx70j case=SOT23
+* 11-02-18 hjr
+

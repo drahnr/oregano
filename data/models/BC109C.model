@@ -1,0 +1,7 @@
+.model BC109C   NPN(IS=7.049f XTI=3 EG=1.11 VAF=28.14 BF=677 ISE=7.049f NE=1.38
++ IKF=96.23 Nk=.5 Xtb=1.5 Br=2.209 Isc=250.3p Nc=2.002 Ikr=10.73
++ Rc=1.433 Cjc=5.38p Mjc=.329 Vjc=.6218 Fc=.5 Cje=11.5p Mje=.2717
++ Vje=.5 Tr=10n Tf=437.8p Itf=3.097 Xtf=12.85 Vtf=10)
+* MFG=PHILIPS pid=bc109c case=TO18
+* 11-02-18 hjr
+

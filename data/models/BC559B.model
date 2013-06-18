@@ -1,0 +1,7 @@
+.model BC559B   PNP(IS=1.02f XTI=3 EG=1.11 VAF=51.26 BF=289.6 ISE=9.846f
++ NE=1.845 IKF=.1026 Nk=.5413 Xtb=1.5 Br=6.124 Isc=1.113f Nc=1.97
++ Ikr=.2035 Rc=1.078 Cjc=9.81p Mjc=.332 Vjc=.4865 Fc=.5 Cje=30p
++ Mje=.3333 Vje=.5 Tr=10n Tf=612.4p Itf=1.287 Xtf=25.55 Vtf=10)
+* PHIILIPS pid=bc559b case=TO92
+* 11-02-18 hjr
+

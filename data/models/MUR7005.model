@@ -1,0 +1,4 @@
+.model MUR7005 D (IS=12.9U RS=1.73M N=2.01 BV=50 IBV=25U
++ CJO=500P VJ=.275 M=.133 TT=72.4N)
+* Motorola 50 Volt 70 Amp 60M us Si Diode
+

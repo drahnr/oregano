@@ -1,0 +1,11 @@
+.SUBCKT KBU4D 2 3 5 4
+* IN1 IN2 + -
+D2 2 5 BU4D
+D3 3 5 BU4D
+D4 4 3 BU4D
+D1 4 2 BU4D
+.model BU4D D (IS=10.7N RS=3M N=1.67 BV=200 IBV=5U
++ CJO=165P VJ=.75 M=.333 TT=4.32U)
+* Diotec 200 Volt 4 Amp 3 us Si Diode Bridge
+.ENDS
+

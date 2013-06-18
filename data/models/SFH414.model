@@ -1,0 +1,4 @@
+.MODEL SFH414 D (IS=473P RS=.808 N=2.68 BV=5 IBV=1U
++ CJO=25P VJ=.75 M=.333 TT=720N)
+* Siemens 5 Volt .1 Amp .5 us GaAs Diode
+

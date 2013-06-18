@@ -1,0 +1,6 @@
+.model 2N6764 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=21.3m Kp=20.52u W=.51 L=2u Vto=3.061
++ Rd=3.109m Rds=1MEG Cbd=3.654n Pb=.8 Mj=.5 Fc=.5 Cgso=9.027n
++ Cgdo=1.679n Rg=8.93 Is=41.6f N=1 Tt=495n)
+* IR pid=2N6764 case=TO3
+

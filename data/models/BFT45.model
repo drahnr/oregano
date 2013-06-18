@@ -1,0 +1,6 @@
+.model BFT45    PNP(IS=7.34n XTI=3 EG=1.11 VAF=100 BF=131.8 ISE=7.34n NE=1.593
++ IKF=.862 Nk=.7194 Xtb=1.5 Br=1 Isc=2.155u Nc=2.236 Ikr=4.712
++ Rc=3.255 Cjc=44.37p Mjc=.3333 Vjc=.5 Fc=.5 Cje=133.1p Mje=.3333
++ Vje=.5 Tr=10n Tf=1.576n Itf=9.045 Xtf=221.6 Vtf=10)
+* MFG=PHILIPS pid=bft44 case=TO39
+* 11-02-18 hjr

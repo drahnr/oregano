@@ -1,0 +1,4 @@
+.model HP2350 D (IS=10N RS=15 N=1.08 BV=30 IBV=10U
++ CJO=1.1P VJ=.64 M=.5 EG=.69 TT=72P)
+* H-P 5082-2350 400 Volt .5 Amp Si Schottky Diode
+

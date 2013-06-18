@@ -1,4 +1,4 @@
-* Vacuum tube triode 12ax7a
+* Vacuum Tube Triode 12ax7a
 .SUBCKT 12AX7A A G K
 Bca	ca  0	V=45+V(A,K)+95.43*V(G,K)
 Bre	re  0	V=URAMP(V(A,K)/5)-URAMP(V(A,K)/5-1)

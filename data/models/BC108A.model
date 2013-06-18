@@ -1,0 +1,7 @@
+.model BC108A   NPN(IS=7.049f XTI=3 EG=1.11 VAF=116.3 BF=375.5 ISE=7.049f
++ NE=1.281 IKF=4.589 Nk=.5 Xtb=1.5 Br=2.611 Isc=121.7p Nc=1.865
++ Ikr=5.313 Rc=1.464 Cjc=5.38p Mjc=.329 Vjc=.6218 Fc=.5 Cje=11.5p
++ Mje=.2717 Vje=.5 Tr=10n Tf=451p Itf=6.194 Xtf=17.43 Vtf=10)
+* MFG=PHILIPS pid=bc108a case=TO18
+* 11-02-18 hjr
+

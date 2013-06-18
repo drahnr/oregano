@@ -1,0 +1,4 @@
+.model BY255 D (IS=22U RS=42M N=3.35 BV=1.3K IBV=20U
++ CJO=124P VJ=.75 M=.333 TT=4.32U)
+* Diotec 1300 Volt 3 Amp 3 us Si Diode
+

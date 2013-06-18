@@ -1,0 +1,7 @@
+.model BSV15-10 PNP(IS=70.49f XTI=3 EG=1.11 VAF=100 BF=118.4 ISE=681f NE=1.558
++ IKF=.5245 Nk=.525 Xtb=1.5 Br=18.45 Isc=715.1f Nc=1.23 Ikr=1.222
++ Rc=.8335 Cjc=47.58p Mjc=.3333 Vjc=.5 Fc=.5 Cje=212.4p Mje=.3333
++ Vje=.5 Tr=304.6n Tf=1.977n Itf=11.86 Xtf=55.69 Vtf=10)
+* MFG=PHILIPS pid=bsv15-10 case=TO39
+* 11-02-18 hjr
+

@@ -1,0 +1,6 @@
+.model IRF622 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=.114 Kp=20.39u W=.23 L=2u Vto=3.083
++ Rd=.5239 Rds=888.9K Cbd=650.2p Pb=.8 Mj=.5 Fc=.5 Cgso=3.996n
++ Cgdo=168.7p Rg=7.473 Is=1.801n N=1 Tt=610n)
+* IR pid=IRF622 case=TO220
+

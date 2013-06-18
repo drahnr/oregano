@@ -1,0 +1,4 @@
+.MODEL IRL80A D (IS=3.70E-17 RS=1.76 N=1.25 BV=3 IBV=10U
++ CJO=25P VJ=.75 M=.333 TT=864N)
+* Siemens 3 Volt 60M Amp .6 us GaAs Diode
+

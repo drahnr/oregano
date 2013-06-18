@@ -1,0 +1,6 @@
+.model IRF150 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=1.624m Kp=20.53u W=.3 L=2u Vto=2.831
++         Rd=1.031m Rds=444.4K Cbd=3.229n Pb=.8 Mj=.5 Fc=.5 Cgso=9.027n
++ Cgdo=1.679n Rg=13.89 Is=194E-18 N=1 Tt=288n)
+* IR pid=IRF150 case=TO3
+

@@ -1,0 +1,4 @@
+.model HP6530 D (IS=40N RS=9 N=1.08 BV=5 IBV=10U
++ CJO=.13P VJ=.5 M=.5 EG=.69 TT=72P)
+* 400 Volt .5 Amp Si Schottky
+

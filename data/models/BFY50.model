@@ -1,0 +1,7 @@
+.model BFY50    NPN(IS=1.476f XTI=3 EG=1.11 VAF=281.4 BF=6.07K ISE=2.327p
++ NE=1.652 IKF=.1692 Nk=.6378 Xtb=1.5 Br=678.6 Isc=17.55p Nc=1.43
++ Ikr=.6167 Rc=.5062 Cjc=16p Mjc=.3333 Vjc=.5 Fc=.5 Cje=48p
++ Mje=.3333 Vje=.5 Tr=1.218u Tf=1.064n Itf=214.3 Xtf=17K Vtf=10)
+* MFG=PHILIPS pid=bfy50 case=TO39
+* 11-02-18 hjr
+

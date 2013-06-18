@@ -1,0 +1,7 @@
+.model BCY78-10 PNP(IS=55.58p XTI=3 EG=1.11 VAF=35.7 BF=523.4 ISE=161.8p
++ NE=2.89 IKF=70.98m Nk=.5 Xtb=1.5 Br=2.429 Isc=34.94n Nc=2.499
++ Ikr=1.387 Rc=2.829 Cjc=16p Mjc=.3333 Vjc=.5 Fc=.5 Cje=16.78p
++ Mje=.3333 Vje=.5 Tr=262.5n Tf=763p Itf=5.411 Xtf=180.8 Vtf=10)
+* MFG=PHILIPS pid=bcy78-10 case=TO18
+* 11-02-18 hjr
+

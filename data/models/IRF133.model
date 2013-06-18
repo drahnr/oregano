@@ -1,0 +1,6 @@
+.model IRF133 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=61.8m Kp=20.68u W=.73 L=2u Vto=3.373
++ Rd=76.21m Rds=355.6K Cbd=1.115n Pb=.8 Mj=.5 Fc=.5 Cgso=729.7p
++ Cgdo=310.4p Rg=3.648 Is=763.6p N=1 Tt=125n)
+* IR pid=IRF133 case=TO3
+

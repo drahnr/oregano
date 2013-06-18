@@ -1,0 +1,6 @@
+.model IRF9232 PMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=300 Phi=.6 Rs=31.21m Kp=10.39u W=.47 L=2u
++ Vto=-3.323 Rd=.7053 Rds=888.9K Cbd=820.8p Pb=.8 Mj=.5 Fc=.5
++ Cgso=6.43n Cgdo=179.5p Rg=1.234 Is=248E-18 N=3 Tt=555n)
+* IR  pid=IRF9232 case=TO3
+

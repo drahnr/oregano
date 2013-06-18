@@ -1,0 +1,8 @@
+.model BSX59    NPN(IS=2.148p XTI=3 EG=1.11 VAF=100 BF=5.51MEG ISE=14.31p
++ NE=1.341 IKF=1.467 Nk=.8282 Xtb=1.75 Br=2.722 Isc=4.352u
++ Nc=2.902 Ikr=11.54 Rc=.4745 Cjc=19.04p Mjc=.2126 Vjc=.5 Fc=.5
++ Cje=45.81p Mje=.3426 Vje=.5 Tr=10n Tf=300.6p Itf=3.73 Xtf=40.95
++ Vtf=10)
+* MFG=PHILIPS pid=bsx59 case=TO39
+* 11-02-18 hjr
+

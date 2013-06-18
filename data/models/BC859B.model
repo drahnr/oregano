@@ -1,0 +1,7 @@
+.model BC859B   PNP(IS=336.7f XTI=3 EG=1.11 VAF=62.37 BF=277.7 ISE=1.966p
++ NE=2.123 IKF=.1686 Nk=.545 Xtb=1.5 Br=7.16 Isc=196p Nc=1.815
++ Ikr=9.677 Rc=2.891 Cjc=11.51p Mjc=.3626 Vjc=.5 Fc=.5 Cje=8.397p
++ Mje=.3865 Vje=.5 Tr=10n Tf=605.9p Itf=2.133 Xtf=23.02 Vtf=10)
+* MFG=SIEMENS pid=bc859b case=SOT23
+* 11-02-18 hjr
+

@@ -1,0 +1,6 @@
+.model 2N6759 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=.1118 Kp=20.77u W=.92 L=2u Vto=3.179
++ Rd=.872 Rds=3.5MEG Cbd=611.5p Pb=.8 Mj=.5 Fc=.5 Cgso=1.595n
++ Cgdo=219.6p Rg=.8404 Is=1.361n N=1 Tt=1400n)
+* Int'l Rectifier pid=2N6759 case=TO3
+

@@ -1,0 +1,6 @@
+.model IRF244 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=777.6u Kp=20.58u W=.54 L=2u Vto=3.405
++ Rd=.2214 Rds=1.111MEG Cbd=1.689n Pb=.8 Mj=.5 Fc=.5 Cgso=1.946n
++ Cgdo=308.7p Rg=5.18 Is=3.523n N=1 Tt=300n)
+* IR pid=IRF244 case=TO3
+

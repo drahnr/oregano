@@ -1,0 +1,6 @@
+.model 2N6790 NMOS(Level=3 Gamma=0 Delta=0 Eta=0 Theta=0 Kappa=0.2 Vmax=0 Xj=0
++ Tox=100n Uo=600 Phi=.6 Rs=94.5m Kp=20.41u W=.2 L=2u Vto=3.016
++ Rd=.3323 Rds=888.9K Cbd=612.1p Pb=.8 Mj=.5 Fc=.5 Cgso=4.029n
++ Cgdo=168.6p Rg=20.53 Is=62.44p N=1 Tt=810n)
+* IR pid=2N6790 case=TO39
+
