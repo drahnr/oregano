@@ -183,4 +183,5 @@ dialog_about (void)
 	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);
 	gtk_dialog_run (GTK_DIALOG (about));
 	gtk_widget_destroy (about);
+	about = NULL;
 }
