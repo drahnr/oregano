@@ -3343,7 +3343,7 @@
       <ogo:properties>
         <ogo:property>
           <ogo:name>internal</ogo:name>
-          <ogo:value>punta</ogo:value>
+          <ogo:value>clamp</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>type</ogo:name>

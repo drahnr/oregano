@@ -250,7 +250,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 			else if (!g_ascii_strcasecmp (prop, "ground")) {
 				data->gnd_list = g_slist_prepend (data->gnd_list, GINT_TO_POINTER (data->node_nr));
 			} 
-			else if (!g_ascii_strcasecmp (prop, "point")) {
+			else if (!g_ascii_strcasecmp (prop, "clamp")) {
 				data->clamp_list = g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
 			} 
 			else if (!g_ascii_strncasecmp (prop, "jumper", 5)) {
@@ -316,7 +316,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				netlist_helper_node_traverse (opposite_node, data);
 			}
 
-			if (g_ascii_strcasecmp (prop, "point")) {
+			if (g_ascii_strcasecmp (prop, "clamp")) {
 				g_free (prop);
 				continue;
 			}
@@ -522,7 +522,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			if (internal != NULL) {
 				gint node_nr;
 				Pin *pins;
-				if (g_ascii_strcasecmp (internal, "point") != 0) {
+				if (g_ascii_strcasecmp (internal, "clamp") != 0) {
 					g_free (internal);
 					continue;
 				}
@@ -658,7 +658,7 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 	for (p = node_store_get_parts (store); p; p = p->next) {
 		prop = part_get_property (p->data, "internal");
 		if (prop) {
-			if (!g_ascii_strcasecmp (prop, "point")) {
+			if (!g_ascii_strcasecmp (prop, "clamp")) {
 				Pin *pins = part_get_pins (p->data);
 				g_free (prop);
 
@@ -729,7 +729,7 @@ netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 	for (p = node_store_get_parts (node_store); p; p = p->next) {
 		prop = part_get_property (p->data, "internal");
 		if (prop) {
-			if (!g_ascii_strcasecmp (prop, "point")) {
+			if (!g_ascii_strcasecmp (prop, "clamp")) {
 				Pin *pins = part_get_pins (p->data);
 				g_free (prop);
 				prop = part_get_property (p->data, "type");
