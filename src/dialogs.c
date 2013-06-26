@@ -35,8 +35,6 @@
 
 #include "pixmaps/logo.xpm"
 
-static GtkWidget *about = NULL;
-
 void
 oregano_error (gchar *msg)
 {
@@ -139,6 +137,7 @@ oregano_question (gchar *msg)
 void
 dialog_about (void)
 {
+	static GtkWidget *about = NULL;
 	GdkPixbuf *logo;
 
 	const gchar *authors[] = {
