@@ -148,6 +148,7 @@ dialog_about (void)
 		"Maximiliano Curia",
 		"Ricardo Markiewicz",
 		"Marc Lorber",
+		"Bernhard Schuster",
 		NULL
 	};
 
@@ -158,7 +159,7 @@ dialog_about (void)
 		NULL
 	};
 
-	const gchar *copy = _("(c) 2009-2012 Marc Lorber 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
+	const gchar *copy = _("(c) 2012-2013 Bernhard Schuster\n(c) 2009-2012 Marc Lorber\n(c) 2003-2006 LUGFi\n(c) 1999-2001 Richard Hult");
 
 	// Allow only one about box at a time.
 	if (about) {
@@ -176,7 +177,7 @@ dialog_about (void)
 	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (about), 
 		"GNU General Public License");
 	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), 
-	    "https://github.com/marc-lorber/oregano");
+	    "https://github.com/drahnr/oregano");
 	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
 	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
 	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);
