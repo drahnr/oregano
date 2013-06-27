@@ -122,3 +122,12 @@ coords_set (Coords *a, Coords *val)
 	a->y = val->y;
 	return a;
 }
+
+inline Coords
+coords_average (const Coords *a, const Coords *b)
+{
+	Coords r = (Coords)(*a);
+	r.x += b->x;	r.x /= 2.0;
+	r.y += b->y;	r.y /= 2.0;
+	return r;
+}

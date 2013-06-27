@@ -48,6 +48,7 @@
 #include "stock.h"
 #include "dialogs.h"
 #include "sheet.h"
+#include "oregano-utils.h"
 
 
 #define NORMAL_COLOR "red"
@@ -769,7 +770,6 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 {
 	//TODO add static vars in order to skip the redraw if nothing changed
 	//TODO may happen once in a while and the check is really cheap
-	cairo_matrix_t matrix_rotate, matrix_mirror;
 	GSList *iter;
 	GooCanvasAnchorType anchor;
 	GooCanvasGroup *group;
@@ -778,11 +778,13 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	PartItemPriv *priv;
 	Part *part;
 	int index = 0;
-
+	Coords pos;
+	double scale_h, scale_v;
+	gdouble x, y;
 
 
 	// states
-	int angle;
+	int rotation;
 	IDFlip flip;
 
 	g_return_if_fail (sheet_item != NULL);
@@ -795,130 +797,54 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	priv = item->priv;
 
 	// init the states
-	angle = part_get_rotation (part);
+
 	flip = part_get_flip (part);
+	rotation = part_get_rotation (part);
 
-#if 1
-	// ### 1. rotate
+	DEGSANITY (rotation);
 
-	cairo_matrix_init_rotate (&matrix_rotate, (double)angle * M_PI / 180);
+	scale_h = (flip & ID_FLIP_HORIZ) ? -1. : 1.;
+	scale_v = (flip & ID_FLIP_VERT) ? -1. : 1.;
+
+
+	item_data_get_pos (data, &pos);
+	cairo_matrix_t morph, inv;
+	cairo_status_t done;
+
+	cairo_matrix_init_rotate (&morph, DEG2RAD (rotation));
+	cairo_matrix_scale (&morph, scale_h, scale_v);
+
+	inv = morph;
+	done = cairo_matrix_invert (&inv);
+	if (done != CAIRO_STATUS_SUCCESS) {
+		g_warning ("Failed to invert matrix. This should never happen. Never!");
+		return;
+	}
 
 	// rotate all items in the canvas group
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
-		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item), &matrix_rotate);
+		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item), &morph);
 	}
 
 	// revert the rotation of all labels and change their anchor to not overlap too badly
 	// this assures that the text is always horizontal and properly aligned
-	anchor = angle_to_anchor (angle);
-	for (iter = priv->label_items; iter;
-	     iter = iter->next) {
-		gdouble x, y;
-		g_object_set (iter->data,
-		              "anchor", anchor,
-		              NULL);
-		g_object_get (iter->data,
-		              "x", &x,
-		              "y", &y,
-		              NULL);
-
-		goo_canvas_item_set_transform (iter->data, NULL);
-		goo_canvas_item_rotate (iter->data, -angle, x, y); // TODO check if we really need this, probably only if we got goo_canvas_items with child labels
-	}
-	// same for label nodes
-	for (iter = priv->label_nodes; iter;
-	     iter = iter->next) {
-		gdouble x, y;
-		g_object_set (iter->data,
-		              "anchor", anchor, 
-		              NULL);
-		g_object_get (iter->data,
-		              "x", &x,
-		              "y", &y,
-		              NULL);
-
-		goo_canvas_item_set_transform (iter->data, NULL);
-		goo_canvas_item_rotate (iter->data, -angle, x, y); // TODO check if we really need this, probably only if we got goo_canvas_items with child labels
-	}
-#endif
-
-
-
-	// ### 2. flip
-#if 1
-	gdouble scale_h, scale_v, x, y;
-	Coords trans;
-
-	//save some cycles by transforming the bounding box directly instead of recomputing
-	GooCanvasBounds bounds_before, bounds_after;
-	cairo_matrix_t matrix_1_translate, matrix_2_scale, matrix_3_translate;
-
-	// convert the flip direction to binary, used in the matrix setup
-	scale_h = (flip & ID_FLIP_HORIZ) ? -1. : 1.;
-	scale_v = (flip & ID_FLIP_VERT) ? -1. : 1.;
-
-	// matrix setup
-	//  1 move to 0,0
-	//  2 invert x and/or y direction(s) as necessary
-	//  3 move back to origin coordinates
-	cairo_matrix_init_translate (&matrix_1_translate, -trans.x, -trans.y);
-	cairo_matrix_init_scale     (&matrix_2_scale, scale_h, scale_v);
-	cairo_matrix_init_translate (&matrix_3_translate, +trans.x, +trans.y);
-
-	cairo_matrix_multiply (&matrix_mirror, &matrix_1_translate, &matrix_2_scale);
-	cairo_matrix_multiply (&matrix_mirror, &matrix_mirror, &matrix_3_translate);
-
-
-	
-	// Get the group bounds before the flip
-	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item), &bounds_before);
-
-	NG_DEBUG ("before x1=%lf x2=%lf y1=%lf y2=%lf", bounds_before.x1, bounds_before.x2, bounds_before.y1, bounds_before.y2);
-
-
-	for (index = 0; index < group->items->len; index++) {
-		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
-		//FIXME replace this by transform to _set_ and not to mpy the scale
-		goo_canvas_item_scale (canvas_item, scale_h, scale_v);
-	}
-
-
-	// Get the group bounds after the flip
-	goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (sheet_item),
-	                            &bounds_after);
-	NG_DEBUG ("after x1=%lf x2=%lf y1=%lf y2=%lf", bounds_after.x1, bounds_after.x2, bounds_after.y1, bounds_after.y2);
-
-	// Translation to the flip translation
-	trans.x = (bounds_after.x1 - bounds_before.x1);
-	trans.y = (bounds_after.y1 - bounds_before.y1);
-	
-	Coords pos;
-	item_data_get_pos (data, &pos);
-
-	goo_canvas_item_translate (GOO_CANVAS_ITEM (sheet_item), trans.x, trans.y);
+	anchor = angle_to_anchor (rotation);
 
 	for (iter = priv->label_items; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor,
 		              NULL);
 		g_object_get (iter->data,
-		              "x", &trans.x,
-		              "y", &trans.y,
+		              "x", &x,
+		              "y", &y,
 		              NULL);
-#if 0
-		goo_canvas_item_get_transform (iter->data, &morph);
-		morph.xx = scale_h;
-		morph.yy = scale_v;
-		morph.x0 = trans.x;
-		morph.y0 = trans.y;
-		goo_canvas_item_set_transform (iter->data, &morph);
-#else
-		goo_canvas_item_scale (iter->data, scale_h, scale_v);
-#endif
-//		goo_canvas_item_translate (label->data, trans.x, trans.y);
-	}
 
+
+		goo_canvas_item_set_transform (iter->data, &inv);
+
+	}
+	// same for label nodes
 	for (iter = priv->label_nodes; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor, 
@@ -927,24 +853,9 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 		              "x", &x,
 		              "y", &y,
 		              NULL);
-		
-#if 0
-		goo_canvas_item_get_transform (iter->data, &morph);
-		morph.xx = scale_h;
-		morph.yy = scale_v;
-		morph.x0 = trans.x;
-		morph.y0 = trans.y;
-		goo_canvas_item_set_transform (iter->data, &morph);
-#else
-		goo_canvas_item_scale (iter->data, scale_h, scale_v);
-		goo_canvas_item_translate (iter->data, trans.x, trans.y);
-#endif
+
+		goo_canvas_item_set_transform (iter->data, &inv);
 	}
-
-#endif
-
-
-
 
 
 	// Invalidate the bounding box cache.

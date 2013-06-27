@@ -896,8 +896,7 @@ rotate_items (Sheet *sheet, GList *items)
 
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
-	center.x = (b2.x + b1.x) / 2.;
-	center.y = (b2.y + b1.y) / 2.;
+	center = coords_average(&b1, &b2);
 
 	snap_to_grid (sheet->grid, &center.x, &center.y);
 
