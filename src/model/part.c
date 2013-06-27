@@ -491,9 +491,10 @@ part_get_labels (Part *part)
 /**
  * rotate an item by an @angle increment (may be negative)
  * @angle the increment the item will be rotated (usually 90° steps)
+ * @center_pos if rotated as part of a group, this is the center to rotate around
  */
 static void
-part_rotate (ItemData *data, int angle, Coords *center)
+part_rotate (ItemData *data, int angle, Coords *center_pos)
 {
 	cairo_matrix_t affine;
 	double x, y;
@@ -501,6 +502,8 @@ part_rotate (ItemData *data, int angle, Coords *center)
 	PartPriv *priv;
 	int i, tot_rotation;
 	Coords b1, b2;
+	Coords part_center_before, part_center_after, delta;
+	Coords delta_cp_before, delta_cp_after;
 	gboolean handler_connected;
 
 	g_return_if_fail (data);
@@ -521,6 +524,11 @@ part_rotate (ItemData *data, int angle, Coords *center)
 	// this is only indirectly related to displaying
 	cairo_matrix_init_rotate (&affine, (double)angle * M_PI / 180.);
 
+	if (center_pos) {
+		delta_cp_before = coords_sub (&part_center_before, center_pos);
+		delta_cp_after = delta_cp_before;
+		cairo_matrix_transform_point (&affine, &delta_cp_after.x, &delta_cp_after.y);
+	}
 
 	priv->rotation = tot_rotation;
 	angle = tot_rotation;
@@ -542,11 +550,22 @@ part_rotate (ItemData *data, int angle, Coords *center)
 
 	// Rotate the bounding box
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
+	part_center_before = coords_average (&b1, &b2);
 
 	cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
 	cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
 
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
+	part_center_after = coords_average (&b1, &b2);
+
+	// we need a way to clamp to the grid without having a sheet pointer
+	// recenter the item, as we prefer to rotate around the bb center (or center_pos if !NULL)
+	delta = coords_sub (&part_center_before, &part_center_after);
+	if (center_pos) {
+		Coords diff = coords_sub (&delta_cp_after, &delta_cp_before);
+		coords_add (&delta, &diff);
+	}
+	item_data_move (data, &delta);
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
 	                                   ITEM_DATA (part)->rotated_handler_id);
