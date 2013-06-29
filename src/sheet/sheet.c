@@ -679,10 +679,10 @@ sheet_show_node_labels (Sheet *sheet, gboolean show)
 	GList *item = NULL;
 
 	for (item = sheet->priv->items; item; item=item->next) {
-    	if (IS_PART_ITEM (item->data))
+		if (IS_PART_ITEM (item->data))
 			if (part_get_num_pins (PART (sheet_item_get_data (SHEET_ITEM(item->data))))==1)
 				part_item_show_node_labels (PART_ITEM (item->data), show);
-        }
+	}
 }
 
 void
@@ -723,10 +723,11 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			// The sheet does not care about double clicks, but invoke the
 		 	// canvas event handler and see if an item picks up the event.
 			if ((*GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-			     ->button_press_event) (widget, (GdkEventButton *)event))
-			return TRUE;
-		else
-			return FALSE;
+							->button_press_event)
+							(widget, (GdkEventButton *)event))
+				return TRUE;
+			else
+				return FALSE;
 		case GDK_BUTTON_PRESS:
 			// If we are in the middle of something else, don't interfere
 		 	// with that.
@@ -735,7 +736,8 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			}
 
 			if ((* GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-		         ->button_press_event) (widget, (GdkEventButton *) event)) {
+							->button_press_event)
+							(widget, (GdkEventButton *) event)) {
 				return TRUE;
 			}
 
@@ -771,19 +773,39 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			break;
 
 		case GDK_SCROLL:
-			if (((GdkEventScroll *)event)->direction == GDK_SCROLL_UP) {
-				double zoom;
-				sheet_get_zoom (sheet, &zoom);
-				if (zoom < ZOOM_MAX)
-					sheet_change_zoom (sheet, 1.1);
-				} 
-				else if (((GdkEventScroll *)event)->direction == GDK_SCROLL_DOWN) {
-					double zoom;
-				sheet_get_zoom (sheet, &zoom);
-				if (zoom > ZOOM_MIN)
-					sheet_change_zoom (sheet, 0.9);
+			{
+				GdkEventScroll *scr_event = (GdkEventScroll*) event;
+				if (scr_event->state & GDK_SHIFT_MASK) {
+					// Scroll horizontally
+					if (scr_event->direction == GDK_SCROLL_UP)
+						sheet_scroll_pixel (sheet, -30, 0);
+					else if (scr_event->direction == GDK_SCROLL_DOWN)
+						sheet_scroll_pixel (sheet, 30, 0);
+
+				} else if (scr_event->state & GDK_CONTROL_MASK) {
+					// Scroll vertically
+					if (scr_event->direction == GDK_SCROLL_UP)
+						sheet_scroll_pixel (sheet, 0,-30);
+					else if (scr_event->direction == GDK_SCROLL_DOWN)
+						sheet_scroll_pixel (sheet, 0, 30);
+
+				} else {
+					// Zoom
+					if (scr_event->direction == GDK_SCROLL_UP) {
+						double zoom;
+						sheet_get_zoom (sheet, &zoom);
+						if (zoom < ZOOM_MAX)
+							sheet_change_zoom (sheet, 1.1);
+					} 
+					else if (scr_event->direction == GDK_SCROLL_DOWN) {
+						double zoom;
+						sheet_get_zoom (sheet, &zoom);
+						if (zoom > ZOOM_MIN)
+							sheet_change_zoom (sheet, 0.9);
+					}
 				}
-				break;
+			}
+			break;
 		case GDK_MOTION_NOTIFY:
 			if (sheet->priv->rubberband_info->state == RUBBERBAND_ACTIVE) {
 				rubberband_update (sheet, event);
