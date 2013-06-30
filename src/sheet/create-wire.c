@@ -73,7 +73,7 @@ create_wire_info_new (Sheet *sheet) {
 	dash = goo_canvas_line_dash_new (2, 5.0, 5.0);
 
 	create_wire_info->line = GOO_CANVAS_POLYLINE (
-	    goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->grid), 
+	    goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->grid_item),
 	                             FALSE, 0,
 	                             "points", create_wire_info->points,
 	                             "stroke-color-rgba", 0x92BA52C3,

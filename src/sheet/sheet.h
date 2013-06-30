@@ -37,6 +37,8 @@
 #include <gtk/gtk.h>
 
 #include "grid.h"
+#include "grid-item.h"
+
 #include "item-data.h"
 
 typedef struct _Sheet      Sheet;
@@ -65,8 +67,12 @@ struct _Sheet {
 	GooCanvas		 parent_canvas;
 	SheetState		 state;
 	GooCanvasGroup	*object_group;
+	// we need both hooked up here
+	// do not merge! this could be quite useful for schematics containing
+	// schematics as parts
 	Grid            *grid;
-	SheetPriv		*priv;
+	GridItem	*grid_item;
+	SheetPriv	*priv;
 };
 
 struct _SheetClass {

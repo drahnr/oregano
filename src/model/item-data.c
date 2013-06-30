@@ -37,6 +37,7 @@
 
 #include "item-data.h"
 #include "node-store.h"
+#include "grid.h"
 
 #include "debug.h"
 
@@ -63,6 +64,7 @@ enum {
 
 struct _ItemDataPriv {
 	NodeStore *store;
+	Grid *grid; //grid model to align to
 	Coords pos;
 	// Bounding box.
 	GooCanvasBounds bounds;
@@ -192,6 +194,8 @@ item_data_init (ItemData *item_data)
 	priv->pos.y = 0;
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 
+	priv->grid = NULL;
+
 	item_data->priv = priv;
 }
 
@@ -300,6 +304,15 @@ item_data_get_store (ItemData *item_data)
 	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
 
 	return item_data->priv->store;
+}
+
+Grid *
+item_data_get_grid (ItemData *item_data)
+{
+	g_return_val_if_fail (item_data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
+
+	return item_data->priv->grid;
 }
 
 ItemData *

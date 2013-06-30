@@ -445,9 +445,8 @@ sheet_new (int width, int height)
 	sheet->priv->height = height;
 
 	// Create the dot grid.
-	sheet->grid = grid_create (GOO_CANVAS_ITEM (sheet_group),
-	                           width,
-	                           height);
+	sheet->grid = grid_new (height, width);
+	sheet->grid_item = grid_item_new (GOO_CANVAS_ITEM (sheet_group), sheet->grid);
 
 	// Everything outside the sheet should be gray.
 	// top //
