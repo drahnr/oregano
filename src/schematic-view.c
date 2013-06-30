@@ -1194,17 +1194,14 @@ schematic_view_new (Schematic *schematic)
 	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, 
 	    "/MainMenu/MenuEdit/Paste"), FALSE);
 
-	// Set the window size to something reasonable.
-	gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
-		3 * gdk_screen_width () / 5, 3 * gdk_screen_height () / 5);
-
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool",
 		G_CALLBACK (reset_tool_cb), G_OBJECT (sv), 0);
 
 	// Set the window size to something reasonable. Stolen from Gnumeric.
-    gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 
-                                 3 * (gdk_screen_width () - 50) / 4, 
-                                 3 * (gdk_screen_height () - 50) / 4);
+	// Use screen height and aspect ratio of 16:10 to calculate size.
+	gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
+			3 * ((16 * (gdk_screen_height ()/10)) - 50) / 4, 
+			3 * (gdk_screen_height () - 50) / 4);
 
 	schematic_view_load (sv, schematic);
 
