@@ -6,7 +6,7 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  * 
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://srctwig.com/oregano
  * 
  * Copyright (C) 2003-2008  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber

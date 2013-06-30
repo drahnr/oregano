@@ -7,7 +7,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/drahnr/oregano
+ * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 2004-2008 Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber

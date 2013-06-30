@@ -13,7 +13,7 @@
  * The name is not really right. This part handles creation of wires and
  * acts as glue between NodeStore/Wire and Sheet/WireItem.
  *
- * Web page: https://github.com/drahnr/oregano
+ * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz

@@ -5,7 +5,7 @@
  * Authors:
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/drahnr/oregano
+ * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 2012-2013  Bernhard Schuster
  *

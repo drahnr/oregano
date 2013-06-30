@@ -9,7 +9,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://srctwig.com/oregano
  *
  * Oregano, a tool for schematic capture and simulation of electronic
  * circuits.

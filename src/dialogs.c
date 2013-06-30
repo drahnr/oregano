@@ -5,7 +5,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -177,7 +177,7 @@ dialog_about (void)
 	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (about), 
 		"GNU General Public License");
 	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), 
-	    "https://github.com/drahnr/oregano");
+	    "https://srctwig.com/oregano");
 	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
 	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
 	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);

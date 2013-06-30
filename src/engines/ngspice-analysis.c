@@ -4,7 +4,7 @@
  * Authors:
  *  Marc Lorber <Lorber.Marc@wanadoo.fr>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 2009-2012  Marc Lorber
  *
