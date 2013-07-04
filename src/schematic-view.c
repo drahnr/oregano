@@ -1194,17 +1194,28 @@ schematic_view_new (Schematic *schematic)
 	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, 
 	    "/MainMenu/MenuEdit/Paste"), FALSE);
 
-	// Set the window size to something reasonable.
-	gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
-		3 * gdk_screen_width () / 5, 3 * gdk_screen_height () / 5);
-
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool",
 		G_CALLBACK (reset_tool_cb), G_OBJECT (sv), 0);
 
-	// Set the window size to something reasonable. Stolen from Gnumeric.
-    gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 
-                                 3 * (gdk_screen_width () - 50) / 4, 
-                                 3 * (gdk_screen_height () - 50) / 4);
+	// Set the window size to something reasonable
+	GdkScreen *screen = gdk_screen_get_default ();
+	if (screen) {
+		gint monitor_count = gdk_screen_get_n_monitors (screen);
+		// usually the bigger one is the primary one
+		// as the window is not realized yet (or for some other reason does not make a difference)
+		gint monitor = gdk_screen_get_primary_monitor (screen);
+		GdkRectangle rect;
+		gdk_screen_get_monitor_geometry (screen, monitor, &rect);
+
+		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x, rect.y);
+
+		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
+		                             3 * (rect.width - 50) / 4,
+		                             3 * (rect.height - 50) / 4);
+	} else {
+		g_warning ("No default screen found. Falling back to 1024x768 window size.");
+		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 1024, 768);
+	}
 
 	schematic_view_load (sv, schematic);
 
