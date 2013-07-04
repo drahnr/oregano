@@ -50,6 +50,7 @@ static void item_data_copy (ItemData *dest, ItemData *src);
 enum {
 	ARG_0,
 	ARG_STORE,
+	ARG_GRID,
 	ARG_POS
 };
 
@@ -64,9 +65,10 @@ enum {
 
 struct _ItemDataPriv {
 	NodeStore *store;
-	Grid *grid; //grid model to align to
+	// Grid model to align to
+	Grid *grid;
 	Coords pos;
-	// Bounding box.
+	// Bounding box
 	GooCanvasBounds bounds;
 };
 
@@ -219,6 +221,9 @@ item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 	case ARG_STORE:
 		item_data->priv->store = g_value_get_pointer (value);
 		break;
+	case ARG_GRID:
+		item_data->priv->grid = g_value_get_pointer (value);
+		break;
 	default:
 		break;
 	}
@@ -233,6 +238,9 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	switch (prop_id) {
 	case ARG_STORE:
 		g_value_set_pointer (value, item_data->priv->store);
+		break;
+	case ARG_GRID:
+		g_value_set_pointer (value, item_data->priv->grid);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (item_data, prop_id, spec);
@@ -266,9 +274,9 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
 
+
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
 	if (handler_connected) {
-		NG_DEBUG ("moved emitted");
 		g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
 	}
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
@@ -306,7 +314,16 @@ item_data_get_store (ItemData *item_data)
 	return item_data->priv->store;
 }
 
-Grid *
+void
+item_data_set_grid (ItemData *item_data, gpointer grid)
+{
+	g_return_val_if_fail (item_data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
+
+	item_data->priv->grid = grid;
+}
+
+gpointer
 item_data_get_grid (ItemData *item_data)
 {
 	g_return_val_if_fail (item_data != NULL, NULL);

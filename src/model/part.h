@@ -39,6 +39,7 @@
 #include <gtk/gtk.h>
 
 #include "coords.h"
+#include "grid.h"
 #include "clipboard.h"
 #include "load-common.h"
 
@@ -77,8 +78,8 @@ struct _PartClass
 };
 
 GType  		part_get_type (void);
-Part *		part_new (void);
-Part *		part_new_from_library_part (LibraryPart *library_part);
+Part *		part_new (Grid *grid);
+Part *		part_new_from_library_part (LibraryPart *library_part, Grid *grid);
 int		part_get_num_pins (Part *part);
 Pin *		part_get_pins (Part *part);
 int	   	part_set_pins (Part *part, GSList *connections);

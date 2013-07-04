@@ -300,7 +300,7 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	g_assert (sheet);
 	g_assert (IS_SHEET (sheet));
 
-	wire = wire_new ();
+	wire = wire_new (sheet->grid);
 	
 	length.x = end_pos.x - start_pos.x;
 	length.y = end_pos.y - start_pos.y;

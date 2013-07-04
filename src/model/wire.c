@@ -150,9 +150,11 @@ wire_init (Wire *wire)
 }
 
 Wire *
-wire_new (void)
+wire_new (Grid *grid)
 {
-	return WIRE (g_object_new (TYPE_WIRE, NULL));
+	Wire *w = WIRE (g_object_new (TYPE_WIRE, NULL));
+	item_data_set_grid (ITEM_DATA (w), grid);
+	return w;
 }
 
 gint

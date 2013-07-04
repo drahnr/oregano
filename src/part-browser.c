@@ -177,7 +177,7 @@ place_cmd (GtkWidget *widget, Browser *br)
 	gtk_tree_model_get (model, &iter, 0, &part_name, -1);
 
 	library_part = library_get_part (br->library, part_name);
-	part = part_new_from_library_part (library_part);
+	part = part_new_from_library_part (library_part, sheet->grid);
 	if (!part) {
 		oregano_error (_("Unable to load required part"));
 		return;
@@ -398,7 +398,7 @@ part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 	snap_to_grid (sheet->grid, &pos.x, &pos.y);
 
 	library_part = library_get_part (data->br->library, data->part_name);
-	part = part_new_from_library_part (library_part);
+	part = part_new_from_library_part (library_part, sheet->grid);
 	if (!part) {
 		oregano_error (_("Unable to load required part"));
 		return;

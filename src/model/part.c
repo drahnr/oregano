@@ -191,17 +191,19 @@ part_init (Part *part)
 }
 
 Part *
-part_new (void)
+part_new (Grid *grid)
 {
 	Part *part;
 
 	part = PART (g_object_new (TYPE_PART, NULL));
 
+	item_data_set_grid (ITEM_DATA (part), grid);
+
 	return part;
 }
 
 Part *
-part_new_from_library_part (LibraryPart *library_part)
+part_new_from_library_part (LibraryPart *library_part, Grid *grid)
 {
 	Part *part;
 	GSList *pins;
@@ -210,7 +212,7 @@ part_new_from_library_part (LibraryPart *library_part)
 
 	g_return_val_if_fail (library_part != NULL, NULL);
 
-	part = part_new ();
+	part = part_new (grid);
 	if (!part)
 		return NULL;
 
@@ -663,6 +665,9 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 			x = 0.0;
 		if (fabs (y) < 1e-2)
 			y = 0.0;
+
+		snap_to_grid (item_data_get_grid (data), &x, &y);
+
 //		g_printf ("  x=%lf, y=%lf\n", x,y);
 		priv->pins[i].offset.x = x;
 		priv->pins[i].offset.y = y;

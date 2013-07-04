@@ -807,7 +807,7 @@ v_clamp_cmd (SchematicView *sv)
 
 	library_part = library_get_part (l, "Test Clamp");
 	
-	part = part_new_from_library_part (library_part);
+	part = part_new_from_library_part (library_part, sheet->grid);
 	if (!part) {
 		g_warning ("Clamp not found!");
 		return;
