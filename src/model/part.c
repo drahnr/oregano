@@ -494,6 +494,8 @@ part_get_labels (Part *part)
  * rotate an item by an @angle increment (may be negative)
  * @angle the increment the item will be rotated (usually 90° steps)
  * @center_pos if rotated as part of a group, this is the center to rotate around
+ * FIXME XXX TODO an issue arises as the center changes with part_rotate
+ * FIXME XXX TODO the view callback needs to compensate this somehow
  */
 static void
 part_rotate (ItemData *data, int angle, Coords *center_pos)
@@ -560,14 +562,13 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	part_center_after = coords_average (&b1, &b2);
 
-	// we need a way to clamp to the grid without having a sheet pointer
-	// recenter the item, as we prefer to rotate around the bb center (or center_pos if !NULL)
 	delta = coords_sub (&part_center_before, &part_center_after);
 	if (center_pos) {
 		Coords diff = coords_sub (&delta_cp_after, &delta_cp_before);
 		coords_add (&delta, &diff);
 	}
 	item_data_move (data, &delta);
+	item_data_snap (data);
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
 	                                   ITEM_DATA (part)->rotated_handler_id);
@@ -658,7 +659,6 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 
 		x = priv->pins[i].offset.x;
 		y = priv->pins[i].offset.y;
-//		g_printf ("pin %i [old] x=%lf,y=%lf -->", i, x, y);
 		cairo_matrix_transform_point (&affine, &x, &y);
 
 		if (fabs (x) < 1e-2)
@@ -666,12 +666,10 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 		if (fabs (y) < 1e-2)
 			y = 0.0;
 
-		snap_to_grid (item_data_get_grid (data), &x, &y);
-
-//		g_printf ("  x=%lf, y=%lf\n", x,y);
 		priv->pins[i].offset.x = x;
 		priv->pins[i].offset.y = y;
 	}
+	item_data_snap (data);
 
 	// tell the view
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part), 

@@ -301,8 +301,37 @@ item_data_move (ItemData *item_data, Coords *delta)
 	target.x = priv->pos.x + delta->x;
 	target.y = priv->pos.y + delta->y;
 
-	NG_DEBUG ("xxxx %lf,,%lf\n", target.x, target.y);
 	item_data_set_pos (item_data, &target);
+}
+
+void
+item_data_snap (ItemData *item_data)
+{
+	ItemDataPriv *priv;
+	gboolean handler_connected;
+
+	g_return_if_fail (item_data);
+	g_return_if_fail (IS_ITEM_DATA (item_data));
+
+	priv = item_data->priv;
+
+
+	if (priv->grid)
+		snap_to_grid (priv->grid, &(priv->pos.x), &(priv->pos.y));
+	else
+		g_warning ("ItemData's grid field is NUL");
+
+
+#if 0 //TODO FIXME XXX
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (item_data), "snapped"); //FIXME replace this by a "snapped" signal
+	}
+#endif
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (item_data), "changed");
+	}
 }
 
 gpointer // NodeStore * 

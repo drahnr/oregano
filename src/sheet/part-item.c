@@ -835,11 +835,6 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 		g_object_set (iter->data,
 		              "anchor", anchor,
 		              NULL);
-		g_object_get (iter->data,
-		              "x", &x,
-		              "y", &y,
-		              NULL);
-
 
 		goo_canvas_item_set_transform (iter->data, &inv);
 
@@ -848,10 +843,6 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	for (iter = priv->label_nodes; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor, 
-		              NULL);
-		g_object_get (iter->data,
-		              "x", &x,
-		              "y", &y,
 		              NULL);
 
 		goo_canvas_item_set_transform (iter->data, &inv);
