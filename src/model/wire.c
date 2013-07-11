@@ -57,7 +57,6 @@ static void      wire_changed (ItemData *data);
 
 enum {
 	ARG_0,
-	ARG_CHANGED,
 	ARG_DELETE,
 	ARG_LAST_SIGNAL
 };
@@ -101,16 +100,6 @@ wire_class_init (WireClass *klass)
 
 	object_class->dispose = wire_dispose;
 	object_class->finalize = wire_finalize;
-
-	wire_signals [ARG_CHANGED] = g_signal_new ("changed", 
-		    G_TYPE_FROM_CLASS (object_class),
-			G_SIGNAL_RUN_FIRST,
-			G_STRUCT_OFFSET (WireClass, changed),
-			NULL,
-			NULL,
-			g_cclosure_marshal_VOID__VOID,
-			G_TYPE_NONE,
-			0);
 
 	wire_signals [ARG_DELETE] = g_signal_new ("delete", 
 		    G_TYPE_FROM_CLASS (object_class),
