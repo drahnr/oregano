@@ -780,7 +780,6 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	int index = 0;
 	Coords pos;
 	double scale_h, scale_v;
-	gdouble x, y;
 
 
 	// states
@@ -808,6 +807,13 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 
 	item_data_get_pos (data, &pos);
+	// Move the canvas item and invalidate the bbox cache.
+	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (sheet_item),
+	                                      pos.x,
+	                                      pos.y,
+	                                      1.0,
+	                                      0.0);
+
 	cairo_matrix_t morph, inv;
 	cairo_status_t done;
 
@@ -1257,26 +1263,7 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 static void
 part_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	PartItem *part_item;
-	
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (data));
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_PART_ITEM (item));
 
-	if (pos == NULL)
-		return;
-
-	part_item = PART_ITEM (item);
-
-	// Move the canvas item and invalidate the bbox cache.
-	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),
-	                                      pos->x,
-	                                      pos->y,
-	                                      1.0,
-	                                      0.0);
-	                        
-	part_item->priv->cache_valid = FALSE;
 }
 
 static void

@@ -914,10 +914,15 @@ rotate_items (Sheet *sheet, GList *items)
 	g_list_free (item_data_list);
 }
 
+
+/*
+ * remove the currently selected items from the sheet
+ * (especially their goo canvas represnatators)
+ */
 void
 sheet_delete_selection (Sheet *sheet)
 {
-	GList *list, *copy;
+	GList *copy, *iter;
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
@@ -926,15 +931,18 @@ sheet_delete_selection (Sheet *sheet)
 		return;
 
 	copy = g_list_copy (sheet->priv->selected_objects);
-	for (list = copy; list; list = list->next) {
-		sheet_remove_item_in_sheet (SHEET_ITEM (list->data), sheet);
-		goo_canvas_item_remove (GOO_CANVAS_ITEM (list->data));
-	}
 
+	for (iter = copy; iter; iter = iter->next) {
+		sheet_remove_item_in_sheet (SHEET_ITEM (iter->data), sheet);
+		goo_canvas_item_remove (GOO_CANVAS_ITEM (iter->data));
+	}
+	g_list_free (copy);
+
+	// we need to it like this as <sheet_remove_item_in_sheet>
+	// requires selected_objects, items, floating_objects
+	// to be not NULL!
 	g_list_free (sheet->priv->selected_objects);
 	sheet->priv->selected_objects = NULL;
-	
-	g_list_free (copy);
 }
 
 
@@ -1264,22 +1272,31 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 
 }
 
+/*
+ * remove a single item from the sheet
+ */
 void
 sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 {
 	g_return_if_fail (sheet != NULL);
-    g_return_if_fail (IS_SHEET (sheet));
-    g_return_if_fail (item != NULL);
-    g_return_if_fail (IS_SHEET_ITEM (item));
+	g_return_if_fail (IS_SHEET (sheet));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_SHEET_ITEM (item));
 
-    sheet->priv->items = g_list_remove (sheet->priv->items, item);
+	sheet->priv->items = g_list_remove (sheet->priv->items, item);
 
 	//  Remove the object from the selected-list before destroying.
 	sheet_remove_selected_object (sheet, item);
 	sheet_remove_floating_object (sheet, item);
 
+	ItemData *data = sheet_item_get_data (item);
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+
+	// properly unregister the itemdata from the sheet
+	item_data_unregister (data);
 	// Destroy the item-data (model) associated to the sheet-item
-	g_object_unref (sheet_item_get_data (item));
+	g_object_unref (data);
 }
 
 
@@ -1318,7 +1335,7 @@ extract_time (GdkEvent *event)
 }
 
 /*
- * helpful for debugging to not freeze your pc
+ * helpful for debugging to not grab all input forever
  * if oregano segfaults while running inside
  * a gdb session
  */
@@ -1369,7 +1386,7 @@ sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed==0 &&
 	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet),
-		                      GOO_CANVAS_ITEM (sheet->grid),
+		                          GOO_CANVAS_ITEM (sheet->grid),
 	                              TRUE, /*do not reroute signals through sheet->grid*/
 		                      extract_time (event))==GDK_GRAB_SUCCESS) {
 		sheet->priv->keyboard_grabbed = 1;

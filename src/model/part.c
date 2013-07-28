@@ -524,7 +524,8 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	NG_DEBUG ("rotation: angle=%i tot_rotation=%i", angle, tot_rotation);
 
-	// use the cairo matrix funcs to transform the pin positions relative to the item center
+	// use the cairo matrix funcs to transform the pin
+	// positions relative to the item center
 	// this is only indirectly related to displaying
 	cairo_matrix_init_rotate (&affine, (double)angle * M_PI / 180.);
 
@@ -552,7 +553,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 		priv->pins[i].offset.y = y;
 	}
 
-	// Rotate the bounding box
+	// Rotate the bounding box, recenter to old center
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	part_center_before = coords_average (&b1, &b2);
 
@@ -573,22 +574,22 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
 	                                   ITEM_DATA (part)->rotated_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part), 
+		g_signal_emit_by_name (G_OBJECT (part),
 		                       "rotated", tot_rotation);
 	}
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
 	                                   ITEM_DATA (part)->changed_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part), 
+		g_signal_emit_by_name (G_OBJECT (part),
 		                       "changed");
 	}
 }
 
 /**
- * flip a part in a given @direction
- * @direction gives the direction the item will be flipped, end user view!
- * @center currently ignored
+ * flip a part in a given direction
+ * @direction gives the direction the item will be flipped, end users pov!
+ * @center the center to flip over - currently ignored FIXME
  */
 static void
 part_flip (ItemData *data, IDFlip direction, Coords *center)
@@ -603,7 +604,7 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	Coords pos, trans;
 	Coords b1, b2;
 	Coords pos_new, pos_old, delta;
-	//TODO properly recenter after flipping
+	//FIXME properly recenter after flipping
 	//Coords part_center_before, part_center_after, delta;
 
 	g_return_if_fail (data);
@@ -688,11 +689,11 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 		item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 		item_data_set_pos (ITEM_DATA (part), &pos);
 
-		// TODO - proper recenter to boundingbox center
+		// FIXME - proper recenter to boundingbox center
 	}
-	if (g_signal_handler_is_connected (G_OBJECT (part), 
+	if (g_signal_handler_is_connected (G_OBJECT (part),
 	                                   ITEM_DATA (part)->changed_handler_id)) {
-		g_signal_emit_by_name (G_OBJECT (part), 
+		g_signal_emit_by_name (G_OBJECT (part),
 		                       "changed");
 	}
 

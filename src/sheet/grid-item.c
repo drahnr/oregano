@@ -137,7 +137,7 @@ grid_item_new (GooCanvasItem *root, Grid *grid)
 
 	priv = grid_item->priv;
 
-	gint height, width;
+	gint height = -1,  width = -1;
 	grid_get_size (grid, &height, &width);
 
 	// we make the canvas_grid child of the grid_item
@@ -174,15 +174,15 @@ grid_changed_callback (Grid *grid, GridItem *item)
 {
 
 	const gdouble spacing = grid_get_spacing (grid);
-	const gint h, w;
+	gint height = -1, width = -1;
 
-	grid_get_size (grid, &h, &w);
+	grid_get_size (grid, &height, &width);
 
 	g_object_set (item->priv->canvas_grid,
 	              "x-step", spacing,
 	              "y-step", spacing,
-	              "height", h,
-	              "width", w,
+	              "height", height,
+	              "width", width,
 	              "visibility", grid_is_visible (grid) ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);
 

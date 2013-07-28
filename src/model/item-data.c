@@ -322,10 +322,10 @@ item_data_snap (ItemData *item_data)
 		g_warning ("ItemData's grid field is NUL");
 
 
-#if 0 //TODO FIXME XXX
+#if 1 //TODO FIXME XXX rename this to "snapped" instead of moved
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (item_data), "snapped"); //FIXME replace this by a "snapped" signal
+		g_signal_emit_by_name (G_OBJECT (item_data), "moved"); //FIXME replace this by a "snapped" signal
 	}
 #endif
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
@@ -333,6 +333,7 @@ item_data_snap (ItemData *item_data)
 		g_signal_emit_by_name (G_OBJECT (item_data), "changed");
 	}
 }
+
 
 gpointer // NodeStore * 
 item_data_get_store (ItemData *item_data)
