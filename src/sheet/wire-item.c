@@ -184,13 +184,7 @@ wire_item_finalize (GObject *object)
 static void
 wire_item_moved (SheetItem *object)
 {
-	WireItem *item;
-	WireItemPriv *priv;
-
-	item = WIRE_ITEM (object);
-	priv = item->priv;
-
-	priv->cache_valid = FALSE;
+	g_warning ("wire MOVED callback called - LEGACY");
 }
 
 WireItem *
@@ -198,6 +192,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 {
 	GooCanvasItem *item;
 	WireItem *wire_item;
+	ItemData *item_data;
 	GooCanvasPoints *points;
 	WireItemPriv *priv;
 	Coords start_pos, length;
@@ -264,23 +259,28 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	
 	goo_canvas_points_unref (points);
 
-	ITEM_DATA (wire)->rotated_handler_id = 
-		g_signal_connect_data (wire, "rotated",
-		G_CALLBACK (wire_rotated_callback), G_OBJECT (wire_item), NULL, 0);
-	
-	g_signal_connect_data (wire, "flipped",
-		G_CALLBACK (wire_flipped_callback), G_OBJECT (wire_item), NULL, 0);
-	
-	ITEM_DATA (wire)->moved_handler_id = 
-		g_signal_connect_object (wire, "moved",
-		G_CALLBACK (wire_moved_callback),  G_OBJECT (wire_item), 0);
 
-	g_signal_connect (wire, "changed", 
-		G_CALLBACK (wire_changed_callback), wire_item);
+	item_data = ITEM_DATA (wire);
+	item_data->rotated_handler_id = g_signal_connect_object (G_OBJECT (wire),
+	                                "rotated",
+	                                G_CALLBACK (wire_rotated_callback),
+	                                G_OBJECT (wire_item), 0);
+	item_data->flipped_handler_id = g_signal_connect_object (G_OBJECT (wire),
+	                                "flipped",
+	                                G_CALLBACK (wire_flipped_callback),
+	                                G_OBJECT (wire_item), 0);
+	item_data->moved_handler_id = g_signal_connect_object (G_OBJECT (wire),
+	                                "moved",
+	                                G_CALLBACK (wire_moved_callback),
+	                                G_OBJECT (wire_item), 0);
+	item_data->changed_handler_id = g_signal_connect_object (G_OBJECT (wire),
+	                                "changed",
+	                                G_CALLBACK (wire_changed_callback),
+	                                G_OBJECT (wire_item), 0);
 
 	g_signal_connect (wire, "delete", 
 	    G_CALLBACK (wire_delete_callback), wire_item);
-	                                   
+
 	wire_update_bbox (wire);
 
 	return wire_item;
@@ -809,29 +809,12 @@ unhighlight_wire (WireItem *item)
 	return FALSE;
 }
 
-// This is called when the wire data was moved. Update the view accordingly.
+
+
 static void
 wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	WireItem *wire_item;
-
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (data));
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_WIRE_ITEM (item));
-
-	if (pos == NULL)
-		return;
-
-	wire_item = WIRE_ITEM (item);
-
-	// Move the canvas item and invalidate the bbox cache.
-	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),
-	                                      pos->x,
-	                                      pos->y,
-	                                      1.0,
-	                                      0.0);
-	wire_item->priv->cache_valid = FALSE;
+	g_warning ("wire MOVED callback called - LEGACY");
 }
 
 static void
@@ -843,6 +826,7 @@ wire_item_place (SheetItem *item, Sheet *sheet)
 static void
 wire_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
+//FIXME
 //	wire_item_signal_connect_placed (WIRE_ITEM (item));
 }
 
@@ -852,8 +836,22 @@ wire_changed_callback (Wire *wire, WireItem *item)
 {
 	Coords start_pos, length;
 	GooCanvasPoints *points;
-	
+
+	g_return_if_fail (wire != NULL);
+	g_return_if_fail (IS_ITEM_DATA (wire));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_WIRE_ITEM (item));
+
+
 	wire_get_pos_and_length (wire, &start_pos, &length);
+
+	// Move the canvas item and invalidate the bbox cache.
+	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),
+	                                      start_pos.x,
+	                                      start_pos.y,
+	                                      1.0,
+	                                      0.0);
+	item->priv->cache_valid = FALSE;
 
 	points = goo_canvas_points_new (2);
 	points->coords[0] = 0;

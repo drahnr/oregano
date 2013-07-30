@@ -455,25 +455,26 @@ sheet_item_event (GooCanvasItem *sheet_item,
 			// Reparent the selected objects to the normal group
 			// to have correct behaviour
 			for (list = priv->selected_objects; list; list = list->next) {
-            	sheet_item_reparent (SHEET_ITEM (list->data), 
-	                                 sheet->object_group);
-            }
+				sheet_item_reparent (SHEET_ITEM (list->data),
+				                     sheet->object_group);
+			}
 
 			for (list = priv->selected_objects; list; list = list->next) {
-            	ItemData *item_data;
+				ItemData *item_data;
 				Coords pos;
 
-                item_data = SHEET_ITEM (list->data)->priv->data;
+				item_data = SHEET_ITEM (list->data)->priv->data;
 				pos.x = snapped_x;
 				pos.y = snapped_y;
 				item_data_move (item_data, &pos);
-                item_data_register (item_data);
-            }
+				item_data_snap (item_data);
+				item_data_register (item_data);
+			}
 			g_list_free_full (list, g_object_unref);
-				
+
 			break;
 		}
-			
+
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 			case GDK_KEY_r:
@@ -701,8 +702,9 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 				}
 				g_object_ref (G_OBJECT (floating_data));
-
 				item_data_set_pos (floating_data, &pos);
+				item_data_snap (floating_data);
+
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), floating_data);
 
 				if (!keep)

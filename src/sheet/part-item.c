@@ -255,14 +255,11 @@ part_item_set_label_items (PartItem *item, GSList *item_list)
 	priv->label_items = item_list;
 }
 
-// "moved" signal handler. Invalidates the bounding box cache.
+
 static void
 part_item_moved (SheetItem *sheet_item)
 {
-	PartItem *part_item;
-
-	part_item = PART_ITEM (sheet_item);
-	part_item->priv->cache_valid = FALSE;
+	g_warning ("part MOVED callback called - LEGACY");
 }
 
 PartItem *
