@@ -406,10 +406,10 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 	g_signal_emit_by_name (G_OBJECT (wire), "changed");
 }
 
+//FIXME if we have a center pos, this actually needs to do some transform magic
 static void
 wire_flip (ItemData *data, IDFlip direction, Coords *center)
 {
-	// Do nothing!	
 	return;
 }
 
@@ -487,7 +487,8 @@ wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	cairo_restore (cr);
 }
 
-void wire_delete (Wire *wire)
+void
+wire_delete (Wire *wire)
 {
 	g_return_if_fail (IS_WIRE (wire));
 

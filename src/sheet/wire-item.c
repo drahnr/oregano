@@ -859,23 +859,23 @@ wire_changed_callback (Wire *wire, WireItem *item)
 	points->coords[2] = length.x;
 	points->coords[3] = length.y;
 
-	g_object_set (item->priv->line, 
-	              "points", points, 
+	g_object_set (item->priv->line,
+	              "points", points,
 	              NULL);
 	goo_canvas_points_unref (points);
 
 	g_object_set (item->priv->resize1,
-	              "x", -RESIZER_SIZE, 
+	              "x", -RESIZER_SIZE,
 	              "y", -RESIZER_SIZE,
-	              "width", 2 * RESIZER_SIZE, 
-	              "height", 2 * RESIZER_SIZE, 
+	              "width", 2 * RESIZER_SIZE,
+	              "height", 2 * RESIZER_SIZE,
 	              NULL);
 
 	g_object_set (item->priv->resize2,
-	              "x", length.x-RESIZER_SIZE, 
+	              "x", length.x-RESIZER_SIZE,
 	              "y", length.y-RESIZER_SIZE,
-	              "width", 2 * RESIZER_SIZE, 
-	              "height", 2 * RESIZER_SIZE, 
+	              "width", 2 * RESIZER_SIZE,
+	              "height", 2 * RESIZER_SIZE,
 	              NULL);
 
 	goo_canvas_item_request_update (GOO_CANVAS_ITEM (item->priv->line));

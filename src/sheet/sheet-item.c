@@ -485,7 +485,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 					
 					sheet_get_pointer (sheet, &x, &y);
 
-                    // Center the objects around the mouse pointer.
+					// Center the objects around the mouse pointer.
 					goo_canvas_item_get_bounds (
 						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
 
@@ -530,13 +530,13 @@ sheet_item_event (GooCanvasItem *sheet_item,
 				item_data = SHEET_ITEM (list->data)->priv->data;
 				item_data_unregister (item_data);
 				sheet_item_reparent (SHEET_ITEM (list->data), 
-                                     priv->selected_group);
+				                     priv->selected_group);
 			}
 			
 			goo_canvas_pointer_grab (canvas, GOO_CANVAS_ITEM (sheet_item),
-	    		GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
-	    		NULL, 
-	    		event->button.time);
+			     GDK_POINTER_MOTION_MASK | GDK_BUTTON_RELEASE_MASK,
+			     NULL,
+			     event->button.time);
 		}
 
 		// Set last_x & last_y to the pointer position
@@ -577,7 +577,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (priv->selected_group), 
 		                               NULL);
 		goo_canvas_item_translate (GOO_CANVAS_ITEM (priv->selected_group), 
-			                       dx, dy);
+		                           dx, dy);
 		return TRUE;
 	
 	default:
@@ -620,9 +620,9 @@ sheet_item_cancel_floating (Sheet *sheet)
 	// Create a new empty group to prepare next floating group
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (
 			goo_canvas_group_new (GOO_CANVAS_ITEM (sheet->object_group), 
-			"x", 0.0, 
-			"y", 0.0, 
-			NULL)); 
+			"x", 0.0,
+			"y", 0.0,
+			NULL));
 
 	// sheet_clear_ghosts (sheet);
 	sheet->priv->float_handler_id = 0;
@@ -712,13 +712,13 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			}
 
 			if (keep) {
-				g_object_set (G_OBJECT (sheet->priv->floating_group),
+				g_object_set (G_OBJECT (priv->floating_group),
 				              "x", pos.x,
 				              "y", pos.y,
 				              NULL);
 			} else {
-				g_list_free (sheet->priv->floating_objects);
-				sheet->priv->floating_objects = NULL;
+				g_list_free (priv->floating_objects);
+				priv->floating_objects = NULL;
 			}
 			pos.x = 0.0; 
 			pos.y = 0.0; 
@@ -752,19 +752,19 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			for (list = priv->floating_objects; list; list = list->next) {
 				sheet_item_reparent (SHEET_ITEM (list->data), 
 				                     priv->floating_group);
-				
+
 				// Set the floating item visible
 				g_object_set (G_OBJECT (list->data),
-	              		  	  "visibility", GOO_CANVAS_ITEM_VISIBLE,
-	              		      NULL);
-			}	
+				              "visibility", GOO_CANVAS_ITEM_VISIBLE,
+				              NULL);
+			}
 			last_x = 0.0;
 			last_y = 0.0;
 		}
 
 		// Get pointer position independantly of the zoom
 		sheet_get_pointer (sheet, &snapped_x, &snapped_y);
-			
+
 		// Calculate which amount to move the selected objects by.
 		dx = snapped_x - last_x;
 		dy = snapped_y - last_y;
@@ -775,7 +775,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 		for (list = priv->floating_objects; list; list = list->next) {
 			goo_canvas_item_translate (GOO_CANVAS_ITEM (list->data),
 			                           dx, dy);
-		}	
+		}
 		g_list_free_full (list, g_object_unref);
 		break;
 
@@ -787,22 +787,22 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				{
 					gdouble x, y;
 					GooCanvasBounds bounds;
-					
+
 					sheet_get_pointer (sheet, &x, &y);
 
-                    // Center the objects around the mouse pointer.
+					// Center the objects around the mouse pointer.
 					goo_canvas_item_get_bounds (
 						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
 
 					snapped_x = x - (bounds.x1 + bounds.x2) / 2;
 					snapped_y = y - (bounds.y1 + bounds.y2) / 2;
-                    snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
+					snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
 
 					goo_canvas_item_translate (
 					    GOO_CANVAS_ITEM (priv->floating_group), snapped_x, snapped_y);
 
-                    last_x = snapped_x;
-                    last_y = snapped_y;
+					last_x = snapped_x;
+					last_y = snapped_y;
 				}
 				break;
 			default:
@@ -861,10 +861,11 @@ sheet_item_reparent (SheetItem *item, GooCanvasGroup *group)
 	g_return_if_fail (group != NULL);
 
 	g_object_ref (item);
-  	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
+	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
 	goo_canvas_item_add_child (GOO_CANVAS_ITEM (group),
 	                           GOO_CANVAS_ITEM (item),
 	                           -1);
+	//FIXME are we leaking a ref here?
 }
 
 void
