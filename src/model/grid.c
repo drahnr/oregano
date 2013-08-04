@@ -36,15 +36,12 @@
 
 static void      grid_class_init (GridClass *klass);
 static void      grid_init (Grid *grid);
-static void      grid_copy (ItemData *dest, ItemData *src);
 //static ItemData *grid_clone (ItemData *src);
-static void      grid_rotate (ItemData *data, gint angle, Coords *center);
-static void      grid_flip (ItemData *data, IDFlip direction, Coords *center);
-static gboolean  grid_has_properties (ItemData *data);
-static void	 grid_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
-static void	 grid_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
-static void      grid_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
-static void      grid_changed (ItemData *data);
+static gboolean  grid_has_properties (GObject *data);
+static void      grid_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
+static void      grid_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
+static void      grid_print (GObject *data, cairo_t *cr, SchematicPrintContext *ctx);
+static void      grid_changed (GObject *data);
 
 
 #include "debug.h"
@@ -72,7 +69,7 @@ struct _GridPriv {
 	gint width;
 };
 
-G_DEFINE_TYPE (Grid, grid, TYPE_ITEM_DATA)
+G_DEFINE_TYPE (Grid, grid, G_TYPE_OBJECT)
 
 static guint grid_signals [LAST_SIGNAL] = { 0 };
 static ItemDataClass *parent_class = NULL;
@@ -102,10 +99,8 @@ static void
 grid_class_init (GridClass *klass)
 {
 	GObjectClass *object_class;
-	ItemDataClass *item_data_class;
 
-	parent_class = g_type_class_peek (TYPE_ITEM_DATA);
-	item_data_class = ITEM_DATA_CLASS (klass);
+	parent_class = g_type_class_peek (G_TYPE_OBJECT);
 	object_class = G_OBJECT_CLASS (klass);
 
 	object_class->dispose = grid_dispose;
@@ -130,16 +125,6 @@ grid_class_init (GridClass *klass)
 	                g_cclosure_marshal_VOID__VOID,
 	                G_TYPE_NONE,
 	                0);
-
-	item_data_class->clone = NULL; //grid_clone;
-	item_data_class->copy = grid_copy;
-	item_data_class->rotate = grid_rotate;
-	item_data_class->flip = grid_flip;
-	item_data_class->unreg = NULL;
-	item_data_class->reg = NULL;
-	item_data_class->has_properties = grid_has_properties;
-	item_data_class->print = grid_print;
-	item_data_class->changed = grid_changed;
 
 	object_class->set_property = grid_set_property;
 	object_class->get_property = grid_get_property;
@@ -376,61 +361,71 @@ snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 	}
 }
 
+typedef enum {
+	GRID_BIAS_NONE = 0,
+	GRID_BIAS_NORTH = 1,
+	GRID_BIAS_SOUTH = 2,
+	GRID_BIAS_WEST = 4,
+	GRID_BIAS_EAST = 8
+} GridRoundingBias;
+typedef guint8 GridRoundingBiasFlags;
 
-static void
-grid_copy (ItemData *dest, ItemData *src)
+inline void
+snap_to_grid_with_bias (Grid *grid, gdouble *x, gdouble *y, GridRoundingBiasFlags bias)
 {
-	Grid *dest_grid, *src_grid;
-
-	g_return_if_fail (dest != NULL);
-	g_return_if_fail (IS_GRID (dest));
-	g_return_if_fail (src != NULL);
-	g_return_if_fail (IS_GRID (src));
-
-	if (parent_class->copy != NULL)
-		parent_class->copy (dest, src);
-
-	dest_grid = GRID (dest);
-	src_grid = GRID (src);
-
-	g_assert (src_grid);
-	g_assert (dest_grid);
-	//FIXME copy the priv struct
-}
+	GridPriv *priv;
+	gdouble spacing;
 
 
-static void
-grid_flip (ItemData *data, IDFlip direction, Coords *center)
-{
-	// Do nothing!	
-	return;
-}
+	priv = grid->priv;
+	spacing = priv->spacing;
 
-
-static void
-grid_rotate (ItemData *data, gint rotate, Coords *center)
-{
-	// Do nothing!	
-	return;
+	if (__likely(priv->snap)) {
+		gdouble xcorr, ycorr;
+		if (bias != GRID_BIAS_NONE) {
+			if (bias & GRID_BIAS_NORTH & ~GRID_BIAS_SOUTH) {
+				xcorr = -0.25;
+			} else if (bias & ~GRID_BIAS_NORTH & GRID_BIAS_SOUTH) {
+				xcorr = +0.25;
+			} else {
+				xcorr = 0.;
+			}
+			if (bias & GRID_BIAS_WEST & ~GRID_BIAS_EAST) {
+				ycorr = -0.25;
+			} else if (bias & ~GRID_BIAS_WEST & GRID_BIAS_EAST) {
+				ycorr = +0.25;
+			} else {
+				ycorr = 0.;
+			}
+			if (xcorr == 0. && ycorr == 0.) {
+				g_warning ("Invalid GRID_BIAS_* value, ignoring (with value %i)", bias);
+			}
+		} else {
+			xcorr = ycorr = 0.;
+		}
+		if (__likely(x)) *x = ROUND (((*x)+xcorr) / spacing) * spacing;
+		if (__likely(y)) *y = ROUND (((*y)+ycorr) / spacing) * spacing;
+	}
 }
 
 
 static gboolean
-grid_has_properties (ItemData *data)
+grid_has_properties (GObject *data)
 {
 	return FALSE;
 }
 
 static void
-grid_changed (ItemData *data)
+grid_changed (GObject *data)
 {
 	g_return_if_fail (IS_GRID (data));
 
 	g_signal_emit_by_name ((GObject *)data, "changed");
 }
 
+
 static void
-grid_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
+grid_print (GObject *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	Coords start_pos, end_pos;
 	Grid *grid;

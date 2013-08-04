@@ -46,13 +46,13 @@ typedef struct _GridPriv GridPriv;
 
 
 struct _Grid {
-	ItemData parent;
+	GObject parent;
 	GridPriv *priv;
 };
 
 struct _GridClass
 {
-	ItemDataClass parent_class;
+	GObjectClass parent_class;
 
 	void (*changed) ();
 	void (*delete) ();
