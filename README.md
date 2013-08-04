@@ -51,7 +51,7 @@ After installation oregano can be started by running `oregano` from terminal.
 
 ### Web
 
-The [official oregano website](https://srctwig.com/oregano) - a clone of this README.md
+The [official oregano website](https://srctwig.com/oregano)
 
 ### Mailinglist
 
