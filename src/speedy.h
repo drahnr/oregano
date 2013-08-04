@@ -9,4 +9,6 @@
 #define __unlikely(x)     (x)
 #endif
 
+#define UNUSED(x) ((void)x)
+
 #endif /* _SPEEDY_H__ */

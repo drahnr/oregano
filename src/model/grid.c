@@ -429,6 +429,9 @@ grid_print (GObject *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	Coords start_pos, end_pos;
 	Grid *grid;
+	UNUSED (start_pos);
+	UNUSED (end_pos);
+	UNUSED (grid);
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_GRID (data));
