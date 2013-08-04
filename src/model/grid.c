@@ -136,13 +136,23 @@ grid_class_init (GridClass *klass)
 	
 	g_object_class_install_property (object_class, ARG_SPACING,
 	           g_param_spec_double ("spacing", "Grid::spacing", "the grid spacing",
-	                                0.0f, 100.0f, 10.0f,
+	                                0., 100., 10.,
 	                                G_PARAM_READWRITE));
 	
 	g_object_class_install_property (object_class, ARG_SNAP,
 	           g_param_spec_boolean ("snap", "Grid::snap", "snap to grid?",
-		                         TRUE,
+	                                 TRUE,
 	                                 G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class, ARG_HEIGHT,
+	           g_param_spec_double ("height", "Grid::height", "grid height",
+	                                100., 1000000., 8888.,
+	                                G_PARAM_READWRITE));
+	g_object_class_install_property (object_class, ARG_WIDTH,
+	           g_param_spec_double ("width", "Grid::width", "grid width",
+	                                100., 1000000., 7777.,
+	                                G_PARAM_READWRITE));
+
 }
 
 static void
@@ -177,10 +187,10 @@ grid_set_property (GObject *object, guint prop_id, const GValue *value,
 		priv->snap = g_value_get_boolean (value);
 		break;
 	case ARG_HEIGHT:
-		priv->height = g_value_get_int (value);
+		priv->height = g_value_get_double (value);
 		break;
 	case ARG_WIDTH:
-		priv->width = g_value_get_int (value);
+		priv->width = g_value_get_double (value);
 		break;
 	case ARG_COLOR:
 //		priv->color = g_value_get_string (value);
@@ -193,8 +203,8 @@ grid_set_property (GObject *object, guint prop_id, const GValue *value,
 }
 
 static void
-grid_get_property (GObject *object, guint prop_id, GValue *value,
-	GParamSpec *spec)
+grid_get_property (GObject *object,
+                   guint prop_id, GValue *value, GParamSpec *spec)
 {
 	Grid *grid;
 	GridPriv *priv;
@@ -211,10 +221,10 @@ grid_get_property (GObject *object, guint prop_id, GValue *value,
 	case ARG_COLOR:
 		break; //TODO
 	case ARG_HEIGHT:
-		g_value_set_boolean (value, priv->height);
+		g_value_set_double (value, priv->height);
 		break;
 	case ARG_WIDTH:
-		g_value_set_boolean (value, priv->width);
+		g_value_set_double (value, priv->width);
 		break;
 
 	default:
@@ -230,13 +240,9 @@ Grid *
 grid_new (gdouble height, gdouble width)
 {
 	Grid *grid;
-	GridPriv *priv; 
-
-	grid = GRID (g_object_new (TYPE_GRID, NULL));
+	g_printf ("%s xxx %lf x %lf\n", __FUNCTION__, height, width);
+	grid = GRID (g_object_new (TYPE_GRID, "height", height, "width", width, NULL));
 	g_assert (grid);
-	priv = grid->priv;
-	priv->height = height;
-	priv->width = width;
 	return grid;
 }
 
@@ -329,7 +335,7 @@ grid_set_snap (Grid *grid, gboolean snap)
 
 
 void
-grid_get_size (Grid *grid, gint *height, gint *width)
+grid_get_size (Grid *grid, gdouble *height, gdouble *width)
 {
 	GridPriv *priv;
 

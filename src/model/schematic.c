@@ -83,6 +83,8 @@ struct _SchematicPriv {
 
 	GtkTextBuffer 			*log;
 	GtkTextTag 				*tag_error;
+
+	Grid *grid;
 };
 
 typedef enum {
@@ -120,9 +122,9 @@ static void item_data_destroy_callback (gpointer s, GObject *data);
 static void item_moved_callback (ItemData *data, Coords *pos, Schematic *sm);
 
 static int  schematic_get_lowest_available_refdes (Schematic *schematic,
-				char *prefix);
+                                                   char *prefix);
 static void schematic_set_lowest_available_refdes (Schematic *schematic,
-				char *prefix, int num);
+                                                   char *prefix, int num);
 
 static GObjectClass *parent_class = NULL;
 static guint schematic_signals[LAST_SIGNAL] = { 0 };
@@ -236,9 +238,9 @@ schematic_init (Schematic *schematic)
 	priv->dirty = FALSE;
 	priv->log = gtk_text_buffer_new (NULL);
 	priv->tag_error = gtk_text_buffer_create_tag (priv->log, "error",
-		"foreground", "red", 
-	    "weight", PANGO_WEIGHT_BOLD, 
-	    NULL);
+	                                              "foreground", "red",
+	                                              "weight", PANGO_WEIGHT_BOLD,
+	                                              NULL);
 
 	g_signal_connect_object (priv->store, "node_dot_added",
 		G_CALLBACK (node_dot_added_callback), G_OBJECT (schematic), 
@@ -254,8 +256,10 @@ schematic_init (Schematic *schematic)
 
 	priv->filename = NULL;
 	priv->netlist_filename = NULL;
-	priv->author = g_strdup ("");
-	priv->comments = g_strdup ("");
+	priv->author = g_strdup (""); //FIXME fill with sane default values - bug #52
+	priv->comments = g_strdup (""); //FIXME
+
+	priv->grid = grid_new (10000., 10000.); //FIXME make this dynamic - bug #45
 }
 
 Schematic *
@@ -310,7 +314,8 @@ schematic_finalize (GObject *object)
 		g_hash_table_destroy (sm->priv->refdes_values);
 		if (sm->priv->netlist_filename)
 			g_free (sm->priv->netlist_filename);
-
+		if (sm->priv->grid)
+			g_object_unref (sm->priv->grid);
 		g_free (sm->priv);
 		sm->priv = NULL;
 	}
@@ -320,6 +325,14 @@ schematic_finalize (GObject *object)
 
 // Get/set functions.
 // ***************** /
+Grid *
+schematic_get_grid (Schematic *schematic)
+{
+	g_return_val_if_fail (schematic != NULL, NULL);
+	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+
+	return schematic->priv->grid;
+}
 
 char *
 schematic_get_title (Schematic *schematic)
@@ -649,9 +662,11 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	store = sm->priv->store;
-	g_object_set (G_OBJECT (data), 
-	              "store", store, 
+	g_object_set (G_OBJECT (data),
+	              "store", store,
+	              "grid", sm->priv->grid, // assert this is not NULL
 	              NULL);
+
 
 	// item data will call the child register function
 	// for parts e.g. this ends up in <node_store_add_part>

@@ -645,16 +645,16 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	}
 
 	cairo_matrix_init_scale (&affine, scale_h, scale_v);
-	
+
 	item_data_get_pos (data, &pos_old);
 	pos_new = pos_old;
 	cairo_matrix_transform_point (&affine, &pos_new.x, &pos_new.y);
 
 	g_printf ("\ncenter %p [old] x=%lf,y=%lf -->", data, pos_old.x, pos_old.y);
 	g_printf ("  x=%lf, y=%lf\n", pos_new.x, pos_new.y);
-    delta.x = - pos_new.x + pos_old.x;
-    delta.y = - pos_new.y + pos_old.y;
-    
+	delta.x = - pos_new.x + pos_old.x;
+	delta.y = - pos_new.y + pos_old.y;
+
 	// flip the pins
 	for (i = 0; i < priv->num_pins; i++) {
 
@@ -827,16 +827,17 @@ part_update_bbox (Part *part)
 			break;
 
 		case SYMBOL_OBJECT_TEXT:
-		   {
-			   /*GdkFont *font = gdk_font_load ("Sans 10");
+			{
+				//FIXME
+				/*GdkFont *font = gdk_font_load ("Sans 10");
 				 b1.x = b1.y =  0;
 				 b2.x = 2*object->u.text.x +
 				 gdk_string_width (font, object->u.text.str );
 				 b2.y = 2*object->u.text.y +
 				 gdk_string_height (font,object->u.text.str );
 				*/
-		   }
-		   break;
+			}
+			break;
 
 
 		default:
@@ -889,10 +890,12 @@ part_changed (ItemData *data)
 	angle = part_get_rotation (part);
 	item_data_get_pos (data, &loc);
 
+#if 0
 	//FIXME isn't it more sane to just emit the changed?
 	g_signal_emit_by_name (data, "moved", &loc);
 	g_signal_emit_by_name (data, "flipped", flip);
 	g_signal_emit_by_name (data, "rotated", angle);
+#endif
 	g_signal_emit_by_name (data, "changed");
 }
 

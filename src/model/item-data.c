@@ -117,6 +117,10 @@ item_data_class_init (ItemDataClass *klass)
 		g_param_spec_pointer ("pos", "ItemData::pos",
 		"the pos data", G_PARAM_READWRITE));
 
+	g_object_class_install_property (object_class, ARG_GRID,
+		g_param_spec_pointer ("grid", "ItemData::grid",
+		"the grid to align to", G_PARAM_READWRITE));
+
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
 	item_data_signals [MOVED] = g_signal_new ("moved",

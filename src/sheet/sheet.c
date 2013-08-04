@@ -407,16 +407,28 @@ sheet_change_zoom (Sheet *sheet, gdouble rate)
 }
 
 
-// This function defines the drawing sheet on which schematic will be drawn 
+/* This function defines the drawing sheet on which schematic will be drawn
+ * @param grid the grid (not a GtkGrid but a Grid struct)
+ */
 GtkWidget *
-sheet_new (int width, int height)
+sheet_new (Grid *grid)
 {
+	g_return_val_if_fail (grid, NULL);
+	g_return_val_if_fail (IS_GRID (grid), NULL);
+
 	GooCanvas *sheet_canvas;
 	GooCanvasGroup *sheet_group;
 	GooCanvasPoints *points;
 	Sheet *sheet;
 	GtkWidget *sheet_widget;
-  	GooCanvasItem *root;
+	GooCanvasItem *root;
+
+	gdouble height=-1., width=-1.;
+	g_object_get (grid,
+	              "height", &height,
+	              "width", &width,
+	              NULL);
+	g_printf ("%s xxx %lf x %lf\n", __FUNCTION__, height, width);
 	
 	// Creation of the Canvas
 	sheet = SHEET (g_object_new (TYPE_SHEET, NULL));
@@ -428,15 +440,16 @@ sheet_new (int width, int height)
 	              "background-color-rgb", 0xFFFFFF,
 	              NULL);
 
-  	root = goo_canvas_get_root_item (sheet_canvas);
+	root = goo_canvas_get_root_item (sheet_canvas);
 	
 	sheet_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	                                root,
 	                                NULL));
 	sheet_widget = GTK_WIDGET (sheet);
 
-	goo_canvas_set_bounds (GOO_CANVAS (sheet_canvas), 0, 0, 
-	    width + 20, height + 20);
+	goo_canvas_set_bounds (GOO_CANVAS (sheet_canvas),
+	                       0., 0.,
+	                       width + 20., height + 20.);
 
 	// Define vicinity around GooCanvasItem
 	//sheet_canvas->close_enough = 6.0;
@@ -445,46 +458,46 @@ sheet_new (int width, int height)
 	sheet->priv->height = height;
 
 	// Create the dot grid.
-	sheet->grid = grid_new (height, width);
+	sheet->grid = grid;
 	sheet->grid_item = grid_item_new (GOO_CANVAS_ITEM (sheet_group), sheet->grid);
 
 	// Everything outside the sheet should be gray.
 	// top //
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     0.0, 
-	                     0.0, 
-	                     (double) width + 20.0, 
-	                     20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     0.0,
+	                     0.0,
+	                     width + 20.0,
+	                     20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     0.0, 
-	                     (double) height, 
-	                     (double) width + 20.0, 
-	                     (double) height + 20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     0.0,
+	                     height,
+	                     width + 20.0,
+	                     height + 20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
 	// right //
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     0.0, 
-	                     0.0, 
-	                     20.0, 
-	                     (double) height + 20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     0.0,
+	                     0.0,
+	                     20.0,
+	                     height + 20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     (double) width, 
-	                     0.0, 
-	                     (double) width + 20.0, 
-	                     (double) height + 20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     width,
+	                     0.0,
+	                     width + 20.0,
+	                     height + 20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
 	//  Draw a thin black border around the sheet.
@@ -502,8 +515,8 @@ sheet_new (int width, int height)
 	
 	goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet_group),
 	      FALSE, 0,
-	      "line-width", 1.0, 
-	      "points", points, 
+	      "line-width", 1.0,
+	      "points", points,
 	      NULL);
 
 	goo_canvas_points_unref (points);
@@ -542,7 +555,7 @@ sheet_new (int width, int height)
 
 static void
 sheet_set_property (GObject *object,
-					guint prop_id, const GValue *value, GParamSpec *spec)
+                    guint prop_id, const GValue *value, GParamSpec *spec)
 {
 	const Sheet *sheet = SHEET (object);
 
@@ -917,7 +930,7 @@ rotate_items (Sheet *sheet, GList *items)
 
 /*
  * remove the currently selected items from the sheet
- * (especially their goo canvas represnatators)
+ * (especially their goocanvas representators)
  */
 void
 sheet_delete_selection (Sheet *sheet)

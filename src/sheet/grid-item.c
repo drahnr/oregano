@@ -128,26 +128,28 @@ grid_item_new (GooCanvasItem *root, Grid *grid)
 	GridItem *grid_item;
 	GridItemPriv *priv;
 
-	g_return_val_if_fail (root != NULL, NULL);
+	g_return_val_if_fail (root, NULL);
 	g_return_val_if_fail (GOO_IS_CANVAS_ITEM (root), NULL);
+	g_return_val_if_fail (grid, NULL);
+	g_return_val_if_fail (IS_GRID (grid), NULL);
 
-	grid_item = g_object_new (TYPE_GRID_ITEM,
-	                     "parent", root,
-	                     NULL);
+	grid_item = GRID_ITEM (g_object_new (TYPE_GRID_ITEM,
+	                       "parent", root,
+	                       NULL));
 
 	priv = grid_item->priv;
 
-	gint height = -1,  width = -1;
+	gdouble height = -1.,  width = -1.;
 	grid_get_size (grid, &height, &width);
-
+	g_printf ("%s xxx %lf x %lf\n", __FUNCTION__, height, width);
 	// we make the canvas_grid child of the grid_item
 	priv->canvas_grid = GOO_CANVAS_GRID (
 	                    goo_canvas_grid_new (
 	                            GOO_CANVAS_ITEM (grid_item),
 	                            0.0,
 	                            0.0,
-	                            (gdouble)width,
-	                            (gdouble)height,
+	                            width,
+	                            height,
 	                            10.0,
 	                            10.0,
 	                            0.0,
@@ -174,7 +176,7 @@ grid_changed_callback (Grid *grid, GridItem *item)
 {
 
 	const gdouble spacing = grid_get_spacing (grid);
-	gint height = -1, width = -1;
+	gdouble height = -1., width = -1.;
 
 	grid_get_size (grid, &height, &width);
 

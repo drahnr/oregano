@@ -71,7 +71,7 @@ void 		grid_set_visible (Grid *grid, gboolean show);
 gboolean	grid_is_visible (Grid *grid);
 void 		grid_set_spacing (Grid *grid, gdouble spacing);
 gdouble		grid_get_spacing (Grid *grid);
-void		grid_get_size (Grid *grid, gint *height, gint *width);
+void		grid_get_size (Grid *grid, gdouble *height, gdouble *width);
 #define grid_snap(x,b) grid_set_snap(x,b)
 void		grid_set_snap (Grid *grid, gboolean snap);
 gboolean	grid_is_snap (Grid *grid);
