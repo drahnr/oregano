@@ -62,15 +62,17 @@ node_item_show_dot (NodeItem *item, gboolean show)
 	if (show) {
 		if (item->priv->dot_item == NULL) {
 			item->priv->dot_item = goo_canvas_ellipse_new (
-			     	GOO_CANVAS_ITEM (item),
-			   		0.0, 0.0, 2.0, 2.0, 
-			   		"fill_color", "black", 
-			        NULL);
+			         GOO_CANVAS_ITEM (item),
+			         0.0, 0.0, 2.0, 2.0,
+			         "fill_color", "black",
+			         NULL);
 		}
 		g_object_set (item->priv->dot_item, 
-				      "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
-	} 
-	else if (item->priv->dot_item != NULL)
+		              "visibility", GOO_CANVAS_ITEM_VISIBLE,
+		              NULL);
+	} else if (item->priv->dot_item != NULL) {
 		g_object_set (item->priv->dot_item, 
-				      "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+				      "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+				      NULL);
+	}
 }

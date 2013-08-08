@@ -407,16 +407,28 @@ sheet_change_zoom (Sheet *sheet, gdouble rate)
 }
 
 
-// This function defines the drawing sheet on which schematic will be drawn 
+/* This function defines the drawing sheet on which schematic will be drawn
+ * @param grid the grid (not a GtkGrid but a Grid struct)
+ */
 GtkWidget *
-sheet_new (int width, int height)
+sheet_new (Grid *grid)
 {
+	g_return_val_if_fail (grid, NULL);
+	g_return_val_if_fail (IS_GRID (grid), NULL);
+
 	GooCanvas *sheet_canvas;
 	GooCanvasGroup *sheet_group;
 	GooCanvasPoints *points;
 	Sheet *sheet;
 	GtkWidget *sheet_widget;
-  	GooCanvasItem *root;
+	GooCanvasItem *root;
+
+	gdouble height=-1., width=-1.;
+	g_object_get (grid,
+	              "height", &height,
+	              "width", &width,
+	              NULL);
+	g_printf ("%s xxx %lf x %lf\n", __FUNCTION__, height, width);
 	
 	// Creation of the Canvas
 	sheet = SHEET (g_object_new (TYPE_SHEET, NULL));
@@ -428,15 +440,16 @@ sheet_new (int width, int height)
 	              "background-color-rgb", 0xFFFFFF,
 	              NULL);
 
-  	root = goo_canvas_get_root_item (sheet_canvas);
+	root = goo_canvas_get_root_item (sheet_canvas);
 	
 	sheet_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	                                root,
 	                                NULL));
 	sheet_widget = GTK_WIDGET (sheet);
 
-	goo_canvas_set_bounds (GOO_CANVAS (sheet_canvas), 0, 0, 
-	    width + 20, height + 20);
+	goo_canvas_set_bounds (GOO_CANVAS (sheet_canvas),
+	                       0., 0.,
+	                       width + 20., height + 20.);
 
 	// Define vicinity around GooCanvasItem
 	//sheet_canvas->close_enough = 6.0;
@@ -445,47 +458,46 @@ sheet_new (int width, int height)
 	sheet->priv->height = height;
 
 	// Create the dot grid.
-	sheet->grid = grid_create (GOO_CANVAS_ITEM (sheet_group),
-	                           width,
-	                           height);
+	sheet->grid = grid;
+	sheet->grid_item = grid_item_new (GOO_CANVAS_ITEM (sheet_group), sheet->grid);
 
 	// Everything outside the sheet should be gray.
 	// top //
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     0.0, 
-	                     0.0, 
-	                     (double) width + 20.0, 
-	                     20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     0.0,
+	                     0.0,
+	                     width + 20.0,
+	                     20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     0.0, 
-	                     (double) height, 
-	                     (double) width + 20.0, 
-	                     (double) height + 20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     0.0,
+	                     height,
+	                     width + 20.0,
+	                     height + 20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
 	// right //
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     0.0, 
-	                     0.0, 
-	                     20.0, 
-	                     (double) height + 20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     0.0,
+	                     0.0,
+	                     20.0,
+	                     height + 20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
-	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group), 
-	                     (double) width, 
-	                     0.0, 
-	                     (double) width + 20.0, 
-	                     (double) height + 20.0, 
-	                     "fill_color", "gray", 
-	                     "line-width", 0.0, 
+	goo_canvas_rect_new (GOO_CANVAS_ITEM (sheet_group),
+	                     width,
+	                     0.0,
+	                     width + 20.0,
+	                     height + 20.0,
+	                     "fill_color", "gray",
+	                     "line-width", 0.0,
 	                     NULL);
 
 	//  Draw a thin black border around the sheet.
@@ -503,8 +515,8 @@ sheet_new (int width, int height)
 	
 	goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet_group),
 	      FALSE, 0,
-	      "line-width", 1.0, 
-	      "points", points, 
+	      "line-width", 1.0,
+	      "points", points,
 	      NULL);
 
 	goo_canvas_points_unref (points);
@@ -543,7 +555,7 @@ sheet_new (int width, int height)
 
 static void
 sheet_set_property (GObject *object,
-					guint prop_id, const GValue *value, GParamSpec *spec)
+                    guint prop_id, const GValue *value, GParamSpec *spec)
 {
 	const Sheet *sheet = SHEET (object);
 
@@ -918,8 +930,7 @@ rotate_items (Sheet *sheet, GList *items)
 
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
-	center.x = (b2.x + b1.x) / 2.;
-	center.y = (b2.y + b1.y) / 2.;
+	center = coords_average(&b1, &b2);
 
 	snap_to_grid (sheet->grid, &center.x, &center.y);
 
@@ -938,10 +949,15 @@ rotate_items (Sheet *sheet, GList *items)
 	g_list_free (item_data_list);
 }
 
+
+/*
+ * remove the currently selected items from the sheet
+ * (especially their goocanvas representators)
+ */
 void
 sheet_delete_selection (Sheet *sheet)
 {
-	GList *list, *copy;
+	GList *copy, *iter;
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
@@ -950,15 +966,18 @@ sheet_delete_selection (Sheet *sheet)
 		return;
 
 	copy = g_list_copy (sheet->priv->selected_objects);
-	for (list = copy; list; list = list->next) {
-		sheet_remove_item_in_sheet (SHEET_ITEM (list->data), sheet);
-		goo_canvas_item_remove (GOO_CANVAS_ITEM (list->data));
-	}
 
+	for (iter = copy; iter; iter = iter->next) {
+		sheet_remove_item_in_sheet (SHEET_ITEM (iter->data), sheet);
+		goo_canvas_item_remove (GOO_CANVAS_ITEM (iter->data));
+	}
+	g_list_free (copy);
+
+	// we need to it like this as <sheet_remove_item_in_sheet>
+	// requires selected_objects, items, floating_objects
+	// to be not NULL!
 	g_list_free (sheet->priv->selected_objects);
 	sheet->priv->selected_objects = NULL;
-	
-	g_list_free (copy);
 }
 
 
@@ -1288,22 +1307,31 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 
 }
 
+/*
+ * remove a single item from the sheet
+ */
 void
 sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 {
 	g_return_if_fail (sheet != NULL);
-    g_return_if_fail (IS_SHEET (sheet));
-    g_return_if_fail (item != NULL);
-    g_return_if_fail (IS_SHEET_ITEM (item));
+	g_return_if_fail (IS_SHEET (sheet));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_SHEET_ITEM (item));
 
-    sheet->priv->items = g_list_remove (sheet->priv->items, item);
+	sheet->priv->items = g_list_remove (sheet->priv->items, item);
 
 	//  Remove the object from the selected-list before destroying.
 	sheet_remove_selected_object (sheet, item);
 	sheet_remove_floating_object (sheet, item);
 
+	ItemData *data = sheet_item_get_data (item);
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+
+	// properly unregister the itemdata from the sheet
+	item_data_unregister (data);
 	// Destroy the item-data (model) associated to the sheet-item
-	g_object_unref (sheet_item_get_data (item));
+	g_object_unref (data);
 }
 
 
@@ -1342,7 +1370,7 @@ extract_time (GdkEvent *event)
 }
 
 /*
- * helpful for debugging to not freeze your pc
+ * helpful for debugging to not grab all input forever
  * if oregano segfaults while running inside
  * a gdb session
  */
@@ -1393,7 +1421,7 @@ sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed==0 &&
 	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet),
-		                      GOO_CANVAS_ITEM (sheet->grid),
+		                          GOO_CANVAS_ITEM (sheet->grid),
 	                              TRUE, /*do not reroute signals through sheet->grid*/
 		                      extract_time (event))==GDK_GRAB_SUCCESS) {
 		sheet->priv->keyboard_grabbed = 1;

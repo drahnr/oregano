@@ -51,6 +51,7 @@ typedef struct _WirePriv WirePriv;
 
 #include "node-store.h"
 #include "node.h"
+#include "grid.h"
 
 typedef enum {
 	WIRE_DIR_NONE = 0,
@@ -74,7 +75,7 @@ struct _WireClass
 };
 
 GType 		wire_get_type (void);
-Wire *		wire_new (void);
+Wire *		wire_new (Grid *grid);
 NodeStore *	wire_get_store (Wire *wire);
 gint 		wire_set_store (Wire *wire, NodeStore *store);
 gint 		wire_add_node (Wire *wire, Node *node);

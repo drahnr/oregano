@@ -807,7 +807,7 @@ v_clamp_cmd (SchematicView *sv)
 
 	library_part = library_get_part (l, "Test Clamp");
 	
-	part = part_new_from_library_part (library_part);
+	part = part_new_from_library_part (library_part, sheet->grid);
 	if (!part) {
 		g_warning ("Clamp not found!");
 		return;
@@ -1086,12 +1086,13 @@ schematic_view_new (Schematic *schematic)
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
 	GtkWidget *menubar;
-	GtkGrid *grid;
+	GtkGrid *uigrid;
 	GError *error = NULL;
 	GtkBuilder *gui;
 	gchar *msg;
+	Grid *grid;
 
-	g_return_val_if_fail (schematic != NULL, NULL);
+	g_return_val_if_fail (schematic, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
 
 	sv = SCHEMATIC_VIEW (g_object_new (schematic_view_get_type(), NULL));
@@ -1113,8 +1114,12 @@ schematic_view_new (Schematic *schematic)
 	}
 
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
-	grid = GTK_GRID (gtk_builder_get_object (gui, "grid1"));
-	sv->priv->sheet = SHEET (sheet_new (10000, 10000));
+	uigrid = GTK_GRID (gtk_builder_get_object (gui, "grid1"));
+
+	grid = schematic_get_grid (schematic);
+	g_assert (grid);
+	g_assert (IS_GRID(grid));
+	sv->priv->sheet = SHEET (sheet_new (grid));
 
 	g_signal_connect (G_OBJECT (sv->priv->sheet),
 	    "event", G_CALLBACK (sheet_event_callback), 
@@ -1176,7 +1181,7 @@ schematic_view_new (Schematic *schematic)
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
-	gtk_grid_attach (grid, vbox, 0,0, 1,1);
+	gtk_grid_attach (uigrid, vbox, 0,0, 1,1);
 	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), 
 	    GTK_WIDGET (sv->priv->sheet)); 
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));

@@ -41,7 +41,7 @@
 #include "rubberband.h"
 	
 struct _SheetPriv {
-	// Keeps the current signal handler for wire creation.	
+	// Keeps the current signal handler for wire creation
 	int 			 wire_handler_id;
 	// Keeps the signal handler for floating objects.
 	int 			 float_handler_id;

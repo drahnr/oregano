@@ -54,7 +54,8 @@ typedef struct _ItemDataPriv ItemDataPriv;
 typedef enum {
 	ID_FLIP_NONE 	= 0,
 	ID_FLIP_HORIZ 	= 1 << 0,
-	ID_FLIP_VERT 	= 1 << 1
+	ID_FLIP_VERT 	= 1 << 1,
+	ID_FLIP_MASK	= 3
 } IDFlip;
 
 struct _ItemData {
@@ -137,6 +138,15 @@ void 		item_data_flip (ItemData *data, IDFlip direction, Coords *center);
 // Get the Store associated for this item
 //  Store is a class that hold all items in a schematic
 gpointer 	item_data_get_store (ItemData *item_data);
+
+// Get the grid this one is attached to/bound to
+gpointer	item_data_get_grid (ItemData *item_data);
+
+// Snap to the grid
+void		item_data_snap (ItemData *item_data);
+
+// Set the grid this one is attached to/bound to, shall only be used by subclass functions
+void	item_data_set_grid (ItemData *item_data, gpointer);
 
 //  Unregister item in its Store
 void 		item_data_unregister (ItemData *data);

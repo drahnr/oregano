@@ -73,7 +73,7 @@ create_wire_info_new (Sheet *sheet) {
 	dash = goo_canvas_line_dash_new (2, 5.0, 5.0);
 
 	create_wire_info->line = GOO_CANVAS_POLYLINE (
-	    goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->grid), 
+	    goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->grid_item),
 	                             FALSE, 0,
 	                             "points", create_wire_info->points,
 	                             "stroke-color-rgba", 0x92BA52C3,
@@ -300,7 +300,7 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	g_assert (sheet);
 	g_assert (IS_SHEET (sheet));
 
-	wire = wire_new ();
+	wire = wire_new (sheet->grid);
 	
 	length.x = end_pos.x - start_pos.x;
 	length.y = end_pos.y - start_pos.y;

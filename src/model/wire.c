@@ -39,6 +39,7 @@
 #include "wire-private.h"
 #include "clipboard.h"
 #include "schematic-print-context.h"
+#include "oregano-utils.h"
 
 static void      wire_class_init (WireClass *klass);
 static void      wire_init (Wire *wire);
@@ -50,13 +51,12 @@ static void      wire_unregister (ItemData *data);
 static int       wire_register (ItemData *data);
 static gboolean  wire_has_properties (ItemData *data);
 static void      wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
-static void	 wire_changed (ItemData *data);
+static void      wire_changed (ItemData *data);
 
 #include "debug.h"
 
 enum {
 	ARG_0,
-	ARG_CHANGED,
 	ARG_DELETE,
 	ARG_LAST_SIGNAL
 };
@@ -101,16 +101,6 @@ wire_class_init (WireClass *klass)
 	object_class->dispose = wire_dispose;
 	object_class->finalize = wire_finalize;
 
-	wire_signals [ARG_CHANGED] = g_signal_new ("changed", 
-		    G_TYPE_FROM_CLASS (object_class),
-			G_SIGNAL_RUN_FIRST,
-			G_STRUCT_OFFSET (WireClass, changed),
-			NULL,
-			NULL,
-			g_cclosure_marshal_VOID__VOID,
-			G_TYPE_NONE,
-			0);
-
 	wire_signals [ARG_DELETE] = g_signal_new ("delete", 
 		    G_TYPE_FROM_CLASS (object_class),
 			G_SIGNAL_RUN_FIRST,
@@ -149,9 +139,11 @@ wire_init (Wire *wire)
 }
 
 Wire *
-wire_new (void)
+wire_new (Grid *grid)
 {
-	return WIRE (g_object_new (TYPE_WIRE, NULL));
+	Wire *w = WIRE (g_object_new (TYPE_WIRE, NULL));
+	item_data_set_grid (ITEM_DATA (w), grid);
+	return w;
 }
 
 gint
@@ -349,6 +341,7 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 	WirePriv *priv;
 	Coords b1, b2;
 	Coords wire_center_before, wire_center_after, delta;
+	Coords delta_cp_before, delta_cp_after;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
@@ -358,11 +351,9 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	wire = WIRE (data);
 
-	if (center_pos) {
-		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
-		wire_center_before.x = (b1.x + b2.x) / 2;
-		wire_center_before.y = (b1.y + b2.y) / 2;
-	}
+	item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
+	wire_center_before = coords_average(&b1, &b2);
+
 
 	priv = wire->priv;
 
@@ -381,61 +372,44 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 	
 	cairo_matrix_transform_point (&affine, &x, &y);
 
+
 	if (fabs (x) < 1e-2)
 		x = 0.0;
 	if (fabs (y) < 1e-2)
 		y = 0.0;
 
-	// 'Normalize'.
-	if (y < 0 || (y == 0 && x < 0)) {
-		priv->length.x = -x;
-		priv->length.y = -y;
-		delta.x = -x;
-		delta.y = -y;
+	priv->length.x = x;
+	priv->length.y = y;
 
-		item_data_move (ITEM_DATA (wire), &delta);
-	} 
-	else {
-		priv->length.x = x;
-		priv->length.y = y;
+	if (center_pos) {
+		delta_cp_before = coords_sub (&wire_center_before, center_pos);
+		delta_cp_after = delta_cp_before;
+		cairo_matrix_transform_point (&affine, &delta_cp_after.x, &delta_cp_after.y);
 	}
-
-	// Let the views (canvas items) know about the rotation.
-	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle);
 
 	// Update bounding box.
 	wire_update_bbox (wire);
 
+	item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
+	wire_center_after = coords_average(&b1, &b2);
+
+	delta = coords_sub (&wire_center_before, &wire_center_after);
 	if (center_pos) {
-		Coords wire_pos;
-
-		item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
-
-		wire_center_after.x = (b1.x + b2.x) / 2;
-		wire_center_after.y = (b1.y + b2.y) / 2;
-
-		dx = wire_center_before.x - wire_center_after.x;
-		dy = wire_center_before.y - wire_center_after.y;
-
-		item_data_get_pos (ITEM_DATA (wire), &wire_pos);
-
-		x = wire_center_before.x - center_pos->x;
-		y = wire_center_before.y - center_pos->y;
-		dx = dx - x;
-		dy = dy - y;
-		cairo_matrix_transform_point (&affine, &x, &y);
-
-		delta.x = dx + x + b1.x; 
-		delta.y = dy + y + b1.y; 
-
-		item_data_move (ITEM_DATA (wire), &delta);
+		Coords diff = coords_sub (&delta_cp_after, &delta_cp_before);
+		coords_add (&delta, &diff);
 	}
+	item_data_move (ITEM_DATA (wire), &delta);
+	item_data_snap (ITEM_DATA (wire));
+
+	// Let the views (canvas items) know about the rotation.
+	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle); //legacy
+	g_signal_emit_by_name (G_OBJECT (wire), "changed");
 }
 
+//FIXME if we have a center pos, this actually needs to do some transform magic
 static void
 wire_flip (ItemData *data, IDFlip direction, Coords *center)
 {
-	// Do nothing!	
 	return;
 }
 
@@ -513,7 +487,8 @@ wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	cairo_restore (cr);
 }
 
-void wire_delete (Wire *wire)
+void
+wire_delete (Wire *wire)
 {
 	g_return_if_fail (IS_WIRE (wire));
 

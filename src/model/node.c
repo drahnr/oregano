@@ -176,9 +176,9 @@ node_needs_dot (Node *node)
 			// The dot is only needed when the end/start-point of
 			// one of the wires in on the other wire.
 			if (ON_THE_WIRE (start_pos1, start_pos2, end_pos2) ||
-			   ON_THE_WIRE (  end_pos1, start_pos2, end_pos2) ||
-			   ON_THE_WIRE (start_pos2, start_pos1, end_pos1) ||
-			   ON_THE_WIRE (  end_pos2, start_pos1, end_pos1)
+			    ON_THE_WIRE (  end_pos1, start_pos2, end_pos2) ||
+			    ON_THE_WIRE (start_pos2, start_pos1, end_pos1) ||
+			    ON_THE_WIRE (  end_pos2, start_pos1, end_pos1)
 			) {
 				NG_DEBUG ("  TRUE (wires>2 && endpoint on wire)");
 				return TRUE;

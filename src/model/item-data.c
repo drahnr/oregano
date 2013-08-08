@@ -37,6 +37,7 @@
 
 #include "item-data.h"
 #include "node-store.h"
+#include "grid.h"
 
 #include "debug.h"
 
@@ -49,6 +50,7 @@ static void item_data_copy (ItemData *dest, ItemData *src);
 enum {
 	ARG_0,
 	ARG_STORE,
+	ARG_GRID,
 	ARG_POS
 };
 
@@ -63,8 +65,10 @@ enum {
 
 struct _ItemDataPriv {
 	NodeStore *store;
+	// Grid model to align to
+	Grid *grid;
 	Coords pos;
-	// Bounding box.
+	// Bounding box
 	GooCanvasBounds bounds;
 };
 
@@ -112,6 +116,10 @@ item_data_class_init (ItemDataClass *klass)
 	g_object_class_install_property (object_class, ARG_POS,
 		g_param_spec_pointer ("pos", "ItemData::pos",
 		"the pos data", G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class, ARG_GRID,
+		g_param_spec_pointer ("grid", "ItemData::grid",
+		"the grid to align to", G_PARAM_READWRITE));
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
@@ -192,6 +200,8 @@ item_data_init (ItemData *item_data)
 	priv->pos.y = 0;
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 
+	priv->grid = NULL;
+
 	item_data->priv = priv;
 }
 
@@ -215,6 +225,9 @@ item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 	case ARG_STORE:
 		item_data->priv->store = g_value_get_pointer (value);
 		break;
+	case ARG_GRID:
+		item_data->priv->grid = g_value_get_pointer (value);
+		break;
 	default:
 		break;
 	}
@@ -229,6 +242,9 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	switch (prop_id) {
 	case ARG_STORE:
 		g_value_set_pointer (value, item_data->priv->store);
+		break;
+	case ARG_GRID:
+		g_value_set_pointer (value, item_data->priv->grid);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (item_data, prop_id, spec);
@@ -262,9 +278,9 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	priv->pos.x = pos->x;
 	priv->pos.y = pos->y;
 
+
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
 	if (handler_connected) {
-		NG_DEBUG ("moved emitted");
 		g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
 	}
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
@@ -289,9 +305,39 @@ item_data_move (ItemData *item_data, Coords *delta)
 	target.x = priv->pos.x + delta->x;
 	target.y = priv->pos.y + delta->y;
 
-	NG_DEBUG ("xxxx %lf,,%lf\n", target.x, target.y);
 	item_data_set_pos (item_data, &target);
 }
+
+void
+item_data_snap (ItemData *item_data)
+{
+	ItemDataPriv *priv;
+	gboolean handler_connected;
+
+	g_return_if_fail (item_data);
+	g_return_if_fail (IS_ITEM_DATA (item_data));
+
+	priv = item_data->priv;
+
+
+	if (priv->grid)
+		snap_to_grid (priv->grid, &(priv->pos.x), &(priv->pos.y));
+	else
+		g_warning ("ItemData's grid field is NUL");
+
+
+#if 1 //TODO FIXME XXX rename this to "snapped" instead of moved
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (item_data), "moved"); //FIXME replace this by a "snapped" signal
+	}
+#endif
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
+	if (handler_connected) {
+		g_signal_emit_by_name (G_OBJECT (item_data), "changed");
+	}
+}
+
 
 gpointer // NodeStore * 
 item_data_get_store (ItemData *item_data)
@@ -300,6 +346,24 @@ item_data_get_store (ItemData *item_data)
 	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
 
 	return item_data->priv->store;
+}
+
+void
+item_data_set_grid (ItemData *item_data, gpointer grid)
+{
+	g_return_val_if_fail (item_data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
+
+	item_data->priv->grid = grid;
+}
+
+gpointer
+item_data_get_grid (ItemData *item_data)
+{
+	g_return_val_if_fail (item_data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
+
+	return item_data->priv->grid;
 }
 
 ItemData *
