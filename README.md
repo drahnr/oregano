@@ -85,7 +85,7 @@ As always, code should be kept modular and all methods should get a sane name (R
 New code should be written in mostly K&R fashion.
 It's easiest to show within an example snippet how code should look like:
 
-```
+```C
 /**
  * \brief description - may be ommitted
  *
@@ -109,14 +109,14 @@ some_function (gint16 long_name, gint16 offset, gint16 zoom)
 }
 ```
 
-Use <tabs> to indent, but whitspaces for syntetical linebreak indents.
+Use <kbd>tab</kbd>s to indent, but <kbd>space</kbd>s for syntetical linebreak indents.
 
-```
+```C
 {
 |←tab→|{
-|←tab→|←tab→|a_very_long_func_name_breaking_120_chars (first_argument,
-|←tab→|←tab→|← - - - any sane number of spaces - - - →|second_argument,
-|←tab→|←tab→|← - - - any sane number of spaces - - - →|third_argument);
+|←tab→|←tab→|a_very_long_func_name_breaking_120_chars (type first_argument,
+|←tab→|←tab→|← - - - any sane number of spaces - - - →|type second_argument,
+|←tab→|←tab→|← - - - any sane number of spaces - - - →|type third_argument);
 |←tab→|}
 }
 ```
