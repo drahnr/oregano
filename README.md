@@ -55,7 +55,7 @@ The [official oregano website](https://srctwig.com/oregano)
 
 ### Mailinglist
 
-The mailing list has yet to be set up, but this should happen within a few weeks.
+Mailinglist is at `oregano@librelist.com`, just drop a mail to subscribe. To unsubscribe again send a mail to `oregano-unsubscribe@librelist.com`.
 
 As every mailinglist, we also expect appropriate behavior, respect and a positive manner.
 
@@ -124,6 +124,12 @@ Use <kbd>tab</kbd>s to indent, but <kbd>space</kbd>s for syntetical linebreak in
 Note: There is a lot of old code, that has mixed styling. It will be fixed over time.
 
 #### Commit messages
+Git commit messages should be one (1) line, describing the changeset briefly. If it closes a bug append a `, closes #bugnumber` or `, fixes #bugnumber`, where `#bugnumber` refers to the github bugtracker bugnumber. 
+If it is a really complex issue or you think a few sentence might not hurt, add empty line followed by one or two descriptive/explaining sentences.
+Add no trailing `.` to the commit message.
 
-Git commit messages should be one (1) line, describing briefly what you did. If it closes a bug append a , closes #bugnumber or , fixes #bugnumber. The #bugnumber refers to the github issue tracker number of a specific bug. Add no trailing . to the commit message.
-If it is a commit fixing a corner case bug, add one (1) space line followed by an explaining paragraph. It should explain the cause as well as the fix used (please omit pony adventure stories or fairy tales, keep it brief).
+```
+Refactor grid, closes #77
+
+Split grid into model and view objects, which is necessary due to ...
+```
