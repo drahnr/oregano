@@ -123,13 +123,12 @@ Use <kbd>tab</kbd>s to indent, but <kbd>space</kbd>s for syntetical linebreak in
 
 Note: There is a lot of old code, that has mixed styling. It will be fixed over time.
 
-#### Commit messages
+### Commit messages
 Git commit messages should be one (1) line, describing the changeset briefly. If it closes a bug append a `, closes #bugnumber` or `, fixes #bugnumber`, where `#bugnumber` refers to the github bugtracker bugnumber. 
 If it is a really complex issue or you think a few sentence might not hurt, add empty line followed by one or two descriptive/explaining sentences.
 Add no trailing `.` to the commit message.
 
-```
-Refactor grid, closes #77
 
-Split grid into model and view objects, which is necessary due to ...
-```
+    Refactor grid, closes #77
+
+    Split grid into model and view objects, which is necessary due to ...
