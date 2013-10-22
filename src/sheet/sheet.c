@@ -223,6 +223,7 @@ sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 			gtk_widget_get_display (GTK_WIDGET (sheet)));
 	device_pointer = gdk_device_manager_get_client_pointer (device_manager);
 	//FIXME add another check based on the following functions return val
+	//FIXME gtkdoc says this shall not be used in event handlers
 	gdk_window_get_device_position (gtk_widget_get_window (GTK_WIDGET (sheet)),
 					device_pointer,
 					&_x, &_y, NULL);

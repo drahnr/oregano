@@ -194,6 +194,10 @@ node_dot_removed_callback (Node *node, Coords *pos, NodeStore *store)
 	g_signal_emit_by_name (G_OBJECT (store), "node_dot_removed", pos);
 }
 
+/**
+ * lookup if a node at @pos exists, if so return it, otherwise
+ * create one, add it to the nodestore and return it
+ */
 Node *
 node_store_get_or_create_node (NodeStore *self, Coords pos)
 {
@@ -217,11 +221,12 @@ node_store_get_or_create_node (NodeStore *self, Coords pos)
 		g_hash_table_insert (self->nodes, &node->key, node);
 	}
 
-	// If there was a previously stored node here, just
-	// return that node.
 	return node;
 }
 
+/**
+ * register a part to the nodestore
+ */
 int
 node_store_add_part (NodeStore *self, Part *part)
 {
@@ -261,7 +266,7 @@ node_store_add_part (NodeStore *self, Part *part)
 		for (list = wire_list; list; list = list->next) {
 			Wire *wire = list->data;
 
-			NG_DEBUG ("Add pin to wire.");
+			NG_DEBUG ("Add pin (node) %p to wire %p.\n", node, wire);
 
 			node_add_wire (node, wire);
 			wire_add_node (wire, node);
@@ -279,6 +284,10 @@ node_store_add_part (NodeStore *self, Part *part)
 	return TRUE;
 }
 
+/**
+ * remove/unregister a part from the nodestore
+ * this does _not_ free the part!
+ */
 int
 node_store_remove_part (NodeStore *self, Part *part)
 {
@@ -385,7 +394,8 @@ wires_on_line (NodeStore *store, Wire *wire)
 }
 
 
-/*
+/**
+ * add/register the wire to the nodestore
  * TODO implement some optimizations and/or history stack
  */
 gboolean
@@ -439,7 +449,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 		node_add_wire (node, wire);
 		wire_add_node (wire, node);
 
-		NG_DEBUG ("Add wire to pin.\n");
+		NG_DEBUG ("Add wire %p to pin (node) %p.\n", wire, node);
 	}
 
 	g_slist_free (ip_list);
@@ -452,6 +462,10 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 }
 
 
+/**
+ * removes/unregisters a wire from the nodestore
+ * this does _not_ free the wire itself!
+ */
 gboolean
 node_store_remove_wire (NodeStore *store, Wire *wire)
 {
@@ -464,7 +478,7 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
 	if (item_data_get_store (ITEM_DATA (wire)) == NULL) {
-		g_warning ("Trying to remove not-stored wire.");
+		g_warning ("Trying to remove not-stored wire %p.", wire);
 		return FALSE;
 	}
 
@@ -552,6 +566,7 @@ wire_intersect_parts (NodeStore *store, Wire *wire)
 
 	return ip_list;
 }
+
 
 /*
  * returns a list of wire at position p (including endpoints)
