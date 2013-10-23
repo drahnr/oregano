@@ -1132,6 +1132,9 @@ schematic_view_new (Schematic *schematic)
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w), 
 	    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (w), GTK_SHADOW_IN);
+	gtk_widget_set_hexpand (w, TRUE);
+	gtk_widget_set_vexpand (w, TRUE);
+
 	gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (sv->priv->sheet));
 	gtk_box_pack_start (GTK_BOX (hbox), w, TRUE, TRUE, 5);
 	
