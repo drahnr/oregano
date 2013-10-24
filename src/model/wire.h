@@ -91,4 +91,5 @@ void 		wire_set_visited (Wire *wire, gboolean is_visited);
 void 		wire_delete (Wire *wire);
 void 		wire_update_bbox (Wire *wire);
 
+void		wire_dbg_print (Wire *w);
 #endif

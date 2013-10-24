@@ -138,6 +138,15 @@ wire_init (Wire *wire)
 	wire->priv = priv;
 }
 
+void
+wire_dbg_print (Wire *w)
+{
+	Coords pos;
+	item_data_get_pos (ITEM_DATA (w), &pos);
+	g_print ("\\\\\\ %p === (%lf,%lf) + lambda * (%lf,%lf)\n",
+	         w, pos.x, pos.y, w->priv->length.x, w->priv->length.y);
+}
+
 Wire *
 wire_new (Grid *grid)
 {
@@ -336,7 +345,7 @@ static void
 wire_rotate (ItemData *data, int angle, Coords *center_pos)
 {
 	cairo_matrix_t affine;
-	double dx, dy, x, y;
+	double x, y;
 	Wire *wire;
 	WirePriv *priv;
 	Coords b1, b2;

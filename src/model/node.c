@@ -144,16 +144,14 @@ node_needs_dot (Node *node)
 	Coords start_pos1, length1, end_pos1;
 	Coords start_pos2, length2, end_pos2;
 
-	NG_DEBUG ("\nnode: %p --- pins: %i --- wires: %i", node, node->pin_count, node->wire_count);
+	NG_DEBUG ("node: %p --- pins: %i --- wires: %i", node, node->pin_count, node->wire_count);
 
 	// always display a black dot if a part hits a wire
-	if (node->pin_count >= 1 && node->wire_count >= 1) {
-		NG_DEBUG ("  TRUE (pins>=1 && wires>=1)");
+	if (node->pin_count > 0 && node->wire_count > 0) {
+		NG_DEBUG ("  TRUE (pins>0 && wires>0)");
 		return TRUE;
-	// FIXME this can create sparse knots, because of overlaying wires o===xxxx===o
-	// TODO can be fixed by optimizing away/fuzing duplicate/overlaying wires
-	} else if ((node->pin_count + node->wire_count) > 2) {
-		NG_DEBUG ("  TRUE (pins+wires>2)");
+	} else if (node->pin_count > 1 || node->wire_count > 2) {
+		NG_DEBUG ("  TRUE (pins>1 || wires>2)");
 		return TRUE;
 	} else if (node->wire_count == 2) {
 		// Check that we don't have two wire endpoints.
@@ -178,8 +176,8 @@ node_needs_dot (Node *node)
 			if (ON_THE_WIRE (start_pos1, start_pos2, end_pos2) ||
 			    ON_THE_WIRE (  end_pos1, start_pos2, end_pos2) ||
 			    ON_THE_WIRE (start_pos2, start_pos1, end_pos1) ||
-			    ON_THE_WIRE (  end_pos2, start_pos1, end_pos1)
-			) {
+			    ON_THE_WIRE (  end_pos2, start_pos1, end_pos1)) {
+
 				NG_DEBUG ("  TRUE (wires>2 && endpoint on wire)");
 				return TRUE;
 			} else {
@@ -188,18 +186,6 @@ node_needs_dot (Node *node)
 			}
 		}
 		return FALSE;
-	} else if (node->pin_count == 1 && node->wire_count == 1) {
-		// TODO this is most likely obsolete and is never entered
-		// Check if we have one wire with a pin in the 'middle'.
-		wire1 = node->wires->data;
-		wire_get_pos_and_length (wire1, &start_pos1, &length1);
-		end_pos1.x = start_pos1.x + length1.x;
-		end_pos1.y = start_pos1.y + length1.y;
-
-		if (!SEP (node->key, start_pos1) && !SEP (node->key, end_pos1)) {
-			NG_DEBUG ("  FALSE (pins==1 && wires==1) pin in the middle of a wire");
-			return TRUE;
-		}
 	}
 	NG_DEBUG (" FALSE (else)");
 	return FALSE;
@@ -253,7 +239,7 @@ node_remove_pin (Node *node, Pin *pin)
 	return TRUE;
 }
 
-gint
+gboolean
 node_add_wire (Node *node, Wire *wire)
 {
 	gboolean dot;
