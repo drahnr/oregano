@@ -182,7 +182,7 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 	GtkTreeView *treeview;
-	gboolean activo;
+	gboolean visible = FALSE;
 
 	treeview = GTK_TREE_VIEW (g_object_get_data (G_OBJECT (plot->window), 
 	    "clist"));
@@ -191,11 +191,11 @@ on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path, Plot *plot)
 	if (!gtk_tree_model_get_iter_from_string (model , &iter, path))
 		return;
 
-	gtk_tree_model_get (model, &iter, 0, &activo, 4, &f, -1);
-	activo = !activo;
-	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, activo, -1);
+	gtk_tree_model_get (model, &iter, 0, &visible, 4, &f, -1);
+	visible = !visible;
+	gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, visible, -1);
 
-	g_object_set (G_OBJECT (f), "visible", activo, NULL);
+	g_object_set (G_OBJECT (f), "visible", visible, NULL);
 
 	gtk_widget_queue_draw (plot->plot);
 }
@@ -206,7 +206,6 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 	GPlotFunction *f;
 	double *X;
 	double *Y;
-	double data;
 	guint len, j;
 	gdouble width = 1;
 	GraphicType graphic_type = FUNCTIONAL_CURVE;
@@ -218,8 +217,7 @@ create_plot_function_from_simulation_data (guint i, SimulationData *current)
 	
 	for (j = 0; j < len; j++) {
 		Y[j] = g_array_index (current->data[i], double, j);
-		data = g_array_index (current->data[0], double, j);
-		X[j] = data;
+		X[j] = g_array_index (current->data[0], double, j);
 	}
 	if (current->type == FOURIER) {
 		graphic_type = FREQUENCY_PULSE;
@@ -355,7 +353,7 @@ analysis_selected (GtkWidget *combo_box, Plot *plot)
 static void
 plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 {
-	gchar *coord;
+	gchar *coordstr;
 	gdouble x,y;
 
 	x = event->x;
@@ -363,11 +361,11 @@ plot_canvas_movement (GtkWidget *w, GdkEventMotion *event, Plot *plot)
 
 	g_plot_window_to_device (GPLOT (plot->plot), &x, &y);
 
-	coord = g_strdup_printf ("(%g, %g)", x, y);
+	coordstr = g_strdup_printf ("(%g, %g)", x, y);
 
-	gtk_entry_set_text (GTK_ENTRY (plot->coord), coord);
+	gtk_entry_set_text (GTK_ENTRY (plot->coord), coordstr);
 
-	g_free (coord);
+	g_free (coordstr);
 }
 
 static GtkWidget *
