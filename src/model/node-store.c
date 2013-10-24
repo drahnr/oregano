@@ -294,7 +294,6 @@ node_store_remove_part (NodeStore *self, Part *part)
 	Node *node;
 	Coords lookup_key;
 	Coords pos;
-	gdouble x, y;
 	int i, num_pins;
 	Pin *pins;
 
@@ -311,17 +310,13 @@ node_store_remove_part (NodeStore *self, Part *part)
 
 	pins = part_get_pins (part);
 	for (i = 0; i < num_pins; i++) {
-		x = pos.x + pins[i].offset.x;
-		y = pos.y + pins[i].offset.y;
-
-		// Use the position of the pin as lookup key.
-		lookup_key.x = x;
-		lookup_key.y = y;
+		lookup_key.x = pos.x + pins[i].offset.x;
+		lookup_key.y = pos.y + pins[i].offset.y;
 
 		node = g_hash_table_lookup (self->nodes, &lookup_key);
 		if (node) {
 			if (!node_remove_pin (node, &pins[i])) {
-				g_warning ("Couldn't remove pin.");
+				g_warning ("Couldn't remove pin from node %p.", node);
 				return FALSE;
 			}
 
@@ -331,8 +326,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 				g_hash_table_remove (self->nodes, &lookup_key);
 				g_object_unref (G_OBJECT (node));
 			}
-		}
-		else {
+		} else {
 			return FALSE;
 		}
 	}
@@ -872,7 +866,7 @@ is_wire_at_coords(Wire *w, Coords *coo, gboolean endpoints)
 	return is_wire_at_pos (p1.x, p1.y, p2.x, p2.y, *coo, endpoints);
 }
 
-/*
+/**
  * evaluates if x1,y1 to x2,y2 contain pos.x/pos.y if connected by a birds eye line
  */
 static inline gboolean

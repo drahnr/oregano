@@ -265,7 +265,7 @@ node_add_wire (Node *node, Wire *wire)
 	return TRUE;
 }
 
-gint
+gboolean
 node_remove_wire (Node *node, Wire *wire)
 {
 	gboolean dot;
