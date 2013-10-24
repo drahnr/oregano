@@ -544,7 +544,7 @@ sheet_new (Grid *grid)
 	     NULL));
 	NG_DEBUG ("floating group %p", sheet->priv->floating_group);
 
-	// Hash table that keeps maps coordinate to a specific dot.
+	// Hash table that maps coordinates to a specific dot.
 	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, NULL);
 
 	//this requires object_group to be setup properly

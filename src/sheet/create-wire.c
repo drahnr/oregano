@@ -240,8 +240,8 @@ create_wire_update (Sheet *sheet, GdkEvent *event)
 	 */
 	g_assert (create_wire_info->dot);
 
-	guint8 is_pin = node_store_is_pin_at_pos (store, pos);
-	guint8 is_wire = node_store_is_wire_at_pos (store, pos);
+	const guint8 is_pin = node_store_is_pin_at_pos (store, pos);
+	const guint8 is_wire = node_store_is_wire_at_pos (store, pos);
 
 	if (is_pin || is_wire) {
 		g_object_set (G_OBJECT (create_wire_info->dot),
@@ -307,7 +307,8 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	wire_set_length (wire, &length);
 
 	item_data_set_pos (ITEM_DATA (wire), &start_pos);
-	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), ITEM_DATA (wire));
+	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
+	                    ITEM_DATA (wire));
 
 	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
 
@@ -375,8 +376,9 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y, coords_equal(&mid_pos, &end_pos));
 
 #if FINISH_ON_WIRE_CLICK
-	/* check for wires _before_ spawning wires, otherwise we will end up with 1 anyways*/
-	b_finish = node_store_get_node (store, end_pos) || node_store_is_wire_at_pos (store, end_pos); 
+	// check for wires _before_ spawning wires
+	// otherwise we will end up with 1 anyways
+	b_finish = node_store_get_node (store, end_pos) || node_store_is_wire_at_pos (store, end_pos);
 #endif
 	b_start_eq_mid = coords_equal(&start_pos, &mid_pos);
 	b_mid_eq_end = coords_equal(&mid_pos, &end_pos);
@@ -429,7 +431,7 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	              NULL);
 
 	//toggle wire direction
-	if (create_wire_info->direction==WIRE_DIR_VERT)
+	if (create_wire_info->direction == WIRE_DIR_VERT)
 		create_wire_info->direction = WIRE_DIR_HORIZ;
 	else
 		create_wire_info->direction = WIRE_DIR_VERT;

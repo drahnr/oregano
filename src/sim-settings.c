@@ -407,12 +407,8 @@ trans_enable_cb (GtkWidget *widget, SimSettings *s)
 {
 	gboolean enable;
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	
-	if (enable)
-		gtk_widget_show (s->priv->w_trans_frame);
-	else
-		gtk_widget_hide (s->priv->w_trans_frame);
-	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
+
+	gtk_widget_set_visible (s->priv->w_trans_frame, enable);
 }
 
 static void
@@ -438,12 +434,7 @@ ac_enable_cb (GtkWidget *widget, SimSettings *s)
 {
 	gboolean enable;
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	
-	if (enable)
-		gtk_widget_show (s->priv->w_ac_frame);
-	else
-		gtk_widget_hide (s->priv->w_ac_frame);
-	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
+	gtk_widget_set_visible (s->priv->w_ac_frame, enable);
 }
 
 static void
@@ -451,12 +442,7 @@ fourier_enable_cb (GtkWidget *widget, SimSettings *s)
 {
 	gboolean enable;
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	
-	if (enable) 
-		gtk_widget_show (s->priv->w_fourier_frame);
-	else
-		gtk_widget_hide (s->priv->w_fourier_frame);
-	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
+	gtk_widget_set_visible (s->priv->w_fourier_frame, enable);
 }
 
 static void
@@ -464,12 +450,7 @@ dc_enable_cb (GtkWidget *widget, SimSettings *s)
 {
 	gboolean enable;
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	
-	if (enable)
-		gtk_widget_show (s->priv->w_dcsweep_frame);
-	else
-		gtk_widget_hide (s->priv->w_dcsweep_frame);
-	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
+	gtk_widget_set_visible (s->priv->w_dcsweep_frame, enable);
 }
 
 static int
@@ -918,8 +899,6 @@ response_callback (GtkButton *button, Schematic *sm)
 		g_free (s->priv->fourier_frequency);
 	s->priv->fourier_frequency = g_strdup (gtk_entry_get_text (
 	                       GTK_ENTRY (s->priv->w_four_freq)));
-
-	gtk_container_resize_children (GTK_CONTAINER (s->notebook));
 
 	// Options 
 	get_options_from_list (s);
