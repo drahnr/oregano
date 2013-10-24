@@ -131,3 +131,27 @@ coords_average (const Coords *a, const Coords *b)
 	r.y += b->y;	r.y /= 2.0;
 	return r;
 }
+
+inline gdouble
+coords_dot (const Coords *a, const Coords *b)
+{
+	return (a->x * b->x) + (a->y * b->y);
+}
+
+inline gdouble
+coords_cross (const Coords *a, const Coords *b)
+{
+	return (a->x * b->y) - (a->y * b->x);
+}
+
+inline gdouble
+coords_euclid (const Coords *a)
+{
+	return sqrt (coords_dot (a,a));
+}
+
+inline gdouble
+coords_euclid2 (const Coords *a)
+{
+	return coords_dot (a,a);
+}

@@ -86,4 +86,17 @@ coords_sub (Coords *a, Coords *b);
  */
 Coords
 coords_average (const Coords *a, const Coords *b);
+
+gdouble
+coords_cross (const Coords *a, const Coords *b);
+
+gdouble
+coords_dot (const Coords *a, const Coords *b);
+
+gdouble
+coords_euclid (const Coords *a);
+
+gdouble
+coords_euclid2 (const Coords *a);
+
 #endif /* __COORDS_H */
