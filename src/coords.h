@@ -48,37 +48,37 @@ Coords *
 coords_new (gdouble x, gdouble y);
 
 Coords *
-coords_new_copy (Coords *c);
+coords_new_copy (const Coords *c);
 
 void
 coords_destroy (Coords *c);
 
 gboolean
-coords_equal (Coords *a, Coords *b);
+coords_equal (const Coords *a, const Coords *b);
 
 /*
  * Adds b to a and returns a pointer to a which holds now the result
  */
 Coords *
-coords_add (Coords *a, Coords *b);
+coords_add (Coords *a, const Coords *b);
 
 /*
  * Adds b to a and returns a ptr to a Coord struct which has to be freed by either coords_destroy
  */
 Coords *
-coords_sum_new (Coords *a, Coords *b);
+coords_sum_new (const Coords *a, const Coords *b);
 
 Coords *
-coords_set (Coords *a, Coords *val);
+coords_set (Coords *a, const Coords *val);
 
 /*
  *
  */
 Coords
-coords_sum (Coords *a, Coords *b);
+coords_sum (const Coords *a, const Coords *b);
 
 Coords
-coords_sub (Coords *a, Coords *b);
+coords_sub (const Coords *a, const Coords *b);
 
 
 /*

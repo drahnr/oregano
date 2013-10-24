@@ -50,7 +50,7 @@ coords_new (gdouble x, gdouble y)
 }
 
 inline Coords *
-coords_new_copy (Coords *src)
+coords_new_copy (const Coords *src)
 {
 	return coords_new (src->x, src->y);
 }
@@ -63,13 +63,13 @@ coords_destroy (Coords *c)
 }
 
 inline gboolean
-coords_equal (Coords *a, Coords *b)
+coords_equal (const Coords *a, const Coords *b)
 {
 	return __unlikely ((COORDS_DELTA > fabs(a->x - b->x)) && (COORDS_DELTA > fabs(a->y - b->y)));
 }
 
 inline Coords *
-coords_add (Coords *a, Coords *b)
+coords_add (Coords *a, const Coords *b)
 {
 	if (!a || !b)
 		return NULL;
@@ -79,7 +79,7 @@ coords_add (Coords *a, Coords *b)
 }
 
 inline Coords
-coords_sum (Coords *a, Coords *b)
+coords_sum (const Coords *a, const Coords *b)
 {
 	g_assert (a);
 	g_assert (b);
@@ -91,7 +91,7 @@ coords_sum (Coords *a, Coords *b)
 }
 
 inline Coords
-coords_sub (Coords *a, Coords *b)
+coords_sub (const Coords *a, const Coords *b)
 {
 	g_assert (a);
 	g_assert (b);
@@ -103,7 +103,7 @@ coords_sub (Coords *a, Coords *b)
 }
 
 inline Coords *
-coords_sum_new (Coords *a, Coords *b)
+coords_sum_new (const Coords *a, const Coords *b)
 {
 	if (__unlikely (!a || !b))
 		return NULL;
@@ -114,7 +114,7 @@ coords_sum_new (Coords *a, Coords *b)
 }
 
 inline Coords *
-coords_set (Coords *a, Coords *val)
+coords_set (Coords *a, const Coords *val)
 {
 	if (__unlikely (!a || !val))
 		return NULL;
