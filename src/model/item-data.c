@@ -319,11 +319,14 @@ item_data_snap (ItemData *item_data)
 
 	priv = item_data->priv;
 
-
-	if (priv->grid)
-		snap_to_grid (priv->grid, &(priv->pos.x), &(priv->pos.y));
-	else
-		g_warning ("ItemData's grid field is NUL");
+	if (priv) {
+		if (priv->grid)
+			snap_to_grid (priv->grid, &(priv->pos.x), &(priv->pos.y));
+		else
+			g_warning ("ItemData %p grid field is NUL", item_data);
+	} else {
+		g_warning ("ItemData %p priv field is NUL", item_data);
+	}
 
 
 #if 1 //TODO FIXME XXX rename this to "snapped" instead of moved

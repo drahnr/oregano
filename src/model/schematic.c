@@ -653,6 +653,7 @@ void
 schematic_add_item (Schematic *sm, ItemData *data)
 {
 	NodeStore *store;
+	Grid *grid;
 	char *prefix = NULL, *refdes = NULL;
 	int num;
 
@@ -662,11 +663,17 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	store = sm->priv->store;
+	g_assert (store);
+	g_assert (IS_NODE_STORE (store));
+
+	grid = sm->priv->grid;
+	g_assert (grid);
+	g_assert (IS_GRID (grid));
+
 	g_object_set (G_OBJECT (data),
 	              "store", store,
-	              "grid", sm->priv->grid, // assert this is not NULL
+	              "grid", grid,
 	              NULL);
-
 
 	// item data will call the child register function
 	// for parts e.g. this ends up in <node_store_add_part>

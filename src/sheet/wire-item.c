@@ -180,11 +180,11 @@ wire_item_finalize (GObject *object)
 	G_OBJECT_CLASS (wire_item_parent_class)->finalize (object);
 }
 
-// "moved" signal handler. Invalidates the bounding box cache.
+// TODO get rid of this
 static void
 wire_item_moved (SheetItem *object)
 {
-	g_warning ("wire MOVED callback called - LEGACY");
+	NG_DEBUG ("wire MOVED callback called - LEGACY");
 }
 
 WireItem *

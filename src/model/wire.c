@@ -143,7 +143,7 @@ wire_dbg_print (Wire *w)
 {
 	Coords pos;
 	item_data_get_pos (ITEM_DATA (w), &pos);
-	g_print ("\\\\\\ %p === (%lf,%lf) + lambda * (%lf,%lf)\n",
+	NG_DEBUG ("Wire %p is defined by (%lf,%lf) + lambda * (%lf,%lf)\n",
 	         w, pos.x, pos.y, w->priv->length.x, w->priv->length.y);
 }
 

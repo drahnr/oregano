@@ -79,11 +79,6 @@ static gboolean 	do_wires_have_common_endpoint (Wire *a, Wire *b);
 static void		node_store_finalize (GObject *self);
 static void		node_store_dispose (GObject *self);
 
-typedef struct {
-	Wire *wire;
-	Coords pos;
-} IntersectionPoint;
-
 enum {
 	NODE_DOT_ADDED,
 	NODE_DOT_REMOVED,
@@ -316,7 +311,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 		node = g_hash_table_lookup (self->nodes, &lookup_key);
 		if (node) {
 			if (!node_remove_pin (node, &pins[i])) {
-				g_warning ("Couldn't remove pin from node %p.", node);
+				g_warning ("Could not remove pin[%i] from node %p.", i, node);
 				return FALSE;
 			}
 
@@ -362,10 +357,6 @@ vulcanize_wire (NodeStore *store, Wire *a, Wire *b)
 	Coords startb, endb;
 	GSList *list;
 
-g_print ("Merge these 2...\n");
-wire_dbg_print (a);
-wire_dbg_print (b);
-g_print ("... into ...\n");
 	wire_get_start_pos (a, &starta);
 	wire_get_end_pos (a, &enda);
 	wire_get_start_pos (b, &startb);
@@ -406,7 +397,6 @@ g_print ("... into ...\n");
 	node_store_remove_wire (store, a);//equiv wire_unregister
 #endif
 	node_store_remove_wire (store, b);//equiv wire_unregister
-	g_print ("... this vulcanized: \n");
 	wire_dbg_print (w);
 	return w;
 }
@@ -455,7 +445,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			wire_add_node (wire, node);
 			wire_add_node (other, node);
 
-			g_print ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
+			NG_DEBUG ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
 		}
 	}
 
@@ -629,11 +619,6 @@ do_wires_overlap (Wire *a, Wire *b)
 	n1.x = +delta1.y;
 	n1.y = -delta1.x;
 	const gdouble dot = fabs(coords_dot (&n1,&delta2));
-#if 0
-	g_print ("Should be 0 if colinear %lf\n", dot);
-	g_print ("%4.8lf,%4.8lf\n", delta1.x, delta1.y);
-	g_print ("%4.8lf,%4.8lf\n", delta2.x, delta2.y);
-#endif
 	if (dot > NODE_EPSILON) {
 		// they could intersect, but not overlap in a parallel fashion
 		return FALSE;
@@ -648,7 +633,6 @@ do_wires_overlap (Wire *a, Wire *b)
 	gdouble lambda, d;
 	Coords q, f;
 
-#if 1
 	//get distance from start2 ontop of wire *a
 	q = coords_sub (&start2, &start1);
 	lambda = coords_dot (&q, &delta1) / l1;
@@ -658,7 +642,7 @@ do_wires_overlap (Wire *a, Wire *b)
 	if (lambda >= -NODE_EPSILON &&
 	    lambda-NODE_EPSILON <= 1. &&
 	    d < NODE_EPSILON) {
-		g_print ("###1 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
+		NG_DEBUG ("###1 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
 		return TRUE;
 	}
 
@@ -671,7 +655,7 @@ do_wires_overlap (Wire *a, Wire *b)
 	if (lambda >= -NODE_EPSILON &&
 	    lambda-NODE_EPSILON <= 1. &&
 	    d < NODE_EPSILON) {
-		g_print ("###2 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
+		NG_DEBUG ("###2 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
 		return TRUE;
 	}
 
@@ -684,7 +668,7 @@ do_wires_overlap (Wire *a, Wire *b)
 	if (lambda >= -NODE_EPSILON &&
 	    lambda-NODE_EPSILON <= 1. &&
 	    d < NODE_EPSILON) {
-		g_print ("###3 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
+		NG_DEBUG ("###3 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
 		return TRUE;
 	}
 
@@ -697,10 +681,10 @@ do_wires_overlap (Wire *a, Wire *b)
 	if (lambda >= -NODE_EPSILON &&
 	    lambda-NODE_EPSILON <= 1. &&
 	    d < NODE_EPSILON) {
-		g_print ("###4 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
+		NG_DEBUG ("###4 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
 		return TRUE;
 	}
-#endif
+
 	return FALSE;
 }
 
@@ -719,10 +703,8 @@ do_wires_intersect (Wire *a, Wire *b, Coords *where)
 
 	// parallel check
 	const gdouble d = coords_cross (&delta1, &delta2);
-	wire_dbg_print (a);
-	wire_dbg_print (b);
 	if (fabs(d) < NODE_EPSILON) {
-	    g_print ("XXXXXX do_wires_intersect(%p,%p): NO! d=%lf\n", a,b, d);
+	    NG_DEBUG ("do_wires_intersect(%p,%p): NO! d=%lf\n", a,b, d);
 		return FALSE;
 	}
 
@@ -736,14 +718,14 @@ do_wires_intersect (Wire *a, Wire *b, Coords *where)
 
 	if (t >= -NODE_EPSILON && t-NODE_EPSILON <= 1.f &&
 	    u >= -NODE_EPSILON && u-NODE_EPSILON <= 1.f) {
-	    g_print ("XXXXXX do_wires_intersect(%p,%p): YES! t,u = %lf,%lf\n",a,b, t, u);
+	    NG_DEBUG ("do_wires_intersect(%p,%p): YES! t,u = %lf,%lf\n",a,b, t, u);
 	    if (where) {
 			where->x = start1.x + u * delta1.x;
 			where->y = start1.y + u * delta1.y;
 	    }
 	    return TRUE;
 	}
-    g_print ("XXXXXX do_wires_intersect(%p,%p): NO! t,u = %lf,%lf\n",a,b, t, u);
+    NG_DEBUG ("do_wires_intersect(%p,%p): NO! t,u = %lf,%lf\n",a,b, t, u);
 	return FALSE;
 }
 
