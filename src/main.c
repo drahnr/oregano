@@ -34,7 +34,7 @@
 #include <glib/gi18n.h>
 
 #include "oregano.h"
-
+#include "options.h"
 #include "schematic.h"
 
 int
@@ -46,8 +46,10 @@ main (int argc, char *argv[])
 	// GtkApplication as well as GApplication or Oregano
 	// are explicitly allowed
 	Oregano *app;
+	GError *error = NULL;
 	int status;
 	gpointer class = NULL;
+
 
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -55,12 +57,23 @@ main (int argc, char *argv[])
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
+
+	oregano_options_parse (&argc, &argv, &error);
+	if (error) {
+		g_warning ("Failed to parse commandline arguments: %i - %s",
+		           error->code,
+		           error->message);
+		g_error_free (error);
+		error = NULL;
+		return 1;
+	}
+
+	// required?
 	gtk_init (&argc, &argv);
-	/*
-	 * required, as we possibly need signal
-	 * information within oregano.c _before_ the
-	 * first Schematic instance exists
-	 */
+
+	// required, as we possibly need signal
+	// information within oregano.c _before_ the
+	// first Schematic instance exists
 	class = g_type_class_ref (TYPE_SCHEMATIC);
 	app = oregano_new ();
 
