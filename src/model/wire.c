@@ -237,6 +237,22 @@ wire_get_end_pos (Wire *wire, Coords *pos)
 }
 
 void
+wire_get_start_and_end_pos (Wire *wire, Coords *start, Coords *end)
+{
+	WirePriv *priv;
+
+	g_return_if_fail (wire != NULL);
+	g_return_if_fail (IS_WIRE (wire));
+	g_return_if_fail (start != NULL);
+	g_return_if_fail (end != NULL);
+
+	priv = wire->priv;
+
+	item_data_get_pos (ITEM_DATA (wire), start);
+	*end = coords_sum (start, &(priv->length));
+}
+
+void
 wire_get_pos_and_length (Wire *wire, Coords *pos, Coords *length)
 {
 	WirePriv *priv;

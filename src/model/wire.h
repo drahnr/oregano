@@ -83,6 +83,7 @@ gint 		wire_remove_node (Wire *wire, Node *node);
 GSList * 	wire_get_nodes (Wire *wire);
 void 		wire_get_start_pos (Wire *wire, Coords *pos);
 void 		wire_get_end_pos (Wire *wire, Coords *pos);
+void		wire_get_start_and_end_pos (Wire *wire, Coords *start, Coords *end);
 void 		wire_get_pos_and_length (Wire *wire, Coords *pos, 
 		                             Coords *length);
 void 		wire_set_length (Wire *wire, Coords *length);
