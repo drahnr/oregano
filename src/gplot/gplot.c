@@ -604,7 +604,7 @@ g_plot_button_press_cb (GtkWidget *w, GdkEventButton *e, GPlot *p)
 				}
 			break;
 			case GPLOT_ZOOM_REGION:
-				if ((e->button == 1)) {
+				if (e->button == 1) {
 					p->priv->action = ACTION_STARTING_REGION;
 					p->priv->rubberband.xmin = e->x;
 					p->priv->rubberband.ymin = e->y;

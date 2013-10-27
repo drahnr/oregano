@@ -354,8 +354,8 @@ item_data_get_store (ItemData *item_data)
 void
 item_data_set_grid (ItemData *item_data, gpointer grid)
 {
-	g_return_val_if_fail (item_data != NULL, NULL);
-	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
+	g_return_if_fail (item_data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (item_data));
 
 	item_data->priv->grid = grid;
 }
