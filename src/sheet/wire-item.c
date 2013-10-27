@@ -41,6 +41,7 @@
 #include "wire-private.h"
 #include "schematic.h"
 #include "schematic-view.h"
+#include "options.h"
 
 #define NORMAL_COLOR "blue"
 #define SELECTED_COLOR "green"
@@ -214,14 +215,18 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	              NULL);
 
 	priv = wire_item->priv;
+
 	
+	const int random_color_count = 9;
+	const char *random_color[] = {"blue", "red", "green"/*, "yellow"*/, "orange", "brown", "purple", "pink", "lightblue", "lightgreen"};
+
 	priv->resize1 = GOO_CANVAS_RECT (goo_canvas_rect_new (
 	           	GOO_CANVAS_ITEM (wire_item),
 			   	-RESIZER_SIZE, 
 	            -RESIZER_SIZE, 
 	            2 * RESIZER_SIZE, 
 	            2 * RESIZER_SIZE,
-	    		"stroke-color", "blue",
+	                "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	            "fill-color", "green",
 	    		"line-width", 1.0,
 	    		NULL));
@@ -235,7 +240,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	     		length.y - RESIZER_SIZE, 
 	            2 * RESIZER_SIZE,
 	    		2 * RESIZER_SIZE,
-	    		"stroke-color", "blue",
+	                "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	            "fill-color", "green",
 	    		"line-width", 1.0, 
 	    		NULL));
@@ -253,7 +258,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	    GOO_CANVAS_ITEM (wire_item), 
 		FALSE, 0, 
 	    "points", points, 
-	    "stroke-color", "blue", 
+	    "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	    "line-width", 1.0, 
 	    NULL));
 	
