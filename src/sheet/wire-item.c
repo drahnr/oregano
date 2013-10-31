@@ -185,7 +185,7 @@ wire_item_finalize (GObject *object)
 static void
 wire_item_moved (SheetItem *object)
 {
-	NG_DEBUG ("wire MOVED callback called - LEGACY");
+//	NG_DEBUG ("wire MOVED callback called - LEGACY");
 }
 
 WireItem *
@@ -816,10 +816,11 @@ unhighlight_wire (WireItem *item)
 
 
 
+//FIXME get rid of
 static void
 wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	g_warning ("wire MOVED callback called - LEGACY");
+	//NG_DEBUG ("wire MOVED callback called - LEGACY");
 }
 
 static void
@@ -828,10 +829,10 @@ wire_item_place (SheetItem *item, Sheet *sheet)
 	wire_item_signal_connect_placed (WIRE_ITEM (item), sheet);
 }
 
+//FIXME get rid of
 static void
 wire_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
-//FIXME
 //	wire_item_signal_connect_placed (WIRE_ITEM (item));
 }
 

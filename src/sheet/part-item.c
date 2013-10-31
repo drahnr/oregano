@@ -259,7 +259,7 @@ part_item_set_label_items (PartItem *item, GSList *item_list)
 static void
 part_item_moved (SheetItem *sheet_item)
 {
-	g_warning ("part MOVED callback called - LEGACY");
+//	g_warning ("part MOVED callback called - LEGACY");
 }
 
 PartItem *
@@ -865,7 +865,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 static void
 part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 {
-	g_warning ("ROTATED callback called - LEGACY\n");
+//	g_warning ("ROTATED callback called - LEGACY\n");
 }
 
 
@@ -878,7 +878,7 @@ part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 static void
 part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 {
-	g_warning ("FLIPPED callback called - LEGACY\n");
+//	g_warning ("FLIPPED callback called - LEGACY\n");
 }
 
 void
