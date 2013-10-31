@@ -198,6 +198,7 @@ static gboolean
 is_point_at_end_of_wire (Wire *w, Coords *p)
 {
 	g_assert (w);
+	g_assert (IS_WIRE (w));
 	g_assert (p);
 
 	Coords start1, end1;
@@ -239,7 +240,12 @@ static gboolean
 do_wires_overlap (Wire *a, Wire *b, Coords *so, Coords *eo)
 {
 	g_assert (a);
+	g_assert (IS_WIRE (a));
 	g_assert (b);
+	g_assert (IS_WIRE (b));
+	g_assert (so);
+	g_assert (eo);
+
 	Coords sa, la, ea;
 	Coords sb, lb, eb;
 
@@ -276,7 +282,7 @@ do_wires_overlap (Wire *a, Wire *b, Coords *so, Coords *eo)
 		*eo = sa;
 		return TRUE;
 	}
-	if (eb_on_a && ea_on_b) {
+	if (eb_on_a && sa_on_b) {
 		*so = eb;
 		*eo = ea;
 		return TRUE;

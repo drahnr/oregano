@@ -42,6 +42,9 @@
 #include <math.h>
 
 #include "speedy.h"
+
+#define NODE_EPSILON 1e-10
+#define HASH_EPSILON 1e-3
 #include "node-store.h"
 #include "node-store-private.h"
 #include "node.h"
@@ -54,8 +57,6 @@
 
 /* NODE_EPSILON is used to check for intersection. */
 /* HASH_EPSILON is used in the hash equality check function. */
-#define NODE_EPSILON 1e-10
-#define HASH_EPSILON 1e-3
 
 /* Share an endpoint? */
 #define SEP(p1x,p1y,p2x,p2y) (IS_EQ(p1x, p2x) && IS_EQ(p1y, p2y))
