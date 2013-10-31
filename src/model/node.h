@@ -86,4 +86,7 @@ void node_set_visited (Node *node, gboolean is_visited);
 
 gboolean node_needs_dot (Node *node);
 
+guint node_hash (gconstpointer key);
+gboolean node_equal (gconstpointer a, gconstpointer b);
+
 #endif
