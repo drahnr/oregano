@@ -323,3 +323,41 @@ node_set_visited (Node *node, gboolean is_visited)
 
 	node->visited = is_visited;
 }
+
+
+#define HASH_EPSILON 1e-3
+
+/**
+ * Hash function to be used with a GHashTable (and others)
+ */
+guint
+node_hash (gconstpointer key)
+{
+	Coords *sp = (Coords *) key;
+	register int x, y;
+
+	// Hash on any other node?
+
+	x = (int)rint (sp->x) % 256;
+	y = (int)rint (sp->y) % 256;
+
+	return (y << 8) | x;
+}
+
+/**
+ * Comparsion function to be used with a GHashTable (and others)
+ */
+gboolean
+node_equal (gconstpointer a, gconstpointer b)
+{
+	const Coords *ca = a;
+	const Coords *cb = b;
+
+	if (fabs (ca->y - cb->y) > HASH_EPSILON)
+		return 0;
+
+	if (fabs (ca->x - cb->x) > HASH_EPSILON)
+		return 0;
+
+	return 1;
+}
