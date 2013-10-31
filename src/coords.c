@@ -42,7 +42,7 @@ inline Coords *
 coords_new (gdouble x, gdouble y)
 {
 	Coords *c = g_malloc (sizeof (Coords));
-	if (__likely (c)) {
+	if (G_LIKELY(c)) {
 		c->x = x;
 		c->y = y;
 	}
@@ -60,12 +60,6 @@ coords_destroy (Coords *c)
 {
 	if (__likely (c))
 		g_free (c);
-}
-
-inline gboolean
-coords_equal (const Coords *a, const Coords *b)
-{
-	return __unlikely ((COORDS_DELTA > fabs(a->x - b->x)) && (COORDS_DELTA > fabs(a->y - b->y)));
 }
 
 inline Coords *
@@ -154,4 +148,23 @@ inline gdouble
 coords_euclid2 (const Coords *a)
 {
 	return coords_dot (a,a);
+}
+
+#define CIRCLERSHIFT(x,r) ((x>>r) | (x<<(sizeof(x)*8-r)))
+#define CIRCLELSHIFT(x,l) ((x<<l) | (x>>(sizeof(x)*8-l)))
+inline guint
+coords_hash (gconstpointer v)
+{
+	const Coords *c = v;
+	const guint x = (guint)(c->x);
+	const guint y = (guint)(c->y);
+	return CIRCLELSHIFT(x,7) ^ CIRCLERSHIFT(y,3);
+}
+
+
+inline gboolean
+coords_equal (const Coords *a, const Coords *b)
+{
+	return G_UNLIKELY(fabs(a->x - b->x) < COORDS_DELTA &&
+	                  fabs(a->y - b->y) < COORDS_DELTA);
 }
