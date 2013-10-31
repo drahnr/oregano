@@ -43,6 +43,7 @@
 
 #include "speedy.h"
 #include "node-store.h"
+#include "node-store-private.h"
 #include "node.h"
 #include "part.h"
 #include "wire.h"
@@ -66,16 +67,6 @@
 
 static void		node_store_class_init (NodeStoreClass *klass);
 static void		node_store_init (NodeStore *store);
-static guint		node_hash (gconstpointer key);
-static gboolean		node_equal (gconstpointer a, gconstpointer b);
-static GSList		*wire_intersect_parts (NodeStore *store, Wire *wire);
-static gboolean		is_wire_at_pos (double x1, double y1, double x2, double y2, Coords pos, gboolean endpoints);
-static gboolean		is_wire_at_coords(Wire *w, Coords *coo, gboolean endpoints);
-static GSList *		wires_at_pos (NodeStore *store, Coords pos);
-static gboolean	do_wires_intersect (Wire *a, Wire *b, Coords *where);
-static gboolean 	do_wires_overlap (Wire *a, Wire *b);
-static gboolean 	do_wires_have_common_endpoint (Wire *a, Wire *b);
-
 static void		node_store_finalize (GObject *self);
 static void		node_store_dispose (GObject *self);
 
@@ -256,7 +247,7 @@ node_store_add_part (NodeStore *self, Part *part)
 		node = node_store_get_or_create_node (self, lookup_key);
 
 		// Add all the wires that intersect this pin to the node store.
-		wire_list = wires_at_pos (self, lookup_key);
+		wire_list = get_wires_at_pos (self, lookup_key);
 
 		for (list = wire_list; list; list = list->next) {
 			Wire *wire = list->data;
@@ -347,61 +338,6 @@ node_store_remove_textbox (NodeStore *self, Textbox *text)
 }
 
 
-/**
- * attention: only ever call this for two parallel and overlapping wires!
- */
-static Wire *
-vulcanize_wire (NodeStore *store, Wire *a, Wire *b)
-{
-	Coords starta, enda;
-	Coords startb, endb;
-	GSList *list;
-
-	wire_get_start_pos (a, &starta);
-	wire_get_end_pos (a, &enda);
-	wire_get_start_pos (b, &startb);
-	wire_get_end_pos (b, &endb);
-
-	Coords start, end, len;
-	start.x = MIN(MIN(starta.x, startb.x),MIN(enda.x,endb.x));
-	start.y = MIN(MIN(starta.y, startb.y),MIN(enda.y,endb.y));
-	end.x = MAX(MAX(starta.x, startb.x),MAX(enda.x,endb.x));
-	end.y = MAX(MAX(starta.y, startb.y),MAX(enda.y,endb.y));
-	len.x = end.x - start.x;
-	len.y = end.y - start.y;
-	g_print ("len=%lf,%lf\n", len.x, len.y);
-	g_assert (fabs(len.x) < NODE_EPSILON || fabs(len.y) < NODE_EPSILON);
-//FIXME register and unregister to new position
-#define CREATE_NEW_WIRE 0
-	// always null, or schematic_add_item in create_wire
-	// will return pure bogus (and potentially crash!)
-#if CREATE_NEW_WIRE
-	Wire *w = wire_new (item_data_get_grid (ITEM_DATA (a)));
-	if (!w)
-		return NULL;
-#else
-	Wire *w = a;
-#endif
-	item_data_set_pos (ITEM_DATA (w), &start);
-	wire_set_length (w, &len);
-
-	for (list = wire_get_nodes(b); list;) {
-		Node *n = list->data;
-		list = list->next;
-		if (!IS_NODE (n))
-			g_warning ("Found bogus node entry in wire %p, ignored.", b);
-		wire_add_node (w, n);
-		node_add_wire (n, w);
-	}
-#if CREATE_NEW_WIRE
-	node_store_remove_wire (store, a);//equiv wire_unregister
-#endif
-	node_store_remove_wire (store, b);//equiv wire_unregister
-	wire_dbg_print (w);
-	return w;
-}
-
-
 
 /**
  * add/register the wire to the nodestore
@@ -418,17 +354,29 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	g_return_val_if_fail (wire, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
-
-
 	// Check for overlapping with other wires.
-	for (list = store->wires; list;	) {
+	for (list = store->wires; list;	list = list->next) {
 		Wire *other = list->data;
-		list = list->next;
-		if (do_wires_overlap (wire, other)) {
-			wire = vulcanize_wire (store, wire, other);
-			if (wire) {
-				list = store->wires; //round'n'round
+		Coords so, eo;
+		if (do_wires_overlap (wire, other, &so, &eo)) {
+			Node *sn = node_store_get_node (store, eo);
+			Node *en = node_store_get_node (store, so);
+			#if 1
+			wire = vulcanize_wire (store, wire, other, &so, &eo);
+			g_warning ("overlapping of %p with %p ", wire, other);
+			#else
+			if (!sn && !en) {
+				wire = vulcanize_wire (store, wire, other, &so, &eo);
+			} else if (!sn) {
+				g_warning ("do_something(TM) : %p sn==NULL ", other);
+			} else if (!en) {
+				g_warning ("do_something(TM) : %p en==NULL ", other);
+			} else {
+				g_warning ("do_something(TM) : %p else ", other);
 			}
+			#endif
+		} else {
+			g_warning ("not of %p with %p ", wire, other);
 		}
 	}
 
@@ -472,7 +420,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 			// If there is a wire at this pin's position,
 			// add it to the return list.
-			if (is_wire_at_coords (wire, &lookup_pos, TRUE)) {
+			if (is_wire_at_coords (wire, &lookup_pos)) {
 				Node *node;
 				node = node_store_get_node (store, lookup_pos);
 
@@ -545,197 +493,15 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 
 
 
-/*
- * returns a list of wire at position p (including endpoints)
- */
-static GSList *
-wires_at_pos (NodeStore *store, Coords pos)
-{
-	GList *list;
-	GSList *wire_list;
-	Wire *wire;
-	Coords start, end;
 
-	g_return_val_if_fail (store, FALSE);
-	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 
-	wire_list = NULL;
 
-	for (list = store->wires; list; list = list->next) {
-		wire = list->data;
-
-		if (is_wire_at_coords (wire, &pos, TRUE))
-			wire_list = g_slist_prepend (wire_list, wire);
-	}
-
-	return wire_list;
-}
 
 /**
- * check if the two given wires have any incomon endpoints
- */
-static gboolean
-do_wires_have_common_endpoint (Wire *a, Wire *b)
-{
-	g_assert (a);
-	g_assert (b);
-	Coords delta1, start1, end1;
-	Coords delta2, start2, end2;
-
-	wire_get_start_pos (a, &start1);
-	wire_get_end_pos (a, &end1);
-
-	wire_get_start_pos (a, &start2);
-	wire_get_end_pos (a, &end2);
-
-	return coords_equal (&start1, &start2) ||
-		   coords_equal (&start1, &end2) ||
-		   coords_equal (&end1, &start2) ||
-		   coords_equal (&end1, &end2);
-}
-
-/**
- * check if the two given wires overlap
- */
-static gboolean
-do_wires_overlap (Wire *a, Wire *b)
-{
-	g_assert (a);
-	g_assert (b);
-	Coords delta1, start1, end1;
-	Coords delta2, start2, end2;
-
-	wire_get_start_pos (a, &start1);
-	wire_get_end_pos (a, &end1);
-
-	wire_get_start_pos (b, &start2);
-	wire_get_end_pos (b, &end2);
-
-	delta1 = coords_sub (&end1, &start1);
-	delta2 = coords_sub (&end2, &start2);
-
-	// parallel check
-	Coords n1;
-	n1.x = +delta1.y;
-	n1.y = -delta1.x;
-	const gdouble dot = fabs(coords_dot (&n1,&delta2));
-	if (dot > NODE_EPSILON) {
-		// they could intersect, but not overlap in a parallel fashion
-		return FALSE;
-	}
-
-
-	// project onto wire, at least one has to succed
-	// to prove real parallism
-	// also the distance has to be 0
-	const gdouble l1 = coords_euclid2 (&delta1);
-	const gdouble l2 = coords_euclid2 (&delta2);
-	gdouble lambda, d;
-	Coords q, f;
-
-	//get distance from start2 ontop of wire *a
-	q = coords_sub (&start2, &start1);
-	lambda = coords_dot (&q, &delta1) / l1;
-	f.x = start1.x + lambda * delta1.x - start2.x;
-	f.y = start1.y + lambda * delta1.y - start2.y;
-	d = coords_euclid2(&f);
-	if (lambda >= -NODE_EPSILON &&
-	    lambda-NODE_EPSILON <= 1. &&
-	    d < NODE_EPSILON) {
-		NG_DEBUG ("###1 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
-		return TRUE;
-	}
-
-	//get distance from end2 ontop of wire *a
-	q = coords_sub (&end2, &start1);
-	lambda = coords_dot (&q, &delta1) / l1;
-	f.x = start1.x + lambda * delta1.x - end2.y;
-	f.y = start1.y + lambda * delta1.y - end2.y;
-	d = coords_euclid2(&f);
-	if (lambda >= -NODE_EPSILON &&
-	    lambda-NODE_EPSILON <= 1. &&
-	    d < NODE_EPSILON) {
-		NG_DEBUG ("###2 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
-		return TRUE;
-	}
-
-	//get distance from start1 ontop of wire *b
-	q = coords_sub (&start1, &start2);
-	lambda = coords_dot (&q, &delta2) / l2;
-	f.x = start2.x + lambda * delta2.x - start1.x;
-	f.y = start2.y + lambda * delta2.y - start1.y;
-	d = coords_euclid2(&f);
-	if (lambda >= -NODE_EPSILON &&
-	    lambda-NODE_EPSILON <= 1. &&
-	    d < NODE_EPSILON) {
-		NG_DEBUG ("###3 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
-		return TRUE;
-	}
-
-	//get distance from end1 ontop of wire *b
-	q = coords_sub (&end1, &start2);
-	lambda = coords_dot (&q, &delta2) / l2;
-	f.x = start2.x + lambda * delta2.x - end1.x;
-	f.y = start2.y + lambda * delta2.y - end1.y;
-	d = coords_euclid2(&f);
-	if (lambda >= -NODE_EPSILON &&
-	    lambda-NODE_EPSILON <= 1. &&
-	    d < NODE_EPSILON) {
-		NG_DEBUG ("###4 lambda=%lf ... d=%lf  ....  %lf,%lf\n", lambda, d, f.x, f.y);
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-/*
- * check if 2 wires intersect
+ * @returns if there exists a wire at the target position which is registered to the nodestore
  */
 gboolean
-do_wires_intersect (Wire *a, Wire *b, Coords *where)
-{
-	g_assert (a);
-	g_assert (b);
-	Coords delta1, start1;
-	Coords delta2, start2;
-	wire_get_pos_and_length (a, &start1, &delta1);
-	wire_get_pos_and_length (b, &start2, &delta2);
-
-	// parallel check
-	const gdouble d = coords_cross (&delta1, &delta2);
-	if (fabs(d) < NODE_EPSILON) {
-	    NG_DEBUG ("do_wires_intersect(%p,%p): NO! d=%lf\n", a,b, d);
-		return FALSE;
-	}
-
-	// implemented according to
-	// http://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect
-	const Coords qminusp = coords_sub (&start2, &start1);
-
-	// p = start1, q = start2, r = delta1, s = delta2
-	const gdouble t = coords_cross (&qminusp, &delta1) / d;
-	const gdouble u = coords_cross (&qminusp, &delta2) / d;
-
-	if (t >= -NODE_EPSILON && t-NODE_EPSILON <= 1.f &&
-	    u >= -NODE_EPSILON && u-NODE_EPSILON <= 1.f) {
-	    NG_DEBUG ("do_wires_intersect(%p,%p): YES! t,u = %lf,%lf\n",a,b, t, u);
-	    if (where) {
-			where->x = start1.x + u * delta1.x;
-			where->y = start1.y + u * delta1.y;
-	    }
-	    return TRUE;
-	}
-    NG_DEBUG ("do_wires_intersect(%p,%p): NO! t,u = %lf,%lf\n",a,b, t, u);
-	return FALSE;
-}
-
-
-/*
- * returns if there exists a wire at the target position
- * endpoints determines if endpoints are allowed and treated as positive
- */
-gboolean
-node_store_is_wire_at_pos_check_endpoints (NodeStore *store, Coords pos, gboolean endpoints)
+node_store_is_wire_at_pos (NodeStore *store, Coords pos)
 {
 	GList *list;
 	Wire *wire;
@@ -750,26 +516,14 @@ node_store_is_wire_at_pos_check_endpoints (NodeStore *store, Coords pos, gboolea
 		wire_get_start_pos (wire, &start);
 		wire_get_end_pos (wire, &end);
 
-		if (is_wire_at_pos (start.x, start.y, end.x, end.y, pos, endpoints))
+		if (is_wire_at_pos (start.x, start.y, end.x, end.y, pos))
 			return TRUE;
 	}
 	return FALSE;
 }
 
 
-/*
- * convenience helper for the above
- * XXX to be removed
- */
-inline gboolean
-node_store_is_wire_at_pos (NodeStore *store, Coords pos)
-{
-	return node_store_is_wire_at_pos_check_endpoints (store, pos, TRUE);
-}
-
-
-
-/*
+/**
  * Find the node that has an element at a certain position.
  */
 Node *
@@ -790,7 +544,10 @@ node_store_get_node (NodeStore *store, Coords pos)
 	return node;
 }
 
-static inline guint
+/**
+ * Hash function to be used with a GHashTable (and others)
+ */
+guint
 node_hash (gconstpointer key)
 {
 	Coords *sp = (Coords *) key;
@@ -804,31 +561,27 @@ node_hash (gconstpointer key)
 	return (y << 8) | x;
 }
 
-static int
+/**
+ * Comparsion function to be used with a GHashTable (and others)
+ */
+gboolean
 node_equal (gconstpointer a, gconstpointer b)
 {
-	Coords *spa, *spb;
+	const Coords *ca = a;
+	const Coords *cb = b;
 
-	spa = (Coords *) a;
-	spb = (Coords *) b;
-
-	if (fabs (spa->y - spb->y) > HASH_EPSILON) {
-		if (fabs (spa->y - spb->y) < 2.0)
-			NG_DEBUG ("A neighbour of B in Y\n");
-
+	if (fabs (ca->y - cb->y) > HASH_EPSILON)
 		return 0;
-	}
 
-	if (fabs (spa->x - spb->x) > HASH_EPSILON) {
-		if (fabs (spa->x - spb->x) < 5.0)
-			NG_DEBUG ("A neighbour of B in X\n\n");
-
+	if (fabs (ca->x - cb->x) > HASH_EPSILON)
 		return 0;
-	}
 
 	return 1;
 }
 
+/**
+ * Call GHFunc for each node in the nodestore
+ */
 void
 node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data)
 {
@@ -838,51 +591,7 @@ node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data)
 	g_hash_table_foreach (store->nodes, (gpointer)func, user_data);
 }
 
-static inline gboolean
-is_wire_at_coords(Wire *w, Coords *coo, gboolean endpoints)
-{
-	Coords p1, p2, len;
-	wire_get_pos_and_length (w, &p1, &len);
-	p2 = p1;
-	coords_add (&p2, &len);
-	return is_wire_at_pos (p1.x, p1.y, p2.x, p2.y, *coo, endpoints);
-}
 
-/**
- * evaluates if x1,y1 to x2,y2 contain pos.x/pos.y if connected by a birds eye line
- */
-static inline gboolean
-is_wire_at_pos (double x1, double y1, double x2, double y2, Coords pos, gboolean endpoints)
-{
-	//calculate the hessenormalform and check the results vs eps
-	// 0 = (vx - vp0) dot (n)
-	double d;
-	Coords a, n;
-
-	a.x = x2 - x1;
-	a.y = y2 - y1;
-	n.x = -a.y;
-	n.y = +a.x;
-
-	d = (pos.x - x1) * n.x + (pos.y - y1) * n.y;
-
-	if (fabs(d) > NODE_EPSILON)
-		return FALSE;
-
-	if (endpoints) {
-		if (pos.x<MIN(x1,x2) || pos.x>MAX(x1,x2) || pos.y<MIN(y1,y2) || pos.y>MAX(y1,y2))
-			return FALSE;
-
-	} else {
-		if (pos.x<=MIN(x1,x2) || pos.x>=MAX(x1,x2) || pos.y<=MIN(y1,y2) || pos.y>=MAX(y1,y2))
-			return FALSE;
-
-	}
-
-	NG_DEBUG ("on wire (DIST=%g): linear start:(%g %g); end:(%g %g); point:(%g %g)", d, x1, y1, x2, y2, pos.x, pos.y);
-
-	return TRUE;
-}
 
 
 /**
@@ -921,18 +630,7 @@ node_store_get_items (NodeStore *store)
 	return store->items;
 }
 
-static void
-add_node (gpointer key, Node *node, GList **list)
-{
-	*list = g_list_prepend (*list, node);
-}
 
-static void
-add_node_position (gpointer key, Node *node, GList **list)
-{
-	if (node_needs_dot (node))
-		*list = g_list_prepend (*list, key);
-}
 
 /**
  * the caller has to free the list himself, but not the actual data items!
