@@ -51,6 +51,7 @@
 
 static void 		wire_item_class_init (WireItemClass *klass);
 static void 		wire_item_init (WireItem *item);
+static void 		wire_item_dispose (GObject *object);
 static void 		wire_item_finalize (GObject *object);
 static void 		wire_item_moved (SheetItem *object);
 static void 		wire_rotated_callback (ItemData *data, int angle,
@@ -113,15 +114,16 @@ wire_item_class_init (WireItemClass *wire_item_class)
 	object_class = G_OBJECT_CLASS (wire_item_class);
 	sheet_item_class = SHEET_ITEM_CLASS (wire_item_class);
 	wire_item_parent_class = g_type_class_peek_parent (wire_item_class);
-	
+
 	object_class->finalize = wire_item_finalize;
+	object_class->dispose = wire_item_dispose;
 	object_class->set_property = wire_item_set_property;
     object_class->get_property = wire_item_get_property;
 
 	sheet_item_class->moved = wire_item_moved;
 	sheet_item_class->paste = wire_item_paste;
 	sheet_item_class->is_in_area = is_in_area;
-	sheet_item_class->selection_changed = (gpointer) selection_changed;
+	sheet_item_class->selection_changed = selection_changed;
 	sheet_item_class->place = wire_item_place;
 	sheet_item_class->place_ghost = wire_item_place_ghost;
 }
@@ -163,9 +165,26 @@ wire_item_init (WireItem *item)
 	priv->direction = WIRE_DIR_NONE;
 	priv->highlight = FALSE;
 	priv->cache_valid = FALSE;
+	priv->line = NULL;
+	priv->resize1 = NULL;
+	priv->resize2 = NULL;
 
 	item->priv = priv;
 }
+
+static void
+wire_item_dispose (GObject *object)
+{
+	WireItemPriv *priv;
+
+	priv = WIRE_ITEM (object)->priv;
+
+	g_clear_object (&(priv->line));
+	g_clear_object (&(priv->resize1));
+	g_clear_object (&(priv->resize2));
+	G_OBJECT_CLASS (wire_item_parent_class)->dispose (object);
+}
+
 
 static void
 wire_item_finalize (GObject *object)
@@ -259,7 +278,9 @@ wire_item_new (Sheet *sheet, Wire *wire)
 		FALSE, 0, 
 	    "points", points, 
 	    "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
-	    "line-width", 1.0, 
+	    "line-width", 1.0,
+	    "start-arrow", opts.debug.wires ? TRUE : FALSE,
+	    "end-arrow", opts.debug.wires ? TRUE : FALSE,
 	    NULL));
 	
 	goo_canvas_points_unref (points);
@@ -890,5 +911,9 @@ wire_changed_callback (Wire *wire, WireItem *item)
 static void
 wire_delete_callback (Wire *wire, WireItem *item)
 {
-	g_object_unref (G_OBJECT (item));
+// no clue why does work but canvas item does not disappear
+//	g_clear_object (&item);
+//	g_assert (item==NULL);
+	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
+
 }
