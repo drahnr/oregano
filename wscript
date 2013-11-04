@@ -135,24 +135,49 @@ def build(bld):
 			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
 
 
-	exe = bld.program(
- 		features = ['c', 'cprogram', 'glib2'],
-		target = APPNAME,
-		source = bld.path.ant_glob(['src/*.c', 'src/engines/*.c', 'src/gplot/*.c', 'src/model/*.c', 'src/sheet/*.c']),
+
+	bld.objects (
+		['c','glib2'],
+		source = bld.path.ant_glob(['src/*.c', 'src/engines/*.c', 'src/gplot/*.c', 'src/model/*.c', 'src/sheet/*.c'], excl='*/main.c'),
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
+		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
+		target = 'shared_objects'
+	)
+
+	exe = bld.program(
+		features = ['c', 'glib2'],
+		target = APPNAME,
+		source = ['src/main.c'],
+		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
+		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
+		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		settings_schema_files = ['data/settings/apps.oregano.gschema.xml'],
 		install_path = "${BINDIR}"
 	)
+
 	for item in exe.includes:
 		logs.debug(item)
+	test = bld.program(
+		features = ['c', 'glib2'],
+		target = APPNAME+'-testsuite',
+		source = ['test/test.c'],
+		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
+		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
+		use = 'shared_objects',
+		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
+	)
 
 
 
 
 
 from waflib.Build import BuildContext
+
+def runtests(ctx):
+	os.system("gtester ./build/debug/"+APPNAME+"-testsuite");
+
 
 class release(BuildContext):
 	      cmd = 'release'
