@@ -161,7 +161,7 @@ def build(bld):
 		logs.debug(item)
 	test = bld.program(
 		features = ['c', 'glib2'],
-		target = APPNAME+"-testsuite",
+		target = APPNAME+'-testsuite',
 		source = ['test/test.c'],
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
@@ -174,6 +174,10 @@ def build(bld):
 
 
 from waflib.Build import BuildContext
+
+def runtests(ctx):
+	os.system("gtester ./build/debug/"+APPNAME+"-testsuite");
+
 
 class release(BuildContext):
 	      cmd = 'release'

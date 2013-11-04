@@ -1,7 +1,7 @@
 #include <glib.h>
+
 #include "coords.h"
 #include "wire.h"
-#include "node-store.h"
 
 void
 test_coords ()
@@ -24,6 +24,9 @@ test_coords ()
 	g_assert_cmpfloat (tmp.x, ==, 0.);
 	g_assert_cmpfloat (tmp.y, ==, 200.);
 }
+
+#define NODE_EPSILON 1e-3
+#include "node-store.h"
 
 void
 test_wire_wire_interaction ()

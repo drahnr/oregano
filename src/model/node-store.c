@@ -72,7 +72,7 @@ static GSList		*wire_intersect_parts (NodeStore *store, Wire *wire);
 static gboolean		is_wire_at_pos (double x1, double y1, double x2, double y2, Coords pos, gboolean endpoints);
 static gboolean		is_wire_at_coords(Wire *w, Coords *coo, gboolean endpoints);
 static GSList *		wires_at_pos (NodeStore *store, Coords pos);
-static gboolean	do_wires_intersect (Wire *a, Wire *b, Coords *where);
+gboolean	do_wires_intersect (Wire *a, Wire *b, Coords *where);
 static gboolean 	do_wires_overlap (Wire *a, Wire *b);
 static gboolean 	do_wires_have_common_endpoint (Wire *a, Wire *b);
 
