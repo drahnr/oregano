@@ -72,27 +72,27 @@ do_wires_intersect (Wire *a, Wire *b, Coords *where)
  * evaluates if x1,y1 to x2,y2 contain pos.x/pos.y if connected by a birds eye line
  */
 static inline gboolean
-is_wire_at_pos (double x1, double y1, double x2, double y2, Coords pos)
+is_line_segment_at_pos (Coords *one, Coords *two, Coords *pos)
 {
 	//calculate the hessenormalform and check the results vs eps
 	// 0 = (vx - vp0) dot (n)
 	double d;
 	Coords a, n;
 
-	a.x = x2 - x1;
-	a.y = y2 - y1;
+	a.x = two->x - one->x;
+	a.y = two->y - one->y;
 	n.x = -a.y;
 	n.y = +a.x;
 
-	d = (pos.x - x1) * n.x + (pos.y - y1) * n.y;
+	d = (pos->x - one->x) * n.x + (pos->y - one->y) * n.y;
 
 	if (fabs(d) > NODE_EPSILON)
 		return FALSE;
 
-	if (pos.x<MIN(x1,x2) || pos.x>MAX(x1,x2) || pos.y<MIN(y1,y2) || pos.y>MAX(y1,y2))
+	if (pos->x<MIN(one->x,two->x) || pos->x>MAX(one->x,two->x) || pos->y<MIN(one->y,two->y) || pos->y>MAX(one->y,two->y))
 		return FALSE;
 
-	NG_DEBUG ("on wire (DIST=%g): linear start:(%g %g); end:(%g %g); point:(%g %g)", d, x1, y1, x2, y2, pos.x, pos.y);
+	NG_DEBUG ("on wire (DIST=%g): linear start:(%g %g); end:(%g %g); point:(%g %g)", d, one->x, one->y, two->x, two->y, pos->x, pos->y);
 
 	return TRUE;
 }
@@ -104,7 +104,7 @@ is_wire_at_coords(Wire *w, Coords *coo)
 	wire_get_pos_and_length (w, &p1, &len);
 	p2 = p1;
 	coords_add (&p2, &len);
-	return is_wire_at_pos (p1.x, p1.y, p2.x, p2.y, *coo);
+	return is_line_segment_at_pos (&p1, &p2, coo);
 }
 
 
@@ -409,7 +409,7 @@ vulcanize_wire (NodeStore *store, Wire *a, Wire *b, Coords *so, Coords *eo)
 	node_store_remove_wire (store, a);//equiv wire_unregister
 #endif
 	node_store_remove_wire (store, b);//equiv wire_unregister
-	wire_dbg_print (w);
+	wire_delete (b);
 	return w;
 }
 

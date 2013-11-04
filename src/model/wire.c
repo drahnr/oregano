@@ -468,7 +468,7 @@ wire_unregister (ItemData *data)
 	node_store_remove_wire (store, WIRE (data));
 }
 
-static int 
+static gboolean
 wire_register (ItemData *data)
 {
 	NodeStore *store;

@@ -232,7 +232,7 @@ sheet_item_init (SheetItem *item)
 	
 	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, 
 	                 sheet_item_context_menu, -1, &error)) {
-		g_message ("building menus failed: %s", error->message);
+		g_warning ("building menus failed: %s", error->message);
 		g_error_free (error);
 	}
 }
