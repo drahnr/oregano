@@ -10,7 +10,7 @@ file COPYING.
 ### Quick install guide
 #### Requirements
 
-You need `gtk+-3.0`, `gtksourceview-3.0`, `goocanvas-2.0` and `libxml2` in order to build oregano.
+You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0` and `libxml2` in order to build oregano.
 These are usually included in your favorite distributions repositories and can otherwise be found at the [gnome public ftp](ftp://ftp.gnome.org) server.
 
 
@@ -30,7 +30,8 @@ For additional options like specifying the install directory, consult
 
     waf --help
 
-Note that additional options need to be passed to the `configure` stage.
+Note that additional options can be passed to the `configure` stage, i.e. `waf configure --prefix="/usr" debug -j6` is commonly used.
+
 
 #### Installation
 
@@ -122,6 +123,11 @@ Use <kbd>tab</kbd>s to indent, but <kbd>space</kbd>s for syntetical linebreak in
 ```
 
 Note: There is a lot of old code, that has mixed styling. It will be fixed over time.
+
+### Tests
+
+Verify that all existing tests do pass before calling for review/doing merge requests by calling `waf runtests` after successfully compiling (installing is _not_ required).
+Add new tests whenever possible/sane!
 
 ### Commit messages
 Git commit messages should be one (1) line, describing the changeset briefly. If it closes a bug append a `, closes #bugnumber` or `, fixes #bugnumber`, where `#bugnumber` refers to the github bugtracker bugnumber. 
