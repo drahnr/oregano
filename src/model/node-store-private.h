@@ -1,3 +1,6 @@
+#ifndef NODE_STORE_PRIV_H__
+#define NODE_STORE_PRIV_H__
+
 #include <glib.h>
 
 #include "coords.h"
@@ -26,7 +29,7 @@ add_node_position (gpointer key, Node *node, GList **list)
 /**
  * check if 2 wires intersect
  */
-static gboolean
+gboolean
 do_wires_intersect (Wire *a, Wire *b, Coords *where)
 {
 	g_assert (a);
@@ -119,7 +122,6 @@ get_wires_at_pos (NodeStore *store, Coords pos)
 	GList *list;
 	GSList *wire_list;
 	Wire *wire;
-	Coords start, end;
 
 	g_return_val_if_fail (store, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
@@ -413,3 +415,5 @@ vulcanize_wire (NodeStore *store, Wire *a, Wire *b, Coords *so, Coords *eo)
 	return w;
 }
 
+
+#endif /* NODE_STORE_PRIVATE_H__ */

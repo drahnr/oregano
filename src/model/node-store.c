@@ -517,7 +517,7 @@ node_store_is_wire_at_pos (NodeStore *store, Coords pos)
 		wire_get_start_pos (wire, &start);
 		wire_get_end_pos (wire, &end);
 
-		if (is_wire_at_pos (start.x, start.y, end.x, end.y, pos))
+		if (is_line_segment_at_pos (&start, &end, &pos))
 			return TRUE;
 	}
 	return FALSE;
