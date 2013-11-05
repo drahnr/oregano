@@ -28,6 +28,10 @@ add_node_position (gpointer key, Node *node, GList **list)
 
 /**
  * check if 2 wires intersect
+ * @param a wire
+ * @param b wire
+ * @param where [out] [NULL allowed] the position of intersection, if
+ * @returns TRUE when @a and @b intersect, else FALSE
  */
 gboolean
 do_wires_intersect (Wire *a, Wire *b, Coords *where)
@@ -311,7 +315,7 @@ do_wires_overlap (Wire *a, Wire *b, Coords *so, Coords *eo)
  * @returns which of the inputs
  * @attention wire @a and @b are taken as granted to be intersecting
  */
-static gboolean
+gboolean
 is_t_crossing (Wire *a, Wire *b, Coords *t)
 {
 	g_assert (a);
@@ -327,17 +331,17 @@ is_t_crossing (Wire *a, Wire *b, Coords *t)
 			*t = sb;
 		return TRUE;
 	}
-	if (is_point_on_wire (a, &eb) && !is_point_on_wire (a, &eb)) {
+	if (is_point_on_wire (a, &eb) && !is_point_at_end_of_wire (a, &eb)) {
 		if (t)
 			*t = eb;
 		return TRUE;
 	}
-	if (is_point_on_wire (b, &sa) && !is_point_on_wire (b, &sa)) {
+	if (is_point_on_wire (b, &sa) && !is_point_at_end_of_wire (b, &sa)) {
 		if (t)
 			*t = sa;
 		return TRUE;
 	}
-	if (is_point_on_wire (b, &ea) && !is_point_on_wire (b, &ea)) {
+	if (is_point_on_wire (b, &ea) && !is_point_at_end_of_wire (b, &ea)) {
 		if (t)
 			*t = ea;
 		return TRUE;

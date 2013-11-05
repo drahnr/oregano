@@ -29,31 +29,67 @@ test_coords ()
 #include "node-store.h"
 
 void
-test_wire_wire_interaction ()
+test_wire_intersection ()
 {
-	// test the most fragile stuff here
-
-
+	extern gboolean do_wires_intersect (Wire *a, Wire *b, Coords *where);
+	// intersection
 	Coords p1 = {100.,0.};
 	Coords l1 = {-100.,100.};
 	Coords p2 = {0.,0.};
 	Coords l2 = {100.,100.};
+	Coords where = {-77777.77,-77.7777};
+	const Coords expected = {50.0,50.0};
 
 	Wire *a = wire_new (NULL);
 	Wire *b = wire_new (NULL);
-
-	Coords where = {-77777.77,-77.7777};
-	Coords expected = {50.0,50.0};
 
 	item_data_set_pos (ITEM_DATA (a), &p1);
 	wire_set_length (a, &l1);
 	item_data_set_pos (ITEM_DATA (b), &p2);
 	wire_set_length (b, &l2);
 
-
 	g_assert (do_wires_intersect (a,b,&where));
 	g_assert (coords_equal (&where, &expected));
 
+	g_object_unref (a);
+	g_object_unref (b);
+
+}
+
+
+void
+test_wire_tcrossing ()
+{
+	extern gboolean is_t_crossing (Wire *a, Wire *b, Coords *t);
+	// t crossing
+	Coords p1 = {50.,0.};
+	Coords l1 = {0., 100.};
+	Coords p2 = {0.,0.};
+	Coords l2 = {100.,0.};
+	Coords where = {-77.77,-77.77};
+	const Coords expected = p1;
+
+	Wire *a = wire_new (NULL);
+	Wire *b = wire_new (NULL);
+
+	{
+		item_data_set_pos (ITEM_DATA (a), &p1);
+		wire_set_length (a, &l1);
+		item_data_set_pos (ITEM_DATA (b), &p2);
+		wire_set_length (b, &l2);
+
+		g_assert (is_t_crossing (a, b, &where));
+		g_assert (coords_equal (&where, &expected));
+	}
+
+	{
+		item_data_set_pos (ITEM_DATA (a), &p1);
+		wire_set_length (a, &l2);
+		item_data_set_pos (ITEM_DATA (b), &p2);
+		wire_set_length (b, &l1);
+
+		g_assert (!is_t_crossing (a, b, &where));
+	}
 	g_object_unref (a);
 	g_object_unref (b);
 }
@@ -63,6 +99,7 @@ main (int argc, char *argv[])
 {
 	g_test_init (&argc, &argv, NULL);
 	g_test_add_func ("/core/coords", test_coords);
-	g_test_add_func ("/core/model/wires", test_wire_wire_interaction);
+	g_test_add_func ("/core/model/wire/intersection", test_wire_intersection);
+	g_test_add_func ("/core/model/wire/tcrossing", test_wire_tcrossing);
 	return g_test_run ();
 }
