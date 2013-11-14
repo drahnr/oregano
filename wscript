@@ -176,7 +176,7 @@ def build(bld):
 from waflib.Build import BuildContext
 
 def runtests(ctx):
-	os.system("gtester ./build/debug/"+APPNAME+"-testsuite");
+	os.system("gtester --g-fatal-warnings --verbose --keep-going ./build/debug/"+APPNAME+"-testsuite");
 
 
 class release(BuildContext):
