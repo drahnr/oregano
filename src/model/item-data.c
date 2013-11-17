@@ -524,19 +524,19 @@ item_data_unregister (ItemData *data)
 	}
 }
 
-int
+gboolean
 item_data_register (ItemData *data)
 {
 	ItemDataClass *id_class;
 
-	g_return_val_if_fail (data != NULL, -1);
-	g_return_val_if_fail (IS_ITEM_DATA (data), -1);
+	g_return_val_if_fail (data != NULL, FALSE);
+	g_return_val_if_fail (IS_ITEM_DATA (data), FALSE);
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->reg) {
 		return id_class->reg (data);
 	}
-	return -1;
+	return FALSE;
 }
 
 char *
