@@ -67,7 +67,8 @@ struct _ItemDataPriv {
 	NodeStore *store;
 	// Grid model to align to
 	Grid *grid;
-	Coords pos;
+	// the transform matrix, containing all rotations, translations and alike
+	cairo_matrix_t transform;
 	// Bounding box
 	GooCanvasBounds bounds;
 };
@@ -196,11 +197,11 @@ item_data_init (ItemData *item_data)
 
 	priv = g_new0 (ItemDataPriv, 1);
 
-	priv->pos.x = 0;
-	priv->pos.y = 0;
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 
 	priv->grid = NULL;
+
+	cairo_matrix_init_identity (&(priv->transform));
 
 	item_data->priv = priv;
 }
@@ -251,14 +252,19 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	}
 }
 
+/**
+ * returns the top left corner of the item
+ */
 void
 item_data_get_pos (ItemData *item_data, Coords *pos)
 {
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 	g_return_if_fail (pos != NULL);
-
-	*pos = item_data->priv->pos;
+	ItemDataPriv *priv;
+	priv = item_data->priv;
+	pos->x = priv->transform.x0;
+	pos->y = priv->transform.y0;
 }
 
 void
@@ -271,12 +277,9 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	g_return_if_fail (item_data);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 
-	if (pos == NULL)
-		return;
-
 	priv = item_data->priv;
-	priv->pos.x = pos->x;
-	priv->pos.y = pos->y;
+	priv->transform.x0 = pos->x;
+	priv->transform.y0 = pos->y;
 
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
@@ -302,10 +305,7 @@ item_data_move (ItemData *item_data, Coords *delta)
 		return;
 
 	priv = item_data->priv;
-	target.x = priv->pos.x + delta->x;
-	target.y = priv->pos.y + delta->y;
-
-	item_data_set_pos (item_data, &target);
+	cairo_matrix_translate (&(priv->transform), delta->x, delta->y);
 }
 
 void
@@ -321,7 +321,7 @@ item_data_snap (ItemData *item_data)
 
 	if (priv) {
 		if (priv->grid)
-			snap_to_grid (priv->grid, &(priv->pos.x), &(priv->pos.y));
+			snap_to_grid (priv->grid, &(priv->transform.x0), &(priv->transform.y0));
 		else
 			g_warning ("ItemData %p grid field is NUL", item_data);
 	} else {
@@ -392,7 +392,7 @@ item_data_copy (ItemData *dest, ItemData *src)
 	g_return_if_fail (src != NULL);
 	g_return_if_fail (IS_ITEM_DATA (src));
 
-	dest->priv->pos = src->priv->pos;
+	dest->priv->transform = src->priv->transform;
 	dest->priv->store = NULL;
 }
 
@@ -419,16 +419,20 @@ item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
 
+
+	ItemDataPriv *priv;
+
 	item_data_get_relative_bbox (data, p1, p2);
+	priv = data->priv;
 
 	if (p1) {
-		p1->x += data->priv->pos.x;
-		p1->y += data->priv->pos.y;
+		p1->x += priv->transform.x0;
+		p1->y += priv->transform.y0;
 	}
 
 	if (p2) {
-		p2->x += data->priv->pos.x;
-		p2->y += data->priv->pos.y;
+		p2->x += priv->transform.x0;
+		p2->y += priv->transform.y0;
 	}
 }
 
@@ -453,7 +457,7 @@ void
 item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 	Coords *p2)
 {
-	GList *list;
+	GList *iter;
 	Coords b1, b2;
 
 	if (item_data_list == NULL)
@@ -461,8 +465,10 @@ item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 
 	item_data_get_absolute_bbox (item_data_list->data, p1, p2);
 
-	for (list = item_data_list; list; list = list->next) {
-		item_data_get_absolute_bbox (list->data, &b1, &b2);
+	for (iter = item_data_list; iter; iter = iter->next) {
+		if (G_UNLIKELY (iter->data==NULL))
+			continue;
+		item_data_get_absolute_bbox (iter->data, &b1, &b2);
 
 		if (p1) {
 			p1->x = MIN (p1->x, b1.x);
@@ -474,7 +480,6 @@ item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 			p2->y = MAX (p2->y, b2.y);
 		}
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 void
