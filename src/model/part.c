@@ -281,7 +281,7 @@ part_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	}
 }
 
-int
+gint
 part_get_num_pins (Part *part)
 {
 	PartPriv *priv;
@@ -293,7 +293,7 @@ part_get_num_pins (Part *part)
 	return priv->num_pins;
 }
 
-int
+gint
 part_get_rotation (Part *part)
 {
 	PartPriv *priv;
@@ -337,7 +337,7 @@ part_has_properties (ItemData *item)
 	return part->priv->properties != NULL;
 }
 
-static int
+static gboolean
 part_set_properties (Part *part, GSList *properties)
 {
 	PartPriv *priv;
@@ -401,7 +401,7 @@ part_get_property (Part *part, char *name)
 	return NULL;
 }
 
-static int
+static gboolean
 part_set_labels (Part *part, GSList *labels)
 {
 	PartPriv *priv;
@@ -440,7 +440,7 @@ part_set_labels (Part *part, GSList *labels)
 	return TRUE;
 }
 
-int
+gboolean
 part_set_pins (Part *part, GSList *pins)
 {
 	PartPriv *priv;
@@ -865,12 +865,12 @@ part_register (ItemData *data)
 {
 	NodeStore *store;
 
-	g_return_val_if_fail (IS_PART (data), -1);
+	g_return_val_if_fail (IS_PART (data), FALSE);
 
 	store = item_data_get_store (data);
 	node_store_add_part (store, PART (data));
 
-	return 0;
+	return TRUE;
 }
 
 

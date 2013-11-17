@@ -473,7 +473,7 @@ wire_register (ItemData *data)
 {
 	NodeStore *store;
 
-	g_return_val_if_fail (IS_WIRE (data), -1);
+	g_return_val_if_fail (IS_WIRE (data), FALSE);
 
 	store = item_data_get_store (data);
 	return node_store_add_wire (store, WIRE (data));

@@ -217,9 +217,15 @@ node_store_get_or_create_node (NodeStore *self, Coords pos)
 /**
  * register a part to the nodestore
  */
-int
+gboolean
 node_store_add_part (NodeStore *self, Part *part)
 {
+	NG_DEBUG ("-0-");
+	g_return_val_if_fail (self, FALSE);
+	g_return_val_if_fail (IS_NODE_STORE (self), FALSE);
+	g_return_val_if_fail (part, FALSE);
+	g_return_val_if_fail (IS_PART (part), FALSE);
+
 	GSList *wire_list, *list;
 	Node *node;
 	Coords lookup_key;
@@ -227,12 +233,6 @@ node_store_add_part (NodeStore *self, Part *part)
 	gdouble x, y;
 	int i, num_pins;
 	Pin *pins;
-
-	NG_DEBUG ("-0-");
-	g_return_val_if_fail (self, FALSE);
-	g_return_val_if_fail (IS_NODE_STORE (self), FALSE);
-	g_return_val_if_fail (part, FALSE);
-	g_return_val_if_fail (IS_PART (part), FALSE);
 
 	num_pins = part_get_num_pins (part);
 	pins = part_get_pins (part);
@@ -278,7 +278,7 @@ node_store_add_part (NodeStore *self, Part *part)
  * remove/unregister a part from the nodestore
  * this does _not_ free the part!
  */
-int
+gboolean
 node_store_remove_part (NodeStore *self, Part *part)
 {
 	Node *node;
@@ -324,7 +324,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 	return TRUE;
 }
 
-int
+gboolean
 node_store_add_textbox (NodeStore *self, Textbox *text)
 {
 	g_object_set (G_OBJECT (text), "store", self, NULL);
