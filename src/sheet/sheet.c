@@ -38,7 +38,6 @@
 #include <goocanvas.h>
 #include <goocanvasutils.h>
 
-#include "speedy.h"
 #include "sheet-private.h"
 #include "sheet-item.h"
 #include "node-store.h"
@@ -214,7 +213,7 @@ sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	// deprecated gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
 	// replaced by a code copied from evince
 
-	if (__unlikely (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
+	if (G_UNLIKELY (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
 		NG_DEBUG ("widget not realized");
 		return FALSE;
 	}
@@ -286,22 +285,22 @@ sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdjustment *
 	GtkWidget *parent;
 	GtkScrolledWindow *scrolled;
 
-	if (__unlikely (!sheet))
+	if (G_UNLIKELY (!sheet))
 		return FALSE;
-	if (__unlikely (!vadj || !hadj))
+	if (G_UNLIKELY (!vadj || !hadj))
 		return FALSE;
 
 	parent = gtk_widget_get_parent (GTK_WIDGET (sheet));
-	if (__unlikely (!parent || !GTK_IS_SCROLLED_WINDOW (parent)))
+	if (G_UNLIKELY (!parent || !GTK_IS_SCROLLED_WINDOW (parent)))
 		return FALSE;
 	scrolled = GTK_SCROLLED_WINDOW (parent);
 
 	*hadj = gtk_scrolled_window_get_hadjustment (scrolled);
-	if (__unlikely (!*hadj || !GTK_IS_ADJUSTMENT (*hadj)))
+	if (G_UNLIKELY (!*hadj || !GTK_IS_ADJUSTMENT (*hadj)))
 		return FALSE;
 
 	*vadj = gtk_scrolled_window_get_vadjustment (scrolled);
-	if (__unlikely (!*vadj || !GTK_IS_ADJUSTMENT (*vadj)))
+	if (G_UNLIKELY (!*vadj || !GTK_IS_ADJUSTMENT (*vadj)))
 		return FALSE;
 
 	return TRUE;

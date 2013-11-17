@@ -32,7 +32,6 @@
 #include "clipboard.h"
 #include "schematic-print-context.h"
 #include "oregano-utils.h"
-#include "speedy.h"
 
 static void      grid_class_init (GridClass *klass);
 static void      grid_init (Grid *grid);
@@ -361,9 +360,9 @@ snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 	priv = grid->priv;
 	spacing = priv->spacing;
 
-	if (__likely(priv->snap)) {
-		if (__likely(x)) *x = ROUND ((*x) / spacing) * spacing;
-		if (__likely(y)) *y = ROUND ((*y) / spacing) * spacing;
+	if (G_LIKELY(priv->snap)) {
+		if (G_LIKELY(x)) *x = ROUND ((*x) / spacing) * spacing;
+		if (G_LIKELY(y)) *y = ROUND ((*y) / spacing) * spacing;
 	}
 }
 
@@ -386,7 +385,7 @@ snap_to_grid_with_bias (Grid *grid, gdouble *x, gdouble *y, GridRoundingBiasFlag
 	priv = grid->priv;
 	spacing = priv->spacing;
 
-	if (__likely(priv->snap)) {
+	if (G_LIKELY(priv->snap)) {
 		gdouble xcorr, ycorr;
 		if (bias != GRID_BIAS_NONE) {
 			if (bias & GRID_BIAS_NORTH & ~GRID_BIAS_SOUTH) {
@@ -409,8 +408,8 @@ snap_to_grid_with_bias (Grid *grid, gdouble *x, gdouble *y, GridRoundingBiasFlag
 		} else {
 			xcorr = ycorr = 0.;
 		}
-		if (__likely(x)) *x = ROUND (((*x)+xcorr) / spacing) * spacing;
-		if (__likely(y)) *y = ROUND (((*y)+ycorr) / spacing) * spacing;
+		if (G_LIKELY(x)) *x = ROUND (((*x)+xcorr) / spacing) * spacing;
+		if (G_LIKELY(y)) *y = ROUND (((*y)+ycorr) / spacing) * spacing;
 	}
 }
 
@@ -429,7 +428,7 @@ grid_changed (GObject *data)
 	g_signal_emit_by_name ((GObject *)data, "changed");
 }
 
-
+#define UNUSED(x) ((void)x)
 static void
 grid_print (GObject *data, cairo_t *cr, SchematicPrintContext *ctx)
 {

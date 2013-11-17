@@ -41,7 +41,6 @@
 #include <gtk/gtk.h>
 #include <math.h>
 
-#include "speedy.h"
 
 #define NODE_EPSILON 1e-10
 #define HASH_EPSILON 1e-3

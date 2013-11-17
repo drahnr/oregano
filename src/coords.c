@@ -33,7 +33,6 @@
  */
 
 #include "coords.h"
-#include "speedy.h"
 
 #define COORDS_DELTA (1e-5)
 
@@ -58,7 +57,7 @@ coords_new_copy (const Coords *src)
 inline void
 coords_destroy (Coords *c)
 {
-	if (__likely (c))
+	if (G_LIKELY (c))
 		g_free (c);
 }
 
@@ -99,7 +98,7 @@ coords_sub (const Coords *a, const Coords *b)
 inline Coords *
 coords_sum_new (const Coords *a, const Coords *b)
 {
-	if (__unlikely (!a || !b))
+	if (G_UNLIKELY (!a || !b))
 		return NULL;
 	Coords *c = coords_new (a->x, a->y);
 	c->x += b->x;
@@ -110,7 +109,7 @@ coords_sum_new (const Coords *a, const Coords *b)
 inline Coords *
 coords_set (Coords *a, const Coords *val)
 {
-	if (__unlikely (!a || !val))
+	if (G_UNLIKELY (!a || !val))
 		return NULL;
 	a->x = val->x;
 	a->y = val->y;
