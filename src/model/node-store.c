@@ -82,6 +82,12 @@ G_DEFINE_TYPE (NodeStore, node_store, G_TYPE_OBJECT)
 static guint node_store_signals [LAST_SIGNAL] = { 0 };
 
 static void
+node_store_dispose (GObject *self)
+{
+	G_OBJECT_CLASS (node_store_parent_class)->dispose (self);
+}
+
+static void
 node_store_finalize (GObject *object)
 {
 	NodeStore *self = NODE_STORE (object);
@@ -105,12 +111,6 @@ node_store_finalize (GObject *object)
 	}
 
 	G_OBJECT_CLASS (node_store_parent_class)->finalize (object);
-}
-
-static void
-node_store_dispose (GObject *self)
-{
-	G_OBJECT_CLASS (node_store_parent_class)->dispose (self);
 }
 
 static void
@@ -364,20 +364,20 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			Node *en = node_store_get_node (store, so);
 			#if 1
 			wire = vulcanize_wire (store, wire, other, &so, &eo);
-			g_warning ("overlapping of %p with %p ", wire, other);
+			NG_DEBUG ("overlapping of %p with %p ", wire, other);
 			#else
 			if (!sn && !en) {
 				wire = vulcanize_wire (store, wire, other, &so, &eo);
 			} else if (!sn) {
-				g_warning ("do_something(TM) : %p sn==NULL ", other);
+				NG_DEBUG ("do_something(TM) : %p sn==NULL ", other);
 			} else if (!en) {
-				g_warning ("do_something(TM) : %p en==NULL ", other);
+				NG_DEBUG ("do_something(TM) : %p en==NULL ", other);
 			} else {
-				g_warning ("do_something(TM) : %p else ", other);
+				NG_DEBUG ("do_something(TM) : %p else ", other);
 			}
 			#endif
 		} else {
-			g_warning ("not of %p with %p ", wire, other);
+			NG_DEBUG ("not of %p with %p ", wire, other);
 		}
 	}
 

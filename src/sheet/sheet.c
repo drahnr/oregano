@@ -709,7 +709,10 @@ sheet_add_item (Sheet *sheet, SheetItem *item)
 	sheet->priv->items = g_list_prepend (sheet->priv->items, item);
 }
 
-
+/**
+ * save the selection
+ * @attention not stackable
+ */
 GList *
 sheet_preserve_selection (Sheet *sheet)
 {
@@ -725,22 +728,19 @@ sheet_preserve_selection (Sheet *sheet)
 	return sheet->priv->selected_objects;
 }
 
+
 int
 sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 {
+	GtkWidgetClass *wklass = GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class);
 	switch (event->type) {
 		case GDK_3BUTTON_PRESS:
-			// We don't not care about triple clicks on the sheet.
+			// We do not care about triple clicks on the sheet.
 			return FALSE;
 		case GDK_2BUTTON_PRESS:
 			// The sheet does not care about double clicks, but invoke the
 		 	// canvas event handler and see if an item picks up the event.
-			if ((*GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-							->button_press_event)
-							(widget, (GdkEventButton *)event))
-				return TRUE;
-			else
-				return FALSE;
+			return wklass->button_press_event(widget, (GdkEventButton *) event);
 		case GDK_BUTTON_PRESS:
 			// If we are in the middle of something else, don't interfere
 		 	// with that.
@@ -748,9 +748,7 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				return FALSE;
 			}
 
-			if ((* GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-							->button_press_event)
-							(widget, (GdkEventButton *) event)) {
+			if (wklass->button_press_event(widget, (GdkEventButton *) event)) {
 				return TRUE;
 			}
 
@@ -778,9 +776,8 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				return TRUE;
 			}
 
-			if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)->button_release_event != NULL) {
-				return GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-					->button_release_event (widget, (GdkEventButton *) event);
+			if (wklass->button_release_event != NULL) {
+				return wklass->button_release_event (widget, (GdkEventButton *) event);
 			}
 
 			break;
@@ -824,14 +821,11 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				rubberband_update (sheet, event);
 				return TRUE;
 			}
-			if (GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-			    ->motion_notify_event != NULL) {
-				return GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-						->motion_notify_event (widget, (GdkEventMotion *) event);		
+			if (wklass->motion_notify_event != NULL) {
+				return wklass->motion_notify_event (widget, (GdkEventMotion *) event);		
 			}
 		case GDK_ENTER_NOTIFY:
-			GTK_WIDGET_CLASS (sheet->priv->sheet_parent_class)
-						->enter_notify_event (widget, (GdkEventCrossing *) event);
+			wklass->enter_notify_event (widget, (GdkEventCrossing *) event);
 		case GDK_KEY_PRESS:
 			switch (event->key.keyval) {
 				case GDK_KEY_R:
@@ -907,6 +901,9 @@ sheet_rotate_selection (Sheet *sheet)
 		rotate_items (sheet, sheet->priv->selected_objects);
 }
 
+/**
+ * rotate floating items
+ */
 void
 sheet_rotate_ghosts (Sheet *sheet)
 {

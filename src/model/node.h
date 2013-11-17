@@ -75,13 +75,13 @@ GType node_get_type (void);
 Node *node_new (Coords pos);
 gint node_is_empty (Node *node);
 
-gint node_add_pin (Node *node, Pin *pin);
-gint node_remove_pin (Node *node, Pin *pin);
+gboolean node_add_pin (Node *node, Pin *pin);
+gboolean node_remove_pin (Node *node, Pin *pin);
 
-gint node_add_wire (Node *node, Wire *wire);
-gint node_remove_wire (Node *node, Wire *wire);
+gboolean node_add_wire (Node *node, Wire *wire);
+gboolean node_remove_wire (Node *node, Wire *wire);
 
-gint node_is_visited (Node *node);
+gboolean node_is_visited (Node *node);
 void node_set_visited (Node *node, gboolean is_visited);
 
 gboolean node_needs_dot (Node *node);

@@ -497,6 +497,7 @@ part_get_labels (Part *part)
  * FIXME XXX TODO an issue arises as the center changes with part_rotate
  * FIXME XXX TODO the view callback needs to compensate this somehow
  */
+ #define DEBUG_THIS 1
 static void
 part_rotate (ItemData *data, int angle, Coords *center_pos)
 {
@@ -505,9 +506,10 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	Part *part;
 	PartPriv *priv;
 	int i, tot_rotation;
+	Coords t;
 	Coords b1, b2;
 	Coords part_center_before, part_center_after, delta;
-	Coords delta_cp_before, delta_cp_after;
+	Coords delta_cp_before, delta_cp_after, delta_delta;
 	gboolean handler_connected;
 
 	g_return_if_fail (data);
@@ -521,18 +523,27 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	priv = part->priv;
 
 	tot_rotation = (priv->rotation + angle + 360) % 360;
-
+	NG_DEBUG ("\n");
+	NG_DEBUG ("\n");
 	NG_DEBUG ("rotation: angle=%i tot_rotation=%i", angle, tot_rotation);
 
 	// use the cairo matrix funcs to transform the pin
 	// positions relative to the item center
 	// this is only indirectly related to displaying
-	cairo_matrix_init_rotate (&affine, (double)angle * M_PI / 180.);
+	cairo_matrix_init_translate (&affine, t.x, t.y); //last
+	cairo_matrix_rotate (&affine, (double)angle * M_PI / 180.);
+	cairo_matrix_translate (&affine, -t.x, -t.y); //first
+
+	item_data_get_pos (data, &part_center_before);
+	NG_DEBUG ("part_center_start = (%lf,%lf)", part_center_before.x, part_center_before.y);
 
 	if (center_pos) {
 		delta_cp_before = coords_sub (&part_center_before, center_pos);
 		delta_cp_after = delta_cp_before;
+		NG_DEBUG ("delta_cp_before = (%lf,%lf)", delta_cp_before.x, delta_cp_before.y);
 		cairo_matrix_transform_point (&affine, &delta_cp_after.x, &delta_cp_after.y);
+		NG_DEBUG ("delta_cp_after = (%lf,%lf)", delta_cp_after.x, delta_cp_after.y);
+		delta_delta = coords_sub (&delta_cp_after, &delta_cp_before);
 	}
 
 	priv->rotation = tot_rotation;
@@ -556,6 +567,11 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	// Rotate the bounding box, recenter to old center
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	part_center_before = coords_average (&b1, &b2);
+	//center around rotation origin
+	b1.x -= part_center_before.x;
+	b1.y -= part_center_before.y;
+	b2.x -= part_center_before.x;
+	b2.y -= part_center_before.y;
 
 	cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
 	cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
@@ -563,10 +579,12 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	part_center_after = coords_average (&b1, &b2);
 
-	delta = coords_sub (&part_center_before, &part_center_after);
+	NG_DEBUG ("part_center_after = (%lf,%lf)", part_center_after.x, part_center_after.y);
+
+	delta = coords_sub (&part_center_after, &part_center_before);
+	NG_DEBUG ("center_delta = (%lf,%lf)", delta.x, delta.y);
 	if (center_pos) {
-		Coords diff = coords_sub (&delta_cp_after, &delta_cp_before);
-		coords_add (&delta, &diff);
+		coords_add (&delta, &delta_delta);
 	}
 	item_data_move (data, &delta);
 	item_data_snap (data);
@@ -601,9 +619,10 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 	double x, y;
 	double scale_v, scale_h;
 	gboolean handler_connected;
+	Coords delta;
 	Coords pos, trans;
 	Coords b1, b2;
-	Coords pos_new, pos_old, delta;
+	Coords pos_new, pos_old;
 	//FIXME properly recenter after flipping
 	//Coords part_center_before, part_center_after, delta;
 
@@ -713,7 +732,7 @@ part_clone (ItemData *src)
 		return NULL;
 
 	src_part = PART (src);
-	new_part = PART (g_object_new (TYPE_PART, NULL));
+	new_part = g_object_new (TYPE_PART, NULL);
 	new_part->priv->pins = g_new0 (Pin, src_part->priv->num_pins);
 	id_class->copy (ITEM_DATA (new_part), src);
 
@@ -779,7 +798,7 @@ part_copy (ItemData *dest, ItemData *src)
 static void
 part_update_bbox (Part *part)
 {
-	GSList *objects;
+	GSList *iter;
 	LibrarySymbol *symbol;
 	SymbolObject *object;
 	GooCanvasPoints *points;
@@ -795,9 +814,8 @@ part_update_bbox (Part *part)
 
 	b1.x = b1.y = b2.x = b2.y = 0.0;
 
-	for (objects = symbol->symbol_objects; objects;
-	     objects = objects->next) {
-		object = objects->data;
+	for (iter = symbol->symbol_objects; iter; iter=iter->next) {
+		object = iter->data;
 		switch (object->type) {
 		case SYMBOL_OBJECT_LINE:
 			points = object->u.uline.line;
@@ -860,6 +878,11 @@ part_unregister (ItemData *data)
 	node_store_remove_part (store, PART (data));
 }
 
+/**
+ * register a part to its nodestore
+ * @param data the part
+ * @attention the @data has to have a valid nodestore set
+ */
 static int 
 part_register (ItemData *data)
 {
@@ -874,23 +897,27 @@ part_register (ItemData *data)
 }
 
 
+/**
+ * simply signal a change in the part
+ */
 static void
 part_changed (ItemData *data)
 {
+	g_return_if_fail (IS_PART (data));
+
+#if 0
 	Part *part;
 	Coords loc = {0., 0.};
 	int angle = 0;
 	IDFlip flip = ID_FLIP_NONE;
 
-	g_return_if_fail (IS_PART (data));
-
 	part = (Part *)data;
+
 
 	flip = part_get_flip (part);
 	angle = part_get_rotation (part);
 	item_data_get_pos (data, &loc);
 
-#if 0
 	//FIXME isn't it more sane to just emit the changed?
 	g_signal_emit_by_name (data, "moved", &loc);
 	g_signal_emit_by_name (data, "flipped", flip);
@@ -955,6 +982,9 @@ part_set_property (ItemData *data, char *property, char *value)
 	}
 }
 
+/**
+ * print the part onto a physical sheet of paper or pdf, which is represented by @cr
+ */
 static void
 part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
