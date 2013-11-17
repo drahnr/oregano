@@ -80,10 +80,10 @@ struct _PartClass
 GType  		part_get_type (void);
 Part *		part_new (Grid *grid);
 Part *		part_new_from_library_part (LibraryPart *library_part, Grid *grid);
-int		part_get_num_pins (Part *part);
+gint		part_get_num_pins (Part *part);
 Pin *		part_get_pins (Part *part);
-int	   	part_set_pins (Part *part, GSList *connections);
-int	   	part_get_rotation (Part *part);
+gboolean   	part_set_pins (Part *part, GSList *connections);
+gboolean   	part_get_rotation (Part *part);
 IDFlip 		part_get_flip (Part *part);
 void   		part_labels_rotate (Part *part, int rotation);
 char *		part_get_property (Part *part, char *name);
