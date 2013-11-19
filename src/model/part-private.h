@@ -33,6 +33,8 @@
 #ifndef __PART_PRIVATE_H
 #define __PART_PRIVATE_H
 
+#include <glib-2.0/glib.h>
+
 struct _PartPriv {
 	guint16  num_pins : 16;
 	guint16	 rotation : 16;

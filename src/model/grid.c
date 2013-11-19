@@ -25,7 +25,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <goocanvas.h>
+#include <goocanvas-2.0/goocanvas.h>
 #include <math.h>
 
 #include "grid.h"
