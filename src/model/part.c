@@ -98,14 +98,26 @@ G_DEFINE_TYPE (Part, part, TYPE_ITEM_DATA)
 static ItemDataClass *parent_class = NULL;
 
 static void
+part_init (Part *part)
+{
+	part->priv = g_slice_new0 (PartPriv);
+}
+
+
+static void
+part_dispose (GObject *object)
+{
+	G_OBJECT_CLASS (parent_class)->dispose (object);
+}
+
+
+static void
 part_finalize (GObject *object)
 {
-	Part *part;
 	PartPriv *priv;
 	GSList *list;
 
-	part = PART (object);
-	priv = part->priv;
+	priv = PART (object)->priv;
 
 	if (priv) {
 		g_free (priv->name);
@@ -130,17 +142,13 @@ part_finalize (GObject *object)
 
 		g_free (priv->pins);
 		g_free (priv->symbol_name);
-		g_free (priv);
+
+		g_slice_free (PartPriv, priv);
 		part->priv = NULL;
 	}
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-part_dispose (GObject *object)
-{
-	G_OBJECT_CLASS (parent_class)->dispose (object);
-}
 
 static void
 part_class_init (PartClass *klass)
@@ -180,15 +188,9 @@ part_class_init (PartClass *klass)
 
 }
 
-static void
-part_init (Part *part)
-{
-	PartPriv *priv;
-
-	priv = g_new0 (PartPriv, 1);
-
-	part->priv = priv;
-}
+////////////////////////////////////////////////////////////////////////////////
+// END BOILER PLATE
+////////////////////////////////////////////////////////////////////////////////
 
 Part *
 part_new (Grid *grid)

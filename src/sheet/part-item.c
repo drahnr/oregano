@@ -182,7 +182,7 @@ part_item_init (PartItem *item)
 {
 	PartItemPriv *priv;
 
-	priv = g_new0 (PartItemPriv, 1);
+	priv = g_slice_new0 (PartItemPriv);
 
 	priv->cache_valid = FALSE;
 
@@ -234,10 +234,15 @@ part_item_finalize (GObject *object)
 
 	g_slist_free (priv->label_nodes);
 	g_slist_free (priv->label_items);
-	g_free (priv);
+	g_slice_free (PartItemPriv, priv);
 	priv = NULL;
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+// END BOILER PLATE
+////////////////////////////////////////////////////////////////////////////////
 
 static void
 part_item_set_label_items (PartItem *item, GSList *item_list)
