@@ -218,7 +218,7 @@ create_wire (ParseState *state)
 	length.x = state->wire_end.x - start_pos.x;
 	length.y = state->wire_end.y - start_pos.y;
 
-	wire = wire_new (NULL); //FIXME need to set this reliably later on!
+	wire = wire_new (schematic_get_grid (state->schematic));
 	wire_set_length (wire, &length);
 
 	item_data_set_pos (ITEM_DATA (wire), &state->wire_start);
@@ -231,7 +231,8 @@ create_part (ParseState *state)
 	Part *part;
 	LibraryPart *library_part = state->part;
 
-	part = part_new_from_library_part (library_part, NULL); //FIXME need to set this reliably later on!
+	part = part_new_from_library_part (library_part,
+	                                   schematic_get_grid (state->schematic));
 	if (!part)
 		return;
 
