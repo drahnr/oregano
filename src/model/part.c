@@ -496,46 +496,44 @@ part_get_labels (Part *part)
  * rotate an item by an @angle increment (may be negative)
  * @angle the increment the item will be rotated (usually 90° steps)
  * @center_pos if rotated as part of a group, this is the center to rotate around
- * FIXME XXX TODO an issue arises as the center changes with part_rotate
- * FIXME XXX TODO the view callback needs to compensate this somehow
  */
- #define DEBUG_THIS 1
 static void
 part_rotate (ItemData *data, int angle, Coords *center_pos)
 {
-	cairo_matrix_t affine;
-	double x, y;
-	Part *part;
-	PartPriv *priv;
-	int i, tot_rotation;
-	Coords t;
-	Coords b1, b2;
-	Coords part_center_before, part_center_after, delta;
-	Coords delta_cp_before, delta_cp_after, delta_delta;
-	gboolean handler_connected;
-
 	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
 
-	if (angle == 0)
-		return;
+	cairo_matrix_t morph, tmp;
+	Part *part;
+	PartPriv *priv;
+	gboolean handler_connected;
+	Coords b1, b2;
 
 	part = PART (data);
 
 	priv = part->priv;
 
-	tot_rotation = (priv->rotation + angle + 360) % 360;
-	NG_DEBUG ("\n");
-	NG_DEBUG ("\n");
-	NG_DEBUG ("rotation: angle=%i tot_rotation=%i", angle, tot_rotation);
+
+	// FIXME store vanilla coords, apply the morph 
+	// FIXME to these and store the result in the 
+	// FIXME instance then everything will be fine
 
 	// use the cairo matrix funcs to transform the pin
 	// positions relative to the item center
 	// this is only indirectly related to displaying
-	cairo_matrix_init_translate (&affine, t.x, t.y); //last
-	cairo_matrix_rotate (&affine, (double)angle * M_PI / 180.);
-	cairo_matrix_translate (&affine, -t.x, -t.y); //first
+	
+	cairo_matrix_rotate (item_data_get_rotate (data), (double)angle * M_PI / 180.);
 
+	cairo_matrix_init_rotate (&tmp, (double)angle * M_PI / 180.);
+
+	morph = *(item_data_get_rotate (data));
+	cairo_matrix_multiply (&morph,
+	                       &morph,
+	                       item_data_get_translate (data));
+
+	
+
+#if 0
 	item_data_get_pos (data, &part_center_before);
 	NG_DEBUG ("part_center_start = (%lf,%lf)", part_center_before.x, part_center_before.y);
 
@@ -550,12 +548,15 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	priv->rotation = tot_rotation;
 	angle = tot_rotation;
+#endif
 
+	int i;
+	gdouble x,y;
 	// Rotate the pins.
 	for (i = 0; i < priv->num_pins; i++) {
 		x = priv->pins[i].offset.x;
 		y = priv->pins[i].offset.y;
-		cairo_matrix_transform_point (&affine, &x, &y);
+		cairo_matrix_transform_point (&tmp, &x, &y);
 
 		if (fabs (x) < 1e-2)
 			x = 0.0;
@@ -568,17 +569,19 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	// Rotate the bounding box, recenter to old center
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
+#if 0
 	part_center_before = coords_average (&b1, &b2);
 	//center around rotation origin
 	b1.x -= part_center_before.x;
 	b1.y -= part_center_before.y;
 	b2.x -= part_center_before.x;
 	b2.y -= part_center_before.y;
+#endif
+	cairo_matrix_transform_point (&tmp, &b1.x, &b1.y);
+	cairo_matrix_transform_point (&tmp, &b2.x, &b2.y);
 
-	cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
-	cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
-
-	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
+	item_data_set_relative_bbox (data, &b1, &b2);
+#if 0
 	part_center_after = coords_average (&b1, &b2);
 
 	NG_DEBUG ("part_center_after = (%lf,%lf)", part_center_after.x, part_center_after.y);
@@ -589,19 +592,21 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 		coords_add (&delta, &delta_delta);
 	}
 	item_data_move (data, &delta);
+#endif
 	item_data_snap (data);
+#if 0
 
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
-	                                   ITEM_DATA (part)->rotated_handler_id);
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
+	                                   data->rotated_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part),
+		g_signal_emit_by_name (G_OBJECT (data),
 		                       "rotated", tot_rotation);
 	}
-
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
-	                                   ITEM_DATA (part)->changed_handler_id);
+#endif
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
+	                                   data->changed_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part),
+		g_signal_emit_by_name (G_OBJECT (data),
 		                       "changed");
 	}
 }
@@ -614,6 +619,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 static void
 part_flip (ItemData *data, IDFlip direction, Coords *center)
 {
+#if 0
 	Part *part;
 	PartPriv *priv;
 	int i;
@@ -717,7 +723,7 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 		g_signal_emit_by_name (G_OBJECT (part),
 		                       "changed");
 	}
-
+#endif
 }
 
 static ItemData *

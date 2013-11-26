@@ -770,6 +770,10 @@ angle_to_anchor (int angle)
 static void
 part_changed_callback (ItemData *data, SheetItem *sheet_item)
 {
+	g_return_if_fail (sheet_item != NULL);
+	g_return_if_fail (IS_PART_ITEM (sheet_item));
+
+
 	//TODO add static vars in order to skip the redraw if nothing changed
 	//TODO may happen once in a while and the check is really cheap
 	GSList *iter;
@@ -781,15 +785,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	Part *part;
 	int index = 0;
 	Coords pos;
-	double scale_h, scale_v;
 
-
-	// states
-	int rotation;
-	IDFlip flip;
-
-	g_return_if_fail (sheet_item != NULL);
-	g_return_if_fail (IS_PART_ITEM (sheet_item));
 
 	item = PART_ITEM (sheet_item);
 	group = GOO_CANVAS_GROUP (item);
@@ -802,7 +798,10 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	cairo_matrix_t morph, inv;
 	cairo_status_t done;
 
-	morph = inv = priv->transform;
+	morph = inv = *(item_data_get_rotate(data)); //copy
+	cairo_matrix_multiply (&morph, &morph, item_data_get_translate (data));
+	
+	
 	done = cairo_matrix_invert (&inv);
 	if (done != CAIRO_STATUS_SUCCESS) {
 		g_warning ("Failed to invert matrix. This should never happen. Never!");
@@ -815,7 +814,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	priv->cache_valid = FALSE;
 	return; /* FIXME */
-
+#if 0
 	// rotate all items in the canvas group
 	for (index = 0; index < group->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
@@ -846,6 +845,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
+#endif
 }
 
 /**
