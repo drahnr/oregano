@@ -9,7 +9,8 @@ OreganoOptions opts = {
 };
 
 GOptionEntry entries[] = {
-	{"debug-wires", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.wires), "Colors", NULL},
+	{"debug-wires", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.wires), "Give them randomly alternating colors.", NULL},
+	{"debug-boundingboxes", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.boundingboxes), "Draw them in semi transparent purple.", NULL},
 	{NULL}
 };
 

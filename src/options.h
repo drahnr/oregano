@@ -11,6 +11,7 @@
 typedef struct {
 	struct {
 		gboolean wires;
+		gboolean boundingboxes;
 	} debug;
 
 } OreganoOptions;
