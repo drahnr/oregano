@@ -144,7 +144,6 @@ part_finalize (GObject *object)
 		g_free (priv->symbol_name);
 
 		g_slice_free (PartPriv, priv);
-		part->priv = NULL;
 	}
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -442,6 +441,10 @@ part_set_labels (Part *part, GSList *labels)
 	return TRUE;
 }
 
+
+/**
+ * overwrite the pins with those given in the list
+ */
 gboolean
 part_set_pins (Part *part, GSList *pins)
 {
@@ -457,10 +460,16 @@ part_set_pins (Part *part, GSList *pins)
 
 	num_pins = g_slist_length (pins);
 
+
 	if (priv->pins)
 		g_free (priv->pins);
 
+	if (priv->pins_orig)
+		g_free (priv->pins_orig);
+
 	priv->pins = g_new0 (Pin, num_pins);
+	priv->pins_orig = g_new0 (Pin, num_pins);
+
 	priv->num_pins = num_pins;
 
 	for (list = pins, i = 0; list; list = list->next, i++) {
@@ -468,11 +477,13 @@ part_set_pins (Part *part, GSList *pins)
 		// Connections which only have the Coords field.
 		Pin *pin = list->data;
 
-		priv->pins[i].pin_nr = i;
-		priv->pins[i].node_nr= 0;
-		priv->pins[i].offset.x = pin->offset.x;
-		priv->pins[i].offset.y = pin->offset.y;
-		priv->pins[i].part = part;
+		priv->pins_orig[i].pin_nr = i;
+		priv->pins_orig[i].node_nr= 0;
+		priv->pins_orig[i].offset.x = pin->offset.x;
+		priv->pins_orig[i].offset.y = pin->offset.y;
+		priv->pins_orig[i].part = part;
+
+		memcpy (priv->pins, priv->pins_orig, sizeof(Pin)*num_pins);
 	}
 
 	return TRUE;
@@ -503,7 +514,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
 
-	cairo_matrix_t morph, tmp;
+	cairo_matrix_t morph, morph_rot;
 	Part *part;
 	PartPriv *priv;
 	gboolean handler_connected;
@@ -514,24 +525,21 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	priv = part->priv;
 
 
-	// FIXME store vanilla coords, apply the morph 
-	// FIXME to these and store the result in the 
+	// FIXME store vanilla coords, apply the morph
+	// FIXME to these and store the result in the
 	// FIXME instance then everything will be fine
+	// XXX also prevents rounding yiggle up downs
 
-	// use the cairo matrix funcs to transform the pin
-	// positions relative to the item center
-	// this is only indirectly related to displaying
-	
+
+
 	cairo_matrix_rotate (item_data_get_rotate (data), (double)angle * M_PI / 180.);
 
-	cairo_matrix_init_rotate (&tmp, (double)angle * M_PI / 180.);
-
-	morph = *(item_data_get_rotate (data));
+	morph_rot = *(item_data_get_rotate (data));
 	cairo_matrix_multiply (&morph,
-	                       &morph,
+	                       &morph_rot,
 	                       item_data_get_translate (data));
 
-	
+
 
 #if 0
 	item_data_get_pos (data, &part_center_before);
@@ -550,13 +558,20 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	angle = tot_rotation;
 #endif
 
-	int i;
+
+	// use the cairo matrix funcs to transform the pin
+	// positions relative to the item center
+	// this is only indirectly related to displayin
+	// HINT: we need to modify the actual pins to make the
+	// pin tests work being used to detect connections
+
+	gint i;
 	gdouble x,y;
 	// Rotate the pins.
 	for (i = 0; i < priv->num_pins; i++) {
-		x = priv->pins[i].offset.x;
-		y = priv->pins[i].offset.y;
-		cairo_matrix_transform_point (&tmp, &x, &y);
+		x = priv->pins_orig[i].offset.x;
+		y = priv->pins_orig[i].offset.y;
+		cairo_matrix_transform_point (&morph_rot, &x, &y);
 
 		if (fabs (x) < 1e-2)
 			x = 0.0;
@@ -577,8 +592,8 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	b2.x -= part_center_before.x;
 	b2.y -= part_center_before.y;
 #endif
-	cairo_matrix_transform_point (&tmp, &b1.x, &b1.y);
-	cairo_matrix_transform_point (&tmp, &b2.x, &b2.y);
+	cairo_matrix_transform_point (&morph_rot, &b1.x, &b1.y);
+	cairo_matrix_transform_point (&morph_rot, &b2.x, &b2.y);
 
 	item_data_set_relative_bbox (data, &b1, &b2);
 #if 0
