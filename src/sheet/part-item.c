@@ -49,7 +49,7 @@
 #include "dialogs.h"
 #include "sheet.h"
 #include "oregano-utils.h"
-
+#include "options.h"
 
 #define NORMAL_COLOR "red"
 #define LABEL_COLOR "dark cyan"
@@ -113,6 +113,8 @@ struct _PartItemPriv {
 	GSList 			 *label_items;
 	GooCanvasItem    *node_group;
 	GSList           *label_nodes;
+
+	GooCanvasItem    *rect;
 	// Cached bounding box. This is used to make
 	// the rubberband selection a bit faster.
 	Coords 		  bbox_start;
@@ -183,12 +185,12 @@ part_item_init (PartItem *item)
 	PartItemPriv *priv;
 
 	priv = g_slice_new0 (PartItemPriv);
-
+	priv->rect = NULL;
 	priv->cache_valid = FALSE;
 
 	item->priv = priv;
 
-	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu, 
+	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu,
 	    action_entries, G_N_ELEMENTS (action_entries));
 }
 
@@ -272,7 +274,7 @@ part_item_canvas_new (Sheet *sheet, Part *part)
 {
 	PartItem *part_item;
 	PartItemPriv *priv;
-	GooCanvasItem *item;
+	GooCanvasItem *goo_item;
 	ItemData *item_data;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
@@ -280,50 +282,67 @@ part_item_canvas_new (Sheet *sheet, Part *part)
 	g_return_val_if_fail (part != NULL, NULL);
 	g_return_val_if_fail (IS_PART (part), NULL);
 
-	item = g_object_new (TYPE_PART_ITEM, NULL);
-	
-	g_object_set (item, 
-	              "parent", sheet->object_group, 
+	part_item = g_object_new (TYPE_PART_ITEM, NULL);
+	goo_item = GOO_CANVAS_ITEM (part_item);
+
+	g_object_set (part_item,
+	              "parent", sheet->object_group,
 	              NULL);
-	
-	part_item = PART_ITEM (item);
-	g_object_set (part_item, 
-                  "data", part, 
+
+	g_object_set (part_item,
+                  "data", part,
                   NULL);
+
 	priv = part_item->priv;
-	
-	priv->label_group = GOO_CANVAS_ITEM (goo_canvas_group_new (
-	        GOO_CANVAS_ITEM (part_item),
+
+
+	Coords b1, b2;
+	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
+
+	priv->rect = goo_canvas_rect_new (
+	        goo_item,
+	        b1.x, b1.y,
+	        b2.x-b1.x, b2.y-b1.y,
+	        "stroke-color", "green",
+	        "line-width", .0,
+	        "fill-color-rgba", 0x7733aa66,
+	        "radius-x", 1.0,
+	        "radius-y", 1.0,
+	        "visibility", opts.debug.boundingboxes ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE,
+	        NULL);
+
+	priv->label_group = goo_canvas_group_new (
+	        goo_item,
 	        "width", -1.0,
 	        "height", -1.0,
-	        NULL));
-	g_object_unref (item);
-	
-	priv->node_group = GOO_CANVAS_ITEM (goo_canvas_group_new (
-	        GOO_CANVAS_ITEM (part_item), 
-	        NULL));
+	        NULL);
+	g_object_unref (goo_item); //FIXME wtf? why?
 
-	g_object_set (GOO_CANVAS_ITEM (priv->node_group),
-	              "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	priv->node_group = goo_canvas_group_new (
+	        goo_item,
+	        NULL);
+
+	g_object_set (priv->node_group,
+	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);
 
 	item_data = ITEM_DATA (part);
-	item_data->rotated_handler_id = g_signal_connect_object (G_OBJECT (part), 
+	item_data->rotated_handler_id = g_signal_connect_object (part,
 	                                "rotated",
 	                                G_CALLBACK (part_rotated_callback),
-	                                G_OBJECT (part_item), 0);
-	item_data->flipped_handler_id = g_signal_connect_object (G_OBJECT (part), 
+	                                part_item, 0);
+	item_data->flipped_handler_id = g_signal_connect_object (part,
 	                                "flipped",
 	                                G_CALLBACK (part_flipped_callback),
-	                                G_OBJECT (part_item), 0);
-	item_data->moved_handler_id = g_signal_connect_object (G_OBJECT (part),
+	                                part_item, 0);
+	item_data->moved_handler_id = g_signal_connect_object (part,
 	                                "moved",
 	                                G_CALLBACK (part_moved_callback),
-	                                G_OBJECT (part_item), 0);
-	item_data->changed_handler_id = g_signal_connect_object (G_OBJECT (part),
+	                                part_item, 0);
+	item_data->changed_handler_id = g_signal_connect_object (part,
 	                                "changed",
 	                                G_CALLBACK (part_changed_callback),
-	                                G_OBJECT (part_item), 0);
+	                                part_item, 0);
 
 	return part_item;
 }
