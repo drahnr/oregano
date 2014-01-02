@@ -38,6 +38,7 @@
 #include <math.h>
 #include <string.h>
 #include <glib/gi18n.h>
+#include <stdlib.h>
 
 #include "part.h"
 #include "part-property.h"
@@ -297,13 +298,39 @@ part_get_num_pins (Part *part)
 gint
 part_get_rotation (Part *part)
 {
+	ItemData *item;
 	PartPriv *priv;
+	gdouble register a,b,c,d, sx,sy;
+	cairo_matrix_t *t;
 
 	g_return_val_if_fail (part != NULL, 0);
 	g_return_val_if_fail (IS_PART (part), 0);
 
+	item = ITEM_DATA (part);
 	priv = part->priv;
-	return priv->rotation;
+
+	t = item_data_get_rotate (item);
+	a = t->xx;
+	b =	t->xy;
+	c = t->yx;
+	d =	t->yy;
+
+	sx = sqrt (a*a + c*c);
+    sy = sqrt (b*b + d*d);
+    if (G_UNLIKELY (abs(sx)<1e-10 && abs(sy)<1e-10)) {
+		g_warning ("Unabled to calculate rotation from matrix. Assuming 0°.");
+		return 0;
+    }
+#if 0
+    if (abs(b)>abs(c))
+		a = (gint)(180. * atan2(-b, a) / M_PI);
+	echo
+	return (gint)(180. * atan2(c, d) / M_PI);
+#else
+	if (abs(sx)>abs(sy))
+		return (gint)(180. * acos(a / sx) / M_PI);
+	return (gint)(180. * acos(d / sy) / M_PI);
+#endif
 }
 
 IDFlip
@@ -585,6 +612,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	// Rotate the bounding box, recenter to old center
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
+
 #if 0
 	part_center_before = coords_average (&b1, &b2);
 	//center around rotation origin
@@ -610,8 +638,8 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	item_data_move (data, &delta);
 #endif
 	item_data_snap (data);
-#if 0
 
+#if 0
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
 	                                   data->rotated_handler_id);
 	if (handler_connected) {
@@ -626,6 +654,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 		                       "changed");
 	}
 }
+
 
 /**
  * flip a part in a given direction
@@ -781,7 +810,7 @@ part_copy (ItemData *dest, ItemData *src)
 	dest_part = PART (dest);
 	src_part = PART (src);
 
-	dest_part->priv->rotation = src_part->priv->rotation;
+//	dest_part->priv->rotation = src_part->priv->rotation;
 	dest_part->priv->flip = src_part->priv->flip;
 	dest_part->priv->num_pins = src_part->priv->num_pins;
 	dest_part->priv->library = src_part->priv->library;
