@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -257,14 +259,14 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 
 	priv = part->priv;
 
-	// Create a node for the part. 
+	// Create a node for the part.
 	node_part = xmlNewChild (ctxt->node_parts, ctxt->ns, BAD_CAST "part", NULL);
 	if (!node_part) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
 		return;
 	}
 
-	str = g_strdup_printf ("%d", priv->rotation);
+	str = g_strdup_printf ("%d", part_get_rotation (part));
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "rotation",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
