@@ -40,6 +40,7 @@
 #include "sheet-item.h"
 #include "stock.h"
 #include "clipboard.h"
+#include "options.h"
 
 static void sheet_item_class_init (SheetItemClass * klass);
 static void sheet_item_init (SheetItem *item);
