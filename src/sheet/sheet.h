@@ -128,6 +128,7 @@ void		sheet_connect_node_dots_to_signals (Sheet *sheet);
 void		sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet);
 gboolean	sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y);
 gboolean	sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y);
+gboolean	sheet_get_pointer_snapped (Sheet *sheet, gdouble *x, gdouble *y);
 gboolean	sheet_pointer_grab (Sheet *sheet, GdkEvent *event);
 void		sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event);
 gboolean	sheet_keyboard_grab (Sheet *sheet, GdkEvent *event);

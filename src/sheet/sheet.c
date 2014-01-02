@@ -258,9 +258,19 @@ sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
 	if (!sheet_get_pointer_pixel (sheet, x, y))
 		return FALSE;
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), x, y);
+	return TRUE;
+}
+
+gboolean
+sheet_get_pointer_snapped (Sheet *sheet, gdouble *x, gdouble *y)
+{
+	if (!sheet_get_pointer_pixel (sheet, x, y))
+		return FALSE;
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), x, y);
 	snap_to_grid (sheet->grid, x, y);
 	return TRUE;
 }
+
 
 void
 sheet_get_zoom (const Sheet *sheet, gdouble *zoom)
