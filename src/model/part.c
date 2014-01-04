@@ -570,22 +570,26 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	Coords delta_to_center, delta_to_center_transformed;
 	Coords delta_to_apply, delta_bbox;
 	Coords bbox_center, bbox_center_transformed;
+	Coords item_pos;
 
 	//get bbox
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
 	bbox_center = coords_average (&b1, &b2);
+	item_data_get_pos (ITEM_DATA (part), &item_pos);
 #define DEBUG_THIS 1
 	NG_DEBUG ("bbox[vanilla] = %lf,%lf to %lf,%lf - centered at %lf,%lf", b1.x, b1.y, b2.x, b2.y, bbox_center.x, bbox_center.y);
 
 
 	if (center_pos) {
-		delta_to_center_transformed = delta_to_center = coords_sub (center_pos, &bbox_center);
+		delta_to_center_transformed = delta_to_center = coords_sub (center_pos, &item_pos);
 
-		cairo_matrix_transform_point (&morph_rot,
+		cairo_matrix_transform_point (&local_rot,
 			                          &(delta_to_center_transformed.x),
 			                          &(delta_to_center_transformed.y));
-		delta_to_apply = coords_sub (&delta_to_center_transformed, &delta_to_center);
+		delta_to_apply = coords_sub (&delta_to_center, &delta_to_center_transformed);
+		NG_DEBUG ("delta{group} = transform from %lf,%lf to %lf,%lf", delta_to_center.x,delta_to_center.y, delta_to_center_transformed.x,delta_to_center_transformed.y);
+		NG_DEBUG ("delta{group} = centered at %lf,%lf resulting in shift %lf,%lf", center_pos->x, center_pos->y, delta_to_apply.x, delta_to_apply.y);
 	} else {
 		delta_to_apply.x = delta_to_apply.y = 0.;
 	}
@@ -621,6 +625,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	bbox_center_transformed = coords_average (&b1, &b2);
 	delta_bbox = coords_sub (&bbox_center, &bbox_center_transformed);
+	coords_add (&delta_to_apply, &delta_bbox);
 	NG_DEBUG ("bbox[trans] = %lf,%lf to %lf,%lf - centered at %lf,%lf", b1.x, b1.y, b2.x, b2.y, bbox_center_transformed.x, bbox_center_transformed.y);
 	NG_DEBUG ("bbox[delta] = %lf,%lf", delta_bbox.x, delta_bbox.y);
 
@@ -639,7 +644,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 
 //	NG_DEBUG ("total[delta] = %lf,%lf", delta_to_apply.x, delta_to_apply.y);
-	item_data_move (data, &delta_bbox);
+	item_data_move (data, &delta_to_apply);
 	item_data_snap (data);
 
 #if 0
