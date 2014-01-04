@@ -541,7 +541,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
 
-	cairo_matrix_t morph, morph_rot;
+	cairo_matrix_t morph, morph_rot, local_rot;
 	Part *part;
 	PartPriv *priv;
 	gboolean handler_connected;
@@ -559,32 +559,36 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 
 
-	cairo_matrix_rotate (item_data_get_rotate (data), (double)angle * M_PI / 180.);
+	cairo_matrix_init_rotate (&local_rot, (double)angle * M_PI / 180.);
+	cairo_matrix_multiply (item_data_get_rotate (data), item_data_get_rotate (data), &local_rot);
 
 	morph_rot = *(item_data_get_rotate (data));
 	cairo_matrix_multiply (&morph,
 	                       &morph_rot,
 	                       item_data_get_translate (data));
 
+	Coords delta_to_center, delta_to_center_transformed;
+	Coords delta_to_apply, delta_bbox;
+	Coords bbox_center, bbox_center_transformed;
 
+	//get bbox
+	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
-#if 0
-	item_data_get_pos (data, &part_center_before);
-	NG_DEBUG ("part_center_start = (%lf,%lf)", part_center_before.x, part_center_before.y);
+	bbox_center = coords_average (&b1, &b2);
+#define DEBUG_THIS 1
+	NG_DEBUG ("bbox[vanilla] = %lf,%lf to %lf,%lf - centered at %lf,%lf", b1.x, b1.y, b2.x, b2.y, bbox_center.x, bbox_center.y);
+
 
 	if (center_pos) {
-		delta_cp_before = coords_sub (&part_center_before, center_pos);
-		delta_cp_after = delta_cp_before;
-		NG_DEBUG ("delta_cp_before = (%lf,%lf)", delta_cp_before.x, delta_cp_before.y);
-		cairo_matrix_transform_point (&affine, &delta_cp_after.x, &delta_cp_after.y);
-		NG_DEBUG ("delta_cp_after = (%lf,%lf)", delta_cp_after.x, delta_cp_after.y);
-		delta_delta = coords_sub (&delta_cp_after, &delta_cp_before);
+		delta_to_center_transformed = delta_to_center = coords_sub (center_pos, &bbox_center);
+
+		cairo_matrix_transform_point (&morph_rot,
+			                          &(delta_to_center_transformed.x),
+			                          &(delta_to_center_transformed.y));
+		delta_to_apply = coords_sub (&delta_to_center_transformed, &delta_to_center);
+	} else {
+		delta_to_apply.x = delta_to_apply.y = 0.;
 	}
-
-	priv->rotation = tot_rotation;
-	angle = tot_rotation;
-#endif
-
 
 	// use the cairo matrix funcs to transform the pin
 	// positions relative to the item center
@@ -609,21 +613,17 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 		priv->pins[i].offset.y = y;
 	}
 
-	// Rotate the bounding box, recenter to old center
-	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
-#if 0
-	part_center_before = coords_average (&b1, &b2);
-	//center around rotation origin
-	b1.x -= part_center_before.x;
-	b1.y -= part_center_before.y;
-	b2.x -= part_center_before.x;
-	b2.y -= part_center_before.y;
-#endif
-	cairo_matrix_transform_point (&morph_rot, &b1.x, &b1.y);
-	cairo_matrix_transform_point (&morph_rot, &b2.x, &b2.y);
+	cairo_matrix_transform_point (&local_rot, &b1.x, &b1.y);
+	cairo_matrix_transform_point (&local_rot, &b2.x, &b2.y);
 
 	item_data_set_relative_bbox (data, &b1, &b2);
+
+	bbox_center_transformed = coords_average (&b1, &b2);
+	delta_bbox = coords_sub (&bbox_center, &bbox_center_transformed);
+	NG_DEBUG ("bbox[trans] = %lf,%lf to %lf,%lf - centered at %lf,%lf", b1.x, b1.y, b2.x, b2.y, bbox_center_transformed.x, bbox_center_transformed.y);
+	NG_DEBUG ("bbox[delta] = %lf,%lf", delta_bbox.x, delta_bbox.y);
+
 #if 0
 	part_center_after = coords_average (&b1, &b2);
 
@@ -636,6 +636,10 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	}
 	item_data_move (data, &delta);
 #endif
+
+
+//	NG_DEBUG ("total[delta] = %lf,%lf", delta_to_apply.x, delta_to_apply.y);
+	item_data_move (data, &delta_bbox);
 	item_data_snap (data);
 
 #if 0
@@ -652,6 +656,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 		g_signal_emit_by_name (G_OBJECT (data),
 		                       "changed");
 	}
+	NG_DEBUG ("\n\n");
 }
 
 
