@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -817,10 +817,10 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	cairo_matrix_t morph, inv;
 	cairo_status_t done;
 
-	morph = inv = *(item_data_get_rotate(data)); //copy
-	cairo_matrix_multiply (&morph, &morph, item_data_get_translate (data));
-	
-	
+	inv = *(item_data_get_rotate(data)); //copy
+	cairo_matrix_multiply (&morph, &inv, item_data_get_translate (data));
+
+
 	done = cairo_matrix_invert (&inv);
 	if (done != CAIRO_STATUS_SUCCESS) {
 		g_warning ("Failed to invert matrix. This should never happen. Never!");

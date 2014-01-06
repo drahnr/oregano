@@ -54,8 +54,8 @@ struct _SheetItem {
 	GooCanvasGroup	 canvas_group;
 	gdouble		 width;
 	gdouble		 height;
-	gdouble 	 x;
-	gdouble		 y;
+	gdouble 	 x; //left
+	gdouble		 y; //top
 	SheetItemPriv	*priv;
 };
 
