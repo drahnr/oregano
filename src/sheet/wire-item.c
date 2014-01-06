@@ -196,7 +196,7 @@ wire_item_finalize (GObject *object)
 	if (priv != NULL) {
 		g_free (priv);
 	}
-	
+
 	G_OBJECT_CLASS (wire_item_parent_class)->finalize (object);
 }
 
@@ -223,66 +223,66 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	wire_get_pos_and_length (wire, &start_pos, &length);
 
 	item = g_object_new (TYPE_WIRE_ITEM, NULL);
-	
-	g_object_set (item, 
-	              "parent", sheet->object_group, 
+
+	g_object_set (item,
+	              "parent", sheet->object_group,
 	              NULL);
-	
+
 	wire_item = WIRE_ITEM (item);
-	g_object_set (wire_item, 
+	g_object_set (wire_item,
 	              "data", wire,
 	              NULL);
 
 	priv = wire_item->priv;
 
-	
+
 	const int random_color_count = 9;
 	const char *random_color[] = {"blue", "red", "green"/*, "yellow"*/, "orange", "brown", "purple", "pink", "lightblue", "lightgreen"};
 
 	priv->resize1 = GOO_CANVAS_RECT (goo_canvas_rect_new (
 	           	GOO_CANVAS_ITEM (wire_item),
-			   	-RESIZER_SIZE, 
-	            -RESIZER_SIZE, 
-	            2 * RESIZER_SIZE, 
+			   	-RESIZER_SIZE,
+	            -RESIZER_SIZE,
+	            2 * RESIZER_SIZE,
 	            2 * RESIZER_SIZE,
 	                "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	            "fill-color", "green",
 	    		"line-width", 1.0,
 	    		NULL));
-	g_object_set (priv->resize1, 
-				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	g_object_set (priv->resize1,
+				  "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);
 
 	priv->resize2 = GOO_CANVAS_RECT (goo_canvas_rect_new (
 				GOO_CANVAS_ITEM (wire_item),
-				length.x - RESIZER_SIZE, 
-	     		length.y - RESIZER_SIZE, 
+				length.x - RESIZER_SIZE,
+	     		length.y - RESIZER_SIZE,
 	            2 * RESIZER_SIZE,
 	    		2 * RESIZER_SIZE,
 	                "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	            "fill-color", "green",
-	    		"line-width", 1.0, 
+	    		"line-width", 1.0,
 	    		NULL));
-	g_object_set (priv->resize2, 
-				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	g_object_set (priv->resize2,
+				  "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);
 
-	points = goo_canvas_points_new (2);                                 
+	points = goo_canvas_points_new (2);
 	points->coords[0] = 0;
 	points->coords[1] = 0;
 	points->coords[2] = length.x;
 	points->coords[3] = length.y;
 
 	priv->line = GOO_CANVAS_POLYLINE (goo_canvas_polyline_new (
-	    GOO_CANVAS_ITEM (wire_item), 
-		FALSE, 0, 
-	    "points", points, 
+	    GOO_CANVAS_ITEM (wire_item),
+		FALSE, 0,
+	    "points", points,
 	    "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	    "line-width", 1.0,
 	    "start-arrow", opts.debug.wires ? TRUE : FALSE,
 	    "end-arrow", opts.debug.wires ? TRUE : FALSE,
 	    NULL));
-	
+
 	goo_canvas_points_unref (points);
 
 
@@ -304,7 +304,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	                                G_CALLBACK (wire_changed_callback),
 	                                G_OBJECT (wire_item), 0);
 
-	g_signal_connect (wire, "delete", 
+	g_signal_connect (wire, "delete",
 	    G_CALLBACK (wire_delete_callback), wire_item);
 
 	wire_update_bbox (wire);
@@ -326,10 +326,10 @@ wire_item_event (WireItem *wire_item,
 	double snapped_x, snapped_y;
 	Coords pos;
 
-	
+
 	canvas = GOO_CANVAS (sheet);
-	g_object_get (G_OBJECT (wire_item), 
-	              "data", &wire, 
+	g_object_get (G_OBJECT (wire_item),
+	              "data", &wire,
 	              NULL);
 
 	wire_get_pos_and_length (WIRE (wire), &start_pos, &length);
@@ -340,9 +340,9 @@ wire_item_event (WireItem *wire_item,
 			switch (event->button.button) {
 				case 1: {
 					double x, y;
-					g_signal_stop_emission_by_name (wire_item, 
+					g_signal_stop_emission_by_name (wire_item,
 					                                "button_press_event");
-					sheet_get_pointer (sheet, &x, &y);
+					sheet_get_pointer_snapped (sheet, &x, &y);
 					x = x - start_pos.x;
 					y = y - start_pos.y;
 					if ((x > -RESIZER_SIZE) && (x < RESIZER_SIZE)  &&
@@ -351,21 +351,21 @@ wire_item_event (WireItem *wire_item,
 						sheet->state = SHEET_STATE_DRAG_START;
 						wire_item->priv->resize_state = WIRE_RESIZER_1;
 
-						sheet_get_pointer (sheet, &x, &y);
+						sheet_get_pointer_snapped (sheet, &x, &y);
 						last_x = x;
 						last_y = y;
-						item_data_unregister (ITEM_DATA (wire)); 
+						item_data_unregister (ITEM_DATA (wire));
 						return TRUE;
 					}
-                    if ((x > (length.x-RESIZER_SIZE)) && 
+                    if ((x > (length.x-RESIZER_SIZE)) &&
                         (x < (length.x+RESIZER_SIZE)) &&
-						(y > (length.y-RESIZER_SIZE)) && 
+						(y > (length.y-RESIZER_SIZE)) &&
                         (y < (length.y+RESIZER_SIZE))) {
 						gtk_widget_grab_focus (GTK_WIDGET (sheet));
 						sheet->state = SHEET_STATE_DRAG_START;
 						wire_item->priv->resize_state = WIRE_RESIZER_2;
 
-						sheet_get_pointer (sheet, &x, &y);
+						sheet_get_pointer_snapped (sheet, &x, &y);
 						last_x = x;
 						last_y = y;
 						item_data_unregister (ITEM_DATA (wire));
@@ -384,16 +384,16 @@ wire_item_event (WireItem *wire_item,
 			if (wire_item->priv->resize_state == WIRE_RESIZER_NONE)
 				break;
 
-			if (sheet->state == SHEET_STATE_DRAG_START || 
+			if (sheet->state == SHEET_STATE_DRAG_START ||
 			    sheet->state == SHEET_STATE_DRAG) 	   {
 
-				g_signal_stop_emission_by_name (wire_item, 
+				g_signal_stop_emission_by_name (wire_item,
 				                                "motion-notify-event");
-					
+
 				sheet->state = SHEET_STATE_DRAG;
-				
-				sheet_get_pointer (sheet, &snapped_x, &snapped_y);
-		
+
+				sheet_get_pointer_snapped (sheet, &snapped_x, &snapped_y);
+
 				dx = snapped_x - last_x;
 				dy = snapped_y - last_y;
 
@@ -420,7 +420,7 @@ wire_item_event (WireItem *wire_item,
 							pos.x = last_x;
 							length.x -= dx;
 					}
-				} 
+				}
 				else {
 					switch (wire->priv->direction) {
 						case WIRE_DIR_VERT:
@@ -437,7 +437,7 @@ wire_item_event (WireItem *wire_item,
 					}
 				}
 				snap_to_grid (sheet->grid, &length.x, &length.y);
-				item_data_set_pos (sheet_item_get_data (SHEET_ITEM (wire_item)), 
+				item_data_set_pos (sheet_item_get_data (SHEET_ITEM (wire_item)),
 				                   &pos);
 
 				wire_set_length (wire, &length);
@@ -454,13 +454,13 @@ wire_item_event (WireItem *wire_item,
 				if (wire_item->priv->resize_state == WIRE_RESIZER_NONE) {
 					break;
 				}
-				
-				g_signal_stop_emission_by_name (wire_item, 
+
+				g_signal_stop_emission_by_name (wire_item,
 				                                "button-release-event");
-				   
+
 				goo_canvas_pointer_ungrab (canvas, GOO_CANVAS_ITEM (wire_item),
 					event->button.time);
-					
+
 				wire_item->priv->resize_state = WIRE_RESIZER_NONE;
 				sheet->state = SHEET_STATE_NONE;
 				item_data_register (ITEM_DATA (wire));
@@ -468,10 +468,10 @@ wire_item_event (WireItem *wire_item,
 			}
 			break;
 		default:
-			return sheet_item_event (GOO_CANVAS_ITEM (wire_item), 
+			return sheet_item_event (GOO_CANVAS_ITEM (wire_item),
 			                         GOO_CANVAS_ITEM (wire_item), event, sheet);
 	}
-	return sheet_item_event (GOO_CANVAS_ITEM (wire_item), 
+	return sheet_item_event (GOO_CANVAS_ITEM (wire_item),
 	                         GOO_CANVAS_ITEM (wire_item), event, sheet);
 }
 
@@ -487,10 +487,10 @@ wire_item_signal_connect_placed (WireItem *wire_item, Sheet *sheet)
 
 	g_signal_connect (wire_item, "button-release-event",
 	    G_CALLBACK (wire_item_event), sheet);
-	
+
 	g_signal_connect (wire_item, "motion-notify-event",
 	    G_CALLBACK (wire_item_event), sheet);
-		
+
 	g_signal_connect (wire_item, "mouse_over",
 		G_CALLBACK (mouse_over_wire_callback), sheet);
 
@@ -518,19 +518,19 @@ wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
 	points->coords[2] = length.x;
 	points->coords[3] = length.y;
 
-	g_object_set (wire_item->priv->line, 
-			      "points", points, 
+	g_object_set (wire_item->priv->line,
+			      "points", points,
 		          NULL);
 	goo_canvas_points_unref (points);
 
-	g_object_set (wire_item, 
-				  "x", start_pos.x, 
-		          "y", start_pos.y, 
+	g_object_set (wire_item,
+				  "x", start_pos.x,
+		          "y", start_pos.y,
 		          NULL);
 
 	g_object_set (wire_item-> priv->resize2,
-		          "x", length.x-RESIZER_SIZE, 
-	              "y", length.y-RESIZER_SIZE, 
+		          "x", length.x-RESIZER_SIZE,
+	              "y", length.y-RESIZER_SIZE,
 	              NULL);
 
 	//Invalidate the bounding box cache.
@@ -560,14 +560,14 @@ wire_flipped_callback (ItemData *data,
 	points->coords[2] = length.x;
 	points->coords[3] = length.y;
 
-	g_object_set (item->priv->line,  
-	              "points", points, 
+	g_object_set (item->priv->line,
+	              "points", points,
 	              NULL);
 	goo_canvas_points_unref (points);
 
-	g_object_set (item, 
-	              "x", start_pos.x, 
-	              "y", start_pos.y, 
+	g_object_set (item,
+	              "x", start_pos.x,
+	              "y", start_pos.y,
 	              NULL);
 
 	// Invalidate the bounding box cache.
@@ -579,14 +579,14 @@ select_idle_callback (WireItem *item)
 {
 	WireItemPriv *priv = item->priv;
 
-	g_object_set (priv->line, 
-	              "stroke-color", SELECTED_COLOR, 
+	g_object_set (priv->line,
+	              "stroke-color", SELECTED_COLOR,
 	              NULL);
-	g_object_set (item->priv->resize1, 
-				  "visibility", GOO_CANVAS_ITEM_VISIBLE, 
+	g_object_set (item->priv->resize1,
+				  "visibility", GOO_CANVAS_ITEM_VISIBLE,
 	              NULL);
-	g_object_set (item->priv->resize2, 
-				  "visibility", GOO_CANVAS_ITEM_VISIBLE, 
+	g_object_set (item->priv->resize2,
+				  "visibility", GOO_CANVAS_ITEM_VISIBLE,
 	              NULL);
 
 	priv->highlight = TRUE;
@@ -600,14 +600,14 @@ deselect_idle_callback (WireItem *item)
 {
 	WireItemPriv *priv = item->priv;
 
-	g_object_set (priv->line, 
-	              "stroke_color", NORMAL_COLOR, 
+	g_object_set (priv->line,
+	              "stroke_color", NORMAL_COLOR,
 	              NULL);
-	g_object_set (item->priv->resize1, 
-				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	g_object_set (item->priv->resize1,
+				  "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);
-	g_object_set (item->priv->resize2, 
-				  "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+	g_object_set (item->priv->resize2,
+				  "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 	              NULL);
 
 	priv->highlight = FALSE;
@@ -622,7 +622,7 @@ selection_changed ( WireItem *item, gboolean select, gpointer user)
 	g_object_ref (G_OBJECT (item));
 	if (select) {
 		g_idle_add ((gpointer) select_idle_callback, item);
-	} 
+	}
 	else {
 		g_idle_add ((gpointer) deselect_idle_callback, item);
 	}
@@ -637,9 +637,9 @@ wire_item_get_start_pos (WireItem *item, Coords *pos)
 	g_return_if_fail (IS_WIRE_ITEM (item));
 	g_return_if_fail (pos != NULL);
 
-	g_object_get (G_OBJECT (item), 
-	              "x", &pos->x, 
-	              "y", &pos->y, 
+	g_object_get (G_OBJECT (item),
+	              "x", &pos->x,
+	              "y", &pos->y,
 	              NULL);
 }
 
@@ -656,8 +656,8 @@ wire_item_get_length (WireItem *item, Coords *pos)
 
 	priv = item->priv;
 
-	g_object_get (G_OBJECT (priv->line), 
-	              "points", &points, 
+	g_object_get (G_OBJECT (priv->line),
+	              "points", &points,
 	              NULL);
 
 	// This is not strictly neccessary, since the first point is always
@@ -807,8 +807,8 @@ highlight_wire_callback (Wire *wire, WireItem *item)
 {
 	WireItemPriv *priv = item->priv;
 
-	g_object_set (priv->line, 
-	              "stroke-color", HIGHLIGHT_COLOR, 
+	g_object_set (priv->line,
+	              "stroke-color", HIGHLIGHT_COLOR,
 	              NULL);
 
 	// Guard against removal during the highlighting.
@@ -826,8 +826,8 @@ unhighlight_wire (WireItem *item)
 	color = sheet_item_get_selected (SHEET_ITEM (item)) ?
 		SELECTED_COLOR : NORMAL_COLOR;
 
-	g_object_set (priv->line, 
-	              "stroke-color", color, 
+	g_object_set (priv->line,
+	              "stroke-color", color,
 	              NULL);
 
 	g_object_unref (G_OBJECT (item));
