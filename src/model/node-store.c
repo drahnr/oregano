@@ -156,6 +156,10 @@ node_store_init (NodeStore *self)
 	self->textbox = NULL;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//         END BOILERPLATE
+////////////////////////////////////////////////////////////////////////////////
+
 NodeStore *
 node_store_new (void)
 {
@@ -354,6 +358,46 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	g_return_val_if_fail (wire, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
+
+
+	// Check for intersection with other wires.
+	for (list = store->wires; list;	list = list->next) {
+		Coords where = {0., 0.};
+		Wire *other = list->data;
+		if (do_wires_intersect (wire, other, &where)) {
+			if (is_t_crossing (wire, other, &where) || is_t_crossing (other, wire, &where)) {
+
+				node = node_store_get_or_create_node (store, where);
+
+				node_add_wire (node, wire);
+				node_add_wire (node, other);
+
+				wire_add_node (wire, node);
+				wire_add_node (other, node);
+
+				NG_DEBUG ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
+			} else {
+				node = node_store_get_node (store, where);
+				NG_DEBUG ("Nuke that node [ %p ] at coords inbetween", node);
+				if (node) {
+					Coords c[4];
+					wire_get_start_and_end_pos (other, c+0, c+1);
+					wire_get_start_and_end_pos (other, c+2, c+3);
+					if (!coords_equal (&where, c+0) &&
+					    !coords_equal (&where, c+1) &&
+					    !coords_equal (&where, c+2) &&
+					    !coords_equal (&where, c+3)) {
+
+						wire_remove_node (wire, node);
+						wire_remove_node (other, node);
+						node_remove_wire (node, wire);
+						node_remove_wire (node, other);
+					}
+				}
+			}
+		}
+	}
+
 	// Check for overlapping with other wires.
 	for (list = store->wires; list;	list = list->next) {
 		Wire *other = list->data;
@@ -377,23 +421,6 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 			#endif
 		} else {
 			g_warning ("not of %p with %p ", wire, other);
-		}
-	}
-
-	// Check for intersection with other wires.
-	for (list = store->wires; list;	list = list->next) {
-		Coords where = {0., 0.};
-		Wire *other = list->data;
-		if (do_wires_intersect (wire, other, &where)) {
-			node = node_store_get_or_create_node (store, where);
-
-			node_add_wire (node, wire);
-			node_add_wire (node, other);
-
-			wire_add_node (wire, node);
-			wire_add_node (other, node);
-
-			NG_DEBUG ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
 		}
 	}
 
