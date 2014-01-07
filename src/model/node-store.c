@@ -362,8 +362,10 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	// Check for intersection with other wires.
 	for (list = store->wires; list;	list = list->next) {
-		Coords where = {0., 0.};
+		Coords where = {-77.77, -77.77};
 		Wire *other = list->data;
+		if (other==NULL)
+			continue;
 		if (do_wires_intersect (wire, other, &where)) {
 			if (is_t_crossing (wire, other, &where) || is_t_crossing (other, wire, &where)) {
 
@@ -377,12 +379,13 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 				NG_DEBUG ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
 			} else {
+				// magic node removal if a x crossing is overlapped with another wire
 				node = node_store_get_node (store, where);
 				NG_DEBUG ("Nuke that node [ %p ] at coords inbetween", node);
 				if (node) {
 					Coords c[4];
 					wire_get_start_and_end_pos (other, c+0, c+1);
-					wire_get_start_and_end_pos (other, c+2, c+3);
+					wire_get_start_and_end_pos (wire, c+2, c+3);
 					if (!coords_equal (&where, c+0) &&
 					    !coords_equal (&where, c+1) &&
 					    !coords_equal (&where, c+2) &&
@@ -402,7 +405,9 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	for (list = store->wires; list;	list = list->next) {
 		Wire *other = list->data;
 		Coords so, eo;
-		if (do_wires_overlap (wire, other, &so, &eo)) {
+		const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
+		NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other, overlap==TRUE ? "YES" : "NO" );
+		if (overlap) {
 			Node *sn = node_store_get_node (store, eo);
 			Node *en = node_store_get_node (store, so);
 			#if 1

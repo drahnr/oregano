@@ -16,8 +16,6 @@ add_node (gpointer key, Node *node, GList **list)
 }
 
 
-
-
 static void
 add_node_position (gpointer key, Node *node, GList **list)
 {
@@ -149,8 +147,8 @@ get_wires_at_pos (NodeStore *store, Coords pos)
  * projects the point @p onto wire @w
  * @param w the wire
  * @param p the point
- * @param projected [out] the point p is projected onto - this is always filled no matter of return value
- * @param d [out] the distance between @p and @projected - this is always filled no matter of return value
+ * @param projected [out][NULL-allowed] the point p is projected onto - this is always filled no matter of return value
+ * @param d [out][NULL-allowed] the distance between @p and @projected - this is always filled no matter of return value
  * @returns TRUE if the point was within the line segement bounds, else FALSE
  */
 static gboolean
@@ -240,7 +238,7 @@ check_colinear (Wire *a, Wire *b)
 /**
  * check if the two given wires overlap
  * @param so start overlap
- * @param se end overlap
+ * @param eo end overlap
  */
 static gboolean
 do_wires_overlap (Wire *a, Wire *b, Coords *so, Coords *eo)
@@ -311,9 +309,10 @@ do_wires_overlap (Wire *a, Wire *b, Coords *so, Coords *eo)
  * check if wires a and b form a t crossing
  * @param a
  * @param b
- * @param t [out] which endpoint is the T point (where both wires "intersect")
+ * @param t [out][NULL-allowed] which endpoint is the T point (where both wires "intersect")
  * @returns which of the inputs
  * @attention wire @a and @b are taken as granted to be intersecting
+ * @attention L-like crossings are a special form of T-crossings
  */
 gboolean
 is_t_crossing (Wire *a, Wire *b, Coords *t)
@@ -326,30 +325,28 @@ is_t_crossing (Wire *a, Wire *b, Coords *t)
 	wire_get_start_and_end_pos (a, &sa, &ea);
 	wire_get_start_and_end_pos (b, &sb, &eb);
 
-	if (is_point_on_wire (a, &sb) && !is_point_on_wire (a, &sb)) {
-		if (t)
-			*t = sb;
-		return TRUE;
+	if (is_point_on_wire (a, &sb)/* && !is_point_on_wire (a, &sb)*/) {
+		if (t)           // a
+			*t = sb;     // sbbb
+		return TRUE;     // a
 	}
-	if (is_point_on_wire (a, &eb) && !is_point_at_end_of_wire (a, &eb)) {
-		if (t)
-			*t = eb;
-		return TRUE;
+	if (is_point_on_wire (a, &eb)/* && !is_point_at_end_of_wire (a, &eb)*/) {
+		if (t)           //   a
+			*t = eb;     // bbe
+		return TRUE;     //   a
 	}
-	if (is_point_on_wire (b, &sa) && !is_point_at_end_of_wire (b, &sa)) {
+	if (is_point_on_wire (b, &sa)/* && !is_point_at_end_of_wire (b, &sa)*/) {
 		if (t)
 			*t = sa;
 		return TRUE;
 	}
-	if (is_point_on_wire (b, &ea) && !is_point_at_end_of_wire (b, &ea)) {
+	if (is_point_on_wire (b, &ea)/* && !is_point_at_end_of_wire (b, &ea)*/) {
 		if (t)
 			*t = ea;
 		return TRUE;
 	}
 	return FALSE;
 }
-
-
 
 /**
  * merge wire @b into wire @a, where @so and @eo are the overlapping wire part
@@ -358,7 +355,7 @@ is_t_crossing (Wire *a, Wire *b, Coords *t)
  * @param so [out] coords of the overlapping wire part - start
  * @param eo [out] coords of the overlapping wire part - end
  * @returns the pointer to a, or NUL if something went wrong
- * @attention only ever call this for two parallel and overlapping wires!
+ * @attention onlycall this for two parallel and overlapping wires, ever!
  */
 static Wire *
 vulcanize_wire (NodeStore *store, Wire *a, Wire *b, Coords *so, Coords *eo)
