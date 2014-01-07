@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -170,30 +170,30 @@ static void create_wire (ParseState *state);
 static void create_part (ParseState *state);
 
 static xmlSAXHandler oreganoSAXParser = {
-	0, // internalSubset 
-	0, // isStandalone 
-	0, // hasInternalSubset 
-	0, // hasExternalSubset 
-	0, // resolveEntity 
-	(getEntitySAXFunc) get_entity, // getEntity 
-	0, // entityDecl 
-	0, // notationDecl 
-	0, // attributeDecl 
-	0, // elementDecl 
-	0, // unparsedEntityDecl 
-	0, // setDocumentLocator 
-	(startDocumentSAXFunc) start_document, // startDocument 
-	(endDocumentSAXFunc) end_document, // endDocument 
-	(startElementSAXFunc) start_element, // startElement 
-	(endElementSAXFunc) end_element, // endElement 
-	0, // reference 
-	(charactersSAXFunc) my_characters, // characters 
-	0, // ignorableWhitespace 
-	0, // processingInstruction 
-	0, //(commentSAXFunc)0,	 comment 
-	(warningSAXFunc) my_warning, // warning 
-	(errorSAXFunc) my_error, // error 
-	(fatalErrorSAXFunc) my_fatal_error, // fatalError 
+	0, // internalSubset
+	0, // isStandalone
+	0, // hasInternalSubset
+	0, // hasExternalSubset
+	0, // resolveEntity
+	(getEntitySAXFunc) get_entity, // getEntity
+	0, // entityDecl
+	0, // notationDecl
+	0, // attributeDecl
+	0, // elementDecl
+	0, // unparsedEntityDecl
+	0, // setDocumentLocator
+	(startDocumentSAXFunc) start_document, // startDocument
+	(endDocumentSAXFunc) end_document, // endDocument
+	(startElementSAXFunc) start_element, // startElement
+	(endElementSAXFunc) end_element, // endElement
+	0, // reference
+	(charactersSAXFunc) my_characters, // characters
+	0, // ignorableWhitespace
+	0, // processingInstruction
+	0, //(commentSAXFunc)0,	 comment
+	(warningSAXFunc) my_warning, // warning
+	(errorSAXFunc) my_error, // error
+	(fatalErrorSAXFunc) my_fatal_error, // fatalError
 };
 
 static void
@@ -312,7 +312,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:schematic")) {
 			g_warning ("Expecting 'ogo:schematic'.  Got '%s'", name);
 			state->state = PARSE_ERROR;
-		} 
+		}
 		else
 			state->state = PARSE_SCHEMATIC;
 		break;
@@ -321,31 +321,31 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:author")) {
 			state->state = PARSE_AUTHOR;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:title")) {
 			state->state = PARSE_TITLE;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:comments")) {
 			state->state = PARSE_COMMENTS;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:zoom")) {
 			state->state = PARSE_ZOOM;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:simulation-settings")) {
 			state->state = PARSE_SIMULATION_SETTINGS;
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:parts")) {
 			state->state = PARSE_PARTS;
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:wires")) {
 			state->state = PARSE_WIRES;
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:textboxes")) {
 			state->state = PARSE_TEXTBOXES;
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -356,19 +356,19 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 	case PARSE_SIMULATION_SETTINGS:
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:transient")) {
 			state->state = PARSE_TRANSIENT_SETTINGS;
-		} 
+		}
 		else if ( !xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:ac")) {
 			state->state = PARSE_AC_SETTINGS;
-		} 
+		}
 		else if ( !xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:dc-sweep")) {
 			state->state = PARSE_DC_SETTINGS;
-		} 
+		}
 		else if ( !xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:fourier")) {
 			state->state = PARSE_FOURIER_SETTINGS;
 		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:options")) {
 			state->state = PARSE_OPTION_LIST;
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -380,15 +380,15 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:enabled")) {
 			state->state = PARSE_TRANSIENT_ENABLED;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:start")) {
 			state->state = PARSE_TRANSIENT_START;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:stop")) {
 			state->state = PARSE_TRANSIENT_STOP;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:step")) {
 			state->state = PARSE_TRANSIENT_STEP;
 			g_string_truncate (state->content, 0);
@@ -396,11 +396,11 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:step-enabled")) {
 			state->state = PARSE_TRANSIENT_STEP_ENABLE;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:init-conditions")) {
 			state->state = PARSE_TRANSIENT_INIT_COND;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -412,19 +412,19 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:enabled")) {
 			state->state = PARSE_AC_ENABLED;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:npoints")) {
 			state->state = PARSE_AC_NPOINTS;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:start")) {
 			state->state = PARSE_AC_START;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:stop")) {
 			state->state = PARSE_AC_STOP;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -436,23 +436,23 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:enabled")) {
 			state->state = PARSE_DC_ENABLED;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:vsrc1")) {
 			state->state = PARSE_DC_VSRC;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:start1")) {
 			state->state = PARSE_DC_START;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:stop1")) {
 			state->state = PARSE_DC_STOP;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:step1")) {
 			state->state = PARSE_DC_STEP;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -464,28 +464,28 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:enabled")) {
 			state->state = PARSE_FOURIER_ENABLED;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:freq")) {
 			state->state = PARSE_FOURIER_FREQ;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:vout")) {
 			state->state = PARSE_FOURIER_VOUT;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
 			state->unknown_depth++;
 		}
-		break;	
+		break;
 
 	case PARSE_OPTION_LIST:
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:option")) {
 			state->state = PARSE_OPTION;
 			state->option= g_new0 (SimOption,1);
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -496,11 +496,11 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:name")) {
 			state->state = PARSE_OPTION_NAME;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:value")) {
 			state->state = PARSE_OPTION_VALUE;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -516,7 +516,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 			state->flip = ID_FLIP_NONE;
 			state->label = NULL;
 			state->property = NULL;
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -527,45 +527,45 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:name")) {
 			state->state = PARSE_PART_NAME;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:library")) {
 			state->state = PARSE_PART_LIBNAME;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:refdes")) {
 			state->state = PARSE_PART_REFDES;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:position")) {
 			state->state = PARSE_PART_POSITION;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:rotation")) {
 			state->state = PARSE_PART_ROTATION;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:flip")) {
 			state->state = PARSE_PART_FLIP;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:template")) {
 			state->state = PARSE_PART_TEMPLATE;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:model")) {
 			state->state = PARSE_PART_MODEL;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:symbol")) {
 			state->state = PARSE_PART_SYMNAME;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:labels")) {
 			state->state = PARSE_PART_LABELS;
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:properties")) {
 			state->state = PARSE_PART_PROPERTIES;
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -576,7 +576,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:label")) {
 			state->state = PARSE_PART_LABEL;
 			state->label = g_new0 (PartLabel, 1);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -587,15 +587,15 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:name")) {
 			state->state = PARSE_PART_LABEL_NAME;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:text")) {
 			state->state = PARSE_PART_LABEL_TEXT;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:position")) {
 			state->state = PARSE_PART_LABEL_POS;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -607,7 +607,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:property")) {
 			state->state = PARSE_PART_PROPERTY;
 			state->property = g_new0 (Property, 1);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -618,11 +618,11 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:name")) {
 			state->state = PARSE_PART_PROPERTY_NAME;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:value")) {
 			state->state = PARSE_PART_PROPERTY_VALUE;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -634,7 +634,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 	case PARSE_WIRES:
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:wire")) {
 			state->state = PARSE_WIRE;
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -645,7 +645,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:points")) {
 			state->state = PARSE_WIRE_POINTS;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -656,7 +656,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 	case PARSE_TEXTBOXES:
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:textbox")) {
 			state->state = PARSE_TEXTBOX;
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -667,11 +667,11 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:position")) {
 			state->state = PARSE_TEXTBOX_POSITION;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else if (!xmlStrcmp (BAD_CAST name, BAD_CAST"ogo:text")) {
 			state->state = PARSE_TEXTBOX_TEXT;
 			g_string_truncate (state->content, 0);
-		} 
+		}
 		else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -723,7 +723,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 	case PARSE_TITLE:
 	case PARSE_AUTHOR:
 	case PARSE_COMMENTS:
-		// there should be no tags inside these types of tags 
+		// there should be no tags inside these types of tags
 		g_message ("*** '%s' tag found", name);
 		state->prev_state = state->state;
 		state->state = PARSE_UNKNOWN;
@@ -736,7 +736,7 @@ start_element (ParseState *state, const xmlChar *name, const xmlChar **attrs)
 		state->unknown_depth++;
 		break;
 	case PARSE_FINISH:
-		// should not start new elements in this state 
+		// should not start new elements in this state
 		g_assert_not_reached ();
 		break;
 	case PARSE_TRANSIENT_INIT_COND:
@@ -782,7 +782,7 @@ end_element (ParseState *state, const xmlChar *name)
 	case PARSE_SIMULATION_SETTINGS:
 		state->state = PARSE_SCHEMATIC;
 		break;
-			
+
 	case PARSE_TRANSIENT_SETTINGS:
 		state->state = PARSE_SIMULATION_SETTINGS;
 		break;
@@ -856,7 +856,7 @@ end_element (ParseState *state, const xmlChar *name)
 		sim_settings_set_dc_step (state->sim_settings, state->content->str);
 		state->state = PARSE_DC_SETTINGS;
 		break;
-			
+
 	case PARSE_FOURIER_SETTINGS:
 		state->state = PARSE_SIMULATION_SETTINGS;
 		break;
@@ -989,13 +989,13 @@ end_element (ParseState *state, const xmlChar *name)
 		state->state = PARSE_SCHEMATIC;
 		break;
 	case PARSE_WIRE:
-		create_wire (state);
 		state->state = PARSE_WIRES;
 		break;
 	case PARSE_WIRE_POINTS:
 		sscanf (state->content->str, "(%lf %lf)(%lf %lf)",
 			&state->wire_start.x, &state->wire_start.y,
 			&state->wire_end.x, &state->wire_end.y);
+		create_wire (state);
 		state->state = PARSE_WIRE;
 		break;
 
@@ -1016,14 +1016,14 @@ end_element (ParseState *state, const xmlChar *name)
 		state->state = PARSE_TEXTBOX;
 		break;
 	case PARSE_SCHEMATIC:
-		// The end of the file. 
+		// The end of the file.
 		state->state = PARSE_FINISH;
 		break;
 	case PARSE_ERROR:
 		break;
 	case PARSE_START:
 	case PARSE_FINISH:
-		// There should not be a closing tag in this state. 
+		// There should not be a closing tag in this state.
 		g_assert_not_reached ();
 		break;
 	}

@@ -49,14 +49,14 @@
 #include "debug.h"
 
 typedef struct {
-	xmlDocPtr  doc;		 // Xml document. 
-	xmlNsPtr   ns;		 // Main namespace. 
+	xmlDocPtr  doc;		 // Xml document.
+	xmlNsPtr   ns;		 // Main namespace.
 
-	xmlNodePtr node_symbols; // For saving of symbols. 
-	xmlNodePtr node_parts;	 // For saving of parts. 
-	xmlNodePtr node_props;	 // For saving of properties. 
-	xmlNodePtr node_labels;	 // For saving of labels. 
-	xmlNodePtr node_wires;	 // For saving of wires. 
+	xmlNodePtr node_symbols; // For saving of symbols.
+	xmlNodePtr node_parts;	 // For saving of parts.
+	xmlNodePtr node_props;	 // For saving of properties.
+	xmlNodePtr node_labels;	 // For saving of labels.
+	xmlNodePtr node_wires;	 // For saving of wires.
 	xmlNodePtr node_textboxes;
 } parseXmlContext;
 
@@ -78,7 +78,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 		return;
 	}
 
-	// Transient analysis    
+	// Transient analysis
 	analysis = xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "transient",
 		NULL);
  	if (!analysis) {
@@ -116,7 +116,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 		str = "false";
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "init-conditions", BAD_CAST str);
 
-	//  AC analysis   
+	//  AC analysis
 	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "ac", NULL);
 	if (!analysis) {
 		g_warning ("Failed during save of AC analysis settings.\n");
@@ -137,7 +137,7 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "stop", BAD_CAST str);
 	g_free (str);
 
-	//  DC analysis   
+	//  DC analysis
 	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "dc-sweep",
 		NULL);
 	if (!analysis) {
@@ -161,8 +161,8 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	str = g_strdup_printf ("%g", sim_settings_get_dc_step (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "step1", BAD_CAST str);
 	g_free (str);
-	
-	//  Fourier analysis   
+
+	//  Fourier analysis
 	analysis =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "fourier", NULL);
 	if (!analysis) {
 		g_warning ("Failed during save of Fourier analysis settings.\n");
@@ -174,12 +174,12 @@ write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schematic *sm)
 	str = g_strdup_printf ("%d", sim_settings_get_fourier_frequency (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "freq", BAD_CAST str);
 	g_free (str);
-	
+
 	str = g_strdup_printf ("%s", sim_settings_get_fourier_vout (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "vout", BAD_CAST str);
 	g_free (str);
 
-	// Save the options 
+	// Save the options
 	list = sim_settings_get_options (s);
 	if ( list ) {
 		options =  xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "options",
@@ -204,7 +204,7 @@ write_xml_property (Property *prop, parseXmlContext *ctxt)
 {
 	xmlNodePtr node_property;
 
-	// Create a node for the property. 
+	// Create a node for the property.
 	node_property = xmlNewChild (ctxt->node_props, ctxt->ns, BAD_CAST "property",
 		NULL);
 	if (!node_property) {
@@ -212,11 +212,11 @@ write_xml_property (Property *prop, parseXmlContext *ctxt)
 		return;
 	}
 
-	// Store the name. 
+	// Store the name.
 	xmlNewChild (node_property, ctxt->ns, BAD_CAST "name",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST prop->name));
 
-	// Store the value. 
+	// Store the value.
 	xmlNewChild (node_property, ctxt->ns, BAD_CAST "value",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST prop->value));
 }
@@ -234,7 +234,7 @@ write_xml_label (PartLabel *label, parseXmlContext *ctxt)
 		return;
 	}
 
-	// Store the name. 
+	// Store the name.
 	xmlNewChild (node_label, ctxt->ns, BAD_CAST "name",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST label->name));
 
@@ -257,7 +257,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 
 	priv = part->priv;
 
-	// Create a node for the part. 
+	// Create a node for the part.
 	node_part = xmlNewChild (ctxt->node_parts, ctxt->ns, BAD_CAST "part", NULL);
 	if (!node_part) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
@@ -277,25 +277,25 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 		xmlNewChild (node_part, ctxt->ns, BAD_CAST "flip",
 			xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST "vertical"));
 
-	// Store the name. 
+	// Store the name.
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "name",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST priv->name));
 
-	// Store the name of the library the part resides in. 
+	// Store the name of the library the part resides in.
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "library",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST priv->library->name));
 
-	// Which symbol to use. 
+	// Which symbol to use.
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "symbol",
 		xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST priv->symbol_name));
 
-	// Position. 
+	// Position.
 	item_data_get_pos (ITEM_DATA (part), &pos);
 	str = g_strdup_printf ("(%g %g)", pos.x, pos.y);
 	xmlNewChild (node_part, ctxt->ns, BAD_CAST "position", BAD_CAST str);
 	g_free (str);
 
-	// Create a node for the properties. 
+	// Create a node for the properties.
 	ctxt->node_props = xmlNewChild (node_part, ctxt->ns, BAD_CAST "properties",
 		NULL);
 	if (!ctxt->node_props) {
@@ -307,7 +307,7 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 			ctxt);
 	}
 
-	// Create a node for the labels. 
+	// Create a node for the labels.
 	ctxt->node_labels = xmlNewChild (node_part, ctxt->ns, BAD_CAST "labels", NULL);
 	if (!ctxt->node_labels) {
 		g_warning ("Failed during save of part %s.\n", priv->name);
@@ -316,6 +316,12 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	else{
 		g_slist_foreach (priv->labels, (GFunc) write_xml_label, ctxt);
 	}
+}
+
+static gint
+cmp_nodes (gconstpointer a, gconstpointer b)
+{
+	return coords_compare (&(((const Node *)a)->key), &(((const Node *)b)->key));
 }
 
 static void
@@ -328,7 +334,7 @@ write_xml_wire (Wire *wire, parseXmlContext *ctxt)
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
 
-	// Create a node for the wire. 
+	// Create a node for the wire.
 	node_wire = xmlNewChild (ctxt->node_wires, ctxt->ns, BAD_CAST "wire", NULL);
 	if (!node_wire) {
 		g_warning ("Failed during save of wire.\n");
@@ -338,10 +344,45 @@ write_xml_wire (Wire *wire, parseXmlContext *ctxt)
 	wire_get_start_pos (wire, &start_pos);
 	wire_get_end_pos (wire, &end_pos);
 
+	Node *node;
+	Coords last, current, tmp;
+	GSList *iter, *copy;
+
+	copy = g_slist_sort (g_slist_copy (wire_get_nodes (wire)), cmp_nodes);
+	current = last = start_pos;
+
+	for (iter = copy; iter; iter = iter->next) {
+		node = iter->data;
+		if (node==NULL) {
+			g_warning ("Node of wire did not exist [%p].", node);
+			continue;
+		}
+
+		tmp = node->key;
+		if (coords_equal(&tmp, &start_pos))
+			continue;
+		if (coords_equal(&tmp, &end_pos))
+			continue;
+
+		last = current;
+		current = tmp;
+
+		str = g_strdup_printf ("(%g %g)(%g %g)",
+			                   last.x, last.y, current.x, current.y);
+
+		xmlNewChild (node_wire, ctxt->ns, BAD_CAST "points", BAD_CAST str);
+		g_free (str);
+	}
+	last = current;
+	current = end_pos;
 	str = g_strdup_printf ("(%g %g)(%g %g)",
-		start_pos.x, start_pos.y, end_pos.x, end_pos.y);
+			                   last.x, last.y, current.x, current.y);
+
 	xmlNewChild (node_wire, ctxt->ns, BAD_CAST "points", BAD_CAST str);
 	g_free (str);
+
+	g_slist_free (copy);
+
 }
 
 static void
@@ -373,7 +414,7 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 	xmlNewChild (node_textbox, ctxt->ns, BAD_CAST "text", BAD_CAST str);
 }
 
-// Create an XML subtree of doc equivalent to the given Schematic. 
+// Create an XML subtree of doc equivalent to the given Schematic.
 static xmlNodePtr
 write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 {
@@ -397,7 +438,7 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 		ctxt->ns = ogo;
 	}
 
-	// General information about the Schematic.	 
+	// General information about the Schematic.
 	str = g_strdup_printf ("%s", schematic_get_author (sm));
 	xmlNewChild (cur, ctxt->ns, BAD_CAST "author", xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
@@ -410,23 +451,23 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 	xmlNewChild (cur, ctxt->ns, BAD_CAST "comments", xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
 
-	// Grid. 
+	// Grid.
 	grid = xmlNewChild (cur, ctxt->ns, BAD_CAST "grid", NULL);
 	xmlNewChild (grid, ctxt->ns, BAD_CAST "visible", BAD_CAST "true");
 	xmlNewChild (grid, ctxt->ns, BAD_CAST "snap", BAD_CAST "true");
-	
-	// Simulation settings. 
+
+	// Simulation settings.
 	write_xml_sim_settings (cur, ctxt, sm);
 
-	// Parts. 
+	// Parts.
 	ctxt->node_parts = xmlNewChild (cur, ctxt->ns, BAD_CAST "parts", NULL);
 	schematic_parts_foreach (sm, (gpointer) write_xml_part, ctxt);
 
-	// Wires. 
+	// Wires.
 	ctxt->node_wires = xmlNewChild (cur, ctxt->ns, BAD_CAST "wires", NULL);
 	schematic_wires_foreach (sm, (gpointer) write_xml_wire, ctxt);
 
-	// Text boxes. 
+	// Text boxes.
 	ctxt->node_textboxes = xmlNewChild (cur, ctxt->ns, BAD_CAST "textboxes", NULL);
 	schematic_items_foreach (sm, (gpointer) write_xml_textbox, ctxt);
 
@@ -446,7 +487,7 @@ schematic_write_xml (Schematic *sm, GError **error)
 
 	g_return_val_if_fail (sm != NULL, FALSE);
 
-	// Create the tree. 
+	// Create the tree.
 	xml = xmlNewDoc (BAD_CAST "1.0");
 	if (xml == NULL) {
 		return FALSE;
@@ -462,14 +503,14 @@ schematic_write_xml (Schematic *sm, GError **error)
 		return FALSE;
 	}
 
-	// Dump the tree. 
+	// Dump the tree.
 	xmlSetDocCompressMode (xml, oregano.compress_files ? 9 : 0);
 
 	{
 		char *s =schematic_get_filename (sm);
 		if (s != NULL) {
 			ret = xmlSaveFormatFile (s, xml, 1);
-		} 
+		}
 		else {
 			g_warning ("Schematic has no filename!!\n");
 		}
@@ -477,7 +518,7 @@ schematic_write_xml (Schematic *sm, GError **error)
 
 	if (xml != NULL) {
 		xmlFreeDoc (xml);
-	} 
+	}
 	else {
 		g_warning ("XML object is NULL\n");
 	}
