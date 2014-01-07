@@ -167,3 +167,14 @@ coords_equal (const Coords *a, const Coords *b)
 	return G_UNLIKELY(fabs(a->x - b->x) < COORDS_DELTA &&
 	                  fabs(a->y - b->y) < COORDS_DELTA);
 }
+
+inline gint
+coords_compare (const Coords *a, const Coords *b)
+{
+	if (coords_equal (a,b))
+		return 0;
+	if ((a->x > b->x) ||
+	    (fabs(a->x - b->x)<(COORDS_DELTA*COORDS_DELTA) && (a->y > b->y)))
+		return -1;
+	return +1;
+}

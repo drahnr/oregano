@@ -53,8 +53,6 @@ coords_new_copy (const Coords *c);
 void
 coords_destroy (Coords *c);
 
-gboolean
-coords_equal (const Coords *a, const Coords *b);
 
 /*
  * Adds b to a and returns a pointer to a which holds now the result
@@ -98,5 +96,16 @@ coords_euclid (const Coords *a);
 
 gdouble
 coords_euclid2 (const Coords *a);
+
+
+inline guint
+coords_hash (gconstpointer v);
+
+gboolean
+coords_equal (const Coords *a, const Coords *b);
+
+gint
+coords_compare (const Coords *a, const Coords *b);
+
 
 #endif /* __COORDS_H */
