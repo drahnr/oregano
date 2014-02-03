@@ -105,7 +105,7 @@ sheet_class_init (SheetClass *sheet_class)
 	g_object_class_install_property (object_class, ARG_ZOOM,
 			g_param_spec_double ("zoom", "Sheet::zoom", "the zoom factor",
 								0.01f, 10.0f, 1.0f, G_PARAM_READWRITE));
-	
+
 	// Signals.
 	signals[SELECTION_CHANGED] = g_signal_new ("selection_changed",
 				G_TYPE_FROM_CLASS (object_class),
@@ -114,9 +114,9 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__VOID,
-				G_TYPE_NONE, 
+				G_TYPE_NONE,
 	            0);
-	
+
 	signals[BUTTON_PRESS] = g_signal_new ("button_press",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -124,10 +124,10 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__POINTER,
-				G_TYPE_NONE, 
-	            1, 
+				G_TYPE_NONE,
+	            1,
 	            GDK_TYPE_EVENT);
-	
+
 	signals[CONTEXT_CLICK] = g_signal_new ("context_click",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -135,11 +135,11 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__POINTER,
-				G_TYPE_NONE, 
-	            2, 
-	            G_TYPE_STRING, 
+				G_TYPE_NONE,
+	            2,
+	            G_TYPE_STRING,
 	            G_TYPE_POINTER);
-	
+
 	signals[CONTEXT_CLICK] = g_signal_new ("cancel",
 				G_TYPE_FROM_CLASS (object_class),
 				G_SIGNAL_RUN_FIRST,
@@ -147,7 +147,7 @@ sheet_class_init (SheetClass *sheet_class)
 				NULL,
 				NULL,
 				g_cclosure_marshal_VOID__VOID,
-				G_TYPE_NONE, 
+				G_TYPE_NONE,
 	            0);
 }
 
@@ -163,7 +163,7 @@ sheet_init (Sheet *sheet)
 	sheet->priv->selected_objects = NULL;
 	sheet->priv->wire_handler_id = 0;
 	sheet->priv->float_handler_id = 0;
-	
+
 	sheet->priv->items = NULL;
 	sheet->priv->rubberband_info = NULL;
 	sheet->priv->create_wire_info = NULL;
@@ -178,7 +178,7 @@ sheet_init (Sheet *sheet)
 
 static void
 sheet_finalize (GObject *object)
-{	
+{
 	Sheet *sheet = SHEET (object);
 
 	if (sheet->priv) {
@@ -209,30 +209,44 @@ sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	GdkDeviceManager *device_manager;
 	GdkDevice *device_pointer;
 	GdkRectangle allocation;
-
+	GdkDisplay *display;
+	GdkWindow *window;
 
 	// deprecated gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
 	// replaced by a code copied from evince
 
-	if (__unlikely (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
-		NG_DEBUG ("widget not realized");
+	if (G_UNLIKELY (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
+		NG_DEBUG ("Widget is not realized.");
 		return FALSE;
 	}
 
-	device_manager = gdk_display_get_device_manager (
-			gtk_widget_get_display (GTK_WIDGET (sheet)));
+	display = gtk_widget_get_display (GTK_WIDGET (sheet));
+	device_manager = gdk_display_get_device_manager (display);
+	// gdk_device_manager_get_client_pointer
+	// shall not be used within events
 	device_pointer = gdk_device_manager_get_client_pointer (device_manager);
-	//FIXME add another check based on the following functions return val
-	//FIXME gtkdoc says this shall not be used in event handlers
-	gdk_window_get_device_position (gtk_widget_get_window (GTK_WIDGET (sheet)),
+	window = gtk_widget_get_window (GTK_WIDGET (sheet));
+
+	if (!window) {
+		NG_DEBUG ("Window is not realized.");
+		return FALSE;
+	}
+	// even though above is all defined the below will always return NUL for
+	// unknown reason and _x and _y are populated as expected
+	gdk_window_get_device_position (
+	                window,
 					device_pointer,
 					&_x, &_y, NULL);
-
-	if (!gtk_widget_get_has_window (GTK_WIDGET (sheet))) {
-		NG_DEBUG ("some weird gtk window shit failed");
+#if 0
+	if (!window) { //fails always
+		NG_DEBUG ("Window does not seem to be realized yet?");
 		return FALSE;
 	}
-	
+#else
+	NG_DEBUG ("\n%p %p %p %p %i %i\n\n",display, device_manager, device_pointer, window, _x, _y);
+#endif
+
+
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
 
 	_x -= allocation.x;
@@ -365,7 +379,7 @@ sheet_change_zoom (Sheet *sheet, gdouble rate)
 	// calculate the center of the widget in pixels
 	cx = x + dx/2;
 	cy = y + dy/2;
-	
+
 	// calculate the delta between the center and the pointer in pixels
 	// this is required as the center is the zoom target
 	dcx = px - cx;
@@ -440,19 +454,19 @@ sheet_new (Grid *grid)
 	              "width", &width,
 	              NULL);
 	g_printf ("%s xxx %lf x %lf\n", __FUNCTION__, height, width);
-	
+
 	// Creation of the Canvas
 	sheet = SHEET (g_object_new (TYPE_SHEET, NULL));
 
 	sheet_canvas = GOO_CANVAS (sheet);
-	g_object_set (G_OBJECT (sheet_canvas), 
+	g_object_set (G_OBJECT (sheet_canvas),
 	              "bounds-from-origin", FALSE,
 	              "bounds-padding", 4.0,
 	              "background-color-rgb", 0xFFFFFF,
 	              NULL);
 
 	root = goo_canvas_get_root_item (sheet_canvas);
-	
+
 	sheet_group = GOO_CANVAS_GROUP (goo_canvas_group_new (
 	                                root,
 	                                NULL));
@@ -523,7 +537,7 @@ sheet_new (Grid *grid)
 	points->coords[7] = height;
 	points->coords[8] = 20.0;
 	points->coords[9] = 20.0;
-	
+
 	goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet_group),
 	      FALSE, 0,
 	      "line-width", 1.0,
@@ -647,31 +661,31 @@ sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height)
 	*height = sheet->priv->height * sheet->priv->zoom;
 }
 
-void 	   
+void
 sheet_remove_selected_object (const Sheet *sheet, SheetItem *item)
 {
-	sheet->priv->selected_objects = 
+	sheet->priv->selected_objects =
 		g_list_remove (sheet->priv->selected_objects, item);
 }
 
-void 	   
+void
 sheet_prepend_selected_object (Sheet *sheet, SheetItem *item)
 {
 	sheet->priv->selected_objects =
 		g_list_prepend (sheet->priv->selected_objects, item);
 }
 
-void 	   
+void
 sheet_remove_floating_object (const Sheet *sheet, SheetItem *item)
 {
-	sheet->priv->floating_objects = 
+	sheet->priv->floating_objects =
 		g_list_remove (sheet->priv->floating_objects, item);
 }
 
-void 	  
+void
 sheet_prepend_floating_object (Sheet *sheet, SheetItem *item)
 {
-	sheet->priv->floating_objects = 
+	sheet->priv->floating_objects =
 		g_list_prepend (sheet->priv->floating_objects, item);
 }
 
@@ -688,8 +702,8 @@ sheet_connect_part_item_to_floating_group (Sheet *sheet, gpointer *sv)
 	if (sheet->priv->float_handler_id != 0)
 		return;
 
-	sheet->priv->float_handler_id = g_signal_connect(G_OBJECT (sheet), 
-	        "event", G_CALLBACK (sheet_item_floating_event), 
+	sheet->priv->float_handler_id = g_signal_connect(G_OBJECT (sheet),
+	        "event", G_CALLBACK (sheet_item_floating_event),
 	        sv);
 }
 
@@ -728,7 +742,7 @@ sheet_preserve_selection (Sheet *sheet)
 {
 	g_return_val_if_fail (sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
-	
+
 	GList *list = NULL;
 	for (list = sheet->priv->selected_objects; list; list = list->next) {
 		sheet_item_set_preserve_selection (SHEET_ITEM (list->data), TRUE);
@@ -764,7 +778,7 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 
 			if (event->button.button == 3) {
 				run_context_menu (
-					schematic_view_get_schematicview_from_sheet (sheet), 
+					schematic_view_get_schematicview_from_sheet (sheet),
 			    	(GdkEventButton *) event);
 				return TRUE;
 			}
@@ -816,7 +830,7 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 						sheet_get_zoom (sheet, &zoom);
 						if (zoom < ZOOM_MAX)
 							sheet_change_zoom (sheet, 1.1);
-					} 
+					}
 					else if (scr_event->direction == GDK_SCROLL_DOWN) {
 						double zoom;
 						sheet_get_zoom (sheet, &zoom);
@@ -832,7 +846,7 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				return TRUE;
 			}
 			if (wklass->motion_notify_event != NULL) {
-				return wklass->motion_notify_event (widget, (GdkEventMotion *) event);		
+				return wklass->motion_notify_event (widget, (GdkEventMotion *) event);
 			}
 		case GDK_ENTER_NOTIFY:
 			wklass->enter_notify_event (widget, (GdkEventCrossing *) event);
@@ -944,6 +958,8 @@ rotate_items (Sheet *sheet, GList *items)
 
 	for (list = item_data_list; list; list = list->next) {
 		ItemData *item_data = list->data;
+		if (item_data==NULL)
+			continue;
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_unregister (item_data);
@@ -958,7 +974,7 @@ rotate_items (Sheet *sheet, GList *items)
 }
 
 
-/*
+/**
  * remove the currently selected items from the sheet
  * (especially their goocanvas representators)
  */
@@ -989,20 +1005,23 @@ sheet_delete_selection (Sheet *sheet)
 }
 
 
-//FIXME this looks weird
+/**
+ * removes all canvas items in the selected canvas group from their parents
+ * but does NOT delete them
+ */
 void
 sheet_release_selected_objects (Sheet *sheet)
 {
 	GList *list, *copy;
 	GooCanvasGroup *group;
-	gint   item_nbr;
-	
+	gint item_nbr;
+
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
 	group = sheet->priv->selected_group;
 	copy = g_list_copy (sheet->priv->selected_objects);
-	
+
 	// Remove all the selected_objects into selected_group
 	for (list = copy; list; list = list->next) {
 		item_nbr = goo_canvas_item_find_child (GOO_CANVAS_ITEM (group),
@@ -1011,11 +1030,14 @@ sheet_release_selected_objects (Sheet *sheet)
 		                              item_nbr);
 	}
 	g_list_free (copy);
-		
+
 	g_list_free (sheet->priv->selected_objects);
 	sheet->priv->selected_objects = NULL;
 }
 
+/**
+ * @returns [transfer-none] the list of selected objects
+ */
 GList *
 sheet_get_selection (Sheet *sheet)
 {
@@ -1025,6 +1047,9 @@ sheet_get_selection (Sheet *sheet)
 	return sheet->priv->selected_objects;
 }
 
+/**
+ * update the node lables of all parts in the current sheet
+ */
 void
 sheet_update_parts (Sheet *sheet)
 {
@@ -1039,6 +1064,9 @@ sheet_update_parts (Sheet *sheet)
 	}
 }
 
+/**
+ * flip currently selected items
+ */
 void
 sheet_flip_selection (Sheet *sheet, IDFlip direction)
 {
@@ -1049,6 +1077,9 @@ sheet_flip_selection (Sheet *sheet, IDFlip direction)
 		flip_items (sheet, sheet->priv->selected_objects, direction);
 }
 
+/**
+ * flip currently floating items
+ */
 void
 sheet_flip_ghosts (Sheet *sheet, IDFlip direction)
 {
@@ -1131,11 +1162,14 @@ sheet_provide_object_properties (Sheet *sheet)
 		sheet_item_edit_properties (sheet->priv->selected_objects->data);
 }
 
+/**
+ * get rid of floating items (delete them)
+ */
 void
 sheet_clear_ghosts (Sheet *sheet)
 {
 	GList *copy, *list;
-	
+
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
@@ -1150,10 +1184,13 @@ sheet_clear_ghosts (Sheet *sheet)
 	}
 
 	g_list_free (copy);
-	
+
 	sheet->priv->floating_objects = NULL;
 }
 
+/**
+ * count selected objects O(n)
+ */
 guint
 sheet_get_selected_objects_length (Sheet *sheet)
 {
@@ -1163,6 +1200,9 @@ sheet_get_selected_objects_length (Sheet *sheet)
 	return g_list_length (sheet->priv->selected_objects);
 }
 
+/**
+ * @returns a shallow copy of the floating items list, free with `g_list_free`
+ */
 GList	*
 sheet_get_floating_objects (Sheet *sheet)
 {
@@ -1172,6 +1212,11 @@ sheet_get_floating_objects (Sheet *sheet)
 	return g_list_copy (sheet->priv->floating_objects);
 }
 
+/**
+ * add a recently created item (no view representation yet!)
+ * to the group of floating items and add a SheetItem via
+ * `sheet_item_factory_create_sheet_item()`
+ */
 void
 sheet_add_ghost_item (Sheet *sheet, ItemData *data)
 {
@@ -1218,7 +1263,7 @@ node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet)
 
 	node_item = g_hash_table_lookup (sheet->priv->node_dots, pos);
 	if (node_item == NULL) {
-		node_item = NODE_ITEM (g_object_new (TYPE_NODE_ITEM, NULL));	
+		node_item = NODE_ITEM (g_object_new (TYPE_NODE_ITEM, NULL));
 		g_object_set (node_item,
 		              "parent", goo_canvas_get_root_item (GOO_CANVAS (sheet)),
 		              "x", pos->x,
@@ -1253,11 +1298,15 @@ node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet)
 	if (found) {
 		goo_canvas_item_remove (GOO_CANVAS_ITEM (node_item));
 		g_hash_table_remove (sheet->priv->node_dots, pos);
-	} 
+	}
 	else
 		g_warning ("No dot to remove!");
 }
 
+/**
+ * hash function for dots (for their position actually)
+ * good enough to get some spread and very lightweight
+ */
 static guint
 dot_hash (gconstpointer key)
 {
@@ -1298,7 +1347,7 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	GList *list;	
+	GList *list;
 	Schematic *sm;
 
 	sm = schematic_view_get_schematic_from_sheet (sheet);
@@ -1315,7 +1364,7 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 
 }
 
-/*
+/**
  * remove a single item from the sheet
  */
 void
@@ -1377,7 +1426,7 @@ extract_time (GdkEvent *event)
 	return 0;
 }
 
-/*
+/**
  * helpful for debugging to not grab all input forever
  * if oregano segfaults while running inside
  * a gdb session
