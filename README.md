@@ -8,6 +8,9 @@ file COPYING.
 ----
 
 ### Quick install guide
+
+[![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)
+
 #### Requirements
 
 You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0` and `libxml2` in order to build oregano.
@@ -130,7 +133,7 @@ Verify that all existing tests do pass before calling for review/doing merge req
 Add new tests whenever possible/sane!
 
 ### Commit messages
-Git commit messages should be one (1) line, describing the changeset briefly. If it closes a bug append a `, closes #bugnumber` or `, fixes #bugnumber`, where `#bugnumber` refers to the github bugtracker bugnumber. 
+Git commit messages should be one (1) line, describing the changeset briefly. If it closes a bug append a `, closes #bugnumber` or `, fixes #bugnumber`, where `#bugnumber` refers to the github bugtracker bugnumber.
 If it is a really complex issue or you think a few sentence might not hurt, add empty line followed by one or two descriptive/explaining sentences.
 Add no trailing `.` to the commit message.
 
