@@ -12,18 +12,16 @@ from waflib import Logs as logs
 from waflib import Utils as utils
 
 def options(ctx):
-	ctx.load('compiler_c gnu_dirs glib2')
+	ctx.load('compiler_c gnu_dirs glib2 intltool')
 
 	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	ctx.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
-	ctx.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
+#	ctx.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
 
 
 
 def configure(ctx):
-	ctx.load('compiler_c gnu_dirs glib2')
-	if  ctx.options.intl:
-		ctx.load('intltool')
+	ctx.load('compiler_c gnu_dirs glib2 intltool')
 	ctx.env.appname = APPNAME
 	ctx.env.version = VERSION
 
