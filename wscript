@@ -10,17 +10,20 @@ out = 'build'
 import os
 from waflib import Logs as logs
 from waflib import Utils as utils
-	
-def options(ctx):
-	ctx.load('compiler_c gnu_dirs glib2 intltool')
 
-	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds')
-	ctx.add_option('--gnomelike', action='store_true', default=True, help='Determines if gnome shemas and gnome iconcache should be installed')
+def options(ctx):
+	ctx.load('compiler_c gnu_dirs glib2')
+
+	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
+	ctx.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
+	ctx.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
 
 
 
 def configure(ctx):
-	ctx.load('compiler_c gnu_dirs glib2 intltool')
+	ctx.load('compiler_c gnu_dirs glib2')
+	if  ctx.options.intl:
+		ctx.load('intltool')
 	ctx.env.appname = APPNAME
 	ctx.env.version = VERSION
 
@@ -205,5 +208,3 @@ class spawnpot(BuildContext):
 class updatepo(BuildContext):
         cmd = 'updatepo'
         fun = 'update_po'
-
-
