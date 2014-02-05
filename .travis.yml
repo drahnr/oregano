@@ -3,4 +3,4 @@ compiler:
   - gcc
   - clang
 # Change this to your needs
-script: waf configure debug -j1 runtests
+script: ./waf configure debug -j1 runtests
