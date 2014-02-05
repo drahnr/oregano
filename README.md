@@ -13,7 +13,7 @@ file COPYING.
 
 #### Requirements
 
-You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0` and `libxml2` in order to build oregano.
+You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0`, `libxml2` and `intltool` in order to build oregano.
 These are usually included in your favorite distributions repositories and can otherwise be found at the [gnome public ftp](ftp://ftp.gnome.org) server.
 
 
@@ -21,17 +21,17 @@ These are usually included in your favorite distributions repositories and can o
 
 To build the oregano application issue the following for a debug build
 
-    waf configure
-    waf debug -j
+    ./waf configure
+    ./waf debug -j
 
 or the following for a release build
 
-    waf configure
-    waf release -j
+    ./waf configure
+    ./waf release -j
 
 For additional options like specifying the install directory, consult
 
-    waf --help
+    ./waf --help
 
 Note that additional options can be passed to the `configure` stage, i.e. `waf configure --prefix="/usr" debug -j6` is commonly used.
 
@@ -40,7 +40,7 @@ Note that additional options can be passed to the `configure` stage, i.e. `waf c
 
 For installation to the default directories, it is usually required to run
 
-    waf install
+    ./waf install
 
 with root privileges.
 
@@ -48,7 +48,7 @@ After installation oregano can be started by running `oregano` from terminal.
 
 #### Removal
 
-    waf uninstall
+    ./waf uninstall
 
 
 ----
@@ -68,7 +68,7 @@ As every mailinglist, we also expect appropriate behavior, respect and a positiv
 ### Contributions
 
 are very welcome! We provide `TODO`,`ARCHITECTURE.md` and the files under `docs/*` as a starting point, an overview that should help you going.
-If you want to discuss an issue or something you would like to implement, don't be shy, drop a mail to the mailinglist (see below).
+If you want to discuss an issue or something you would like to implement, don't be shy, drop a mail to the mailinglist (see above).
 
 
 #### Bugs
