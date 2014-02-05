@@ -181,28 +181,34 @@ def runtests(ctx):
 
 
 class release(BuildContext):
-	      cmd = 'release'
-	      variant = 'release'
+	""" compile release binary """
+	cmd = 'release'
+	variant = 'release'
 
 class debug(BuildContext):
-	      cmd = 'debug'
-	      variant = 'debug'
+	""" compile debug binary """
+	cmd = 'debug'
+	variant = 'debug'
 
 
 
 def spawn_pot(ctx):
+#	"create a .pot from all sources (.ui,.c,.h,.desktop)"
 	ctx.recurse ('po')
 
 
 def update_po(ctx):
+#	"update the .po files"
 	ctx.recurse ('po')
 
 # we need to subclass BuildContext instead of Context
 # in order to access ctx.env.some_variable
 class spawnpot(BuildContext):
-        cmd = 'spawnpot'
-        fun = 'spawn_pot'
+	""" spawn .pot files """
+	cmd = 'spawnpot'
+	fun = 'spawn_pot'
 
 class updatepo(BuildContext):
-        cmd = 'updatepo'
-        fun = 'update_po'
+	""" update the translate .po files """
+	cmd = 'updatepo'
+	fun = 'update_po'
