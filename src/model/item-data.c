@@ -637,8 +637,8 @@ item_data_changed (ItemData *data)
 
 
 /**
- * @param data determines which item to refresh
- * @returns [transfer-none] pointer to cairo matrix
+ * @param data
+ * @returns [transfer-none] pointer to cairo matrix which only includes the translation
  */
 cairo_matrix_t *
 item_data_get_translate (ItemData *data)
@@ -649,8 +649,8 @@ item_data_get_translate (ItemData *data)
 }
 
 /**
- * @param data determines which item to refresh
- * @returns [transfer-none] pointer to cairo matrix
+ * @param data
+ * @returns [transfer-none] pointer to cairo matrix which only includes the rotation
  */
 cairo_matrix_t *
 item_data_get_rotate (ItemData *data)
