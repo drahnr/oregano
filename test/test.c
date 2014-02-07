@@ -3,6 +3,9 @@
 #include "coords.h"
 #include "wire.h"
 
+//FIXME
+#define FIXME_MAKE_TESTS_FAILABLE 0
+
 void
 test_coords ()
 {
@@ -94,6 +97,14 @@ test_wire_tcrossing ()
 	g_object_unref (b);
 }
 
+#if FIXME_MAKE_TESTS_FAILABLE
+int
+test_false ()
+{
+	g_assert (FALSE==TRUE);
+}
+#endif
+
 int
 main (int argc, char *argv[])
 {
@@ -101,5 +112,8 @@ main (int argc, char *argv[])
 	g_test_add_func ("/core/coords", test_coords);
 	g_test_add_func ("/core/model/wire/intersection", test_wire_intersection);
 	g_test_add_func ("/core/model/wire/tcrossing", test_wire_tcrossing);
+#if FIXME_MAKE_TESTS_FAILABLE
+	g_test_add_func ("/false", test_false);
+#endif
 	return g_test_run ();
 }

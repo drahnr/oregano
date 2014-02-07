@@ -28,7 +28,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __PLOT_ADD__H
+#ifndef __PLOT_ADD_H
 #define __PLOT_ADD_H
 
 #include "simulation.h"
