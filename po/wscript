@@ -35,6 +35,8 @@ def spawn_pot(ctx):
 	f.write ("\n")
 	f.close()
 
+	#create header files from anything else (.ui, .desktop, .xml)
+	#and now fed the result into xgettext to create the potfile
 	os.system ('cd po && intltool-update --headers --verbose')
 
 	f = open ('po/potfiles.in','w+')
@@ -63,4 +65,3 @@ def build(bld):
 		appname=bld.env.appname,
 		podir='.',
 		install_path="${LOCALEDIR}")
-
