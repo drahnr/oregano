@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-VERSION = '0.83'
+VERSION = '0.83.2'
 APPNAME = 'oregano'
 
 top = '.'
@@ -12,7 +12,7 @@ from waflib import Logs as logs
 from waflib import Utils as utils
 
 def options(ctx):
-	ctx.load('compiler_c gnu_dirs glib2 intltool')
+	ctx.load('compiler_c gnu_dirs glib2')
 
 	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds')
 	ctx.add_option('--gnomelike', action='store_true', default=True, help='Determines if gnome shemas and gnome iconcache should be installed')
