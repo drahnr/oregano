@@ -1,4 +1,4 @@
-#Architecture
+## ARCHITECTURE
 
 This document is targeted at oregano developers, giving a brief overview how all pieces connect together.
 
@@ -21,5 +21,5 @@ Note that all these objects are local to the `schematic-view`. This is required 
 
 ### Issues
 
-The above layout is quite complex and currently there are some issues which require new `item-data` derived classes be add _first_ to the schematic and _afterwards_ being set to the proper position.
+The above layout is quite complex and currently there are some issues which require new `item-data` derived classes be added _first_ to the schematic and _afterwards_ being set to the proper position.
 Also there is a total lack of documentation within the sourcecode which is currently being addressed.
