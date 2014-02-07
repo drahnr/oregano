@@ -134,70 +134,70 @@ item_data_class_init (ItemDataClass *klass)
 	object_class->get_property = item_data_get_gproperty;
 
 	g_object_class_install_property (object_class, ARG_STORE,
-		g_param_spec_pointer ("store", "ItemData::store",
-		"the store data", G_PARAM_READWRITE));
+	    g_param_spec_pointer ("store", "ItemData::store",
+	    "the store data", G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class, ARG_POS,
-		g_param_spec_pointer ("pos", "ItemData::pos",
-		"the pos data", G_PARAM_READWRITE));
+	    g_param_spec_pointer ("pos", "ItemData::pos",
+	    "the pos data", G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class, ARG_GRID,
-		g_param_spec_pointer ("grid", "ItemData::grid",
-		"the grid to align to", G_PARAM_READWRITE));
+	    g_param_spec_pointer ("grid", "ItemData::grid",
+	    "the grid to align to", G_PARAM_READWRITE));
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
 	item_data_signals [MOVED] = g_signal_new ("moved",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET (ItemDataClass, moved),
-		NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    G_STRUCT_OFFSET (ItemDataClass, moved),
 	    NULL,
-		g_cclosure_marshal_VOID__POINTER,
-		G_TYPE_NONE,
-		1, 
+	    NULL,
+	    g_cclosure_marshal_VOID__POINTER,
+	    G_TYPE_NONE,
+	    1,
 	    G_TYPE_POINTER);
 
 	item_data_signals [ROTATED] = g_signal_new ("rotated",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0, 
-	    NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
-		g_cclosure_marshal_VOID__INT,
-	  	G_TYPE_NONE, 
-	    1, 
+	    NULL,
+	    g_cclosure_marshal_VOID__INT,
+	    G_TYPE_NONE,
+	    1,
 	    G_TYPE_INT);
 
 	item_data_signals [FLIPPED] = g_signal_new ("flipped",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0, 
-	    NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
-		g_cclosure_marshal_VOID__INT,
-		G_TYPE_NONE, 
-	    1, 
+	    NULL,
+	    g_cclosure_marshal_VOID__INT,
+	    G_TYPE_NONE,
+	    1,
 	    G_TYPE_INT);
 
 	item_data_signals [CHANGED] = g_signal_new ("changed",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0,
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
 	    NULL,
-		g_cclosure_marshal_VOID__VOID,
-		G_TYPE_NONE,
-		0);
+	    g_cclosure_marshal_VOID__VOID,
+	    G_TYPE_NONE,
+	    0);
 
 	item_data_signals [HIGHLIGHT] = g_signal_new ("highlight",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0, 
-	    NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
-		g_cclosure_marshal_VOID__VOID,
-		G_TYPE_NONE, 
+	    NULL,
+	    g_cclosure_marshal_VOID__VOID,
+	    G_TYPE_NONE,
 	    0);
 
 	// Methods.
@@ -307,7 +307,6 @@ void
 item_data_move (ItemData *item_data, Coords *delta)
 {
 	ItemDataPriv *priv;
-	Coords target;
 
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -353,7 +352,7 @@ item_data_snap (ItemData *item_data)
 }
 
 
-gpointer // NodeStore * 
+gpointer // NodeStore *
 item_data_get_store (ItemData *item_data)
 {
 	g_return_val_if_fail (item_data != NULL, NULL);
