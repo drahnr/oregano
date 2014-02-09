@@ -60,7 +60,8 @@ static void 	sheet_get_property (GObject *object, guint prop_id,
 					GValue *value, GParamSpec *spec);
 static void 	sheet_set_zoom (const Sheet *sheet, double zoom);
 static GList *	sheet_preserve_selection (Sheet *sheet);
-static void	rotate_items (Sheet *sheet, GList *items);
+static void	rotate_items (Sheet *sheet, GList *items, gint angle);
+static void	move_items (Sheet *sheet, GList *items, Coords *delta);
 static void	flip_items (Sheet *sheet, GList *items, IDFlip direction);
 static void 	node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void 	node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
@@ -528,6 +529,38 @@ sheet_new (Grid *grid)
 	                     "line-width", 0.0,
 	                     NULL);
 
+#ifdef FIXME_DRAW_DIRECTION ARROWS
+	goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
+	                              10.0, 10.0,
+	                              50.0, 10.0,
+	                              "stroke-color", "green",
+	                              "line-width", 2.0,
+	                              "end-arrow", TRUE,
+	                              NULL);
+	goo_canvas_text_new (GOO_CANVAS_ITEM (sheet_group),
+	                     "x",
+	                     90.0, 10.0,
+	                     -1.0,
+	                     GOO_CANVAS_ANCHOR_WEST,
+	                     "fill-color", "green",
+	                     NULL);
+
+
+	goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
+	                              10.0, 10.0,
+	                              10.0, 50.0,
+	                              "stroke-color", "red",
+	                              "line-width", 2.0,
+	                              "end-arrow", TRUE,
+	                              NULL);
+	goo_canvas_text_new (GOO_CANVAS_ITEM (sheet_group),
+	                     "y",
+	                     10.0, 90.0,
+	                     -1.0,
+	                     GOO_CANVAS_ANCHOR_CENTER,
+	                     "fill-color", "red",
+	                     NULL);
+#endif
 	//  Draw a thin black border around the sheet.
 	points = goo_canvas_points_new (5);
 	points->coords[0] = 20.0;
@@ -859,34 +892,38 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				case GDK_KEY_R:
 				case GDK_KEY_r:
 					if (sheet->state == SHEET_STATE_NONE)
-						sheet_rotate_selection (sheet);
+						sheet_rotate_selection (sheet, 90);
 					break;
 				case GDK_KEY_Home:
 				case GDK_KEY_End:
 					break;
 				case GDK_KEY_Left:
-					if (event->key.state & GDK_MOD1_MASK)
+					if (event->key.state & GDK_MOD1_MASK) {
 						sheet_scroll_pixel (sheet, -20, 0);
+					} else {
+						sheet_move_selection (sheet, -20., 0.);
+					}
 					break;
 				case GDK_KEY_Up:
-					if (event->key.state & GDK_MOD1_MASK)
+					if (event->key.state & GDK_MOD1_MASK) {
 						sheet_scroll_pixel (sheet, 0, -20);
+					} else {
+						sheet_move_selection (sheet, 0., -20.);
+					}
 					break;
 				case GDK_KEY_Right:
-					if (event->key.state & GDK_MOD1_MASK)
+					if (event->key.state & GDK_MOD1_MASK) {
 						sheet_scroll_pixel (sheet, 20, 0);
+					} else {
+						sheet_move_selection (sheet, +20., 0.);
+					}
 					break;
 				case GDK_KEY_Down:
-					if (event->key.state & GDK_MOD1_MASK)
+					if (event->key.state & GDK_MOD1_MASK) {
 						sheet_scroll_pixel (sheet, 0, 20);
-					break;
-				case GDK_KEY_Page_Up:
-					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll_pixel (sheet, 0, -120);
-					break;
-				case GDK_KEY_Page_Down:
-					if (event->key.state & GDK_MOD1_MASK)
-						sheet_scroll_pixel (sheet, 0, 120);
+					} else {
+						sheet_move_selection (sheet, 0., +20.);
+					}
 					break;
 				case GDK_KEY_Escape:
 					g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
@@ -926,13 +963,27 @@ sheet_select_all (Sheet *sheet, gboolean select)
  * rotate the currently selected on the sheet
  */
 void
-sheet_rotate_selection (Sheet *sheet)
+sheet_rotate_selection (Sheet *sheet, gint angle)
 {
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
 	if (sheet->priv->selected_objects != NULL)
-		rotate_items (sheet, sheet->priv->selected_objects);
+		rotate_items (sheet, sheet->priv->selected_objects, angle);
+}
+
+/**
+ * rotate the currently selected on the sheet
+ */
+void
+sheet_move_selection (Sheet *sheet, gdouble x, gdouble y)
+{
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (IS_SHEET (sheet));
+
+	const Coords delta = {x,y};
+	if (sheet->priv->selected_objects != NULL)
+		move_items (sheet, sheet->priv->selected_objects, &delta);
 }
 
 /**
@@ -945,11 +996,11 @@ sheet_rotate_ghosts (Sheet *sheet)
 	g_return_if_fail (IS_SHEET (sheet));
 
 	if (sheet->priv->floating_objects != NULL)
-		rotate_items (sheet, sheet->priv->floating_objects);
+		rotate_items (sheet, sheet->priv->floating_objects, 90);
 }
 
 static void
-rotate_items (Sheet *sheet, GList *items)
+rotate_items (Sheet *sheet, GList *items, gint angle)
 {
 	GList *list, *item_data_list;
 	Coords center, b1, b2;
@@ -974,13 +1025,34 @@ rotate_items (Sheet *sheet, GList *items)
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_unregister (item_data);
 
-		item_data_rotate (item_data, 90, &center);
+		item_data_rotate (item_data, angle, &center);
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_register (item_data);
 	}
 
 	g_list_free (item_data_list);
+}
+
+static void
+move_items (Sheet *sheet, GList *items, Coords *trans)
+{
+	GList *list;
+	Coords center, b1, b2;
+
+	for (list = items; list; list = list->next) {
+		g_assert (list->data!=NULL);
+		ItemData *item_data = sheet_item_get_data (list->data);
+		g_assert (item_data!=NULL);
+
+		if (sheet->state == SHEET_STATE_NONE)
+			item_data_unregister (item_data);
+
+		item_data_move (item_data, trans);
+
+		if (sheet->state == SHEET_STATE_NONE)
+			item_data_register (item_data);
+	}
 }
 
 
