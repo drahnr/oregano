@@ -251,6 +251,10 @@ sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	return TRUE;
 }
 
+/**
+ * get the pointer position in goocanvas coordinates
+ * @attention shall not be called in event callbacks, except for GDK_MOTION_...
+ */
 gboolean
 sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
 {
@@ -881,6 +885,9 @@ sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 	return TRUE;
 }
 
+/**
+ * select all items on the sheet
+ */
 void
 sheet_select_all (Sheet *sheet, gboolean select)
 {
@@ -896,6 +903,9 @@ sheet_select_all (Sheet *sheet, gboolean select)
 		sheet_release_selected_objects (sheet);
 }
 
+/**
+ * rotate the currently selected on the sheet
+ */
 void
 sheet_rotate_selection (Sheet *sheet)
 {
@@ -973,7 +983,7 @@ sheet_delete_selection (Sheet *sheet)
 	}
 	g_list_free (copy);
 
-	// we need to it like this as <sheet_remove_item_in_sheet>
+	// function <sheet_remove_item_in_sheet>
 	// requires selected_objects, items, floating_objects
 	// to be not NULL!
 	g_list_free (sheet->priv->selected_objects);
@@ -1384,7 +1394,7 @@ sheet_pointer_grab (Sheet *sheet, GdkEvent *event)
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->pointer_grabbed==0 &&
 	    goo_canvas_pointer_grab (GOO_CANVAS (sheet),
-	                             GOO_CANVAS_ITEM (sheet->grid),
+	                             GOO_CANVAS_ITEM (sheet->grid_item),
 	                             GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK,
 	                         NULL,
 	                         extract_time (event))==GDK_GRAB_SUCCESS) {
@@ -1404,9 +1414,9 @@ sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event)
 	g_return_if_fail (IS_SHEET (sheet));
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->pointer_grabbed) {
-		sheet->priv->pointer_grabbed = 0;
+		sheet->priv->pointer_grabbed = FALSE;
 		goo_canvas_pointer_ungrab (GOO_CANVAS (sheet),
-		                           GOO_CANVAS_ITEM (sheet->grid),
+		                           GOO_CANVAS_ITEM (sheet->grid_item),
 		                           extract_time (event));
 	}
 #endif
@@ -1419,14 +1429,14 @@ sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
 	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
 #ifndef DEBUG_DISABLE_GRABBING
-	if (sheet->priv->keyboard_grabbed==0 &&
+	if (sheet->priv->keyboard_grabbed==FALSE &&
 	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet),
-		                          GOO_CANVAS_ITEM (sheet->grid),
+		                          GOO_CANVAS_ITEM (sheet->grid_item),
 	                              TRUE, /*do not reroute signals through sheet->grid*/
 		                      extract_time (event))==GDK_GRAB_SUCCESS) {
-		sheet->priv->keyboard_grabbed = 1;
+		sheet->priv->keyboard_grabbed = TRUE;
 	}
-	return (sheet->priv->keyboard_grabbed == 1);
+	return (sheet->priv->keyboard_grabbed == TRUE);
 #else
 	return TRUE;
 #endif
@@ -1440,7 +1450,7 @@ sheet_keyboard_ungrab (Sheet *sheet, GdkEvent *event)
 	g_return_if_fail (IS_SHEET (sheet));
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed) {
-		sheet->priv->keyboard_grabbed = 0;
+		sheet->priv->keyboard_grabbed = FALSE;
 		goo_canvas_keyboard_ungrab (GOO_CANVAS (sheet),
 		                            GOO_CANVAS_ITEM (sheet->grid),
 		                            extract_time (event));
