@@ -613,7 +613,7 @@ static void
 rotate_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state == SHEET_STATE_NONE)
-		sheet_rotate_selection (sv->priv->sheet);
+		sheet_rotate_selection (sv->priv->sheet, 90);
 	else if (sv->priv->sheet->state == SHEET_STATE_FLOAT ||
 			 sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
 		sheet_rotate_ghosts (sv->priv->sheet);
