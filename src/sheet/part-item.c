@@ -1005,7 +1005,10 @@ get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
 	PartItemPriv *priv;
 	priv = item->priv;
 
-	if (!priv->cache_valid) {
+	if (G_LIKELY(priv->cache_valid)) {
+		*p1 = priv->bbox_start;
+		*p2 = priv->bbox_end;
+	} else {
 		Coords start_pos, end_pos;
 		GooCanvasBounds bounds;
 
@@ -1016,13 +1019,10 @@ get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
 		end_pos.x = bounds.x2;
 		end_pos.y = bounds.y2;
 
-		priv->bbox_start = start_pos;
-		priv->bbox_end = end_pos;
+		*p1 = priv->bbox_start = start_pos;
+		*p2 = priv->bbox_end = end_pos;
 		priv->cache_valid = TRUE;
 	}
-
-	memcpy (p1, &priv->bbox_start, sizeof (Coords));
-	memcpy (p2, &priv->bbox_end, sizeof (Coords));
 }
 
 static void
