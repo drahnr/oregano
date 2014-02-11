@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -82,15 +84,15 @@ struct _NodeRect
 GType		node_store_get_type (void);
 NodeStore *	node_store_new (void);
 Node *		node_store_get_node (NodeStore *store, Coords pos);
-int		node_store_add_part (NodeStore *store, Part *part);
-int		node_store_remove_part (NodeStore *store, Part *part);
-int		node_store_add_wire (NodeStore *store, Wire *wire);
-int		node_store_remove_wire (NodeStore *store, Wire *wire);
-int		node_store_add_textbox (NodeStore *self, Textbox *text);
-int		node_store_remove_textbox (NodeStore *self, Textbox *text);
+gboolean	node_store_add_part (NodeStore *store, Part *part);
+gboolean	node_store_remove_part (NodeStore *store, Part *part);
+gboolean	node_store_add_wire (NodeStore *store, Wire *wire);
+gboolean	node_store_remove_wire (NodeStore *store, Wire *wire);
+gboolean	node_store_add_textbox (NodeStore *self, Textbox *text);
+gboolean	node_store_remove_textbox (NodeStore *self, Textbox *text);
 void		node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data);
-int		node_store_is_wire_at_pos (NodeStore *store, Coords pos);
-int		node_store_is_pin_at_pos (NodeStore *store, Coords pos);
+gboolean	node_store_is_wire_at_pos (NodeStore *store, Coords pos);
+gboolean	node_store_is_pin_at_pos (NodeStore *store, Coords pos);
 GList *		node_store_get_parts (NodeStore *store);
 GList *		node_store_get_wires (NodeStore *store);
 GList *		node_store_get_items (NodeStore *store);
