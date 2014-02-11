@@ -336,7 +336,7 @@ sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdjustment *
 }
 
 
-/*
+/**
  * change the zoom by factor <rate>
  * zoom origin when zooming in is the cursor
  * zoom origin when zooming out is the center of the current viewport
@@ -451,13 +451,12 @@ sheet_new (Grid *grid)
 	Sheet *sheet;
 	GtkWidget *sheet_widget;
 	GooCanvasItem *root;
-
 	gdouble height=-1., width=-1.;
+
 	g_object_get (grid,
 	              "height", &height,
 	              "width", &width,
 	              NULL);
-	g_printf ("%s xxx %lf x %lf\n", __FUNCTION__, height, width);
 
 	// Creation of the Canvas
 	sheet = SHEET (g_object_new (TYPE_SHEET, NULL));
@@ -602,6 +601,7 @@ sheet_new (Grid *grid)
 	     "x", 0.0,
 	     "y", 0.0,
 	     NULL));
+
 	NG_DEBUG ("floating group %p", sheet->priv->floating_group);
 
 	// Hash table that maps coordinates to a specific dot.
