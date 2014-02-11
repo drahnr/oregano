@@ -3,6 +3,11 @@
 #include "coords.h"
 #include "wire.h"
 
+// may be already defined, if not:
+#ifndef DEBUG_FORCE_FAIL
+#define DEBUG_FORCE_FAIL 0
+#endif
+
 void
 test_coords ()
 {
@@ -94,6 +99,14 @@ test_wire_tcrossing ()
 	g_object_unref (b);
 }
 
+#if DEBUG_FORCE_FAIL
+void
+test_false ()
+{
+	g_assert (FALSE==TRUE);
+}
+#endif
+
 int
 main (int argc, char *argv[])
 {
@@ -105,5 +118,8 @@ main (int argc, char *argv[])
 	g_test_add_func ("/core/coords", test_coords);
 	g_test_add_func ("/core/model/wire/intersection", test_wire_intersection);
 	g_test_add_func ("/core/model/wire/tcrossing", test_wire_tcrossing);
+#if DEBUG_FORCE_FAIL
+	g_test_add_func ("/false", test_false);
+#endif
 	return g_test_run ();
 }
