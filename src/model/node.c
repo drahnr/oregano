@@ -54,15 +54,6 @@ static guint node_signals [LAST_SIGNAL] = { 0 };
 static void
 node_dispose (GObject *object)
 {
-	// Remove the pins and wires encountered by the node.
-	if (NODE (object)->pins) {
-		g_slist_free (NODE (object)->pins);
-	}
-	
-	if (NODE (object)->wires) {
-		g_slist_free (NODE (object)->wires);
-	}
-
 	G_OBJECT_CLASS (node_parent_class)->dispose (object);
 }
 
@@ -71,6 +62,15 @@ static void
 node_finalize (GObject *object)
 {
 	g_return_if_fail (object != NULL);
+
+	// Remove the pins and wires encountered by the node.
+	if (NODE (object)->pins) {
+		g_slist_free (NODE (object)->pins);
+	}
+
+	if (NODE (object)->wires) {
+		g_slist_free (NODE (object)->wires);
+	}
 	G_OBJECT_CLASS (node_parent_class)->finalize (object);
 }
 
@@ -178,7 +178,7 @@ node_needs_dot (Node *node)
 	return FALSE;
 }
 
-gint
+gboolean
 node_add_pin (Node *node, Pin *pin)
 {
 	gboolean dot;
@@ -196,14 +196,13 @@ node_add_pin (Node *node, Pin *pin)
 
 	node->pins = g_slist_prepend (node->pins, pin);
 	node->pin_count++;
-
 	if (!dot && node_needs_dot (node))
 		g_signal_emit_by_name (G_OBJECT (node), "node_dot_added", &node->key);
 
 	return TRUE;
 }
 
-gint
+gboolean
 node_remove_pin (Node *node, Pin *pin)
 {
 	gboolean dot;
@@ -281,7 +280,7 @@ node_remove_wire (Node *node, Wire *wire)
 	return TRUE;
 }
 
-gint
+gboolean
 node_is_empty (Node *node)
 {
 	g_return_val_if_fail (node != NULL, FALSE);
@@ -293,7 +292,7 @@ node_is_empty (Node *node)
 	return FALSE;
 }
 
-gint
+gboolean
 node_is_visited (Node *node)
 {
 	g_return_val_if_fail (node != NULL, FALSE);
@@ -322,13 +321,14 @@ node_hash (gconstpointer key)
 {
 	Coords *sp = (Coords *) key;
 	register int x, y;
+	const int shift = sizeof (int)*8/2;
 
 	// Hash on any other node?
 
-	x = (int)rint (sp->x) % 256;
-	y = (int)rint (sp->y) % 256;
+	x = (int)rint (sp->x) % 1<<shift;
+	y = (int)rint (sp->y) % 1<<shift;
 
-	return (y << 8) | x;
+	return (y << shift) | x;
 }
 
 /**
