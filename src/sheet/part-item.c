@@ -794,35 +794,22 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	// init the states
 
-	flip = part_get_flip (part);
-	rotation = part_get_rotation (part);
-
-	DEGSANITY (rotation);
-
-	scale_h = (flip & ID_FLIP_HORIZ) ? -1. : 1.;
-	scale_v = (flip & ID_FLIP_VERT) ? -1. : 1.;
-
-
-	item_data_get_pos (data, &pos);
-	// Move the canvas item and invalidate the bbox cache.
-	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (sheet_item),
-	                                      pos.x,
-	                                      pos.y,
-	                                      1.0,
-	                                      0.0);
-
 	cairo_matrix_t morph, inv;
 	cairo_status_t done;
 
-	cairo_matrix_init_rotate (&morph, DEG2RAD (rotation));
-	cairo_matrix_scale (&morph, scale_h, scale_v);
-
-	inv = morph;
+	morph = inv = priv->transform;
 	done = cairo_matrix_invert (&inv);
 	if (done != CAIRO_STATUS_SUCCESS) {
 		g_warning ("Failed to invert matrix. This should never happen. Never!");
 		return;
 	}
+	// no translations
+	inv.y0 = inv.x0 = 0.;
+
+	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (sheet_item), &(morph));
+
+	priv->cache_valid = FALSE;
+	return; /* FIXME */
 
 	// rotate all items in the canvas group
 	for (index = 0; index < group->items->len; index++) {
