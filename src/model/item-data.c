@@ -78,13 +78,30 @@ G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT)
 static guint item_data_signals [LAST_SIGNAL] = { 0 };
 
 static void
+item_data_init (ItemData *item_data)
+{
+	ItemDataPriv *priv;
+
+	priv = g_slice_new0 (ItemDataPriv);
+
+	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
+
+	priv->grid = NULL;
+
+	cairo_matrix_init_identity (&(priv->transform));
+
+	item_data->priv = priv;
+}
+
+static void
 item_data_dispose (GObject *object)
 {
+	ItemDataPriv *priv = ITEM_DATA (object)->priv;
 	// Remove the item from the sheet node store if there.
-	if (ITEM_DATA (object)->priv->store) {
+	if (priv->store) {
 		item_data_unregister (ITEM_DATA (object));
 	}
-
+	g_slice_free (ItemDataPriv, priv);
 	G_OBJECT_CLASS (item_data_parent_class)->dispose (object);
 }
 
@@ -190,21 +207,9 @@ item_data_class_init (ItemDataClass *klass)
 	klass->moved = NULL;
 }
 
-static void
-item_data_init (ItemData *item_data)
-{
-	ItemDataPriv *priv;
-
-	priv = g_new0 (ItemDataPriv, 1);
-
-	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
-
-	priv->grid = NULL;
-
-	cairo_matrix_init_identity (&(priv->transform));
-
-	item_data->priv = priv;
-}
+////////////////////////////////////////////////////////////////////////////////
+// END BOILER PLATE
+////////////////////////////////////////////////////////////////////////////////
 
 ItemData *
 item_data_new (void)
