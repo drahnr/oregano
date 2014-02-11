@@ -67,8 +67,9 @@ struct _ItemDataPriv {
 	NodeStore *store;
 	// Grid model to align to
 	Grid *grid;
-	// the transform matrix, containing all rotations, translations and alike
-	cairo_matrix_t transform;
+
+	cairo_matrix_t translate;
+	cairo_matrix_t rotate;
 	// Bounding box
 	GooCanvasBounds bounds;
 };
@@ -88,7 +89,8 @@ item_data_init (ItemData *item_data)
 
 	priv->grid = NULL;
 
-	cairo_matrix_init_identity (&(priv->transform));
+	cairo_matrix_init_identity (&(priv->translate));
+	cairo_matrix_init_identity (&(priv->rotate));
 
 	item_data->priv = priv;
 }
@@ -268,8 +270,8 @@ item_data_get_pos (ItemData *item_data, Coords *pos)
 	g_return_if_fail (pos != NULL);
 	ItemDataPriv *priv;
 	priv = item_data->priv;
-	pos->x = priv->transform.x0;
-	pos->y = priv->transform.y0;
+	pos->x = priv->translate.x0;
+	pos->y = priv->translate.y0;
 }
 
 void
@@ -283,8 +285,8 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 
 	priv = item_data->priv;
-	priv->transform.x0 = pos->x;
-	priv->transform.y0 = pos->y;
+
+	cairo_matrix_init_translate (&(priv->translate), pos->x, pos->y);
 
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
@@ -310,7 +312,7 @@ item_data_move (ItemData *item_data, Coords *delta)
 		return;
 
 	priv = item_data->priv;
-	cairo_matrix_translate (&(priv->transform), delta->x, delta->y);
+	cairo_matrix_translate (&(priv->translate), delta->x, delta->y);
 }
 
 void
@@ -326,7 +328,7 @@ item_data_snap (ItemData *item_data)
 
 	if (priv) {
 		if (priv->grid)
-			snap_to_grid (priv->grid, &(priv->transform.x0), &(priv->transform.y0));
+			snap_to_grid (priv->grid, &(priv->translate.x0), &(priv->translate.y0));
 		else
 			g_warning ("ItemData %p grid field is NUL", item_data);
 	} else {
@@ -397,7 +399,8 @@ item_data_copy (ItemData *dest, ItemData *src)
 	g_return_if_fail (src != NULL);
 	g_return_if_fail (IS_ITEM_DATA (src));
 
-	dest->priv->transform = src->priv->transform;
+	dest->priv->translate = src->priv->translate;
+	dest->priv->rotate = src->priv->rotate;
 	dest->priv->store = NULL;
 }
 
@@ -431,13 +434,13 @@ item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 	priv = data->priv;
 
 	if (p1) {
-		p1->x += priv->transform.x0;
-		p1->y += priv->transform.y0;
+		p1->x += priv->translate.x0;
+		p1->y += priv->translate.y0;
 	}
 
 	if (p2) {
-		p2->x += priv->transform.x0;
-		p2->y += priv->transform.y0;
+		p2->x += priv->translate.x0;
+		p2->y += priv->translate.y0;
 	}
 }
 
@@ -627,4 +630,29 @@ item_data_changed (ItemData *data)
 		return;
 
 	return id_class->changed (data);
+}
+
+
+/**
+ * @param data determines which item to refresh
+ * @returns [transfer-none] pointer to cairo matrix
+ */
+cairo_matrix_t *
+item_data_get_translate (ItemData *data)
+{
+	g_return_val_if_fail (data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
+	return &(data->priv->translate);
+}
+
+/**
+ * @param data determines which item to refresh
+ * @returns [transfer-none] pointer to cairo matrix
+ */
+cairo_matrix_t *
+item_data_get_rotate (ItemData *data)
+{
+	g_return_val_if_fail (data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
+	return &(data->priv->rotate);
 }
