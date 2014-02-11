@@ -33,7 +33,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "goocanvas.h"
+#include <goocanvas.h>
 
 #include "item-data.h"
 #include "node-store.h"
