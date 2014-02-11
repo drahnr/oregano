@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -67,9 +67,9 @@ static void 		       selection_changed (PartItem *item, gboolean select,
 static int  		       select_idle_callback (PartItem *item);
 static int  		       deselect_idle_callback (PartItem *item);
 static void 			   update_canvas_labels (PartItem *part_item);
-static gboolean 		   is_in_area (SheetItem *object, Coords *p1, 
+static gboolean 		   is_in_area (SheetItem *object, Coords *p1,
 		                  		Coords *p2);
-inline static void 		   get_cached_bounds (PartItem *item, Coords *p1, 
+inline static void 		   get_cached_bounds (PartItem *item, Coords *p1,
 		                   		Coords *p2);
 static void 		       show_labels (SheetItem *sheet_item, gboolean show);
 static void 		       part_item_paste (Sheet *sheet, ItemData *data);
@@ -80,15 +80,15 @@ static void 		       part_changed_callback (ItemData *data, SheetItem *sheet_ite
 
 static void 		       part_item_place (SheetItem *item, Sheet *sheet);
 static void 		       part_item_place_ghost (SheetItem *item, Sheet *sheet);
-static void 		       create_canvas_items (GooCanvasGroup *group, 
-		                		LibraryPart *library_part);      
+static void 		       create_canvas_items (GooCanvasGroup *group,
+		                		LibraryPart *library_part);
 static void 		       create_canvas_labels (PartItem *item, Part *part);
 static void 		       create_canvas_label_nodes (PartItem *item, Part *part);
 static PartItem *	       part_item_canvas_new (Sheet *sheet, Part *part);
-static void 		       part_item_get_property (GObject *object, 
+static void 		       part_item_get_property (GObject *object,
 		                   		guint prop_id, GValue *value, GParamSpec *spec);
-static void 		       part_item_set_property (GObject *object, 
-		                   		guint prop_id, const GValue *value, 
+static void 		       part_item_set_property (GObject *object,
+		                   		guint prop_id, const GValue *value,
 		                        GParamSpec *spec);
 static void                part_item_dispose (GObject *object);
 static GooCanvasAnchorType part_item_get_anchor_from_part (Part *part);
@@ -139,7 +139,7 @@ static const char *part_item_context_menu =
 "</ui>";
 
 static GtkActionEntry action_entries[] = {
-	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."), 
+	{"ObjectProperties", GTK_STOCK_PROPERTIES, N_("_Object Properties..."),
 		NULL, N_("Modify object properties"),
 		NULL}
 };
@@ -372,8 +372,8 @@ update_canvas_labels (PartItem *item)
 		canvas_item = label_items->data;
 
 		text = part_property_expand_macros (part, label->text);
-		g_object_set (canvas_item, 
-					  "text", text, 
+		g_object_set (canvas_item,
+					  "text", text,
 					  NULL);
 		g_free (text);
 	}
@@ -398,7 +398,7 @@ part_item_update_node_label (PartItem *item)
 
 	// Put the label of each node
 	num_pins = part_get_num_pins (part);
-	
+
 	if (num_pins == 1) {
 		pins = part_get_pins (part);
 		labels = priv->label_nodes;
@@ -408,14 +408,14 @@ part_item_update_node_label (PartItem *item)
 			txt = g_strdup_printf ("V(%d)", pins[0].node_nr);
 			canvas_item = labels->data;
 			if (pins[0].node_nr != 0)
-				g_object_set (canvas_item, 
-			              "text", txt,  
+				g_object_set (canvas_item,
+			              "text", txt,
 			        	  "fill_color", LABEL_COLOR,
-			        	  "font", "Sans 8", 
+			        	  "font", "Sans 8",
 			              NULL);
 			else
-				g_object_set (canvas_item, 
-			              "text", "", 
+				g_object_set (canvas_item,
+			              "text", "",
 			              NULL);
 
 			g_free (txt);
@@ -423,7 +423,7 @@ part_item_update_node_label (PartItem *item)
 	}
 }
 
-static void 
+static void
 prop_dialog_destroy (GtkWidget *widget, PartPropDialog *prop_dialog)
 {
 	g_free (prop_dialog);
@@ -486,18 +486,18 @@ edit_properties_point (PartItem *item)
 	}
 	gtk_builder_set_translation_domain (gui, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui", 
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui",
 	                               &error) <= 0) {
 		oregano_error_with_title (_("Could not create part properties dialog."), error->message);
 		g_error_free (error);
 		return;
-	}	
+	}
 
 	prop_dialog = g_new0 (PartPropDialog, 1);
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, 
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui,
 	                                   "clamp-properties-dialog"));
 
 	radio_v = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_v"));
@@ -511,7 +511,7 @@ edit_properties_point (PartItem *item)
 	ac_i = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_i"));
 
 	chk_db = GTK_CHECK_BUTTON (gtk_builder_get_object (gui, "check_db"));
-	
+
 	// Setup GUI from properties
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
@@ -524,25 +524,25 @@ edit_properties_point (PartItem *item)
 			if (!g_ascii_strcasecmp (prop->name, "type")) {
 				if (!g_ascii_strcasecmp (prop->value, "v")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_v), TRUE);
-				} 
+				}
 				else {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (radio_c), TRUE);
 				}
-			} 
+			}
 			else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
 				if (!g_ascii_strcasecmp (prop->value, "m")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_m), TRUE);
-				} 
+				}
 				else if (!g_ascii_strcasecmp (prop->value, "i")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_i), TRUE);
-				} 
+				}
 				else if (!g_ascii_strcasecmp (prop->value, "p")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_p), TRUE);
-				} 
+				}
 				else if (!g_ascii_strcasecmp (prop->value, "r")) {
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (ac_r), TRUE);
 				}
-			} 
+			}
 			else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
 				if (!g_ascii_strcasecmp (prop->value, "true"))
 					gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (chk_db), TRUE);
@@ -561,31 +561,31 @@ edit_properties_point (PartItem *item)
 		if (prop->name) {
 			if (!g_ascii_strcasecmp (prop->name, "internal"))
 				continue;
-	
+
 			if (!g_ascii_strcasecmp (prop->name, "type")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (radio_v))) {
 					prop->value = g_strdup ("v");
-				} 
+				}
 				else {
 					prop->value = g_strdup ("i");
 				}
-			} 
+			}
 			else if (!g_ascii_strcasecmp (prop->name, "ac_type")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_m))) {
 					prop->value = g_strdup ("m");
-				} 
+				}
 				else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_i))) {
 					prop->value = g_strdup ("i");
-				} 
+				}
 				else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_p))) {
 					prop->value = g_strdup ("p");
-				} 
+				}
 				else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (ac_r))) {
 					prop->value = g_strdup ("r");
 				}
-			} 
+			}
 			else if (!g_ascii_strcasecmp (prop->name, "ac_db")) {
 				g_free (prop->value);
 				if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (chk_db)))
@@ -637,15 +637,15 @@ edit_properties (SheetItem *object)
 	if ((gui = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create part properties dialog."));
 		return;
-	} 
+	}
 	else
 		 gtk_builder_set_translation_domain (gui, NULL);
 
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-properties-dialog.ui", 
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-properties-dialog.ui",
 	    &error) <= 0) {
 		msg = error->message;
-		oregano_error_with_title (_("Could not create part properties dialog."), 
+		oregano_error_with_title (_("Could not create part properties dialog."),
 		                          msg);
 		g_error_free (error);
 		return;
@@ -655,7 +655,7 @@ edit_properties (SheetItem *object)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, 
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui,
 	                      "part-properties-dialog"));
 
 	prop_grid = GTK_GRID (gtk_builder_get_object (gui, "prop_grid"));
@@ -670,14 +670,14 @@ edit_properties (SheetItem *object)
 	for (properties = part_get_properties (part); properties;
 		properties = properties->next) {
 		Property *prop;
-		
+
 		prop = properties->data;
 
 		if (prop->name) {
 			GtkWidget *entry;
 			GtkWidget *label;
 			gchar *temp=NULL;
-			
+
 			if (!g_ascii_strcasecmp (prop->name, "internal"))
 				continue;
 
@@ -685,7 +685,7 @@ edit_properties (SheetItem *object)
 				has_model = TRUE;
 				model_name = g_strdup (prop->value);
 			}
-			
+
 			// Find the Refdes and replace by their real value
 			temp = prop->name;
 			if (!g_ascii_strcasecmp (temp,  "Refdes")) temp = _("Designation");
@@ -700,9 +700,9 @@ edit_properties (SheetItem *object)
 			g_object_set_data (G_OBJECT (entry),  "user",  g_strdup (prop->name));
 
 			gtk_grid_attach (prop_grid, label, 0,y, 1,1);
-			
+
 			gtk_grid_attach (prop_grid, entry, 1,y, 1,1);
-			
+
 			y++;
 			gtk_widget_show (label);
 			gtk_widget_show (entry);
@@ -712,8 +712,8 @@ edit_properties (SheetItem *object)
 	}
 
 	if (!has_model) {
-		gtk_notebook_remove_page (notebook, 1); 
-	} 
+		gtk_notebook_remove_page (notebook, 1);
+	}
 	else {
 		GtkTextBuffer *txtbuffer;
 		GtkTextView *txtmodel;
@@ -727,7 +727,7 @@ edit_properties (SheetItem *object)
 		if (g_file_get_contents (filename, &str, NULL, &read_error)) {
 			gtk_text_buffer_set_text (txtbuffer, str, -1);
 			g_free (str);
-		} 
+		}
 		else {
 			gtk_text_buffer_set_text (txtbuffer, read_error->message, -1);
 			g_error_free (read_error);
@@ -765,7 +765,7 @@ angle_to_anchor (int angle)
 	angle %= 360;
 
 	if (90-45 < angle && angle < 90+45) {
-		anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;	
+		anchor = GOO_CANVAS_ANCHOR_NORTH_WEST;
 	} else if (180-45 < angle && angle < 180+45) {
 		anchor = GOO_CANVAS_ANCHOR_NORTH_EAST;
 	} else if (270-45 < angle && angle < 270+45) {
@@ -773,7 +773,7 @@ angle_to_anchor (int angle)
 	} else/* if (360-45 < angle && angle < 0+45) */{
 		anchor = GOO_CANVAS_ANCHOR_SOUTH_WEST;
 	}
-	
+
 	return anchor;
 }
 
@@ -817,8 +817,8 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	cairo_matrix_t morph, inv;
 	cairo_status_t done;
 
-	morph = inv = *(item_data_get_rotate(data)); //copy
-	cairo_matrix_multiply (&morph, &morph, item_data_get_translate (data));
+	inv = *(item_data_get_rotate(data)); //copy
+	cairo_matrix_multiply (&morph, &inv, item_data_get_translate (data));
 
 
 	done = cairo_matrix_invert (&inv);
@@ -855,7 +855,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	// same for label nodes
 	for (iter = priv->label_nodes; iter; iter = iter->next) {
 		g_object_set (iter->data,
-		              "anchor", anchor, 
+		              "anchor", anchor,
 		              NULL);
 
 		goo_canvas_item_set_transform (iter->data, &inv);
@@ -919,13 +919,13 @@ select_idle_callback (PartItem *item)
 {
 	GooCanvasItem *canvas_item = NULL;
 	int index;
-	
+
 	g_return_val_if_fail (item != NULL, FALSE);
 
-	for (index = 0; index < GOO_CANVAS_GROUP (item)->items->len; index++) {	
+	for (index = 0; index < GOO_CANVAS_GROUP (item)->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (GOO_CANVAS_GROUP (item)->items->pdata[index]);
-		g_object_set (canvas_item, 
-		              "stroke-color", SELECTED_COLOR, 
+		g_object_set (canvas_item,
+		              "stroke-color", SELECTED_COLOR,
 		              NULL);
 	}
 	g_object_unref (G_OBJECT (item));
@@ -940,15 +940,15 @@ deselect_idle_callback (PartItem *item)
 
 	for (index = 0; index < GOO_CANVAS_GROUP (item)->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (GOO_CANVAS_GROUP (item)->items->pdata[index]);
-		
+
 		if (GOO_IS_CANVAS_TEXT (canvas_item)) {
-			g_object_set (canvas_item, 
-			              "stroke-color", LABEL_COLOR, 
+			g_object_set (canvas_item,
+			              "stroke-color", LABEL_COLOR,
 			              NULL);
 		}
 		else {
-			g_object_set (canvas_item, 
-			              "stroke-color", NORMAL_COLOR, 
+			g_object_set (canvas_item,
+			              "stroke-color", NORMAL_COLOR,
 			              NULL);
 		}
 	}
@@ -988,12 +988,12 @@ show_labels (SheetItem *sheet_item, gboolean show)
 	priv = item->priv;
 
 	if (show)
-		g_object_set (priv->label_group, 
-				      "visibility", GOO_CANVAS_ITEM_VISIBLE, 
+		g_object_set (priv->label_group,
+				      "visibility", GOO_CANVAS_ITEM_VISIBLE,
 		              NULL);
 	else
-		g_object_set (priv->label_group, 
-				      "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+		g_object_set (priv->label_group,
+				      "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 		              NULL);
 }
 
@@ -1008,7 +1008,7 @@ get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
 	if (!priv->cache_valid) {
 		Coords start_pos, end_pos;
 		GooCanvasBounds bounds;
-		
+
 		goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (item), &bounds);
 
 		start_pos.x = bounds.x1;
@@ -1097,7 +1097,7 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 		switch (object->type) {
 			case SYMBOL_OBJECT_LINE:
 				points = object->u.uline.line;
-				item = goo_canvas_polyline_new (GOO_CANVAS_ITEM (group), 
+				item = goo_canvas_polyline_new (GOO_CANVAS_ITEM (group),
 			        FALSE,
 			        0,
 			       	"points", points,
@@ -1105,14 +1105,14 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 					"line-width", 0.5,
 					NULL);
 				if (object->u.uline.spline) {
-					g_object_set (item, 
-				              "smooth", TRUE, 
-				              "spline_steps", 5, 
+					g_object_set (item,
+				              "smooth", TRUE,
+				              "spline_steps", 5,
 				              NULL);
 				}
 				break;
 			case SYMBOL_OBJECT_ARC:
-				item = goo_canvas_ellipse_new (GOO_CANVAS_ITEM (group), 
+				item = goo_canvas_ellipse_new (GOO_CANVAS_ITEM (group),
 					(object->u.arc.x2 + object->u.arc.x1) / 2.0,
 			        (object->u.arc.y1 + object->u.arc.y2) / 2.0,
 			        (object->u.arc.x2 - object->u.arc.x1) / 2.0,
@@ -1122,14 +1122,14 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 			        NULL);
 				break;
 			case SYMBOL_OBJECT_TEXT:
-				item = goo_canvas_text_new (GOO_CANVAS_ITEM (group), 
-			        object->u.text.str, 
-			     	(double) object->u.text.x, 
-			        (double) object->u.text.y, 
+				item = goo_canvas_text_new (GOO_CANVAS_ITEM (group),
+			        object->u.text.str,
+			     	(double) object->u.text.x,
+			        (double) object->u.text.y,
 			        -1,
-			        GOO_CANVAS_ANCHOR_NORTH_EAST, 
+			        GOO_CANVAS_ANCHOR_NORTH_EAST,
 			        "fill_color", LABEL_COLOR,
-			        "font", "Sans 8", 
+			        "font", "Sans 8",
 			        NULL);
 			break;
 			default:
@@ -1141,21 +1141,21 @@ create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 		if (group_bounds.x2 < bounds.x2) group_bounds.x2 = bounds.x2;
 		if (group_bounds.y1 > bounds.y1) group_bounds.y1 = bounds.y1;
 		if (group_bounds.y2 < bounds.y2) group_bounds.y2 = bounds.y2;
-		
+
 	}
-	
+
 	g_object_get (group,
 	              "width", &width,
 	              "height", &height,
 	              NULL);
 	width = group_bounds.x2 - group_bounds.x1;
 	height = group_bounds.y2 - group_bounds.y1;
-	
+
 	g_object_set (group,
 	              "width", width,
 	              "height", height,
 	              NULL);
-	
+
 	g_slist_free_full (objects, g_object_unref);
 }
 
@@ -1210,7 +1210,7 @@ create_canvas_label_nodes (PartItem *item, Part *part)
 	int num_pins, i;
 	Coords p1, p2;
 	GooCanvasAnchorType anchor;
-	
+
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
 	g_return_if_fail (part != NULL);
@@ -1279,16 +1279,16 @@ part_item_place (SheetItem *item, Sheet *sheet)
 {
 	g_signal_connect (G_OBJECT (item), "button_press_event",
 	    G_CALLBACK (sheet_item_event), sheet);
-		
+
 	g_signal_connect (G_OBJECT (item), "button_release_event",
 	    G_CALLBACK (sheet_item_event), sheet);
-			
+
 	g_signal_connect (G_OBJECT (item), "motion_notify_event",
 	    G_CALLBACK (sheet_item_event), sheet);
-		
+
 	g_signal_connect (G_OBJECT (item), "key_press_event",
 	    G_CALLBACK (sheet_item_event), sheet);
-		
+
 	g_signal_connect (G_OBJECT (item), "double_clicked",
             G_CALLBACK (edit_properties), item);
 }
@@ -1307,16 +1307,16 @@ part_item_show_node_labels (PartItem *part, gboolean show)
 	priv = part->priv;
 
 	if (show)
-		g_object_set (priv->node_group, 
-				      "visibility", GOO_CANVAS_ITEM_VISIBLE, 
+		g_object_set (priv->node_group,
+				      "visibility", GOO_CANVAS_ITEM_VISIBLE,
 		              NULL);
 	else
-		g_object_set (priv->node_group, 
-				      "visibility", GOO_CANVAS_ITEM_INVISIBLE, 
+		g_object_set (priv->node_group,
+				      "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 		              NULL);
 }
 
-static GooCanvasAnchorType 
+static GooCanvasAnchorType
 part_item_get_anchor_from_part (Part *part)
 {
 	int anchor_h, anchor_v;
@@ -1334,7 +1334,7 @@ part_item_get_anchor_from_part (Part *part)
 	case 90:
 		anchor_h = ANCHOR_NORTH;
 		anchor_v = ANCHOR_WEST;
-		// Invert Rotation 
+		// Invert Rotation
 		if (flip & ID_FLIP_HORIZ)
 			flip = ID_FLIP_VERT;
 		else if (flip & ID_FLIP_VERT)
