@@ -32,6 +32,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+// FIXME
+#define FIXME_INCREMENTAL_MOVMENT_DOES_NOT_WORK 1
+
+
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
@@ -355,14 +359,14 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		 GdkEvent *event, Sheet *sheet)
 {
 	// Remember the last position of the mouse cursor.
-	static double last_x, last_y;
 	GooCanvas *canvas;
 	SheetPriv *priv;
 	GList *list;
-	// Mouse cursor position in window coordinates, snapped to the grid spacing.
-	double snapped_x, snapped_y;
-	// Move the selected item(s) by this movement.
-	double dx, dy;
+
+	static Coords last, current, snapped;
+	//snapped : Mouse cursor position in window coordinates, snapped to the grid spacing.
+	//delta   : Move the selected item(s) by this movement.
+	Coords delta;
 
 
 	g_return_val_if_fail (sheet_item != NULL, FALSE);
@@ -380,7 +384,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		case 1:
 			g_signal_stop_emission_by_name (sheet_item, "button_press_event");
 			sheet->state = SHEET_STATE_DRAG_START;
-			sheet_get_pointer (sheet, &last_x, &last_y);
+			g_assert (sheet_get_pointer (sheet, &last.x, &last.y));
 			break;
 		case 3:
 			g_signal_stop_emission_by_name (sheet_item, "button_press_event");
@@ -447,9 +451,8 @@ sheet_item_event (GooCanvasItem *sheet_item,
 			}
 
 			// Get the mouse motion
-			sheet_get_pointer (sheet, &snapped_x, &snapped_y);
-			snapped_x -= last_x;
-			snapped_y -= last_y;
+			g_assert (sheet_get_pointer (sheet, &snapped.x, &snapped.y));
+			delta = coords_sub (&snapped, &last);
 
 			sheet->state = SHEET_STATE_NONE;
 			goo_canvas_pointer_ungrab (canvas, GOO_CANVAS_ITEM (sheet_item),
@@ -464,43 +467,44 @@ sheet_item_event (GooCanvasItem *sheet_item,
 
 			for (list = priv->selected_objects; list; list = list->next) {
 				ItemData *item_data;
-				Coords pos;
 
 				item_data = SHEET_ITEM (list->data)->priv->data;
-				pos.x = snapped_x;
-				pos.y = snapped_y;
-				item_data_move (item_data, &pos);
+				item_data_move (item_data, &delta);
 				item_data_snap (item_data);
 				item_data_register (item_data);
 			}
-			g_list_free_full (list, g_object_unref);
-
 			break;
 		}
 
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 			case GDK_KEY_r:
-				sheet_rotate_selection (sheet);
 				{
-					gdouble x, y;
+#ifndef FIXME_STILL_MINI_OFFSET
+					Coords bbdelta;
 					GooCanvasBounds bounds;
-
-					sheet_get_pointer (sheet, &x, &y);
 
 					// Center the objects around the mouse pointer.
 					goo_canvas_item_get_bounds (
-						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
+						GOO_CANVAS_ITEM (priv->selected_group), &bounds);
 
-					dx = x - (bounds.x1 + bounds.x2) / 2;
-					dy = y - (bounds.y1 + bounds.y2) / 2;
-                    snap_to_grid (sheet->grid, &dx, &dy);
+					bbdelta.x = (bounds.x2 - bounds.x1) / 2.;
+					bbdelta.y = (bounds.y2 - bounds.y1) / 2.;
+#endif
+				sheet_rotate_selection (sheet, 90);
+#ifndef FIXME_STILL_MINI_OFFSET
+					// Center the objects around the mouse pointer.
+					goo_canvas_item_get_bounds (
+						GOO_CANVAS_ITEM (priv->selected_group), &bounds);
+
+					bbdelta.x -= (bounds.x2 - bounds.x1) / 2.;
+					bbdelta.y -= (bounds.y2 - bounds.y1) / 2.;
+
+					snap_to_grid (sheet->grid, &bbdelta.x, &bbdelta.y);
 
 					goo_canvas_item_translate (
-						GOO_CANVAS_ITEM (priv->floating_group), dx, dy);
-
-                    last_x = snapped_x;
-                    last_y = snapped_y;
+					    GOO_CANVAS_ITEM (priv->selected_group), bbdelta.x, bbdelta.y);
+#endif
 				}
 				break;
 			default:
@@ -543,10 +547,9 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		}
 
 		// Set last_x & last_y to the pointer position
-		sheet_get_pointer (sheet, &snapped_x, &snapped_y);
+		sheet_get_pointer (sheet, &snapped.x, &snapped.y);
 
-		dx = snapped_x - last_x;
-		dy = snapped_y - last_y;
+		delta = coords_sub (&snapped, &last);
 
 		// Check that we don't move outside the sheet...
 		// Horizontally:
@@ -577,10 +580,14 @@ sheet_item_event (GooCanvasItem *sheet_item,
 		//last_y = snapped_y;
 		*/
 
+#if !FIXME_INCREMENTAL_MOVMENT_DOES_NOT_WORK
+		last = snapped;
+#else
 		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (priv->selected_group),
-		                               NULL);
+				                           NULL);
+#endif
 		goo_canvas_item_translate (GOO_CANVAS_ITEM (priv->selected_group),
-		                           dx, dy);
+		                           delta.x, delta.y);
 		return TRUE;
 
 	default:
@@ -638,17 +645,16 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 {
 	SheetPriv *priv;
 	GList *list;
-	static Coords pos;
-	static int keep = 0;
+	static gboolean keep = FALSE;
 
-	// Remember the last position of the mouse cursor.
-	static double last_x, last_y;
+	// Remember the start position of the mouse cursor.
+	static Coords last = {0., 0.};
 
 	// Mouse cursor position in window coordinates, snapped to the grid spacing.
-	double snapped_x, snapped_y;
+	static Coords snapped = {0., 0.};
 
 	// Move the selected item(s) by this movement.
-	double dx, dy;
+	Coords delta = {0., 0.};
 
 	g_return_val_if_fail (sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
@@ -686,10 +692,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 				sheet->priv->float_handler_id = 0;
 			}
-
-			// Get pointer position in canvas coordinates
-			sheet_get_pointer (sheet, &pos.x, &pos.y);
-
+			// FIXME assert that `Coords current` has been set by now!
 			for (list = priv->floating_objects; list; list = list->next) {
 				SheetItem *floating_item;
 				ItemData *floating_data;
@@ -702,11 +705,16 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 					              NULL);
 				} else {
+					// FIXME the bounding box of the clone is wrong
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 				}
 				g_object_ref (G_OBJECT (floating_data));
-				item_data_set_pos (floating_data, &pos);
+
+				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
+
+				item_data_set_pos (floating_data, &snapped);
 				item_data_snap (floating_data);
+
 
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), floating_data);
 
@@ -714,17 +722,16 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					g_object_unref (G_OBJECT (floating_item));
 			}
 
+
 			if (keep) {
 				g_object_set (G_OBJECT (priv->floating_group),
-				              "x", pos.x,
-				              "y", pos.y,
-				              NULL);
+			              "x", snapped.x,
+			              "y", snapped.y,
+			              NULL);
 			} else {
 				g_list_free (priv->floating_objects);
 				priv->floating_objects = NULL;
 			}
-			pos.x = 0.0; 
-			pos.y = 0.0; 
 			break;
 
 		case 3:
@@ -741,71 +748,93 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 		return TRUE;
 
 	case GDK_MOTION_NOTIFY:
+		// keep track of the position, as `sheet_get_pointer*()` does not work
+		// in other events than MOTION_NOTIFY
+#if 0
+		{
+			Coords tmp;
+			last = current;
+			if (sheet_get_pointer (sheet, &tmp.x, &tmp.y)) {
+				snapped_current = current = tmp;
+				snap_to_grid (sheet->grid, &snapped_current.x, &snapped_current.y);
+			}
+		}
+#endif
 		if (sheet->state != SHEET_STATE_FLOAT &&
 			sheet->state != SHEET_STATE_FLOAT_START)
 			return FALSE;
 
 		g_signal_stop_emission_by_name (sheet, "event");
 
+		// Get pointer position independantly of the zoom
+
 		if (sheet->state == SHEET_STATE_FLOAT_START) {
 			sheet->state = SHEET_STATE_FLOAT;
-
+			last.x = last.y = 0.;
 			// Reparent the selected objects so that we can move them
 			// efficiently.
 			for (list = priv->floating_objects; list; list = list->next) {
 				sheet_item_reparent (SHEET_ITEM (list->data),
-				                     priv->floating_group);
-
+					                 priv->floating_group);
 				// Set the floating item visible
 				g_object_set (G_OBJECT (list->data),
 				              "visibility", GOO_CANVAS_ITEM_VISIBLE,
-				              NULL);
+					          NULL);
 			}
-			last_x = 0.0;
-			last_y = 0.0;
+#if 0
+			GooCanvasBounds box;
+			goo_canvas_item_get_bounds (priv->floating_group, &box);
+#endif
+			NG_DEBUG ("\n\n\nFLOAT ### START\n\n\n\n");
 		}
 
-		// Get pointer position independantly of the zoom
-		sheet_get_pointer (sheet, &snapped_x, &snapped_y);
+		sheet_get_pointer_snapped (sheet, &snapped.x, &snapped.y);
 
-		// Calculate which amount to move the selected objects by.
-		dx = snapped_x - last_x;
-		dy = snapped_y - last_y;
-	
-		last_x = snapped_x;
-		last_y = snapped_y;
+		delta = coords_sub (&snapped, &last);
+		NG_DEBUG ("drag floating current      sx=%lf sy=%lf \n", snapped.x, snapped.y);
+		NG_DEBUG ("drag floating last         lx=%lf ly=%lf \n", last.x, last.y);
+		NG_DEBUG ("drag floating delta     -> dx=%lf dy=%lf \n", delta.x, delta.y);
 
-		for (list = priv->floating_objects; list; list = list->next) {
-			goo_canvas_item_translate (GOO_CANVAS_ITEM (list->data),
-			                           dx, dy);
-		}
-		g_list_free_full (list, g_object_unref);
+
+#if !FIXME_INCREMENTAL_MOVMENT_DOES_NOT_WORK
+		last = snapped;
+#else
+		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (priv->floating_group),
+				                           NULL);
+#endif
+		goo_canvas_item_translate (GOO_CANVAS_ITEM (priv->floating_group),
+		                           delta.x, delta.y);
+
 		break;
 
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 			case GDK_KEY_r:
 			case GDK_KEY_R:
-				sheet_rotate_ghosts (sheet);
 				{
-					gdouble x, y;
+					Coords bbdelta;
 					GooCanvasBounds bounds;
-
-					sheet_get_pointer (sheet, &x, &y);
 
 					// Center the objects around the mouse pointer.
 					goo_canvas_item_get_bounds (
 						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
 
-					snapped_x = x - (bounds.x1 + bounds.x2) / 2;
-					snapped_y = y - (bounds.y1 + bounds.y2) / 2;
-					snap_to_grid (sheet->grid, &snapped_x, &snapped_y);
+					bbdelta.x = (bounds.x2 - bounds.x1) / 2.;
+					bbdelta.y = (bounds.y2 - bounds.y1) / 2.;
+
+				sheet_rotate_ghosts (sheet);
+
+					// Center the objects around the mouse pointer.
+					goo_canvas_item_get_bounds (
+						GOO_CANVAS_ITEM (priv->floating_group), &bounds);
+
+					bbdelta.x -= (bounds.x2 - bounds.x1) / 2.;
+					bbdelta.y -= (bounds.y2 - bounds.y1) / 2.;
+
+					snap_to_grid (sheet->grid, &bbdelta.x, &bbdelta.y);
 
 					goo_canvas_item_translate (
-					    GOO_CANVAS_ITEM (priv->floating_group), snapped_x, snapped_y);
-
-					last_x = snapped_x;
-					last_y = snapped_y;
+					    GOO_CANVAS_ITEM (priv->floating_group), bbdelta.x, bbdelta.y);
 				}
 				break;
 			default:
