@@ -68,8 +68,11 @@ struct _ItemDataPriv {
 	// Grid model to align to
 	Grid *grid;
 
+	// modificator matrices
 	cairo_matrix_t translate;
 	cairo_matrix_t rotate;
+	cairo_matrix_t flip;
+
 	// Bounding box
 	GooCanvasBounds bounds;
 };
@@ -91,6 +94,7 @@ item_data_init (ItemData *item_data)
 
 	cairo_matrix_init_identity (&(priv->translate));
 	cairo_matrix_init_identity (&(priv->rotate));
+	cairo_matrix_init_identity (&(priv->flip));
 
 	item_data->priv = priv;
 }
@@ -124,7 +128,7 @@ item_data_class_init (ItemDataClass *klass)
 
 	object_class = G_OBJECT_CLASS (klass);
 
-	// This assignment must be  performed before the call 
+	// This assignment must be  performed before the call
 	// to g_object_class_install_property
 	object_class->set_property = item_data_set_gproperty;
 	object_class->get_property = item_data_get_gproperty;
