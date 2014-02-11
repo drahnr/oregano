@@ -171,4 +171,8 @@ void 		item_data_print (ItemData *data, cairo_t *cr,
 // properties (or its subclasses)
 void		item_data_changed (ItemData *data);
 
+//
+cairo_matrix_t *	item_data_get_translate (ItemData *data);
+cairo_matrix_t *	item_data_get_rotate (ItemData *data);
+
 #endif

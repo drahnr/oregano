@@ -33,7 +33,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include "goocanvas.h"
+#include <goocanvas.h>
 
 #include "item-data.h"
 #include "node-store.h"
@@ -67,7 +67,12 @@ struct _ItemDataPriv {
 	NodeStore *store;
 	// Grid model to align to
 	Grid *grid;
-	Coords pos;
+
+	// modificator matrices
+	cairo_matrix_t translate;
+	cairo_matrix_t rotate;
+	cairo_matrix_t flip;
+
 	// Bounding box
 	GooCanvasBounds bounds;
 };
@@ -77,13 +82,32 @@ G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT)
 static guint item_data_signals [LAST_SIGNAL] = { 0 };
 
 static void
+item_data_init (ItemData *item_data)
+{
+	ItemDataPriv *priv;
+
+	priv = g_slice_new0 (ItemDataPriv);
+
+	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
+
+	priv->grid = NULL;
+
+	cairo_matrix_init_identity (&(priv->translate));
+	cairo_matrix_init_identity (&(priv->rotate));
+	cairo_matrix_init_identity (&(priv->flip));
+
+	item_data->priv = priv;
+}
+
+static void
 item_data_dispose (GObject *object)
 {
+	ItemDataPriv *priv = ITEM_DATA (object)->priv;
 	// Remove the item from the sheet node store if there.
-	if (ITEM_DATA (object)->priv->store) {
+	if (priv->store) {
 		item_data_unregister (ITEM_DATA (object));
 	}
-
+	g_slice_free (ItemDataPriv, priv);
 	G_OBJECT_CLASS (item_data_parent_class)->dispose (object);
 }
 
@@ -104,76 +128,76 @@ item_data_class_init (ItemDataClass *klass)
 
 	object_class = G_OBJECT_CLASS (klass);
 
-	// This assignment must be  performed before the call 
+	// This assignment must be  performed before the call
 	// to g_object_class_install_property
 	object_class->set_property = item_data_set_gproperty;
 	object_class->get_property = item_data_get_gproperty;
 
 	g_object_class_install_property (object_class, ARG_STORE,
-		g_param_spec_pointer ("store", "ItemData::store",
-		"the store data", G_PARAM_READWRITE));
+	    g_param_spec_pointer ("store", "ItemData::store",
+	    "the store data", G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class, ARG_POS,
-		g_param_spec_pointer ("pos", "ItemData::pos",
-		"the pos data", G_PARAM_READWRITE));
+	    g_param_spec_pointer ("pos", "ItemData::pos",
+	    "the pos data", G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class, ARG_GRID,
-		g_param_spec_pointer ("grid", "ItemData::grid",
-		"the grid to align to", G_PARAM_READWRITE));
+	    g_param_spec_pointer ("grid", "ItemData::grid",
+	    "the grid to align to", G_PARAM_READWRITE));
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
 	item_data_signals [MOVED] = g_signal_new ("moved",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		G_STRUCT_OFFSET (ItemDataClass, moved),
-		NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    G_STRUCT_OFFSET (ItemDataClass, moved),
 	    NULL,
-		g_cclosure_marshal_VOID__POINTER,
-		G_TYPE_NONE,
-		1, 
+	    NULL,
+	    g_cclosure_marshal_VOID__POINTER,
+	    G_TYPE_NONE,
+	    1,
 	    G_TYPE_POINTER);
 
 	item_data_signals [ROTATED] = g_signal_new ("rotated",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0, 
-	    NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
-		g_cclosure_marshal_VOID__INT,
-	  	G_TYPE_NONE, 
-	    1, 
+	    NULL,
+	    g_cclosure_marshal_VOID__INT,
+	    G_TYPE_NONE,
+	    1,
 	    G_TYPE_INT);
 
 	item_data_signals [FLIPPED] = g_signal_new ("flipped",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0, 
-	    NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
-		g_cclosure_marshal_VOID__INT,
-		G_TYPE_NONE, 
-	    1, 
+	    NULL,
+	    g_cclosure_marshal_VOID__INT,
+	    G_TYPE_NONE,
+	    1,
 	    G_TYPE_INT);
 
 	item_data_signals [CHANGED] = g_signal_new ("changed",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0,
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
 	    NULL,
-		g_cclosure_marshal_VOID__VOID,
-		G_TYPE_NONE,
-		0);
+	    g_cclosure_marshal_VOID__VOID,
+	    G_TYPE_NONE,
+	    0);
 
 	item_data_signals [HIGHLIGHT] = g_signal_new ("highlight",
-		G_TYPE_FROM_CLASS (object_class),
-		G_SIGNAL_RUN_FIRST,
-		0, 
-	    NULL, 
+	    G_TYPE_FROM_CLASS (object_class),
+	    G_SIGNAL_RUN_FIRST,
+	    0,
 	    NULL,
-		g_cclosure_marshal_VOID__VOID,
-		G_TYPE_NONE, 
+	    NULL,
+	    g_cclosure_marshal_VOID__VOID,
+	    G_TYPE_NONE,
 	    0);
 
 	// Methods.
@@ -189,21 +213,9 @@ item_data_class_init (ItemDataClass *klass)
 	klass->moved = NULL;
 }
 
-static void
-item_data_init (ItemData *item_data)
-{
-	ItemDataPriv *priv;
-
-	priv = g_new0 (ItemDataPriv, 1);
-
-	priv->pos.x = 0;
-	priv->pos.y = 0;
-	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
-
-	priv->grid = NULL;
-
-	item_data->priv = priv;
-}
+////////////////////////////////////////////////////////////////////////////////
+// END BOILER PLATE
+////////////////////////////////////////////////////////////////////////////////
 
 ItemData *
 item_data_new (void)
@@ -251,14 +263,19 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	}
 }
 
+/**
+ * returns the top left corner of the item
+ */
 void
 item_data_get_pos (ItemData *item_data, Coords *pos)
 {
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 	g_return_if_fail (pos != NULL);
-
-	*pos = item_data->priv->pos;
+	ItemDataPriv *priv;
+	priv = item_data->priv;
+	pos->x = priv->translate.x0;
+	pos->y = priv->translate.y0;
 }
 
 void
@@ -271,12 +288,9 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 	g_return_if_fail (item_data);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 
-	if (pos == NULL)
-		return;
-
 	priv = item_data->priv;
-	priv->pos.x = pos->x;
-	priv->pos.y = pos->y;
+
+	cairo_matrix_init_translate (&(priv->translate), pos->x, pos->y);
 
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
@@ -293,7 +307,6 @@ void
 item_data_move (ItemData *item_data, Coords *delta)
 {
 	ItemDataPriv *priv;
-	Coords target;
 
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -302,10 +315,7 @@ item_data_move (ItemData *item_data, Coords *delta)
 		return;
 
 	priv = item_data->priv;
-	target.x = priv->pos.x + delta->x;
-	target.y = priv->pos.y + delta->y;
-
-	item_data_set_pos (item_data, &target);
+	cairo_matrix_translate (&(priv->translate), delta->x, delta->y);
 }
 
 void
@@ -321,7 +331,7 @@ item_data_snap (ItemData *item_data)
 
 	if (priv) {
 		if (priv->grid)
-			snap_to_grid (priv->grid, &(priv->pos.x), &(priv->pos.y));
+			snap_to_grid (priv->grid, &(priv->translate.x0), &(priv->translate.y0));
 		else
 			g_warning ("ItemData %p grid field is NUL", item_data);
 	} else {
@@ -342,7 +352,7 @@ item_data_snap (ItemData *item_data)
 }
 
 
-gpointer // NodeStore * 
+gpointer // NodeStore *
 item_data_get_store (ItemData *item_data)
 {
 	g_return_val_if_fail (item_data != NULL, NULL);
@@ -392,7 +402,8 @@ item_data_copy (ItemData *dest, ItemData *src)
 	g_return_if_fail (src != NULL);
 	g_return_if_fail (IS_ITEM_DATA (src));
 
-	dest->priv->pos = src->priv->pos;
+	dest->priv->translate = src->priv->translate;
+	dest->priv->rotate = src->priv->rotate;
 	dest->priv->store = NULL;
 }
 
@@ -419,16 +430,20 @@ item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
 
+
+	ItemDataPriv *priv;
+
 	item_data_get_relative_bbox (data, p1, p2);
+	priv = data->priv;
 
 	if (p1) {
-		p1->x += data->priv->pos.x;
-		p1->y += data->priv->pos.y;
+		p1->x += priv->translate.x0;
+		p1->y += priv->translate.y0;
 	}
 
 	if (p2) {
-		p2->x += data->priv->pos.x;
-		p2->y += data->priv->pos.y;
+		p2->x += priv->translate.x0;
+		p2->y += priv->translate.y0;
 	}
 }
 
@@ -453,7 +468,7 @@ void
 item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 	Coords *p2)
 {
-	GList *list;
+	GList *iter;
 	Coords b1, b2;
 
 	if (item_data_list == NULL)
@@ -461,8 +476,10 @@ item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 
 	item_data_get_absolute_bbox (item_data_list->data, p1, p2);
 
-	for (list = item_data_list; list; list = list->next) {
-		item_data_get_absolute_bbox (list->data, &b1, &b2);
+	for (iter = item_data_list; iter; iter = iter->next) {
+		if (G_UNLIKELY (iter->data==NULL))
+			continue;
+		item_data_get_absolute_bbox (iter->data, &b1, &b2);
 
 		if (p1) {
 			p1->x = MIN (p1->x, b1.x);
@@ -474,7 +491,6 @@ item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 			p2->y = MAX (p2->y, b2.y);
 		}
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -519,19 +535,19 @@ item_data_unregister (ItemData *data)
 	}
 }
 
-int
+gboolean
 item_data_register (ItemData *data)
 {
 	ItemDataClass *id_class;
 
-	g_return_val_if_fail (data != NULL, -1);
-	g_return_val_if_fail (IS_ITEM_DATA (data), -1);
+	g_return_val_if_fail (data != NULL, FALSE);
+	g_return_val_if_fail (IS_ITEM_DATA (data), FALSE);
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
 	if (id_class->reg) {
 		return id_class->reg (data);
 	}
-	return -1;
+	return FALSE;
 }
 
 char *
@@ -617,4 +633,29 @@ item_data_changed (ItemData *data)
 		return;
 
 	return id_class->changed (data);
+}
+
+
+/**
+ * @param data
+ * @returns [transfer-none] pointer to cairo matrix which only includes the translation
+ */
+cairo_matrix_t *
+item_data_get_translate (ItemData *data)
+{
+	g_return_val_if_fail (data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
+	return &(data->priv->translate);
+}
+
+/**
+ * @param data
+ * @returns [transfer-none] pointer to cairo matrix which only includes the rotation
+ */
+cairo_matrix_t *
+item_data_get_rotate (ItemData *data)
+{
+	g_return_val_if_fail (data != NULL, NULL);
+	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
+	return &(data->priv->rotate);
 }

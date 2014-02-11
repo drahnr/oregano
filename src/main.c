@@ -63,8 +63,7 @@ main (int argc, char *argv[])
 		g_warning ("Failed to parse commandline arguments: %i - %s",
 		           error->code,
 		           error->message);
-		g_error_free (error);
-		error = NULL;
+		g_clear_error (&error);
 		return 1;
 	}
 

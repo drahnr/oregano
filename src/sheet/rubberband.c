@@ -202,23 +202,23 @@ rubberband_update (Sheet *sheet, GdkEvent *event) {
 	       width, height,
 	       width_ng, height_ng;
 	RubberbandInfo *rubberband_info;
-	
+
 	rubberband_info = sheet->priv->rubberband_info;
 	sheet_get_pointer (sheet, &(cur.x), &(cur.y));
-	
+
 	width  = fabs(rubberband_info->end.x - rubberband_info->start.x);
 	height = fabs(rubberband_info->end.y - rubberband_info->start.y);
-	
+
 	width_ng  = fabs(cur.x - rubberband_info->start.x);
 	height_ng = fabs(cur.y - rubberband_info->start.y);
-	
+
 	dx = fabs (width_ng - width);
 	dy = fabs (height_ng - height);
 	NG_DEBUG ("motion :: dx=%lf, dy=%lf :: x=%lf, y=%lf :: w_ng=%lf, h_ng=%lf", dx, dy, cur.x, cur.y, width_ng, height_ng);
-		
+
 	// TODO FIXME scroll window if needed (use http://developer.gnome.org/goocanvas/stable/GooCanvas.html#goo-canvas-scroll-to)
-	
-	if (dx > 0.5 || dy > 0.5) { //a 0.5 change in pixel coords would be the least visible, silently ignore everything else
+
+	if (dx > 0.1 || dy > 0.1) { //a 0.1 change in pixel coords would be the least visible, silently ignore everything else
 		rubberband_info->end.x = cur.x;
 		rubberband_info->end.y = cur.y;
 		cmin.x = MIN(rubberband_info->start.x, rubberband_info->end.x);
