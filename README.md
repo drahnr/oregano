@@ -5,11 +5,21 @@ oregano is an application for schematic capture and simulation of electronic cir
 oregano is licensed under the terms of the GNU GPL-2.0 included in the
 file COPYING.
 
+### Status
+
+[![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)
+
+The overall status should be considered `unstable`, as the process of fixing core components has yet to be completed.
+
+### Support
+
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=drahnr&url=https://github.com/drahnr/oregano&title=oregano&language=&tags=github&category=software)
+
+Any donations will directly increase sparetime we spend to write code, fix bugs, write developer documentation – working towards a 21st century Oregano Electrical Engineering Tool which is worthwhile using.
+
 ----
 
 ### Quick install guide
-
-[![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)
 
 #### Requirements
 
@@ -67,7 +77,7 @@ As every mailinglist, we also expect appropriate behavior, respect and a positiv
 
 ### Contributions
 
-are very welcome! We provide `TODO`,`ARCHITECTURE.md` and the files under `docs/*` as a starting point, an overview that should help you going.
+are very welcome! We provide `TODO`,`ARCHITECTURE.md`, `HACKING.md` and the files under `docs/*` as a starting point, an overview that should help you going.
 If you want to discuss an issue or something you would like to implement, don't be shy, drop a mail to the mailinglist (see above).
 
 
@@ -78,66 +88,3 @@ For bug and issue tracking as well as feature requests, the github built in issu
 #### Translations
 
 Translators are welcome to translate at transifex which will be synced into the git repository a day before a new release is created (see the release milestones for planned release dates)
-
-----
-
-#### Code
-
-##### Coding style
-
-As always, code should be kept modular and all methods should get a sane name (R.I.P. foo & bar)
-New code should be written in mostly K&R fashion.
-It's easiest to show within an example snippet how code should look like:
-
-```C
-/**
- * \brief description - may be ommitted
- *
- * description from a toplevel viewpoint, what it does
- * @param long_name some magic key
- * @param offset whatsoeverargument
- * @param zoom the new zoom level
- */
-int
-some_function (gint16 long_name, gint16 offset, gint16 zoom)
-{
-    int ret;
-    // comments for developers
-    // like why something is done or has to be done that specific way
-    // example:
-    // required to handle zoomed shifts
-    long_name -= offset/zoom;
-
-    ret = function_call (&long_name, zoom);
-    return ret;
-}
-```
-
-Use <kbd>tab</kbd>s to indent, but <kbd>space</kbd>s for syntetical linebreak indents.
-
-```C
-{
-|←tab→|{
-|←tab→|←tab→|a_very_long_func_name_breaking_120_chars (type first_argument,
-|←tab→|←tab→|← - - - any sane number of spaces - - - →|type second_argument,
-|←tab→|←tab→|← - - - any sane number of spaces - - - →|type third_argument);
-|←tab→|}
-}
-```
-
-Note: There is a lot of old code, that has mixed styling. It will be fixed over time.
-
-### Tests
-
-Verify that all existing tests do pass before calling for review/doing merge requests by calling `waf runtests` after successfully compiling (installing is _not_ required).
-Add new tests whenever possible/sane!
-
-### Commit messages
-Git commit messages should be one (1) line, describing the changeset briefly. If it closes a bug append a `, closes #bugnumber` or `, fixes #bugnumber`, where `#bugnumber` refers to the github bugtracker bugnumber.
-If it is a really complex issue or you think a few sentence might not hurt, add empty line followed by one or two descriptive/explaining sentences.
-Add no trailing `.` to the commit message.
-
-
-    Refactor grid, closes #77
-
-    Split grid into model and view objects, which is necessary due to ...
