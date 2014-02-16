@@ -25,6 +25,7 @@ Any donations will directly increase sparetime we spend to write code, fix bugs,
 
 You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0`, `libxml2` and `intltool` in order to build oregano.
 These are usually included in your favorite distributions repositories and can otherwise be found at the [gnome public ftp](ftp://ftp.gnome.org) server.
+In order to simulate a schematic you need either `ngspice` or `gnucap`.
 
 
 #### Building
