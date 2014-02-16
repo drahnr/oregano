@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2014       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,6 +41,7 @@
 #include "dialogs.h"
 #include "engine-internal.h"
 #include "ngspice-analysis.h"
+#include "errors.h"
 
 #include "debug.h"
 
@@ -107,7 +110,7 @@ ngspice_finalize (GObject *object)
 
 	ngspice = OREGANO_NGSPICE (object);
 	list = ngspice->priv->analysis;
-	while (list) {
+	for (; list; list = list->next) {
 		data = SIM_DATA (list->data);
 		g_free (data->var_names);
 		g_free (data->var_units);
@@ -116,13 +119,11 @@ ngspice_finalize (GObject *object)
 
 		g_free (data->min_data);
 		g_free (data->max_data);
-		
+
 		g_free (list->data);
-		list = list->next;
 	}
 	g_list_free (ngspice->priv->analysis);
 	ngspice->priv->analysis = NULL;
-	g_list_free_full (list, g_object_unref);
 
 	parent_class->finalize (object);
 }
@@ -145,77 +146,85 @@ ngspice_is_available (OreganoEngine *self)
 	gchar *exe;
 	exe = g_find_program_in_path ("ngspice");
 
-	if (!exe) return FALSE; // ngspice not found
+	if (!exe)
+		return FALSE; // ngspice not found
 
 	g_free (exe);
 	return TRUE;
 }
 
-static void
-ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename, 
-                          GError **error)
+
+/**
+ * \brief create a netlist buffer from the engine inernals
+ *
+ * @engine
+ * @error [allow-none]
+ */
+static GString *
+ngspice_generate_netlist_buffer (OreganoEngine *engine,
+                                 GError **error)
 {
 	OreganoNgSpice *ngspice;
 	Netlist output;
 	SimOption *so;
 	GList *list;
 	FILE *file;
-	GError *local_error = NULL;
+	GError *e = NULL;
+
+	GString *buffer = NULL;
 
 	ngspice = OREGANO_NGSPICE (engine);
 
-	netlist_helper_create (ngspice->priv->schematic, &output, &local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
-		return;
+	netlist_helper_create (ngspice->priv->schematic, &output, &e);
+	if (e) {
+		g_propagate_error (error, e);
+		return NULL;
 	}
 
-	file = fopen (filename, "w");
-	if (!file) {
-		oregano_error (g_strdup_printf ("Creation of %s not possible\n", filename));
-		return;
-	}
-	
+
+
 	list = sim_settings_get_options (output.settings);
-		
-	// Prints title	
-	fputs ("* ",file);
-	fputs (output.title ? output.title : "Title: <unset>", file);
-	fputs ("\n"
+
+	buffer = g_string_sized_new (500);
+	if (!buffer) {
+		g_set_error_literal (&e, OREGANO_ERROR, OREGANO_OOM, "Failed to allocate intermediate buffer.");
+		g_propagate_error (error, &e);
+		return NULL;
+	}
+	// Prints title
+	g_string_append (buffer, "* ");
+	g_string_append (buffer, output.title ? output.title : "Title: <unset>");
+	g_string_append (buffer, "\n"
 		"*----------------------------------------------"
 		"\n"
 		"*\tngspice - NETLIST"
-		"\n", file);
+		"\n");
 
 	// Prints Options
-	fputs (".options OUT=120 ",file);
+	g_string_append (buffer, ".options OUT=120 ");
 
-	while (list) {
+	for (; list; list = list->next) {
 		so = list->data;
 		// Prevent send NULL text
 		if (so->value) {
 			if (strlen(so->value) > 0) {
-				g_fprintf (file,"%s=%s ",so->name,so->value);
+				g_string_append_printf (buffer, "%s=%s ", so->name, so->value);
 			}
 		}
-		list = list->next;
 	}
-	fputc ('\n',file);
+	g_string_append_c (buffer, '\n');
 
 	// Include of subckt models
-	fputs ("*------------- Models -------------------------\n",file);
-	list = output.models;
-	while (list) {
-		gchar *model;
-		model = (gchar *)list->data;
-		g_fprintf (file,".include %s/%s.model\n", OREGANO_MODELDIR, model);
-		list = list->next;
+	g_string_append (buffer, "*------------- Models -------------------------\n");
+	for (list = output.models; list; list = list->next) {
+		const gchar *model = list->data;
+		g_string_append_printf (buffer, ".include %s/%s.model\n", OREGANO_MODELDIR, model);
 	}
 
-	// Prints template parts 
-	fputs ("*------------- Circuit Description-------------\n",file);
-	fputs (output.template->str, file);
-	fputs ("\n*----------------------------------------------\n",file);
+	// Prints template parts
+	g_string_append (buffer, "*------------- Circuit Description-------------\n");
+	g_string_append (buffer, output.template->str);
+	g_string_append (buffer, "\n*----------------------------------------------\n");
 
 	// Prints Transient Analysis
 	if (sim_settings_get_trans (output.settings)) {
@@ -229,57 +238,88 @@ ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename,
 			st = (stop-start) / 50;
 
 		if ((stop-start) <= 0) {
-			oregano_error (_("Your transient analysis settings present a "
-			          "weakness... the start figure is greater than "
+			//FIXME ask for swapping or cancel simulation
+			oregano_error (_("Transient: Start time is after Stop time - fix this."
 			           "stop figure\n"));
-			return;
+			g_string_free (buffer, TRUE);
+			return NULL;
 		}
 
-		g_fprintf (file, ".tran %lf %lf %lf\n", st, stop, start);
+		g_string_append_printf (buffer, ".tran %lf %lf %lf\n", st, stop, start);
 		{
 			gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
-			g_fprintf (file, ".print tran %s\n", tmp_str);
+			g_string_append_printf (buffer, ".print tran %s\n", tmp_str);
 			g_free (tmp_str);
-			
+
 		}
-		fputs ("\n", file);
+		g_string_append_c (buffer, '\n');
 	}
 
 	//	Print DC Analysis
 	if (sim_settings_get_dc (output.settings)) {
-		fputs (".dc ",file);
+		g_string_append (buffer, ".dc ");
 		if (sim_settings_get_dc_vsrc (output.settings)) {
-			g_fprintf (file, "V_V%s %g %g %g\n",
+			g_string_append_printf (buffer, "V_V%s %g %g %g\n",
 				sim_settings_get_dc_vsrc (output.settings),
 				sim_settings_get_dc_start (output.settings),
 				sim_settings_get_dc_stop (output.settings),
 				sim_settings_get_dc_step (output.settings));
-			g_fprintf (file, ".print dc V(%s)\n", sim_settings_get_dc_vsrc (output.settings));
+			g_string_append_printf (buffer, ".print dc V(%s)\n", sim_settings_get_dc_vsrc (output.settings));
 		}
 	}
 
 	// Prints AC Analysis
 	if (sim_settings_get_ac (output.settings)) {
-		g_fprintf (file, ".ac %s %d %g %g\n",
+		g_string_append_printf (buffer, ".ac %s %d %g %g\n",
 			sim_settings_get_ac_type (output.settings),
 			sim_settings_get_ac_npoints (output.settings),
 			sim_settings_get_ac_start (output.settings),
 			sim_settings_get_ac_stop (output.settings));
 	}
-	
+
 	// Prints analysis using a Fourier transform
-	if (sim_settings_get_fourier (output.settings)) {	
-		g_fprintf (file, ".four %d %s\n",
-		    sim_settings_get_fourier_frequency (output.settings), 
+	if (sim_settings_get_fourier (output.settings)) {
+		g_string_append_printf (buffer, ".four %d %s\n",
+		    sim_settings_get_fourier_frequency (output.settings),
 		    sim_settings_get_fourier_nodes (output.settings));
 	}
 
-	g_list_free_full (list, g_object_unref);
-	
-	// Debug op analysis.
-	fputs (".op\n", file);
-	fputs ("\n.END\n", file);
-	fclose (file);
+	g_string_append (buffer, ".op\n\n.END\n");
+
+	return buffer;
+}
+
+/**
+ * \brief generate a netlist and write to file
+ *
+ * @engine engine to extract schematic and settings from
+ * @filename target netlist file, user selected
+ * @error [allow-none]
+ */
+static gboolean
+ngspice_generate_netlist (OreganoEngine *engine, const gchar *filename,
+                          GError **error)
+{
+	GError *e = NULL;
+	GString *buffer;
+	gboolean success = FALSE;
+
+	buffer = ngspice_generate_netlist_buffer (engine, &e);
+	if (!buffer) {
+		oregano_error (g_strdup_printf ("Failed generate netlist buffer\n"));
+		g_propagate_error (error, e);
+		return FALSE;
+	}
+
+	success = g_file_set_contents (filename, buffer->str, buffer->len, &e);
+	g_string_free (buffer, TRUE);
+
+	if (!success) {
+		g_propagate_error (error, e);
+		oregano_error (g_strdup_printf ("Failed to open file \"%s\" in 'w' mode.\n", filename));
+		return FALSE;
+	}
+	return TRUE;
 }
 
 static void
