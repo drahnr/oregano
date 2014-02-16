@@ -113,9 +113,11 @@ get_variables (const gchar *str, gint *count)
 		return NULL;
 	}
 
-	out = g_new0 (gchar*, i);
+	//append an extra NUL slot to allow using g_strfreev
+	out = g_new0 (gchar*, i+1);
 	(*count) = i;
 	memcpy (out, tmp, sizeof(gchar*)*i);
+	out[i] = NULL;
 	return out;
 }
 

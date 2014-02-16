@@ -21,14 +21,12 @@ test_engine ()
 	gint i,j, k;
 
 	for (i=0; test[i]; i++) {
-		g_message ("round %i", i);
 		gchar **v = get_variables (test[i], &k);
 		g_assert_cmpint (k,==,7);
 		for (j=0; j<k; j++) {
-			g_message ("v[%i] = %s  --- expected[%i] = %s\n", j, v[j], j, expected[j]);
 			g_assert_cmpstr (v[j], ==, expected[j]);
 		}
-//		g_strfreev (v);
+		g_strfreev (v);
 	}
 }
 
