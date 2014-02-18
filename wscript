@@ -13,7 +13,7 @@ from waflib import Utils as utils
 
 def options(ctx):
 	ctx.load('compiler_c gnu_dirs glib2')
-	ctx.load('gtester', tooldir='.wafcustom')
+	ctx.load('unites', tooldir='.wafcustom')
 
 	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	ctx.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
@@ -23,7 +23,7 @@ def options(ctx):
 
 def configure(ctx):
 	ctx.load('compiler_c gnu_dirs glib2 intltool')
-	ctx.load('gtester', tooldir='.wafcustom')
+	ctx.load('unites', tooldir='.wafcustom')
 
 	ctx.env.appname = APPNAME
 	ctx.env.version = VERSION
@@ -148,7 +148,7 @@ def build(bld):
 	for item in exe.includes:
 		logs.debug(item)
 	test = bld.program(
-		features = ['c', 'glib2', 'gtester'],
+		features = ['c', 'glib2', 'unites'],
 		target = 'microtests',
 		source = ['test/test.c'],
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],

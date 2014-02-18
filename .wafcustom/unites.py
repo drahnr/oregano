@@ -13,13 +13,13 @@ Unit testing system for C/C++/D providing test execution:
 The tests are declared by adding the **test** feature to programs::
 
 	def options(opt):
-		opt.load('compiler_c glib gtester')
+		opt.load('compiler_c unites')
 	def configure(conf):
-		conf.load('compiler_c glib gtester')
+		conf.load('compiler_c unites')
 	def build(bld):
-		bld(features='c cprogram glib gtester', source='main.cpp', target='app')
+		bld(features='c cprogram unites', source='main.cpp', target='app')
 		# or
-		bld.program(features='gtester', source='main2.cpp', target='app2')
+		bld.program(features='unites', source='main2.cpp', target='app2')
 
 When the build is executed, the program 'test' will be built and executed without arguments.
 The success/failure is detected by looking at the return code. The status and the standard output/error
@@ -29,24 +29,24 @@ The results can be displayed by registering a callback function. Here is how to 
 the predefined callback::
 
 	def build(bld):
-		bld(features='c cprogram glib gtester', source='main.c', target='app')
-		from waflib.Tools import gtester
-		bld.add_post_fun(gtester.summary)
+		bld(features='c cprogram unites', source='main.c', target='app')
+		from waflib.Tools import unites
+		bld.add_post_fun(unites.summary)
 """
 
 import os, sys
 from waflib.TaskGen import feature, after_method
-from waflib import Utils, Task, Logs, Options
+from waflib import Utils, Task, Logs, Options, Errors
 
-@feature('gtester')
+@feature('unites')
 @after_method('apply_link')
 def make_test(self):
 	"""Create the unit test task. There can be only one unit test task by task generator."""
 	if getattr(self, 'link_task', None):
-		tsk = self.create_task('gtester', self.link_task.outputs)
+		tsk = self.create_task('unites', self.link_task.outputs)
 
 
-class gtester(Task.Task):
+class unites(Task.Task):
 	"""
 	Execute a unit test
 	"""
@@ -60,17 +60,17 @@ class gtester(Task.Task):
 		if getattr(Options.options, 'no_tests', False):
 			return Task.SKIP_ME
 
-		ret = super(gtester, self).runnable_status()
+		ret = super(unites, self).runnable_status()
 		if ret == Task.SKIP_ME:
 			return Task.RUN_ME
 		return ret
 
 	def run(self):
 		"""
-		Execute the test. The execution is always successful, but the results
-		are stored on ``self.generator.bld.gtester_results`` for postprocessing.
+		Execute the test. This can fail.
 		"""
 
+		testname = str(self.inputs[0])
 		filename = self.inputs[0].abspath()
 
 		self.gt_exec = getattr(self.generator, 'gt_exec', [filename])
@@ -111,6 +111,13 @@ class gtester(Task.Task):
 		if testcmd:
 			self.gt_exec = (testcmd % self.gt_exec[0]).split(' ')
 
+		#overwrite the default logger to prevent duplicate logging
+		def to_log(x):
+			pass
+
+		self.generator.bld.to_log = to_log
+		self.generator.bld.start_msg("Running test \'%s\'" % (testname))
+
 		proc = Utils.subprocess.Popen(self.gt_exec,\
 		                              cwd=cwd,\
 		                              env=fu,\
@@ -120,9 +127,7 @@ class gtester(Task.Task):
 		(out, err) = proc.communicate()
 
 		if proc.returncode==0:
-			name = str(self.inputs[0])
-			c = len(name)
-			Logs.pprint('CYAN', ('%s ' + ' '*(60-c) + ' OK') % (name))
+			self.generator.bld.end_msg ("passed", 'GREEN');
 		else:
 			msg = []
 			if out:
@@ -130,12 +135,13 @@ class gtester(Task.Task):
 			if err:
 				msg.append('stderr:%s%s' % (os.linesep, err.decode('utf-8')))
 			msg = os.linesep.join(msg)
+
+
 			if (getattr(Options.options, 'permissive_tests', False)):
-				Logs.warn(msg)
+				self.generator.bld.end_msg ("FAIL", 'YELLOW');
 			else:
-#				self.generator.bld.fatal (msg)
-				Logs.error (msg)
-				return 1
+				self.generator.bld.end_msg ("FAIL", 'RED');
+				raise Errors.WafError('Test \'%s\' failed' % (testname))
 
 
 def options(opt):
