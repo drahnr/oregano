@@ -5,4 +5,4 @@ compiler:
   - gcc
   - clang
 # Change this to your needs
-script: ./waf configure --prefix=/usr debug -j4 --alltests
+script: ./waf configure --prefix=/usr debug -j4
