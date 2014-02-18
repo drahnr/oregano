@@ -556,36 +556,33 @@ schematic_count (void)
 }
 
 Schematic *
-schematic_read (char *name, GError **out_error)
+schematic_read (char *name, GError **error)
 {
 	Schematic *new_sm;
 	int ret;
 	char *fname;
-	GError *error = NULL;
+	GError *e = NULL;
 	FileType *ft;
 
 	g_return_val_if_fail (name != NULL, NULL);
 
-	fname = g_filename_from_uri  (name, NULL, &error);
+	fname = g_filename_from_uri  (name, NULL, &e);
 
 	if (!fname) {
 		fname = name;
-		if (error) {
-			g_error_free (error);
-			error = NULL;
-		}
+		g_clear_error (&e);
 	}
 
 	if (!g_file_test (fname, G_FILE_TEST_EXISTS)) {
-		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
-			_("File %s does not exists."), fname);
+		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+			_("File %s does not exist."), fname);
 		return NULL;
 	}
 
 	// Get File Handler
 	ft = file_manager_get_handler (fname);
 	if (ft == NULL) {
-		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
 			_("Unknown file format for %s."), fname);
 		return NULL;
 	}
@@ -593,10 +590,10 @@ schematic_read (char *name, GError **out_error)
 	new_sm = schematic_new ();
 
 	/* TODO : Add GError-like error reporting! */
-	ret = ft->load_func (new_sm, fname, &error);
+	ret = ft->load_func (new_sm, fname, &e);
 
-	if (error != NULL) {
-		g_propagate_error (out_error, error);
+	if (e) {
+		g_propagate_error (error, e);
 		g_object_unref (G_OBJECT (new_sm));
 		return NULL;
 	}
@@ -604,9 +601,9 @@ schematic_read (char *name, GError **out_error)
 	if (ret) {
 		g_object_unref (G_OBJECT (new_sm));
 		new_sm = NULL;
-		g_set_error (out_error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
+		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
 			_("Load fails!."));
-	} 
+	}
 	else
 		schematic_set_dirty (new_sm, FALSE);
 
@@ -617,7 +614,7 @@ gint
 schematic_save_file (Schematic *sm, GError **error)
 {
 	FileType *ft;
-	GError *internal_error = NULL;
+	GError *e = NULL;
 
 	g_return_val_if_fail (sm != NULL, FALSE);
 
@@ -629,15 +626,14 @@ schematic_save_file (Schematic *sm, GError **error)
 		return FALSE;
 	}
 
-	if (ft->save_func (sm, &internal_error)) {
+	if (ft->save_func (sm, &e)) {
 		schematic_set_title (sm, g_path_get_basename (sm->priv->filename));
 		schematic_set_dirty (sm, FALSE);
 		return TRUE;
 	}
 
-	g_propagate_error (error, internal_error);
+	g_propagate_error (error, e);
 
-	g_error_free (internal_error);
 	return FALSE; // Save fails!
 }
 
