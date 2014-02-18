@@ -13,6 +13,7 @@ from waflib import Utils as utils
 
 def options(ctx):
 	ctx.load('compiler_c gnu_dirs glib2')
+	ctx.load('waf_unit_test')
 
 	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	ctx.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
@@ -22,6 +23,8 @@ def options(ctx):
 
 def configure(ctx):
 	ctx.load('compiler_c gnu_dirs glib2 intltool')
+	ctx.load('waf_unit_test')
+
 	ctx.env.appname = APPNAME
 	ctx.env.version = VERSION
 
@@ -78,22 +81,6 @@ def configure(ctx):
 
 
 
-
-
-
-import re
-def locate(regex, root=os.curdir, exclpattern="((.*/)?\.(git|svn|cvs).*)|(.*/.+~)|(.*/intl/.*)"):
-	lst = []
-	for dir_, dirnames, filenames in os.walk(root):
-		for filename in filenames:
-			abspath = os.path.join(dir_, filename)
-			if not re.match(exclpattern, abspath):
-				if re.match(regex, abspath):
-					if (abspath[0:2]=="./"):
-						lst.append(abspath[2:])
-					else:
-						lst.append(abspath)
-	return lst
 
 
 def docs(ctx):
@@ -161,23 +148,20 @@ def build(bld):
 	for item in exe.includes:
 		logs.debug(item)
 	test = bld.program(
-		features = ['c', 'glib2'],
-		target = APPNAME+'-testsuite',
+		features = ['c', 'glib2', 'test'],
+		target = 'microtests',
 		source = ['test/test.c'],
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)
-
-
-
+	from waflib.Tools import waf_unit_test
+	bld.add_post_fun(waf_unit_test.summary)
+	bld.add_post_fun(waf_unit_test.set_exit_code)
 
 
 from waflib.Build import BuildContext
-
-def runtests(ctx):
-	os.system("gtester --g-fatal-warnings --verbose --keep-going ./build/debug/"+APPNAME+"-testsuite");
 
 
 class release(BuildContext):
