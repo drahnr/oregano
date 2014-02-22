@@ -92,7 +92,6 @@ void	   schematic_set_filename (Schematic *schematic, const gchar *filename);
 char	  *schematic_get_netlist_filename (Schematic *schematic);
 void	   schematic_set_netlist_filename (Schematic *schematic, char *filename);
 int		   schematic_count (void);
-Grid	  *schematic_get_grid (Schematic *schematic);
 double	   schematic_get_zoom (Schematic *schematic);
 void	   schematic_set_zoom (Schematic *schematic, double zoom);
 void	   schematic_add_item (Schematic *sm, ItemData *data);

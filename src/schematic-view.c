@@ -807,7 +807,7 @@ v_clamp_cmd (SchematicView *sv)
 
 	library_part = library_get_part (l, "Test Clamp");
 	
-	part = part_new_from_library_part (library_part, sheet->grid);
+	part = part_new_from_library_part (library_part);
 	if (!part) {
 		g_warning ("Clamp not found!");
 		return;
@@ -1086,11 +1086,10 @@ schematic_view_new (Schematic *schematic)
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
 	GtkWidget *menubar;
-	GtkGrid *uigrid;
+	GtkGrid *grid;
 	GError *error = NULL;
 	GtkBuilder *gui;
 	gchar *msg;
-	Grid *grid;
 
 	g_return_val_if_fail (schematic, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
@@ -1114,12 +1113,10 @@ schematic_view_new (Schematic *schematic)
 	}
 
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
-	uigrid = GTK_GRID (gtk_builder_get_object (gui, "grid1"));
+	grid = GTK_GRID (gtk_builder_get_object (gui, "grid1"));
 
-	grid = schematic_get_grid (schematic);
-	g_assert (grid);
-	g_assert (IS_GRID(grid));
-	sv->priv->sheet = SHEET (sheet_new (grid));
+	//TODO make the size allocation dynamic - bug #45
+	sv->priv->sheet = SHEET (sheet_new (10000.,10000.));
 
 	g_signal_connect (G_OBJECT (sv->priv->sheet),
 	    "event", G_CALLBACK (sheet_event_callback), 
@@ -1184,7 +1181,7 @@ schematic_view_new (Schematic *schematic)
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
-	gtk_grid_attach (uigrid, vbox, 0,0, 1,1);
+	gtk_grid_attach (grid, vbox, 0,0, 1,1);
 	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), 
 	    GTK_WIDGET (sv->priv->sheet)); 
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));

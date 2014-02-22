@@ -193,19 +193,17 @@ part_class_init (PartClass *klass)
 ////////////////////////////////////////////////////////////////////////////////
 
 Part *
-part_new (Grid *grid)
+part_new ()
 {
 	Part *part;
 
 	part = PART (g_object_new (TYPE_PART, NULL));
 
-	item_data_set_grid (ITEM_DATA (part), grid);
-
 	return part;
 }
 
 Part *
-part_new_from_library_part (LibraryPart *library_part, Grid *grid)
+part_new_from_library_part (LibraryPart *library_part)
 {
 	Part *part;
 	GSList *pins;
@@ -214,7 +212,7 @@ part_new_from_library_part (LibraryPart *library_part, Grid *grid)
 
 	g_return_val_if_fail (library_part != NULL, NULL);
 
-	part = part_new (grid);
+	part = part_new ();
 	if (!part)
 		return NULL;
 
@@ -531,7 +529,8 @@ part_get_labels (Part *part)
 
 
 /**
- * rotate an item by an @angle increment (may be negative)
+ * \brief rotate an item by an @angle increment (may be negative)
+ *
  * @angle the increment the item will be rotated (usually 90° steps)
  * @center_pos if rotated as part of a group, this is the center to rotate around
  */
@@ -643,7 +642,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 //	NG_DEBUG ("total[delta] = %lf,%lf", delta_to_apply.x, delta_to_apply.y);
 	item_data_move (data, &delta_to_apply);
-	item_data_snap (data);
+	item_data_snap (data, NULL); //FIXME XXX
 
 #if 0
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),

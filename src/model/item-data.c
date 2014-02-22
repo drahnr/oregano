@@ -37,7 +37,6 @@
 
 #include "item-data.h"
 #include "node-store.h"
-#include "grid.h"
 
 #include "debug.h"
 
@@ -50,7 +49,6 @@ static void item_data_copy (ItemData *dest, ItemData *src);
 enum {
 	ARG_0,
 	ARG_STORE,
-	ARG_GRID,
 	ARG_POS
 };
 
@@ -65,8 +63,6 @@ enum {
 
 struct _ItemDataPriv {
 	NodeStore *store;
-	// Grid model to align to
-	Grid *grid;
 
 	// modificator matrices
 	cairo_matrix_t translate;
@@ -89,8 +85,6 @@ item_data_init (ItemData *item_data)
 	priv = g_slice_new0 (ItemDataPriv);
 
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
-
-	priv->grid = NULL;
 
 	cairo_matrix_init_identity (&(priv->translate));
 	cairo_matrix_init_identity (&(priv->rotate));
@@ -140,10 +134,6 @@ item_data_class_init (ItemDataClass *klass)
 	g_object_class_install_property (object_class, ARG_POS,
 	    g_param_spec_pointer ("pos", "ItemData::pos",
 	    "the pos data", G_PARAM_READWRITE));
-
-	g_object_class_install_property (object_class, ARG_GRID,
-	    g_param_spec_pointer ("grid", "ItemData::grid",
-	    "the grid to align to", G_PARAM_READWRITE));
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
@@ -237,9 +227,6 @@ item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 	case ARG_STORE:
 		item_data->priv->store = g_value_get_pointer (value);
 		break;
-	case ARG_GRID:
-		item_data->priv->grid = g_value_get_pointer (value);
-		break;
 	default:
 		break;
 	}
@@ -254,9 +241,6 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	switch (prop_id) {
 	case ARG_STORE:
 		g_value_set_pointer (value, item_data->priv->store);
-		break;
-	case ARG_GRID:
-		g_value_set_pointer (value, item_data->priv->grid);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (item_data, prop_id, spec);
@@ -319,24 +303,18 @@ item_data_move (ItemData *item_data, Coords *delta)
 }
 
 void
-item_data_snap (ItemData *item_data)
+item_data_snap (ItemData *item_data, Grid *grid)
 {
-	ItemDataPriv *priv;
 	gboolean handler_connected;
 
 	g_return_if_fail (item_data);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
+	g_return_if_fail (grid);
+	g_return_if_fail (IS_GRID (grid));
 
-	priv = item_data->priv;
-
-	if (priv) {
-		if (priv->grid)
-			snap_to_grid (priv->grid, &(priv->translate.x0), &(priv->translate.y0));
-		else
-			g_warning ("ItemData %p grid field is NUL", item_data);
-	} else {
-		g_warning ("ItemData %p priv field is NUL", item_data);
-	}
+	snap_to_grid (grid,
+	              &(item_data->priv->translate.x0),
+	              &(item_data->priv->translate.y0));
 
 
 #if 1 //TODO FIXME XXX rename this to "snapped" instead of moved
@@ -359,24 +337,6 @@ item_data_get_store (ItemData *item_data)
 	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
 
 	return item_data->priv->store;
-}
-
-void
-item_data_set_grid (ItemData *item_data, gpointer grid)
-{
-	g_return_if_fail (item_data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (item_data));
-
-	item_data->priv->grid = grid;
-}
-
-gpointer
-item_data_get_grid (ItemData *item_data)
-{
-	g_return_val_if_fail (item_data != NULL, NULL);
-	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
-
-	return item_data->priv->grid;
 }
 
 ItemData *
