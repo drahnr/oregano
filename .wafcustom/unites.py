@@ -36,7 +36,7 @@ the predefined callback::
 
 import os, sys
 from waflib.TaskGen import feature, after_method
-from waflib import Utils, Task, Logs, Options, Errors
+from waflib import Utils, Task, Logs, Options, Errors, Context
 
 @feature('unites')
 @after_method('apply_link')
@@ -73,11 +73,14 @@ class unites(Task.Task):
 		testname = str(self.inputs[0])
 		filename = self.inputs[0].abspath()
 
-		self.gt_exec = getattr(self.generator, 'gt_exec', [filename])
 
-		if getattr(self.generator, 'gt_fun', None):
+		self.generator.bld.logger = Logs.make_logger(os.path.join(self.generator.bld.out_dir, "test.log"), 'unites_logger')
+
+		self.ut_exec = getattr(self.generator, 'ut_exec', [filename])
+
+		if getattr(self.generator, 'ut_fun', None):
 				# FIXME waf 1.8 - add a return statement here?
-			self.generator.gt_fun(self)
+			self.generator.ut_fun(self)
 
 		try:
 			fu = getattr(self.generator.bld, 'all_test_paths')
@@ -105,20 +108,19 @@ class unites(Task.Task):
 				add_path(fu, lst, 'LD_LIBRARY_PATH')
 			self.generator.bld.all_test_paths = fu
 
-		cwd = getattr(self.generator, 'gt_cwd', '') or self.inputs[0].parent.abspath()
+		cwd = getattr(self.generator, 'ut_cwd', '') or self.inputs[0].parent.abspath()
 		testcmd = getattr(Options.options, 'testcmd', False)
 
 		if testcmd:
-			self.gt_exec = (testcmd % self.gt_exec[0]).split(' ')
+			self.ut_exec = (testcmd % self.ut_exec[0]).split(' ')
 
 		#overwrite the default logger to prevent duplicate logging
 		def to_log(x):
 			pass
 
-		self.generator.bld.to_log = to_log
 		self.generator.bld.start_msg("Running test \'%s\'" % (testname))
 
-		proc = Utils.subprocess.Popen(self.gt_exec,\
+		proc = Utils.subprocess.Popen(self.ut_exec,\
 		                              cwd=cwd,\
 		                              env=fu,\
 		                              stderr=Utils.subprocess.PIPE,\
