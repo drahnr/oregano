@@ -521,7 +521,7 @@ sheet_new (gdouble height, gdouble width)
 	                     "line-width", 0.0,
 	                     NULL);
 
-#ifdef FIXME_DRAW_DIRECTION ARROWS
+#ifdef FIXME_DRAW_DIRECTION_ARROWS
 	goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
 	                              10.0, 10.0,
 	                              50.0, 10.0,
