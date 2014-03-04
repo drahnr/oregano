@@ -35,6 +35,8 @@
 #ifndef __COORDS_H
 #define __COORDS_H
 
+#define COORDS_DELTA (1e-5)
+
 #include <glib.h>
 #include <math.h>
 
