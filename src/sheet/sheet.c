@@ -1552,7 +1552,7 @@ sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed==FALSE &&
 	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet),
-		                          GOO_CANVAS_ITEM (sheet->grid_item),
+		                          GOO_CANVAS_ITEM (sheet->grid),
 	                              TRUE, /*do not reroute signals through sheet->grid*/
 		                      extract_time (event))==GDK_GRAB_SUCCESS) {
 		sheet->priv->keyboard_grabbed = TRUE;
