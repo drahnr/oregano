@@ -34,7 +34,7 @@
 
 #include "coords.h"
 
-#define COORDS_DELTA (1e-5)
+
 
 
 inline Coords *

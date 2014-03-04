@@ -161,6 +161,9 @@ def build(bld):
 from waflib.Build import BuildContext
 
 
+def gdb(ctx):
+	os.system ("G_DEBUG=resident-modules,fatal-warnings gdb --args ./build/debug/oregano --debug-boundingboxes --debug-wires")
+
 class release(BuildContext):
 	"""compile release binary"""
 	cmd = 'release'

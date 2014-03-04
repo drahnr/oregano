@@ -470,7 +470,7 @@ sheet_item_event (GooCanvasItem *sheet_item,
 
 				item_data = SHEET_ITEM (list->data)->priv->data;
 				item_data_move (item_data, &delta);
-				item_data_snap (item_data);
+				item_data_snap (item_data, sheet->grid);
 				item_data_register (item_data);
 			}
 			break;
@@ -713,7 +713,7 @@ sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
 
 				item_data_set_pos (floating_data, &snapped);
-				item_data_snap (floating_data);
+				item_data_snap (floating_data, sheet->grid);
 
 
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), floating_data);
