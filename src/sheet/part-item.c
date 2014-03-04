@@ -823,12 +823,17 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	done = cairo_matrix_invert (&inv);
 	if (done != CAIRO_STATUS_SUCCESS) {
-		g_warning ("Failed to invert matrix. This should never happen. Never!");
+		g_warning ("Failed to invert matrix. This should never happen. Ever!");
 		return;
 	}
 	// no translations
 	inv.y0 = inv.x0 = 0.;
 
+	Sheet *sheet = SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (sheet_item)));
+	if (G_UNLIKELY(!sheet)) {
+		g_warning ("Failed to determine the Sheet the item is glued to. This should never happen. Ever!");
+	}
+	item_data_snap (data, sheet->grid); //&morph.x0, &morph.y0); //FIXME recheck if this works as expected FIXME
 	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (sheet_item), &(morph));
 
 	priv->cache_valid = FALSE;

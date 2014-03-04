@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -436,27 +436,21 @@ sheet_change_zoom (Sheet *sheet, gdouble rate)
 }
 
 
-/* This function defines the drawing sheet on which schematic will be drawn
- * @param grid the grid (not a GtkGrid but a Grid struct)
+/**
+ * \brief defines the drawing widget on which the actual schematic will be drawn
+ *
+ * @param height height of the content area
+ * @param width width of the content area
  */
 GtkWidget *
-sheet_new (Grid *grid)
+sheet_new (gdouble height, gdouble width)
 {
-	g_return_val_if_fail (grid, NULL);
-	g_return_val_if_fail (IS_GRID (grid), NULL);
-
 	GooCanvas *sheet_canvas;
 	GooCanvasGroup *sheet_group;
 	GooCanvasPoints *points;
 	Sheet *sheet;
 	GtkWidget *sheet_widget;
 	GooCanvasItem *root;
-	gdouble height=-1., width=-1.;
-
-	g_object_get (grid,
-	              "height", &height,
-	              "width", &width,
-	              NULL);
 
 	// Creation of the Canvas
 	sheet = SHEET (g_object_new (TYPE_SHEET, NULL));
@@ -486,8 +480,7 @@ sheet_new (Grid *grid)
 	sheet->priv->height = height;
 
 	// Create the dot grid.
-	sheet->grid = grid;
-	sheet->grid_item = grid_item_new (GOO_CANVAS_ITEM (sheet_group), sheet->grid);
+	sheet->grid = grid_new (GOO_CANVAS_ITEM (sheet_group), height, width);
 
 	// Everything outside the sheet should be gray.
 	// top //
@@ -528,7 +521,7 @@ sheet_new (Grid *grid)
 	                     "line-width", 0.0,
 	                     NULL);
 
-#ifdef FIXME_DRAW_DIRECTION ARROWS
+#ifdef FIXME_DRAW_DIRECTION_ARROWS
 	goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
 	                              10.0, 10.0,
 	                              50.0, 10.0,
@@ -1522,7 +1515,7 @@ sheet_pointer_grab (Sheet *sheet, GdkEvent *event)
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->pointer_grabbed==0 &&
 	    goo_canvas_pointer_grab (GOO_CANVAS (sheet),
-	                             GOO_CANVAS_ITEM (sheet->grid_item),
+	                             GOO_CANVAS_ITEM (sheet->grid),
 	                             GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK,
 	                         NULL,
 	                         extract_time (event))==GDK_GRAB_SUCCESS) {
@@ -1544,7 +1537,7 @@ sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event)
 	if (sheet->priv->pointer_grabbed) {
 		sheet->priv->pointer_grabbed = FALSE;
 		goo_canvas_pointer_ungrab (GOO_CANVAS (sheet),
-		                           GOO_CANVAS_ITEM (sheet->grid_item),
+		                           GOO_CANVAS_ITEM (sheet->grid),
 		                           extract_time (event));
 	}
 #endif
@@ -1559,7 +1552,7 @@ sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
 #ifndef DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed==FALSE &&
 	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet),
-		                          GOO_CANVAS_ITEM (sheet->grid_item),
+		                          GOO_CANVAS_ITEM (sheet->grid),
 	                              TRUE, /*do not reroute signals through sheet->grid*/
 		                      extract_time (event))==GDK_GRAB_SUCCESS) {
 		sheet->priv->keyboard_grabbed = TRUE;

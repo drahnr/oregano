@@ -83,8 +83,6 @@ struct _SchematicPriv {
 
 	GtkTextBuffer 			*log;
 	GtkTextTag 				*tag_error;
-
-	Grid *grid;
 };
 
 typedef enum {
@@ -259,7 +257,6 @@ schematic_init (Schematic *schematic)
 	priv->author = g_strdup (""); //FIXME fill with sane default values - bug #52
 	priv->comments = g_strdup (""); //FIXME
 
-	priv->grid = grid_new (10000., 10000.); //FIXME make this dynamic - bug #45
 }
 
 Schematic *
@@ -314,8 +311,6 @@ schematic_finalize (GObject *object)
 		g_hash_table_destroy (sm->priv->refdes_values);
 		if (sm->priv->netlist_filename)
 			g_free (sm->priv->netlist_filename);
-		if (sm->priv->grid)
-			g_object_unref (sm->priv->grid);
 		g_free (sm->priv);
 		sm->priv = NULL;
 	}
@@ -323,16 +318,7 @@ schematic_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (G_OBJECT (sm));
 }
 
-// Get/set functions.
-// ***************** /
-Grid *
-schematic_get_grid (Schematic *schematic)
-{
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
 
-	return schematic->priv->grid;
-}
 
 char *
 schematic_get_title (Schematic *schematic)
@@ -649,7 +635,6 @@ void
 schematic_add_item (Schematic *sm, ItemData *data)
 {
 	NodeStore *store;
-	Grid *grid;
 	char *prefix = NULL, *refdes = NULL;
 	int num;
 
@@ -662,13 +647,9 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_assert (store);
 	g_assert (IS_NODE_STORE (store));
 
-	grid = sm->priv->grid;
-	g_assert (grid);
-	g_assert (IS_GRID (grid));
 
 	g_object_set (G_OBJECT (data),
 	              "store", store,
-	              "grid", grid,
 	              NULL);
 
 	// item data will call the child register function

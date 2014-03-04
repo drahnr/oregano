@@ -39,6 +39,7 @@
 #include <cairo/cairo.h>
 
 #include "coords.h"
+#include "grid.h"
 #include "schematic-print-context.h"
 
 #define TYPE_ITEM_DATA			  (item_data_get_type ())
@@ -139,14 +140,10 @@ void 		item_data_flip (ItemData *data, IDFlip direction, Coords *center);
 //  Store is a class that hold all items in a schematic
 gpointer 	item_data_get_store (ItemData *item_data);
 
-// Get the grid this one is attached to/bound to
-gpointer	item_data_get_grid (ItemData *item_data);
 
 // Snap to the grid
-void		item_data_snap (ItemData *item_data);
+void		item_data_snap (ItemData *item_data, Grid *grid);
 
-// Set the grid this one is attached to/bound to, shall only be used by subclass functions
-void	item_data_set_grid (ItemData *item_data, gpointer);
 
 //  Unregister item in its Store
 void 		item_data_unregister (ItemData *data);

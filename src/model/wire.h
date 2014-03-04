@@ -7,13 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -75,7 +76,7 @@ struct _WireClass
 };
 
 GType 		wire_get_type (void);
-Wire *		wire_new (Grid *grid);
+Wire *		wire_new ();
 NodeStore *	wire_get_store (Wire *wire);
 gint 		wire_set_store (Wire *wire, NodeStore *store);
 gint 		wire_add_node (Wire *wire, Node *node);
