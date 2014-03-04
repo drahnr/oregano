@@ -36,6 +36,7 @@
 #include <glib.h>
 #include <gtk/gtk.h>
 #include <goocanvas.h>
+#include "coords.h"
 
 #define TYPE_GRID		   (grid_get_type())
 #define GRID(obj)		   (G_TYPE_CHECK_INSTANCE_CAST (obj, grid_get_type (), Grid))
@@ -62,7 +63,7 @@ struct _GridClass {
 
 Grid *grid_new (GooCanvasItem *root, gdouble width, gdouble height);
 GType grid_get_type (void);
-void  snap_to_grid (Grid *grid, double *x, double *y);
+gboolean  snap_to_grid (Grid *grid, double *x, double *y);
 void  grid_show (Grid *grid, gboolean snap);
 void  grid_snap (Grid *grid, gboolean snap);
 

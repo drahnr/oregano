@@ -833,7 +833,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	if (G_UNLIKELY(!sheet)) {
 		g_warning ("Failed to determine the Sheet the item is glued to. This should never happen. Ever!");
 	}
-	snap_to_grid (sheet->grid, &morph.x0, &morph.y0); //FIXME recheck if this works as expected FIXME
+	item_data_snap (data, sheet->grid); //&morph.x0, &morph.y0); //FIXME recheck if this works as expected FIXME
 	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (sheet_item), &(morph));
 
 	priv->cache_valid = FALSE;

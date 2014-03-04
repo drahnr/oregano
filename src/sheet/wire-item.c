@@ -876,7 +876,7 @@ wire_changed_callback (Wire *wire, WireItem *item)
 	if (G_UNLIKELY(!sheet)) {
 		g_warning ("Failed to determine the Sheet the item is glued to. This should never happen. Ever!");
 	}
-	snap_to_grid (sheet->grid, &start_pos.x, &start_pos.y);
+	item_data_snap (ITEM_DATA (wire), sheet->grid);
 
 	// Move the canvas item and invalidate the bbox cache.
 	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),

@@ -201,7 +201,7 @@ grid_new (GooCanvasItem *root, gdouble width, gdouble height)
 	return grid;
 }
 
-inline void
+inline gboolean
 snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 {
 	GridPriv *priv;
@@ -210,10 +210,22 @@ snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 	priv = grid->priv;
 	spacing = priv->spacing;
 
+	Coords old = {0.,0.};
+	gboolean moved = FALSE;
+
 	if (G_LIKELY(priv->snap)) {
-		if (G_LIKELY(x)) *x = ROUND ((*x) / spacing) * spacing;
-		if (G_LIKELY(y)) *y = ROUND ((*y) / spacing) * spacing;
+		if (G_LIKELY(x)) {
+			old.x = *x;
+			*x = ROUND ((*x) / spacing) * spacing;
+			moved = moved || (fabs((*x)-old.x)>COORDS_DELTA);
+		}
+		if (G_LIKELY(y)) {
+			old.y = *y;
+			*y = ROUND ((*y) / spacing) * spacing;
+			moved = moved || (fabs((*y)-old.y)>COORDS_DELTA);
+		}
 	}
+	return moved;
 }
 
 void
