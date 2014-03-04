@@ -424,7 +424,7 @@ wire_rotate (ItemData *data, int angle, Coords *center_pos)
 		coords_add (&delta, &diff);
 	}
 	item_data_move (ITEM_DATA (wire), &delta);
-	item_data_snap (ITEM_DATA (wire), NULL); //FIXME XXX
+//	item_data_snap (ITEM_DATA (wire), NULL); //FIXME XXX
 
 	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle); //legacy

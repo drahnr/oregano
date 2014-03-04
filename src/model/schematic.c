@@ -83,8 +83,6 @@ struct _SchematicPriv {
 
 	GtkTextBuffer 			*log;
 	GtkTextTag 				*tag_error;
-
-	Grid *grid;
 };
 
 typedef enum {
@@ -313,8 +311,6 @@ schematic_finalize (GObject *object)
 		g_hash_table_destroy (sm->priv->refdes_values);
 		if (sm->priv->netlist_filename)
 			g_free (sm->priv->netlist_filename);
-		if (sm->priv->grid)
-			g_object_unref (sm->priv->grid);
 		g_free (sm->priv);
 		sm->priv = NULL;
 	}
@@ -639,7 +635,6 @@ void
 schematic_add_item (Schematic *sm, ItemData *data)
 {
 	NodeStore *store;
-	Grid *grid;
 	char *prefix = NULL, *refdes = NULL;
 	int num;
 
@@ -652,13 +647,9 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	g_assert (store);
 	g_assert (IS_NODE_STORE (store));
 
-	grid = sm->priv->grid;
-	g_assert (grid);
-	g_assert (IS_GRID (grid));
 
 	g_object_set (G_OBJECT (data),
 	              "store", store,
-	              "grid", grid,
 	              NULL);
 
 	// item data will call the child register function

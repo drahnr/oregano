@@ -144,8 +144,6 @@ gpointer 	item_data_get_store (ItemData *item_data);
 // Snap to the grid
 void		item_data_snap (ItemData *item_data, Grid *grid);
 
-// Set the grid this one is attached to/bound to, shall only be used by subclass functions
-void	item_data_set_grid (ItemData *item_data, gpointer);
 
 //  Unregister item in its Store
 void 		item_data_unregister (ItemData *data);

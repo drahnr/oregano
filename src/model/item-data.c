@@ -33,6 +33,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include <glib.h>
 #include <goocanvas.h>
 
 #include "item-data.h"
@@ -73,7 +74,7 @@ struct _ItemDataPriv {
 	GooCanvasBounds bounds;
 };
 
-G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT)
+G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT);
 
 static guint item_data_signals [LAST_SIGNAL] = { 0 };
 
@@ -573,12 +574,11 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 
 
 /**
- * changed, forcefully emits a changed signal to recalculate the morph matrix
+ * \brief changed, forcefully emits a changed signal to recalculate the morph matrix
  *
  * @param data determines which item to refresh
  *
- * \note
- * this function does _not_ request a redraw
+ * \note this function does _not_ request a redraw
  */
 void
 item_data_changed (ItemData *data)

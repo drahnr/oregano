@@ -557,7 +557,9 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	// XXX also prevents rounding yiggle up downs
 
 	cairo_matrix_init_rotate (&local_rot, (double)angle * M_PI / 180.);
-	cairo_matrix_multiply (item_data_get_rotate (data), item_data_get_rotate (data), &local_rot);
+	cairo_matrix_multiply (item_data_get_rotate (data),
+	                       item_data_get_rotate (data),
+	                       &local_rot);
 
 	morph_rot = *(item_data_get_rotate (data));
 	cairo_matrix_multiply (&morph,
@@ -642,7 +644,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 //	NG_DEBUG ("total[delta] = %lf,%lf", delta_to_apply.x, delta_to_apply.y);
 	item_data_move (data, &delta_to_apply);
-	item_data_snap (data, NULL); //FIXME XXX
+//	item_data_snap (data, NULL); //FIXME XXX
 
 #if 0
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
