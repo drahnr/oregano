@@ -188,7 +188,7 @@ ngspice_generate_netlist_buffer (OreganoEngine *engine,
 	buffer = g_string_sized_new (500);
 	if (!buffer) {
 		g_set_error_literal (&e, OREGANO_ERROR, OREGANO_OOM, "Failed to allocate intermediate buffer.");
-		g_propagate_error (error, &e);
+		g_propagate_error (error, e);
 		return NULL;
 	}
 	// Prints title
