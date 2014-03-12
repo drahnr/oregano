@@ -144,10 +144,10 @@ oregano_engine_get_progress (OreganoEngine *self, double *p)
 	OREGANO_ENGINE_GET_CLASS (self)->progress (self, p);
 }
 
-void
+gboolean
 oregano_engine_generate_netlist (OreganoEngine *self, const gchar *file, GError **error)
 {
-	OREGANO_ENGINE_GET_CLASS (self)->get_netlist (self, file, error);
+	return OREGANO_ENGINE_GET_CLASS (self)->get_netlist (self, file, error);
 }
 
 GList*

@@ -47,7 +47,7 @@ struct _OreganoEngineClass {
 	void (*start) (OreganoEngine *engine);
 	void (*stop) (OreganoEngine *engine);
 	void (*progress) (OreganoEngine *engine, double *p);
-	void (*get_netlist) (OreganoEngine *engine, const gchar *sm, GError **error);
+	gboolean (*get_netlist) (OreganoEngine *engine, const gchar *sm, GError **error);
 	GList* (*get_results) (OreganoEngine *engine);
 	gchar* (*get_operation) (OreganoEngine *engine);
 	gboolean (*has_warnings) (OreganoEngine *engine);
