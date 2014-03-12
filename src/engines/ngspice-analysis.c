@@ -51,14 +51,14 @@ typedef enum {
 static gchar *analysis_names[] = {
 	"Operating Point"            ,
 	"Transient Analysis"         ,
-	"DC transfer characteristic" ,
+	"DC Transfer Characteristic" ,
 	"AC Analysis"                ,
 	"Transfer Function"          ,
 	"Distortion Analysis"        ,
 	"Noise Analysis"             ,
 	"Pole-Zero Analysis"         ,
 	"Sensitivity Analysis"       ,
-	"Fourier analysis"           ,
+	"Fourier Analysis"           ,
 	"Unknown Analysis"           ,
 	NULL
 };
@@ -600,15 +600,15 @@ ngspice_parse (OreganoNgSpice *ngspice)
 	}
 
 	if (transient_enabled) {
-		if (g_str_has_prefix (analysis_names[analysis_type], 
+		if (g_str_has_prefix (analysis_names[analysis_type],
 		                      "Transient Analysis")) {
 			parse_transient_analysis (ngspice, buf);
 		}
 		else {
-			oregano_warning (_("Transient analysis expected not found"));
+			oregano_warning (_("Transient analysis expected but not found"));
 		}
 	}
-		
+
 	fgets (buf, 255, priv->inputfp);
 	NG_DEBUG ("1 buf = %s\n", buf);
 	tmp = &buf[0];
@@ -625,7 +625,7 @@ ngspice_parse (OreganoNgSpice *ngspice)
 			parse_fourier_analysis (ngspice, buf);
 		}
 		else {
-			oregano_warning (_("Fourier analysis expected not found"));
+			oregano_warning (_("Fourier analysis expected but not found"));
 		}
 	}
 	fgets (buf, 255, priv->inputfp);
@@ -647,6 +647,6 @@ ngspice_parse (OreganoNgSpice *ngspice)
 			oregano_warning (_("DC Sweep expected but not found"));
 		}
 	}
-		
+
 	fclose (priv->inputfp);
 }
