@@ -922,5 +922,5 @@ wire_delete_callback (Wire *wire, WireItem *item)
 //	g_clear_object (&item);
 //	g_assert (item==NULL);
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
-
+	g_object_unref (wire); // verify this
 }
