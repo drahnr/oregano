@@ -345,13 +345,17 @@ node_store_remove_textbox (NodeStore *self, Textbox *text)
 
 /**
  * add/register the wire to the nodestore
+ *
+ * @param store
+ * @param wire
+ * @returns TRUE on success, else FALSE
  */
 gboolean
 node_store_add_wire (NodeStore *store, Wire *wire)
 {
 	GList *list;
 	Node *node;
-	int i=0;
+	int i = 0;
 
 	g_return_val_if_fail (store, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
@@ -362,10 +366,11 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	// Check for intersection with other wires.
 	for (list = store->wires; list;	list = list->next) {
+		g_assert (list->data!=NULL);
+		g_assert (IS_WIRE (list->data));
+
 		Coords where = {-77.77, -77.77};
 		Wire *other = list->data;
-		if (other==NULL)
-			continue;
 		if (do_wires_intersect (wire, other, &where)) {
 			if (is_t_crossing (wire, other, &where) || is_t_crossing (other, wire, &where)) {
 
@@ -403,6 +408,8 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	// Check for overlapping with other wires.
 	for (list = store->wires; list;	list = list->next) {
+		g_assert (list->data!=NULL);
+		g_assert (IS_WIRE (list->data));
 		Wire *other = list->data;
 		Coords so, eo;
 		const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
@@ -431,11 +438,12 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	// Check for intersection with parts (pins).
 	for (list = store->parts; list; list = list->next) {
-		Coords part_pos;
-		Part *part;
-		gint num_pins = -1;
+		g_assert (list->data!=NULL);
+		g_assert (IS_PART (list->data));
 
-		part = list->data;
+		Coords part_pos;
+		gint num_pins = -1;
+		Part *part = list->data;
 
 		num_pins = part_get_num_pins (part);
 		item_data_get_pos (ITEM_DATA (part), &part_pos);
@@ -470,7 +478,9 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 		}
 	}
 
-	g_object_set (G_OBJECT (wire), "store", store, NULL);
+	g_object_set (G_OBJECT (wire),
+	              "store", store,
+	              NULL);
 	store->wires = g_list_prepend (store->wires, wire);
 	store->items = g_list_prepend (store->items, wire);
 
@@ -485,7 +495,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 gboolean
 node_store_remove_wire (NodeStore *store, Wire *wire)
 {
-	GSList *list;
+	GSList *copy, *iter;
 	Coords lookup_key;
 
 	g_return_val_if_fail (store, FALSE);
@@ -505,9 +515,9 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 	// empty when the wire is removed, remove the node as well.
 
 	// FIXME if done properly, a list copy is _not_ necessary
-	list = g_slist_copy (wire_get_nodes (wire));
-	for (; list; list = list->next) {
-		Node *node = list->data;
+	copy = g_slist_copy (wire_get_nodes (wire));
+	for (iter = copy; iter; iter = iter->next) {
+		Node *node = iter->data;
 
 		lookup_key = node->key;
 
@@ -518,7 +528,7 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 			g_hash_table_remove (store->nodes, &lookup_key);
 	}
 
-	g_slist_free (list);
+	g_slist_free (copy);
 
 	return TRUE;
 }

@@ -402,7 +402,7 @@ vulcanize_wire (NodeStore *store, Wire *a, Wire *b, Coords *so, Coords *eo)
 
 	for (list = wire_get_nodes(b); list;) {
 		Node *n = list->data;
-		list = list->next;
+		list = list->next; //needs to be done here, as wire_add_node mods the list
 		if (!IS_NODE (n))
 			g_warning ("Found bogus node entry in wire %p, ignored.", b);
 		wire_add_node (w, n);
