@@ -350,6 +350,7 @@ is_t_crossing (Wire *a, Wire *b, Coords *t)
 
 /**
  * merge wire @b into wire @a, where @so and @eo are the overlapping wire part
+ *
  * @param a wire
  * @param b wire to merge into @a
  * @param so [out] coords of the overlapping wire part - start
@@ -408,11 +409,6 @@ vulcanize_wire (NodeStore *store, Wire *a, Wire *b, Coords *so, Coords *eo)
 		wire_add_node (w, n);
 		node_add_wire (n, w);
 	}
-#if CREATE_NEW_WIRE
-	node_store_remove_wire (store, a);//equiv wire_unregister
-#endif
-	node_store_remove_wire (store, b);//equiv wire_unregister
-	wire_delete (b);
 	return w;
 }
 

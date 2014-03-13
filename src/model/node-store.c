@@ -76,7 +76,7 @@ enum {
 	LAST_SIGNAL
 };
 
-G_DEFINE_TYPE (NodeStore, node_store, G_TYPE_OBJECT)
+G_DEFINE_TYPE (NodeStore, node_store, G_TYPE_OBJECT);
 
 static guint node_store_signals [LAST_SIGNAL] = { 0 };
 
@@ -407,34 +407,39 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	}
 
 	// Check for overlapping with other wires.
-	for (list = store->wires; list;	list = list->next) {
-		g_assert (list->data!=NULL);
-		g_assert (IS_WIRE (list->data));
-		Wire *other = list->data;
-		Coords so, eo;
-		const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
-		NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other, overlap==TRUE ? "YES" : "NO" );
-		if (overlap) {
-			Node *sn = node_store_get_node (store, eo);
-			Node *en = node_store_get_node (store, so);
-			#if 1
-			wire = vulcanize_wire (store, wire, other, &so, &eo);
-			NG_DEBUG ("overlapping of %p with %p ", wire, other);
-			#else
-			if (!sn && !en) {
+	do {
+		for (list = store->wires; list;	list = list->next) {
+			g_assert (list->data!=NULL);
+			g_assert (IS_WIRE (list->data));
+			Wire *other = list->data;
+			Coords so, eo;
+			const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
+			NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other, overlap==TRUE ? "YES" : "NO" );
+			if (overlap) {
+				Node *sn = node_store_get_node (store, eo);
+				Node *en = node_store_get_node (store, so);
+				#if 1
 				wire = vulcanize_wire (store, wire, other, &so, &eo);
-			} else if (!sn) {
-				NG_DEBUG ("do_something(TM) : %p sn==NULL ", other);
-			} else if (!en) {
-				NG_DEBUG ("do_something(TM) : %p en==NULL ", other);
+				node_store_remove_wire (store, other);//equiv wire_unregister XXX FIXME this modifies the list we iterate over!
+				wire_delete (other);
+				break;
+				NG_DEBUG ("overlapping of %p with %p ", wire, other);
+				#else
+				if (!sn && !en) {
+					wire = vulcanize_wire (store, wire, other, &so, &eo);
+				} else if (!sn) {
+					NG_DEBUG ("do_something(TM) : %p sn==NULL ", other);
+				} else if (!en) {
+					NG_DEBUG ("do_something(TM) : %p en==NULL ", other);
+				} else {
+					NG_DEBUG ("do_something(TM) : %p else ", other);
+				}
+				#endif
 			} else {
-				NG_DEBUG ("do_something(TM) : %p else ", other);
+				NG_DEBUG ("not of %p with %p ", wire, other);
 			}
-			#endif
-		} else {
-			NG_DEBUG ("not of %p with %p ", wire, other);
 		}
-	}
+	} while (list);
 
 	// Check for intersection with parts (pins).
 	for (list = store->parts; list; list = list->next) {
