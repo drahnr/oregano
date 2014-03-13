@@ -700,7 +700,6 @@ schematic_parts_foreach (Schematic *schematic,
 	for (list = node_store_get_parts (schematic->priv->store); list; list = list->next) {
 		func (list->data, user_data);
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -718,7 +717,6 @@ schematic_wires_foreach (Schematic *schematic,
 	for (list = node_store_get_wires (schematic->priv->store); list; list = list->next) {
 		func (list->data, user_data);
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 void
@@ -736,7 +734,6 @@ schematic_items_foreach (Schematic *schematic,
 	for (list = schematic->priv->current_items; list; list = list->next) {
 		func (list->data, user_data);
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 GList *
