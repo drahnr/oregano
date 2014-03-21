@@ -433,7 +433,7 @@ static void
 prop_dialog_response (GtkWidget *dialog, gint response,
 	PartPropDialog *prop_dialog)
 {
-	GSList		 *props;
+	GSList		 *props = NULL;
 	GList		 *widget;
 	Property	 *prop;
 	PartItem	 *item;
@@ -797,7 +797,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	//TODO may happen once in a while and the check is really cheap
 	GSList *iter;
 	GooCanvasAnchorType anchor;
-	GooCanvasGroup *group;
+	//GooCanvasGroup *group;
 	GooCanvasItem *canvas_item;
 	PartItem *item;
 	PartItemPriv *priv;
@@ -807,7 +807,7 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 
 	item = PART_ITEM (sheet_item);
-	group = GOO_CANVAS_GROUP (item);
+	//group = GOO_CANVAS_GROUP (item);
 	part = PART (data);
 
 	priv = item->priv;
@@ -832,8 +832,9 @@ part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	Sheet *sheet = SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (sheet_item)));
 	if (G_UNLIKELY(!sheet)) {
 		g_warning ("Failed to determine the Sheet the item is glued to. This should never happen. Ever!");
+	} else {
+		item_data_snap (data, sheet->grid); //&morph.x0, &morph.y0); //FIXME recheck if this works as expected FIXME
 	}
-	item_data_snap (data, sheet->grid); //&morph.x0, &morph.y0); //FIXME recheck if this works as expected FIXME
 	goo_canvas_item_set_transform (GOO_CANVAS_ITEM (sheet_item), &(morph));
 
 	priv->cache_valid = FALSE;

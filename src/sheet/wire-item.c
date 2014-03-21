@@ -875,8 +875,9 @@ wire_changed_callback (Wire *wire, WireItem *item)
 	Sheet *sheet = SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (item)));
 	if (G_UNLIKELY(!sheet)) {
 		g_warning ("Failed to determine the Sheet the item is glued to. This should never happen. Ever!");
+	} else {
+		item_data_snap (ITEM_DATA (wire), sheet->grid);
 	}
-	item_data_snap (ITEM_DATA (wire), sheet->grid);
 
 	// Move the canvas item and invalidate the bbox cache.
 	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item),
@@ -892,7 +893,7 @@ wire_changed_callback (Wire *wire, WireItem *item)
 	points->coords[2] = length.x;
 	points->coords[3] = length.y;
 
-	// this does handle cleanup of previous points
+	// this does handle cleanup of previous points internally
 	g_object_set (item->priv->line,
 	              "points", points,
 	              NULL);
@@ -922,5 +923,5 @@ wire_delete_callback (Wire *wire, WireItem *item)
 //	g_clear_object (&item);
 //	g_assert (item==NULL);
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
-	g_object_unref (wire); // verify this
+	g_object_unref (wire);
 }

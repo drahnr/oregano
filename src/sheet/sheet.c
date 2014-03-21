@@ -203,7 +203,7 @@ sheet_finalize (GObject *object)
 gboolean
 sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 {
-	GtkAdjustment *hadj, *vadj;
+	GtkAdjustment *hadj = NULL, *vadj = NULL;
 	gdouble x1, y1;
 	gint _x, _y;
 	GdkDeviceManager *device_manager;
@@ -355,7 +355,7 @@ sheet_change_zoom (Sheet *sheet, gdouble rate)
 	gdouble dx, dy;
 	gdouble cx, cy;
 	gdouble dcx, dcy;
-	GtkAdjustment *hadj, *vadj;
+	GtkAdjustment *hadj = NULL, *vadj = NULL;
 	GooCanvas *canvas;
 
 	canvas = GOO_CANVAS (sheet);
@@ -371,15 +371,18 @@ sheet_change_zoom (Sheet *sheet, gdouble rate)
 		x = gtk_adjustment_get_value (hadj);
 		y = gtk_adjustment_get_value (vadj);
 	} else {
-		x = y = 0.;
+		return; //TODO recheck
 	}
 
 	// get pointer position in pixels
-	sheet_get_pointer_pixel (sheet, &px, &py);
+	if (!sheet_get_pointer_pixel (sheet, &px, &py)) {
+		return;
+	}
 
 	// get the page size in pixels
 	dx = gtk_adjustment_get_page_size (hadj);
 	dy = gtk_adjustment_get_page_size (vadj);
+
 	// calculate the center of the widget in pixels
 	cx = x + dx/2;
 	cy = y + dy/2;
@@ -644,7 +647,7 @@ sheet_get_property (GObject *object,
 void
 sheet_scroll_pixel (const Sheet *sheet, int delta_x, int delta_y)
 {
-	GtkAdjustment *hadj, *vadj;
+	GtkAdjustment *hadj = NULL, *vadj = NULL;
 	GtkAllocation allocation;
 	gfloat vnew, hnew;
 	gfloat hmax, vmax;
@@ -673,11 +676,11 @@ sheet_scroll_pixel (const Sheet *sheet, int delta_x, int delta_y)
 	hnew = CLAMP (x1 + (gfloat) delta_x, 0.f, hmax);
 	vnew = CLAMP (y1 + (gfloat) delta_y, 0.f, vmax);
 
-	if (hnew != x1) {
+	if (hadj && hnew != x1) {
 		gtk_adjustment_set_value (hadj, hnew);
 		g_signal_emit_by_name (G_OBJECT (hadj), "value_changed");
 	}
-	if (vnew != y1) {
+	if (vadj && vnew != y1) {
 		gtk_adjustment_set_value (vadj, vnew);
 		g_signal_emit_by_name (G_OBJECT (vadj), "value_changed");
 	}
@@ -1425,7 +1428,6 @@ sheet_connect_node_dots_to_signals (Sheet *sheet)
 	Schematic *sm;
 
 	sm = schematic_view_get_schematic_from_sheet (sheet);
-	list = schematic_get_items (sm);
 
 	g_signal_connect_object (G_OBJECT (sm), "node_dot_added",
 			G_CALLBACK (node_dot_added_callback), G_OBJECT (sheet), 0);
