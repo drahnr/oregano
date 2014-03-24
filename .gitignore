@@ -4,3 +4,4 @@ build
 po/build
 src/build
 po/.intlcache
+.wafcustom/__pycache__*
