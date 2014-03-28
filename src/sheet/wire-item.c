@@ -692,6 +692,9 @@ is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 inline static void
 get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
 {
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_WIRE_ITEM (item));
+
 	WireItemPriv *priv;
 	priv = item->priv;
 
@@ -700,18 +703,18 @@ get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
 		GooCanvasBounds bounds; //, canvas_bounds;
 
 		goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (item), &bounds);
-		start_pos.x = bounds.x1;
-		start_pos.y = bounds.y1;
-		end_pos.x = bounds.x2;
-		end_pos.y = bounds.y2;
+		priv->bbox_start.x = bounds.x1;
+		priv->bbox_start.y = bounds.y1;
+		priv->bbox_end.x = bounds.x2;
+		priv->bbox_end.y = bounds.y2;
 
-		priv->bbox_start = start_pos;
-		priv->bbox_end = end_pos;
 		priv->cache_valid = TRUE;
 	}
 
-	memcpy (p1, &priv->bbox_start, sizeof (Coords));
-	memcpy (p2, &priv->bbox_end, sizeof (Coords));
+	if (p1)
+		*p1 = priv->bbox_start;
+	if (p2)
+		*p2 = priv->bbox_end;
 }
 
 static void
@@ -730,7 +733,7 @@ static void wire_traverse (Wire *wire);
 static void
 node_traverse (Node *node)
 {
-	GSList *wires;
+	GSList *iter;
 
 	g_return_if_fail (node != NULL);
 	g_return_if_fail (IS_NODE (node));
@@ -740,17 +743,16 @@ node_traverse (Node *node)
 
 	node_set_visited (node, TRUE);
 
-	for (wires = node->wires; wires; wires = wires->next) {
-		Wire *wire = wires->data;
+	for (iter = node->wires; iter; iter=iter->next) {
+		Wire *wire = iter->data;
 		wire_traverse (wire);
 	}
-	g_slist_free_full (wires, g_object_unref);
 }
 
 static void
 wire_traverse (Wire *wire)
 {
-	GSList *nodes;
+	GSList *iter;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -762,12 +764,10 @@ wire_traverse (Wire *wire)
 
 	g_signal_emit_by_name (wire, "highlight");
 
-	for (nodes = wire_get_nodes (wire); nodes; nodes = nodes->next) {
-		Node *node = nodes->data;
-
+	for (iter=wire_get_nodes (wire); iter; iter=iter->next) {
+		Node *node = iter->data;
 		node_traverse (node);
 	}
-	g_slist_free_full (nodes, g_object_unref);
 }
 
 static void
@@ -781,7 +781,7 @@ node_foreach_reset (gpointer key, gpointer value, gpointer user_data)
 static void
 mouse_over_wire_callback (WireItem *item, Sheet *sheet)
 {
-	GList *wires;
+	GList *iter;
 	Wire *wire;
 	NodeStore *store;
 
@@ -792,14 +792,13 @@ mouse_over_wire_callback (WireItem *item, Sheet *sheet)
 	        	schematic_view_get_schematic_from_sheet (sheet));
 
 	node_store_node_foreach (store, (GHFunc *) node_foreach_reset, NULL);
-	for (wires = store->wires; wires; wires = wires->next) {
-		wire = wires->data;
+	for (iter=store->wires; iter; iter=iter->next) {
+		wire = iter->data;
 		wire_set_visited (wire, FALSE);
 	}
 
 	wire = WIRE (sheet_item_get_data (SHEET_ITEM (item)));
 	wire_traverse (wire);
-	g_list_free_full (wires, g_object_unref);
 }
 
 static void
@@ -814,7 +813,7 @@ highlight_wire_callback (Wire *wire, WireItem *item)
 	// Guard against removal during the highlighting.
 	g_object_ref (G_OBJECT (item));
 
-	g_timeout_add (1000, (gpointer) unhighlight_wire, item);
+	g_timeout_add (1000, (gpointer) unhighlight_wire, item); //FIXME XXX wtf???
 }
 
 static int
