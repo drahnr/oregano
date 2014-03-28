@@ -245,7 +245,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	            -RESIZER_SIZE,
 	            2 * RESIZER_SIZE,
 	            2 * RESIZER_SIZE,
-	                "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
+	                "stroke-color", oregano_options_debug_wires() ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	            "fill-color", "green",
 	    		"line-width", 1.0,
 	    		NULL));
@@ -259,7 +259,7 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	     		length.y - RESIZER_SIZE,
 	            2 * RESIZER_SIZE,
 	    		2 * RESIZER_SIZE,
-	                "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
+	                "stroke-color", oregano_options_debug_wires() ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	            "fill-color", "green",
 	    		"line-width", 1.0,
 	    		NULL));
@@ -277,10 +277,10 @@ wire_item_new (Sheet *sheet, Wire *wire)
 	    GOO_CANVAS_ITEM (wire_item),
 		FALSE, 0,
 	    "points", points,
-	    "stroke-color", opts.debug.wires ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
+	    "stroke-color", oregano_options_debug_wires() ? random_color[g_random_int_range(0,random_color_count-1)] : "blue",
 	    "line-width", 1.0,
-	    "start-arrow", opts.debug.wires ? TRUE : FALSE,
-	    "end-arrow", opts.debug.wires ? TRUE : FALSE,
+	    "start-arrow", oregano_options_debug_wires() ? TRUE : FALSE,
+	    "end-arrow", oregano_options_debug_wires() ? TRUE : FALSE,
 	    NULL));
 
 	goo_canvas_points_unref (points);

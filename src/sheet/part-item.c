@@ -308,7 +308,7 @@ part_item_canvas_new (Sheet *sheet, Part *part)
 	        "fill-color-rgba", 0x7733aa66,
 	        "radius-x", 1.0,
 	        "radius-y", 1.0,
-	        "visibility", opts.debug.boundingboxes ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE,
+	        "visibility", oregano_options_debug_boxes() ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE,
 	        NULL);
 
 	priv->label_group = goo_canvas_group_new (

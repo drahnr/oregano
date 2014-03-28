@@ -11,15 +11,24 @@
 typedef struct {
 	struct {
 		gboolean wires;
-		gboolean boundingboxes;
+		gboolean boxes;
+		gboolean dots;
+		gboolean all;
 	} debug;
 
 } OreganoOptions;
 
 
-extern OreganoOptions opts;
-
 gboolean
 oregano_options_parse (int *argc, char **argv[], GError **e);
+
+gboolean
+oregano_options_debug_wires ();
+
+gboolean
+oregano_options_debug_boxes ();
+
+gboolean
+oregano_options_debug_dots ();
 
 #endif /* OPTION_H__ */
