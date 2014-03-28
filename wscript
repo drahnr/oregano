@@ -162,14 +162,14 @@ from waflib.Build import BuildContext
 
 
 def gdb(ctx):
-	os.system ("G_DEBUG=resident-modules,fatal-warnings gdb --args ./build/debug/"+APPNAME+" --debug-boundingboxes --debug-wires")
+	os.system ("G_DEBUG=resident-modules,fatal-warnings gdb --args ./build/debug/"+APPNAME+" --debug-all")
 
 
 def valgrind(ctx):
-	os.system ("G_DEBUG=resident-modules,always-malloc valgrind --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-wires --debug-boundingboxes")
+	os.system ("G_DEBUG=resident-modules,always-malloc valgrind --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
 
 def massif(ctx):
-	os.system ("G_DEBUG=resident-modules,always-malloc valgrind --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-wires --debug-boundingboxes")
+	os.system ("G_DEBUG=resident-modules,always-malloc valgrind --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
 
 
 class release(BuildContext):
