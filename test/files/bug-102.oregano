@@ -1,0 +1,770 @@
+<?xml version="1.0"?>
+<ogo:schematic xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
+  <ogo:author/>
+  <ogo:title>fliprottest.oregano</ogo:title>
+  <ogo:comments/>
+  <ogo:grid>
+    <ogo:visible>true</ogo:visible>
+    <ogo:snap>true</ogo:snap>
+  </ogo:grid>
+  <ogo:simulation-settings>
+    <ogo:transient>
+      <ogo:enabled>true</ogo:enabled>
+      <ogo:start>0</ogo:start>
+      <ogo:stop>0.005</ogo:stop>
+      <ogo:step>0.0001</ogo:step>
+      <ogo:step-enabled>false</ogo:step-enabled>
+      <ogo:init-conditions>false</ogo:init-conditions>
+    </ogo:transient>
+    <ogo:ac>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:npoints>50</ogo:npoints>
+      <ogo:start>1</ogo:start>
+      <ogo:stop>1e+06</ogo:stop>
+    </ogo:ac>
+    <ogo:dc-sweep>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:vsrc1/>
+      <ogo:start1>0</ogo:start1>
+      <ogo:stop1>0</ogo:stop1>
+      <ogo:step1>0</ogo:step1>
+    </ogo:dc-sweep>
+    <ogo:fourier>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:freq>0</ogo:freq>
+      <ogo:vout>0</ogo:vout>
+    </ogo:fourier>
+  </ogo:simulation-settings>
+  <ogo:parts>
+    <ogo:part>
+      <ogo:rotation>180</ogo:rotation>
+      <ogo:flip>vertical</ogo:flip>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(1045 260)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V2</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>180</ogo:rotation>
+      <ogo:flip>horizontal</ogo:flip>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(1125 360)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V8</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>0</ogo:rotation>
+      <ogo:flip>horizontal</ogo:flip>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(700 270)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V7</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>0</ogo:rotation>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(510 270)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V6</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>180</ogo:rotation>
+      <ogo:flip>horizontal</ogo:flip>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(575 390)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V5</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>180</ogo:rotation>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(765 390)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V4</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>180</ogo:rotation>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(1095 360)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V3</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+    <ogo:part>
+      <ogo:rotation>270</ogo:rotation>
+      <ogo:name>12AX7 (a)</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Triode</ogo:symbol>
+      <ogo:position>(1112.5 312.5)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>V1</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Model</ogo:name>
+          <ogo:value>12AX7A(a)</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 -27)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>p</ogo:name>
+          <ogo:text>1</ogo:text>
+          <ogo:position>(34 -29)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>g</ogo:name>
+          <ogo:text>2</ogo:text>
+          <ogo:position>(5 -2)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>c</ogo:name>
+          <ogo:text>3</ogo:text>
+          <ogo:position>(62 30)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h1</ogo:name>
+          <ogo:text>4</ogo:text>
+          <ogo:position>(23 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h2</ogo:name>
+          <ogo:text>9</ogo:text>
+          <ogo:position>(33 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>h3</ogo:name>
+          <ogo:text>5</ogo:text>
+          <ogo:position>(43 38)</ogo:position>
+        </ogo:label>
+        <ogo:label>
+          <ogo:name>Model</ogo:name>
+          <ogo:text>@model</ogo:text>
+          <ogo:position>(45 -27)</ogo:position>
+        </ogo:label>
+      </ogo:labels>
+    </ogo:part>
+  </ogo:parts>
+  <ogo:wires>
+    <ogo:wire>
+      <ogo:points>(310 190)(1420 190)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1420 190)(1420 200)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1420 200)(310 200)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 200)(310 210)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 210)(1420 210)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1420 210)(1420 230)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1420 230)(1410 230)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1410 230)(1410 220)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1410 220)(310 220)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 220)(310 230)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 230)(1400 230)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1400 230)(1400 250)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1400 250)(1400 260)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1400 260)(1390 260)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1390 260)(1390 250)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1390 250)(1390 240)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1390 240)(310 240)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 240)(310 250)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 250)(1380 250)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1380 250)(1380 260)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1380 260)(310 260)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 260)(310 270)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 270)(1450 270)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 270)(1450 280)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 280)(310 280)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 280)(310 290)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 290)(1450 290)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 290)(1450 300)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 300)(310 300)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 300)(310 310)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 310)(1450 310)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 310)(1450 320)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 320)(310 320)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 320)(310 330)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 330)(1450 330)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 330)(1450 340)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 340)(310 340)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 340)(310 350)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 350)(1450 350)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 350)(1450 360)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 360)(310 360)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 360)(310 370)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 370)(1450 370)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 370)(1450 380)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 380)(310 380)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 380)(310 390)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 390)(1450 390)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 390)(1450 400)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 400)(310 400)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 400)(310 410)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 410)(1450 410)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 410)(1450 420)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 420)(310 420)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 420)(310 430)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 430)(1450 430)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 430)(1450 440)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 440)(310 440)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 440)(310 450)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 450)(1450 450)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 450)(1450 460)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 460)(310 460)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 460)(310 470)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 470)(1450 470)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 470)(1450 480)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 480)(310 480)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 480)(310 490)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 490)(1450 490)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 490)(1450 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 500)(310 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 500)(310 510)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 510)(1450 510)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 510)(1450 520)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(1450 520)(310 520)</ogo:points>
+    </ogo:wire>
+  </ogo:wires>
+  <ogo:textboxes/>
+</ogo:schematic>
