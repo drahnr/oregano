@@ -13,6 +13,7 @@ typedef struct {
 		gboolean wires;
 		gboolean boxes;
 		gboolean dots;
+		gboolean directions;
 		gboolean all;
 	} debug;
 
@@ -30,5 +31,8 @@ oregano_options_debug_boxes ();
 
 gboolean
 oregano_options_debug_dots ();
+
+gboolean
+oregano_options_debug_directions ();
 
 #endif /* OPTION_H__ */

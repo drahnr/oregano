@@ -7,6 +7,7 @@ OreganoOptions opts = {
 		.wires = FALSE,
 		.boxes = FALSE,
 		.dots = FALSE,
+		.directions = FALSE,
 		.all = FALSE
 	}
 };
@@ -15,6 +16,7 @@ GOptionEntry entries[] = {
 	{"debug-wires", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.wires), "Give them randomly alternating colors.", NULL},
 	{"debug-boundingboxes", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.boxes), "Draw them in semi transparent purple.", NULL},
 	{"debug-dots", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.dots), "Draw an extra color circle around dots which are always shown.", NULL},
+	{"debug-directions", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.directions), "Draw fancy direction arrows top left edge of the sheet.", NULL},
 	{"debug-all", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.all), "Enable all debug-* options.", NULL},
 	{NULL}
 };
@@ -64,4 +66,10 @@ inline gboolean
 oregano_options_debug_dots ()
 {
 	return opts.debug.dots || opts.debug.all;
+}
+
+inline gboolean
+oregano_options_debug_directions ()
+{
+	return opts.debug.directions || opts.debug.all;
 }

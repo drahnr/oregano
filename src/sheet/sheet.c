@@ -47,7 +47,7 @@
 #include "grid.h"
 #include "sheet-item-factory.h"
 #include "schematic-view.h"
-
+#include "options.h"
 #include "rubberband.h"
 #include "create-wire.h"
 
@@ -524,38 +524,38 @@ sheet_new (gdouble height, gdouble width)
 	                     "line-width", 0.0,
 	                     NULL);
 
-#ifdef FIXME_DRAW_DIRECTION_ARROWS
-	goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
-	                              10.0, 10.0,
-	                              50.0, 10.0,
-	                              "stroke-color", "green",
-	                              "line-width", 2.0,
-	                              "end-arrow", TRUE,
-	                              NULL);
-	goo_canvas_text_new (GOO_CANVAS_ITEM (sheet_group),
-	                     "x",
-	                     90.0, 10.0,
-	                     -1.0,
-	                     GOO_CANVAS_ANCHOR_WEST,
-	                     "fill-color", "green",
-	                     NULL);
+	if (oregano_options_debug_directions()) {
+		goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
+			                          10.0, 10.0,
+			                          50.0, 10.0,
+			                          "stroke-color", "green",
+			                          "line-width", 2.0,
+			                          "end-arrow", TRUE,
+			                          NULL);
+		goo_canvas_text_new (GOO_CANVAS_ITEM (sheet_group),
+			                 "x",
+			                 90.0, 10.0,
+			                 -1.0,
+			                 GOO_CANVAS_ANCHOR_WEST,
+			                 "fill-color", "green",
+			                 NULL);
 
 
-	goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
-	                              10.0, 10.0,
-	                              10.0, 50.0,
-	                              "stroke-color", "red",
-	                              "line-width", 2.0,
-	                              "end-arrow", TRUE,
-	                              NULL);
-	goo_canvas_text_new (GOO_CANVAS_ITEM (sheet_group),
-	                     "y",
-	                     10.0, 90.0,
-	                     -1.0,
-	                     GOO_CANVAS_ANCHOR_CENTER,
-	                     "fill-color", "red",
-	                     NULL);
-#endif
+		goo_canvas_polyline_new_line (GOO_CANVAS_ITEM (sheet_group),
+			                          10.0, 10.0,
+			                          10.0, 50.0,
+			                          "stroke-color", "red",
+			                          "line-width", 2.0,
+			                          "end-arrow", TRUE,
+			                          NULL);
+		goo_canvas_text_new (GOO_CANVAS_ITEM (sheet_group),
+			                 "y",
+			                 10.0, 90.0,
+			                 -1.0,
+			                 GOO_CANVAS_ANCHOR_CENTER,
+			                 "fill-color", "red",
+			                 NULL);
+	}
 	//  Draw a thin black border around the sheet.
 	points = goo_canvas_points_new (5);
 	points->coords[0] = 20.0;
