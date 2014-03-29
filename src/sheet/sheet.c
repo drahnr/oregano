@@ -337,103 +337,111 @@ sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdjustment *
 
 
 /**
- * change the zoom by factor <rate>
+ * change the zoom by factor
+ *
  * zoom origin when zooming in is the cursor
  * zoom origin when zooming out is the center of the current viewport
- * sane <rate> values are in range of [0.5 .. 2]
+ *
+ * @param sheet
+ * @param factor values should be in the range of [0.5 .. 2]
  */
 void
-sheet_change_zoom (Sheet *sheet, gdouble rate)
+sheet_change_zoom (Sheet *sheet, gdouble factor)
 {
 	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
-//////////////////////////////////////////////7
 
-	gdouble x, y;
-	gdouble rx, ry;
-	gdouble px, py;
-	gdouble dx, dy;
-	gdouble cx, cy;
-	gdouble dcx, dcy;
+	Coords adju, r, pointer, delta, center, pagesize;
 	GtkAdjustment *hadj = NULL, *vadj = NULL;
 	GooCanvas *canvas;
+	gboolean b = FALSE;
 
 	canvas = GOO_CANVAS (sheet);
 
-	// if we scroll out, just scroll to the center
-	if (rate < 1.) {
-		goo_canvas_set_scale (canvas, rate * goo_canvas_get_scale (canvas));
+	// if we scroll out, just use the center as focus
+	// mouse curser centered scroll out "feels" awkward
+	if (factor < 1.) {
+		goo_canvas_set_scale (canvas, factor * goo_canvas_get_scale (canvas));
+		return;
+	}
+
+	// get pointer position in pixels
+	// just skip the correction if we can not get the pointer
+	if (!sheet_get_pointer_pixel (sheet, &pointer.x, &pointer.y)) {
+		goo_canvas_set_scale (canvas, factor * goo_canvas_get_scale (canvas));
+		g_warning ("Failed to get cursor position.");
 		return;
 	}
 
 	// top left corner in pixels
-	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
-		x = gtk_adjustment_get_value (hadj);
-		y = gtk_adjustment_get_value (vadj);
+	b = sheet_get_adjustments (sheet, &hadj, &vadj);
+	if (b) {
+		adju.x = gtk_adjustment_get_value (hadj);
+		adju.y = gtk_adjustment_get_value (vadj);
+		// get the page size in pixels
+		pagesize.x = gtk_adjustment_get_page_size (hadj);
+		pagesize.y = gtk_adjustment_get_page_size (vadj);
 	} else {
-		return; //TODO recheck
+		//FIXME untested codepath, check for variable space conversion
+		//FIXME Pixel vs GooUnits
+		gdouble left, right, top, bottom;
+		goo_canvas_get_bounds (canvas, &left, &top, &right, &bottom);
+		pagesize.x = bottom - top;
+		pagesize.y = right - left;
+		adju.x = adju.y = 0.;
 	}
-
-	// get pointer position in pixels
-	if (!sheet_get_pointer_pixel (sheet, &px, &py)) {
-		return;
-	}
-
-	// get the page size in pixels
-	dx = gtk_adjustment_get_page_size (hadj);
-	dy = gtk_adjustment_get_page_size (vadj);
 
 	// calculate the center of the widget in pixels
-	cx = x + dx/2;
-	cy = y + dy/2;
+	center.x = adju.x + pagesize.x/2.;
+	center.y = adju.y + pagesize.y/2.;
 
 	// calculate the delta between the center and the pointer in pixels
 	// this is required as the center is the zoom target
-	dcx = px - cx;
-	dcy = py - cy;
+	delta.x = pointer.x - center.x;
+	delta.y = pointer.y - center.y;
 
 	// increase the top left position in pixels by our calculated delta
-	x += dcx;
-	y += dcy;
+	adju.x += delta.x;
+	adju.y += delta.y;
 
 	//convert to canvas coords
-	goo_canvas_convert_from_pixels (canvas, &x, &y);
+	goo_canvas_convert_from_pixels (canvas, &adju.x, &adju.y);
 
 	//the center of the canvas is now our cursor position
-	goo_canvas_scroll_to (canvas, x, y);
+	goo_canvas_scroll_to (canvas, adju.x, adju.y);
 
 	//calculate a correction term
 	//for the case that we can not scroll the pane far enough to
 	//compensate the whole off-due-to-wrong-center-error
-	rx = gtk_adjustment_get_value (hadj);
-	ry = gtk_adjustment_get_value (vadj);
-	goo_canvas_convert_from_pixels (canvas, &rx, &ry);
-	//the correction term in goo coordinates, to be subtracted from the backscroll distance
-	rx -= x;
-	ry -= y;
+
+	if (b) {
+		r.x = gtk_adjustment_get_value (hadj);
+		r.y = gtk_adjustment_get_value (vadj);
+		goo_canvas_convert_from_pixels (canvas, &r.x, &r.y);
+		//the correction term in goo coordinates, to be subtracted from the backscroll distance
+		r.x -= adju.x;
+		r.y -= adju.y;
+	} else {
+		r.x = r.y = 0.;
+	}
 
 	// no the center is our cursor position and we can safely call scale
-	goo_canvas_set_scale (canvas, rate * goo_canvas_get_scale (canvas));
+	goo_canvas_set_scale (canvas, factor * goo_canvas_get_scale (canvas));
 
 	// top left corner in pixels after scaling
-	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
-		x = gtk_adjustment_get_value (hadj);
-		y = gtk_adjustment_get_value (vadj);
+	if (b) {
+		adju.x = gtk_adjustment_get_value (hadj);
+		adju.y = gtk_adjustment_get_value (vadj);
 	} else {
-		x = y = 0.;
+		adju.x = adju.y = 0.;
 	}
-	// not sure if the below part is required, could be zer0
-	NG_DEBUG ("rx %lf\n", rx);
-	NG_DEBUG ("ry %lf\n", ry);
-	NG_DEBUG ("dcx %lf\n", dcx);
-	NG_DEBUG ("dcy %lf\n", dcy);
-	NG_DEBUG ("\n\n");
-	// gtk_adjustment_get_page_size is constant
-	x -= (dcx) / sheet->priv->zoom;
-	y -= (dcy) / sheet->priv->zoom;
-	goo_canvas_convert_from_pixels (canvas, &x, &y);
 
-	goo_canvas_scroll_to (canvas, x-rx, y-ry);
+	// gtk_adjustment_get_page_size is constant before and after scale
+	adju.x -= (delta.x) / sheet->priv->zoom;
+	adju.y -= (delta.y) / sheet->priv->zoom;
+	goo_canvas_convert_from_pixels (canvas, &adju.x, &adju.y);
+
+	goo_canvas_scroll_to (canvas, adju.x-r.x, adju.y-r.y);
 
 	gtk_widget_queue_draw (GTK_WIDGET (canvas));
 }
