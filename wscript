@@ -117,7 +117,8 @@ def build(bld):
 			logs.warn ('Defaulting to \'debug\' build variant')
 			logs.warn ('Do "waf debug" or "waf release" to avoid this warning')
 		if os.geteuid()==0:
-			logs.fatal ('Do not run "' + ctx.cmd + '" as root, just don\'t!. Aborting.')
+			logs.error ('Do not run "' + bld.cmd + '" as root, just don\'t!. Aborting.')
+			exit (1)
 	else:
 		if not os.geteuid()==0:
 			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
