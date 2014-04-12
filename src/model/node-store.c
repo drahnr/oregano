@@ -226,11 +226,10 @@ node_store_add_part (NodeStore *self, Part *part)
 	g_return_val_if_fail (part, FALSE);
 	g_return_val_if_fail (IS_PART (part), FALSE);
 
-	GSList *wire_list, *list;
+	GSList *iter, *copy;
 	Node *node;
-	Coords lookup_key;
+	Coords pin_pos;
 	Coords part_pos;
-	gdouble x, y;
 	int i, num_pins;
 	Pin *pins;
 
@@ -240,29 +239,24 @@ node_store_add_part (NodeStore *self, Part *part)
 	item_data_get_pos (ITEM_DATA (part), &part_pos);
 
 	for (i = 0; i < num_pins; i++) {
-		x = part_pos.x + pins[i].offset.x;
-		y = part_pos.y + pins[i].offset.y;
-
 		//Use the position of the pin as hash key.
-		lookup_key.x = x;
-		lookup_key.y = y;
+		pin_pos.x = part_pos.x + pins[i].offset.x;
+		pin_pos.y = part_pos.y + pins[i].offset.y;
 
 		// Retrieve a node for this position.
-		node = node_store_get_or_create_node (self, lookup_key);
+		node = node_store_get_or_create_node (self, pin_pos);
 
 		// Add all the wires that intersect this pin to the node store.
-		wire_list = get_wires_at_pos (self, lookup_key);
+		copy = get_wires_at_pos (self, pin_pos);
+		for (iter=copy; iter; iter=iter->next) {
+			Wire *wire = copy->data;
 
-		for (list = wire_list; list; list = list->next) {
-			Wire *wire = list->data;
-
-			NG_DEBUG ("Add pin (node) %p to wire %p.\n", node, wire);
 
 			node_add_wire (node, wire);
 			wire_add_node (wire, node);
 		}
 
-		g_slist_free (wire_list);
+		g_slist_free (copy);
 
 		node_add_pin (node, &pins[i]);
 	}
@@ -282,8 +276,8 @@ gboolean
 node_store_remove_part (NodeStore *self, Part *part)
 {
 	Node *node;
-	Coords lookup_key;
-	Coords pos;
+	Coords pin_pos;
+	Coords part_pos;
 	int i, num_pins;
 	Pin *pins;
 
@@ -296,14 +290,14 @@ node_store_remove_part (NodeStore *self, Part *part)
 	self->items = g_list_remove (self->items, part);
 
 	num_pins = part_get_num_pins (part);
-	item_data_get_pos (ITEM_DATA (part), &pos);
+	item_data_get_pos (ITEM_DATA (part), &part_pos);
 
 	pins = part_get_pins (part);
 	for (i = 0; i < num_pins; i++) {
-		lookup_key.x = pos.x + pins[i].offset.x;
-		lookup_key.y = pos.y + pins[i].offset.y;
+		pin_pos.x = part_pos.x + pins[i].offset.x;
+		pin_pos.y = part_pos.y + pins[i].offset.y;
 
-		node = g_hash_table_lookup (self->nodes, &lookup_key);
+		node = g_hash_table_lookup (self->nodes, &pin_pos);
 		if (node) {
 			if (!node_remove_pin (node, &pins[i])) {
 				g_warning ("Could not remove pin[%i] from node %p.", i, node);
@@ -313,7 +307,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 			// If the node is empty after removing the pin,
 			// remove the node as well.
 			if (node_is_empty (node)) {
-				g_hash_table_remove (self->nodes, &lookup_key);
+				g_hash_table_remove (self->nodes, &pin_pos);
 				g_object_unref (G_OBJECT (node));
 			}
 		} else {
@@ -348,7 +342,7 @@ node_store_remove_textbox (NodeStore *self, Textbox *text)
  *
  * @param store
  * @param wire
- * @returns TRUE on success, else FALSE
+ * @returns TRUE if the wire was added or merged into another, else FALSE
  */
 gboolean
 node_store_add_wire (NodeStore *store, Wire *wire)
@@ -571,7 +565,11 @@ node_store_is_wire_at_pos (NodeStore *store, Coords pos)
 
 
 /**
- * Find the node that has an element at a certain position.
+ * lookup node at specified position
+ *
+ * @param store which store to check
+ * @param pos where to check in that store
+ * @returns the node pointer if there is a node, else NULL
  */
 Node *
 node_store_get_node (NodeStore *store, Coords pos)
@@ -732,12 +730,12 @@ node_store_count_items (NodeStore *store, NodeRect *rect)
 }
 
 static void
-draw_dot (Coords *key, Node *value, cairo_t *cr)
+draw_dot (Coords *pos, Node *value, cairo_t *cr)
 {
 	if (node_needs_dot (value)) {
 		cairo_save (cr);
 		cairo_set_source_rgb (cr, 0.0, 0.0, 0.0);
-		cairo_translate (cr, key->x, key->y);
+		cairo_translate (cr, pos->x, pos->y);
 		cairo_scale (cr, 1.0, 1.0);
 		cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
 		cairo_fill (cr);
