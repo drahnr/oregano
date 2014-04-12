@@ -465,7 +465,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 			// If there is a wire at this pin's position,
 			// add it to the return list.
-			if (is_wire_at_coords (wire, &lookup_pos)) {
+			if (is_point_on_wire (wire, &lookup_pos)) {
 				Node *node;
 				node = node_store_get_node (store, lookup_pos);
 
@@ -545,25 +545,25 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 
 
 /**
- * @returns if there exists a wire at the target position which is registered to the nodestore
+ * check if there is at least one wire at the specified position
+ *
+ * @param store which NodeStore to check
+ * @param pos the position
+ * @returns TRUE or FALSE
  */
 gboolean
 node_store_is_wire_at_pos (NodeStore *store, Coords pos)
 {
-	GList *list;
-	Wire *wire;
-	Coords start, end;
+	GList *iter;
 
 	g_return_val_if_fail (store, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 
-	for (list = store->wires; list; list = list->next) {
-		wire = list->data;
+	for (iter=store->wires; iter; iter=iter->next) {
+		Wire *wire = iter->data;
 
-		wire_get_start_pos (wire, &start);
-		wire_get_end_pos (wire, &end);
 
-		if (is_line_segment_at_pos (&start, &end, &pos))
+		if (is_point_on_wire (wire, &pos))
 			return TRUE;
 	}
 	return FALSE;

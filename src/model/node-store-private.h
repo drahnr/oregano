@@ -8,6 +8,7 @@
 #include "wire.h"
 
 #include "debug.h"
+static gboolean is_point_on_wire (Wire *w, Coords *where);
 
 static void
 add_node (gpointer key, Node *node, GList **list)
@@ -70,49 +71,6 @@ do_wires_intersect (Wire *a, Wire *b, Coords *where)
 }
 
 
-
-
-
-/**
- * evaluates if x1,y1 to x2,y2 contain pos.x/pos.y if connected by a birds eye line
- */
-static inline gboolean
-is_line_segment_at_pos (Coords *one, Coords *two, Coords *pos)
-{
-	//calculate the hessenormalform and check the results vs eps
-	// 0 = (vx - vp0) dot (n)
-	double d;
-	Coords a, n;
-
-	a.x = two->x - one->x;
-	a.y = two->y - one->y;
-	n.x = -a.y;
-	n.y = +a.x;
-
-	d = (pos->x - one->x) * n.x + (pos->y - one->y) * n.y;
-
-	if (fabs(d) > NODE_EPSILON)
-		return FALSE;
-
-	if (pos->x<MIN(one->x,two->x) || pos->x>MAX(one->x,two->x) || pos->y<MIN(one->y,two->y) || pos->y>MAX(one->y,two->y))
-		return FALSE;
-
-	NG_DEBUG ("on wire (DIST=%g): linear start:(%g %g); end:(%g %g); point:(%g %g)", d, one->x, one->y, two->x, two->y, pos->x, pos->y);
-
-	return TRUE;
-}
-
-static inline gboolean
-is_wire_at_coords(Wire *w, Coords *coo)
-{
-	Coords p1, p2, len;
-	wire_get_pos_and_length (w, &p1, &len);
-	p2 = p1;
-	coords_add (&p2, &len);
-	return is_line_segment_at_pos (&p1, &p2, coo);
-}
-
-
 /**
  * @param store which NodeStore to use
  * @param pos where to look for wires
@@ -121,19 +79,18 @@ is_wire_at_coords(Wire *w, Coords *coo)
 static GSList *
 get_wires_at_pos (NodeStore *store, Coords pos)
 {
-	GList *list;
+	GList *iter;
 	GSList *wire_list;
-	Wire *wire;
 
 	g_return_val_if_fail (store, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 
 	wire_list = NULL;
 
-	for (list = store->wires; list; list = list->next) {
-		wire = list->data;
+	for (iter=store->wires; iter; iter=iter->next) {
+		Wire *wire = iter->data;
 
-		if (is_wire_at_coords (wire, &pos))
+		if (is_point_on_wire (wire, &pos))
 			wire_list = g_slist_prepend (wire_list, wire);
 	}
 
@@ -178,7 +135,7 @@ project_point_on_wire (Wire *w, Coords *p, Coords *projected, gdouble *d)
 
 
 /**
- * test if point is within a wire
+ * test if point is within a wire (including endpoints)
  * @param w the wire
  * @param p the point to test
  */
@@ -186,6 +143,7 @@ static gboolean
 is_point_on_wire (Wire *w, Coords *p)
 {
 	g_assert (w);
+	g_assert (IS_WIRE (w));
 	g_assert (p);
 	gdouble d = -7777.7777;
 	const gboolean ret = project_point_on_wire (w, p, NULL, &d);
@@ -318,7 +276,9 @@ gboolean
 is_t_crossing (Wire *a, Wire *b, Coords *t)
 {
 	g_assert (a);
+	g_assert (IS_WIRE (a));
 	g_assert (b);
+	g_assert (IS_WIRE (b));
 
 	Coords sa, ea, sb, eb;
 

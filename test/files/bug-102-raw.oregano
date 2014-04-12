@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ogo:schematic xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
   <ogo:author/>
-  <ogo:title>item_data_test.oregano</ogo:title>
+  <ogo:title>bug-102-raw.oregano</ogo:title>
   <ogo:comments/>
   <ogo:grid>
     <ogo:visible>true</ogo:visible>
@@ -38,116 +38,112 @@
   <ogo:parts/>
   <ogo:wires>
     <ogo:wire>
-      <ogo:points>(640 90)(640 450)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(310 150)(310 500)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(290 150)(290 500)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(280 150)(280 500)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(300 150)(300 500)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(320 150)(320 500)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(330 150)(330 500)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(350 150)(350 540)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(360 150)(360 530)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(370 530)(370 130)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(380 130)(380 540)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(390 540)(390 110)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(400 110)(400 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(410 550)(410 100)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(420 100)(420 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(430 550)(430 100)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(440 100)(440 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(450 550)(450 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(460 90)(460 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(470 550)(470 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(480 90)(480 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(490 550)(490 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(500 90)(500 540)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(510 540)(510 80)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(520 80)(520 540)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(530 540)(530 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(540 90)(540 540)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(550 540)(550 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(560 90)(560 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(570 550)(570 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(580 90)(580 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(590 550)(590 90)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(600 90)(600 550)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(610 550)(610 90)</ogo:points>
+      <ogo:points>(630 550)(630 90)</ogo:points>
     </ogo:wire>
     <ogo:wire>
       <ogo:points>(620 90)(620 550)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(630 550)(630 90)</ogo:points>
+      <ogo:points>(610 550)(610 90)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(340 150)(340 500)</ogo:points>
-      <ogo:points>(340 500)(340 540)</ogo:points>
+      <ogo:points>(600 90)(600 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(590 550)(590 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(580 90)(580 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(570 550)(570 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(560 90)(560 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(550 540)(550 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(540 90)(540 540)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(530 540)(530 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(520 80)(520 540)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(510 540)(510 80)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(500 90)(500 540)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(490 550)(490 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(480 90)(480 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(470 550)(470 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(460 90)(460 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(450 550)(450 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(440 100)(440 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(430 550)(430 100)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(420 100)(420 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(410 550)(410 100)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(400 110)(400 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(390 540)(390 110)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(380 130)(380 540)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(370 530)(370 130)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(360 150)(360 530)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(350 150)(350 540)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(330 150)(330 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(320 150)(320 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(300 150)(300 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(280 150)(280 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(290 150)(290 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(310 150)(310 500)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(640 90)(640 450)</ogo:points>
     </ogo:wire>
   </ogo:wires>
   <ogo:textboxes/>

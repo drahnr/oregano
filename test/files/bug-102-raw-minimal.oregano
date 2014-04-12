@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<ogo:schematic xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
+  <ogo:author/>
+  <ogo:title>bug-102-raw-minimal.oregano</ogo:title>
+  <ogo:comments/>
+  <ogo:grid>
+    <ogo:visible>true</ogo:visible>
+    <ogo:snap>true</ogo:snap>
+  </ogo:grid>
+  <ogo:simulation-settings>
+    <ogo:transient>
+      <ogo:enabled>true</ogo:enabled>
+      <ogo:start>0</ogo:start>
+      <ogo:stop>0.005</ogo:stop>
+      <ogo:step>0.0001</ogo:step>
+      <ogo:step-enabled>false</ogo:step-enabled>
+      <ogo:init-conditions>false</ogo:init-conditions>
+    </ogo:transient>
+    <ogo:ac>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:npoints>50</ogo:npoints>
+      <ogo:start>1</ogo:start>
+      <ogo:stop>1e+06</ogo:stop>
+    </ogo:ac>
+    <ogo:dc-sweep>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:vsrc1/>
+      <ogo:start1>0</ogo:start1>
+      <ogo:stop1>0</ogo:stop1>
+      <ogo:step1>0</ogo:step1>
+    </ogo:dc-sweep>
+    <ogo:fourier>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:freq>0</ogo:freq>
+      <ogo:vout>0</ogo:vout>
+    </ogo:fourier>
+  </ogo:simulation-settings>
+  <ogo:parts/>
+  <ogo:wires>
+    <ogo:wire>
+      <ogo:points>(620 90)(620 550)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(580 550)(580 90)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
+      <ogo:points>(600 550)(600 90)</ogo:points>
+    </ogo:wire>
+  </ogo:wires>
+  <ogo:textboxes/>
+</ogo:schematic>
