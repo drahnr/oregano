@@ -297,7 +297,6 @@ gint
 part_get_rotation (Part *part)
 {
 	ItemData *item;
-	PartPriv *priv;
 	gdouble register a,b,c,d, sx,sy;
 	cairo_matrix_t *t;
 
@@ -305,7 +304,6 @@ part_get_rotation (Part *part)
 	g_return_val_if_fail (IS_PART (part), 0);
 
 	item = ITEM_DATA (part);
-	priv = part->priv;
 
 	t = item_data_get_rotate (item);
 	a = t->xx;

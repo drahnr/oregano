@@ -29,7 +29,7 @@
  */
 
 #include <gtk/gtk.h>
-
+#include "options.h"
 #include "node-item.h"
 
 static void node_item_init		(NodeItem		 *item);
