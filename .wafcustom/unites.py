@@ -74,19 +74,21 @@ class unites(Task.Task):
 		filename = self.inputs[0].abspath()
 
 
-		self.generator.bld.logger = Logs.make_logger(os.path.join(self.generator.bld.out_dir, "test.log"), 'unites_logger')
+		bld = self.generator.bld
+		if not bld.logger:
+			bld.logger = Logs.make_logger(os.path.join(bld.out_dir, "test.log"), 'unites_logger')
 
-		self.ut_exec = getattr(self.generator, 'ut_exec', [filename])
+		self.unites_exec = getattr(self.generator, 'unites_exec', [filename])
 
-		if getattr(self.generator, 'ut_fun', None):
+		if getattr(self.generator, 'unites_fun', None):
 				# FIXME waf 1.8 - add a return statement here?
-			self.generator.ut_fun(self)
+			self.generator.unites_fun(self)
 
 		try:
-			fu = getattr(self.generator.bld, 'all_test_paths')
+			shenv = getattr(self.generator.bld, 'all_test_paths')
 		except AttributeError:
 			# this operation may be performed by at most #maxjobs
-			fu = os.environ.copy()
+			shenv = os.environ.copy()
 
 			lst = []
 			for g in self.generator.bld.groups:
@@ -100,36 +102,32 @@ class unites(Task.Task):
 				dct[var] = os.pathsep.join(Utils.to_list(path) + [os.environ.get(var, '')])
 
 			if Utils.is_win32:
-				add_path(fu, lst, 'PATH')
+				add_path(shenv, lst, 'PATH')
 			elif Utils.unversioned_sys_platform() == 'darwin':
-				add_path(fu, lst, 'DYLD_LIBRARY_PATH')
-				add_path(fu, lst, 'LD_LIBRARY_PATH')
+				add_path(shenv, lst, 'DYLD_LIBRARY_PATH')
+				add_path(shenv, lst, 'LD_LIBRARY_PATH')
 			else:
-				add_path(fu, lst, 'LD_LIBRARY_PATH')
-			self.generator.bld.all_test_paths = fu
+				add_path(shenv, lst, 'LD_LIBRARY_PATH')
+			bld.all_test_paths = shenv
 
-		cwd = getattr(self.generator, 'ut_cwd', '') or self.inputs[0].parent.abspath()
+		cwd = getattr(self.generator, 'unites_cwd', '') or self.inputs[0].parent.abspath()
 		testcmd = getattr(Options.options, 'testcmd', False)
 
 		if testcmd:
-			self.ut_exec = (testcmd % self.ut_exec[0]).split(' ')
+			self.unites_exec = (testcmd % self.unites_exec[0]).split(' ')
 
-		#overwrite the default logger to prevent duplicate logging
-		def to_log(x):
-			pass
+		bld.start_msg("Running test \'%s\'" % (testname))
 
-		self.generator.bld.start_msg("Running test \'%s\'" % (testname))
-
-		proc = Utils.subprocess.Popen(self.ut_exec,\
+		proc = Utils.subprocess.Popen(self.unites_exec,\
 		                              cwd=cwd,\
-		                              env=fu,\
+		                              env=shenv,\
 		                              stderr=Utils.subprocess.PIPE,\
 		                              stdout=Utils.subprocess.PIPE)
 
 		(out, err) = proc.communicate()
 
 		if proc.returncode==0:
-			self.generator.bld.end_msg ("passed", 'GREEN');
+			bld.end_msg ("passed", 'GREEN');
 		else:
 			msg = []
 			if out:
@@ -137,12 +135,9 @@ class unites(Task.Task):
 			if err:
 				msg.append('stderr:%s%s' % (os.linesep, err.decode('utf-8')))
 			msg = os.linesep.join(msg)
-
-
-			if (getattr(Options.options, 'permissive_tests', False)):
-				self.generator.bld.end_msg ("FAIL", 'YELLOW');
-			else:
-				self.generator.bld.end_msg ("FAIL", 'RED');
+			bld.end_msg ("FAIL", 'RED');
+			bld.to_log(msg)
+			if not getattr(Options.options, 'permissive_tests', False):
 				raise Errors.WafError('Test \'%s\' failed' % (testname))
 
 
