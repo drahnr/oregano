@@ -139,7 +139,33 @@ class unites(Task.Task):
 			bld.to_log(msg)
 			if not getattr(Options.options, 'permissive_tests', False):
 				raise Errors.WafError('Test \'%s\' failed' % (testname))
+		if not getattr(bld,'unites_summary',None):
+			bld.unites_summary = {}
+		bld.unites_summary[testname] = (proc.returncode!=0)
 
+
+def summary(bld):
+	"""
+	Display an execution summary::
+
+		def build(bld):
+			bld(features='cxx cxxprogram unites', source='main.c', target='app')
+			from waflib.Tools import unites
+			bld.add_post_fun(unites.summary)
+	"""
+	dic = getattr(bld, 'unites_summary', {})
+	if dic:
+		total = len(dic)
+		tfail = len([k for k in dic if dic[k]])
+
+		if tfail>0:
+			if getattr(Options.options, 'permissive_tests', False):
+				col = 'YELLOW'
+			else:
+				col = 'RED'
+		else:
+			col = 'PINK'
+		Logs.pprint (col, 'unites:  %d of %d tests passed' % (total-tfail, total))
 
 def options(opt):
 	"""

@@ -11,73 +11,72 @@ import os
 from waflib import Logs as logs
 from waflib import Utils as utils
 
-def options(ctx):
-	ctx.load('compiler_c gnu_dirs glib2')
-	ctx.load('unites', tooldir='.wafcustom')
+def options(opt):
+	opt.load('compiler_c gnu_dirs glib2')
+	opt.load('unites', tooldir='waftools')
 
-	ctx.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
-	ctx.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
-#	ctx.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
+	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
+	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
+#	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
 
 
+def configure(conf):
+	conf.load('compiler_c gnu_dirs glib2 intltool')
+	conf.load('unites', tooldir='waftools')
 
-def configure(ctx):
-	ctx.load('compiler_c gnu_dirs glib2 intltool')
-	ctx.load('unites', tooldir='.wafcustom')
+	conf.env.appname = APPNAME
+	conf.env.version = VERSION
 
-	ctx.env.appname = APPNAME
-	ctx.env.version = VERSION
-
-	ctx.define('VERSION', VERSION)
-	ctx.define('GETTEXT_PACKAGE', APPNAME)
+	conf.define('VERSION', VERSION)
+	conf.define('GETTEXT_PACKAGE', APPNAME)
 
 
 	#things the applications needs to know about, for easier re-use in subdir wscript(s)
-	ctx.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', ctx.env)
-	ctx.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', ctx.env)
-	ctx.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', ctx.env)
-	ctx.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', ctx.env)
-	ctx.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', ctx.env)
-#	ctx.env.path_icons = '${DATADIR}/oregano/icons/'
-#	ctx.env.path_mime = '${DATADIR}/oregano/mime/'
-#	ctx.env.path_locale = '${DATADIR}/oregano/locale/'
+	conf.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', conf.env)
+	conf.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', conf.env)
+	conf.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', conf.env)
+	conf.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', conf.env)
+	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', conf.env)
+#	conf.env.path_icons = '${DATADIR}/oregano/icons/'
+#	conf.env.path_mime = '${DATADIR}/oregano/mime/'
+#	conf.env.path_locale = '${DATADIR}/oregano/locale/'
 
 	#define the above paths so the application does know about files locations
-	ctx.define('OREGANO_UIDIR', ctx.env.path_ui)
-	ctx.define('OREGANO_MODELDIR', ctx.env.path_model)
-	ctx.define('OREGANO_LIBRARYDIR', ctx.env.path_partslib)
-	ctx.define('OREGANO_LANGDIR', ctx.env.path_lang)
-	ctx.define('OREGANO_EXAMPLEDIR', ctx.env.path_examples)
-#	ctx.define('OREGANO_ICONDIR', ctx.env.path_icons)
-#	ctx.define('OREGANO_MIMEDIR', ctx.env.path_mime)
-#	ctx.define('OREGANO_LOCALEDIR', ctx.env.path_locale)
+	conf.define('OREGANO_UIDIR', conf.env.path_ui)
+	conf.define('OREGANO_MODELDIR', conf.env.path_model)
+	conf.define('OREGANO_LIBRARYDIR', conf.env.path_partslib)
+	conf.define('OREGANO_LANGDIR', conf.env.path_lang)
+	conf.define('OREGANO_EXAMPLEDIR', conf.env.path_examples)
+#	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
+#	conf.define('OREGANO_MIMEDIR', conf.env.path_mime)
+#	conf.define('OREGANO_LOCALEDIR', conf.env.path_locale)
 
 
 
 
-	ctx.check_cc(lib='m', uselib_store='M', mandatory=True)
+	conf.check_cc(lib='m', uselib_store='M', mandatory=True)
 
-	ctx.check_cfg(atleast_pkgconfig_version='0.26')
-	ctx.check_cfg(package='glib-2.0', uselib_store='GLIB', args=['glib-2.0 >= 2.24', '--cflags', '--libs'], mandatory=True)
-	ctx.check_cfg(package='gobject-2.0', uselib_store='GOBJECT', args=['--cflags', '--libs'], mandatory=True)
-	ctx.check_cfg(package='gtk+-3.0', uselib_store='GTK3', args=['--cflags', '--libs'], mandatory=True)
-	ctx.check_cfg(package='libxml-2.0', uselib_store='XML', args=['--cflags', '--libs'], mandatory=True)
-	ctx.check_cfg(package='goocanvas-2.0', uselib_store='GOOCANVAS', args=['--cflags', '--libs'], mandatory=True)
-	ctx.check_cfg(package='gtksourceview-3.0', uselib_store='GTKSOURCEVIEW3', args=['--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(atleast_pkgconfig_version='0.26')
+	conf.check_cfg(package='glib-2.0', uselib_store='GLIB', args=['glib-2.0 >= 2.24', '--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(package='gobject-2.0', uselib_store='GOBJECT', args=['--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(package='gtk+-3.0', uselib_store='GTK3', args=['--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(package='libxml-2.0', uselib_store='XML', args=['--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(package='goocanvas-2.0', uselib_store='GOOCANVAS', args=['--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(package='gtksourceview-3.0', uselib_store='GTKSOURCEVIEW3', args=['--cflags', '--libs'], mandatory=True)
 
-	ctx.check_large_file(mandatory=False)
-	ctx.check_endianness(mandatory=False)
-	ctx.check_inline(mandatory=False)
+	conf.check_large_file(mandatory=False)
+	conf.check_endianness(mandatory=False)
+	conf.check_inline(mandatory=False)
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
-	ctx.setenv('debug', env=ctx.env.derive())
-	ctx.env.CFLAGS = ['-ggdb', '-Wall']
-	ctx.define('DEBUG',1)
-	ctx.define('DEBUG_DISABLE_GRABBING',1)
+	conf.setenv('debug', env=conf.env.derive())
+	conf.env.CFLAGS = ['-ggdb', '-Wall']
+	conf.define('DEBUG',1)
+	conf.define('DEBUG_DISABLE_GRABBING',1)
 
-	ctx.setenv('release', env=ctx.env.derive())
-	ctx.env.CFLAGS = ['-O2', '-Wall']
-	ctx.define('RELEASE',1)
+	conf.setenv('release', env=conf.env.derive())
+	conf.env.CFLAGS = ['-O2', '-Wall']
+	conf.define('RELEASE',1)
 
 
 
@@ -105,6 +104,8 @@ def post(ctx):
 	if ctx.options.run:
 		ctx.exec_command('')
 
+
+from waftools.unites import summary as unites_summary
 
 def build(bld):
 	bld.add_pre_fun(pre)
@@ -157,6 +158,9 @@ def build(bld):
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)
+
+	bld.add_post_fun(unites_summary)
+
 
 
 from waflib.Build import BuildContext
