@@ -149,6 +149,14 @@ coords_euclid2 (const Coords *a)
 	return coords_dot (a,a);
 }
 
+inline gdouble
+coords_distance (const Coords *a, const Coords *b)
+{
+	return sqrt(coords_dot (a,b));
+}
+
+
+
 #define CIRCLERSHIFT(x,r) ((x>>r) | (x<<(sizeof(x)*8-r)))
 #define CIRCLELSHIFT(x,l) ((x<<l) | (x>>(sizeof(x)*8-l)))
 inline guint

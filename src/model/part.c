@@ -311,8 +311,8 @@ part_get_rotation (Part *part)
 	c = t->yx;
 	d =	t->yy;
 
-	sx = sqrt (a*a + c*c);
-    sy = sqrt (b*b + d*d);
+	sx = a*a + c*c;
+	sy = b*b + d*d;
     if (G_UNLIKELY (abs(sx)<1e-10 && abs(sy)<1e-10)) {
 		g_warning ("Unabled to calculate rotation from matrix. Assuming 0°.");
 		return 0;
@@ -324,8 +324,8 @@ part_get_rotation (Part *part)
 	return (gint)(180. * atan2(c, d) / M_PI);
 #else
 	if (abs(sx)>abs(sy))
-		return (gint)(180. * acos(a / sx) / M_PI);
-	return (gint)(180. * acos(d / sy) / M_PI);
+		return (gint)(180. * acos(a / sqrt(sx)) / M_PI);
+	return (gint)(180. * acos(d / sqrt(sy)) / M_PI);
 #endif
 }
 

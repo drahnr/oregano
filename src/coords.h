@@ -100,12 +100,23 @@ gdouble
 coords_euclid2 (const Coords *a);
 
 
-inline guint
-coords_hash (gconstpointer v);
+inline gdouble
+coords_distance (const Coords *a, const Coords *b);
 
 gboolean
 coords_equal (const Coords *a, const Coords *b);
 
+
+/*
+ * used for GHashTable key hashing
+ */
+inline guint
+coords_hash (gconstpointer v);
+
+
+/*
+ * used for comparsion in GHashTable
+ */
 gint
 coords_compare (const Coords *a, const Coords *b);
 
