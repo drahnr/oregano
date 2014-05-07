@@ -137,13 +137,13 @@ library_get_symbol (const gchar *symbol_name)
 {
 	LibrarySymbol *symbol;
 	Library *library;
-	GList *libraries;
+	GList *iter;
 
 	g_return_val_if_fail (symbol_name != NULL, NULL);
 
 	symbol = NULL;
-	for (libraries = oregano.libraries; libraries; libraries = libraries->next) {
-	   library = libraries->data;
+	for (iter = oregano.libraries; iter; iter = iter->next) {
+	   library = iter->data;
 	   symbol = g_hash_table_lookup (library->symbol_hash, symbol_name);
 	   if (symbol)
 		   break;

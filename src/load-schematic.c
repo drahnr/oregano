@@ -232,8 +232,10 @@ create_part (ParseState *state)
 	LibraryPart *library_part = state->part;
 
 	part = part_new_from_library_part (library_part);
-	if (!part)
+	if (!part) {
+		g_warning ("Failed to create Part from LibraryPart");
 		return;
+	}
 
 	item_data_set_pos (ITEM_DATA (part), &state->pos);
 	item_data_rotate (ITEM_DATA (part), state->rotation, NULL);
