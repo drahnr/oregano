@@ -126,9 +126,17 @@ def build(bld):
 
 
 
+	nodes =  bld.path.ant_glob(\
+	    ['src/*.c',
+	     'src/gplot/*.c',
+	     'src/engines/*.c',
+	     'src/sheet/*.c',
+	     'src/model/*.c'],
+	     excl='*/main.c')
+
 	bld.objects (
 		['c','glib2'],
-		source = bld.path.ant_glob(['src/*.c', 'src/engines/*.c', 'src/gplot/*.c', 'src/model/*.c', 'src/sheet/*.c'], excl='*/main.c'),
+		source = nodes,
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
