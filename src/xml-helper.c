@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2014       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,28 +38,33 @@
 // A modified version of XmlSAXParseFile in gnome-xml. This one lets us set
 // the user_data that is passed to the various callbacks, to make it possible
 // to avoid lots of global variables.
-int oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
+gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
 	gpointer user_data, const gchar *filename)
 {
-	int ret = 0;
+	g_return_val_if_fail (filename!=NULL, FALSE);
+
+	gboolean ret = TRUE;
 	xmlParserCtxtPtr ctxt;
 
 	ctxt = xmlCreateFileParserCtxt (filename);
-	if (ctxt == NULL) return -1;
+	if (ctxt == NULL)
+		return FALSE;
+
 	ctxt->sax = sax;
 	ctxt->userData = user_data;
 
 #if defined(LIBXML_VERSION) && LIBXML_VERSION >= 20000
 	xmlKeepBlanksDefault (0);
 #endif
-	xmlParseDocument (ctxt);
-
-	if (ctxt->wellFormed)
-		ret = 0;
-	else
-		ret = -1;
-	if (sax != NULL)
-		ctxt->sax = NULL;
+	if (xmlParseDocument (ctxt) < 0) {
+		//FIXME post a message to the log buffer with as much details as possible
+		g_message ("Failed to parse \"%s\"", filename);
+		ret = FALSE;
+	} else {
+		ret = ctxt->wellFormed ? TRUE : FALSE;
+		if (sax != NULL)
+			ctxt->sax = NULL;
+	}
 	xmlFreeParserCtxt (ctxt);
 
 	return ret;

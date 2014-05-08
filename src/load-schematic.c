@@ -259,7 +259,7 @@ schematic_parse_xml_file (Schematic *sm, const char *filename, GError **error)
 	state.author = NULL;
 	state.comments = NULL;
 
-	if (oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename) < 0) {
+	if (!oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename)) {
 		g_warning ("Document not well formed!");
 		if (error != NULL) {
 			g_set_error (error,
@@ -1062,6 +1062,8 @@ my_warning (void *user_data, const char *msg, ...)
 	va_end (args);
 }
 
+
+// FIXME this should not be critical but forward to the oregano log buffer
 static void
 my_error (void *user_data, const char *msg, ...)
 {

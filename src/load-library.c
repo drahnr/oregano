@@ -177,13 +177,13 @@ library_parse_xml_file (const gchar *filename)
 	Library *library;
 	ParseState state;
 
-	if (oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename) < 0) {
+	if (!oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename)) {
 		g_warning ("Library '%s' not well formed!", filename);
 	}
 
 	if (state.state == PARSE_ERROR) {
 		library = NULL;
-	} 
+	}
 	else {
 		library = state.library;
 	}
