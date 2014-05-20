@@ -21,6 +21,13 @@ Any donations will directly increase sparetime we spend to write code, fix bugs,
 
 ### Quick install guide
 
+#### Repositories
+
+If you are not going to build it yourself from source (which in fact is quite straightforward) you can grab a either a ready to install packages or distribution specific recipes:
+
+* Fedora - https://copr.fedoraproject.org/coprs/drahnr/oregano/
+* ArchLinux - https://aur.archlinux.org/packages/oregano/
+
 #### Requirements
 
 You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0`, `libxml2` and `intltool` in order to build oregano.
@@ -66,7 +73,7 @@ After installation oregano can be started by running `oregano` from terminal.
 
 ### Web
 
-The [official oregano website](https://srctwig.com/oregano)
+The [official oregano website](https://srctwig.com/project/oregano)
 
 ### Mailinglist
 
