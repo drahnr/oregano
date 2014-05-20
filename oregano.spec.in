@@ -1,0 +1,43 @@
+Summary:		Oregano
+Name:			oregano
+Version:		0.83.2
+Release:        1%{?dist}
+License:		GPLv2+
+Group:			Applications/Engineering
+Source0: 		https://github.com/drahnr/oregano/archive/master.tar.gz
+Url:			https://srctwig.com/project/oregano
+
+BuildRequires: gtk3-devel
+BuildRequires: libxml2-devel
+BuildRequires: gtksourceview3-devel
+Requires: gtksourceview3
+Requires: glade3
+
+%description
+Oregano, schematic capture and simulation of electrical circuits.
+
+%prep
+%setup -q
+
+%build
+./waf distclean configure --prefix="/usr" release
+
+
+%install
+./waf install --destdir="$RPM_BUILD_ROOT" --prefix="/usr" --sysconfdir="/etc"
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+
+%doc HACKING.md README.md TODO AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.txt
+
+%{bindir}/*
+%{_datadir}/locale/*/*
+%{_datadir}/gnome/help/oregano/*/*
+%{_datadir}/gnome/apps/Applications/oregano.desktop
+%{_datadir}/mime-info/*
+%{_datadir}/pixmaps/*
+%{_datadir}/oregano/*/*
