@@ -49,6 +49,7 @@
 #include "part.h"
 #include "wire.h"
 #include "node-store.h"
+#include "log.h"
 
 #define TYPE_SCHEMATIC			  (schematic_get_type ())
 #define SCHEMATIC(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC, Schematic))
@@ -106,13 +107,14 @@ NodeStore *schematic_get_store (Schematic *schematic);
 gpointer   schematic_get_settings (Schematic *schematic);
 gpointer   schematic_get_sim_settings (Schematic *schematic);
 gpointer   schematic_get_simulation (Schematic *schematic);
+Log       *schematic_get_log_store (Schematic *schematic);
 void	   schematic_log_clear (Schematic *schematic);
 void	   schematic_log_append (Schematic *schematic, const char *message);
 void	   schematic_log_append_error (Schematic *schematic, const char *message);
 void	   schematic_log_show (Schematic *schematic);
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic);
 int	   	   schematic_count (void);
-gboolean   schematic_is_dirty (Schematic *sm);	
+gboolean   schematic_is_dirty (Schematic *sm);
 void       schematic_set_dirty (Schematic *sm, gboolean b);
 gint       schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);

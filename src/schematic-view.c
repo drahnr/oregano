@@ -57,6 +57,7 @@
 #include "sheet.h"
 #include "sheet-item-factory.h"
 #include "textbox-item.h"
+#include "log-view.h"
 
 #include "debug.h"
 
@@ -1082,6 +1083,7 @@ schematic_view_new (Schematic *schematic)
 	SchematicViewPriv *priv;
 	GtkWidget *w, *hbox, *vbox;
 	GtkWidget *toolbar, *part_browser;
+	GtkWidget *logview;
 	GtkActionGroup *action_group;
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
@@ -1099,15 +1101,15 @@ schematic_view_new (Schematic *schematic)
 	schematic_view_list = g_list_prepend (schematic_view_list, sv);
 
 	if ((gui = gtk_builder_new ()) == NULL) {
-		oregano_error (_("Could not create main window."));
+		oregano_error (_("Failed to spawn builder object."));
 		return NULL;
-	} 
+	}
 	gtk_builder_set_translation_domain (gui, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/oregano-main.ui", 
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/oregano-main.ui",
 	    &error) <= 0) {
 		msg = error->message;
-		oregano_error_with_title (_("Could not create main window."), msg);
+		oregano_error_with_title (_("Could not create main window from file."), msg);
 		g_error_free (error);
 		return NULL;
 	}
@@ -1182,21 +1184,25 @@ schematic_view_new (Schematic *schematic)
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
 	gtk_grid_attach (grid, vbox, 0,0, 1,1);
-	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), 
-	    GTK_WIDGET (sv->priv->sheet)); 
+	gtk_window_set_focus (GTK_WINDOW (sv->toplevel),
+	    GTK_WIDGET (sv->priv->sheet));
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 
-	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus", 
+	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus",
 	    G_CALLBACK (set_focus), sv);
-	g_signal_connect (G_OBJECT (sv->toplevel), "delete_event", 
+	g_signal_connect (G_OBJECT (sv->toplevel), "delete_event",
 	    G_CALLBACK (delete_event), sv);
+
+	logview = GTK_WIDGET (log_view_new ());
+	log_view_set_store (logview, schematic_get_log_store(schematic));
+	gtk_grid_attach (grid, logview, 0,1, 1,1);
 
 	setup_dnd (sv);
 
-	// Set default sensitive for items 
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, 
+	// Set default sensitive for items
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager,
 	    "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, 
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager,
 	    "/MainMenu/MenuEdit/Paste"), FALSE);
 
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool",

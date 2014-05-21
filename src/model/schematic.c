@@ -46,6 +46,7 @@
 #include "simulation.h"
 #include "errors.h"
 #include "schematic-print-context.h"
+#include "log.h"
 
 #include "debug.h"
 typedef struct _SchematicsPrintOptions {
@@ -81,6 +82,8 @@ struct _SchematicPriv {
 
 	gboolean 				 dirty;
 
+	Log                     *logstore;
+
 	GtkTextBuffer 			*log;
 	GtkTextTag 				*tag_error;
 };
@@ -110,7 +113,7 @@ enum {
 	LAST_SIGNAL
 };
 
-G_DEFINE_TYPE (Schematic, schematic, G_TYPE_OBJECT)
+G_DEFINE_TYPE (Schematic, schematic, G_TYPE_OBJECT);
 
 static void schematic_init (Schematic *schematic);
 static void schematic_class_init (SchematicClass	*klass);
@@ -234,14 +237,15 @@ schematic_init (Schematic *schematic)
 	priv->refdes_values = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->store = node_store_new ();
 	priv->dirty = FALSE;
-	priv->log = gtk_text_buffer_new (NULL);
+	priv->logstore = log_new();
+	priv->log = gtk_text_buffer_new (NULL); //LEGACY
 	priv->tag_error = gtk_text_buffer_create_tag (priv->log, "error",
 	                                              "foreground", "red",
 	                                              "weight", PANGO_WEIGHT_BOLD,
 	                                              NULL);
 
 	g_signal_connect_object (priv->store, "node_dot_added",
-		G_CALLBACK (node_dot_added_callback), G_OBJECT (schematic), 
+		G_CALLBACK (node_dot_added_callback), G_OBJECT (schematic),
 	    G_CONNECT_AFTER);
 
 	g_signal_connect_object (priv->store, "node_dot_removed",
@@ -480,15 +484,28 @@ schematic_get_simulation (Schematic *schematic)
 	return schematic->priv->simulation;
 }
 
+
+Log *
+schematic_get_log_store (Schematic *schematic)
+{
+	g_return_val_if_fail (schematic != NULL, NULL);
+	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+
+	return schematic->priv->logstore;
+}
+
 void
 schematic_log_append (Schematic *schematic, const char *message)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-  gtk_text_buffer_insert_at_cursor (
-		schematic->priv->log,
-		message, strlen (message));
+	log_append (schematic->priv->logstore, "INFO", message);
+
+ //LEGACY
+	gtk_text_buffer_insert_at_cursor (
+	                schematic->priv->log,
+	                message, strlen (message));
 }
 
 void
@@ -502,6 +519,9 @@ schematic_log_append_error (Schematic *schematic, const char *message)
 
 	priv = schematic->priv;
 
+	log_append (schematic->priv->logstore, "ERROR", message);
+
+ //LEGACY
 	gtk_text_buffer_get_end_iter (priv->log, &iter);
 	gtk_text_buffer_insert_with_tags (priv->log, &iter, message,
 		-1, priv->tag_error, NULL);
@@ -767,7 +787,7 @@ schematic_get_lowest_available_refdes (Schematic *schematic, char *prefix)
 	if ( g_hash_table_lookup_extended (schematic->priv->refdes_values,
 		     prefix, &key, &value) ) {
 		return GPOINTER_TO_INT (value);
-	} 
+	}
 	else {
 		return 1;
 	}
@@ -827,7 +847,7 @@ schematic_render (Schematic *sm, cairo_t *cr)
 	SchematicPrintContext schematic_print_context;
 	schematic_print_context.colors = sm->priv->colors;
 	store = schematic_get_store (sm);
-	
+
 	node_store_print_items (store, cr, &schematic_print_context);
 }
 
