@@ -36,6 +36,9 @@ Log *log_new (void);
 void
 log_append (Log *log, const gchar *prefix, const gchar *message);
 
+void
+log_append_error (Log *log, const gchar *prefix, GError *error);
+
 G_END_DECLS
 
 #endif /* __LOG_H__ */

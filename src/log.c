@@ -50,6 +50,8 @@ log_new ()
 void
 log_append (Log *log, const gchar *prefix, const gchar *message)
 {
+	g_return_if_fail (message!=NULL);
+
 	GtkTreeIter item;
 	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
 	gtk_list_store_set (GTK_LIST_STORE (log),
@@ -59,6 +61,21 @@ log_append (Log *log, const gchar *prefix, const gchar *message)
 	                    -1);
 }
 
+
+void
+log_append_error (Log *log, const gchar *prefix, GError *error)
+{
+	g_return_if_fail (error!=NULL);
+	gchar *message = g_strdup_printf ("%s - %i", error->message, error->code);
+
+	GtkTreeIter item;
+	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
+	gtk_list_store_set (GTK_LIST_STORE (log),
+	                    &item,
+	                    0, g_strdup(prefix),
+	                    1, message,
+	                    -1);
+}
 
 void
 log_clear (Log *log)

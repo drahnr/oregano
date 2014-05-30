@@ -254,7 +254,7 @@ schematic_init (Schematic *schematic)
 
 	priv->sim_settings = sim_settings_new (schematic);
 	priv->settings = settings_new (schematic);
-	priv->simulation = simulation_new (schematic);
+	priv->simulation = simulation_new (schematic, priv->logstore);
 
 	priv->filename = NULL;
 	priv->netlist_filename = NULL;
