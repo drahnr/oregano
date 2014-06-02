@@ -939,7 +939,7 @@ schematic_export (Schematic *sm, const gchar *filename,
 	// Preparing...
 	cairo_save (cr);
 	cairo_translate (cr, (img_w - graph_w)/2.0, (img_h - graph_h) / 2.0);
-	cairo_scale (cr, scale, scale);	
+	cairo_scale (cr, scale, scale);
 	cairo_translate (cr, -bbox.x0, -bbox.y0);
 	cairo_set_line_width (cr, 0.5);
 
@@ -980,7 +980,7 @@ draw_page (GtkPrintOperation *operation,
 	NodeStore *store;
 	NodeRect bbox;
 	gdouble page_w, page_h;
-	
+
 	page_w = gtk_print_context_get_width (context);
 	page_h = gtk_print_context_get_height (context);
 
@@ -1009,7 +1009,7 @@ draw_page (GtkPrintOperation *operation,
 		cairo_translate (cr, page_w * 0.1, page_h * 0.1);
 		// 0.4 is the convert factor between Model unit and
 		// milimeters, unit used in printing
-		cairo_scale (cr, 0.4, 0.4);	
+		cairo_scale (cr, 0.4, 0.4);
 		cairo_translate (cr, -bbox.x0, -bbox.y0);
 		schematic_render (sm, cr);
 	cairo_restore (cr);
@@ -1020,12 +1020,12 @@ print_options (GtkPrintOperation *operation, Schematic *sm)
 {
 	GtkBuilder *gui;
 	GError *perror = NULL;
-	
+
 	if ((gui = gtk_builder_new ()) == NULL) {
 		return G_OBJECT (gtk_label_new (_("Error loading print-options.ui")));
 	}
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/print-options.ui", 
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/print-options.ui",
 	    &perror) <= 0) {
 		g_error_free (perror);
 		return G_OBJECT (gtk_label_new (_("Error loading print-options.ui")));
@@ -1095,11 +1095,11 @@ schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *settings, 
 	gtk_print_operation_set_unit (op, GTK_UNIT_MM);
 	gtk_print_operation_set_use_full_page (op, TRUE);
 
-	g_signal_connect (op, "create-custom-widget", 
+	g_signal_connect (op, "create-custom-widget",
 	                  G_CALLBACK (print_options), sm);
-	g_signal_connect (op, "custom-widget-apply", 
+	g_signal_connect (op, "custom-widget-apply",
 	                  G_CALLBACK (read_print_options), sm);
-	g_signal_connect (op, "draw_page", 
+	g_signal_connect (op, "draw_page",
 	                  G_CALLBACK (draw_page), sm);
 
 	gtk_print_operation_set_custom_tab_label (op, _("Schematic"));
