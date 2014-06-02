@@ -63,17 +63,23 @@ log_append (Log *log, const gchar *prefix, const gchar *message)
 
 
 void
-log_append_error (Log *log, const gchar *prefix, GError *error)
+log_append_error (Log *log, const gchar *prefix, const gchar *message, GError *error)
 {
 	g_return_if_fail (error!=NULL);
-	gchar *message = g_strdup_printf ("%s - %i", error->message, error->code);
+	gchar *concat = NULL;
+
+	if (message) {
+		concat = g_strdup_printf ("%s\n%s - %i", message, error->message, error->code);
+	} else {
+		concat =  g_strdup_printf ("\n%s - %i", error->message, error->code);
+	}
 
 	GtkTreeIter item;
 	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
 	gtk_list_store_set (GTK_LIST_STORE (log),
 	                    &item,
 	                    0, g_strdup(prefix),
-	                    1, message,
+	                    1, concat,
 	                    -1);
 }
 

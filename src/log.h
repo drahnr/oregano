@@ -37,7 +37,7 @@ void
 log_append (Log *log, const gchar *prefix, const gchar *message);
 
 void
-log_append_error (Log *log, const gchar *prefix, GError *error);
+log_append_error (Log *log, const gchar *prefix, const gchar *message, GError *error);
 
 G_END_DECLS
 
