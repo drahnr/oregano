@@ -115,7 +115,7 @@ _("Simulation"),
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/simulation.ui", &e) <= 0) {
 		log_append_error (s->logstore,
 		                  _("Simulation"),
-//		                  _("Could not create simulation dialog"),
+		                  _("Could not create simulation dialog"),
 		                  e);
 		g_clear_error (&e);
 		return;
@@ -186,9 +186,16 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 
 	plot_show (s->engine);
 
-	if (oregano_engine_has_warnings (s->engine))
+	if (oregano_engine_has_warnings (s->engine)) {
 		schematic_view_log_show (s->sv, FALSE);
-
+		log_append (s->logstore,
+	            _("Simulation"),
+	            _("Finished with warnings:")); //FIXME add actual warnings
+	} else {
+		log_append (s->logstore,
+	            _("Simulation"),
+	            _("Finished."));
+	}
 	sheet_clear_op_values (schematic_view_get_sheet (s->sv));
 
 	// I don't need the engine anymore. The plot window owns its reference to
@@ -209,12 +216,13 @@ engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 		s->progress_timeout_id = 0;
 	}
 
+//	g_clear_object (&(s->dialog));
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 
 	log_append (s->logstore,
 	            _("Simulation"),
-	            _("Aborted due to something... see complete log."));
+	            _("Aborted. See lines below for details."));
 	schematic_view_log_show (s->sv, TRUE);
 }
 
@@ -234,6 +242,10 @@ cancel_cb (GtkWidget *widget, gint arg1, Simulation *s)
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 	s->sv = NULL;
+
+	log_append (s->logstore,
+	            _("Simulation"),
+	            _("Canceled."));
 }
 
 static gboolean
