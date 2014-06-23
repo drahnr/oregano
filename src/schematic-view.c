@@ -171,7 +171,7 @@ static void
 properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
-	GtkBuilder *gui;
+	GtkBuilder *builder;
 	GError *e = NULL;
 	GtkWidget *window;
 	GtkEntry *title, *author;
@@ -182,13 +182,13 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 
 	s = schematic_view_get_schematic (sv);
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		log_append (schematic_get_log_store (s), _("SchematicView"), _("Could not create properties dialog"));
 		return;
 	}
-	gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/properties.ui",
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/properties.ui",
 	    &e) <= 0) {
 		log_append_error (schematic_get_log_store (s),
 		                  _("SchematicView"),
@@ -198,10 +198,10 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	window = GTK_WIDGET (gtk_builder_get_object (gui, "properties"));
-	title = GTK_ENTRY (gtk_builder_get_object (gui, "title"));
-	author = GTK_ENTRY (gtk_builder_get_object (gui, "author"));
-	comments = GTK_TEXT_VIEW (gtk_builder_get_object (gui, "comments"));
+	window = GTK_WIDGET (gtk_builder_get_object (builder, "properties"));
+	title = GTK_ENTRY (gtk_builder_get_object (builder, "title"));
+	author = GTK_ENTRY (gtk_builder_get_object (builder, "author"));
+	comments = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "comments"));
 	buffer = gtk_text_view_get_buffer (comments);
 
 	s_title = schematic_get_title (s);
@@ -265,9 +265,8 @@ static void
 export_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
-	GtkBuilder *gui;
+	GtkBuilder *builder;
 	GError *e = NULL;
-	gchar *msg;
 	GtkWidget *window;
 	GtkWidget* warning;
 	GtkWidget *w;
@@ -278,22 +277,22 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 
 	s = schematic_view_get_schematic (sv);
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		log_append (schematic_get_log_store (s), _("SchematicView"), _("Could not create properties dialog"));
 		return;
 	}
-	gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/export.ui",
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/export.ui",
 	    &e) <= 0) {
 		log_append_error (schematic_get_log_store (s), _("SchematicView"), _("Could not create properties dialog due to issues with " OREGANO_UIDIR "/exportp.ui file."), e);
 		g_clear_error (&e);
 		return;
 	}
 
-	window = GTK_WIDGET (gtk_builder_get_object (gui, "export"));
+	window = GTK_WIDGET (gtk_builder_get_object (builder, "export"));
 
-	combo = GTK_COMBO_BOX_TEXT (gtk_builder_get_object (gui, "format"));
+	combo = GTK_COMBO_BOX_TEXT (gtk_builder_get_object (builder, "format"));
 	fc = 0;
 #ifdef CAIRO_HAS_SVG_SURFACE
 	gtk_combo_box_text_append_text (combo, "Scalar Vector Graphics (SVG)");
@@ -312,9 +311,9 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	formats[fc++] = 3;
 #endif
 
-	file = GTK_ENTRY (gtk_builder_get_object (gui, "file"));
+	file = GTK_ENTRY (gtk_builder_get_object (builder, "file"));
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "find"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "find"));
 	g_signal_connect (G_OBJECT (w), "clicked",
 	                  G_CALLBACK (find_file), file);
 
@@ -350,16 +349,16 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 			GtkWidget *w;
 			int i = gtk_combo_box_get_active (GTK_COMBO_BOX (combo));
 
-			w = GTK_WIDGET (gtk_builder_get_object (gui, "bgwhite"));
+			w = GTK_WIDGET (gtk_builder_get_object (builder, "bgwhite"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 1;
-			w = GTK_WIDGET (gtk_builder_get_object (gui, "bgblack"));
+			w = GTK_WIDGET (gtk_builder_get_object (builder, "bgblack"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 2;
-			w = GTK_WIDGET (gtk_builder_get_object (gui, "color"));
+			w = GTK_WIDGET (gtk_builder_get_object (builder, "color"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
 				color_scheme = 1;
 
-			spinw = GTK_SPIN_BUTTON (gtk_builder_get_object (gui, "export_width"));
-			spinh = GTK_SPIN_BUTTON (gtk_builder_get_object (gui, "export_height"));
+			spinw = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "export_width"));
+			spinh = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "export_height"));
 			schematic_export (s,
 				gtk_entry_get_text (file),
 				gtk_spin_button_get_value_as_int (spinw),
@@ -408,7 +407,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 
 	new_sm = schematic_read(fname, &e);
 	if (e) {
-		gchar const *const msg = g_strdup_printf(_("Could not load file \"file://%s\""), fname);
+		gchar *const msg = g_strdup_printf(_("Could not load file \"file://%s\""), fname);
 		Schematic *old = schematic_view_get_schematic (sv);
 		log_append_error (schematic_get_log_store(old), _("SchematicView"), msg, e);
 		g_clear_error (&e);
@@ -1087,7 +1086,7 @@ schematic_view_new (Schematic *schematic)
 	GtkWidget *menubar;
 	GtkGrid *grid;
 	GError *e = NULL;
-	GtkBuilder *gui;
+	GtkBuilder *builder;
 
 	g_return_val_if_fail (schematic, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
@@ -1098,15 +1097,15 @@ schematic_view_new (Schematic *schematic)
 
 	sm = schematic_view_get_schematic (sv);
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		log_append (schematic_get_log_store (sm),
 		            _("SchematicView"),
 		            _("Failed to spawn builder object."));
 		return NULL;
 	}
-	gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/oregano-main.ui",
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/oregano-main.ui",
 	    &e) <= 0) {
 		log_append_error (schematic_get_log_store (sm),
 		                  _("SchematicView"),
@@ -1115,8 +1114,8 @@ schematic_view_new (Schematic *schematic)
 		return NULL;
 	}
 
-	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
-	grid = GTK_GRID (gtk_builder_get_object (gui, "grid1"));
+	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (builder, "toplevel"));
+	grid = GTK_GRID (gtk_builder_get_object (builder, "grid1"));
 
 	//TODO make the size allocation dynamic - bug #45
 	sv->priv->sheet = SHEET (sheet_new (10000.,10000.));
@@ -1494,7 +1493,8 @@ data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
 					if (e) {
 //						g_warning ()
 						g_clear_error (&e);
-					} if (new_sm) {
+					}
+					if (new_sm) {
 						SchematicView *new_view;
 						new_view = schematic_view_new (new_sm);
 						if (new_view) {
@@ -1640,7 +1640,6 @@ void
 schematic_view_log_show (SchematicView *sv, gboolean explicit)
 {
 	GtkWidget *w;
-	gchar *msg;
 	Schematic *sm;
 	GError *e = NULL;
 

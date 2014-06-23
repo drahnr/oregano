@@ -522,36 +522,35 @@ edit_textbox (SheetItem *sheet_item)
 {
 	TextboxItem *item;
 	Textbox *textbox;
-	char *msg;
 	const char *value;
-	GtkBuilder *gui;
-	GError *perror = NULL;
+	GtkBuilder *builder;
+	GError *e = NULL;
+	Sheet *sheet = sheet_item_get_sheet (sheet_item);
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create textbox properties dialog"));
 		return;
-	} 
-	gtk_builder_set_translation_domain (gui, NULL);
+	}
+	gtk_builder_set_translation_domain (builder, NULL);
 
 	item = TEXTBOX_ITEM (sheet_item);
 	textbox = TEXTBOX (sheet_item_get_data (sheet_item));
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/textbox-properties-dialog.ui", 
-	    &perror) <= 0) {
-		msg = perror->message;
-		oregano_error_with_title (_("Could not create textbox properties dialog"), msg);
-		g_error_free (perror);
+	if (!gtk_builder_add_from_file (builder, OREGANO_UIDIR "/textbox-properties-dialog.ui",
+	    &e)) {
+		oregano_error_with_title (_("Could not create textbox properties dialog."), e->message);
+		g_clear_error (&e);
 		return;
 	}
 
 	prop_dialog = g_new0 (TextboxPropDialog, 1);
 	prop_dialog->dialog = GTK_DIALOG (
-		gtk_builder_get_object (gui, "textbox-properties-dialog"));
+		gtk_builder_get_object (builder, "textbox-properties-dialog"));
 
-	prop_dialog->entry = GTK_ENTRY (gtk_builder_get_object (gui, "entry"));
+	prop_dialog->entry = GTK_ENTRY (gtk_builder_get_object (builder, "entry"));
 
 	value = textbox_get_text (textbox);
 	gtk_entry_set_text (GTK_ENTRY (prop_dialog->entry), value);
@@ -559,9 +558,9 @@ edit_textbox (SheetItem *sheet_item)
 	gtk_dialog_run (GTK_DIALOG (prop_dialog->dialog));
 	edit_dialog_ok (item);
 
-	// Clean / destroy the dialog
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
-	prop_dialog = NULL;
+	g_free (prop_dialog);
+	g_object_unref (builder);
 }
 
 static void
