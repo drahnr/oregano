@@ -1080,11 +1080,13 @@ schematic_view_new (Schematic *schematic)
 	GtkWidget *w, *hbox, *vbox;
 	GtkWidget *toolbar, *part_browser;
 	GtkWidget *logview;
+	GtkScrolledWindow *logview_scrolled;
 	GtkActionGroup *action_group;
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
 	GtkWidget *menubar;
 	GtkGrid *grid;
+	GtkPaned *paned;
 	GError *e = NULL;
 	GtkBuilder *builder;
 
@@ -1116,6 +1118,7 @@ schematic_view_new (Schematic *schematic)
 
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (builder, "toplevel"));
 	grid = GTK_GRID (gtk_builder_get_object (builder, "grid1"));
+	paned = GTK_PANED (gtk_builder_get_object (builder, "paned1"));
 
 	//TODO make the size allocation dynamic - bug #45
 	sv->priv->sheet = SHEET (sheet_new (10000.,10000.));
@@ -1194,7 +1197,10 @@ schematic_view_new (Schematic *schematic)
 
 	logview = GTK_WIDGET (log_view_new ());
 	log_view_set_store (logview, schematic_get_log_store(schematic));
-	gtk_grid_attach (grid, logview, 0,1, 1,1);
+
+	logview_scrolled = gtk_scrolled_window_new (NULL, NULL);
+	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
+	gtk_paned_pack2 (paned, GTK_WIDGET (logview_scrolled), FALSE, TRUE);
 
 	setup_dnd (sv);
 
