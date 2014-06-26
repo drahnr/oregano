@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -115,6 +115,8 @@ struct _SchematicViewPriv {
 	GtkWidget 			*floating_part_browser;
 	gpointer 			 browser;
 
+	GtkWidget			*logview;
+	GtkWidget			*paned;
 	guint 				 grid : 1;
 	SchematicTool 		 tool;
 	int 				 cursor;
@@ -375,9 +377,9 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 static void
 page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
-sv->priv->page_setup = gtk_print_run_page_setup_dialog (NULL,
-					sv->priv->page_setup,
-					sv->priv->print_settings);
+	sv->priv->page_setup = gtk_print_run_page_setup_dialog (NULL,
+						sv->priv->page_setup,
+						sv->priv->print_settings);
 }
 
 static void
@@ -480,12 +482,11 @@ oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 	gtk_recent_manager_add_item (manager, uri);
 
 	mime = gtk_recent_info_get_mime_type (item);
-	if (!mime) {
+	if (!mime || strcmp (mime, "application/x-oregano")!=0) {
 		g_warning (_("Unrecognized mime type"));
-		return;
-	}
-
-	if (!strcmp (mime, "application/x-oregano")) {
+		if (mime)
+			g_warning (mime);
+	} else {
 		new_sm = schematic_read (uri, &e);
 		if (e) {
 			oregano_error_with_title (_("Could not load file"), e->message);
@@ -502,8 +503,6 @@ oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 			schematic_set_title (new_sm, g_path_get_basename(uri));
 		}
 	}
-	else
-		g_warning (_("Unknown type of file can't open"));
 
 	g_free(uri);
 	gtk_recent_info_unref (item);
@@ -839,7 +838,7 @@ tool_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
 static void
 part_browser_cmd (GtkToggleAction *action, SchematicView *sv)
 {
-	part_browser_toggle_show (sv);
+	part_browser_toggle_visibility (sv);
 }
 
 static void
@@ -849,6 +848,25 @@ grid_toggle_snap_cmd (GtkToggleAction *action, SchematicView *sv)
 
 	grid_snap (sv->priv->sheet->grid, sv->priv->grid);
 	grid_show (sv->priv->sheet->grid, sv->priv->grid);
+}
+
+
+static void
+log_toggle_visibility_cmd (GtkToggleAction *action, SchematicView *sv)
+{
+	g_return_if_fail (sv);
+	g_return_if_fail (sv->priv->logview);
+
+	GtkAllocation allocation;
+	gboolean b = gtk_toggle_action_get_active (action);
+	static int pos = 0;
+	if (pos==0)
+		pos = gtk_paned_get_position (sv->priv->paned);
+
+	gtk_widget_set_visible (sv->priv->logview, b);
+
+	gtk_widget_get_allocation (GTK_WIDGET (sv->priv->paned), &allocation);
+	gtk_paned_set_position (sv->priv->paned, b ? pos : allocation.height);
 }
 
 static void
@@ -1007,6 +1025,7 @@ schematic_view_init (SchematicView *sv)
 	sv->priv->page_setup = NULL;
 	sv->priv->print_settings = gtk_print_settings_new ();
 	sv->priv->grid = TRUE;
+	sv->priv->logview = NULL;
 }
 
 static void
@@ -1068,7 +1087,6 @@ show_help (GtkWidget *widget, SchematicView *sv)
 	}
 }
 
-//FIXME this is really uggly
 #include "schematic-view-menu.h"
 
 SchematicView *
@@ -1080,7 +1098,7 @@ schematic_view_new (Schematic *schematic)
 	GtkWidget *w, *hbox, *vbox;
 	GtkWidget *toolbar, *part_browser;
 	GtkWidget *logview;
-	GtkScrolledWindow *logview_scrolled;
+	GtkWidget *logview_scrolled;
 	GtkActionGroup *action_group;
 	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
@@ -1119,6 +1137,7 @@ schematic_view_new (Schematic *schematic)
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (builder, "toplevel"));
 	grid = GTK_GRID (gtk_builder_get_object (builder, "grid1"));
 	paned = GTK_PANED (gtk_builder_get_object (builder, "paned1"));
+	sv->priv->paned = paned;
 
 	//TODO make the size allocation dynamic - bug #45
 	sv->priv->sheet = SHEET (sheet_new (10000.,10000.));
@@ -1148,16 +1167,15 @@ schematic_view_new (Schematic *schematic)
 	priv->log_info->log_window = NULL;
 
 	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
-	gtk_action_group_set_translation_domain (priv->action_group,
-	    GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries),
-	    sv);
+	gtk_action_group_set_translation_domain (action_group, GETTEXT_PACKAGE);
+	gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), sv);
 	gtk_action_group_add_radio_actions (action_group, zoom_entries,
-	    G_N_ELEMENTS (zoom_entries), 2, G_CALLBACK (zoom_cmd), sv);
+	                                    G_N_ELEMENTS (zoom_entries), 2, G_CALLBACK (zoom_cmd), sv);
 	gtk_action_group_add_radio_actions (action_group, tools_entries,
-	    G_N_ELEMENTS (tools_entries), 0, G_CALLBACK (tool_cmd), sv);
+	                                    G_N_ELEMENTS (tools_entries), 0, G_CALLBACK (tool_cmd), sv);
+	g_assert_cmpint (G_N_ELEMENTS (toggle_entries),>=,4);
 	gtk_action_group_add_toggle_actions (action_group, toggle_entries,
-	    G_N_ELEMENTS (toggle_entries), sv);
+	                                     G_N_ELEMENTS (toggle_entries), sv);
 
 	priv->ui_manager = ui_manager = gtk_ui_manager_new ();
 	gtk_ui_manager_insert_action_group (ui_manager, action_group, 0);
@@ -1195,12 +1213,12 @@ schematic_view_new (Schematic *schematic)
 	g_signal_connect (G_OBJECT (sv->toplevel), "delete_event",
 	    G_CALLBACK (delete_event), sv);
 
-	logview = GTK_WIDGET (log_view_new ());
-	log_view_set_store (logview, schematic_get_log_store(schematic));
+	sv->priv->logview = logview = GTK_WIDGET (log_view_new ());
+	log_view_set_store (LOG_VIEW (logview), schematic_get_log_store(schematic));
 
 	logview_scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
-	gtk_paned_pack2 (paned, GTK_WIDGET (logview_scrolled), FALSE, TRUE);
+	gtk_paned_pack2 (paned, logview_scrolled, FALSE, TRUE);
 
 	setup_dnd (sv);
 

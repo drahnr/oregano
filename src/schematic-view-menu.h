@@ -33,7 +33,7 @@
 #ifndef _SCHEMATIC_VIEW_MENU_
 #define _SCHEMATIC_VIEW_MENU_
 static GtkActionEntry entries[] = {
-	// Name, ICON, Text, CTRL, DESC, CALLBACK 
+	// Name, ICON, Text, CTRL, DESC, CALLBACK
 	{"MenuFile", NULL, N_("_File")},
 	{"MenuEdit", NULL, N_("_Edit")},
 	{"MenuTools", NULL, N_("_Tools")},
@@ -42,7 +42,7 @@ static GtkActionEntry entries[] = {
 	{"MenuZoom", NULL, N_("_Zoom")},
 	{"New", GTK_STOCK_NEW, N_("_New"), "<control>N", N_("Create a new schematic"), G_CALLBACK (new_cmd)},
 	{"Open", GTK_STOCK_OPEN, N_("_Open"), "<control>O", N_("Open a schematic"), G_CALLBACK (open_cmd)},
-	{"DisplayRecentFiles", NULL, N_("_Recent Files"), NULL, NULL, NULL}, 
+	{"DisplayRecentFiles", NULL, N_("_Recent Files"), NULL, NULL, NULL},
 	{"Save", GTK_STOCK_SAVE, N_("_Save"), "<control>S", N_("Save a schematic"), G_CALLBACK (save_cmd)},
 	{"SaveAs", GTK_STOCK_SAVE_AS, N_("Save _As..."), "<control><shift>S", N_("Save a schematic with other name"), G_CALLBACK (save_as_cmd)},
 	{"PrintProperties", NULL, N_("Print Properties"), NULL, N_("Set print properties"), G_CALLBACK (page_properties_cmd)},
@@ -76,17 +76,18 @@ static GtkActionEntry entries[] = {
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
-	{"Labels", NULL, N_("_Node labels"), NULL, N_("Show or hide node labels"), G_CALLBACK (show_label_cmd), FALSE},
-	{"Parts", STOCK_PIXMAP_PART_BROWSER, N_("_Parts"), NULL, N_("Show or hide the part browser"), G_CALLBACK (part_browser_cmd), TRUE},
-	{"Grid", STOCK_PIXMAP_GRID, N_("_Grid"), NULL, N_("Show or hide the grid"), G_CALLBACK (grid_toggle_snap_cmd), TRUE},
+	{"Labels", NULL, N_("_Node labels"), NULL, N_("Toggle node label visibility"), G_CALLBACK (show_label_cmd), FALSE},
+	{"Parts", STOCK_PIXMAP_PART_BROWSER, N_("_Parts"), NULL, N_("Toggle part browser visibility"), G_CALLBACK (part_browser_cmd), TRUE},
+	{"Grid", STOCK_PIXMAP_GRID, N_("_Grid"), NULL, N_("Toggle grid visibility"), G_CALLBACK (grid_toggle_snap_cmd), TRUE},
+	{"LogView", STOCK_PIXMAP_GRID, N_("LogView"), NULL, N_("Toggle log view visibility"), G_CALLBACK (log_toggle_visibility_cmd), TRUE},
 };
 
 static GtkRadioActionEntry zoom_entries[] = {
-	{"Zoom50", NULL, "50%", NULL, N_("Set the zoom factor to 50%"), 0},
-	{"Zoom75", NULL, "75%", NULL, N_("Set the zoom factor to 75%"), 1},
-	{"Zoom100", NULL, "100%", "1", N_("Set the zoom factor to 100%"), 2},
-	{"Zoom125", NULL, "125%", NULL, N_("Set the zoom factor to 125%"), 3},
-	{"Zoom150", NULL, "150%", NULL, N_("Set the zoom factor to 150%"), 4},
+	{"Zoom50", NULL, "50%", NULL, N_("Set the zoom to 50%"), 0},
+	{"Zoom75", NULL, "75%", NULL, N_("Set the zoom to 75%"), 1},
+	{"Zoom100", NULL, "100%", "1", N_("Set the zoom to 100%"), 2},
+	{"Zoom125", NULL, "125%", NULL, N_("Set the zoom to 125%"), 3},
+	{"Zoom150", NULL, "150%", NULL, N_("Set the zoom to 150%"), 4},
 };
 
 static GtkRadioActionEntry tools_entries[] = {
@@ -181,6 +182,7 @@ static const char *ui_description =
 "    <separator/>"
 "    <toolitem action='Grid'/>"
 "    <toolitem action='Parts'/>"
+"    <toolitem action='LogView'/>"
 "  </toolbar>"
 "  <popup name='MainPopup'>"
 "    <menuitem action='Paste'/>"

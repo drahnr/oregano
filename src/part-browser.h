@@ -37,7 +37,7 @@
 
 #include "schematic.h"
 
-void part_browser_toggle_show (SchematicView *schematic_view);
+void part_browser_toggle_visibility (SchematicView *schematic_view);
 GtkWidget *part_browser_create (SchematicView *schematic_view);
 void part_browser_dnd (GtkSelectionData *selection_data, gint x, gint y);
 void part_browser_place_selected_part (Schematic *sm);

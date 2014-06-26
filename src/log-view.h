@@ -35,6 +35,7 @@ struct _LogViewClass
 GType log_view_get_type (void) G_GNUC_CONST;
 LogView *log_view_new (void);
 
+void log_view_set_store (LogView *lv, Log *ls);
 
 G_END_DECLS
 
