@@ -79,7 +79,7 @@ static GtkToggleActionEntry toggle_entries[] = {
 	{"Labels", NULL, N_("_Node labels"), NULL, N_("Toggle node label visibility"), G_CALLBACK (show_label_cmd), FALSE},
 	{"Parts", STOCK_PIXMAP_PART_BROWSER, N_("_Parts"), NULL, N_("Toggle part browser visibility"), G_CALLBACK (part_browser_cmd), TRUE},
 	{"Grid", STOCK_PIXMAP_GRID, N_("_Grid"), NULL, N_("Toggle grid visibility"), G_CALLBACK (grid_toggle_snap_cmd), TRUE},
-	{"LogView", STOCK_PIXMAP_GRID, N_("LogView"), NULL, N_("Toggle log view visibility"), G_CALLBACK (log_toggle_visibility_cmd), TRUE},
+	{"LogView", GTK_STOCK_DIALOG_WARNING, N_("LogView"), NULL, N_("Toggle log view visibility"), G_CALLBACK (log_toggle_visibility_cmd), TRUE},
 };
 
 static GtkRadioActionEntry zoom_entries[] = {
