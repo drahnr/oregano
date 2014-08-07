@@ -863,8 +863,6 @@ log_toggle_visibility_cmd (GtkToggleAction *action, SchematicView *sv)
 	if (pos==0)
 		pos = gtk_paned_get_position (sv->priv->paned);
 
-	gtk_widget_set_visible (sv->priv->logview, b);
-
 	gtk_widget_get_allocation (GTK_WIDGET (sv->priv->paned), &allocation);
 	gtk_paned_set_position (sv->priv->paned, b ? pos : allocation.height);
 }
