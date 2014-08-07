@@ -1085,6 +1085,33 @@ show_help (GtkWidget *widget, SchematicView *sv)
 	}
 }
 
+
+/**
+ * make the window occupy 3/4 of the screen with a padding of 50px in each direction
+ */
+static void
+set_window_size (SchematicView *sv)
+{
+	// Set the window size to something reasonable
+	GdkScreen *screen = gdk_screen_get_default ();
+	if (screen) {
+		gint monitor_count = gdk_screen_get_n_monitors (screen);
+		// usually the bigger one is the primary one
+		// as the window is not realized yet (or for some other reason does not make a difference)
+		gint monitor = gdk_screen_get_primary_monitor (screen);
+		GdkRectangle rect;
+		gdk_screen_get_monitor_geometry (screen, monitor, &rect);
+
+		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x, rect.y);
+
+		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
+		                             3 * (rect.width - 50) / 4,
+		                             3 * (rect.height - 50) / 4);
+	} else {
+		g_warning ("No default screen found. Falling back to 1024x768 window size.");
+		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 1024, 768);
+	}
+}
 #include "schematic-view-menu.h"
 
 SchematicView *
@@ -1229,25 +1256,7 @@ schematic_view_new (Schematic *schematic)
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool",
 		G_CALLBACK (reset_tool_cb), G_OBJECT (sv), 0);
 
-	// Set the window size to something reasonable
-	GdkScreen *screen = gdk_screen_get_default ();
-	if (screen) {
-		gint monitor_count = gdk_screen_get_n_monitors (screen);
-		// usually the bigger one is the primary one
-		// as the window is not realized yet (or for some other reason does not make a difference)
-		gint monitor = gdk_screen_get_primary_monitor (screen);
-		GdkRectangle rect;
-		gdk_screen_get_monitor_geometry (screen, monitor, &rect);
-
-		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x, rect.y);
-
-		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
-		                             3 * (rect.width - 50) / 4,
-		                             3 * (rect.height - 50) / 4);
-	} else {
-		g_warning ("No default screen found. Falling back to 1024x768 window size.");
-		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 1024, 768);
-	}
+	set_window_size (sv);
 
 	schematic_view_load (sv, schematic);
 
