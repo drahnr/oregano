@@ -409,12 +409,17 @@ ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condition, OreganoNgSp
 	GError *e = NULL;
 
 	status = g_io_channel_read_line (source, &line, &len, &terminator, &e);
-	if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
-		gchar *msg = g_strdup_printf ("%s \"%s\"", _("NgSpice throwned upon that schematic line: "), line);
+	gchar *msg = g_strdup_printf ("%s \"%s\"",
+	                              _("NgSpice throwned upon that schematic line: "),
+	                              line);
+	if (e) {
 		log_append_error (schematic_get_log_store (sm), "Engine:NgSpice", msg, e);
-		g_free (msg);
 		g_clear_error (&e);
+	} else if ((status & G_IO_STATUS_NORMAL) && (len > 0)) {
+
+		log_append (schematic_get_log_store (sm), "Engine:NgSpice", msg);
 	}
+	g_free (msg);
 	g_free (line);
 
 	// Let UI update

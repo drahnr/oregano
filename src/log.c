@@ -65,7 +65,9 @@ log_append (Log *log, const gchar *prefix, const gchar *message)
 void
 log_append_error (Log *log, const gchar *prefix, const gchar *message, GError *error)
 {
-	g_return_if_fail (error!=NULL);
+	if (error==NULL) {
+		return log_append (log, prefix, message);
+	}
 	gchar *concat = NULL;
 
 	if (message) {
