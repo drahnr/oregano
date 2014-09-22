@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <ogo:library xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
   <ogo:name>Default</ogo:name>
-  <ogo:description>modified by H. Bellesi</ogo:description>
+  <ogo:description>modified by H. Bellesi, Hansjuergen Riess</ogo:description>
   <ogo:version>1.3</ogo:version>
   <ogo:author>Richard Hult</ogo:author>
-  <ogo:last-updated>11-Oct-2004</ogo:last-updated>
+  <ogo:last-updated>19-Jul-2014</ogo:last-updated>
 
   <ogo:symbols>
 
@@ -1719,7 +1719,7 @@
         <ogo:label>
           <ogo:name>Resistance</ogo:name>
           <ogo:text>@res</ogo:text>
-          <ogo:position>(0 30)</ogo:position>
+          <ogo:position>(0 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -1748,13 +1748,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(5 0)</ogo:position>
+          <ogo:position>(0 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Resistance</ogo:name>
           <ogo:text>@res</ogo:text>
-          <ogo:position>(5 30)</ogo:position>
+          <ogo:position>(0 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -1788,7 +1788,7 @@
         <ogo:label>
           <ogo:name>Resistance</ogo:name>
           <ogo:text>@res</ogo:text>
-          <ogo:position>(5 30)</ogo:position>
+          <ogo:position>(-5 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -1816,13 +1816,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(5 0)</ogo:position>
+          <ogo:position>(15 -5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Resistance</ogo:name>
           <ogo:text>@res</ogo:text>
-          <ogo:position>(5 30)</ogo:position>
+          <ogo:position>(0 40)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -1850,13 +1850,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(5 -10)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(5 50)</ogo:position>
+          <ogo:position>(-5 40)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2103,7 +2103,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(30 0)</ogo:position>
+          <ogo:position>(-7 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2137,13 +2137,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(15 -10)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Capacitance</ogo:name>
           <ogo:text>@cap</ogo:text>
-          <ogo:position>(15 40)</ogo:position>
+          <ogo:position>(-2 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2168,7 +2168,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>Trimmer</ogo:name>
+      <ogo:name>Capacitor Trimmer</ogo:name>
       <ogo:symbol>capacitor-var1</ogo:symbol>
       <ogo:description>Variable Capacitor</ogo:description>
       <ogo:labels>
@@ -2181,7 +2181,7 @@
         <ogo:label>
           <ogo:name>Capacitance</ogo:name>
           <ogo:text>@cap</ogo:text>
-          <ogo:position>(15 40)</ogo:position>
+          <ogo:position>(-5 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2202,9 +2202,9 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>Trimmer-2</ogo:name>
+      <ogo:name>Capacitor Trimmer alt.</ogo:name>
       <ogo:symbol>capacitor-var2</ogo:symbol>
-      <ogo:description>Variable Capacitor</ogo:description>
+      <ogo:description>Variable Capacitor alternative</ogo:description>
       <ogo:labels>
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
@@ -2215,7 +2215,7 @@
         <ogo:label>
           <ogo:name>Capacitance</ogo:name>
           <ogo:text>@cap</ogo:text>
-          <ogo:position>(15 40)</ogo:position>
+          <ogo:position>(-5 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2249,7 +2249,7 @@
         <ogo:label>
           <ogo:name>Capacitance</ogo:name>
           <ogo:text>@cap</ogo:text>
-          <ogo:position>(15 30)</ogo:position>
+          <ogo:position>(-5 37)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2283,7 +2283,7 @@
         <ogo:label>
           <ogo:name>Frequency</ogo:name>
           <ogo:text>@freq</ogo:text>
-          <ogo:position>(15 30)</ogo:position>
+          <ogo:position>(-5 40)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2312,13 +2312,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Inductance</ogo:name>
           <ogo:text>@ind</ogo:text>
-          <ogo:position>(20 30)</ogo:position>
+          <ogo:position>(0 40)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2346,13 +2346,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
+          <ogo:position>(15 -5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Inductance</ogo:name>
           <ogo:text>@ind</ogo:text>
-          <ogo:position>(20 30)</ogo:position>
+          <ogo:position>(0 38)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2380,13 +2380,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(50 35)</ogo:position>
+          <ogo:position>(40 35)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Inductance</ogo:name>
           <ogo:text>@ind</ogo:text>
-          <ogo:position>(50 20)</ogo:position>
+          <ogo:position>(-23 20)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2454,7 +2454,7 @@
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(-5 -5)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>no</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2465,7 +2465,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Model</ogo:name>
-          <ogo:value>diode</ogo:value>
+          <ogo:value>Diode</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
@@ -2477,7 +2477,7 @@
     <ogo:part>
       <ogo:name>Diode Tunnel</ogo:name>
       <ogo:symbol>d_tunnel</ogo:symbol>
-      <ogo:description>Tunnel diode</ogo:description>
+      <ogo:description>Tunnel Diode</ogo:description>
       <ogo:labels>
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
@@ -2488,7 +2488,7 @@
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(-5 -5)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>no</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2499,7 +2499,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Model</ogo:name>
-          <ogo:value>tunneldiode</ogo:value>
+          <ogo:value>Diode Tunnel</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
@@ -2509,20 +2509,20 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>Photodiode</ogo:name>
+      <ogo:name>Diode Photo</ogo:name>
       <ogo:symbol>photodiode</ogo:symbol>
       <ogo:description>Photodiode</ogo:description>
       <ogo:labels>
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(0 35)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2550,13 +2550,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(0 35)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(30 40)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2584,13 +2584,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(0 35)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(30 40)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2617,14 +2617,14 @@
       <ogo:labels>
         <ogo:label>
           <ogo:name>Refdes</ogo:name>
-          <ogo:position>(15 0)</ogo:position>
+          <ogo:position>(0 35)</ogo:position>
           <ogo:text>@refdes</ogo:text>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(30 40)</ogo:position>
+          <ogo:position>(15 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2652,7 +2652,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2686,13 +2686,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 -5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(-20 40)</ogo:position>
+          <ogo:position>(-30 50)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2720,13 +2720,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 -5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(-20 40)</ogo:position>
+          <ogo:position>(-30 50)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -2754,7 +2754,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2788,7 +2788,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-10 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2822,7 +2822,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2856,7 +2856,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2890,7 +2890,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2924,7 +2924,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-10 5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -2958,7 +2958,7 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
+          <ogo:position>(-5 5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
@@ -3111,7 +3111,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Model</ogo:name>
-          <ogo:value>P-MOS Dual Gate</ogo:value>
+          <ogo:value>P-MOS Gate</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
@@ -3134,7 +3134,7 @@
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(25 60)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -3162,13 +3162,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
+          <ogo:position>(25 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(25 60)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -3196,13 +3196,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
+          <ogo:position>(35 50)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(25 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -3230,81 +3230,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
+          <ogo:position>(35 50)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
-          <ogo:modify>yes</ogo:modify>
-        </ogo:label>
-      </ogo:labels>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>U</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Model</ogo:name>
-          <ogo:value>OPAMP</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @model</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-    </ogo:part>
-
-    <ogo:part>
-      <ogo:name>OPAMP+P+S+B</ogo:name>
-      <ogo:symbol>OPAMPPSB</ogo:symbol>
-      <ogo:description>Operational amplifier +power+offset+bias</ogo:description>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
-          <ogo:modify>yes</ogo:modify>
-        </ogo:label>
-        <ogo:label>
-          <ogo:name>Model</ogo:name>
-          <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
-          <ogo:modify>yes</ogo:modify>
-        </ogo:label>
-      </ogo:labels>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>U</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Model</ogo:name>
-          <ogo:value>OPAMP</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @model</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-    </ogo:part>
-
-    <ogo:part>
-      <ogo:name>OPAMP+P+S+B</ogo:name>
-      <ogo:symbol>OPAMPPSB</ogo:symbol>
-      <ogo:description>Operational amplifier +power+offset+bias</ogo:description>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(20 0)</ogo:position>
-          <ogo:modify>yes</ogo:modify>
-        </ogo:label>
-        <ogo:label>
-          <ogo:name>Model</ogo:name>
-          <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(25 0)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -3497,7 +3429,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Model</ogo:name>
-          <ogo:value>12AX7A(b)</ogo:value>
+          <ogo:value>Triode Type</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
@@ -4336,13 +4268,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(25 20)</ogo:position>
+          <ogo:position>(-22 5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(23 38)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -4370,13 +4302,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(25 20)</ogo:position>
+          <ogo:position>(-22 -3)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(40 40)</ogo:position>
+          <ogo:position>(23 28)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>
@@ -4404,7 +4336,7 @@
 				<ogo:label>
 					<ogo:name>Reference designator</ogo:name>
 					<ogo:text>@refdes</ogo:text>
-					<ogo:position>(0 0)</ogo:position>
+					<ogo:position>(-5 0)</ogo:position>
 					<ogo:modify>yes</ogo:modify>
 				</ogo:label>
 				<ogo:label>
@@ -4438,7 +4370,7 @@
 				<ogo:label>
 					<ogo:name>Reference designator</ogo:name>
 					<ogo:text>@refdes</ogo:text>
-					<ogo:position>(0 0)</ogo:position>
+					<ogo:position>(-5 0)</ogo:position>
 					<ogo:modify>yes</ogo:modify>
 				</ogo:label>
 				<ogo:label>
@@ -4472,13 +4404,13 @@
 				<ogo:label>
 					<ogo:name>Reference designator</ogo:name>
 					<ogo:text>@refdes</ogo:text>
-					<ogo:position>(25 20)</ogo:position>
+					<ogo:position>(-30 7)</ogo:position>
 					<ogo:modify>yes</ogo:modify>
 				</ogo:label>
 				<ogo:label>
 					<ogo:name>Model</ogo:name>
 					<ogo:text>@model</ogo:text>
-					<ogo:position>(40 40)</ogo:position>
+					<ogo:position>(25 35)</ogo:position>
 					<ogo:modify>yes</ogo:modify>
 				</ogo:label>
 			</ogo:labels>
@@ -4510,7 +4442,7 @@
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
-          <ogo:name>V</ogo:name>
+          <ogo:name>Voltage</ogo:name>
           <ogo:text>12 V</ogo:text>
           <ogo:position>(30 -25)</ogo:position>
           <ogo:modify>yes</ogo:modify>
@@ -4520,6 +4452,10 @@
         <ogo:property>
           <ogo:name>Refdes</ogo:name>
           <ogo:value>L</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Voltage</ogo:name>
+          <ogo:value>V</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
@@ -4536,13 +4472,13 @@
         <ogo:label>
           <ogo:name>Reference designator</ogo:name>
           <ogo:text>@refdes</ogo:text>
-          <ogo:position>(25 20)</ogo:position>
+          <ogo:position>(-15 -5)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
          <ogo:label>
           <ogo:name>Model</ogo:name>
           <ogo:text>@model</ogo:text>
-          <ogo:position>(30 40)</ogo:position>
+          <ogo:position>(20 30)</ogo:position>
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
       </ogo:labels>

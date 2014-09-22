@@ -1,6 +1,4 @@
-.SUBCKT BC264A/PLP 10 20 30
-J1 10 20 30 NJF
-.MODEL NJF NJF
+.MODEL BC264A NJF (
 +             VTO = -1.0686E+000
 +            BETA = 1.73071E-003
 +          LAMBDA = 2.29157E-002
@@ -11,6 +9,4 @@ J1 10 20 30 NJF
 +            CGD  = 2.20000E-012
 +              PB = 9.78591E-001
 +              FC = 5.00000E-001
-.ENDS
-*
-*$
+)
