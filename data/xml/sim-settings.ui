@@ -318,12 +318,6 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <child>
-                              <object class="GtkAlignment" id="alignment1">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="xscale">0</property>
-                                <property name="yscale">0</property>
                                 <child>
                                   <object class="GtkHBox" id="hbox12">
                                     <property name="visible">True</property>
@@ -354,8 +348,6 @@
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
-                                  </object>
-                                </child>
                               </object>
                             </child>
                           </object>
@@ -398,12 +390,6 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <child>
-                              <object class="GtkAlignment" id="alignment3">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="xscale">0</property>
-                                <property name="yscale">0</property>
-                                <child>
                                   <object class="GtkHBox" id="hbox2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
@@ -434,8 +420,6 @@
                                       </packing>
                                     </child>
                                   </object>
-                                </child>
-                              </object>
                             </child>
                           </object>
                           <packing>
@@ -946,12 +930,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <child>
-                      <object class="GtkAlignment" id="alignment2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="xscale">0</property>
-                        <property name="yscale">0</property>
                         <child>
                           <object class="GtkHBox" id="hbox14">
                             <property name="visible">True</property>
@@ -983,8 +961,6 @@
                               </packing>
                             </child>
                           </object>
-                        </child>
-                      </object>
                     </child>
                   </object>
                   <packing>
