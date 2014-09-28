@@ -198,7 +198,7 @@ gnucap_is_available (OreganoEngine *self)
 	return TRUE;
 }
 
-static void
+static gboolean
 gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename, 
                          GError **error)
 {
@@ -214,13 +214,13 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
 	netlist_helper_create (gnucap->priv->schematic, &output, &local_error);
 	if (local_error != NULL) {
 		g_propagate_error (error, local_error);
-		return;
+		return FALSE;
 	}
 
 	file = fopen (filename, "w");
 	if (!file) {
 		oregano_error (g_strdup_printf ("Creation of %s not possible\n", filename));
-		return;
+		return FALSE;
 	}
 
 	list = sim_settings_get_options (output.settings);
@@ -329,6 +329,7 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
 	fputs (".op\n", file);
 	fputs (".end\n", file);
 	fclose (file);
+	return TRUE;
 }
 
 static void
