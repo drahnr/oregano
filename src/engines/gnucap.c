@@ -145,14 +145,14 @@ gnucap_finalize (GObject *object)
 {
 	SimulationData *data;
 	OreganoGnuCap *gnucap;
-	GList *list;
+	GList *iter;
 	int i;
 
 	gnucap = OREGANO_GNUCAP (object);
 
-	list = gnucap->priv->analysis;
-	while (list) {
-		data = SIM_DATA (list->data);
+	iter = gnucap->priv->analysis;
+	for (; iter; iter = iter->next) {
+		data = SIM_DATA (iter->data);
 		for (i=0; i<data->n_variables; i++) {
 			g_free (data->var_names[i]);
 			g_free (data->var_units[i]);
@@ -164,12 +164,10 @@ gnucap_finalize (GObject *object)
 		g_free (data->min_data);
 		g_free (data->max_data);
 
-		g_free (list->data);
-		list = list->next;
+		g_free (iter->data);
 	}
 	g_list_free (gnucap->priv->analysis);
 	gnucap->priv->analysis = NULL;
-	g_list_free_full (list, g_object_unref);
 
 	parent_class->finalize (object);
 }
@@ -205,7 +203,7 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
 	OreganoGnuCap *gnucap;
 	Netlist output;
 	SimOption *so;
-	GList *list;
+	GList *iter;
 	FILE *file;
 	GError *local_error = NULL;
 
@@ -223,8 +221,6 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
 		return FALSE;
 	}
 
-	list = sim_settings_get_options (output.settings);
-
 	// Prints title
 	fputs (output.title ? output.title : "Title: <unset>", file);
 	fputs ("\n"
@@ -235,26 +231,24 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
 	// Prints Options
 	fputs (".options OUT=120 ",file);
 
-	while (list) {
-		so = list->data;
+	iter = sim_settings_get_options (output.settings);
+	for (; iter; iter = iter->next) {
+		so = iter->data;
 		// Prevent send NULL text
 		if (so->value) {
 			if (strlen(so->value) > 0) {
 				g_fprintf (file,"%s=%s ",so->name,so->value);
 			}
 		}
-		list = list->next;
 	}
 	fputc ('\n',file);
 
 	// Include of subckt models
 	fputs ("*------------- Models -------------------------\n",file);
-	list = output.models;
-	while (list) {
+	for (iter = output.models; iter; iter = iter->next) {
 		gchar *model;
-		model = (gchar *)list->data;
+		model = (gchar *)iter->data;
 		g_fprintf (file,".include %s/%s.model\n", OREGANO_MODELDIR, model);
-		list = list->next;
 	}
 
 	// Prints template parts 
@@ -322,7 +316,6 @@ gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
 		g_free (tmp_str);
 	}*/
 
-	g_list_free_full (list, g_object_unref);
 
 	// Debug op analysis.
 	fputs (".print op v(nodes)\n", file);
