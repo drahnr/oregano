@@ -4,7 +4,7 @@
   <ogo:description>modified by H. Bellesi, Hansjuergen Riess</ogo:description>
   <ogo:version>1.3</ogo:version>
   <ogo:author>Richard Hult</ogo:author>
-  <ogo:last-updated>19-Jul-2014</ogo:last-updated>
+  <ogo:last-updated>29-Sep-2014</ogo:last-updated>
 
   <ogo:symbols>
 
@@ -2849,7 +2849,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>JFET-P</ogo:name>
+      <ogo:name>FET J P</ogo:name>
       <ogo:symbol>JFET-P</ogo:symbol>
       <ogo:description>P-channel junction field effect transistor </ogo:description>
       <ogo:labels>
@@ -2883,7 +2883,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>JFET-N</ogo:name>
+      <ogo:name>FET J N</ogo:name>
       <ogo:symbol>JFET-N</ogo:symbol>
       <ogo:description>N Channel junction field effect transistor</ogo:description>
       <ogo:labels>
@@ -2985,7 +2985,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>N-MOS</ogo:name>
+      <ogo:name>FET MOS N</ogo:name>
       <ogo:symbol>N-MOS</ogo:symbol>
       <ogo:description>N Channel MOSFET</ogo:description>
       <ogo:labels>
@@ -3019,7 +3019,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>N-MOS DUAL GATE</ogo:name>
+      <ogo:name>FET MOS N DG</ogo:name>
       <ogo:symbol>DGN-MOS</ogo:symbol>
       <ogo:description>N Channel Dual Gate MOSFET</ogo:description>
       <ogo:labels>
@@ -3053,7 +3053,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>P-MOS DUAL GATE</ogo:name>
+      <ogo:name>FET MOS P DG</ogo:name>
       <ogo:symbol>DGP-MOS</ogo:symbol>
       <ogo:description>P Channel Dual Gate MOSFET</ogo:description>
       <ogo:labels>
@@ -3087,7 +3087,7 @@
     </ogo:part>
 
     <ogo:part>
-      <ogo:name>P-MOS</ogo:name>
+      <ogo:name>FET MOS P</ogo:name>
       <ogo:symbol>P-MOS</ogo:symbol>
       <ogo:description>P Channel MOSFET</ogo:description>
       <ogo:labels>

@@ -1,4 +1,4 @@
-.MODEL BC264D NJF (
+.MODEL BC264 NJF (
 +             VTO = -2.3085E+000
 +            BETA = 1.09045E-003
 +          LAMBDA = 2.31754E-002
