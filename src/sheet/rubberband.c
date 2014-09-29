@@ -85,7 +85,8 @@ create_stipple (const char *color_name, guchar stipple_data[])
 #define COLOR_B_PRE PREMULTIPLY(COLOR_B)
 
 RubberbandInfo *
-rubberband_info_new (Sheet *sheet) {
+rubberband_info_new (Sheet *sheet)
+{
 	RubberbandInfo *rubberband_info;
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
@@ -140,7 +141,8 @@ rubberband_info_new (Sheet *sheet) {
 
 
 void
-rubberband_info_destroy (RubberbandInfo *rubberband_info) {
+rubberband_info_destroy (RubberbandInfo *rubberband_info)
+{
 	g_return_if_fail (rubberband_info!=NULL);
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (rubberband_info->rectangle));
 	g_free (rubberband_info);
@@ -155,7 +157,8 @@ rubberband_start (Sheet *sheet, GdkEvent *event)
 	GList *list;
 	double x, y;
 	RubberbandInfo *rubberband_info;
-	
+
+	g_assert (event->type == GDK_BUTTON_PRESS);
 	x = event->button.x;
 	y = event->button.y;
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
@@ -195,16 +198,20 @@ rubberband_start (Sheet *sheet, GdkEvent *event)
 
 
 gboolean
-rubberband_update (Sheet *sheet, GdkEvent *event) {
-	GList *list;
+rubberband_update (Sheet *sheet, GdkEvent *event)
+{
+	GList *iter;
 	Coords cur, cmin, cmax;
-	double dx, dy,
-	       width, height,
+	double dx, dy; // TODO maybe keep track of subpixel changes, make em global/part of the rubberband_info struct and reset on finish
+	double width, height,
 	       width_ng, height_ng;
 	RubberbandInfo *rubberband_info;
 
 	rubberband_info = sheet->priv->rubberband_info;
-	sheet_get_pointer (sheet, &(cur.x), &(cur.y));
+
+	g_assert (event->type == GDK_MOTION_NOTIFY);
+	cur.x = event->motion.x;
+	cur.y = event->motion.y;
 
 	width  = fabs(rubberband_info->end.x - rubberband_info->start.x);
 	height = fabs(rubberband_info->end.y - rubberband_info->start.y);
@@ -226,8 +233,8 @@ rubberband_update (Sheet *sheet, GdkEvent *event) {
 		cmax.x = cmin.x + width_ng;
 		cmax.y = cmin.y + height_ng;
 #if 1
-		for (list = sheet->priv->items; list; list = list->next) {
-			sheet_item_select_in_area (list->data,
+		for (iter = sheet->priv->items; iter; iter = iter->next) {
+			sheet_item_select_in_area (iter->data,
 			                           &cmin,
 			                           &cmax);
 		}
@@ -247,15 +254,16 @@ rubberband_update (Sheet *sheet, GdkEvent *event) {
 
 
 gboolean
-rubberband_finish (Sheet *sheet, GdkEvent *event) {
+rubberband_finish (Sheet *sheet, GdkEvent *event)
+{
 	RubberbandInfo *rubberband_info;
 	
 	rubberband_info = sheet->priv->rubberband_info;
 #if 1
-	GList *list = NULL;
+	GList *iter = NULL;
 	if (sheet->priv->preserve_selection_items) {
-		for (list = sheet->priv->preserve_selection_items; list; list = list->next)
-			sheet_item_set_preserve_selection (SHEET_ITEM (list->data), FALSE);
+		for (iter = sheet->priv->preserve_selection_items; iter; iter = iter->next)
+			sheet_item_set_preserve_selection (SHEET_ITEM (iter->data), FALSE);
 		
 		g_list_free (sheet->priv->preserve_selection_items);
 		sheet->priv->preserve_selection_items = NULL;
