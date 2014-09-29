@@ -1160,8 +1160,8 @@ schematic_view_new (Schematic *schematic)
 	}
 
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (builder, "toplevel"));
-	grid = GTK_GRID (gtk_builder_get_object (builder, "grid1"));
-	paned = GTK_PANED (gtk_builder_get_object (builder, "paned1"));
+	grid = GTK_GRID (gtk_builder_get_object (builder, "grid"));
+	paned = GTK_PANED (gtk_builder_get_object (builder, "paned"));
 	sv->priv->paned = paned;
 
 	//TODO make the size allocation dynamic - bug #45
@@ -1186,7 +1186,8 @@ schematic_view_new (Schematic *schematic)
 
 	part_browser = part_browser_create (sv);
 	gtk_widget_set_hexpand (part_browser, FALSE);
-	gtk_box_pack_start (GTK_BOX (hbox), part_browser, FALSE, FALSE, 5);
+	gtk_grid_attach_next_to (grid, part_browser,
+	                         paned, GTK_POS_RIGHT, 1, 1);
 
 	priv = sv->priv;
 	priv->log_info->log_window = NULL;
@@ -1228,7 +1229,7 @@ schematic_view_new (Schematic *schematic)
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
-	gtk_grid_attach (grid, vbox, 0,0, 1,1);
+	gtk_paned_pack1 (paned, vbox, FALSE, TRUE);
 	gtk_window_set_focus (GTK_WINDOW (sv->toplevel),
 	    GTK_WIDGET (sv->priv->sheet));
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
@@ -1262,8 +1263,7 @@ schematic_view_new (Schematic *schematic)
 
 	if (!schematic_get_title (sv->priv->schematic)) {
 		gtk_window_set_title (GTK_WINDOW (sv->toplevel), _("Untitled.oregano"));
-	}
-	else {
+	} else {
 		gtk_window_set_title (GTK_WINDOW (sv->toplevel),
 					schematic_get_title (sv->priv->schematic));
 	}

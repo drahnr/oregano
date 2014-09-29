@@ -1,39 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.16.1 -->
+<!-- Generated with glade 3.18.3 -->
 <interface>
   <requires lib="gtk+" version="3.0"/>
   <object class="GtkWindow" id="toplevel">
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkPaned" id="paned1">
+      <object class="GtkGrid" id="grid">
         <property name="visible">True</property>
-        <property name="can_focus">True</property>
-        <property name="orientation">vertical</property>
+        <property name="can_focus">False</property>
         <child>
-          <object class="GtkGrid" id="grid1">
+          <object class="GtkPaned" id="paned">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
+            <property name="can_focus">True</property>
+            <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
@@ -42,9 +21,15 @@
             </child>
           </object>
           <packing>
-            <property name="resize">False</property>
-            <property name="shrink">True</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
           </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
         <child>
           <placeholder/>
