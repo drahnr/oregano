@@ -161,20 +161,21 @@ oregano_engine_get_current_operation (OreganoEngine *self)
 {
 	return OREGANO_ENGINE_GET_CLASS (self)->get_operation (self);
 }
+
 OreganoEngine*
 oregano_engine_factory_create_engine (gint type, Schematic *sm)
 {
 	OreganoEngine *engine;
 
 	switch (type) {
-		case OREGANO_ENGINE_GNUCAP:
-			engine = oregano_gnucap_new (sm);
+	case OREGANO_ENGINE_GNUCAP:
+		engine = oregano_gnucap_new (sm);
 		break;
-		case OREGANO_ENGINE_NGSPICE:
-			engine = oregano_ngspice_new (sm);
+	case OREGANO_ENGINE_NGSPICE:
+		engine = oregano_ngspice_new (sm);
 		break;
-		default:
-			engine = NULL;
+	default:
+		engine = NULL;
 	}
 	return engine;
 }
