@@ -649,8 +649,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 #endif
 
 
-//	NG_DEBUG ("total[delta] = %lf,%lf", delta_to_apply.x, delta_to_apply.y);
-	item_data_move (data, &delta_to_apply);
+//	item_data_move (data, &delta_to_apply); // FIXME this causes bug #115! TODO INVESTIGATE
 //	item_data_snap (data, NULL); //FIXME XXX
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
