@@ -118,7 +118,7 @@ oregano_open (GApplication  *application, GFile **files, gint n_files,
 {
   	gint i;
 
-  	for (i = 0; i < n_files; i++)	
+	for (i = 0; i < n_files; i++)
 		oregano_application (application, files[i]);
 }
 
@@ -152,7 +152,7 @@ oregano_application (GApplication *app, GFile *file)
 			                       error->code, error->message);
 			oregano_error (msg);
 			g_free (msg);
-			g_error_free (error);
+			g_clear_error (&error);
 			//non fatal issue
 		}
 	}

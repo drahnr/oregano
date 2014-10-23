@@ -434,6 +434,7 @@ netlist_helper_linebreak (char *str)
 	return tmp;
 }
 
+// FIXME this one piece of uggly+bad code
 void
 netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 {
@@ -446,7 +447,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	NodeStore *store;
 	gchar **node2real;
 
-	schematic_log_clear (sm);
+	schematic_log_clear (sm); // TODO cleanup legacy logging
 
 	out->models = NULL;
 	out->title = schematic_get_filename (sm);
@@ -470,8 +471,6 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 	// Check if there is a Ground node
 	if (num_gnd_nodes == 0) {
-		schematic_log_append (sm, _("You really need at least one Ground Node (GND). Aborting.\n"));
-		schematic_log_show (sm);
 		g_set_error (error,
 			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_GND,
@@ -482,8 +481,6 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		// FIXME put a V/I clamp on each and every subtree
 		// FIXME and let the user toggle visibility in the plot window
 		// FIXME see also TODO/FIXME above
-		schematic_log_append (sm, _("No test clamps found. Aborting.\n"));
-		schematic_log_show (sm);
 		g_set_error (error,
 			OREGANO_ERROR,
 			OREGANO_SIMULATE_ERROR_NO_CLAMP,

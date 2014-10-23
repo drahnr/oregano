@@ -323,26 +323,26 @@ netlist_editor_new_from_schematic_view (SchematicView *sv)
 {
 	NetlistEditor *editor;
 	gchar *name = "/tmp/oregano.netlist";
-	GError *error = 0;
+	GError *e = NULL;
 	Schematic *sm;
 	OreganoEngine *engine;
 
 	sm = schematic_view_get_schematic (sv);
 
 	engine = oregano_engine_factory_create_engine (oregano.engine, sm);
-	oregano_engine_generate_netlist (engine, name, &error);
+	oregano_engine_generate_netlist (engine, name, &e);
 	g_object_unref (engine);
 
-	if (error != NULL) {
-		if (g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
-			g_error_matches (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-				oregano_error_with_title (_("Could not create a netlist"), error->message);
-				g_clear_error (&error);
-		} 
-		else {
-			oregano_error (_("An unexpected error has occurred"));
+	if (e) {
+		if (g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
+		    g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
+		    g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+			log_append_error (schematic_get_log_store (sm), "Netlist", _("Could not create a netlist"), e);
 		}
+		else {
+			log_append_error (schematic_get_log_store (sm), "Netlist", _("Unexpected error occured"), e);
+		}
+		g_clear_error (&e);
 		return NULL;
 	}
 

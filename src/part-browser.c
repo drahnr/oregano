@@ -359,18 +359,19 @@ update_list (Browser *br)
 // have to delete it and build it every time it is needed. If already shown,
 // hide it.
 void
-part_browser_toggle_show (SchematicView *schematic_view)
+part_browser_toggle_visibility (SchematicView *schematic_view)
 {
 	Browser *browser = schematic_view_get_browser (schematic_view);
-		
+
 	if (browser == NULL) {
 	//	part_browser_create (schematic_view);
+		g_warning ("This should never happen. No Part Browser.");
 	}
 	else {
 		browser->hidden = !(browser->hidden);
 		if (browser->hidden) {
 			gtk_widget_hide (browser->viewport);
-		} 
+		}
 		else {
 			gtk_widget_show_all (browser->viewport);
 		}
@@ -463,9 +464,8 @@ GtkWidget *
 part_browser_create (SchematicView *schematic_view)
 {
 	Browser *br;
-	GtkBuilder *gui;
-	GError *perror = NULL;
-	char *msg;
+	GtkBuilder *builder;
+	GError *e = NULL;
 	GtkWidget *w, *view;
 	GtkCellRenderer *cell_text;
 	GtkTreeViewColumn *cell_column;
@@ -475,12 +475,12 @@ part_browser_create (SchematicView *schematic_view)
 	static int dnd_num_types = sizeof (dnd_types) / sizeof (dnd_types[0]);
 	GtkTreePath *path;
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		oregano_error (_("Could not create part browser"));
 		return NULL;
-	} 
-	else 
-		gtk_builder_set_translation_domain (gui, NULL);
+	}
+	else
+		gtk_builder_set_translation_domain (builder, NULL);
 
 	br = g_new0 (Browser, 1);
 	br->preview = NULL;
@@ -489,24 +489,23 @@ part_browser_create (SchematicView *schematic_view)
 
 	schematic_view_set_browser (schematic_view, br);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-browser.ui", 
-	    &perror) <= 0) {
-		msg = perror->message;
-		oregano_error_with_title (_("Could not create part browser"), msg);
-		g_error_free (perror);
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/part-browser.ui",
+	    &e) <= 0) {
+		oregano_error_with_title (_("Could not create part browser"), e->message);
+		g_error_free (e);
 		return NULL;
 	}
 
-	view = GTK_WIDGET (gtk_builder_get_object (gui, "viewport1"));
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (view), 
+	view = GTK_WIDGET (gtk_builder_get_object (builder, "viewport1"));
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (view),
 	    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
 	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (view),
 	                                            115);
-	
+
 	w = goo_canvas_new ();
 	gtk_container_add (GTK_CONTAINER (view), GTK_WIDGET (w));
-	
+
 	br->canvas = w;
 
 	g_signal_connect (w, "realize", (GCallback) preview_realized, br);
@@ -529,24 +528,24 @@ part_browser_create (SchematicView *schematic_view)
 	gtk_drag_source_set (br->canvas, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 		dnd_types, dnd_num_types, GDK_ACTION_MOVE);
 
-	br->filter_entry = GTK_ENTRY (gtk_builder_get_object (gui, "part_search"));
+	br->filter_entry = GTK_ENTRY (gtk_builder_get_object (builder, "part_search"));
 
 	g_signal_connect (G_OBJECT (br->filter_entry), "changed",
 		G_CALLBACK (part_search_change), br);
 	g_signal_connect (G_OBJECT (br->filter_entry), "activate",
 		G_CALLBACK (part_search_activate), br);
 
-	// Buttons. 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "place_button"));
+	// Buttons.
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "place_button"));
 	g_signal_connect (G_OBJECT (w), "clicked",
 		G_CALLBACK (place_cmd), br);
 
 	// Update the libraries option menu 
 	br->library = g_list_nth_data (oregano.libraries, 0);
-	part_browser_setup_libs (br, gui);
+	part_browser_setup_libs (br, builder);
 
-	// Parts list. 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "parts_list"));
+	// Parts list.
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "parts_list"));
 	br->list = w;
 
 	// Create the List Model for TreeView, this is a Real model 
@@ -588,12 +587,12 @@ part_browser_create (SchematicView *schematic_view)
 	gtk_drag_source_set (w, GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 		dnd_types, dnd_num_types, GDK_ACTION_MOVE);
 
-	g_signal_connect (G_OBJECT (w), "cursor_changed", 
+	g_signal_connect (G_OBJECT (w), "cursor_changed",
 		G_CALLBACK (select_row), br);
-	g_signal_connect (G_OBJECT (w), "row_activated", 
+	g_signal_connect (G_OBJECT (w), "row_activated",
 	    G_CALLBACK (part_selected), br);
 
-	br->viewport = GTK_WIDGET (gtk_builder_get_object (gui, 
+	br->viewport = GTK_WIDGET (gtk_builder_get_object (builder,
 	    "part_browser_vbox"));
 
 	path = gtk_tree_path_new_first ();
@@ -605,17 +604,17 @@ part_browser_create (SchematicView *schematic_view)
 }
 
 static void
-part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
+part_browser_setup_libs (Browser *br, GtkBuilder *builder) {
 
 	GtkWidget *combo_box, *w;
 
 	GList *libs;
 	gboolean first = FALSE;
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "library_optionmenu"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "library_optionmenu"));
 	gtk_widget_destroy (w);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid1"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "grid1"));
 	combo_box = gtk_combo_box_text_new ();
 	gtk_grid_attach (GTK_GRID (w), combo_box, 1,0, 1,1);
 
@@ -630,7 +629,7 @@ part_browser_setup_libs (Browser *br, GtkBuilder *gui) {
 			first = TRUE;
 		}
 	}
-	g_signal_connect (G_OBJECT (combo_box), "changed", 
+	g_signal_connect (G_OBJECT (combo_box), "changed",
 		G_CALLBACK (library_switch_cb), br);
 }
 
@@ -644,7 +643,7 @@ library_switch_cb (GtkWidget *combo_box, Browser *br)
 		gtk_combo_box_get_active (GTK_COMBO_BOX (combo_box)));
 
 	update_list (br);
-	
+
 	path = gtk_tree_path_new_first ();
 	gtk_tree_view_set_cursor (GTK_TREE_VIEW (br->list), path, NULL, FALSE);
 	gtk_tree_path_free (path);
@@ -688,7 +687,7 @@ preview_realized (GtkWidget *widget, Browser *br)
 	update_preview (br);
 }
 
-void 
+void
 part_browser_reparent (gpointer *br, GtkWidget *new_parent)
 {
 	Browser *b;

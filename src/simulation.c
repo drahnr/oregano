@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,6 +45,7 @@
 #include "oregano-config.h"
 #include "plot.h"
 #include "gnucap.h"
+#include "log.h"
 
 typedef struct {
 	Schematic 		*sm;
@@ -54,6 +55,7 @@ typedef struct {
 	GtkProgressBar 	*progress;
 	GtkLabel 		*progress_label;
 	int 			 progress_timeout_id;
+	Log             *logstore;
 } Simulation;
 
 static int progress_bar_timeout_cb (Simulation *s);
@@ -69,13 +71,14 @@ delete_event_cb (GtkWidget *widget, GdkEvent *event, gpointer data)
 }
 
 gpointer
-simulation_new (Schematic *sm)
+simulation_new (Schematic *sm, Log *logstore)
 {
 	Simulation *s;
 
 	s = g_new0 (Simulation, 1);
 	s->sm = sm;
 	s->sv = NULL;
+	s->logstore = logstore;
 
 	return s;
 }
@@ -85,19 +88,23 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 {
 	GtkWidget *w;
 	GtkBuilder *gui;
-	GError *perror = NULL;
+	GError *e = NULL;
 	Simulation *s;
 	Schematic *sm;
 
 	g_return_if_fail (sv != NULL);
 
-	if ((gui = gtk_builder_new ()) == NULL) {
-		oregano_error (_("Could not create simulation dialog"));
-		return;
-	} 
-	else gtk_builder_set_translation_domain (gui, NULL);
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_simulation (sm);
+
+	if ((gui = gtk_builder_new ()) == NULL) {
+		log_append (s->logstore,
+_("Simulation"),
+		            _("Could not create simulation dialog - Builder creation failed."));
+		return;
+	}
+	gtk_builder_set_translation_domain (gui, NULL);
+
 
 	// Only allow one instance of the dialog box per schematic.
 	if (s->dialog) {
@@ -105,20 +112,25 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/simulation.ui", &perror) <= 0) {
-		oregano_error_with_title (_("Could not create simulation dialog"), perror->message);
-		g_error_free (perror);
+	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/simulation.ui", &e) <= 0) {
+		log_append_error (s->logstore,
+		                  _("Simulation"),
+		                  _("Could not create simulation dialog"),
+		                  e);
+		g_clear_error (&e);
 		return;
 	}
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
 	if (!w) {
-		oregano_error (_("Could not create simulation dialog"));
+		log_append (s->logstore,
+		            _("Simulation"),
+		            _("Could not create simulation dialog - .ui file lacks widget called \"toplevel\"."));
 		return;
 	}
 
 	s->dialog = GTK_DIALOG (w);
-	g_signal_connect (G_OBJECT (w), "delete_event", 
+	g_signal_connect (G_OBJECT (w), "delete_event",
 		G_CALLBACK (delete_event_cb), s);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "progressbar"));
@@ -128,7 +140,7 @@ simulation_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "progress_label"));
 	s->progress_label = GTK_LABEL (w);
 
-	g_signal_connect (G_OBJECT (s->dialog), "response", 
+	g_signal_connect (G_OBJECT (s->dialog), "response",
 		G_CALLBACK (cancel_cb), s);
 
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
@@ -174,12 +186,19 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 
 	plot_show (s->engine);
 
-	if (oregano_engine_has_warnings (s->engine))
+	if (oregano_engine_has_warnings (s->engine)) {
 		schematic_view_log_show (s->sv, FALSE);
-
+		log_append (s->logstore,
+	            _("Simulation"),
+	            _("Finished with warnings:")); //FIXME add actual warnings
+	} else {
+		log_append (s->logstore,
+	            _("Simulation"),
+	            _("Finished."));
+	}
 	sheet_clear_op_values (schematic_view_get_sheet (s->sv));
 
-	// I don't need the engine anymore. The plot window owns its reference to 
+	// I don't need the engine anymore. The plot window owns its reference to
 	// the engine
 	g_object_unref (s->engine);
 	s->engine = NULL;
@@ -197,30 +216,14 @@ engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 		s->progress_timeout_id = 0;
 	}
 
+//	g_clear_object (&(s->dialog));
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 
-	if (!schematic_view_get_log_window_exists (s->sv)) {
-		dialog = gtk_message_dialog_new_with_markup (
-		    GTK_WINDOW (schematic_view_get_toplevel (s->sv)),
-			GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-			GTK_MESSAGE_ERROR,
-			GTK_BUTTONS_YES_NO,
-			_("<span weight=\"bold\" size=\"large\">The simulation was aborted"
-			" due to an error.</span>\n\nWould you like to view the error log?"));
-
-		answer = gtk_dialog_run (GTK_DIALOG (dialog));
-		gtk_widget_destroy (dialog);
-
-		if (answer == GTK_RESPONSE_YES) {
-			schematic_view_log_show (s->sv, TRUE);
-		}
-	} 
-	else {
-		oregano_error (_("The simulation was aborted due to an error"));
-
-		schematic_view_log_show (s->sv, FALSE);
-	}
+	log_append (s->logstore,
+	            _("Simulation"),
+	            _("Aborted. See lines below for details."));
+	schematic_view_log_show (s->sv, TRUE);
 }
 
 static void
@@ -239,6 +242,10 @@ cancel_cb (GtkWidget *widget, gint arg1, Simulation *s)
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
 	s->sv = NULL;
+
+	log_append (s->logstore,
+	            _("Simulation"),
+	            _("Canceled."));
 }
 
 static gboolean
@@ -257,13 +264,12 @@ simulate_cmd (Simulation *s)
 	s->progress_timeout_id = g_timeout_add (100,
 	                                   (GSourceFunc)progress_bar_timeout_cb, s);
 
-	g_signal_connect (G_OBJECT (engine), "done", 
-		G_CALLBACK (engine_done_cb), s);
-	g_signal_connect (G_OBJECT (engine), "aborted", 
-	    G_CALLBACK (engine_aborted_cb), s);
+	g_signal_connect (G_OBJECT (engine), "done",
+	                  G_CALLBACK (engine_done_cb), s);
+	g_signal_connect (G_OBJECT (engine), "aborted",
+	                  G_CALLBACK (engine_aborted_cb), s);
 
 	oregano_engine_start (engine);
 
 	return TRUE;
 }
-
