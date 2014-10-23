@@ -10,12 +10,12 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Web page: https://srctwig.com/oregano
+ * Web page: https://beerbach.me/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2014  Bernhard Schuster
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -293,6 +293,10 @@ part_get_num_pins (Part *part)
 	return priv->num_pins;
 }
 
+/**
+ * @returns the rotation in degrees
+ * @attention steps of 90 degrees only!
+ */
 gint
 part_get_rotation (Part *part)
 {
@@ -317,16 +321,13 @@ part_get_rotation (Part *part)
 		g_warning ("Unabled to calculate rotation from matrix. Assuming 0°.");
 		return 0;
     }
-#if 0
-    if (abs(b)>abs(c))
-		a = (gint)(180. * atan2(-b, a) / M_PI);
-	echo
-	return (gint)(180. * atan2(c, d) / M_PI);
-#else
+
+	gint register r = -1;
 	if (abs(sx)>abs(sy))
-		return (gint)(180. * acos(a / sqrt(sx)) / M_PI);
-	return (gint)(180. * acos(d / sqrt(sy)) / M_PI);
-#endif
+		r = 90 * (gint)(2. * acos(a / sqrt(sx)) / M_PI);
+	else
+		r = 90 * (gint)(2. * acos(d / sqrt(sy)) / M_PI);
+	return r;
 }
 
 IDFlip
@@ -554,12 +555,18 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	// FIXME instance then everything will be fine
 	// XXX also prevents rounding yiggle up downs
 
+
+	angle /= 90;
+	angle *= 90;
+
 	cairo_matrix_init_rotate (&local_rot, (double)angle * M_PI / 180.);
+
 	cairo_matrix_multiply (item_data_get_rotate (data),
 	                       item_data_get_rotate (data),
 	                       &local_rot);
 
 	morph_rot = *(item_data_get_rotate (data));
+
 	cairo_matrix_multiply (&morph,
 	                       &morph_rot,
 	                       item_data_get_translate (data));
@@ -570,35 +577,30 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	Coords item_pos;
 
 	//get bbox
+#if 0 // this causes #115 to reappear
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-
 	bbox_center = coords_average (&b1, &b2);
+#endif
 	item_data_get_pos (ITEM_DATA (part), &item_pos);
-#define DEBUG_THIS 1
-	NG_DEBUG ("bbox[vanilla] = %lf,%lf to %lf,%lf - centered at %lf,%lf",
-	          b1.x, b1.y,
-	          b2.x, b2.y,
-	          bbox_center.x, bbox_center.y);
 
+	Coords rotation_center;
 
-	if (center_pos) {
-		delta_to_center_transformed = delta_to_center = coords_sub (center_pos, &item_pos);
-
-		cairo_matrix_transform_point (&local_rot,
-			                          &(delta_to_center_transformed.x),
-			                          &(delta_to_center_transformed.y));
-
-		delta_to_apply = coords_sub (&delta_to_center, &delta_to_center_transformed);
-		NG_DEBUG ("delta{group} = transform from %lf,%lf to %lf,%lf",
-		          delta_to_center.x, delta_to_center.y,
-		          delta_to_center_transformed.x, delta_to_center_transformed.y);
-		NG_DEBUG ("delta{group} = centered at %lf,%lf resulting in shift %lf,%lf",
-		          center_pos->x, center_pos->y,
-		          delta_to_apply.x, delta_to_apply.y);
+	if (center_pos==NULL) {
+		rotation_center = coords_sum (&bbox_center, &item_pos);
 	} else {
-		delta_to_apply.x = delta_to_apply.y = 0.;
+		rotation_center = *center_pos;
 	}
 
+	delta_to_center_transformed = delta_to_center = coords_sub (&rotation_center, &item_pos);
+	cairo_matrix_transform_point (&local_rot,
+			                      &(delta_to_center_transformed.x),
+			                      &(delta_to_center_transformed.y));
+
+	delta_to_apply = coords_sub (&delta_to_center, &delta_to_center_transformed);
+
+
+
+#define DEBUG_THIS 0
 	// use the cairo matrix funcs to transform the pin
 	// positions relative to the item center
 	// this is only indirectly related to displayin
@@ -622,35 +624,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 		priv->pins[i].offset.y = y;
 	}
 
-
-	cairo_matrix_transform_point (&local_rot, &b1.x, &b1.y);
-	cairo_matrix_transform_point (&local_rot, &b2.x, &b2.y);
-
-	bbox_center_transformed = coords_average (&b1, &b2);
-	delta_bbox = coords_sub (&bbox_center, &bbox_center_transformed);
-	coords_add (&delta_to_apply, &delta_bbox);
-	NG_DEBUG ("bbox[trans] = %lf,%lf to %lf,%lf - centered at %lf,%lf",
-	          b1.x, b1.y,
-	          b2.x, b2.y,
-	          bbox_center_transformed.x, bbox_center_transformed.y);
-	NG_DEBUG ("bbox[delta] = %lf,%lf", delta_bbox.x, delta_bbox.y);
-
-#if 0
-	part_center_after = coords_average (&b1, &b2);
-
-	NG_DEBUG ("part_center_after = (%lf,%lf)", part_center_after.x, part_center_after.y);
-
-	delta = coords_sub (&part_center_after, &part_center_before);
-	NG_DEBUG ("center_delta = (%lf,%lf)", delta.x, delta.y);
-	if (center_pos) {
-		coords_add (&delta, &delta_delta);
-	}
-	item_data_move (data, &delta);
-#endif
-
-
-//	item_data_move (data, &delta_to_apply); // FIXME this causes bug #115! TODO INVESTIGATE
-//	item_data_snap (data, NULL); //FIXME XXX
+	item_data_move (data, &delta_to_apply);
 
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
 	                                   data->changed_handler_id);
