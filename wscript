@@ -40,6 +40,8 @@ def configure(conf):
 #	conf.env.path_icons = '${DATADIR}/oregano/icons/'
 #	conf.env.path_mime = '${DATADIR}/oregano/mime/'
 #	conf.env.path_locale = '${DATADIR}/oregano/locale/'
+#	conf.env.path_schemas =  utils.subst_vars('${DATADIR}/glib-2.0/schemas/', conf.env)
+
 
 	#define the above paths so the application does know about files locations
 	conf.define('OREGANO_UIDIR', conf.env.path_ui)
@@ -50,8 +52,11 @@ def configure(conf):
 #	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
 #	conf.define('OREGANO_MIMEDIR', conf.env.path_mime)
 #	conf.define('OREGANO_LOCALEDIR', conf.env.path_locale)
+#	conf.define('OREGANO_SCHEMASDIR', conf.env.path_schemas)
 
 
+	conf.env.gschema_name = "apps.oregano.gschema.xml"
+	conf.define('OREGANO_SCHEMA_NAME', conf.env.gschema_name)
 
 
 	conf.check_cc(lib='m', uselib_store='M', mandatory=True)
@@ -67,6 +72,7 @@ def configure(conf):
 	conf.check_large_file(mandatory=False)
 	conf.check_endianness(mandatory=False)
 	conf.check_inline(mandatory=False)
+
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
 	conf.setenv('debug', env=conf.env.derive())
@@ -117,9 +123,6 @@ def build(bld):
 			bld.variant = 'debug'
 			logs.warn ('Defaulting to \'debug\' build variant')
 			logs.warn ('Do "waf debug" or "waf release" to avoid this warning')
-		if os.geteuid()==0:
-			logs.error ('Do not run "' + bld.cmd + '" as root, just don\'t!. Aborting.')
-			exit (1)
 	else:
 		if not os.geteuid()==0:
 			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
@@ -151,7 +154,7 @@ def build(bld):
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = ['data/settings/apps.oregano.gschema.xml'],
+		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
 		install_path = "${BINDIR}"
 	)
 
