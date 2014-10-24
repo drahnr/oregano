@@ -53,6 +53,7 @@ For additional options like specifying the install directory, consult
 
 Note that additional options can be passed to the `configure` stage, i.e. `waf configure --prefix="/usr" debug -j6` is commonly used.
 
+**Attention!** If install oregano to different prefix than `/usr`, `/usr/local` keep in mind that the `GSettings` schema will be installed under `${PREFIX}/shared/glib-2.0/schemas/`, which will not be checked by default. So you need to export the schema location appropriately via `export XDG_DATA_DIRS=/usr/local/share:/usr/share:${HOME}/.local/share:${PREFIX}/share` before launching oregano, see #133 and #134 and the [xdg basedir spec](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html).
 
 #### Installation
 
