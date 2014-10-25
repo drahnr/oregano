@@ -67,6 +67,7 @@
                 <child>
                   <object class="GtkBox" id="trans_frame">
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
                     <property name="border_width">3</property>
                     <child>
@@ -86,6 +87,7 @@
                       <object class="GtkBox" id="vbox3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkBox" id="hbox9">
                             <property name="visible">True</property>
@@ -523,6 +525,7 @@
                 <child>
                   <object class="GtkBox" id="dcsweep_frame">
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
                     <property name="border_width">3</property>
                     <child>
@@ -709,6 +712,7 @@
                 <child>
                   <object class="GtkBox" id="ac_frame">
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
                     <property name="border_width">3</property>
                     <child>
