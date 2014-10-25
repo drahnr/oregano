@@ -404,6 +404,9 @@ part_get_properties (Part *part)
 	return priv->properties;
 }
 
+/**
+ * @returns [transfer-full]
+ */
 char *
 part_get_property (Part *part, char *name)
 {

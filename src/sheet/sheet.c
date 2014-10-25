@@ -268,7 +268,9 @@ sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 
 /**
  * get the pointer position in goocanvas coordinates
- * @attention shall not be called in event callbacks, except for GDK_MOTION_...
+ * @attention shall not be called in event callbacks,
+ * except for GDK_MOTION_... where it is useless since
+ * the event itself contains the cursor position
  */
 gboolean
 sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
