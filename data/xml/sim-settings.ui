@@ -269,6 +269,7 @@
                 <child>
                   <object class="GtkBox" id="fourier_frame">
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <property name="can_focus">False</property>
                     <property name="border_width">3</property>
                     <child>
