@@ -253,82 +253,12 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				marker->node_nr = data->node_nr;
 				marker->name = value;
 				data->mark_list = g_slist_prepend (data->mark_list, marker);
-			}
-			else if (!g_ascii_strcasecmp (prop, "ground")) {
+
+			} else if (g_ascii_strcasecmp (prop, "ground")==0) {
 				data->gnd_list = g_slist_prepend (data->gnd_list, GINT_TO_POINTER (data->node_nr));
-			}
-			else if (!g_ascii_strcasecmp (prop, "clamp")) {
+
+			} else if (g_ascii_strcasecmp (prop, "clamp")==0) {
 				data->clamp_list = g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
-			}
-			else if (!g_ascii_strncasecmp (prop, "jumper", 5)) {
-				// FIXME this should not exist, a jumper should have the
-				// FIXME property what is connected to which one, look it
-				// FIXME up by property not this bogus shit.
-
-				// Either jumper2 or jumper4.
-				Node *opposite_node;
-				Pin opposite_pin;
-				gint pin_nr, opposite_pin_nr;
-				Coords pos;
-				Pin *jumper_pins;
-				gint num_pins;
-
-				opposite_pin_nr = -1;
-				num_pins = part_get_num_pins (pin->part);
-				jumper_pins = part_get_pins (pin->part);
-				for (pin_nr = 0; pin_nr < num_pins; pin_nr++) {
-					if (&jumper_pins[pin_nr] == pin) {
-						opposite_pin_nr = pin_nr;
-						break;
-					}
-				}
-
-				switch (opposite_pin_nr) {
-				case 0:
-					opposite_pin_nr = 1;
-					break;
-				case 1:
-					opposite_pin_nr = 0;
-					break;
-				case 2:
-					opposite_pin_nr = 3;
-					break;
-				case 3:
-					opposite_pin_nr = 2;
-					break;
-				default:
-					g_assert (TRUE); //FIXME what the ..
-					break;
-				}
-
-				opposite_pin = jumper_pins[opposite_pin_nr];
-
-				item_data_get_pos (ITEM_DATA (pin->part), &pos);
-				pos.x += opposite_pin.offset.x;
-				pos.y += opposite_pin.offset.y;
-
-				opposite_node = node_store_get_node (data->store, pos);
-
-#if 0
-				if (node_is_visited (opposite_node)) {
-					GList *list;
-
-					/* Set the node name on the current node to the same as the
-					   already  visited node. */
-					for (list = data->node_and_number_list; list; list = list->next) {
-						NodeAndNumber *opposite_nan = list->data;
-
-						if (opposite_nan->node == opposite_node)
-							nan->node_nr = opposite_nan->node_nr;
-					}
-				}
-#endif
-				netlist_helper_node_traverse (opposite_node, data);
-			}
-
-			if (g_ascii_strcasecmp (prop, "clamp")) {
-				g_free (prop);
-				continue;
 			}
 			g_free (prop);
 		}
