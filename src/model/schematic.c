@@ -289,7 +289,7 @@ schematic_dispose (GObject *object)
 		g_object_weak_unref (G_OBJECT (list->data),
 			item_data_destroy_callback, G_OBJECT (schematic));
 
-	g_object_unref (G_OBJECT (schematic->priv->log));
+	g_clear_object (&schematic->priv->log);
 
 	schematic_count_--;
 	schematic_list = g_list_remove (schematic_list, schematic);
@@ -306,17 +306,18 @@ schematic_dispose (GObject *object)
 static void
 schematic_finalize (GObject *object)
 {
-	Schematic *sm;
-
-	sm = SCHEMATIC (object);
-	if (sm->priv) {
-		g_free (sm->priv->simulation);
-		g_hash_table_destroy (sm->priv->symbols);
-		g_hash_table_destroy (sm->priv->refdes_values);
-		if (sm->priv->netlist_filename)
-			g_free (sm->priv->netlist_filename);
-		g_free (sm->priv);
-		sm->priv = NULL;
+	Schematic *sm = SCHEMATIC (object);
+	SchematicPriv *priv = sm->priv;
+	if (priv) {
+		g_free (priv->simulation);
+		g_hash_table_destroy (priv->symbols);
+		g_hash_table_destroy (priv->refdes_values);
+		if (priv->netlist_filename)
+			g_free (priv->netlist_filename);
+		g_free (priv->comments);
+		g_free (priv->author);
+		g_free (priv->filename);
+		g_free (priv);
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (G_OBJECT (sm));
@@ -500,7 +501,7 @@ schematic_log_append (Schematic *schematic, const char *message)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	log_append (schematic->priv->logstore, "INFO", message);
+	log_append (schematic->priv->logstore, "Schematic Info", message);
 
  //LEGACY
 	gtk_text_buffer_insert_at_cursor (
@@ -519,7 +520,7 @@ schematic_log_append_error (Schematic *schematic, const char *message)
 
 	priv = schematic->priv;
 
-	log_append (schematic->priv->logstore, "ERROR", message);
+	log_append (schematic->priv->logstore, "Schematic Error", message);
 
  //LEGACY
 	gtk_text_buffer_get_end_iter (priv->log, &iter);
@@ -595,23 +596,15 @@ schematic_read (char *name, GError **error)
 
 	new_sm = schematic_new ();
 
-	/* TODO : Add GError-like error reporting! */
-	ret = ft->load_func (new_sm, fname, &e);
 
+	ret = ft->load_func (new_sm, fname, &e);
 	if (e) {
 		g_propagate_error (error, e);
-		g_object_unref (G_OBJECT (new_sm));
+		g_clear_object (&new_sm);
 		return NULL;
 	}
 
-	if (ret) {
-		g_object_unref (G_OBJECT (new_sm));
-		new_sm = NULL;
-		g_set_error (error, OREGANO_ERROR, OREGANO_SCHEMATIC_FILE_NOT_FOUND,
-			_("Load fails!."));
-	}
-	else
-		schematic_set_dirty (new_sm, FALSE);
+	schematic_set_dirty (new_sm, FALSE);
 
 	return new_sm;
 }
