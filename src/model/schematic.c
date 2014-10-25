@@ -258,8 +258,8 @@ schematic_init (Schematic *schematic)
 
 	priv->filename = NULL;
 	priv->netlist_filename = NULL;
-	priv->author = g_strdup (""); //FIXME fill with sane default values - bug #52
-	priv->comments = g_strdup (""); //FIXME
+	priv->author = g_strdup (g_get_user_name ());
+	priv->comments = g_strdup ("");
 
 }
 
