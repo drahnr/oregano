@@ -922,13 +922,13 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	GtkCellRenderer *cell_option, *cell_value;
 	GtkTreeViewColumn *column_option, *column_value;
 	GtkListStore *opt_model;
-	GtkTreeIter iter;
+	GtkTreeIter treeiter;
 	GtkBuilder *gui;
 	GError *e = NULL;
 	SimSettings *s;
 	Schematic *sm;
-	GList *list;
-	GList *sources = NULL, *ltmp;
+	GList *iter;
+	GList *sources = NULL;
 	GtkComboBox *node_box;
 	GtkListStore *node_list_store;
 	gchar *text = NULL;
@@ -941,7 +941,9 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// Only allow one instance of the property box per schematic.
 	if (s->pbox) {
-		gdk_window_raise (gtk_widget_get_window (GTK_WIDGET (s->pbox)));
+		GdkWindow *window = gtk_widget_get_window (GTK_WIDGET (s->pbox));
+		g_assert (window!=NULL);
+		gdk_window_raise (window);
 		return;
 	}
 
@@ -953,7 +955,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 	gtk_builder_set_translation_domain (gui, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/sim-settings.ui", &e) <= 0) {
+	gtk_builder_add_from_file (gui, OREGANO_UIDIR "/sim-settings.ui", &e);
+	if (e) {
 		log_append_error (schematic_get_log_store (sm),
 		              _("SimulationSettings"),
 		              _("Could not create simulation settings dialog due to missing " OREGANO_UIDIR "/sim-settings.ui file"), e);
@@ -1007,30 +1010,27 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	if (s->priv->options == NULL) {
 		// Load defaults
 		for (i = 0; default_options[i].name; i++) {
-			gtk_list_store_append (opt_model, &iter);
-			gtk_list_store_set (opt_model, &iter, 0,
+			gtk_list_store_append (opt_model, &treeiter);
+			gtk_list_store_set (opt_model, &treeiter, 0,
 			                   default_options[i].name, -1);
 		}
 	} else {
 		// Load schematic options
-		list = s->priv->options;
-		while (list) {
-			SimOption *so = list->data;
+
+		for (iter = s->priv->options; iter; iter = iter->next) {
+			SimOption *so = iter->data;
 			if (so) {
-				gtk_list_store_append (opt_model, &iter);
-				gtk_list_store_set (opt_model, &iter, 0, so->name, -1);
+				gtk_list_store_append (opt_model, &treeiter);
+				gtk_list_store_set (opt_model, &treeiter, 0, so->name, -1);
 			}
-			list = list->next;
 		}
 	}
 
 	// Set the options already stored
-	list = s->priv->options;
-	while (list) {
-		SimOption *so = list->data;
+	for (iter = s->priv->options; iter; iter = iter->next) {
+		SimOption *so = iter->data;
 		if (so)
 			set_options_in_list (so->name, so->value, opt_list);
-		list = list->next;
 	}
 
 	g_signal_connect (G_OBJECT (opt_list), "button_release_event",
@@ -1116,11 +1116,11 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	{
 		gint index = 0;
-		for (index = 0; AC_types_list[index]!= NULL ; index++) {
+		for (; AC_types_list[index]!= NULL; index++) {
 			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box),
 			                           AC_types_list[index]);
 		}
-		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),0);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
 	}
 	g_signal_connect (G_OBJECT (GTK_COMBO_BOX (combo_box)), "changed",
 		G_CALLBACK (entry_changed_cb), s);
@@ -1167,6 +1167,8 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		            _("No node in the schematic!"));
 		return;
 	}
+
+	sources = NULL;
 	for (; node_list; node_list = node_list->next) {
 		gchar * tmp;
 		tmp = g_strdup_printf ("V(%d)", atoi (node_list->data));
@@ -1180,11 +1182,11 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_grid_attach (GTK_GRID (w), combo_box, 1,0, 1,1);
 	s->priv->w_dc_vin = combo_box;
 	if (sources) {
-		for (; sources; sources = sources->next) {
+		for (iter=sources; iter; iter = iter->next) {
 			gtk_combo_box_text_append_text (
-			             GTK_COMBO_BOX_TEXT (combo_box), sources->data);
+			             GTK_COMBO_BOX_TEXT (combo_box), iter->data);
 		}
-		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box),0);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed",
 		G_CALLBACK (entry_changed_cb), s);
@@ -1207,8 +1209,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "changed",
 		G_CALLBACK (entry_changed_cb), s);
 
-	for (ltmp = sources; ltmp; ltmp = ltmp->next) g_free (ltmp->data);
-	g_list_free (sources);
+	g_list_free_full (sources, g_free);
 
 	// Fourier //
 	// ******* //
@@ -1311,8 +1312,6 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	trans_enable_cb (s->priv->w_trans_enable, s);
 	trans_step_enable_cb (s->priv->w_trans_step_enable, s);
 
-	// Cleanup
-	g_list_free_full (list, g_object_unref);
 }
 
 GList *
@@ -1324,19 +1323,17 @@ sim_settings_get_options (SimSettings *s)
 void
 sim_settings_add_option (SimSettings *s, SimOption *opt)
 {
-	GList *list=s->priv->options;
+	GList *iter;
 
 	// Remove the option if already in the list.
-	while (list) {
-		SimOption *so=list->data;
+	for(iter = s->priv->options; iter; iter = iter->next) {
+		SimOption *so = iter->data;
 		if (so && !strcmp (opt->name,so->name)) {
 			g_free (so->name);
 			g_free (so->value);
 			s->priv->options = g_list_remove (s->priv->options, so);
 			g_free (so);
 		}
-		list = list->next;
 	}
 	s->priv->options = g_list_append (s->priv->options, opt);
-	g_list_free_full (list, g_object_unref);
 }
