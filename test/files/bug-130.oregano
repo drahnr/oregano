@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<ogo:schematic xmlns:ogo="http://www.dtek.chalmers.se/~d4hult/oregano/v1">
-  <ogo:author/>
-  <ogo:title>funk.oregano</ogo:title>
+<ogo:schematic xmlns:ogo="https://beerbach.me/project/oregano/ns/v1">
+  <ogo:author>bernhard</ogo:author>
+  <ogo:title>(null)</ogo:title>
   <ogo:comments/>
   <ogo:grid>
     <ogo:visible>true</ogo:visible>
@@ -32,335 +32,45 @@
     <ogo:fourier>
       <ogo:enabled>false</ogo:enabled>
       <ogo:freq>0</ogo:freq>
-      <ogo:vout>0</ogo:vout>
+      <ogo:vout>(null)</ogo:vout>
     </ogo:fourier>
   </ogo:simulation-settings>
-  <ogo:parts>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>VSIN</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>VSIN</ogo:symbol>
-      <ogo:position>(710 500)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>V1</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Offset</ogo:name>
-          <ogo:value>0.0</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Amplitude</ogo:name>
-          <ogo:value>4.0</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Frequency</ogo:name>
-          <ogo:value>1.0</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>DC</ogo:name>
-          <ogo:value>0.0</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>AC</ogo:name>
-          <ogo:value>0.0</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(15 10)</ogo:position>
-        </ogo:label>
-      </ogo:labels>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Resistor</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>resistor</ogo:symbol>
-      <ogo:position>(810 530)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>R2</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Res</ogo:name>
-          <ogo:value>1k</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(15 0)</ogo:position>
-        </ogo:label>
-        <ogo:label>
-          <ogo:name>Resistance</ogo:name>
-          <ogo:text>@res</ogo:text>
-          <ogo:position>(0 30)</ogo:position>
-        </ogo:label>
-      </ogo:labels>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Test Clamp</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>Clamp</ogo:symbol>
-      <ogo:position>(870 470)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>internal</ogo:name>
-          <ogo:value>clamp</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>type</ogo:name>
-          <ogo:value>v</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_type</ogo:name>
-          <ogo:value>m</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_db</ogo:name>
-          <ogo:value>false</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels/>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Test Clamp</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>Clamp</ogo:symbol>
-      <ogo:position>(810 470)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>internal</ogo:name>
-          <ogo:value>clamp</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>type</ogo:name>
-          <ogo:value>v</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_type</ogo:name>
-          <ogo:value>m</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_db</ogo:name>
-          <ogo:value>false</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels/>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Test Clamp</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>Clamp</ogo:symbol>
-      <ogo:position>(810 530)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>internal</ogo:name>
-          <ogo:value>clamp</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>type</ogo:name>
-          <ogo:value>v</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_type</ogo:name>
-          <ogo:value>m</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_db</ogo:name>
-          <ogo:value>false</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels/>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Test Clamp</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>Clamp</ogo:symbol>
-      <ogo:position>(910 580)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>internal</ogo:name>
-          <ogo:value>clamp</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>type</ogo:name>
-          <ogo:value>v</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_type</ogo:name>
-          <ogo:value>m</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>ac_db</ogo:name>
-          <ogo:value>false</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels/>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Gnd</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>Ground</ogo:symbol>
-      <ogo:position>(1010 620)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>internal</ogo:name>
-          <ogo:value>ground</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels/>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>VDC</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>VDC</ogo:symbol>
-      <ogo:position>(900 470)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>V2</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>DC</ogo:name>
-          <ogo:value>1.0</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @DC</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(25 10)</ogo:position>
-        </ogo:label>
-      </ogo:labels>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>Resistor</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>resistor</ogo:symbol>
-      <ogo:position>(810 450)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>R1</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Res</ogo:name>
-          <ogo:value>1k</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(15 0)</ogo:position>
-        </ogo:label>
-        <ogo:label>
-          <ogo:name>Resistance</ogo:name>
-          <ogo:text>@res</ogo:text>
-          <ogo:position>(0 30)</ogo:position>
-        </ogo:label>
-      </ogo:labels>
-    </ogo:part>
-    <ogo:part>
-      <ogo:rotation>0</ogo:rotation>
-      <ogo:name>BJT NPN</ogo:name>
-      <ogo:library>Default</ogo:library>
-      <ogo:symbol>NPN</ogo:symbol>
-      <ogo:position>(790 480)</ogo:position>
-      <ogo:properties>
-        <ogo:property>
-          <ogo:name>Refdes</ogo:name>
-          <ogo:value>Q1</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Model</ogo:name>
-          <ogo:value>NPN</ogo:value>
-        </ogo:property>
-        <ogo:property>
-          <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
-        </ogo:property>
-      </ogo:properties>
-      <ogo:labels>
-        <ogo:label>
-          <ogo:name>Reference designator</ogo:name>
-          <ogo:text>@refdes</ogo:text>
-          <ogo:position>(0 0)</ogo:position>
-        </ogo:label>
-        <ogo:label>
-          <ogo:name>Model</ogo:name>
-          <ogo:text>@model</ogo:text>
-          <ogo:position>(30 40)</ogo:position>
-        </ogo:label>
-      </ogo:labels>
-    </ogo:part>
-  </ogo:parts>
+  <ogo:parts/>
   <ogo:wires>
     <ogo:wire>
-      <ogo:points>(850 540)(910 540)</ogo:points>
+      <ogo:points>(340 350)(590 350)</ogo:points>
+      <ogo:points>(590 350)(410 350)</ogo:points>
+      <ogo:points>(410 350)(650 350)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(850 470)(870 470)</ogo:points>
-      <ogo:points>(870 470)(910 470)</ogo:points>
+      <ogo:points>(340 270)(340 350)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(850 460)(850 470)</ogo:points>
+      <ogo:points>(250 270)(340 270)</ogo:points>
+      <ogo:points>(340 270)(590 270)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(910 510)(910 580)</ogo:points>
-      <ogo:points>(910 580)(910 540)</ogo:points>
-      <ogo:points>(910 540)(910 620)</ogo:points>
+      <ogo:points>(590 350)(590 270)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(720 620)(1010 620)</ogo:points>
-      <ogo:points>(1010 620)(910 620)</ogo:points>
-      <ogo:points>(910 620)(1030 620)</ogo:points>
+      <ogo:points>(410 100)(410 350)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(720 540)(720 620)</ogo:points>
+      <ogo:points>(280 100)(420 100)</ogo:points>
+      <ogo:points>(420 100)(410 100)</ogo:points>
+      <ogo:points>(410 100)(340 100)</ogo:points>
+      <ogo:points>(340 100)(470 100)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(710 500)(720 500)</ogo:points>
-      <ogo:points>(720 500)(790 500)</ogo:points>
+      <ogo:points>(340 70)(340 100)</ogo:points>
+      <ogo:points>(340 100)(340 160)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(810 520)(810 530)</ogo:points>
-      <ogo:points>(810 530)(810 540)</ogo:points>
+      <ogo:points>(230 160)(340 160)</ogo:points>
+      <ogo:points>(340 160)(420 160)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(810 460)(810 470)</ogo:points>
-      <ogo:points>(810 470)(810 480)</ogo:points>
+      <ogo:points>(420 100)(420 160)</ogo:points>
     </ogo:wire>
   </ogo:wires>
   <ogo:textboxes/>
