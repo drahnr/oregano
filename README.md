@@ -53,8 +53,8 @@ For additional options like specifying the install directory, consult
 
 Note that additional options can be passed to the `configure` stage, i.e. `waf configure --prefix="/usr" debug -j6` is commonly used.
 
-**Attention!**
-If you install oregano to a different prefix than `/usr`, `/usr/local` keep in mind that the `GSettings` schema will be installed under `${PREFIX}/shared/glib-2.0/schemas/`, which will not be checked by default. So you need to export the schema location appropriately via `export XDG_DATA_DIRS=/usr/local/share:/usr/share:${HOME}/.local/share:${PREFIX}/share` before launching oregano, see [xdg basedir spec](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) for further details.
+**Attention!**  
+If you install oregano to a different prefix than `/usr`, `/usr/local` keep in mind that the `GSettings` schema will be installed under `${PREFIX}/shared/glib-2.0/schemas/`, which will not be checked by default. So you need to export the schema location appropriately via `export XDG_DATA_DIRS=/usr/local/share:/usr/share:${HOME}/.local/share:${PREFIX}/share` before launching oregano, see [xdg basedir spec](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) for further details.  
 Omitting the `--prefix=..` option results in `/usr/local` as prefix, which works just fine.
 
 #### Installation
@@ -76,7 +76,7 @@ After installation oregano can be started by running `oregano` from terminal.
 
 ### Web
 
-The [official oregano website](https://srctwig.com/project/oregano)
+The [official oregano website](https://beerbach.me/project/oregano)
 
 ### Mailinglist
 
