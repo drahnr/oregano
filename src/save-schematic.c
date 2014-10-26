@@ -398,7 +398,7 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 	Coords pos;
 
 	g_return_if_fail (textbox != NULL);
-	g_return_if_fail (IS_TEXTBOX (textbox));
+	if (!IS_TEXTBOX (textbox)) return;
 
 	// Create a node for the textbox.
 	node_textbox = xmlNewChild (ctxt->node_textboxes, ctxt->ns,
