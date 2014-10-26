@@ -257,6 +257,9 @@ write_xml_part (Part *part, parseXmlContext *ctxt)
 	gchar *str;
 	Coords pos;
 
+	g_return_if_fail (part!=NULL);
+	g_return_if_fail (IS_PART(part));
+
 	priv = part->priv;
 
 	// Create a node for the part.
@@ -395,8 +398,7 @@ write_xml_textbox (Textbox *textbox, parseXmlContext *ctxt)
 	Coords pos;
 
 	g_return_if_fail (textbox != NULL);
-	if (!IS_TEXTBOX (textbox))
-		return;
+	g_return_if_fail (IS_TEXTBOX (textbox));
 
 	// Create a node for the textbox.
 	node_textbox = xmlNewChild (ctxt->node_textboxes, ctxt->ns,
@@ -434,7 +436,7 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 
 	if (ctxt->ns == NULL) {
 		ogo = xmlNewNs (cur,
-			BAD_CAST "http://www.dtek.chalmers.se/~d4hult/oregano/v1",
+			BAD_CAST "https://beerbach.me/project/oregano/ns/v1",
 			BAD_CAST "ogo");
 		xmlSetNs (cur,ogo);
 		ctxt->ns = ogo;
@@ -479,13 +481,13 @@ write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GError **error)
 // schematic_write_xml
 //
 // Save a Sheet to an XML file.
-gint
+gboolean
 schematic_write_xml (Schematic *sm, GError **error)
 {
 	int ret = -1;
 	xmlDocPtr xml;
 	parseXmlContext ctxt;
-	GError *internal_error = NULL;
+	GError *err = NULL;
 
 	g_return_val_if_fail (sm != NULL, FALSE);
 
@@ -498,10 +500,10 @@ schematic_write_xml (Schematic *sm, GError **error)
 	ctxt.ns = NULL;
 	ctxt.doc = xml;
 
-	xmlDocSetRootElement (xml, write_xml_schematic (&ctxt, sm, &internal_error));
+	xmlDocSetRootElement (xml, write_xml_schematic (&ctxt, sm, &err));
 
-	if (internal_error) {
-		g_propagate_error (error, internal_error);
+	if (err) {
+		g_propagate_error (error, err);
 		return FALSE;
 	}
 
@@ -509,19 +511,17 @@ schematic_write_xml (Schematic *sm, GError **error)
 	xmlSetDocCompressMode (xml, oregano.compress_files ? 9 : 0);
 
 	{
-		char *s =schematic_get_filename (sm);
+		char *s = schematic_get_filename (sm);
 		if (s != NULL) {
 			ret = xmlSaveFormatFile (s, xml, 1);
-		}
-		else {
+		} else {
 			g_warning ("Schematic has no filename!!\n");
 		}
 	}
 
 	if (xml != NULL) {
 		xmlFreeDoc (xml);
-	}
-	else {
+	} else {
 		g_warning ("XML object is NULL\n");
 	}
 

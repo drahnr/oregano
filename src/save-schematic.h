@@ -37,6 +37,6 @@
 
 #include "schematic.h"
 
-gint schematic_write_xml (Schematic *sm, GError **error);
+gboolean schematic_write_xml (Schematic *sm, GError **error);
 
 #endif
