@@ -955,7 +955,7 @@ sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// Only allow one instance of the property box per schematic.
 	if (s->pbox!=NULL) {
-		if (gtk_widget_is_visible (s->pbox) == FALSE) {
+		if (gtk_widget_get_visible (s->pbox) == FALSE) {
 			gtk_widget_set_visible (s->pbox, TRUE);
 		}
 		GdkWindow *window = gtk_widget_get_window (s->pbox);
