@@ -1,30 +1,36 @@
-Summary:		Oregano
+Summary:		Sschematic capture and simulation of electrical circuits.
 Name:			oregano
 Version:		0.83.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
 Source0: 		https://github.com/drahnr/oregano/archive/master.tar.gz
-Url:			https://srctwig.com/project/oregano
+Url:			https://beerbach.me/project/oregano
 
 BuildRequires: gtk3-devel
 BuildRequires: libxml2-devel
 BuildRequires: gtksourceview3-devel
+BuildRequires: intltool
+BuildRequires: glib2-devel
 Requires: gtksourceview3
 Requires: glade3
+Requires: gtk3
+Requires: glib2 >= 2.24
+Requires: libxml2
+Requires: goocanvas2
 
 %description
-Oregano, schematic capture and simulation of electrical circuits.
+Schematic capture and simulation of electrical circuits utilizing gtk3 as frontend and ngpsice/gnucap as backend.
 
 %prep
 %setup -q
 
 %build
-./waf distclean configure --prefix="/usr" release
+./waf distclean configure --prefix="%{_prefix}" release
 
 
 %install
-./waf install --destdir="$RPM_BUILD_ROOT" --prefix="/usr" --sysconfdir="/etc"
+./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -32,7 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 
-%doc HACKING.md README.md TODO AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.txt
+%doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.txt
 
 %{bindir}/*
 %{_datadir}/locale/*/*
