@@ -1,7 +1,7 @@
-Summary:		Sschematic capture and simulation of electrical circuits.
 Name:			oregano
+Summary:		Schematic capture and simulation of electrical circuits.
 Version:		0.83.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
 Source0: 		https://github.com/drahnr/oregano/archive/master.tar.gz
@@ -23,7 +23,7 @@ Requires: goocanvas2
 Schematic capture and simulation of electrical circuits utilizing gtk3 as frontend and ngpsice/gnucap as backend.
 
 %prep
-%setup -q
+%setup -q -n oregano-master
 
 %build
 ./waf distclean configure --prefix="%{_prefix}" release
@@ -40,10 +40,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.txt
 
-%{bindir}/*
+%{_bindir}/*
 %{_datadir}/locale/*/*
-%{_datadir}/gnome/help/oregano/*/*
-%{_datadir}/gnome/apps/Applications/oregano.desktop
+#%{_datadir}/gnome/help/oregano/*/*
+%{_datadir}/applications/oregano.desktop
 %{_datadir}/mime-info/*
-%{_datadir}/pixmaps/*
+%{_datadir}/icons/hicolor/*/*
 %{_datadir}/oregano/*/*
+%{_datadir}/mime/packages/oregano-mimetypes.xml
+%{_datadir}/glib-2.0/schemas/apps.oregano.gschema.xml
