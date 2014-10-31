@@ -1,4 +1,4 @@
-Name:			oregano
+Name:			oregano-master
 Summary:		Schematic capture and simulation of electrical circuits.
 Version:		0.83.2
 Release:        3%{?dist}
@@ -13,11 +13,11 @@ BuildRequires: gtksourceview3-devel
 BuildRequires: intltool
 BuildRequires: glib2-devel
 Requires: gtksourceview3
-Requires: glade3
 Requires: gtk3
 Requires: glib2 >= 2.24
 Requires: libxml2
 Requires: goocanvas2
+Provides: oregano = %{version}-%{release}
 
 %description
 Schematic capture and simulation of electrical circuits utilizing gtk3 as frontend and ngpsice/gnucap as backend.
@@ -31,6 +31,28 @@ Schematic capture and simulation of electrical circuits utilizing gtk3 as fronte
 
 %install
 ./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
+
+
+%post
+/usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
+/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+/usr/bin/update-desktop-database &> /dev/null || :
+
+%postun
+if [ $1 -eq 0 ] ; then
+    /usr/bin/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+fi
+/usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
+/usr/bin/update-desktop-database &> /dev/null || :
+
+
+%posttrans
+/usr/bin/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+
+
 
 %clean
 rm -rf $RPM_BUILD_ROOT
