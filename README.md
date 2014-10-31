@@ -25,8 +25,8 @@ Any donations will directly increase sparetime we spend to write code, fix bugs,
 
 If you are not going to build it yourself from source (which in fact is quite straightforward) you can grab a either a ready to install packages or distribution specific recipes:
 
-* Fedora - https://copr.fedoraproject.org/coprs/drahnr/oregano/
-* ArchLinux - https://aur.archlinux.org/packages/oregano/
+* Fedora - [stable+git repo](https://copr.fedoraproject.org/coprs/drahnr/oregano/)
+* ArchLinux [stable](https://aur.archlinux.org/packages/oregano/) [git](https://aur.archlinux.org/packages/oregano/)
 
 #### Requirements
 
@@ -71,6 +71,8 @@ After installation oregano can be started by running `oregano` from terminal.
 
     ./waf uninstall
 
+**Attention!**  
+On subsequent installs with different prefixes this will only remove the last install!
 
 ----
 
