@@ -60,7 +60,7 @@ static void 	sheet_get_property (GObject *object, guint prop_id,
 static void 	sheet_set_zoom (const Sheet *sheet, double zoom);
 static GList *	sheet_preserve_selection (Sheet *sheet);
 static void	rotate_items (Sheet *sheet, GList *items, gint angle);
-static void	move_items (Sheet *sheet, GList *items, Coords *delta);
+static void	move_items (Sheet *sheet, GList *items, const Coords *delta);
 static void	flip_items (Sheet *sheet, GList *items, IDFlip direction);
 static void 	node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void 	node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
@@ -1046,10 +1046,9 @@ rotate_items (Sheet *sheet, GList *items, gint angle)
 }
 
 static void
-move_items (Sheet *sheet, GList *items, Coords *trans)
+move_items (Sheet *sheet, GList *items, const Coords *trans)
 {
 	GList *list;
-	Coords center, b1, b2;
 
 	for (list = items; list; list = list->next) {
 		g_assert (list->data!=NULL);

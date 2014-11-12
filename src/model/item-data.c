@@ -289,7 +289,7 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 }
 
 void
-item_data_move (ItemData *item_data, Coords *delta)
+item_data_move (ItemData *item_data, const Coords *delta)
 {
 	ItemDataPriv *priv;
 

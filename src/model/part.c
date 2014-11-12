@@ -546,7 +546,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	Part *part;
 	PartPriv *priv;
 	gboolean handler_connected;
-	Coords b1, b2;
+	//Coords b1, b2;
 
 	part = PART (data);
 

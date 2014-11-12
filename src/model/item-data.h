@@ -107,7 +107,7 @@ void 		item_data_set_pos (ItemData *item_data, Coords *pos);
 
 //  Move an ItemData
 //  \param delta offset to move the item
-void 		item_data_move (ItemData *item_data, Coords *delta);
+void 		item_data_move (ItemData *item_data, const Coords *delta);
 
 // Get the bounding box of an item data 
 //Retrieve the bounding box of the item relative to position

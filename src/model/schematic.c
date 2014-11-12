@@ -566,7 +566,6 @@ Schematic *
 schematic_read (char *name, GError **error)
 {
 	Schematic *new_sm;
-	int ret;
 	char *fname;
 	GError *e = NULL;
 	FileType *ft;
@@ -597,7 +596,7 @@ schematic_read (char *name, GError **error)
 	new_sm = schematic_new ();
 
 
-	ret = ft->load_func (new_sm, fname, &e);
+	ft->load_func (new_sm, fname, &e);
 	if (e) {
 		g_propagate_error (error, e);
 		g_clear_object (&new_sm);

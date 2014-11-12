@@ -208,9 +208,6 @@ engine_done_cb (OreganoEngine *engine, Simulation *s)
 static void
 engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 {
-	GtkWidget *dialog;
-	int answer;
-
 	if (s->progress_timeout_id != 0) {
 		g_source_remove (s->progress_timeout_id);
 		s->progress_timeout_id = 0;
@@ -254,8 +251,7 @@ simulate_cmd (Simulation *s)
 	OreganoEngine *engine;
 
 	if (s->engine != NULL) {
-		g_object_unref (G_OBJECT (s->engine));
-		s->engine = NULL;
+		g_clear_object (&(s->engine));
 	}
 
 	engine = oregano_engine_factory_create_engine (oregano.engine, s->sm);
