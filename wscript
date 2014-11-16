@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-VERSION = '0.83'
+VERSION = '0.83.1.1'
 APPNAME = 'oregano'
 
 top = '.'
