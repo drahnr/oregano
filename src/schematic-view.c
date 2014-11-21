@@ -861,10 +861,10 @@ log_toggle_visibility_cmd (GtkToggleAction *action, SchematicView *sv)
 	gboolean b = gtk_toggle_action_get_active (action);
 	static int pos = 0;
 	if (pos==0)
-		pos = gtk_paned_get_position (sv->priv->paned);
+		pos = gtk_paned_get_position (GTK_PANED (sv->priv->paned));
 
 	gtk_widget_get_allocation (GTK_WIDGET (sv->priv->paned), &allocation);
-	gtk_paned_set_position (sv->priv->paned, b ? pos : allocation.height);
+	gtk_paned_set_position (GTK_PANED (sv->priv->paned), b ? pos : allocation.height);
 }
 
 static void
@@ -1187,7 +1187,7 @@ schematic_view_new (Schematic *schematic)
 	part_browser = part_browser_create (sv);
 	gtk_widget_set_hexpand (part_browser, FALSE);
 	gtk_grid_attach_next_to (grid, part_browser,
-	                         paned, GTK_POS_RIGHT, 1, 1);
+	                         GTK_WIDGET (paned), GTK_POS_RIGHT, 1, 1);
 
 	priv = sv->priv;
 	priv->log_info->log_window = NULL;
