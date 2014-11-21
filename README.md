@@ -9,13 +9,16 @@ file COPYING.
 
 [![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)
 
-The overall status should be considered `unstable`, as the process of fixing core components has yet to be completed.
+The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
+
+### Donations
+
+Donations are welcome!  
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=drahnr&url=https://github.com/drahnr/oregano&title=oregano&language=&tags=github&category=software)
 
 ### Support
 
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=drahnr&url=https://github.com/drahnr/oregano&title=oregano&language=&tags=github&category=software)
-
-Any donations will directly increase sparetime we spend to write code, fix bugs, write developer documentation – working towards a 21st century Oregano Electrical Engineering Tool which is worthwhile using.
+The preferred way of supporting oregano is by sending patches and pull requests or filing bug reports.
 
 ----
 
@@ -25,8 +28,8 @@ Any donations will directly increase sparetime we spend to write code, fix bugs,
 
 If you are not going to build it yourself from source (which in fact is quite straightforward) you can grab a either a ready to install packages or distribution specific recipes:
 
-* Fedora - [stable+git repo](https://copr.fedoraproject.org/coprs/drahnr/oregano/)
-* ArchLinux [stable](https://aur.archlinux.org/packages/oregano/) [git](https://aur.archlinux.org/packages/oregano/)
+* Fedora - [stable and git](https://copr.fedoraproject.org/coprs/drahnr/oregano/)
+* ArchLinux - [stable](https://aur.archlinux.org/packages/oregano/), [git](https://aur.archlinux.org/packages/oregano/)
 
 #### Requirements
 
@@ -101,3 +104,6 @@ For bug and issue tracking as well as feature requests, the github built in issu
 #### Translations
 
 Translators are welcome to translate at transifex which will be synced into the git repository a day before a new release is created (see the release milestones for planned release dates)
+
+**Attention!**  
+Currently translations are out of sync and will stay so until the next stable release since many error and ui strings are in the process of being unified.
