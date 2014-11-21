@@ -377,8 +377,6 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	NodeStore *store;
 	gchar **node2real;
 
-	schematic_log_clear (sm); // TODO cleanup legacy logging
-
 	out->models = NULL;
 	out->title = schematic_get_filename (sm);
 	out->settings = schematic_get_sim_settings (sm);
@@ -424,7 +422,8 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	 	// Build an array for going from node nr to "real node nr",
 	 	// where gnd nodes are nr 0 and the rest of the nodes are
 	 	// 1, 2, 3, ...
-		node2real = g_new0 (gchar*, num_nodes + 1);
+		node2real = g_new0 (gchar*, num_nodes + 1 + 1);
+		node2real[num_nodes + 1] = NULL; // so we can use g_strfreev
 
 		for (i = 1, j = 1; i <= num_nodes; i++) {
 			GSList *mlist;
@@ -489,18 +488,19 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 			template = part_property_expand_macros (part, tmp);
 			NG_DEBUG ("Template: '%s'\n" "macro   : '%s'\n", tmp, template);
-			if (tmp != NULL) g_free (tmp);
 
+			g_free (tmp);
 			tmp = netlist_helper_linebreak (template);
 
-			if (template != NULL) g_free (template);
+			g_free (template);
 			template = tmp;
 
 			num_pins = part_get_num_pins (part);
 			pins = part_get_pins (part);
 
 			template_split = g_strsplit (template, " ", 0);
-			if (template != NULL) g_free (template);
+
+			g_free (template);
 			template = NULL;
 
 			str = g_string_new ("");
@@ -518,8 +518,10 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				gint node_nr = 0;
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[pin_nr]));
 				if (!node_nr) {
-					gchar * tmp = g_strdup_printf (_("Couldn't find part, pin_nr %d."), pin_nr);
-					oregano_error_with_title (_("Problem of library:"), tmp);
+					g_set_error (error,
+					             OREGANO_ERROR,
+					             OREGANO_SIMULATE_ERROR_NO_SUCH_PART,
+					             _("Could not find part in library, pin #%d."), pin_nr);
 					return; //FIXME wtf?? this leaks like hell and did for ages!
 				}
 				else {
@@ -563,26 +565,16 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			g_string_free (str, TRUE);
 		}
 
-		for (i = 0; i < num_nodes + 1; i++) {
-			g_free (node2real[i]);
-		}
-		g_free (node2real);
+		g_strfreev (node2real);
 
-		g_hash_table_foreach (data.models, (GHFunc)netlist_helper_foreach_model_save,
-	    	&out->models);
+		g_hash_table_foreach (data.models, (GHFunc)netlist_helper_foreach_model_save, &out->models);
 		return;
 	}
 
 	g_hash_table_foreach (data.models, (GHFunc)netlist_helper_foreach_model_free, NULL);
 	g_hash_table_destroy (data.models);
 	g_hash_table_destroy (data.pins);
-	for (iter = data.node_and_number_list; iter; iter = iter->next) {
-		NodeAndNumber *nan = iter->data;
-		if (nan != NULL)
-			g_free (nan);
-	}
-	g_list_free (data.node_and_number_list);
-
+	g_list_free_full (data.node_and_number_list, (GDestroyNotify)g_free);
 }
 
 char *
@@ -632,11 +624,11 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 					node = node_store_get_or_create_node (store, lookup_key);
 
 					if (node) {
-						GSList *lst, *it;
-						it = lst = netlist_helper_get_clamp_parts (store, node);
+						GSList *lst, *iter;
+						iter = lst = netlist_helper_get_clamp_parts (store, node);
 
-						for (; it; it = it->next) {
-							g_string_append_printf (out, " i(%s)", (char *)it->data);
+						for (; iter; iter = iter->next) {
+							g_string_append_printf (out, " i(%s)", (char *)iter->data);
 						}
 						g_slist_free (lst); // need to free this, we are owning it!
 					}
