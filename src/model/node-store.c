@@ -336,13 +336,21 @@ node_store_remove_textbox (NodeStore *self, Textbox *text)
 }
 
 
+gboolean
+delayed_wire_delete (gpointer user_data)
+{
+	wire_delete (WIRE (user_data));
+	g_object_unref (G_OBJECT (WIRE (user_data)));
+	return G_SOURCE_REMOVE;
+}
+
 
 /**
  * add/register the wire to the nodestore
  *
  * @param store
  * @param wire
- * @returns TRUE if the wire was added or merged into another, else FALSE
+ * @returns TRUE if the wire was added or merged, else FALSE
  */
 gboolean
 node_store_add_wire (NodeStore *store, Wire *wire)
@@ -414,8 +422,10 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				Node *en = node_store_get_node (store, so);
 				#if 1
 				wire = vulcanize_wire (store, wire, other, &so, &eo);
-				node_store_remove_wire (store, other);//equiv wire_unregister XXX FIXME this modifies the list we iterate over!
-				wire_delete (other);
+				node_store_remove_wire (store, g_object_ref (other));//equiv wire_unregister XXX FIXME this modifies the list we iterate over!
+				// delay this until idle, so all handlers like adding view representation are completed so existing wire-items can be deleted properly
+				// this is not fancy nor nice but seems to work fairly nicly
+				g_idle_add (delayed_wire_delete, other);
 				break;
 				NG_DEBUG ("overlapping of %p with %p ", wire, other);
 				#else
@@ -471,7 +481,6 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				} else {
 					g_warning ("Bug: Found no node at pin at (%g %g).\n",
 					           lookup_pos.x, lookup_pos.y);
-
 				}
 			}
 		}

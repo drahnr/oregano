@@ -668,7 +668,6 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	// for parts e.g. this ends up in <node_store_add_part>
 	// which requires a valid position to add the node dots
 	if (item_data_register (data) == -1) {
-		NG_DEBUG ("registering item-data %p failed\n", data);
 		return;
 	}
 
@@ -692,7 +691,7 @@ schematic_add_item (Schematic *sm, ItemData *data)
 	// if the item gets moved mark the schematic as dirty
 	g_signal_connect_object (data, "moved", G_CALLBACK (item_moved_callback), sm, 0);
 
-	// causes a canvas item to be generated
+	// causes a canvas item (view) to be generated
 	g_signal_emit_by_name (sm, "item_data_added", data);
 }
 

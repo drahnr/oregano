@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <ogo:schematic xmlns:ogo="https://beerbach.me/project/oregano/ns/v1">
   <ogo:author>bernhard</ogo:author>
-  <ogo:title>(null)</ogo:title>
+  <ogo:title>bug-130.oregano</ogo:title>
   <ogo:comments/>
   <ogo:grid>
     <ogo:visible>true</ogo:visible>
@@ -32,45 +32,17 @@
     <ogo:fourier>
       <ogo:enabled>false</ogo:enabled>
       <ogo:freq>0</ogo:freq>
-      <ogo:vout>(null)</ogo:vout>
+      <ogo:vout>0</ogo:vout>
     </ogo:fourier>
   </ogo:simulation-settings>
   <ogo:parts/>
   <ogo:wires>
     <ogo:wire>
-      <ogo:points>(340 350)(590 350)</ogo:points>
-      <ogo:points>(590 350)(410 350)</ogo:points>
-      <ogo:points>(410 350)(650 350)</ogo:points>
+      <ogo:points>(540 150)(540 220)</ogo:points>
     </ogo:wire>
     <ogo:wire>
-      <ogo:points>(340 270)(340 350)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(250 270)(340 270)</ogo:points>
-      <ogo:points>(340 270)(590 270)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(590 350)(590 270)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(410 100)(410 350)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(280 100)(420 100)</ogo:points>
-      <ogo:points>(420 100)(410 100)</ogo:points>
-      <ogo:points>(410 100)(340 100)</ogo:points>
-      <ogo:points>(340 100)(470 100)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(340 70)(340 100)</ogo:points>
-      <ogo:points>(340 100)(340 160)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(230 160)(340 160)</ogo:points>
-      <ogo:points>(340 160)(420 160)</ogo:points>
-    </ogo:wire>
-    <ogo:wire>
-      <ogo:points>(420 100)(420 160)</ogo:points>
+      <ogo:points>(310 220)(540 220)</ogo:points>
+      <ogo:points>(540 220)(620 220)</ogo:points>
     </ogo:wire>
   </ogo:wires>
   <ogo:textboxes/>

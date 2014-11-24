@@ -292,7 +292,7 @@ wire_set_length (Wire *wire, Coords *length)
 	g_signal_emit_by_name (G_OBJECT (wire), "changed");
 }
 
-gint
+gboolean
 wire_is_visited (Wire *wire)
 {
 	WirePriv *priv;
