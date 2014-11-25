@@ -212,6 +212,7 @@ rubberband_update (Sheet *sheet, GdkEvent *event)
 	g_assert (event->type == GDK_MOTION_NOTIFY);
 	cur.x = event->motion.x;
 	cur.y = event->motion.y;
+	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &cur.x, &cur.y);
 
 	width  = fabs(rubberband_info->end.x - rubberband_info->start.x);
 	height = fabs(rubberband_info->end.y - rubberband_info->start.y);
