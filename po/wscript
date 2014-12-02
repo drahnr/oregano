@@ -36,7 +36,7 @@ def spawn_pot(ctx):
 	f.close()
 
 	#create header files from anything else (.ui, .desktop, .xml)
-	#and now fed the result into xgettext to create the potfile
+	#and now feed the result into xgettext to create the potfile
 	os.system ('cd po && intltool-update --headers --verbose')
 
 	f = open ('po/potfiles.in','w+')
@@ -59,7 +59,16 @@ def update_po(ctx):
 		os.system ('msgmerge -U '+item+' po/'+ctx.env.appname+'.pot')
 
 
+def options(opts):
+	pass
+
+
+def configure(conf):
+	pass
+
+
 def build(bld):
+
 	bld(
 		features='intltool_po',
 		appname=bld.env.appname,

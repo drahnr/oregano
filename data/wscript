@@ -4,6 +4,15 @@
 from waflib import Logs as logs
 from waflib import Utils as utils
 
+
+def options(opts):
+	pass
+
+
+def configure(conf):
+	pass
+
+
 def build(bld):
 	if bld.cmd == 'install':
 		#intl does not like the keys in (not an xml and no translation strings)
@@ -19,29 +28,29 @@ def build(bld):
 		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
 
 		try:
-			bld.exec_command(["update-desktop-database", utils.subst_vars("${DATADIR}/applications", bld.env)])
+			bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
 		except:
-			logs.warn("Failed to execute xdg desktop database update.")
+			logs.warn('Failed to execute xdg desktop database update.')
 
 		try:
-			bld.exec_command(["update-mime-database", utils.subst_vars("${DATADIR}/mime", bld.env)])
+			bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
 		except:
-			logs.warn("Failed to execute xdg mime database update.")
+			logs.warn('Failed to execute xdg mime database update.')
 
 	bld(
-		features  = "intltool_in",
-		podir     = "../po",
-		flags     = ["-d", "-q", "-u"],
+		features  = 'intltool_in',
+		podir     = '../po',
+		flags     = ['-x', '-d', '-c', '-u'],
 		source    = 'oregano.desktop.in',
 		target    = 'oregano.desktop',
-		install_path = "${DATADIR}/applications",
+		install_path = '${DATADIR}/applications',
 	)
 
 	bld(
-		features  = "intltool_in",
-		podir     = "../po",
-		flags     = ["-x", "-q", "-u"],
+		features  = 'intltool_in',
+		podir     = '../po',
+		flags     = ['-x', '-d', '-c', '-u'],
 		source    = 'mime/oregano-mimetypes.xml.in',
 		target    = 'mime/oregano.xml',
-		install_path = "${DATADIR}/mime/packages/",
+		install_path = '${DATADIR}/mime/packages/',
 	)
