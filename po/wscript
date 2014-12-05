@@ -1,62 +1,48 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
+top = '..'
+build = '../build'
 
-import os
 from waflib import Logs as logs
 
-import re
-def locate(regex, roots=os.curdir, exclpattern="((.*/)?\.(git|svn|cvs).*)|(.*/.+~)|(.*/intl/.*)"):
-	lst = []
-	for root in roots if not isinstance(roots, str) else [roots]:
-		for dir_, dirnames, filenames in os.walk(root):
-			for filename in filenames:
-				abspath = os.path.join(dir_, filename)
-				if not re.match(exclpattern, abspath):
-					if re.match(regex, abspath):
-						if (abspath[0:2]=="./"):
-							lst.append(abspath[2:])
-						else:
-							lst.append(abspath)
-	return lst
-
-
 def spawn_pot(ctx):
+	"""
+	Create the initial pot file containing strings to translate.
+	"""
 
-	f = open ('po/POTFILES.in', 'w+')
+	# convert all secondary dataformats (ui files, desktop, mimetypes) to headers
 
-	f.write ("data/mime/oregano-mimetypes.xml.in\n")
-	f.write ("data/oregano.desktop.in\n")
-	f.write ("\n")
+	nodes = ctx.path.ant_glob('*.ui')
+	nodes.append(ctx.path.search(['oregano-mimetypes.xml.in', 'oregano.desktop.in']))
+	ctx(rule='echo "[type: gettext/glade]${SRC}" >> '+build+'/po/POTFILES.in',
+		source = nodes,
+		target = 'po/POTFILES.in')
 
-	lst = locate('.+\.ui$', roots='data')
-	for item in lst:
-		f.write("[type: gettext/glade]%s\n" % item)
-	f.write ("\n")
-	f.close()
+	ctx(rule='cd po; intltool-update --headers --verbose',
+		source = 'po/POTFILES.in',
+		target = [ctx.path.search(str(node)+'.h') for item in nodes])
 
-	#create header files from anything else (.ui, .desktop, .xml)
-	#and now feed the result into xgettext to create the potfile
-	os.system ('cd po && intltool-update --headers --verbose')
+	totranslate = ctx.path.ant_glob('**.{c,h}')
+	ctx(rule = 'echo "${SRC}" >> '+build+'/${TGT}',
+		source = totranslate,
+		target = 'po/potfiles.in')
 
-	f = open ('po/potfiles.in','w+')
-	lst = locate('.+\.c$', roots='src')
-	for item in lst:
-		f.write("%s\n" % item)
-	f.write ("\n")
-
-	lst = locate('.+\.h$', roots=['src','data'])
-	for item in lst:
-		f.write("%s\n" % item)
-	f.close ()
-
-	os.system ('xgettext -k_ -kN_ -E -f po/potfiles.in --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o po/'+ctx.env.appname+'.pot')
+	# extract translateable strings from all c/h/generated h files
+	bld(rule = 'xgettext -k_ -kN_ -E -f '+build+'/${SRC} --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o '+build+'/${TGT}',
+		source = 'po/potfiles.in',
+		target = 'po/'+ctx.env.appname+'.pot')
 
 
 def update_po(ctx):
-	lst = locate('po/.+\.po$')
-	for item in lst:
-		os.system ('msgmerge -U '+item+' po/'+ctx.env.appname+'.pot')
+	"""
+	Does not work yet.
+	"""
+	nodes = ctx.path.ant_glob('../build**.po')
+	for node in nodes:
+		ctx(rule = 'msgmerge -U "${SRC}" "${TGT}"',
+			source = node,
+			target = node)
 
 
 def options(opts):
