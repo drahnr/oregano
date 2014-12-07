@@ -1,0 +1,24 @@
+image: fedora/latest
+git: 
+path: github.com/drahnr/oregano
+script:
+- sudo dnf install -y gtk3-devel libxml2-devel gtksourceview3-devel intltool glib2-devel goocanvas2-devel
+- git clone https://github.com/drahnr/oregano
+- cd oregano
+- sudo ./waf configure --prefix="/usr" debug install
+- sudo dnf install -y rpmdevtools
+- rpmdev-setuptree
+- cp oregano.spec.in ~/rpmbuild
+- cd ~/rpmbuild/
+- rpmbuild -ba SPECS/oregano.spec
+- rpmlint RPMS/x86_64/oregano*.rpm
+notify:
+email:
+recipients:
+- brad@drone.io
+notify:
+  email:
+    recipients:
+      - bernhard@beerbach.me
+    on_success: false
+    on_failure: true
