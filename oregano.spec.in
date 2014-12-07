@@ -1,10 +1,10 @@
 Name:			oregano-master
-Summary:		Schematic capture and simulation of electrical circuits.
+Summary:		Schematic capture and simulation of electrical circuits
 Version:		0.83.2
-Release:        3%{?dist}
+Release:		3%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
-Source0: 		https://github.com/drahnr/oregano/archive/master.tar.gz
+Source0:		https://github.com/drahnr/oregano/archive/master.tar.gz
 Url:			https://beerbach.me/project/oregano
 
 BuildRequires: gtk3-devel
@@ -16,23 +16,25 @@ BuildRequires: goocanvas2-devel
 Requires: gtksourceview3
 Requires: gtk3
 Requires: glib2 >= 2.24
-Requires: libxml2
 Requires: goocanvas2
 Provides: oregano = %{version}-%{release}
 
 %description
-Schematic capture and simulation of electrical circuits utilizing gtk3 as frontend and ngpsice/gnucap as backend.
+Schematic capture and simulation of electrical circuits utilizing gtk3
+as frontend and ngpsice/gnucap as backend
 
 %prep
 %setup -q -n oregano-master
 
 %build
-./waf distclean configure --prefix="%{_prefix}" release
+./waf distclean
+./waf configure --prefix="%{_prefix}" release
 
 
 %install
 ./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
-
+rm -f "$RPM_BUILD_ROOT/%{_bindir}/microtests"
+%find_lang oregano
 
 %post
 /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
@@ -56,15 +58,18 @@ fi
 
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf "$RPM_BUILD_ROOT"
 
-%files
+
+
+
+
+%files -f oregano.lang
 %defattr(-, root, root)
 
 %doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.txt
 
 %{_bindir}/*
-%{_datadir}/locale/*/*
 #%{_datadir}/gnome/help/oregano/*/*
 %{_datadir}/applications/oregano.desktop
 %{_datadir}/mime-info/*
@@ -72,3 +77,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/oregano/*/*
 %{_datadir}/mime/packages/oregano-mimetypes.xml
 %{_datadir}/glib-2.0/schemas/apps.oregano.gschema.xml
+
+%changelog
+* Sun Dec 07 2014  Bernhard Schuster  <bernhard@beerbach.me> 0.83.2-3
+- Initial RPM release with changelog
