@@ -430,8 +430,11 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 			} else {
 				gtk_recent_manager_remove_item (manager, uri, &e);
 				if (e) {
-					g_warning ("open_cmd -- %s - %i\n", e->message, e->code);
+					gchar *const msg = g_strdup_printf(_("Could not load recent file \"%s\""), uri);
+					Schematic *old = schematic_view_get_schematic (sv);
+					log_append_error (schematic_get_log_store(old), _("SchematicView"), msg, e);
 					g_clear_error (&e);
+					g_free (msg);
 				}
 			}
 			gtk_recent_manager_add_item (manager, uri);
@@ -476,20 +479,24 @@ oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 	//remove and re-add in order to update the ordering
 	gtk_recent_manager_remove_item (manager, uri, &e);
 	if (e) {
-		g_warning ("recent_open -- %s - %i\n", e->message, e->code);
+		gchar *const msg = g_strdup_printf(_("Could not load recent file \"%s\"\n%s"), uri, e->message);
+		oregano_error_with_title (_("Could not load recent file"), msg);
 		g_clear_error (&e);
+		g_free (msg);
 	}
 	gtk_recent_manager_add_item (manager, uri);
 
 	mime = gtk_recent_info_get_mime_type (item);
 	if (!mime || strcmp (mime, "application/x-oregano")!=0) {
-		g_warning (_("Unrecognized mime type"));
-		if (mime)
-			g_warning (mime);
+		gchar *const msg = g_strdup_printf(_("Can not handle file with mimetype \"%s\""), mime);
+		oregano_error_with_title (_("Could not load recent file"), msg);
+		g_clear_error (&e);
+		g_free (msg);
+
 	} else {
 		new_sm = schematic_read (uri, &e);
 		if (e) {
-			oregano_error_with_title (_("Could not load file"), e->message);
+			oregano_error_with_title (_("Could not load recent file"), e->message);
 			g_clear_error (&e);
 		}
 		if (new_sm) {
