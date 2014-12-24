@@ -5,4 +5,4 @@ compiler:
   - gcc
   - clang
 # Change this to your needs
-script: ./waf configure --prefix=/usr debug -j4
+script: sudo ./waf configure --prefix=/usr debug -j4 install
