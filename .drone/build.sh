@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-sudo ./waf configure --prefix="/usr" debug install
+./waf configure --prefix="/usr" debug install
 rpmdev-setuptree
 cp oregano.spec.in ~/rpmbuild/SPECS/oregano.spec
 cd ~/rpmbuild/
