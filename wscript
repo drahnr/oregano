@@ -229,7 +229,7 @@ def codeformat_fun(ctx):
 		args = ''
 		for item in nodes:
 			args += (str(item.abspath())+' ')
-		os.system (''+ctx.env.CODEFORMAT+' -style="{BasedOnStyle: WebKit, IndentWidth: 4}" -i '+ args)
+		os.system (''+ctx.env.CODEFORMAT+' -i '+ args)
 	else:
 		logs.warn ("Did not find \"clang-format\". Re-configure if you installed it in the meantime.")
 
