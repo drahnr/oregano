@@ -73,6 +73,10 @@ def configure(conf):
 	conf.check_endianness(mandatory=False)
 	conf.check_inline(mandatory=False)
 
+	conf.find_program('clang-format', var='CODEFORMAT', mandatory=False)
+	conf.find_program('gdb', var='GDB', mandatory=False)
+	conf.find_program('valgrind', var='VALGRIND', mandatory=False)
+
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
 	conf.setenv('debug', env=conf.env.derive())
@@ -176,18 +180,6 @@ def build(bld):
 
 from waflib.Build import BuildContext
 
-
-def gdb(ctx):
-	os.system ("G_DEBUG=resident-modules,fatal-warnings gdb --args ./build/debug/"+APPNAME+" --debug-all")
-
-
-def valgrind(ctx):
-	os.system ("G_DEBUG=resident-modules,always-malloc valgrind --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
-
-def massif(ctx):
-	os.system ("G_DEBUG=resident-modules,always-malloc valgrind --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
-
-
 class release(BuildContext):
 	"""compile release binary"""
 	cmd = 'release'
@@ -197,6 +189,50 @@ class debug(BuildContext):
 	"""compile debug binary"""
 	cmd = 'debug'
 	variant = 'debug'
+
+
+
+
+
+def gdb_fun(ctx):
+	if ctx.env.GDB:
+		os.system ("G_DEBUG=resident-modules,fatal-warnings "+ctx.env.GDB+" --args ./build/debug/"+APPNAME+" --debug-all")
+	else:
+		logs.warn ("Did not find \"gdb\". Re-configure if you installed it in the meantime.")
+
+
+def valgrind_fun(ctx):
+	if ctx.env.VALGRIND:
+		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
+	else:
+		logs.warn ("Did not find \"valgrind\". Re-configure if you installed it in the meantime.")
+
+
+
+def massif_fun(ctx):
+	if ctx.env.VALGRIND:
+		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND+" --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
+	else:
+		logs.warn ("Did not find \"massif\". Re-configure if you installed it in the meantime.")
+
+
+
+
+def codeformat_fun(ctx):
+	if ctx.env.CODEFORMAT:
+		nodes = ctx.path.ant_glob(\
+		    ['src/*.[ch]',
+		     'src/gplot/*.[ch]',
+		     'src/engines/*.[ch]',
+		     'src/sheet/*.[ch]',
+		     'src/model/*.[ch]'])
+		args = ''
+		for item in nodes:
+			args += (str(item.abspath())+' ')
+		os.system (''+ctx.env.CODEFORMAT+' -style="{BasedOnStyle: WebKit, IndentWidth: 4}" -i '+ args)
+	else:
+		logs.warn ("Did not find \"clang-format\". Re-configure if you installed it in the meantime.")
+
 
 
 
@@ -211,6 +247,7 @@ def update_po(ctx):
 
 # we need to subclass BuildContext instead of Context
 # in order to access ctx.env.some_variable
+# TODO create a custom subclass of waflib.Context.Context which implements the load_env from BuildContext
 class spawnpot(BuildContext):
 	"""spawn .pot files"""
 	cmd = 'spawnpot'
@@ -220,3 +257,24 @@ class updatepo(BuildContext):
 	"""update the translate .po files"""
 	cmd = 'updatepo'
 	fun = 'update_po'
+
+
+class codeformat(BuildContext):
+	"""Format the source tree"""
+	cmd = 'codeformat'
+	fun = 'codeformat_fun'
+
+class massif(BuildContext):
+	"""Run with \"massif\""""
+	cmd = 'massif'
+	fun = 'massif_fun'
+
+class valgrind(BuildContext):
+	"""Run with \"valgrind\""""
+	cmd = 'valgrind'
+	fun = 'valgrind_fun'
+
+class gdb(BuildContext):
+	"""Run with \"gdb\""""
+	cmd = 'gdb'
+	fun = 'gdb_fun'

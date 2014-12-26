@@ -43,7 +43,7 @@ def build(bld):
 	bld(
 		features  = 'intltool_in',
 		podir     = '../po',
-		flags     = ["-d", "-q", "-u"],
+		flags     = ['-d', '-q', '-u'],
 		source    = 'oregano.desktop.in',
 		target    = 'oregano.desktop',
 		install_path = '${DATADIR}/applications',
@@ -52,7 +52,7 @@ def build(bld):
 	bld(
 		features  = 'intltool_in',
 		podir     = '../po',
-		flags     = ["-d", "-q", "-u"],
+		flags     = ['-d', '-q', '-u'],
 		source    = 'mime/oregano-mimetypes.xml.in',
 		target    = 'mime/oregano.xml',
 		install_path = '${DATADIR}/mime/packages/',
