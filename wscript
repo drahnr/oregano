@@ -196,14 +196,14 @@ class debug(BuildContext):
 
 def gdb_fun(ctx):
 	if ctx.env.GDB:
-		os.system ("G_DEBUG=resident-modules,fatal-warnings "+ctx.env.GDB+" --args ./build/debug/"+APPNAME+" --debug-all")
+		os.system ("G_DEBUG=resident-modules,fatal-warnings "+ctx.env.GDB[0]+" --args ./build/debug/"+APPNAME+" --debug-all")
 	else:
 		logs.warn ("Did not find \"gdb\". Re-configure if you installed it in the meantime.")
 
 
 def valgrind_fun(ctx):
 	if ctx.env.VALGRIND:
-		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
+		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND[0]+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
 	else:
 		logs.warn ("Did not find \"valgrind\". Re-configure if you installed it in the meantime.")
 
@@ -211,7 +211,7 @@ def valgrind_fun(ctx):
 
 def massif_fun(ctx):
 	if ctx.env.VALGRIND:
-		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND+" --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
+		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND[0]+" --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
 	else:
 		logs.warn ("Did not find \"massif\". Re-configure if you installed it in the meantime.")
 
@@ -228,8 +228,8 @@ def codeformat_fun(ctx):
 		     'src/model/*.[ch]'])
 		args = ''
 		for item in nodes:
-			args += (str(item.abspath())+' ')
-		os.system (''+ctx.env.CODEFORMAT+' -i '+ args)
+			args += str(item.abspath())+' '
+		os.system (''+ctx.env.CODEFORMAT[0]+' -i '+ args)
 	else:
 		logs.warn ("Did not find \"clang-format\". Re-configure if you installed it in the meantime.")
 
