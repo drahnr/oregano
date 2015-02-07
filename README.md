@@ -1,5 +1,7 @@
 # oregano - an electrical engineering tool
 
+[![Join the chat at https://gitter.im/drahnr/oregano](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drahnr/oregano?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ### About
 oregano is an application for schematic capture and simulation of electronic circuits. The actual simulation is performed by Berkeley Spice, GNUcap or the new generation ngspice.
 oregano is licensed under the terms of the [GNU GPL-2.0](http://www.gnu.org/licenses/gpl-2.0.html) included in the
