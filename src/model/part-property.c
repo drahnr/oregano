@@ -43,10 +43,9 @@
 // @param cls2 returns second clause
 // @param sz   returns number of characters parsed
 // @return the name of a macro variable
-static char *get_macro_name (const char *str, char **cls1,
-	char **cls2, size_t *sz)
+static char *get_macro_name (const char *str, char **cls1, char **cls2, size_t *sz)
 {
-	char separators[] = { ",.;/|()" };
+	char separators[] = {",.;/|()"};
 	GString *out;
 	const char *q, *qend;
 	char *csep = NULL;
@@ -74,11 +73,11 @@ static char *get_macro_name (const char *str, char **cls1,
 	if (rc)
 		goto error;
 
-	// Look for conditional clauses 
+	// Look for conditional clauses
 	if (csep) {
-		// get the first one 
+		// get the first one
 		GString *aux;
-		q++; // skip the separator and store the clause in tmp 
+		q++; // skip the separator and store the clause in tmp
 		aux = g_string_new ("");
 		for (; (*q) && (*q != *csep); q++)
 			g_string_append_c (aux, *q);
@@ -89,10 +88,10 @@ static char *get_macro_name (const char *str, char **cls1,
 		}
 
 		*cls1 = aux->str;
-		q++; // skip the end-of-clause separator 
+		q++; // skip the end-of-clause separator
 		g_string_free (aux, FALSE);
 
-		// Check for the second one 
+		// Check for the second one
 		if ((*q) && (csep = strchr (separators, *q))) {
 			q++; // skip the separator and store in tmp
 			aux = g_string_new ("");
@@ -106,7 +105,7 @@ static char *get_macro_name (const char *str, char **cls1,
 			}
 
 			*cls2 = aux->str;
-			q++; // skip the end-of-clause separator 
+			q++; // skip the end-of-clause separator
 			g_string_free (aux, FALSE);
 		}
 	}
@@ -121,13 +120,12 @@ static char *get_macro_name (const char *str, char **cls1,
 
 	return ret;
 
- error:
+error:
 	g_string_free (out, TRUE);
 	return NULL;
 }
 
-char *
-part_property_expand_macros (Part *part, char *string)
+char *part_property_expand_macros (Part *part, char *string)
 {
 	static char mcode[] = {"@?~#&"};
 	char *value;
@@ -160,7 +158,7 @@ part_property_expand_macros (Part *part, char *string)
 	// Examples: R^@refdes %1 %2 @value
 	// V^@refdes %+ %- SIN(@offset @ampl @freq 0 0)
 	// ?DC|DC @DC|
-	
+
 	tmp0 = temp = g_strdup (string);
 
 	out = g_string_new ("");
@@ -174,81 +172,74 @@ part_property_expand_macros (Part *part, char *string)
 			value = part_get_property (part, qn);
 			if ((*temp == '@' || *temp == '&') && value) {
 				out = g_string_append (out, value);
-			} 
-			else if (*temp =='&' && !value) {
-				g_warning ( "expand macro error: macro %s undefined", qn);
+			} else if (*temp == '&' && !value) {
+				g_warning ("expand macro error: macro %s undefined", qn);
 				g_free (qn);
 				return NULL;
-			} 
-			else if (*temp == '?' || *temp == '~') {
+			} else if (*temp == '?' || *temp == '~') {
 				if (cls1 == NULL) {
 					g_warning ("error in template: %s", temp);
 					g_free (qn);
 					return NULL;
 				}
-				q0 = (value
-					  ? (*temp == '?' ? cls1 : cls2)
-					  : (*temp == '?' ? cls2 : cls1)
-					);
+				q0 = (value ? (*temp == '?' ? cls1 : cls2) : (*temp == '?' ? cls2 : cls1));
 				if (q0) {
 					t0 = part_property_expand_macros (part, q0);
 					if (!t0) {
-						g_warning ( "error in template: %s", temp);
+						g_warning ("error in template: %s", temp);
 						g_free (qn);
-					} 
-					else {
+					} else {
 						out = g_string_append (out, t0);
 						g_free (t0);
 					}
 				}
-			} 
-			else if (*temp=='#') {
+			} else if (*temp == '#') {
 				if (value) {
 					t0 = part_property_expand_macros (part, value);
 					if (!t0) {
-						g_warning ( "error in template: %s", temp);
+						g_warning ("error in template: %s", temp);
 						g_free (qn);
-					} 
-					else {
+					} else {
 						out = g_string_append (out, t0);
 						g_free (t0);
 					}
-				} 
-				else
+				} else
 					*(temp + sln) = 0;
 			}
 			temp += 1;
 			temp += sln;
-			if (qn) g_free (qn);
-			if (cls1) g_free (cls1);
-			if (cls2) g_free (cls2);
-		} 
-		else {
-			if ( *temp== '\\' ) {
+			if (qn)
+				g_free (qn);
+			if (cls1)
+				g_free (cls1);
+			if (cls2)
+				g_free (cls2);
+		} else {
+			if (*temp == '\\') {
 				temp++;
 				switch (*temp) {
 				case 'n':
 					out = g_string_append_c (out, '\n');
-				break;
+					break;
 				case 't':
 					out = g_string_append_c (out, '\t');
-				break;
+					break;
 				case 'r':
 					out = g_string_append_c (out, '\r');
-				break;
+					break;
 				case 'f':
 					out = g_string_append_c (out, '\f');
 				}
 				temp++;
-			} 
-			else {
+			} else {
 				out = g_string_append_c (out, *temp);
 				temp++;
 			}
 		}
 	}
 
-	if (tmp0) g_free (tmp0);
+	if (tmp0)
+		g_free (tmp0);
 
 	out = g_string_append_c (out, '\0');
 	ret = g_strdup (out->str);

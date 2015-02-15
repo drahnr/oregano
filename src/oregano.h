@@ -38,22 +38,29 @@
 
 G_BEGIN_DECLS
 
-#define OREGANO_TYPE_APPLICATION             (oregano_get_type ())
-#define OREGANO_APPLICATION(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_APPLICATION, Oregano))
-#define OREGANO_APPLICATION_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), OREGANO_TYPE_APPLICATION, OreganoClass))
-#define OREGANO_IS_APPLICATION(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_APPLICATION))
-#define OREGANO_IS_APPLICATION_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), OREGANO_TYPE_APPLICATION))
-#define OREGANO_APPLICATION_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), OREGANO_TYPE_APPLICATION, OreganoClass))
+#define OREGANO_TYPE_APPLICATION (oregano_get_type ())
+#define OREGANO_APPLICATION(obj)                                                                   \
+	(G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_APPLICATION, Oregano))
+#define OREGANO_APPLICATION_CLASS(klass)                                                           \
+	(G_TYPE_CHECK_CLASS_CAST ((klass), OREGANO_TYPE_APPLICATION, OreganoClass))
+#define OREGANO_IS_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_APPLICATION))
+#define OREGANO_IS_APPLICATION_CLASS(klass)                                                        \
+	(G_TYPE_CHECK_CLASS_TYPE ((klass), OREGANO_TYPE_APPLICATION))
+#define OREGANO_APPLICATION_GET_CLASS(obj)                                                         \
+	(G_TYPE_INSTANCE_GET_CLASS ((obj), OREGANO_TYPE_APPLICATION, OreganoClass))
 
-typedef struct {
+typedef struct
+{
 	GtkApplication parent_instance;
 } Oregano;
 
-typedef struct {
+typedef struct
+{
 	GtkApplicationClass parent_class;
 } OreganoClass;
 
-typedef struct {
+typedef struct
+{
 	GList *libraries;
 	GSList *clipboard;
 
@@ -75,7 +82,6 @@ typedef struct {
 
 extern OreganoApp oregano;
 extern int oregano_debugging;
-
 
 Oregano *oregano_new (void);
 

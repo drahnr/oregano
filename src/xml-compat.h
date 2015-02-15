@@ -40,4 +40,3 @@
 #define childs children
 
 #endif /* __XML_COMPAT_H */
-

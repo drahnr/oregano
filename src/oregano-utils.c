@@ -36,15 +36,14 @@
 
 #include "oregano-utils.h"
 
-gdouble
-oregano_strtod (const gchar *str, const gchar unit)
+gdouble oregano_strtod (const gchar *str, const gchar unit)
 {
 	gdouble ret;
 	gchar *endptr, *c;
 
 	if (!str)
 		return 0.0;
-	
+
 	ret = g_ascii_strtod (str, &endptr);
 	for (c = endptr; *c; c++) {
 		switch (*c) {

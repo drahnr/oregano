@@ -37,20 +37,21 @@
 
 #include <glib.h>
 
-struct _PartPriv {
-	guint16  num_pins : 16;
-//	guint16	 rotation : 16;
-	IDFlip	 flip	  : 8;
+struct _PartPriv
+{
+	guint16 num_pins : 16;
+	//	guint16	 rotation : 16;
+	IDFlip flip : 8;
 
-	gchar   *name;
-	GSList  *properties;
-	GSList  *labels;
+	gchar *name;
+	GSList *properties;
+	GSList *labels;
 
-	gchar   *symbol_name;
+	gchar *symbol_name;
 	Library *library;
 
-	Pin		*pins; // Array of pins, without any transformations applied.
-	Pin		*pins_orig;
+	Pin *pins; // Array of pins, without any transformations applied.
+	Pin *pins_orig;
 };
 
 #endif

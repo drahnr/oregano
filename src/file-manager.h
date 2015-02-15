@@ -38,9 +38,13 @@
 #include "load-schematic.h"
 #include "save-schematic.h"
 
-#define FILE_TYPE(a,b,c,d) {a, b, c, d}
+#define FILE_TYPE(a, b, c, d)                                                                      \
+	{                                                                                              \
+		a, b, c, d                                                                                 \
+	}
 
-typedef struct _file_manager_ext_ {
+typedef struct _file_manager_ext_
+{
 	gchar *extension;
 	gchar *description;
 	int (*load_func)(Schematic *schematic, const gchar *filename, GError **error);

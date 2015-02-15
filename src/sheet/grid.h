@@ -38,33 +38,34 @@
 #include <goocanvas.h>
 #include "coords.h"
 
-#define TYPE_GRID		   (grid_get_type())
-#define GRID(obj)		   (G_TYPE_CHECK_INSTANCE_CAST (obj, grid_get_type (), Grid))
-#define GRID_CLASS(klass)  (G_TYPE_CHECK_CLASS_CAST (klass, grid_get_type (), GridClass))
-#define IS_GRID(obj)	   (G_TYPE_CHECK_INSTANCE_TYPE (obj, grid_get_type ()))
+#define TYPE_GRID (grid_get_type ())
+#define GRID(obj) (G_TYPE_CHECK_INSTANCE_CAST (obj, grid_get_type (), Grid))
+#define GRID_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST (klass, grid_get_type (), GridClass))
+#define IS_GRID(obj) (G_TYPE_CHECK_INSTANCE_TYPE (obj, grid_get_type ()))
 
 typedef struct _Grid Grid;
 typedef struct _GridClass GridClass;
 typedef struct _GridPriv GridPriv;
 
-
-struct _Grid {
+struct _Grid
+{
 	GooCanvasGroup canvas_group;
-	gdouble 	   width;
-	gdouble        height;
-	gdouble        x;
-	gdouble		   y;
-	GridPriv *	   priv;
+	gdouble width;
+	gdouble height;
+	gdouble x;
+	gdouble y;
+	GridPriv *priv;
 };
 
-struct _GridClass {
-	GooCanvasGroupClass	parent_class;
+struct _GridClass
+{
+	GooCanvasGroupClass parent_class;
 };
 
 Grid *grid_new (GooCanvasItem *root, gdouble width, gdouble height);
 GType grid_get_type (void);
-gboolean  snap_to_grid (Grid *grid, double *x, double *y);
-void  grid_show (Grid *grid, gboolean snap);
-void  grid_snap (Grid *grid, gboolean snap);
+gboolean snap_to_grid (Grid *grid, double *x, double *y);
+void grid_show (Grid *grid, gboolean snap);
+void grid_snap (Grid *grid, gboolean snap);
 
 #endif

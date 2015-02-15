@@ -3,7 +3,8 @@
  *
  *
  * Store nodes, wires to hashtables.
- * Generate new wires, merge new wire create requests where possible with already existing ones
+ * Generate new wires, merge new wire create requests where possible with
+ *already existing ones
  *
  *
  * Authors:
@@ -41,7 +42,6 @@
 #include <gtk/gtk.h>
 #include <math.h>
 
-
 #define NODE_EPSILON 1e-10
 #define HASH_EPSILON 1e-3
 #include "node-store.h"
@@ -53,41 +53,36 @@
 
 #include "debug.h"
 
-
 /* NODE_EPSILON is used to check for intersection. */
 /* HASH_EPSILON is used in the hash equality check function. */
 
 /* Share an endpoint? */
-#define SEP(p1x,p1y,p2x,p2y) (IS_EQ(p1x, p2x) && IS_EQ(p1y, p2y))
+#define SEP(p1x, p1y, p2x, p2y) (IS_EQ (p1x, p2x) && IS_EQ (p1y, p2y))
 
 /* Equals? */
-#define IS_EQ(a,b) (fabs ((a) - (b)) < NODE_EPSILON)
+#define IS_EQ(a, b) (fabs ((a) - (b)) < NODE_EPSILON)
 
-#define ON_THE_WIRE(p1,start,end) (fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<NODE_EPSILON )
+#define ON_THE_WIRE(p1, start, end)                                                                \
+	(fabs ((end.y - start.y) * (p1.x - start.x) - (end.x - start.x) * (p1.y - start.y)) <          \
+	 NODE_EPSILON)
 
-static void		node_store_class_init (NodeStoreClass *klass);
-static void		node_store_init (NodeStore *store);
-static void		node_store_finalize (GObject *self);
-static void		node_store_dispose (GObject *self);
+static void node_store_class_init (NodeStoreClass *klass);
+static void node_store_init (NodeStore *store);
+static void node_store_finalize (GObject *self);
+static void node_store_dispose (GObject *self);
 
-enum {
-	NODE_DOT_ADDED,
-	NODE_DOT_REMOVED,
-	LAST_SIGNAL
-};
+enum { NODE_DOT_ADDED, NODE_DOT_REMOVED, LAST_SIGNAL };
 
 G_DEFINE_TYPE (NodeStore, node_store, G_TYPE_OBJECT);
 
-static guint node_store_signals [LAST_SIGNAL] = { 0 };
+static guint node_store_signals[LAST_SIGNAL] = {0};
 
-static void
-node_store_dispose (GObject *self)
+static void node_store_dispose (GObject *self)
 {
 	G_OBJECT_CLASS (node_store_parent_class)->dispose (self);
 }
 
-static void
-node_store_finalize (GObject *object)
+static void node_store_finalize (GObject *object)
 {
 	NodeStore *self = NODE_STORE (object);
 
@@ -112,8 +107,7 @@ node_store_finalize (GObject *object)
 	G_OBJECT_CLASS (node_store_parent_class)->finalize (object);
 }
 
-static void
-node_store_class_init (NodeStoreClass *klass)
+static void node_store_class_init (NodeStoreClass *klass)
 {
 	GObjectClass *gobject_class;
 
@@ -123,31 +117,18 @@ node_store_class_init (NodeStoreClass *klass)
 	gobject_class->finalize = node_store_finalize;
 	gobject_class->dispose = node_store_dispose;
 
-	node_store_signals [NODE_DOT_ADDED] =
-		g_signal_new ("node_dot_added",
-		  G_TYPE_FROM_CLASS (gobject_class),
-		  G_SIGNAL_RUN_FIRST,
-		  G_STRUCT_OFFSET (NodeStoreClass, node_dot_added),
-		  NULL,
-		  NULL,
-		  g_cclosure_marshal_VOID__POINTER,
-		  G_TYPE_NONE,
-		  1, G_TYPE_POINTER);
+	node_store_signals[NODE_DOT_ADDED] =
+	    g_signal_new ("node_dot_added", G_TYPE_FROM_CLASS (gobject_class), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (NodeStoreClass, node_dot_added), NULL, NULL,
+	                  g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	node_store_signals [NODE_DOT_REMOVED] =
-		g_signal_new ("node_dot_removed",
-		  TYPE_NODE_STORE,
-		  G_SIGNAL_RUN_FIRST,
-		  G_STRUCT_OFFSET (NodeStoreClass, node_dot_removed),
-		  NULL,
-		  NULL,
-		  g_cclosure_marshal_VOID__POINTER,
-		  G_TYPE_NONE,
-		  1, G_TYPE_POINTER);
+	node_store_signals[NODE_DOT_REMOVED] =
+	    g_signal_new ("node_dot_removed", TYPE_NODE_STORE, G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (NodeStoreClass, node_dot_removed), NULL, NULL,
+	                  g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 }
 
-static void
-node_store_init (NodeStore *self)
+static void node_store_init (NodeStore *self)
 {
 	self->nodes = g_hash_table_new (node_hash, node_equal);
 	self->wires = NULL;
@@ -160,14 +141,9 @@ node_store_init (NodeStore *self)
 //         END BOILERPLATE
 ////////////////////////////////////////////////////////////////////////////////
 
-NodeStore *
-node_store_new (void)
-{
-	return NODE_STORE(g_object_new (TYPE_NODE_STORE, NULL));
-}
+NodeStore *node_store_new (void) { return NODE_STORE (g_object_new (TYPE_NODE_STORE, NULL)); }
 
-static void
-node_dot_added_callback (Node *node, Coords *pos, NodeStore *store)
+static void node_dot_added_callback (Node *node, Coords *pos, NodeStore *store)
 {
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
@@ -175,8 +151,7 @@ node_dot_added_callback (Node *node, Coords *pos, NodeStore *store)
 	g_signal_emit_by_name (G_OBJECT (store), "node_dot_added", pos);
 }
 
-static void
-node_dot_removed_callback (Node *node, Coords *pos, NodeStore *store)
+static void node_dot_removed_callback (Node *node, Coords *pos, NodeStore *store)
 {
 	g_return_if_fail (store);
 	g_return_if_fail (IS_NODE_STORE (store));
@@ -188,8 +163,7 @@ node_dot_removed_callback (Node *node, Coords *pos, NodeStore *store)
  * lookup if a node at @pos exists, if so return it, otherwise
  * create one, add it to the nodestore and return it
  */
-Node *
-node_store_get_or_create_node (NodeStore *self, Coords pos)
+Node *node_store_get_or_create_node (NodeStore *self, Coords pos)
 {
 	Node *node;
 
@@ -203,10 +177,10 @@ node_store_get_or_create_node (NodeStore *self, Coords pos)
 		node = node_new (pos);
 
 		g_signal_connect_object (G_OBJECT (node), "node_dot_added",
-			G_CALLBACK (node_dot_added_callback), G_OBJECT (self), 0);
+		                         G_CALLBACK (node_dot_added_callback), G_OBJECT (self), 0);
 
 		g_signal_connect_object (G_OBJECT (node), "node_dot_removed",
-			G_CALLBACK (node_dot_removed_callback), G_OBJECT (self), 0);
+		                         G_CALLBACK (node_dot_removed_callback), G_OBJECT (self), 0);
 
 		g_hash_table_insert (self->nodes, &node->key, node);
 	}
@@ -217,8 +191,7 @@ node_store_get_or_create_node (NodeStore *self, Coords pos)
 /**
  * register a part to the nodestore
  */
-gboolean
-node_store_add_part (NodeStore *self, Part *part)
+gboolean node_store_add_part (NodeStore *self, Part *part)
 {
 	NG_DEBUG ("-0-");
 	g_return_val_if_fail (self, FALSE);
@@ -239,7 +212,7 @@ node_store_add_part (NodeStore *self, Part *part)
 	item_data_get_pos (ITEM_DATA (part), &part_pos);
 
 	for (i = 0; i < num_pins; i++) {
-		//Use the position of the pin as hash key.
+		// Use the position of the pin as hash key.
 		pin_pos.x = part_pos.x + pins[i].offset.x;
 		pin_pos.y = part_pos.y + pins[i].offset.y;
 
@@ -248,9 +221,8 @@ node_store_add_part (NodeStore *self, Part *part)
 
 		// Add all the wires that intersect this pin to the node store.
 		copy = get_wires_at_pos (self, pin_pos);
-		for (iter=copy; iter; iter=iter->next) {
+		for (iter = copy; iter; iter = iter->next) {
 			Wire *wire = copy->data;
-
 
 			node_add_wire (node, wire);
 			wire_add_node (wire, node);
@@ -272,8 +244,7 @@ node_store_add_part (NodeStore *self, Part *part)
  * remove/unregister a part from the nodestore
  * this does _not_ free the part!
  */
-gboolean
-node_store_remove_part (NodeStore *self, Part *part)
+gboolean node_store_remove_part (NodeStore *self, Part *part)
 {
 	Node *node;
 	Coords pin_pos;
@@ -318,8 +289,7 @@ node_store_remove_part (NodeStore *self, Part *part)
 	return TRUE;
 }
 
-gboolean
-node_store_add_textbox (NodeStore *self, Textbox *text)
+gboolean node_store_add_textbox (NodeStore *self, Textbox *text)
 {
 	g_object_set (G_OBJECT (text), "store", self, NULL);
 	self->textbox = g_list_prepend (self->textbox, text);
@@ -327,23 +297,19 @@ node_store_add_textbox (NodeStore *self, Textbox *text)
 	return TRUE;
 }
 
-gboolean
-node_store_remove_textbox (NodeStore *self, Textbox *text)
+gboolean node_store_remove_textbox (NodeStore *self, Textbox *text)
 {
 	self->textbox = g_list_remove (self->textbox, text);
 
 	return TRUE;
 }
 
-
-gboolean
-delayed_wire_delete (gpointer user_data)
+gboolean delayed_wire_delete (gpointer user_data)
 {
 	wire_delete (WIRE (user_data));
 	g_object_unref (G_OBJECT (WIRE (user_data)));
 	return G_SOURCE_REMOVE;
 }
-
 
 /**
  * add/register the wire to the nodestore
@@ -352,8 +318,7 @@ delayed_wire_delete (gpointer user_data)
  * @param wire
  * @returns TRUE if the wire was added or merged, else FALSE
  */
-gboolean
-node_store_add_wire (NodeStore *store, Wire *wire)
+gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 {
 	GList *list;
 	Node *node;
@@ -364,11 +329,9 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 	g_return_val_if_fail (wire, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
-
-
 	// Check for intersection with other wires.
-	for (list = store->wires; list;	list = list->next) {
-		g_assert (list->data!=NULL);
+	for (list = store->wires; list; list = list->next) {
+		g_assert (list->data != NULL);
 		g_assert (IS_WIRE (list->data));
 
 		Coords where = {-77.77, -77.77};
@@ -391,12 +354,10 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				NG_DEBUG ("Nuke that node [ %p ] at coords inbetween", node);
 				if (node) {
 					Coords c[4];
-					wire_get_start_and_end_pos (other, c+0, c+1);
-					wire_get_start_and_end_pos (wire, c+2, c+3);
-					if (!coords_equal (&where, c+0) &&
-					    !coords_equal (&where, c+1) &&
-					    !coords_equal (&where, c+2) &&
-					    !coords_equal (&where, c+3)) {
+					wire_get_start_and_end_pos (other, c + 0, c + 1);
+					wire_get_start_and_end_pos (wire, c + 2, c + 3);
+					if (!coords_equal (&where, c + 0) && !coords_equal (&where, c + 1) &&
+					    !coords_equal (&where, c + 2) && !coords_equal (&where, c + 3)) {
 
 						wire_remove_node (wire, node);
 						wire_remove_node (other, node);
@@ -410,25 +371,32 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	// Check for overlapping with other wires.
 	do {
-		for (list = store->wires; list;	list = list->next) {
-			g_assert (list->data!=NULL);
+		for (list = store->wires; list; list = list->next) {
+			g_assert (list->data != NULL);
 			g_assert (IS_WIRE (list->data));
 			Wire *other = list->data;
 			Coords so, eo;
 			const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
-			NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other, overlap==TRUE ? "YES" : "NO" );
+			NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other,
+			          overlap == TRUE ? "YES" : "NO");
 			if (overlap) {
 				Node *sn = node_store_get_node (store, eo);
 				Node *en = node_store_get_node (store, so);
-				#if 1
+#if 1
 				wire = vulcanize_wire (store, wire, other, &so, &eo);
-				node_store_remove_wire (store, g_object_ref (other));//equiv wire_unregister XXX FIXME this modifies the list we iterate over!
-				// delay this until idle, so all handlers like adding view representation are completed so existing wire-items can be deleted properly
+				node_store_remove_wire (store, g_object_ref (other)); // equiv
+				                                                      // wire_unregister
+				                                                      // XXX FIXME this
+				                                                      // modifies the list
+				                                                      // we iterate over!
+				// delay this until idle, so all handlers like adding view
+				// representation are completed so existing wire-items can be deleted
+				// properly
 				// this is not fancy nor nice but seems to work fairly nicly
 				g_idle_add (delayed_wire_delete, other);
 				break;
 				NG_DEBUG ("overlapping of %p with %p ", wire, other);
-				#else
+#else
 				if (!sn && !en) {
 					wire = vulcanize_wire (store, wire, other, &so, &eo);
 				} else if (!sn) {
@@ -438,7 +406,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 				} else {
 					NG_DEBUG ("do_something(TM) : %p else ", other);
 				}
-				#endif
+#endif
 			} else {
 				NG_DEBUG ("not of %p with %p ", wire, other);
 			}
@@ -447,7 +415,7 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 
 	// Check for intersection with parts (pins).
 	for (list = store->parts; list; list = list->next) {
-		g_assert (list->data!=NULL);
+		g_assert (list->data != NULL);
 		g_assert (IS_PART (list->data));
 
 		Coords part_pos;
@@ -479,29 +447,25 @@ node_store_add_wire (NodeStore *store, Wire *wire)
 					wire_add_node (wire, node);
 					NG_DEBUG ("Add wire %p to pin (node) %p.\n", wire, node);
 				} else {
-					g_warning ("Bug: Found no node at pin at (%g %g).\n",
-					           lookup_pos.x, lookup_pos.y);
+					g_warning ("Bug: Found no node at pin at (%g %g).\n", lookup_pos.x,
+					           lookup_pos.y);
 				}
 			}
 		}
 	}
 
-	g_object_set (G_OBJECT (wire),
-	              "store", store,
-	              NULL);
+	g_object_set (G_OBJECT (wire), "store", store, NULL);
 	store->wires = g_list_prepend (store->wires, wire);
 	store->items = g_list_prepend (store->items, wire);
 
 	return TRUE;
 }
 
-
 /**
  * removes/unregisters a wire from the nodestore
  * this does _not_ free the wire itself!
  */
-gboolean
-node_store_remove_wire (NodeStore *store, Wire *wire)
+gboolean node_store_remove_wire (NodeStore *store, Wire *wire)
 {
 	GSList *copy, *iter;
 	Coords lookup_key;
@@ -541,12 +505,6 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
 	return TRUE;
 }
 
-
-
-
-
-
-
 /**
  * check if there is at least one wire at the specified position
  *
@@ -554,24 +512,21 @@ node_store_remove_wire (NodeStore *store, Wire *wire)
  * @param pos the position
  * @returns TRUE or FALSE
  */
-gboolean
-node_store_is_wire_at_pos (NodeStore *store, Coords pos)
+gboolean node_store_is_wire_at_pos (NodeStore *store, Coords pos)
 {
 	GList *iter;
 
 	g_return_val_if_fail (store, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (store), FALSE);
 
-	for (iter=store->wires; iter; iter=iter->next) {
+	for (iter = store->wires; iter; iter = iter->next) {
 		Wire *wire = iter->data;
-
 
 		if (is_point_on_wire (wire, &pos))
 			return TRUE;
 	}
 	return FALSE;
 }
-
 
 /**
  * lookup node at specified position
@@ -580,8 +535,7 @@ node_store_is_wire_at_pos (NodeStore *store, Coords pos)
  * @param pos where to check in that store
  * @returns the node pointer if there is a node, else NULL
  */
-Node *
-node_store_get_node (NodeStore *store, Coords pos)
+Node *node_store_get_node (NodeStore *store, Coords pos)
 {
 	Node *node;
 
@@ -590,7 +544,7 @@ node_store_get_node (NodeStore *store, Coords pos)
 
 	node = g_hash_table_lookup (store->nodes, &pos);
 
-	if (!node){
+	if (!node) {
 		NG_DEBUG ("No node at (%g, %g)", pos.x, pos.y);
 	} else {
 		NG_DEBUG ("Found node at (%g, %g)", pos.x, pos.y);
@@ -598,13 +552,10 @@ node_store_get_node (NodeStore *store, Coords pos)
 	return node;
 }
 
-
-
 /**
  * Call GHFunc for each node in the nodestore
  */
-void
-node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data)
+void node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data)
 {
 	g_return_if_fail (store != NULL);
 	g_return_if_fail (IS_NODE_STORE (store));
@@ -612,14 +563,10 @@ node_store_node_foreach (NodeStore *store, GHFunc *func, gpointer user_data)
 	g_hash_table_foreach (store->nodes, (gpointer)func, user_data);
 }
 
-
-
-
 /**
  * [transfer-none]
  */
-GList *
-node_store_get_parts (NodeStore *store)
+GList *node_store_get_parts (NodeStore *store)
 {
 	g_return_val_if_fail (store != NULL, NULL);
 	g_return_val_if_fail (IS_NODE_STORE (store), NULL);
@@ -630,8 +577,7 @@ node_store_get_parts (NodeStore *store)
 /**
  * [transfer-none]
  */
-GList *
-node_store_get_wires (NodeStore *store)
+GList *node_store_get_wires (NodeStore *store)
 {
 	g_return_val_if_fail (store != NULL, NULL);
 	g_return_val_if_fail (IS_NODE_STORE (store), NULL);
@@ -642,8 +588,7 @@ node_store_get_wires (NodeStore *store)
 /**
  * [transfer-none]
  */
-GList *
-node_store_get_items (NodeStore *store)
+GList *node_store_get_items (NodeStore *store)
 {
 	g_return_val_if_fail (store != NULL, NULL);
 	g_return_val_if_fail (IS_NODE_STORE (store), NULL);
@@ -651,13 +596,10 @@ node_store_get_items (NodeStore *store)
 	return store->items;
 }
 
-
-
 /**
  * the caller has to free the list himself, but not the actual data items!
  */
-GList *
-node_store_get_node_positions (NodeStore *store)
+GList *node_store_get_node_positions (NodeStore *store)
 {
 	GList *result;
 
@@ -665,7 +607,7 @@ node_store_get_node_positions (NodeStore *store)
 	g_return_val_if_fail (IS_NODE_STORE (store), NULL);
 
 	result = NULL;
-	g_hash_table_foreach (store->nodes, (GHFunc) add_node_position, &result);
+	g_hash_table_foreach (store->nodes, (GHFunc)add_node_position, &result);
 
 	return result;
 }
@@ -673,8 +615,7 @@ node_store_get_node_positions (NodeStore *store)
 /**
  * the caller has to free the list himself, but not the actual data items!
  */
-GList *
-node_store_get_nodes (NodeStore *store)
+GList *node_store_get_nodes (NodeStore *store)
 {
 	GList *result;
 
@@ -682,13 +623,12 @@ node_store_get_nodes (NodeStore *store)
 	g_return_val_if_fail (IS_NODE_STORE (store), NULL);
 
 	result = NULL;
-	g_hash_table_foreach (store->nodes, (GHFunc) add_node, &result);
+	g_hash_table_foreach (store->nodes, (GHFunc)add_node, &result);
 
 	return result;
 }
 
-void
-node_store_get_bounds (NodeStore *store, NodeRect *rect)
+void node_store_get_bounds (NodeStore *store, NodeRect *rect)
 {
 	GList *list;
 	Coords p1, p2;
@@ -712,8 +652,7 @@ node_store_get_bounds (NodeStore *store, NodeRect *rect)
 	}
 }
 
-gint
-node_store_count_items (NodeStore *store, NodeRect *rect)
+gint node_store_count_items (NodeStore *store, NodeRect *rect)
 {
 	GList *list;
 	Coords p1, p2;
@@ -729,8 +668,7 @@ node_store_count_items (NodeStore *store, NodeRect *rect)
 	for (list = store->items, n = 0; list; list = list->next) {
 		data = ITEM_DATA (list->data);
 		item_data_get_absolute_bbox (data, &p1, &p2);
-		if (p1.x <= rect->x1 && p1.y <= rect->y1 &&
-			p2.x >= rect->x0 && p2.y >= rect->y0) {
+		if (p1.x <= rect->x1 && p1.y <= rect->y1 && p2.x >= rect->x0 && p2.y >= rect->y0) {
 			n++;
 		}
 	}
@@ -738,8 +676,7 @@ node_store_count_items (NodeStore *store, NodeRect *rect)
 	return n;
 }
 
-static void
-draw_dot (Coords *pos, Node *value, cairo_t *cr)
+static void draw_dot (Coords *pos, Node *value, cairo_t *cr)
 {
 	if (node_needs_dot (value)) {
 		cairo_save (cr);
@@ -752,8 +689,7 @@ draw_dot (Coords *pos, Node *value, cairo_t *cr)
 	}
 }
 
-void
-node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ctx)
+void node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	GList *list;
 	ItemData *data;
@@ -770,9 +706,7 @@ node_store_print_items (NodeStore *store, cairo_t *cr, SchematicPrintContext *ct
 	g_hash_table_foreach (store->nodes, (GHFunc)draw_dot, cr);
 }
 
-
-gboolean
-node_store_is_pin_at_pos (NodeStore *store, Coords pos)
+gboolean node_store_is_pin_at_pos (NodeStore *store, Coords pos)
 {
 	int num_pins;
 	Coords part_pos;
@@ -794,7 +728,7 @@ node_store_is_pin_at_pos (NodeStore *store, Coords pos)
 			x = part_pos.x + pins[i].offset.x;
 			y = part_pos.y + pins[i].offset.y;
 
-			if (fabs(x-pos.x)<NODE_EPSILON && fabs(y-pos.y)<NODE_EPSILON)
+			if (fabs (x - pos.x) < NODE_EPSILON && fabs (y - pos.y) < NODE_EPSILON)
 				return TRUE;
 		}
 	}

@@ -38,42 +38,41 @@
 #include "schematic.h"
 #include "sheet.h"
 
-typedef enum {
-	DRAG_URI_INFO,
-	DRAG_PART_INFO
-} DragTypes;
+typedef enum { DRAG_URI_INFO, DRAG_PART_INFO } DragTypes;
 
-#define TYPE_SCHEMATIC_VIEW			   (schematic_view_get_type ())
-#define SCHEMATIC_VIEW(obj)			   (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC_VIEW, SchematicView))
-#define SCHEMATIC_VIEW_CLASS(klass)	   (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC_VIEW, SchematicViewClass))
-#define IS_SCHEMATIC_VIEW(obj)		   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SCHEMATIC_VIEW))
-#define IS_SCHEMATIC_VIEW_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC_VIEW, SchematicViewClass))
+#define TYPE_SCHEMATIC_VIEW (schematic_view_get_type ())
+#define SCHEMATIC_VIEW(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC_VIEW, SchematicView))
+#define SCHEMATIC_VIEW_CLASS(klass)                                                                \
+	(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC_VIEW, SchematicViewClass))
+#define IS_SCHEMATIC_VIEW(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SCHEMATIC_VIEW))
+#define IS_SCHEMATIC_VIEW_CLASS(klass)                                                             \
+	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC_VIEW, SchematicViewClass))
 
-typedef struct _SchematicView	   SchematicView;
+typedef struct _SchematicView SchematicView;
 typedef struct _SchematicViewClass SchematicViewClass;
-typedef struct _SchematicViewPriv  SchematicViewPriv;
+typedef struct _SchematicViewPriv SchematicViewPriv;
 
-GType		   	schematic_view_get_type (void);
-SchematicView  *schematic_view_new (Schematic *schematic);
-Sheet		   *schematic_view_get_sheet (SchematicView *sv);
-Schematic	   *schematic_view_get_schematic (SchematicView *sv);
-Schematic	   *schematic_view_get_schematic_from_sheet (Sheet *sheet);
-SchematicView  *schematic_view_get_schematicview_from_sheet (Sheet *sheet);
-void			run_context_menu (SchematicView *sv, GdkEventButton *event);
+GType schematic_view_get_type (void);
+SchematicView *schematic_view_new (Schematic *schematic);
+Sheet *schematic_view_get_sheet (SchematicView *sv);
+Schematic *schematic_view_get_schematic (SchematicView *sv);
+Schematic *schematic_view_get_schematic_from_sheet (Sheet *sheet);
+SchematicView *schematic_view_get_schematicview_from_sheet (Sheet *sheet);
+void run_context_menu (SchematicView *sv, GdkEventButton *event);
 
 // Signal emission wrappers.
-void		   	schematic_view_reset_tool (SchematicView *sv);
+void schematic_view_reset_tool (SchematicView *sv);
 
 // Misc.
-void 			schematic_view_set_browser (SchematicView *sv, gpointer p);
-gpointer	   	schematic_view_get_browser (SchematicView *sv);
-void		   	schematic_view_set_parent (SchematicView *sv, GtkDialog *dialog);
+void schematic_view_set_browser (SchematicView *sv, gpointer p);
+gpointer schematic_view_get_browser (SchematicView *sv);
+void schematic_view_set_parent (SchematicView *sv, GtkDialog *dialog);
 
 // Logging.
-void		   	schematic_view_log_show (SchematicView *sv, gboolean explicit);
-gboolean	   	schematic_view_get_log_window_exists (SchematicView *sv);
+void schematic_view_log_show (SchematicView *sv, gboolean explicit);
+gboolean schematic_view_get_log_window_exists (SchematicView *sv);
 
 // Windows services.
-GtkWidget	*	schematic_view_get_toplevel (SchematicView *sv);
+GtkWidget *schematic_view_get_toplevel (SchematicView *sv);
 
 #endif /* __SCHEMATIC_VIEW_H */

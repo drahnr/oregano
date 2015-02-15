@@ -34,20 +34,21 @@
 
 #include <gtk/gtk.h>
 
-#define	OREGANO_CURSOR_LEFT_PTR 0
-#define	OREGANO_CURSOR_CROSS 1
-#define	OREGANO_CURSOR_PENCIL 2
-#define	OREGANO_CURSOR_CARET 3
+#define OREGANO_CURSOR_LEFT_PTR 0
+#define OREGANO_CURSOR_CROSS 1
+#define OREGANO_CURSOR_PENCIL 2
+#define OREGANO_CURSOR_CARET 3
 
-typedef struct {
+typedef struct
+{
 	GdkCursor *cursor;
 	GdkCursorType type;
 } OreganoCursor;
 
 extern OreganoCursor oregano_cursors[];
 
-void cursors_init	   (void);
-void cursors_shutdown  (void);
+void cursors_init (void);
+void cursors_shutdown (void);
 void cursor_set_widget (GtkWidget *w, int name);
 
 #endif

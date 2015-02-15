@@ -42,44 +42,33 @@
 #include "dialogs.h"
 #include "engine.h"
 
-#define OREGLIB_EXT	"oreglib"
+#define OREGLIB_EXT "oreglib"
 
-static gboolean is_oregano_library_name (gchar* name);
+static gboolean is_oregano_library_name (gchar *name);
 static void load_library_error (gchar *name);
 
-void
-oregano_config_load (void)
+void oregano_config_load (void)
 {
 	oregano.settings = g_settings_new ("apps.oregano");
-	oregano.engine = g_settings_get_int (oregano.settings, 
-			"engine");
-	oregano.compress_files = g_settings_get_boolean (oregano.settings, 
-			"compress-files");
-	oregano.show_log = g_settings_get_boolean (oregano.settings, 
-			"show-log");
-	oregano.show_splash = g_settings_get_boolean (oregano.settings, 
-			"show-splash");
+	oregano.engine = g_settings_get_int (oregano.settings, "engine");
+	oregano.compress_files = g_settings_get_boolean (oregano.settings, "compress-files");
+	oregano.show_log = g_settings_get_boolean (oregano.settings, "show-log");
+	oregano.show_splash = g_settings_get_boolean (oregano.settings, "show-splash");
 
 	// Let's deal with first use -I don't like this-
 	if ((oregano.engine < 0) || (oregano.engine >= OREGANO_ENGINE_COUNT))
 		oregano.engine = 0;
 }
 
-void
-oregano_config_save (void)
+void oregano_config_save (void)
 {
-	g_settings_set_int (oregano.settings, "engine", 
-			oregano.engine);
-	g_settings_set_boolean (oregano.settings, "compress-files", 
-			oregano.compress_files);
-	g_settings_set_boolean (oregano.settings, "show-log", 
-			oregano.show_log);
-	g_settings_set_boolean (oregano.settings, "show-splash", 
-			oregano.show_splash);
+	g_settings_set_int (oregano.settings, "engine", oregano.engine);
+	g_settings_set_boolean (oregano.settings, "compress-files", oregano.compress_files);
+	g_settings_set_boolean (oregano.settings, "show-log", oregano.show_log);
+	g_settings_set_boolean (oregano.settings, "show-splash", oregano.show_splash);
 }
 
-void
-oregano_lookup_libraries (Splash *sp)
+void oregano_lookup_libraries (Splash *sp)
 {
 	gchar *fname;
 	DIR *libdir;
@@ -89,7 +78,8 @@ oregano_lookup_libraries (Splash *sp)
 	oregano.libraries = NULL;
 	libdir = opendir (OREGANO_LIBRARYDIR);
 
-	if (libdir == NULL) return;
+	if (libdir == NULL)
+		return;
 
 	if (oregano.libraries != NULL) {
 		closedir (libdir);
@@ -104,15 +94,15 @@ oregano_lookup_libraries (Splash *sp)
 	}
 	g_free (fname);
 
-	while ((libentry=readdir (libdir)) != NULL) {
+	while ((libentry = readdir (libdir)) != NULL) {
 		if (is_oregano_library_name (libentry->d_name) &&
-			strcmp (libentry->d_name,"default.oreglib")) {
+		    strcmp (libentry->d_name, "default.oreglib")) {
 			fname = g_build_filename (OREGANO_LIBRARYDIR, libentry->d_name, NULL);
 
 			// do the following only if splash is enabled
 			if (sp) {
 				char txt[50];
-				sprintf (txt, _("Loading %s ..."), libentry->d_name);
+				sprintf (txt, _ ("Loading %s ..."), libentry->d_name);
 
 				oregano_splash_step (sp, txt);
 			}
@@ -120,7 +110,7 @@ oregano_lookup_libraries (Splash *sp)
 			library = library_parse_xml_file (fname);
 
 			if (library)
-				oregano.libraries = g_list_append ( oregano.libraries, library);
+				oregano.libraries = g_list_append (oregano.libraries, library);
 			else
 				load_library_error (fname);
 
@@ -130,15 +120,14 @@ oregano_lookup_libraries (Splash *sp)
 	closedir (libdir);
 }
 
-static gboolean
-is_oregano_library_name (gchar *name)
+static gboolean is_oregano_library_name (gchar *name)
 {
 	gchar *dot;
 	dot = strchr (name, '.');
 	if (dot == NULL || dot[1] == '\0')
 		return FALSE;
 
-	dot++;	// Points to the extension.
+	dot++; // Points to the extension.
 
 	if (strcmp (dot, OREGLIB_EXT) == 0)
 		return TRUE;
@@ -146,15 +135,13 @@ is_oregano_library_name (gchar *name)
 	return FALSE;
 }
 
-static void
-load_library_error (gchar *name)
+static void load_library_error (gchar *name)
 {
 	gchar *title, *desc;
-	title = g_strdup_printf (_("Could not read the parts library: %s "), 
-	                         name);
-	desc = g_strdup_printf (_("The file is probably corrupt. Please "
-		                      "reinstall the parts library or Oregano "
-	                          "and try again."));
+	title = g_strdup_printf (_ ("Could not read the parts library: %s "), name);
+	desc = g_strdup_printf (_ ("The file is probably corrupt. Please "
+	                           "reinstall the parts library or Oregano "
+	                           "and try again."));
 	oregano_error_with_title (title, desc);
 	g_free (title);
 	g_free (desc);

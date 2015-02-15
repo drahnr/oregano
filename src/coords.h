@@ -40,85 +40,63 @@
 #include <glib.h>
 #include <math.h>
 
-typedef struct _Coords {
+typedef struct _Coords
+{
 	gdouble x;
 	gdouble y;
 } Coords;
 
+Coords *coords_new (gdouble x, gdouble y);
 
-Coords *
-coords_new (gdouble x, gdouble y);
+Coords *coords_new_copy (const Coords *c);
 
-Coords *
-coords_new_copy (const Coords *c);
-
-void
-coords_destroy (Coords *c);
-
+void coords_destroy (Coords *c);
 
 /*
  * Adds b to a and returns a pointer to a which holds now the result
  */
-Coords *
-coords_add (Coords *a, const Coords *b);
+Coords *coords_add (Coords *a, const Coords *b);
 
 /*
- * Adds b to a and returns a ptr to a Coord struct which has to be freed by either coords_destroy
+ * Adds b to a and returns a ptr to a Coord struct which has to be freed by
+ * either coords_destroy
  */
-Coords *
-coords_sum_new (const Coords *a, const Coords *b);
+Coords *coords_sum_new (const Coords *a, const Coords *b);
 
-Coords *
-coords_set (Coords *a, const Coords *val);
+Coords *coords_set (Coords *a, const Coords *val);
 
 /*
  *
  */
-Coords
-coords_sum (const Coords *a, const Coords *b);
+Coords coords_sum (const Coords *a, const Coords *b);
 
-Coords
-coords_sub (const Coords *a, const Coords *b);
-
+Coords coords_sub (const Coords *a, const Coords *b);
 
 /*
  * calculates the average of two points
  */
-Coords
-coords_average (const Coords *a, const Coords *b);
+Coords coords_average (const Coords *a, const Coords *b);
 
-gdouble
-coords_cross (const Coords *a, const Coords *b);
+gdouble coords_cross (const Coords *a, const Coords *b);
 
-gdouble
-coords_dot (const Coords *a, const Coords *b);
+gdouble coords_dot (const Coords *a, const Coords *b);
 
-gdouble
-coords_euclid (const Coords *a);
+gdouble coords_euclid (const Coords *a);
 
-gdouble
-coords_euclid2 (const Coords *a);
+gdouble coords_euclid2 (const Coords *a);
 
+inline gdouble coords_distance (const Coords *a, const Coords *b);
 
-inline gdouble
-coords_distance (const Coords *a, const Coords *b);
-
-gboolean
-coords_equal (const Coords *a, const Coords *b);
-
+gboolean coords_equal (const Coords *a, const Coords *b);
 
 /*
  * used for GHashTable key hashing
  */
-inline guint
-coords_hash (gconstpointer v);
-
+inline guint coords_hash (gconstpointer v);
 
 /*
  * used for comparsion in GHashTable
  */
-gint
-coords_compare (const Coords *a, const Coords *b);
-
+gint coords_compare (const Coords *a, const Coords *b);
 
 #endif /* __COORDS_H */

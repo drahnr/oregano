@@ -39,36 +39,37 @@
 #include "sheet.h"
 #include "create-wire.h"
 #include "rubberband.h"
-	
-struct _SheetPriv {
+
+struct _SheetPriv
+{
 	// Keeps the current signal handler for wire creation
-	int 			 wire_handler_id;
+	int wire_handler_id;
 	// Keeps the signal handler for floating objects.
-	int 			 float_handler_id;
+	int float_handler_id;
 
-	double 			 zoom;
-	gulong 			 width;
-	gulong  		 height;
+	double zoom;
+	gulong width;
+	gulong height;
 
-	GooCanvasGroup		*selected_group;
-	GooCanvasGroup		*floating_group;
-	GList			*selected_objects;
-	GList			*floating_objects;
+	GooCanvasGroup *selected_group;
+	GooCanvasGroup *floating_group;
+	GList *selected_objects;
+	GList *floating_objects;
 
-	GList			*items;
-	RubberbandInfo		*rubberband_info;
-	GList 			*preserve_selection_items;
-	GooCanvasClass		*sheet_parent_class;
+	GList *items;
+	RubberbandInfo *rubberband_info;
+	GList *preserve_selection_items;
+	GooCanvasClass *sheet_parent_class;
 
-	GList 			*voltmeter_items; // List of GooCanvasItem
-	GHashTable 		*voltmeter_nodes;
+	GList *voltmeter_items; // List of GooCanvasItem
+	GHashTable *voltmeter_nodes;
 
-	CreateWireInfo		*create_wire_info; // Wire context for each schematic
+	CreateWireInfo *create_wire_info; // Wire context for each schematic
 
-	GHashTable 		*node_dots;
+	GHashTable *node_dots;
 
-	guint8			 keyboard_grabbed:1;
-	guint8			 pointer_grabbed:1;
+	guint8 keyboard_grabbed : 1;
+	guint8 pointer_grabbed : 1;
 };
 
 #endif

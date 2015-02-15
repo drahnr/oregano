@@ -38,39 +38,43 @@
 #include "coords.h"
 
 // Note: this must be synced with Pin in part.h for now.
-typedef struct {
+typedef struct
+{
 	Coords pos;
 } Connection;
 
-typedef struct {
+typedef struct
+{
 	gchar *name;
 	gchar *value;
 } Property;
 
-typedef struct {
+typedef struct
+{
 	gchar *name;
 	gchar *author;
 	gchar *version;
 
 	GSList *parts_list;
 
-	GHashTable  *part_hash;
-	GHashTable  *symbol_hash;
+	GHashTable *part_hash;
+	GHashTable *symbol_hash;
 } Library;
 
-typedef struct {
-	gchar  *name;
+typedef struct
+{
+	gchar *name;
 
-	gchar  *description;
+	gchar *description;
 
-	Library* library;
+	Library *library;
 
-	gchar  *symbol_name;
-	int		symbol_rotation;
+	gchar *symbol_name;
+	int symbol_rotation;
 
-	gchar  *refdes;
-	gchar  *template;
-	gchar  *model;
+	gchar *refdes;
+	gchar *template;
+	gchar *model;
 	GSList *labels;
 	GSList *properties;
 } LibraryPart;

@@ -42,28 +42,29 @@
 #include "ngspice.h"
 
 // Parser STATUS
-struct _OreganoNgSpicePriv {
-	GPid 		child_pid;
-	gint 		child_stdout;
-	gint 		child_error;
+struct _OreganoNgSpicePriv
+{
+	GPid child_pid;
+	gint child_stdout;
+	gint child_error;
 	GIOChannel *child_iochannel;
 	GIOChannel *child_ioerror;
-	gint 		child_iochannel_watch;
-	gint 		child_ioerror_watch;
-	Schematic  *schematic;
+	gint child_iochannel_watch;
+	gint child_ioerror_watch;
+	Schematic *schematic;
 
-	gboolean 	aborted;
+	gboolean aborted;
 
-	GList 	   *analysis;
-	gint 		num_analysis;
+	GList *analysis;
+	gint num_analysis;
 	SimulationData *current;
-	double 		progress;
-	gboolean 	char_last_newline;
-	guint 		status;
-	guint 		buf_count;
+	double progress;
+	gboolean char_last_newline;
+	guint status;
+	guint buf_count;
 	// Added to store ngspice output into a file
 	// 		input for oregano...
-	FILE       *inputfp;
+	FILE *inputfp;
 };
 
 void ngspice_parse (OreganoNgSpice *ngspice);

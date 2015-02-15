@@ -34,30 +34,21 @@
 #include "debug.h"
 
 OreganoCursor oregano_cursors[] = {
-	{ NULL, GDK_LEFT_PTR },
-	{ NULL, GDK_TCROSS },
-	{ NULL, GDK_PENCIL },
-	{ NULL, GDK_XTERM },
-	{ NULL, -1 }
-};
+    {NULL, GDK_LEFT_PTR}, {NULL, GDK_TCROSS}, {NULL, GDK_PENCIL}, {NULL, GDK_XTERM}, {NULL, -1}};
 
-void
-cursors_init (void)
+void cursors_init (void)
 {
 	int i;
 	GdkDisplay *display;
 
-	display = gdk_display_get_default();
+	display = gdk_display_get_default ();
 
 	for (i = 0; oregano_cursors[i].type != -1; i++) {
-		oregano_cursors[i].cursor = 
-			gdk_cursor_new_for_display (display,
-		                                oregano_cursors[i].type);
+		oregano_cursors[i].cursor = gdk_cursor_new_for_display (display, oregano_cursors[i].type);
 	}
 }
 
-void
-cursors_shutdown (void)
+void cursors_shutdown (void)
 {
 	int i;
 
@@ -67,8 +58,7 @@ cursors_shutdown (void)
 	}
 }
 
-void
-cursor_set_widget (GtkWidget *w, int name)
+void cursor_set_widget (GtkWidget *w, int name)
 {
 	if (gtk_widget_get_window (w))
 		gdk_window_set_cursor (gtk_widget_get_window (w), oregano_cursors[name].cursor);

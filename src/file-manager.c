@@ -31,19 +31,15 @@
 #include "file-manager.h"
 
 FileType file_types[] = {
-	FILE_TYPE ("oregano", "Oregano Schematic File", schematic_parse_xml_file, 
-	           schematic_write_xml)
-};
+    FILE_TYPE ("oregano", "Oregano Schematic File", schematic_parse_xml_file, schematic_write_xml)};
 
-#define FILE_TYPES_COUNT (sizeof(file_types)/sizeof(FileType))
+#define FILE_TYPES_COUNT (sizeof(file_types) / sizeof(FileType))
 
-
-FileType *
-file_manager_get_handler (const gchar *fname)
+FileType *file_manager_get_handler (const gchar *fname)
 {
 	int i;
 	gchar *ext, *ptr;
-	FileType *ft = NULL; 
+	FileType *ft = NULL;
 
 	g_return_val_if_fail (fname != NULL, NULL);
 
@@ -57,7 +53,7 @@ file_manager_get_handler (const gchar *fname)
 		ptr++;
 	}
 
-	for (i=0; i<FILE_TYPES_COUNT; i++)
+	for (i = 0; i < FILE_TYPES_COUNT; i++)
 		if (!strcmp (file_types[i].extension, ext)) {
 			ft = &file_types[i];
 			break;

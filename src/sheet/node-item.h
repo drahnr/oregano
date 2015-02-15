@@ -36,21 +36,20 @@
 #include <gtk/gtk.h>
 #include <goocanvas.h>
 
-#define TYPE_NODE_ITEM	 (node_item_get_type ())
-#define NODE_ITEM(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE_ITEM, NodeItem))
-#define NODE_ITEM_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NODE_ITEM, NodeItemClass))
-#define IS_NODE_ITEM(obj)		  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NODE_ITEM))
+#define TYPE_NODE_ITEM (node_item_get_type ())
+#define NODE_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE_ITEM, NodeItem))
+#define NODE_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NODE_ITEM, NodeItemClass))
+#define IS_NODE_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NODE_ITEM))
 #define IS_NODE_ITEM_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_NODE_ITEM, NodeItemClass))
 
-
-typedef struct _NodeItem	  NodeItem;
+typedef struct _NodeItem NodeItem;
 typedef struct _NodeItemClass NodeItemClass;
-typedef struct _NodeItemPriv  NodeItemPriv;
+typedef struct _NodeItemPriv NodeItemPriv;
 
 struct _NodeItem
 {
 	GooCanvasGroup parent;
-	NodeItemPriv  *priv;
+	NodeItemPriv *priv;
 };
 
 struct _NodeItemClass
@@ -58,9 +57,8 @@ struct _NodeItemClass
 	GooCanvasGroupClass parent_class;
 };
 
-
-GType	   node_item_get_type (void);
-GtkWidget *node_item_new	  (void);
-void	   node_item_show_dot (NodeItem *item, gboolean show);
+GType node_item_get_type (void);
+GtkWidget *node_item_new (void);
+void node_item_show_dot (NodeItem *item, gboolean show);
 
 #endif /* __NODE_ITEM_H__ */

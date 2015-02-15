@@ -9,7 +9,8 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
- * Description: Handles the user interaction when doing area/rubberband selections.
+ * Description: Handles the user interaction when doing area/rubberband
+ *selections.
  *
  * Web page: https://srctwig.com/oregano
  *
@@ -42,25 +43,21 @@
 
 #include "coords.h"
 
-
-typedef enum {
-	RUBBERBAND_DISABLED,
-	RUBBERBAND_START, 
-	RUBBERBAND_ACTIVE
-} RubberbandState;
+typedef enum { RUBBERBAND_DISABLED, RUBBERBAND_START, RUBBERBAND_ACTIVE } RubberbandState;
 
 typedef struct _RubberbandInfo RubberbandInfo;
 
 #include "sheet.h"
 
-struct _RubberbandInfo {
+struct _RubberbandInfo
+{
 	RubberbandState state;
 	Coords start;
 	Coords end;
 	GooCanvasRect *rectangle;
 };
 
-RubberbandInfo* rubberband_info_new (Sheet *sheet);
+RubberbandInfo *rubberband_info_new (Sheet *sheet);
 void rubberband_info_destroy (RubberbandInfo *rubberband);
 gboolean rubberband_start (Sheet *sheet, GdkEvent *event);
 gboolean rubberband_update (Sheet *sheet, GdkEvent *event);

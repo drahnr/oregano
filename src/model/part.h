@@ -42,10 +42,10 @@
 #include "clipboard.h"
 #include "load-common.h"
 
-#define TYPE_PART			 (part_get_type())
-#define PART(obj)			 (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_PART, Part))
-#define PART_CLASS(klass)	 (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_PART, PartClass))
-#define IS_PART(obj)		 (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_PART))
+#define TYPE_PART (part_get_type ())
+#define PART(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_PART, Part))
+#define PART_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_PART, PartClass))
+#define IS_PART(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_PART))
 #define IS_PART_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_PART, PartClass))
 
 typedef struct _Part Part;
@@ -55,7 +55,8 @@ typedef struct _PartPriv PartPriv;
 
 #include "item-data.h"
 
-struct _Pin {
+struct _Pin
+{
 	Coords offset;
 	guint pin_nr;
 	gint node_nr; // Node number into the netlist
@@ -64,31 +65,32 @@ struct _Pin {
 
 #define PIN(x) ((Pin *)(x))
 
-struct _Part {
-	ItemData 	parent;
-	PartPriv *	priv;
+struct _Part
+{
+	ItemData parent;
+	PartPriv *priv;
 };
 
 struct _PartClass
 {
 	ItemDataClass parent_class;
 
-	void (*changed) ();
+	void (*changed)();
 };
 
-GType  		part_get_type (void);
-Part *		part_new ();
-Part *		part_new_from_library_part (LibraryPart *library_part);
-gint		part_get_num_pins (Part *part);
-Pin *		part_get_pins (Part *part);
-gboolean   	part_set_pins (Part *part, GSList *connections);
-gboolean   	part_get_rotation (Part *part);
-IDFlip 		part_get_flip (Part *part);
-void   		part_labels_rotate (Part *part, int rotation);
-char *		part_get_property (Part *part, char *name);
-GSList *	part_get_properties (Part *part);
-GSList *	part_get_labels (Part *part);
+GType part_get_type (void);
+Part *part_new ();
+Part *part_new_from_library_part (LibraryPart *library_part);
+gint part_get_num_pins (Part *part);
+Pin *part_get_pins (Part *part);
+gboolean part_set_pins (Part *part, GSList *connections);
+gboolean part_get_rotation (Part *part);
+IDFlip part_get_flip (Part *part);
+void part_labels_rotate (Part *part, int rotation);
+char *part_get_property (Part *part, char *name);
+GSList *part_get_properties (Part *part);
+GSList *part_get_labels (Part *part);
 
-ClipboardData *	part_clipboard_dup (Part *part);
+ClipboardData *part_clipboard_dup (Part *part);
 
 #endif

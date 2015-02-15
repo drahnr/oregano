@@ -38,32 +38,35 @@
 #include "errors.h"
 #include "engine.h"
 
-#define TYPE_NETLIST_EDITOR				(netlist_editor_get_type ())
-#define NETLIST_EDITOR(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NETLIST_EDITOR, NetlistEditor))
-#define NETLIST_EDITOR_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NETLIST_EDITOR, NetlistEditorClass))
-#define IS_NETLIST_EDITOR(obj)			(G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NETLIST_EDITOR))
-#define IS_NETLIST_EDITOR_CLASS(klass) 		(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_NETLIST_EDITOR, NetlistEditorClass))
+#define TYPE_NETLIST_EDITOR (netlist_editor_get_type ())
+#define NETLIST_EDITOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NETLIST_EDITOR, NetlistEditor))
+#define NETLIST_EDITOR_CLASS(klass)                                                                \
+	(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NETLIST_EDITOR, NetlistEditorClass))
+#define IS_NETLIST_EDITOR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NETLIST_EDITOR))
+#define IS_NETLIST_EDITOR_CLASS(klass)                                                             \
+	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_NETLIST_EDITOR, NetlistEditorClass))
 
-
-typedef struct _NetlistEditor	   NetlistEditor;
+typedef struct _NetlistEditor NetlistEditor;
 typedef struct _NetlistEditorClass NetlistEditorClass;
-typedef struct _NetlistEditorPriv  NetlistEditorPriv;
+typedef struct _NetlistEditorPriv NetlistEditorPriv;
 
-struct _NetlistEditor {
+struct _NetlistEditor
+{
 	GObject parent;
 
 	NetlistEditorPriv *priv;
 };
 
-struct _NetlistEditorClass {
+struct _NetlistEditorClass
+{
 	GObjectClass parent_class;
 
 	// Signals go here
 };
 
 GType netlist_editor_get_type (void);
-NetlistEditor *netlist_editor_new_from_file (gchar * filename); 
+NetlistEditor *netlist_editor_new_from_file (gchar *filename);
 NetlistEditor *netlist_editor_new_from_schematic_view (SchematicView *sv);
-NetlistEditor *netlist_editor_new (GtkSourceBuffer * textbuffer);
+NetlistEditor *netlist_editor_new (GtkSourceBuffer *textbuffer);
 
 #endif

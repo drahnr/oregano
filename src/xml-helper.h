@@ -38,8 +38,7 @@
 
 #include "xml-compat.h"
 
-gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
-	gpointer user_data, const gchar *filename);
+gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax, gpointer user_data, const gchar *filename);
 
 void xmlSetValue (xmlNodePtr node, const char *name, const char *val);
 
@@ -49,7 +48,7 @@ void xmlSetDoubleValue (xmlNodePtr node, const char *name, double val);
 
 void xmlSetCoordinate (xmlNodePtr node, const char *name, double x, double y);
 
-void xmlSetCoordinates (xmlNodePtr node, const char *name,
-	double x1, double y1, double x2, double y2);
+void xmlSetCoordinates (xmlNodePtr node, const char *name, double x1, double y1, double x2,
+                        double y2);
 
 #endif

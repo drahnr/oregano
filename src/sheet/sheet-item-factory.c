@@ -40,8 +40,7 @@
 // Create a SheetItem from an ItemData object. This is a bit ugly.
 // It could be beautified by having a method that creates the item.
 // E.g. sheet_item->new_from_data (data);
-SheetItem *
-sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
+SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
 {
 	SheetItem *item;
 

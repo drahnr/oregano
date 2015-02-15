@@ -46,7 +46,6 @@
 #include <signal.h>
 #include <gio/gdesktopappinfo.h>
 
-
 #include "dialogs.h"
 #include "schematic.h"
 #include "schematic-view.h"
@@ -69,26 +68,23 @@ int oregano_debugging;
 
 static void oregano_application (GApplication *app, GFile *file);
 static void oregano_activate (GApplication *application);
-static void oregano_open (GApplication *application, GFile **files, 
-                          gint  n_files, const gchar *hint);
+static void oregano_open (GApplication *application, GFile **files, gint n_files,
+                          const gchar *hint);
 
-static void
-oregano_finalize (GObject *object)
+static void oregano_finalize (GObject *object)
 {
 	cursors_shutdown ();
 	G_OBJECT_CLASS (oregano_parent_class)->finalize (object);
 }
 
-static void
-oregano_class_init (OreganoClass *klass)
-{ 
+static void oregano_class_init (OreganoClass *klass)
+{
 	G_APPLICATION_CLASS (klass)->activate = oregano_activate;
 	G_APPLICATION_CLASS (klass)->open = oregano_open;
 	G_OBJECT_CLASS (klass)->finalize = oregano_finalize;
 }
 
-static void
-oregano_init (Oregano *object)
+static void oregano_init (Oregano *object)
 {
 	cursors_init ();
 	stock_init ();
@@ -96,74 +92,61 @@ oregano_init (Oregano *object)
 	oregano_config_load ();
 }
 
-Oregano *
-oregano_new (void)
+Oregano *oregano_new (void)
 {
-    return g_object_new (oregano_get_type (),
-                         "application-id", "org.gnome.oregano",
-                         "flags", G_APPLICATION_HANDLES_OPEN,
-                         NULL);
+	return g_object_new (oregano_get_type (), "application-id", "org.gnome.oregano", "flags",
+	                     G_APPLICATION_HANDLES_OPEN, NULL);
 }
 
 // GApplication implementation
-static void
-oregano_activate (GApplication *application)
+static void oregano_activate (GApplication *application)
 {
-  oregano_application (application, NULL);
+	oregano_application (application, NULL);
 }
 
-static void
-oregano_open (GApplication  *application, GFile **files, gint n_files,
-              const gchar *hint)
+static void oregano_open (GApplication *application, GFile **files, gint n_files, const gchar *hint)
 {
-  	gint i;
+	gint i;
 
 	for (i = 0; i < n_files; i++)
 		oregano_application (application, files[i]);
 }
 
-static gboolean
-quit_hook (GSignalInvocationHint *ihint,
-	guint n_param_values,
-	const GValue *param_values,
-	gpointer data)
+static gboolean quit_hook (GSignalInvocationHint *ihint, guint n_param_values,
+                           const GValue *param_values, gpointer data)
 {
 	return FALSE;
 }
 
-static void
-oregano_application (GApplication *app, GFile *file)
+static void oregano_application (GApplication *app, GFile *file)
 {
-	Schematic *schematic = NULL ;
+	Schematic *schematic = NULL;
 	SchematicView *schematic_view = NULL;
 
 	gchar *msg;
 	Splash *splash = NULL;
 	GError *error = NULL;
 
-	// Keep non localized input for ngspice 
+	// Keep non localized input for ngspice
 	setlocale (LC_NUMERIC, "C");
 
 	if (oregano.show_splash) {
 		splash = oregano_splash_new (&error);
 		if (error) {
-			msg = g_strdup_printf (_("Failed to spawn splash-screen \'%s\''. Code %i - %s"),
-			                       OREGANO_UIDIR "splash.ui",
-			                       error->code, error->message);
+			msg = g_strdup_printf (_ ("Failed to spawn splash-screen \'%s\''. Code %i - %s"),
+			                       OREGANO_UIDIR "splash.ui", error->code, error->message);
 			oregano_error (msg);
 			g_free (msg);
 			g_clear_error (&error);
-			//non fatal issue
+			// non fatal issue
 		}
 	}
-	//splash == NULL if showing splash is disabled
+	// splash == NULL if showing splash is disabled
 	oregano_lookup_libraries (splash);
 
-
 	if (oregano.libraries == NULL) {
-		oregano_error (
-			_("Could not find a parts library.\n\n"
-		          "Supposed to be in " OREGANO_LIBRARYDIR ));
+		oregano_error (_ ("Could not find a parts library.\n\n"
+		                  "Supposed to be in " OREGANO_LIBRARYDIR));
 		return;
 	}
 
@@ -183,20 +166,15 @@ oregano_application (GApplication *app, GFile *file)
 			schematic_set_filename (schematic, fname);
 			schematic_set_title (schematic, g_path_get_basename (fname));
 		}
-	}
-	else {
+	} else {
 		schematic = schematic_new ();
 		schematic_view = schematic_view_new (schematic);
 		gtk_widget_show_all (schematic_view_get_toplevel (schematic_view));
 	}
 
-	g_signal_add_emission_hook (
-		g_signal_lookup ("last_schematic_destroyed", TYPE_SCHEMATIC),
-		0,
-		quit_hook,
-		NULL,
-		NULL);
+	g_signal_add_emission_hook (g_signal_lookup ("last_schematic_destroyed", TYPE_SCHEMATIC), 0,
+	                            quit_hook, NULL, NULL);
 
 	if (oregano.show_splash && splash)
-		oregano_splash_done (splash, _("Welcome to Oregano"));
+		oregano_splash_done (splash, _ ("Welcome to Oregano"));
 }

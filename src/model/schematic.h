@@ -51,74 +51,75 @@
 #include "node-store.h"
 #include "log.h"
 
-#define TYPE_SCHEMATIC			  (schematic_get_type ())
-#define SCHEMATIC(obj)			  (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC, Schematic))
-#define SCHEMATIC_CLASS (klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC, SchematicClass))
-#define IS_SCHEMATIC(obj)		  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SCHEMATIC))
-#define IS_SCHEMATIC_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC, SchematicClass))
+#define TYPE_SCHEMATIC (schematic_get_type ())
+#define SCHEMATIC(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC, Schematic))
+#define SCHEMATIC_CLASS (klass)(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC, SchematicClass))
+#define IS_SCHEMATIC(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SCHEMATIC))
+#define IS_SCHEMATIC_CLASS(klass)                                                                  \
+	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC, SchematicClass))
 
-typedef struct _Schematic	   Schematic;
+typedef struct _Schematic Schematic;
 typedef struct _SchematicClass SchematicClass;
-typedef struct _SchematicPriv  SchematicPriv;
+typedef struct _SchematicPriv SchematicPriv;
 
-typedef void (*ForeachItemDataFunc) (ItemData *item_data, gpointer user_data);
+typedef void (*ForeachItemDataFunc)(ItemData *item_data, gpointer user_data);
 
-struct _Schematic {
+struct _Schematic
+{
 	GObject parent;
 	SchematicPriv *priv;
 };
 
-struct _SchematicClass {
+struct _SchematicClass
+{
 	GObjectClass parent_class;
 
 	// signals
-	void (*title_changed) (Schematic* ,gchar*);
-	void (*item_data_added) (Schematic*, gpointer*);
-	void (*log_updated) (gpointer);
-	void (*node_dot_added) (Schematic*);
-	void (*node_dot_removed) (Schematic*, gpointer*);
-	void (*last_schematic_destroyed) (Schematic*);
+	void (*title_changed)(Schematic *, gchar *);
+	void (*item_data_added)(Schematic *, gpointer *);
+	void (*log_updated)(gpointer);
+	void (*node_dot_added)(Schematic *);
+	void (*node_dot_removed)(Schematic *, gpointer *);
+	void (*last_schematic_destroyed)(Schematic *);
 };
 
-GType	   schematic_get_type (void);
+GType schematic_get_type (void);
 Schematic *schematic_new (void);
-char	  *schematic_get_title (Schematic *schematic);
-void	   schematic_set_title (Schematic *schematic, const gchar *title);
-char	  *schematic_get_author (Schematic *schematic);
-void	   schematic_set_author (Schematic *schematic, const gchar *author);
-char	  *schematic_get_comments (Schematic *schematic);
-void	   schematic_set_comments (Schematic *schematic, const gchar *comments);
-char	  *schematic_get_filename (Schematic *schematic);
-void	   schematic_set_filename (Schematic *schematic, const gchar *filename);
-char	  *schematic_get_netlist_filename (Schematic *schematic);
-void	   schematic_set_netlist_filename (Schematic *schematic, char *filename);
-int		   schematic_count (void);
-double	   schematic_get_zoom (Schematic *schematic);
-void	   schematic_set_zoom (Schematic *schematic, double zoom);
-void	   schematic_add_item (Schematic *sm, ItemData *data);
-void	   schematic_parts_foreach (Schematic *schematic,
-				ForeachItemDataFunc func, gpointer user_data);
-void	   schematic_wires_foreach (Schematic *schematic,
-				ForeachItemDataFunc func, gpointer user_data);
-void	   schematic_items_foreach (Schematic *schematic,
-				ForeachItemDataFunc func, gpointer user_data);
-GList	  *schematic_get_items (Schematic *sm);
+char *schematic_get_title (Schematic *schematic);
+void schematic_set_title (Schematic *schematic, const gchar *title);
+char *schematic_get_author (Schematic *schematic);
+void schematic_set_author (Schematic *schematic, const gchar *author);
+char *schematic_get_comments (Schematic *schematic);
+void schematic_set_comments (Schematic *schematic, const gchar *comments);
+char *schematic_get_filename (Schematic *schematic);
+void schematic_set_filename (Schematic *schematic, const gchar *filename);
+char *schematic_get_netlist_filename (Schematic *schematic);
+void schematic_set_netlist_filename (Schematic *schematic, char *filename);
+int schematic_count (void);
+double schematic_get_zoom (Schematic *schematic);
+void schematic_set_zoom (Schematic *schematic, double zoom);
+void schematic_add_item (Schematic *sm, ItemData *data);
+void schematic_parts_foreach (Schematic *schematic, ForeachItemDataFunc func, gpointer user_data);
+void schematic_wires_foreach (Schematic *schematic, ForeachItemDataFunc func, gpointer user_data);
+void schematic_items_foreach (Schematic *schematic, ForeachItemDataFunc func, gpointer user_data);
+GList *schematic_get_items (Schematic *sm);
 NodeStore *schematic_get_store (Schematic *schematic);
-gpointer   schematic_get_settings (Schematic *schematic);
-gpointer   schematic_get_sim_settings (Schematic *schematic);
-gpointer   schematic_get_simulation (Schematic *schematic);
-Log       *schematic_get_log_store (Schematic *schematic);
-void	   schematic_log_clear (Schematic *schematic);
-void	   schematic_log_append (Schematic *schematic, const char *message);
-void	   schematic_log_append_error (Schematic *schematic, const char *message);
-void	   schematic_log_show (Schematic *schematic);
+gpointer schematic_get_settings (Schematic *schematic);
+gpointer schematic_get_sim_settings (Schematic *schematic);
+gpointer schematic_get_simulation (Schematic *schematic);
+Log *schematic_get_log_store (Schematic *schematic);
+void schematic_log_clear (Schematic *schematic);
+void schematic_log_append (Schematic *schematic, const char *message);
+void schematic_log_append_error (Schematic *schematic, const char *message);
+void schematic_log_show (Schematic *schematic);
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic);
-int	   	   schematic_count (void);
-gboolean   schematic_is_dirty (Schematic *sm);
-void       schematic_set_dirty (Schematic *sm, gboolean b);
-gint       schematic_save_file (Schematic *sm, GError **error);
+int schematic_count (void);
+gboolean schematic_is_dirty (Schematic *sm);
+void schematic_set_dirty (Schematic *sm, gboolean b);
+gint schematic_save_file (Schematic *sm, GError **error);
 Schematic *schematic_read (char *fname, GError **error);
-void       schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
-void       schematic_export (Schematic *sm, const gchar *filename, gint img_w, gint img_h, int bg, int color, int format);
+void schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
+void schematic_export (Schematic *sm, const gchar *filename, gint img_w, gint img_h, int bg,
+                       int color, int format);
 
 #endif /* __SCHEMATIC_H__ */

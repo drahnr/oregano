@@ -34,7 +34,8 @@
 
 #include <gdk/gdk.h>
 
-typedef struct _SchematicColors {
+typedef struct _SchematicColors
+{
 	GdkRGBA components;
 	GdkRGBA labels;
 	GdkRGBA wires;
@@ -42,7 +43,8 @@ typedef struct _SchematicColors {
 	GdkRGBA background;
 } SchematicColors;
 
-typedef struct _SchematicPrintContext {
+typedef struct _SchematicPrintContext
+{
 	SchematicColors colors;
 } SchematicPrintContext;
 

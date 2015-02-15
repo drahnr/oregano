@@ -39,26 +39,29 @@
 #include "sheet-item.h"
 #include "wire.h"
 
-#define TYPE_WIRE_ITEM         (wire_item_get_type ())
-#define WIRE_ITEM(obj)         (G_TYPE_CHECK_INSTANCE_CAST (obj, wire_item_get_type (), WireItem))
-#define WIRE_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST (klass, wire_item_get_type (), WireItemClass))
-#define IS_WIRE_ITEM(obj)      (G_TYPE_CHECK_INSTANCE_TYPE (obj, wire_item_get_type ()))
+#define TYPE_WIRE_ITEM (wire_item_get_type ())
+#define WIRE_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST (obj, wire_item_get_type (), WireItem))
+#define WIRE_ITEM_CLASS(klass)                                                                     \
+	(G_TYPE_CHECK_CLASS_CAST (klass, wire_item_get_type (), WireItemClass))
+#define IS_WIRE_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE (obj, wire_item_get_type ()))
 
 typedef struct _WireItemPriv WireItemPriv;
 
-typedef struct {
-	SheetItem 		parent_object;
-	WireItemPriv *	priv;
+typedef struct
+{
+	SheetItem parent_object;
+	WireItemPriv *priv;
 } WireItem;
 
-typedef struct {
+typedef struct
+{
 	SheetItemClass parent_class;
 } WireItemClass;
 
-GType 		wire_item_get_type (void);
-WireItem *	wire_item_new (Sheet *sheet, Wire *wire);
-void 		wire_item_initiate (Sheet *sheet);
-void 		wire_item_get_start_pos (WireItem *item, Coords *pos);
-void 		wire_item_get_length (WireItem *item, Coords *pos);
+GType wire_item_get_type (void);
+WireItem *wire_item_new (Sheet *sheet, Wire *wire);
+void wire_item_initiate (Sheet *sheet);
+void wire_item_get_start_pos (WireItem *item, Coords *pos);
+void wire_item_get_length (WireItem *item, Coords *pos);
 
 #endif

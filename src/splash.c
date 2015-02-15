@@ -6,7 +6,7 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
- * 
+ *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
@@ -30,7 +30,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
 #include <unistd.h>
 #include <glib/gi18n.h>
 
@@ -38,8 +37,7 @@
 #include "dialogs.h"
 #include "errors.h"
 
-static void
-oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
+static void oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
 {
 	if ((event->type == GDK_BUTTON_PRESS) && (event->button.button == 1)) {
 		if (sp->can_destroy)
@@ -47,22 +45,19 @@ oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
 	}
 }
 
-Splash *
-oregano_splash_new (GError **error)
+Splash *oregano_splash_new (GError **error)
 {
 	GtkBuilder *gui;
 	Splash *sp;
 	GtkEventBox *event;
-	
+
 	if ((gui = gtk_builder_new ()) == NULL) {
-		g_set_error_literal (error, OREGANO_ERROR,
-		                    OREGANO_UI_ERROR_NO_BUILDER,
-		                      _("Failed to spawn builder"));
+		g_set_error_literal (error, OREGANO_ERROR, OREGANO_UI_ERROR_NO_BUILDER,
+		                     _ ("Failed to spawn builder"));
 		return NULL;
-	} 
+	}
 	gtk_builder_set_translation_domain (gui, NULL);
 
-	
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/splash.ui", error) <= 0) {
 		return NULL;
 	}
@@ -85,8 +80,7 @@ oregano_splash_new (GError **error)
 	return sp;
 }
 
-gboolean
-oregano_splash_free (Splash *sp)
+gboolean oregano_splash_free (Splash *sp)
 {
 	/* Need to disconnect the EventBox Widget! */
 	g_signal_handlers_disconnect_by_func (sp->event, oregano_splash_destroy, sp);
@@ -95,8 +89,7 @@ oregano_splash_free (Splash *sp)
 	return FALSE;
 }
 
-void
-oregano_splash_step (Splash *sp, char *s)
+void oregano_splash_step (Splash *sp, char *s)
 {
 	gtk_label_set_text (sp->lbl, s);
 	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (sp->progress));
@@ -104,12 +97,9 @@ oregano_splash_step (Splash *sp, char *s)
 		gtk_main_iteration ();
 }
 
-
-void
-oregano_splash_done (Splash *sp, char *s)
+void oregano_splash_done (Splash *sp, char *s)
 {
 	gtk_label_set_text (sp->lbl, s);
 	sp->can_destroy = TRUE;
 	g_timeout_add (2000, (GSourceFunc)(oregano_splash_free), sp);
 }
-

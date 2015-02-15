@@ -8,17 +8,17 @@
 
 G_BEGIN_DECLS
 
-#define TYPE_LOG_VIEW				(log_view_get_type ())
-#define LOG_VIEW(obj)				(G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_LOG_VIEW, LogView))
-#define LOG_VIEW_CONST(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_LOG_VIEW, LogView const))
-#define LOG_VIEW_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_LOG_VIEW, LogViewClass))
-#define LOG_IS_VIEW(obj)			(G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_LOG_VIEW))
-#define LOG_IS_VIEW_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_LOG_VIEW))
-#define LOG_VIEW_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_LOG_VIEW, LogViewClass))
+#define TYPE_LOG_VIEW (log_view_get_type ())
+#define LOG_VIEW(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_LOG_VIEW, LogView))
+#define LOG_VIEW_CONST(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_LOG_VIEW, LogView const))
+#define LOG_VIEW_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_LOG_VIEW, LogViewClass))
+#define LOG_IS_VIEW(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_LOG_VIEW))
+#define LOG_IS_VIEW_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_LOG_VIEW))
+#define LOG_VIEW_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_LOG_VIEW, LogViewClass))
 
-typedef struct _LogView			LogView;
-typedef struct _LogViewClass	LogViewClass;
-typedef struct _LogViewPrivate	LogViewPrivate;
+typedef struct _LogView LogView;
+typedef struct _LogViewClass LogViewClass;
+typedef struct _LogViewPrivate LogViewPrivate;
 
 struct _LogView
 {

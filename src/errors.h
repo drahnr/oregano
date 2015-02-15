@@ -8,7 +8,7 @@
  *  Bernhard Schuster <schuster.bernhard@gmail.com>
  *
  * Web page: https://srctwig.com/oregano
- * 
+ *
  * Copyright (C) 2003-2008  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
@@ -34,7 +34,7 @@
 
 #include <glib.h>
 
-#define OREGANO_ERROR (oregano_error_quark())
+#define OREGANO_ERROR (oregano_error_quark ())
 
 GQuark oregano_error_quark (void);
 

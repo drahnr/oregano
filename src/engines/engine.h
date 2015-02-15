@@ -35,31 +35,25 @@
 #include "schematic.h"
 #include "simulation.h"
 
-
-#define OREGANO_ENGINE(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj), OREGANO_TYPE_ENGINE, OreganoEngine))
-#define OREGANO_IS_ENGINE(obj)          (G_TYPE_CHECK_INSTANCE_TYPE((obj), OREGANO_TYPE_ENGINE))
+#define OREGANO_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_ENGINE, OreganoEngine))
+#define OREGANO_IS_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_ENGINE))
 
 typedef struct _OreganoEngine OreganoEngine;
 
-// Engines IDs 
-enum {
-	OREGANO_ENGINE_GNUCAP=0,
-	OREGANO_ENGINE_NGSPICE,
-	OREGANO_ENGINE_COUNT
-};
+// Engines IDs
+enum { OREGANO_ENGINE_GNUCAP = 0, OREGANO_ENGINE_NGSPICE, OREGANO_ENGINE_COUNT };
 
 OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);
 
-GType    oregano_engine_get_type (void);
-void     oregano_engine_start (OreganoEngine *engine);
-void     oregano_engine_stop (OreganoEngine *engine);
+GType oregano_engine_get_type (void);
+void oregano_engine_start (OreganoEngine *engine);
+void oregano_engine_stop (OreganoEngine *engine);
 gboolean oregano_engine_has_warnings (OreganoEngine *engine);
-void     oregano_engine_get_progress (OreganoEngine *engine, double *p);
-gboolean     oregano_engine_generate_netlist (OreganoEngine *engine,
-    			const gchar *file, GError **error);
-GList   *oregano_engine_get_results (OreganoEngine *engine);
-gchar   *oregano_engine_get_current_operation (OreganoEngine *);
+void oregano_engine_get_progress (OreganoEngine *engine, double *p);
+gboolean oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
+GList *oregano_engine_get_results (OreganoEngine *engine);
+gchar *oregano_engine_get_current_operation (OreganoEngine *);
 gboolean oregano_engine_is_available (OreganoEngine *);
-gchar   *oregano_engine_get_analysis_name (SimulationData *id);
+gchar *oregano_engine_get_analysis_name (SimulationData *id);
 
 #endif

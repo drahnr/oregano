@@ -35,7 +35,8 @@
 
 #include "part.h"
 
-typedef struct {
+typedef struct
+{
 	gchar *name;
 	gchar *value;
 } PartProperty;

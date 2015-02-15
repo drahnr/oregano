@@ -41,94 +41,98 @@
 typedef struct _SimulationData SimulationData;
 
 typedef enum {
-	OP_POINT	,
-	TRANSIENT	,
-	DC_TRANSFER ,
-	AC			,
-	TRANSFER	,
-	DISTORTION	,
-	NOISE		,
-	POLE_ZERO	,
-	SENSITIVITY ,
-	FOURIER		,
+	OP_POINT,
+	TRANSIENT,
+	DC_TRANSFER,
+	AC,
+	TRANSFER,
+	DISTORTION,
+	NOISE,
+	POLE_ZERO,
+	SENSITIVITY,
+	FOURIER,
 	ANALYSIS_UNKNOWN
 } AnalysisType;
 
 #define INFINITE 1e50f
 
-typedef enum {
-	FUNCTION_MINUS = 0,
-	FUNCTION_TRANSFER
-} SimulationFunctionType;
+typedef enum { FUNCTION_MINUS = 0, FUNCTION_TRANSFER } SimulationFunctionType;
 
-typedef struct _SimulationFunction {
+typedef struct _SimulationFunction
+{
 	SimulationFunctionType type;
 	guint first;
 	guint second;
 } SimulationFunction;
 
-struct _SimulationData {
+struct _SimulationData
+{
 	AnalysisType type;
-	gint		 state;
-	gint		 n_variables;
-	gchar	   **var_names;
-	gchar	   **var_units;
-	GArray	   **data;
-	gdouble		*min_data;
-	gdouble		*max_data;
-	gint		 got_var;
-	gint		 got_points;
+	gint state;
+	gint n_variables;
+	gchar **var_names;
+	gchar **var_units;
+	GArray **data;
+	gdouble *min_data;
+	gdouble *max_data;
+	gint got_var;
+	gint got_points;
 
 	// Functions  typeof SimulationFunction
-	GList 		*functions;
+	GList *functions;
 };
 
-
-typedef struct {
+typedef struct
+{
 	SimulationData sim_data;
-	int		 state;
+	int state;
 } SimOp;
 
-typedef struct {
+typedef struct
+{
 	SimulationData sim_data;
-	double		   freq;
-	gint		   nb_var;
+	double freq;
+	gint nb_var;
 } SimFourier;
 
-typedef struct {
+typedef struct
+{
 	SimulationData sim_data;
-	int		 state;
-	double	 sim_length;
-	double	 step_size;
+	int state;
+	double sim_length;
+	double step_size;
 } SimTransient;
 
-typedef struct {
+typedef struct
+{
 	SimulationData sim_data;
-	int		 state;
-	double	 sim_length;
-	double	 start,stop;
+	int state;
+	double sim_length;
+	double start, stop;
 } SimAC;
 
-typedef struct {
+typedef struct
+{
 	SimulationData sim_data;
-	int		 state;
-	double	 sim_length;
-	double	 start,stop,step;
+	int state;
+	double sim_length;
+	double start, stop, step;
 } SimDC;
 
-typedef union {
-	SimOp		 op;
+typedef union
+{
+	SimOp op;
 	SimTransient transient;
-	SimFourier	 fourier;
-	SimAC		 ac;
-	SimDC		 dc;
+	SimFourier fourier;
+	SimAC ac;
+	SimDC dc;
 } Analysis;
 
 void simulation_show (GtkWidget *widget, SchematicView *sv);
 gpointer simulation_new (Schematic *sm, Log *logstore);
 gchar *sim_engine_analysis_name (SimulationData *);
 
-#define SIM_DATA(obj)			   ((SimulationData *)(obj))
-#define ANALYSIS(obj)			   ((Analysis *)(obj))
+#define SIM_DATA(obj) ((SimulationData *)(obj))
+#define ANALYSIS(obj) ((Analysis *)(obj))
 
 #endif /* __SIMULATION_H */

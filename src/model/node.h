@@ -37,10 +37,10 @@
 #include "coords.h"
 #include "part.h"
 
-#define TYPE_NODE			 (node_get_type ())
-#define NODE(obj)			 (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE, Node))
-#define NODE_CLASS(klass)	 (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NODE, NodeClass))
-#define IS_NODE(obj)		 (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NODE))
+#define TYPE_NODE (node_get_type ())
+#define NODE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NODE, Node))
+#define NODE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_NODE, NodeClass))
+#define IS_NODE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NODE))
 #define IS_NODE_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_NODE, NodeClass))
 
 typedef struct _Node Node;
@@ -48,7 +48,8 @@ typedef struct _NodeClass NodeClass;
 
 #include "wire.h"
 
-struct _Node {
+struct _Node
+{
 	GObject parent;
 
 	// Used for traversing all nodes in the netlist generation.

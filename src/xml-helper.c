@@ -38,10 +38,9 @@
 // A modified version of XmlSAXParseFile in gnome-xml. This one lets us set
 // the user_data that is passed to the various callbacks, to make it possible
 // to avoid lots of global variables.
-gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
-	gpointer user_data, const gchar *filename)
+gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax, gpointer user_data, const gchar *filename)
 {
-	g_return_val_if_fail (filename!=NULL, FALSE);
+	g_return_val_if_fail (filename != NULL, FALSE);
 
 	gboolean ret = TRUE;
 	xmlParserCtxtPtr ctxt;
@@ -57,7 +56,7 @@ gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
 	xmlKeepBlanksDefault (0);
 #endif
 	if (xmlParseDocument (ctxt) < 0) {
-		//FIXME post a message to the log buffer with as much details as possible
+		// FIXME post a message to the log buffer with as much details as possible
 		g_message ("Failed to parse \"%s\"", filename);
 		ret = FALSE;
 	} else {
@@ -70,10 +69,8 @@ gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax,
 	return ret;
 }
 
-
 // Set coodinate for a node, carried as the content of a child.
-void
-xmlSetCoordinate (xmlNodePtr node, const char *name, double x, double y)
+void xmlSetCoordinate (xmlNodePtr node, const char *name, double x, double y)
 {
 	xmlNodePtr child;
 	gchar *str;
@@ -98,12 +95,9 @@ xmlSetCoordinate (xmlNodePtr node, const char *name, double x, double y)
 	g_free (str);
 }
 
-
-
 // Set coodinates for a node, carried as the content of a child.
-void
-xmlSetCoordinates (xmlNodePtr node, const char *name,
-	double x1, double y1, double x2, double y2)
+void xmlSetCoordinates (xmlNodePtr node, const char *name, double x1, double y1, double x2,
+                        double y2)
 {
 	xmlNodePtr child;
 	gchar *str;
@@ -128,10 +122,9 @@ xmlSetCoordinates (xmlNodePtr node, const char *name,
 	g_free (str);
 }
 
-// Set a string value for a node either carried as an attibute or as the 
+// Set a string value for a node either carried as an attibute or as the
 // content of a child.
-void
-xmlSetValue (xmlNodePtr node, const char *name, const char *val)
+void xmlSetValue (xmlNodePtr node, const char *name, const char *val)
 {
 	xmlChar *ret;
 	xmlNodePtr child;
@@ -154,15 +147,14 @@ xmlSetValue (xmlNodePtr node, const char *name, const char *val)
 
 // Set an integer value for a node either carried as an attibute or as
 // the content of a child.
-void
-xmlSetIntValue (xmlNodePtr node, const char *name, int val)
+void xmlSetIntValue (xmlNodePtr node, const char *name, int val)
 {
 	xmlChar *ret;
 	xmlNodePtr child;
 	char str[101];
 
 	snprintf (str, 100, "%d", val);
-	ret = xmlGetProp (node,BAD_CAST name);
+	ret = xmlGetProp (node, BAD_CAST name);
 	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 		return;
@@ -178,17 +170,15 @@ xmlSetIntValue (xmlNodePtr node, const char *name, int val)
 	xmlSetProp (node, BAD_CAST name, BAD_CAST str);
 }
 
-
 // Set a double value for a node either carried as an attibute or as
 // the content of a child.
-void
-xmlSetDoubleValue (xmlNodePtr node, const char *name, double val)
+void xmlSetDoubleValue (xmlNodePtr node, const char *name, double val)
 {
 	xmlChar *ret;
 	xmlNodePtr child;
 	char str[101];
 
-	snprintf (str, 100, "%g", (float) val);
+	snprintf (str, 100, "%g", (float)val);
 	ret = xmlGetProp (node, BAD_CAST name);
 	if (ret != NULL) {
 		xmlSetProp (node, BAD_CAST name, BAD_CAST str);

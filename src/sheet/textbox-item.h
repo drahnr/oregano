@@ -39,11 +39,11 @@
 #include "sheet-item.h"
 #include "textbox.h"
 
-
-#define TYPE_TEXTBOX_ITEM		  (textbox_item_get_type ())
-#define TEXTBOX_ITEM(obj)	   	  G_TYPE_CHECK_INSTANCE_CAST (obj, textbox_item_get_type (), TextboxItem)
-#define TEXTBOX_ITEM_CLASS(klass) G_TYPE_CHECK_CLASS_CAST (klass, textbox_item_get_type (), TextboxItemClass)
-#define IS_TEXTBOX_ITEM(obj)	  G_TYPE_CHECK_INSTANCE_TYPE (obj, textbox_item_get_type ())
+#define TYPE_TEXTBOX_ITEM (textbox_item_get_type ())
+#define TEXTBOX_ITEM(obj) G_TYPE_CHECK_INSTANCE_CAST (obj, textbox_item_get_type (), TextboxItem)
+#define TEXTBOX_ITEM_CLASS(klass)                                                                  \
+	G_TYPE_CHECK_CLASS_CAST (klass, textbox_item_get_type (), TextboxItemClass)
+#define IS_TEXTBOX_ITEM(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, textbox_item_get_type ())
 
 typedef struct _TextboxItemPriv TextboxItemPriv;
 
@@ -54,20 +54,21 @@ typedef enum {
 	TEXTBOX_DIR_DIAG = 3
 } TextboxDir;
 
-typedef struct {
-	SheetItem 			parent_object;
-	TextboxItemPriv *	priv;
+typedef struct
+{
+	SheetItem parent_object;
+	TextboxItemPriv *priv;
 } TextboxItem;
 
-typedef struct {
-	SheetItemClass 		parent_class;
+typedef struct
+{
+	SheetItemClass parent_class;
 } TextboxItemClass;
 
-GType        	textbox_item_get_type (void);
-TextboxItem *	textbox_item_new (Sheet *sheet, Textbox *textbox);
-void         	textbox_item_signal_connect_placed (TextboxItem *textbox_item, 
-             		Sheet *sheet);
-void         	textbox_item_cancel_listen (Sheet *sheet);
-void         	textbox_item_listen (Sheet *sheet);
+GType textbox_item_get_type (void);
+TextboxItem *textbox_item_new (Sheet *sheet, Textbox *textbox);
+void textbox_item_signal_connect_placed (TextboxItem *textbox_item, Sheet *sheet);
+void textbox_item_cancel_listen (Sheet *sheet);
+void textbox_item_listen (Sheet *sheet);
 
 #endif

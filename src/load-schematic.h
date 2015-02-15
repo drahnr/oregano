@@ -39,5 +39,4 @@
 
 gint schematic_parse_xml_file (Schematic *sm, const gchar *filename, GError **);
 
-
 #endif

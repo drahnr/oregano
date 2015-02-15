@@ -33,7 +33,8 @@
 #ifndef __PART_LABEL_H
 #define __PART_LABEL_H
 
-typedef struct {
+typedef struct
+{
 	gchar *name;
 	gchar *text;
 	Coords pos;

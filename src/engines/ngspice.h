@@ -34,28 +34,33 @@
 
 #include "engine.h"
 
-#define OREGANO_TYPE_NGSPICE             (oregano_ngspice_get_type ())
-#define OREGANO_NGSPICE(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_NGSPICE, OreganoNgSpice))
-#define OREGANO_NGSPICE_CLASS(vtable)    (G_TYPE_CHECK_CLASS_CAST ((vtable), OREGANO_TYPE_NGSPICE, OreganoNgSpiceClass))
-#define OREGANO_IS_NGSPICE(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_NGSPICE))
+#define OREGANO_TYPE_NGSPICE (oregano_ngspice_get_type ())
+#define OREGANO_NGSPICE(obj)                                                                       \
+	(G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_NGSPICE, OreganoNgSpice))
+#define OREGANO_NGSPICE_CLASS(vtable)                                                              \
+	(G_TYPE_CHECK_CLASS_CAST ((vtable), OREGANO_TYPE_NGSPICE, OreganoNgSpiceClass))
+#define OREGANO_IS_NGSPICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_NGSPICE))
 #define OREGANO_IS_NGSPICE_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), OREGANO_TYPE_NGSPICE))
-#define OREGANO_NGSPICE_GET_CLASS(inst)  (G_TYPE_INSTANCE_GET_CLASS ((inst), OREGANO_TYPE_NGSPICE, OreganoNgSpiceClass))
+#define OREGANO_NGSPICE_GET_CLASS(inst)                                                            \
+	(G_TYPE_INSTANCE_GET_CLASS ((inst), OREGANO_TYPE_NGSPICE, OreganoNgSpiceClass))
 
 typedef struct _OreganoNgSpice OreganoNgSpice;
 typedef struct _OreganoNgSpicePriv OreganoNgSpicePriv;
 typedef struct _OreganoNgSpiceClass OreganoNgSpiceClass;
 
-struct _OreganoNgSpice {
+struct _OreganoNgSpice
+{
 	GObject parent;
 
 	OreganoNgSpicePriv *priv;
 };
 
-struct _OreganoNgSpiceClass {
+struct _OreganoNgSpiceClass
+{
 	GObjectClass parent;
 };
 
-GType          oregano_ngspice_get_type (void);
+GType oregano_ngspice_get_type (void);
 OreganoEngine *oregano_ngspice_new (Schematic *sm);
 
 #endif

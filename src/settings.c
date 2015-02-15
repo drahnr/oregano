@@ -47,13 +47,10 @@
 #include "oregano-config.h"
 
 // Engines Types
-static const gchar*
-engine[] = {
-	"gnucap",
-	"ngspice"
-};
+static const gchar *engine[] = {"gnucap", "ngspice"};
 
-typedef struct {
+typedef struct
+{
 	Schematic *sm;
 	GtkWidget *pbox; // Property box
 
@@ -64,23 +61,17 @@ typedef struct {
 	GtkWidget *w_engine;
 } Settings;
 
-#define SETTINGS(x) ((Settings*)(x))
+#define SETTINGS(x) ((Settings *)(x))
 
-GtkWidget *engine_path;	
+GtkWidget *engine_path;
 GtkWidget *button[2];
 
-
-static void
-apply_callback (GtkWidget *w, Settings *s)
+static void apply_callback (GtkWidget *w, Settings *s)
 {
-	oregano.engine = GPOINTER_TO_INT (
-	                  g_object_get_data (G_OBJECT (s->w_engine), "id"));
-	oregano.compress_files = gtk_toggle_button_get_active (
-	                  GTK_TOGGLE_BUTTON (s->w_compress_files));
-	oregano.show_log = gtk_toggle_button_get_active (
-	                  GTK_TOGGLE_BUTTON (s->w_show_log ));
-	oregano.show_splash = gtk_toggle_button_get_active (
-	                  GTK_TOGGLE_BUTTON (s->w_show_splash ));
+	oregano.engine = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
+	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
+	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log));
+	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash));
 
 	oregano_config_save ();
 
@@ -88,43 +79,33 @@ apply_callback (GtkWidget *w, Settings *s)
 	s->pbox = NULL;
 }
 
-static void
-delete_event_callback (GtkWidget *w, GdkEvent *event, Settings *s)
+static void delete_event_callback (GtkWidget *w, GdkEvent *event, Settings *s)
 {
-    apply_callback(w, s);
+	apply_callback (w, s);
 }
 
-static void
-set_engine_name (GtkWidget *w, Settings *s)
+static void set_engine_name (GtkWidget *w, Settings *s)
 {
 	int engine_id;
 
-	s->w_engine = w; 
-	engine_id = GPOINTER_TO_INT (
-	               g_object_get_data (G_OBJECT (s->w_engine), "id"));
+	s->w_engine = w;
+	engine_id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
 	if (g_find_program_in_path (engine[engine_id]) == NULL) {
-		if (gtk_toggle_button_get_active (
-		                GTK_TOGGLE_BUTTON (button[engine_id]))) {
-			GString *msg = g_string_new (
-			               _("Engine <span weight=\"bold\" size=\"large\">"));
+		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button[engine_id]))) {
+			GString *msg = g_string_new (_ ("Engine <span weight=\"bold\" size=\"large\">"));
 			msg = g_string_append (msg, engine[engine_id]);
-			msg = g_string_append (msg, 
-			              _("</span> not found\nThe engine is unable to locate "
-			                "the external program."));
-			oregano_warning_with_title (_("Warning"), msg->str);
+			msg = g_string_append (msg, _ ("</span> not found\nThe engine is unable to locate "
+			                               "the external program."));
+			oregano_warning_with_title (_ ("Warning"), msg->str);
 			g_string_free (msg, TRUE);
-			engine_id = (engine_id +1) % 2;
-			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
-			                              TRUE);
-		}	
-		else
-			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]),
-		                                  FALSE);
+			engine_id = (engine_id + 1) % 2;
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), TRUE);
+		} else
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), FALSE);
 	}
 }
 
-gpointer
-settings_new (Schematic *sm)
+gpointer settings_new (Schematic *sm)
 {
 	Settings *s;
 
@@ -134,8 +115,7 @@ settings_new (Schematic *sm)
 	return s;
 }
 
-void
-settings_show (GtkWidget *widget, SchematicView *sv)
+void settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	gint i;
 	GtkWidget *engine_group = NULL;
@@ -147,26 +127,25 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	Schematic *sm;
 
 	g_return_if_fail (sv != NULL);
-	
+
 	// If no engine available, stop oregano
 	if ((g_find_program_in_path (engine[0]) == NULL) &&
 	    (g_find_program_in_path (engine[1]) == NULL)) {
 		gchar *msg;
-		msg = g_strdup_printf (
-		_("No engine allowing analysis is available.\n"
-		  "You might install one, at least! \n"
-		  "Either ngspice or gnucap."));
-		oregano_error_with_title (_("Could not create settings dialog"), msg);
+		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
+		                          "You might install one, at least! \n"
+		                          "Either ngspice or gnucap."));
+		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_free (msg);
 		return;
 	}
-	
+
 	g_return_if_fail (sv != NULL);
 
 	if ((gui = gtk_builder_new ()) == NULL) {
-		oregano_error (_("Could not create settings dialog"));
+		oregano_error (_ ("Could not create settings dialog"));
 		return;
-	} 
+	}
 	gtk_builder_set_translation_domain (gui, NULL);
 
 	sm = schematic_view_get_schematic (sv);
@@ -174,32 +153,29 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// Only allow one instance of the property box per schematic.
 	if (GTK_WIDGET (SETTINGS (s)->pbox)) {
-		gdk_window_raise (gtk_widget_get_window (
-		                   GTK_WIDGET (SETTINGS (s)->pbox)));
+		gdk_window_raise (gtk_widget_get_window (GTK_WIDGET (SETTINGS (s)->pbox)));
 		return;
 	}
 
 	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/settings.ui", &perror) <= 0) {
 		msg = perror->message;
-		oregano_error_with_title (_("Could not create settings dialog"), msg);
+		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_error_free (perror);
 		return;
 	}
 
 	w = toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
 	if (!w) {
-		oregano_error (_("Could not create settings dialog"));
+		oregano_error (_ ("Could not create settings dialog"));
 		return;
 	}
-	g_signal_connect (G_OBJECT (w), "delete_event",
-			  G_CALLBACK (delete_event_callback), s);
+	g_signal_connect (G_OBJECT (w), "delete_event", G_CALLBACK (delete_event_callback), s);
 
 	pbox = toplevel;
 	s->pbox = GTK_WIDGET (pbox);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "close_bt"));
-	g_signal_connect (G_OBJECT (w), "clicked",
-		G_CALLBACK (apply_callback), s);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (apply_callback), s);
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "splash-enable"));
 	s->w_show_splash = w;
@@ -207,8 +183,7 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "compress-enable"));
 	s->w_compress_files = w;
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w),
-								  oregano.compress_files);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.compress_files);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "log-enable"));
 	s->w_show_log = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_log);
@@ -222,39 +197,34 @@ settings_show (GtkWidget *widget, SchematicView *sv)
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
 		if (engine_group)
 			button[i] = gtk_radio_button_new_with_label_from_widget (
-			      GTK_RADIO_BUTTON (engine_group), engine[i]);
+			    GTK_RADIO_BUTTON (engine_group), engine[i]);
 		else
-			button[i] = engine_group = 
-		          gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
+			button[i] = engine_group =
+			    gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
 
 		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
 
 		gtk_grid_attach (GTK_GRID (w), button[i], 0, i, 1, 1);
-		g_signal_connect (G_OBJECT (button[i]), "clicked", 
-						  G_CALLBACK (set_engine_name), s);
-
+		g_signal_connect (G_OBJECT (button[i]), "clicked", G_CALLBACK (set_engine_name), s);
 	}
-	
+
 	// Is the engine available?
 	// In that case the button is active
 	if (g_find_program_in_path (engine[oregano.engine]) != NULL)
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), 
-		                              TRUE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), TRUE);
 	// Otherwise the button is inactive
 	else
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), 
-		                              FALSE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), FALSE);
 
 	// If no engine available, stop oregano
 	if ((g_find_program_in_path (engine[0]) == NULL) &&
 	    (g_find_program_in_path (engine[1]) == NULL)) {
-			gchar *msg;
-			msg = g_strdup_printf (
-			_("No engine allowing analysis is available.\n"
-			  "You might install one, at least! \n"
-			  "Either ngspice or gnucap."));
-			oregano_error_with_title (_("Could not create settings dialog"), msg);
-			g_free (msg);
+		gchar *msg;
+		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
+		                          "You might install one, at least! \n"
+		                          "Either ngspice or gnucap."));
+		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
+		g_free (msg);
 	}
 
 	gtk_widget_show_all (toplevel);

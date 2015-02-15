@@ -37,8 +37,7 @@
 #include "options.h"
 #include "schematic.h"
 
-int
-main (int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 	// keep in mind the app is a subclass of GtkApplication
 	// which is a subclass of GApplication
@@ -50,19 +49,15 @@ main (int argc, char *argv[])
 	int status;
 	gpointer class = NULL;
 
-
 #ifdef ENABLE_NLS
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
-
 	oregano_options_parse (&argc, &argv, &error);
 	if (error) {
-		g_warning ("Failed to parse commandline arguments: %i - %s",
-		           error->code,
-		           error->message);
+		g_warning ("Failed to parse commandline arguments: %i - %s", error->code, error->message);
 		g_clear_error (&error);
 		return 1;
 	}

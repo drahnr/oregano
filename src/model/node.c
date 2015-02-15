@@ -40,26 +40,15 @@
 static void node_class_init (NodeClass *klass);
 static void node_init (Node *node);
 
-enum {
-	NODE_DOT_ADDED,
-	NODE_DOT_REMOVED,
-	VOLTAGE_CHANGED,
-	LAST_SIGNAL
-};
+enum { NODE_DOT_ADDED, NODE_DOT_REMOVED, VOLTAGE_CHANGED, LAST_SIGNAL };
 
 G_DEFINE_TYPE (Node, node, G_TYPE_OBJECT)
 
-static guint node_signals [LAST_SIGNAL] = { 0 };
+static guint node_signals[LAST_SIGNAL] = {0};
 
-static void
-node_dispose (GObject *object)
-{
-	G_OBJECT_CLASS (node_parent_class)->dispose (object);
-}
+static void node_dispose (GObject *object) { G_OBJECT_CLASS (node_parent_class)->dispose (object); }
 
-
-static void
-node_finalize (GObject *object)
+static void node_finalize (GObject *object)
 {
 	g_return_if_fail (object != NULL);
 
@@ -74,8 +63,7 @@ node_finalize (GObject *object)
 	G_OBJECT_CLASS (node_parent_class)->finalize (object);
 }
 
-static void
-node_class_init (NodeClass *klass)
+static void node_class_init (NodeClass *klass)
 {
 	GObjectClass *object_class;
 
@@ -83,38 +71,21 @@ node_class_init (NodeClass *klass)
 	object_class->dispose = node_dispose;
 	object_class->finalize = node_finalize;
 	node_parent_class = g_type_class_peek_parent (klass);
-	
 
-	node_signals [NODE_DOT_ADDED] = g_signal_new ("node_dot_added",
-					  G_TYPE_FROM_CLASS (object_class),
-					  G_SIGNAL_RUN_FIRST,
-					  0,
-					  NULL,
-					  NULL,
-					  g_cclosure_marshal_VOID__POINTER,
-					  G_TYPE_NONE, 1, G_TYPE_POINTER);
+	node_signals[NODE_DOT_ADDED] =
+	    g_signal_new ("node_dot_added", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0,
+	                  NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	node_signals [NODE_DOT_REMOVED] = g_signal_new ("node_dot_removed",
-					  G_TYPE_FROM_CLASS (object_class),
-					  G_SIGNAL_RUN_FIRST,
-					  0,
-					  NULL,
-					  NULL,
-					  g_cclosure_marshal_VOID__POINTER,
-					  G_TYPE_NONE, 1, G_TYPE_POINTER);
+	node_signals[NODE_DOT_REMOVED] =
+	    g_signal_new ("node_dot_removed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0,
+	                  NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	node_signals [VOLTAGE_CHANGED] = g_signal_new ("voltage_changed",
-					  G_TYPE_FROM_CLASS (object_class),
-					  G_SIGNAL_RUN_FIRST,
-					  0,
-					  NULL,
-					  NULL,
-					  g_cclosure_marshal_VOID__VOID,
-					  G_TYPE_NONE, 0);
+	node_signals[VOLTAGE_CHANGED] =
+	    g_signal_new ("voltage_changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0,
+	                  NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
-static void
-node_init (Node *node)
+static void node_init (Node *node)
 {
 	node->pin_count = 0;
 	node->wire_count = 0;
@@ -123,22 +94,21 @@ node_init (Node *node)
 	node->visited = FALSE;
 }
 
-Node *
-node_new (Coords pos)
+Node *node_new (Coords pos)
 {
 	Node *node;
 
-	node = NODE (g_object_new (node_get_type(), NULL));
+	node = NODE (g_object_new (node_get_type (), NULL));
 
 	node->key = pos;
 
 	return node;
 }
 
-#define SEP(p1,p2) ((fabs(p1.x - p2.x) < 1e-3) && (fabs(p1.y - p2.y) < 1e-3))
-#define ON_THE_WIRE(p1,start,end) (fabs((end.y-start.y)*(p1.x-start.x)-(end.x-start.x)*(p1.y-start.y))<1.e-5)
-gboolean
-node_needs_dot (Node *node)
+#define SEP(p1, p2) ((fabs (p1.x - p2.x) < 1e-3) && (fabs (p1.y - p2.y) < 1e-3))
+#define ON_THE_WIRE(p1, start, end)                                                                \
+	(fabs ((end.y - start.y) * (p1.x - start.x) - (end.x - start.x) * (p1.y - start.y)) < 1.e-5)
+gboolean node_needs_dot (Node *node)
 {
 	Wire *wire1, *wire2;
 	Coords start_pos1, length1, end_pos1;
@@ -166,10 +136,8 @@ node_needs_dot (Node *node)
 		end_pos2.x = start_pos2.x + length2.x;
 		end_pos2.y = start_pos2.y + length2.y;
 
-		if (!(SEP (start_pos1, start_pos2) ||
-			  SEP (start_pos1, end_pos2)   ||
-			  SEP (end_pos1, end_pos2)     ||
-			  SEP (end_pos1, start_pos2))) {
+		if (!(SEP (start_pos1, start_pos2) || SEP (start_pos1, end_pos2) ||
+		      SEP (end_pos1, end_pos2) || SEP (end_pos1, start_pos2))) {
 			return TRUE;
 		}
 		return FALSE;
@@ -178,8 +146,7 @@ node_needs_dot (Node *node)
 	return FALSE;
 }
 
-gboolean
-node_add_pin (Node *node, Pin *pin)
+gboolean node_add_pin (Node *node, Pin *pin)
 {
 	gboolean dot;
 
@@ -202,8 +169,7 @@ node_add_pin (Node *node, Pin *pin)
 	return TRUE;
 }
 
-gboolean
-node_remove_pin (Node *node, Pin *pin)
+gboolean node_remove_pin (Node *node, Pin *pin)
 {
 	gboolean dot;
 
@@ -225,8 +191,7 @@ node_remove_pin (Node *node, Pin *pin)
 	return TRUE;
 }
 
-gboolean
-node_add_wire (Node *node, Wire *wire)
+gboolean node_add_wire (Node *node, Wire *wire)
 {
 	gboolean dot;
 
@@ -251,8 +216,7 @@ node_add_wire (Node *node, Wire *wire)
 	return TRUE;
 }
 
-gboolean
-node_remove_wire (Node *node, Wire *wire)
+gboolean node_remove_wire (Node *node, Wire *wire)
 {
 	gboolean dot;
 
@@ -280,8 +244,7 @@ node_remove_wire (Node *node, Wire *wire)
 	return TRUE;
 }
 
-gboolean
-node_is_empty (Node *node)
+gboolean node_is_empty (Node *node)
 {
 	g_return_val_if_fail (node != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE (node), FALSE);
@@ -292,8 +255,7 @@ node_is_empty (Node *node)
 	return FALSE;
 }
 
-gboolean
-node_is_visited (Node *node)
+gboolean node_is_visited (Node *node)
 {
 	g_return_val_if_fail (node != NULL, FALSE);
 	g_return_val_if_fail (IS_NODE (node), FALSE);
@@ -301,8 +263,7 @@ node_is_visited (Node *node)
 	return node->visited;
 }
 
-void
-node_set_visited (Node *node, gboolean is_visited)
+void node_set_visited (Node *node, gboolean is_visited)
 {
 	g_return_if_fail (node != NULL);
 	g_return_if_fail (IS_NODE (node));
@@ -310,23 +271,21 @@ node_set_visited (Node *node, gboolean is_visited)
 	node->visited = is_visited;
 }
 
-
 #define HASH_EPSILON 1e-3
 
 /**
  * Hash function to be used with a GHashTable (and others)
  */
-guint
-node_hash (gconstpointer key)
+guint node_hash (gconstpointer key)
 {
-	Coords *sp = (Coords *) key;
+	Coords *sp = (Coords *)key;
 	register int x, y;
-	const int shift = sizeof (int)*8/2;
+	const int shift = sizeof(int) * 8 / 2;
 
 	// Hash on any other node?
 
-	x = (int)rint (sp->x) % 1<<shift;
-	y = (int)rint (sp->y) % 1<<shift;
+	x = (int)rint (sp->x) % 1 << shift;
+	y = (int)rint (sp->y) % 1 << shift;
 
 	return (y << shift) | x;
 }
@@ -334,8 +293,7 @@ node_hash (gconstpointer key)
 /**
  * Comparsion function to be used with a GHashTable (and others)
  */
-gboolean
-node_equal (gconstpointer a, gconstpointer b)
+gboolean node_equal (gconstpointer a, gconstpointer b)
 {
 	const Coords *ca = a;
 	const Coords *cb = b;

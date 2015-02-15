@@ -54,25 +54,19 @@ static gboolean textbox_has_properties (ItemData *data);
 
 static void textbox_flip (ItemData *data, IDFlip direction, Coords *center);
 
+enum { TEXT_CHANGED, FONT_CHANGED, LAST_SIGNAL };
 
-enum {
-	TEXT_CHANGED,
-	FONT_CHANGED,
-	LAST_SIGNAL
-};
-
-struct _TextboxPriv {
+struct _TextboxPriv
+{
 	char *text;
 	char *font;
 };
 
 G_DEFINE_TYPE (Textbox, textbox, TYPE_ITEM_DATA)
 
-static guint textbox_signals[LAST_SIGNAL] = { 0 };
+static guint textbox_signals[LAST_SIGNAL] = {0};
 
-
-static void
-textbox_finalize (GObject *object)
+static void textbox_finalize (GObject *object)
 {
 	Textbox *textbox = TEXTBOX (object);
 	TextboxPriv *priv = textbox->priv;
@@ -82,14 +76,12 @@ textbox_finalize (GObject *object)
 	G_OBJECT_CLASS (textbox_parent_class)->finalize (object);
 }
 
-static void
-textbox_dispose (GObject *object)
+static void textbox_dispose (GObject *object)
 {
 	G_OBJECT_CLASS (textbox_parent_class)->dispose (object);
 }
 
-static void
-textbox_class_init (TextboxClass *klass)
+static void textbox_class_init (TextboxClass *klass)
 {
 	GObjectClass *object_class;
 	ItemDataClass *item_data_class;
@@ -99,26 +91,14 @@ textbox_class_init (TextboxClass *klass)
 	object_class = G_OBJECT_CLASS (klass);
 
 	textbox_signals[TEXT_CHANGED] =
-		g_signal_new ("text_changed",
-			G_TYPE_FROM_CLASS (object_class),
-			G_SIGNAL_RUN_FIRST,
-			0,
-			NULL,
-			NULL,
-			g_cclosure_marshal_VOID__STRING,
-			G_TYPE_NONE, 1, G_TYPE_STRING);
+	    g_signal_new ("text_changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
+	                  NULL, g_cclosure_marshal_VOID__STRING, G_TYPE_NONE, 1, G_TYPE_STRING);
 
 	textbox_signals[FONT_CHANGED] =
-		g_signal_new ("font_changed",
-			G_TYPE_FROM_CLASS (object_class),
-			G_SIGNAL_RUN_FIRST,
-			0,
-			NULL,
-			NULL,
-			g_cclosure_marshal_VOID__STRING,
-			G_TYPE_NONE, 1, G_TYPE_STRING);
+	    g_signal_new ("font_changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
+	                  NULL, g_cclosure_marshal_VOID__STRING, G_TYPE_NONE, 1, G_TYPE_STRING);
 
-	object_class->finalize= textbox_finalize;
+	object_class->finalize = textbox_finalize;
 	object_class->dispose = textbox_dispose;
 
 	item_data_class->clone = textbox_clone;
@@ -131,15 +111,13 @@ textbox_class_init (TextboxClass *klass)
 	item_data_class->print = textbox_print;
 }
 
-static void
-textbox_init (Textbox *textbox)
+static void textbox_init (Textbox *textbox)
 {
 	TextboxPriv *priv = g_new0 (TextboxPriv, 1);
 	textbox->priv = priv;
 }
 
-Textbox *
-textbox_new (char *font)
+Textbox *textbox_new (char *font)
 {
 	Textbox *textbox;
 
@@ -153,8 +131,7 @@ textbox_new (char *font)
 	return textbox;
 }
 
-static ItemData *
-textbox_clone (ItemData *src)
+static ItemData *textbox_clone (ItemData *src)
 {
 	Textbox *new_textbox;
 	ItemDataClass *id_class;
@@ -162,7 +139,7 @@ textbox_clone (ItemData *src)
 	g_return_val_if_fail (src != NULL, NULL);
 	g_return_val_if_fail (IS_TEXTBOX (src), NULL);
 
-	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS(src));
+	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (src));
 	if (id_class->copy == NULL)
 		return NULL;
 
@@ -172,8 +149,7 @@ textbox_clone (ItemData *src)
 	return ITEM_DATA (new_textbox);
 }
 
-static void
-textbox_copy (ItemData *dest, ItemData *src)
+static void textbox_copy (ItemData *dest, ItemData *src)
 {
 	Textbox *dest_textbox, *src_textbox;
 
@@ -192,8 +168,7 @@ textbox_copy (ItemData *dest, ItemData *src)
 	dest_textbox->priv->font = src_textbox->priv->font;
 }
 
-static void
-textbox_rotate (ItemData *data, int angle, Coords *center)
+static void textbox_rotate (ItemData *data, int angle, Coords *center)
 {
 	cairo_matrix_t affine;
 	double x, y;
@@ -215,7 +190,7 @@ textbox_rotate (ItemData *data, int angle, Coords *center)
 		textbox_center.y = b1.y + (b2.y - b1.y) / 2;
 	}
 
-	cairo_matrix_init_rotate (&affine, (double) angle * M_PI / 180);
+	cairo_matrix_init_rotate (&affine, (double)angle * M_PI / 180);
 
 	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (textbox), "rotated", angle);
@@ -236,8 +211,7 @@ textbox_rotate (ItemData *data, int angle, Coords *center)
 	}
 }
 
-static void
-textbox_flip (ItemData *data, IDFlip direction, Coords *center)
+static void textbox_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 	cairo_matrix_t affine;
 	double x, y;
@@ -280,26 +254,20 @@ textbox_flip (ItemData *data, IDFlip direction, Coords *center)
 	}
 }
 
-void
-textbox_update_bbox (Textbox *textbox)
+void textbox_update_bbox (Textbox *textbox)
 {
 	Coords b1, b2;
 	b1.x = 0.0;
-	b1.y = 0.0-5; // - font->ascent;
-	b2.x = 0.0+5; // + rbearing;
-	b2.y = 0.0+5; // + font->descent;
+	b1.y = 0.0 - 5; // - font->ascent;
+	b2.x = 0.0 + 5; // + rbearing;
+	b2.y = 0.0 + 5; // + font->descent;
 
 	item_data_set_relative_bbox (ITEM_DATA (textbox), &b1, &b2);
 }
 
-static gboolean
-textbox_has_properties (ItemData *data)
-{
-	return TRUE;
-}
+static gboolean textbox_has_properties (ItemData *data) { return TRUE; }
 
-void
-textbox_set_text (Textbox *textbox, const char *text)
+void textbox_set_text (Textbox *textbox, const char *text)
 {
 	g_return_if_fail (textbox != NULL);
 	g_return_if_fail (IS_TEXTBOX (textbox));
@@ -311,8 +279,7 @@ textbox_set_text (Textbox *textbox, const char *text)
 	g_signal_emit_by_name (G_OBJECT (textbox), "text_changed", text);
 }
 
-char *
-textbox_get_text (Textbox *textbox)
+char *textbox_get_text (Textbox *textbox)
 {
 	g_return_val_if_fail (textbox != NULL, NULL);
 	g_return_val_if_fail (IS_TEXTBOX (textbox), NULL);
@@ -320,8 +287,7 @@ textbox_get_text (Textbox *textbox)
 	return textbox->priv->text;
 }
 
-void
-textbox_set_font (Textbox *textbox, char *font)
+void textbox_set_font (Textbox *textbox, char *font)
 {
 	g_return_if_fail (textbox != NULL);
 	g_return_if_fail (IS_TEXTBOX (textbox));
@@ -334,12 +300,10 @@ textbox_set_font (Textbox *textbox, char *font)
 
 	textbox_update_bbox (textbox);
 
-	g_signal_emit_by_name(G_OBJECT (textbox),
-		"font_changed", textbox->priv->font);
+	g_signal_emit_by_name (G_OBJECT (textbox), "font_changed", textbox->priv->font);
 }
 
-char *
-textbox_get_font (Textbox *textbox)
+char *textbox_get_font (Textbox *textbox)
 {
 	g_return_val_if_fail (textbox != NULL, NULL);
 	g_return_val_if_fail (IS_TEXTBOX (textbox), NULL);
@@ -347,38 +311,36 @@ textbox_get_font (Textbox *textbox)
 	return textbox->priv->font;
 }
 
-static void
-textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
+static void textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
-/*	GnomeCanvasPoints *line;
-	double x0, y0;
-	ArtPoint dst, src;
-	double affine[6];
-	int i;
-	Textbox *textbox;
-	TextboxPriv *priv;
-	Coords pos;
+	/*	GnomeCanvasPoints *line;
+	        double x0, y0;
+	        ArtPoint dst, src;
+	        double affine[6];
+	        int i;
+	        Textbox *textbox;
+	        TextboxPriv *priv;
+	        Coords pos;
 
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_TEXTBOX (data));
+	        g_return_if_fail (data != NULL);
+	        g_return_if_fail (IS_TEXTBOX (data));
 
-	textbox = TEXTBOX (data);
-	priv = textbox->priv;
+	        textbox = TEXTBOX (data);
+	        priv = textbox->priv;
 
-	item_data_get_pos (ITEM_DATA (textbox), &pos);
-	src.x = pos.x;
-	src.y = pos.y;
+	        item_data_get_pos (ITEM_DATA (textbox), &pos);
+	        src.x = pos.x;
+	        src.y = pos.y;
 
-	art_affine_identity (affine);
+	        art_affine_identity (affine);
 
-	gnome_print_setfont (opc->ctx,
-		gnome_font_face_get_font_default (opc->label_font, 6));
-	print_draw_text (opc->ctx, priv->text, &src);
-	*/
+	        gnome_print_setfont (opc->ctx,
+	                gnome_font_face_get_font_default (opc->label_font, 6));
+	        print_draw_text (opc->ctx, priv->text, &src);
+	        */
 }
 
-static void
-textbox_unregister (ItemData *data)
+static void textbox_unregister (ItemData *data)
 {
 	NodeStore *store;
 
@@ -388,8 +350,7 @@ textbox_unregister (ItemData *data)
 	node_store_remove_textbox (store, TEXTBOX (data));
 }
 
-static int 
-textbox_register (ItemData *data)
+static int textbox_register (ItemData *data)
 {
 	NodeStore *store;
 

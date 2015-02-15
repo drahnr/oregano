@@ -4,7 +4,7 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- * 
+ *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
@@ -34,26 +34,25 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-#define GPLOT(obj)          G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT, GPlot)
-#define IS_GPLOT(obj)       G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT)
-#define TYPE_GPLOT			(g_plot_get_type())
+#define GPLOT(obj) G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT, GPlot)
+#define IS_GPLOT(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT)
+#define TYPE_GPLOT (g_plot_get_type ())
 
 typedef struct _GPlot GPlot;
-typedef struct _GPlotFunction {} GPlotFunction;
+typedef struct _GPlotFunction
+{
+} GPlotFunction;
 
-enum {
-	GPLOT_ZOOM_INOUT,
-	GPLOT_ZOOM_REGION
-};
+enum { GPLOT_ZOOM_INOUT, GPLOT_ZOOM_REGION };
 
-GType      g_plot_get_type ();
-GtkWidget* g_plot_new ();
-void       g_plot_clear (GPlot *);
-int        g_plot_add_function (GPlot *, GPlotFunction *);
-void       g_plot_set_zoom_mode (GPlot *, guint);
-guint      g_plot_get_zoom_mode (GPlot *);
-void       g_plot_reset_zoom (GPlot *);
-void       g_plot_set_axis_labels (GPlot *, gchar *, gchar *);
-void       g_plot_window_to_device (GPlot *, double *x, double *y);
+GType g_plot_get_type ();
+GtkWidget *g_plot_new ();
+void g_plot_clear (GPlot *);
+int g_plot_add_function (GPlot *, GPlotFunction *);
+void g_plot_set_zoom_mode (GPlot *, guint);
+guint g_plot_get_zoom_mode (GPlot *);
+void g_plot_reset_zoom (GPlot *);
+void g_plot_set_axis_labels (GPlot *, gchar *, gchar *);
+void g_plot_window_to_device (GPlot *, double *x, double *y);
 
 #endif

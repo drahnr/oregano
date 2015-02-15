@@ -57,15 +57,14 @@
 #include "stock/zoom_pan.xpm"
 #include "stock/zoom_region.xpm"
 
-static void
-add_stock_entry (const gchar *stock_id, char **xpm_data)
+static void add_stock_entry (const gchar *stock_id, char **xpm_data)
 {
 	static GtkIconFactory *factory = NULL;
 	GdkPixbuf *pixbuf;
 	GtkIconSet *icon_set;
 
 	if (!factory) {
-		factory =gtk_icon_factory_new ();
+		factory = gtk_icon_factory_new ();
 		gtk_icon_factory_add_default (factory);
 	}
 
@@ -76,8 +75,7 @@ add_stock_entry (const gchar *stock_id, char **xpm_data)
 	g_object_unref (G_OBJECT (pixbuf));
 }
 
-void
-stock_init (void)
+void stock_init (void)
 {
 	add_stock_entry (STOCK_PIXMAP_SIM_SETTINGS, sim_settings_xpm);
 	add_stock_entry (STOCK_PIXMAP_ROTATE, rotate_xpm);

@@ -49,19 +49,19 @@
 
 #include "debug.h"
 
-
-CreateWireInfo *
-create_wire_info_new (Sheet *sheet) {
+CreateWireInfo *create_wire_info_new (Sheet *sheet)
+{
 	CreateWireInfo *create_wire_info;
 	GooCanvasLineDash *dash;
-	
+
 	create_wire_info = g_new0 (CreateWireInfo, 1);
 
 	create_wire_info->state = WIRE_DISABLED;
-	
+
 	create_wire_info->direction = WIRE_DIR_HORIZ;
-//	create_wire_info->direction_auto_toggle = WIRE_DIRECTION_AUTO_TOGGLE_OFF;
-	
+	//	create_wire_info->direction_auto_toggle =
+	// WIRE_DIRECTION_AUTO_TOGGLE_OFF;
+
 	create_wire_info->points = goo_canvas_points_new (3);
 	create_wire_info->points->coords[0] = 0.;
 	create_wire_info->points->coords[1] = 0.;
@@ -69,36 +69,24 @@ create_wire_info_new (Sheet *sheet) {
 	create_wire_info->points->coords[3] = 0.;
 	create_wire_info->points->coords[4] = 0.;
 	create_wire_info->points->coords[5] = 0.;
-	
+
 	dash = goo_canvas_line_dash_new (2, 5.0, 5.0);
 
-	create_wire_info->line = GOO_CANVAS_POLYLINE (
-	    goo_canvas_polyline_new (GOO_CANVAS_ITEM (sheet->grid),
-	                             FALSE, 0,
-	                             "points", create_wire_info->points,
-	                             "stroke-color-rgba", 0x92BA52C3,
-	                             "line-dash", dash,
-	                             "line-width", 2.0,
-	                             "visibility", GOO_CANVAS_ITEM_INVISIBLE,
-	                             NULL));
+	create_wire_info->line = GOO_CANVAS_POLYLINE (goo_canvas_polyline_new (
+	    GOO_CANVAS_ITEM (sheet->grid), FALSE, 0, "points", create_wire_info->points,
+	    "stroke-color-rgba", 0x92BA52C3, "line-dash", dash, "line-width", 2.0, "visibility",
+	    GOO_CANVAS_ITEM_INVISIBLE, NULL));
 	goo_canvas_line_dash_unref (dash);
-	
-	create_wire_info->dot = GOO_CANVAS_ELLIPSE (
-	           goo_canvas_ellipse_new (GOO_CANVAS_ITEM (sheet->object_group),
-	                                  -3.0,-3.0,
-	                                   6.0, 6.0,
-	                                   "fill-color", "red",
-	                                   "visibility", GOO_CANVAS_ITEM_INVISIBLE,
-	                                   NULL));
 
+	create_wire_info->dot = GOO_CANVAS_ELLIPSE (goo_canvas_ellipse_new (
+	    GOO_CANVAS_ITEM (sheet->object_group), -3.0, -3.0, 6.0, 6.0, "fill-color", "red",
+	    "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL));
 
 	return create_wire_info;
 }
 
-
-
-void
-create_wire_info_destroy (CreateWireInfo *create_wire_info) {
+void create_wire_info_destroy (CreateWireInfo *create_wire_info)
+{
 	g_return_if_fail (create_wire_info);
 
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (create_wire_info->dot));
@@ -107,17 +95,14 @@ create_wire_info_destroy (CreateWireInfo *create_wire_info) {
 	g_free (create_wire_info);
 }
 
-
-
-inline static gboolean
-create_wire_start (Sheet *sheet, GdkEvent *event)
+inline static gboolean create_wire_start (Sheet *sheet, GdkEvent *event)
 {
 	double x, y;
 	GooCanvasPoints *points;
 	GooCanvasPolyline *line;
 	CreateWireInfo *create_wire_info;
 
-	//g_signal_stop_emission_by_name (sheet, "event");
+	// g_signal_stop_emission_by_name (sheet, "event");
 
 	create_wire_info = sheet->priv->create_wire_info;
 #if 0
@@ -126,13 +111,13 @@ create_wire_start (Sheet *sheet, GdkEvent *event)
 #endif
 	points = create_wire_info->points;
 	line = create_wire_info->line;
-	
+
 	g_assert (points);
 	g_assert (line);
-	
+
 	x = event->button.x;
 	y = event->button.y;
-	
+
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
 	snap_to_grid (sheet->grid, &x, &y);
 
@@ -152,11 +137,8 @@ create_wire_start (Sheet *sheet, GdkEvent *event)
 	points->coords[4] = x;
 	points->coords[5] = y;
 
-	g_object_set (G_OBJECT (line),
-	              "points", points,
-	              "visibility", GOO_CANVAS_ITEM_VISIBLE,
-	              NULL);
-	
+	g_object_set (G_OBJECT (line), "points", points, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
+
 	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
 	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->dot), NULL);
 
@@ -166,21 +148,17 @@ create_wire_start (Sheet *sheet, GdkEvent *event)
 	return TRUE;
 }
 
-
-
-inline static gboolean
-create_wire_update (Sheet *sheet, GdkEvent *event)
+inline static gboolean create_wire_update (Sheet *sheet, GdkEvent *event)
 {
 	CreateWireInfo *create_wire_info;
-	double new_x, new_y,
-	       x1, y1;
+	double new_x, new_y, x1, y1;
 	gint32 snapped_x, snapped_y;
 	Coords pos;
 
 	Schematic *schematic;
 	NodeStore *store;
 
-	//g_signal_stop_emission_by_name (sheet, "event");
+	// g_signal_stop_emission_by_name (sheet, "event");
 
 	create_wire_info = sheet->priv->create_wire_info;
 
@@ -192,10 +170,10 @@ create_wire_update (Sheet *sheet, GdkEvent *event)
 
 	new_x = event->button.x;
 	new_y = event->button.y;
-	
+
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &new_x, &new_y);
 	snap_to_grid (sheet->grid, &new_x, &new_y);
-	
+
 #if 0
 	Coords p;
 	sheet_get_pointer (sheet, &p.x, &p.y);
@@ -204,9 +182,9 @@ create_wire_update (Sheet *sheet, GdkEvent *event)
 
 	snapped_x = (gint32)new_x;
 	snapped_y = (gint32)new_y;
-	
+
 	/* start pos (do not update,
-	 * was fixed in _start func and will not change 
+	 * was fixed in _start func and will not change
 	 * until _discard or _fixate)
 	 */
 	x1 = create_wire_info->points->coords[0];
@@ -227,12 +205,10 @@ create_wire_update (Sheet *sheet, GdkEvent *event)
 	// end pos
 	create_wire_info->points->coords[4] = snapped_x;
 	create_wire_info->points->coords[5] = snapped_y;
-	
+
 	g_assert (create_wire_info->line);
-	//required to trigger goocanvas update of the line object
-	g_object_set (G_OBJECT (create_wire_info->line),
-	              "points", create_wire_info->points,
-	              NULL);
+	// required to trigger goocanvas update of the line object
+	g_object_set (G_OBJECT (create_wire_info->line), "points", create_wire_info->points, NULL);
 	pos.x = (gdouble)snapped_x;
 	pos.y = (gdouble)snapped_y;
 	/* Check if the pre-wire intersect another wire, and
@@ -244,54 +220,36 @@ create_wire_update (Sheet *sheet, GdkEvent *event)
 	const guint8 is_wire = node_store_is_wire_at_pos (store, pos);
 
 	if (is_pin || is_wire) {
-		g_object_set (G_OBJECT (create_wire_info->dot),
-		              "x", new_x-3.0,
-		              "y", new_y-3.0,
-		              "width", 6.0,
-		              "height", 6.0,
-		              "visibility", GOO_CANVAS_ITEM_VISIBLE,
-		              NULL);
+		g_object_set (G_OBJECT (create_wire_info->dot), "x", new_x - 3.0, "y", new_y - 3.0, "width",
+		              6.0, "height", 6.0, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
 	} else {
-		g_object_set (G_OBJECT(create_wire_info->dot),
-		              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+		g_object_set (G_OBJECT (create_wire_info->dot), "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 		              NULL);
-
 	}
 	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
 	return TRUE;
 }
 
-
-
-inline static gboolean
-create_wire_discard (Sheet *sheet, GdkEvent *event)
+inline static gboolean create_wire_discard (Sheet *sheet, GdkEvent *event)
 {
 	CreateWireInfo *create_wire_info;
 
-	//g_signal_stop_emission_by_name (sheet, "event");
+	// g_signal_stop_emission_by_name (sheet, "event");
 	NG_DEBUG ("wire got discarded");
 	sheet_keyboard_ungrab (sheet, event);
 	sheet_pointer_ungrab (sheet, event);
 
-	
 	create_wire_info = sheet->priv->create_wire_info;
-	g_object_set (G_OBJECT(create_wire_info->dot),
-	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
-	              NULL);
-	
-	
-	g_object_set (G_OBJECT(create_wire_info->line),
-	              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
-	              NULL);
-	
+	g_object_set (G_OBJECT (create_wire_info->dot), "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+
+	g_object_set (G_OBJECT (create_wire_info->line), "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+
 	create_wire_info->state = WIRE_START;
 
 	return TRUE;
 }
 
-
-inline static Wire *
-create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
+inline static Wire *create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 {
 	Wire *wire = NULL;
 	Coords length;
@@ -301,14 +259,13 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 	g_assert (IS_SHEET (sheet));
 
 	wire = wire_new (sheet->grid);
-	
+
 	length.x = end_pos.x - start_pos.x;
 	length.y = end_pos.y - start_pos.y;
 	wire_set_length (wire, &length);
 
 	item_data_set_pos (ITEM_DATA (wire), &start_pos);
-	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
-	                    ITEM_DATA (wire));
+	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), ITEM_DATA (wire));
 
 	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
 
@@ -316,8 +273,7 @@ create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
 }
 
 #define FINISH_ON_WIRE_CLICK 0
-inline static gboolean
-create_wire_fixate (Sheet *sheet, GdkEvent *event)
+inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 {
 	NodeStore *store;
 	Schematic *schematic;
@@ -331,9 +287,9 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 #endif
 	double x, y;
 
-	//g_signal_stop_emission_by_name (sheet, "event");
+	// g_signal_stop_emission_by_name (sheet, "event");
 
-	x = event->button.x; 
+	x = event->button.x;
 	y = event->button.y;
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), &x, &y);
 	snap_to_grid (sheet->grid, &x, &y);
@@ -345,43 +301,44 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 
 	p1.x = create_wire_info->points->coords[0];
 	p1.y = create_wire_info->points->coords[1];
-	
+
 	p2.x = x;
 	p2.y = y;
-	
+
 	NG_DEBUG ("x: %lf ?= %lf | y: %lf ?= %lf", p1.x, p2.x, p1.y, p2.y);
 
 	// if we are back at the starting point of our wire,
 	// and the user tries to fixate, just ignore it
 	// and mark the event as handled
-	if (coords_equal(&p1, &p2))
+	if (coords_equal (&p1, &p2))
 		return TRUE;
 
 	schematic = schematic_view_get_schematic_from_sheet (sheet);
-	g_assert (schematic);	
+	g_assert (schematic);
 	store = schematic_get_store (schematic);
 	g_assert (store);
-	
+
 	start_pos.x = create_wire_info->points->coords[0];
 	start_pos.y = create_wire_info->points->coords[1];
-	
+
 	mid_pos.x = create_wire_info->points->coords[2];
 	mid_pos.y = create_wire_info->points->coords[3];
-	
+
 	end_pos.x = create_wire_info->points->coords[4];
 	end_pos.y = create_wire_info->points->coords[5];
 
-
-	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", start_pos.x, start_pos.y, mid_pos.x, mid_pos.y, coords_equal(&start_pos, &mid_pos));
-	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y, coords_equal(&mid_pos, &end_pos));
+	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", start_pos.x, start_pos.y, mid_pos.x, mid_pos.y,
+	          coords_equal (&start_pos, &mid_pos));
+	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y,
+	          coords_equal (&mid_pos, &end_pos));
 
 #if FINISH_ON_WIRE_CLICK
 	// check for wires _before_ spawning wires
 	// otherwise we will end up with 1 anyways
 	b_finish = node_store_get_node (store, end_pos) || node_store_is_wire_at_pos (store, end_pos);
 #endif
-	b_start_eq_mid = coords_equal(&start_pos, &mid_pos);
-	b_mid_eq_end = coords_equal(&mid_pos, &end_pos);
+	b_start_eq_mid = coords_equal (&start_pos, &mid_pos);
+	b_mid_eq_end = coords_equal (&mid_pos, &end_pos);
 
 	if (!b_mid_eq_end && !b_start_eq_mid) {
 		NG_DEBUG ("we should get exactly 2 wires");
@@ -394,7 +351,7 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	} else {
 		NG_DEBUG ("looks like start == midpos");
 	}
-	
+
 	if (!b_mid_eq_end) {
 		wire = create_wire_spawn (sheet, mid_pos, end_pos);
 		g_assert (wire);
@@ -403,16 +360,16 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 		NG_DEBUG ("looks like midpos == endpos");
 	}
 
-	/* check if target location is either wire or node, 
-	 * if so,
-	 * set state to START and fixate both ends of the current wire
-	 */
+/* check if target location is either wire or node,
+ * if so,
+ * set state to START and fixate both ends of the current wire
+ */
 #if FINISH_ON_WIRE_CLICK
 	/*
 	 * auto-finish if the target is a wire or node
 	 */
 	if (b_finish)
-		return create_wire_discard (sheet,event);
+		return create_wire_discard (sheet, event);
 #endif
 	/*
 	 * update all position/cursor data for the next wire
@@ -425,31 +382,26 @@ create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	create_wire_info->points->coords[2] = x;
 	create_wire_info->points->coords[3] = y;
 
-	//required to trigger goocanvas update of the line object
-	g_object_set (G_OBJECT (create_wire_info->line),
-	              "points", create_wire_info->points,
-	              NULL);
+	// required to trigger goocanvas update of the line object
+	g_object_set (G_OBJECT (create_wire_info->line), "points", create_wire_info->points, NULL);
 
-	//toggle wire direction
+	// toggle wire direction
 	if (create_wire_info->direction == WIRE_DIR_VERT)
 		create_wire_info->direction = WIRE_DIR_HORIZ;
 	else
 		create_wire_info->direction = WIRE_DIR_VERT;
 
-	
 	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
 
 	/*
-         * do NOT ungrab sheet here, as we are still creating another wire
-         * this should be changed if on fixate means that we are back in state WIRE_START
-         */
+	 * do NOT ungrab sheet here, as we are still creating another wire
+	 * this should be changed if on fixate means that we are back in state
+	 * WIRE_START
+	 */
 	return TRUE;
 }
 
-
-
-gboolean
-create_wire_setup (Sheet *sheet)
+gboolean create_wire_setup (Sheet *sheet)
 {
 	CreateWireInfo *create_wire_info;
 
@@ -460,21 +412,20 @@ create_wire_setup (Sheet *sheet)
 	g_return_val_if_fail (create_wire_info, FALSE);
 
 	if (create_wire_info->state == WIRE_DISABLED) {
-		create_wire_info->event_handler_id = g_signal_connect (sheet, "event", 
-		                                                G_CALLBACK (create_wire_event), NULL);
-// this is also handled by event
-//		create_wire_info->cancel_handler_id = g_signal_connect (sheet, "cancel",
-//		                                                 G_CALLBACK (create_wire_discard), NULL);
+		create_wire_info->event_handler_id =
+		    g_signal_connect (sheet, "event", G_CALLBACK (create_wire_event), NULL);
+		// this is also handled by event
+		//		create_wire_info->cancel_handler_id = g_signal_connect (sheet,
+		//"cancel",
+		//		                                                 G_CALLBACK
+		//(create_wire_discard), NULL);
 	}
 
 	create_wire_info->state = WIRE_START;
 	return TRUE;
 }
 
-
-
-gboolean
-create_wire_orientationtoggle (Sheet *sheet)
+gboolean create_wire_orientationtoggle (Sheet *sheet)
 {
 	CreateWireInfo *create_wire_info;
 	GooCanvasPoints *points;
@@ -486,39 +437,32 @@ create_wire_orientationtoggle (Sheet *sheet)
 	g_return_val_if_fail (create_wire_info, FALSE);
 
 	points = create_wire_info->points;
-	
+
 	switch (create_wire_info->direction) {
-		case WIRE_DIR_HORIZ:
-			create_wire_info->direction = WIRE_DIR_VERT;
-			points->coords[2] = points->coords[0];
-			points->coords[3] = points->coords[5];
-			g_object_set (G_OBJECT (create_wire_info->line),
-			              "points", points,
-			              NULL);
-			break;
-		case WIRE_DIR_VERT:
-			create_wire_info->direction = WIRE_DIR_HORIZ;
-			points->coords[2] = points->coords[4];
-			points->coords[3] = points->coords[1];
-			g_object_set (G_OBJECT (create_wire_info->line),
-			              "points", points,
-			              NULL);
-			break;
-		default:
-			break;
+	case WIRE_DIR_HORIZ:
+		create_wire_info->direction = WIRE_DIR_VERT;
+		points->coords[2] = points->coords[0];
+		points->coords[3] = points->coords[5];
+		g_object_set (G_OBJECT (create_wire_info->line), "points", points, NULL);
+		break;
+	case WIRE_DIR_VERT:
+		create_wire_info->direction = WIRE_DIR_HORIZ;
+		points->coords[2] = points->coords[4];
+		points->coords[3] = points->coords[1];
+		g_object_set (G_OBJECT (create_wire_info->line), "points", points, NULL);
+		break;
+	default:
+		break;
 	}
 	return TRUE;
 }
 
-
-
-gboolean
-create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
-{	
+gboolean create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
+{
 	CreateWireInfo *create_wire_info;
 	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
-	
+
 	create_wire_info = sheet->priv->create_wire_info;
 	g_return_val_if_fail (create_wire_info, FALSE);
 
@@ -553,13 +497,13 @@ create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
 			return FALSE;
 		NG_DEBUG ("keypress 1");
 		switch (event->key.keyval) {
-			case GDK_KEY_Escape:
-				return create_wire_discard (sheet, event);
-			case GDK_KEY_R:
-			case GDK_KEY_r:
-				return create_wire_orientationtoggle (sheet);
-			default:
-				break;
+		case GDK_KEY_Escape:
+			return create_wire_discard (sheet, event);
+		case GDK_KEY_R:
+		case GDK_KEY_r:
+			return create_wire_orientationtoggle (sheet);
+		default:
+			break;
 		}
 	default:
 		break;
@@ -567,21 +511,19 @@ create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
 	return FALSE;
 }
 
-
-gboolean
-create_wire_cleanup (Sheet *sheet) {
+gboolean create_wire_cleanup (Sheet *sheet)
+{
 	CreateWireInfo *create_wire_info;
-	
+
 	create_wire_info = sheet->priv->create_wire_info;
-	if (create_wire_info && create_wire_info->state!=WIRE_DISABLED) {
-		g_object_set (G_OBJECT(create_wire_info->line),
-		              "visibility", GOO_CANVAS_ITEM_INVISIBLE,
+	if (create_wire_info && create_wire_info->state != WIRE_DISABLED) {
+		g_object_set (G_OBJECT (create_wire_info->line), "visibility", GOO_CANVAS_ITEM_INVISIBLE,
 		              NULL);
 		create_wire_info->state = WIRE_DISABLED;
 		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->event_handler_id);
-//		g_signal_handler_disconnect (G_OBJECT (sheet), create_wire_info->cancel_handler_id);
+		//		g_signal_handler_disconnect (G_OBJECT (sheet),
+		// create_wire_info->cancel_handler_id);
 	}
 
 	return TRUE;
 }
-

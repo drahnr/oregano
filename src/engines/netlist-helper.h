@@ -37,40 +37,43 @@
 #include "schematic.h"
 #include "sim-settings.h"
 
-typedef struct {
-	gint        node_nr; ///< Node number
+typedef struct
+{
+	gint node_nr; ///< Node number
 	GHashTable *pins;
 	GHashTable *models;
-	GSList	   *gnd_list;   ///< Ground parts on the schematic
-	GSList     *clamp_list; ///< Test clamps on the schematic
-	GSList	   *mark_list;
-	GList	   *node_and_number_list;
-	NodeStore  *store;
+	GSList *gnd_list;   ///< Ground parts on the schematic
+	GSList *clamp_list; ///< Test clamps on the schematic
+	GSList *mark_list;
+	GList *node_and_number_list;
+	NodeStore *store;
 } NetlistData;
 
-typedef struct {
-	gchar       *cmd;
-	gchar       *title;
-	GString     *template;
+typedef struct
+{
+	gchar *cmd;
+	gchar *title;
+	GString *template;
 	SimSettings *settings;
-	NodeStore   *store;
-	GList       *models;
+	NodeStore *store;
+	GList *models;
 } Netlist;
 
-typedef struct {
-	gint   node_nr;
+typedef struct
+{
+	gint node_nr;
 	gchar *name;
 } Marker;
 
-typedef struct {
-	gint  node_nr;
+typedef struct
+{
+	gint node_nr;
 	Node *node;
 } NodeAndNumber;
 
-void  		netlist_helper_init_data (NetlistData *data);
-void  		netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
-char 	*	netlist_helper_create_analysis_string (NodeStore *store, 
-    			gboolean do_ac);
-GSList 	*	netlist_helper_get_voltmeters_list (Schematic *sm, GError **error);
+void netlist_helper_init_data (NetlistData *data);
+void netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
+char *netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac);
+GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error);
 
 #endif

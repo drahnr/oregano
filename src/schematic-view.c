@@ -64,11 +64,7 @@
 #define ZOOM_MIN 0.35
 #define ZOOM_MAX 3
 
-enum {
-	CHANGED,
-	RESET_TOOL,
-	LAST_SIGNAL
-};
+enum { CHANGED, RESET_TOOL, LAST_SIGNAL };
 
 typedef enum {
 	SCHEMATIC_TOOL_ARROW,
@@ -77,88 +73,85 @@ typedef enum {
 	SCHEMATIC_TOOL_TEXT
 } SchematicTool;
 
-typedef struct {
-	GtkWidget 			*log_window;
-	GtkTextView 		*log_text;
-	GtkBuilder 			*log_gui;
+typedef struct
+{
+	GtkWidget *log_window;
+	GtkTextView *log_text;
+	GtkBuilder *log_gui;
 } LogInfo;
 
 struct _SchematicView
 {
-	GObject 		   parent;
-	GtkWidget 		  *toplevel;
+	GObject parent;
+	GtkWidget *toplevel;
 	SchematicViewPriv *priv;
 };
 
 struct _SchematicViewClass
 {
-	GObjectClass 		parent_class;
+	GObjectClass parent_class;
 
 	// Signals go here
-	void (*changed)		(SchematicView *schematic_view);
-	void (*reset_tool) 	(SchematicView *schematic_view);
+	void (*changed)(SchematicView *schematic_view);
+	void (*reset_tool)(SchematicView *schematic_view);
 };
 
-struct _SchematicViewPriv {
-	Schematic 			*schematic;
+struct _SchematicViewPriv
+{
+	Schematic *schematic;
 
-	Sheet 				*sheet;
+	Sheet *sheet;
 
-	GtkPageSetup 		*page_setup;
-	GtkPrintSettings 	*print_settings;
+	GtkPageSetup *page_setup;
+	GtkPrintSettings *print_settings;
 
-	gboolean 			 empty;
+	gboolean empty;
 
-	GtkActionGroup 		*action_group;
-	GtkUIManager 		*ui_manager;
+	GtkActionGroup *action_group;
+	GtkUIManager *ui_manager;
 
-	GtkWidget 			*floating_part_browser;
-	gpointer 			 browser;
+	GtkWidget *floating_part_browser;
+	gpointer browser;
 
-	GtkWidget			*logview;
-	GtkWidget			*paned;
-	guint 				 grid : 1;
-	SchematicTool 		 tool;
-	int 				 cursor;
+	GtkWidget *logview;
+	GtkWidget *paned;
+	guint grid : 1;
+	SchematicTool tool;
+	int cursor;
 
-	LogInfo				*log_info;
+	LogInfo *log_info;
 };
 
 G_DEFINE_TYPE (SchematicView, schematic_view, G_TYPE_OBJECT)
 
 // Class functions and members.
-static void schematic_view_init(SchematicView *sv);
-static void schematic_view_class_init(SchematicViewClass *klass);
-static void schematic_view_dispose(GObject *object);
-static void schematic_view_finalize(GObject *object);
+static void schematic_view_init (SchematicView *sv);
+static void schematic_view_class_init (SchematicViewClass *klass);
+static void schematic_view_dispose (GObject *object);
+static void schematic_view_finalize (GObject *object);
 static void schematic_view_load (SchematicView *sv, Schematic *sm);
 
 // Signal callbacks.
-static void title_changed_callback (Schematic *schematic, char *new_title,
-    			SchematicView *sv);
+static void title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv);
 static void set_focus (GtkWindow *window, GtkWidget *focus, SchematicView *sv);
-static int  delete_event (GtkWidget *widget, GdkEvent *event,
-    			SchematicView *sv);
-static void data_received (GtkWidget *widget, GdkDragContext *context,
-				gint x, gint y, GtkSelectionData *selection_data, guint info,
-				guint32 time, SchematicView *sv);
-static void	item_data_added_callback (Schematic *schematic, ItemData *data,
-    			SchematicView *sv);
-static void	item_selection_changed_callback (SheetItem *item, gboolean selected,
-    			SchematicView *sv);
-static void	reset_tool_cb (Sheet *sheet, SchematicView *sv);
+static int delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv);
+static void data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
+                           GtkSelectionData *selection_data, guint info, guint32 time,
+                           SchematicView *sv);
+static void item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *sv);
+static void item_selection_changed_callback (SheetItem *item, gboolean selected, SchematicView *sv);
+static void reset_tool_cb (Sheet *sheet, SchematicView *sv);
 
 // Misc.
-static int 			 can_close (SchematicView *sv);
-static void 		 setup_dnd (SchematicView *sv);
-static void 		 set_tool (SchematicView *sv, SchematicTool tool);
+static int can_close (SchematicView *sv);
+static void setup_dnd (SchematicView *sv);
+static void set_tool (SchematicView *sv, SchematicTool tool);
 
-static GList 		*schematic_view_list = NULL;
+static GList *schematic_view_list = NULL;
 static GObjectClass *parent_class = NULL;
-static guint 		 schematic_view_signals[LAST_SIGNAL] = { 0 };
+static guint schematic_view_signals[LAST_SIGNAL] = {0};
 
-static void
-new_cmd (GtkWidget *widget, Schematic *sv)
+static void new_cmd (GtkWidget *widget, Schematic *sv)
 {
 	Schematic *new_sm;
 	SchematicView *new_sv;
@@ -169,8 +162,7 @@ new_cmd (GtkWidget *widget, Schematic *sv)
 	gtk_widget_show_all (new_sv->toplevel);
 }
 
-static void
-properties_cmd (GtkWidget *widget, SchematicView *sv)
+static void properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
 	GtkBuilder *builder;
@@ -185,16 +177,16 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	s = schematic_view_get_schematic (sv);
 
 	if ((builder = gtk_builder_new ()) == NULL) {
-		log_append (schematic_get_log_store (s), _("SchematicView"), _("Could not create properties dialog"));
+		log_append (schematic_get_log_store (s), _ ("SchematicView"),
+		            _ ("Could not create properties dialog"));
 		return;
 	}
 	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/properties.ui",
-	    &e) <= 0) {
-		log_append_error (schematic_get_log_store (s),
-		                  _("SchematicView"),
-		                  _("Could not create properties dialog due to issues with " OREGANO_UIDIR "/properties.ui file."),
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/properties.ui", &e) <= 0) {
+		log_append_error (schematic_get_log_store (s), _ ("SchematicView"),
+		                  _ ("Could not create properties dialog due to issues with " OREGANO_UIDIR
+		                     "/properties.ui file."),
 		                  e);
 		g_clear_error (&e);
 		return;
@@ -215,7 +207,7 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	if (s_author)
 		gtk_entry_set_text (author, s_author);
 	if (s_comments)
-		gtk_text_buffer_set_text (buffer, s_comments, strlen(s_comments));
+		gtk_text_buffer_set_text (buffer, s_comments, strlen (s_comments));
 
 	button = gtk_dialog_run (GTK_DIALOG (window));
 
@@ -225,8 +217,8 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 		gtk_text_buffer_get_start_iter (buffer, &start);
 		gtk_text_buffer_get_end_iter (buffer, &end);
 
-		s_title = (gchar *) gtk_entry_get_text (title);
-		s_author = (gchar *) gtk_entry_get_text (author);
+		s_title = (gchar *)gtk_entry_get_text (title);
+		s_author = (gchar *)gtk_entry_get_text (author);
 		s_comments = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
 
 		schematic_set_title (s, s_title);
@@ -239,18 +231,13 @@ properties_cmd (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_destroy (window);
 }
 
-static void
-find_file (GtkButton *button, GtkEntry *text)
+static void find_file (GtkButton *button, GtkEntry *text)
 {
 	GtkWidget *dialog;
 
-	dialog = gtk_file_chooser_dialog_new (
-			_("Export to..."),
-			NULL,
-			GTK_FILE_CHOOSER_ACTION_SAVE,
-			GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-			GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-			NULL);
+	dialog = gtk_file_chooser_dialog_new (_ ("Export to..."), NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
+	                                      GTK_RESPONSE_ACCEPT, NULL);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *filename;
@@ -263,14 +250,13 @@ find_file (GtkButton *button, GtkEntry *text)
 	gtk_widget_destroy (dialog);
 }
 
-static void
-export_cmd (GtkWidget *widget, SchematicView *sv)
+static void export_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
 	GtkBuilder *builder;
 	GError *e = NULL;
 	GtkWidget *window;
-	GtkWidget* warning;
+	GtkWidget *warning;
 	GtkWidget *w;
 	GtkEntry *file = NULL;
 	GtkComboBoxText *combo;
@@ -280,14 +266,17 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	s = schematic_view_get_schematic (sv);
 
 	if ((builder = gtk_builder_new ()) == NULL) {
-		log_append (schematic_get_log_store (s), _("SchematicView"), _("Could not create properties dialog"));
+		log_append (schematic_get_log_store (s), _ ("SchematicView"),
+		            _ ("Could not create properties dialog"));
 		return;
 	}
 	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/export.ui",
-	    &e) <= 0) {
-		log_append_error (schematic_get_log_store (s), _("SchematicView"), _("Could not create properties dialog due to issues with " OREGANO_UIDIR "/exportp.ui file."), e);
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/export.ui", &e) <= 0) {
+		log_append_error (schematic_get_log_store (s), _ ("SchematicView"),
+		                  _ ("Could not create properties dialog due to issues with " OREGANO_UIDIR
+		                     "/exportp.ui file."),
+		                  e);
 		g_clear_error (&e);
 		return;
 	}
@@ -316,8 +305,7 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 	file = GTK_ENTRY (gtk_builder_get_object (builder, "file"));
 
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "find"));
-	g_signal_connect (G_OBJECT (w), "clicked",
-	                  G_CALLBACK (find_file), file);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file), file);
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
@@ -325,25 +313,21 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 
 	if (button == GTK_RESPONSE_OK) {
 
-	    if (g_path_skip_root (gtk_entry_get_text(file)) == NULL) {
+		if (g_path_skip_root (gtk_entry_get_text (file)) == NULL) {
 
 			warning = gtk_message_dialog_new_with_markup (
-					NULL,
-					GTK_DIALOG_MODAL,
-					GTK_MESSAGE_WARNING,
-					GTK_BUTTONS_OK,
-					_("<span weight=\"bold\" size=\"large\">No filename has "
-					   "been chosen</span>\n\n"
-					"Please, click on the tag, beside, to select an output."));
+			    NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK,
+			    _ ("<span weight=\"bold\" size=\"large\">No filename has "
+			       "been chosen</span>\n\n"
+			       "Please, click on the tag, beside, to select an output."));
 
-			if (gtk_dialog_run (GTK_DIALOG (warning)) == GTK_RESPONSE_OK)  {
+			if (gtk_dialog_run (GTK_DIALOG (warning)) == GTK_RESPONSE_OK) {
 				gtk_widget_destroy (GTK_WIDGET (warning));
 				export_cmd (widget, sv);
 				gtk_widget_destroy (GTK_WIDGET (window));
 				return;
 			}
-		}
-		else  {
+		} else {
 
 			int bg = 0;
 			GtkSpinButton *spinw, *spinh;
@@ -352,38 +336,33 @@ export_cmd (GtkWidget *widget, SchematicView *sv)
 			int i = gtk_combo_box_get_active (GTK_COMBO_BOX (combo));
 
 			w = GTK_WIDGET (gtk_builder_get_object (builder, "bgwhite"));
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 1;
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
+				bg = 1;
 			w = GTK_WIDGET (gtk_builder_get_object (builder, "bgblack"));
-			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w))) bg = 2;
+			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
+				bg = 2;
 			w = GTK_WIDGET (gtk_builder_get_object (builder, "color"));
 			if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (w)))
 				color_scheme = 1;
 
 			spinw = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "export_width"));
 			spinh = GTK_SPIN_BUTTON (gtk_builder_get_object (builder, "export_height"));
-			schematic_export (s,
-				gtk_entry_get_text (file),
-				gtk_spin_button_get_value_as_int (spinw),
-				gtk_spin_button_get_value_as_int (spinh),
-				bg,
-				color_scheme,
-				formats[i]);
+			schematic_export (
+			    s, gtk_entry_get_text (file), gtk_spin_button_get_value_as_int (spinw),
+			    gtk_spin_button_get_value_as_int (spinh), bg, color_scheme, formats[i]);
 		}
 	}
 
 	gtk_widget_destroy (window);
 }
 
-static void
-page_properties_cmd (GtkWidget *widget, SchematicView *sv)
+static void page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	sv->priv->page_setup = gtk_print_run_page_setup_dialog (NULL,
-						sv->priv->page_setup,
-						sv->priv->print_settings);
+	sv->priv->page_setup =
+	    gtk_print_run_page_setup_dialog (NULL, sv->priv->page_setup, sv->priv->print_settings);
 }
 
-static void
-open_cmd (GtkWidget *widget, SchematicView *sv)
+static void open_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *new_sm;
 	SchematicView *new_sv, *t;
@@ -397,7 +376,7 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 
 	// Repaint the other schematic windows before loading the new file.
 	new_sv = NULL;
-	for (iter=schematic_view_list; iter; iter=iter->next) {
+	for (iter = schematic_view_list; iter; iter = iter->next) {
 		t = SCHEMATIC_VIEW (iter->data);
 		if (t->priv->empty)
 			new_sv = t;
@@ -407,11 +386,11 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
 
-	new_sm = schematic_read(fname, &e);
+	new_sm = schematic_read (fname, &e);
 	if (e) {
-		gchar *const msg = g_strdup_printf(_("Could not load file \"file://%s\""), fname);
+		gchar *const msg = g_strdup_printf (_ ("Could not load file \"file://%s\""), fname);
 		Schematic *old = schematic_view_get_schematic (sv);
-		log_append_error (schematic_get_log_store(old), _("SchematicView"), msg, e);
+		log_append_error (schematic_get_log_store (old), _ ("SchematicView"), msg, e);
 		g_clear_error (&e);
 		g_free (msg);
 	}
@@ -430,9 +409,10 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 			} else {
 				gtk_recent_manager_remove_item (manager, uri, &e);
 				if (e) {
-					gchar *const msg = g_strdup_printf(_("Could not load recent file \"%s\""), uri);
+					gchar *const msg =
+					    g_strdup_printf (_ ("Could not load recent file \"%s\""), uri);
 					Schematic *old = schematic_view_get_schematic (sv);
-					log_append_error (schematic_get_log_store(old), _("SchematicView"), msg, e);
+					log_append_error (schematic_get_log_store (old), _ ("SchematicView"), msg, e);
 					g_clear_error (&e);
 					g_free (msg);
 				}
@@ -449,16 +429,14 @@ open_cmd (GtkWidget *widget, SchematicView *sv)
 
 		gtk_widget_show_all (new_sv->toplevel);
 		schematic_set_filename (new_sm, fname);
-		schematic_set_title (new_sm, g_path_get_basename(fname));
+		schematic_set_title (new_sm, g_path_get_basename (fname));
 
 		g_free (uri);
 	}
 	g_free (fname);
 }
 
-
-static void
-oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
+static void oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 {
 	gchar *uri;
 	const gchar *mime;
@@ -476,27 +454,28 @@ oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 	item = gtk_recent_manager_lookup_item (manager, uri, NULL);
 	if (!item)
 		return;
-	//remove and re-add in order to update the ordering
+	// remove and re-add in order to update the ordering
 	gtk_recent_manager_remove_item (manager, uri, &e);
 	if (e) {
-		gchar *const msg = g_strdup_printf(_("Could not load recent file \"%s\"\n%s"), uri, e->message);
-		oregano_error_with_title (_("Could not load recent file"), msg);
+		gchar *const msg =
+		    g_strdup_printf (_ ("Could not load recent file \"%s\"\n%s"), uri, e->message);
+		oregano_error_with_title (_ ("Could not load recent file"), msg);
 		g_clear_error (&e);
 		g_free (msg);
 	}
 	gtk_recent_manager_add_item (manager, uri);
 
 	mime = gtk_recent_info_get_mime_type (item);
-	if (!mime || strcmp (mime, "application/x-oregano")!=0) {
-		gchar *const msg = g_strdup_printf(_("Can not handle file with mimetype \"%s\""), mime);
-		oregano_error_with_title (_("Could not load recent file"), msg);
+	if (!mime || strcmp (mime, "application/x-oregano") != 0) {
+		gchar *const msg = g_strdup_printf (_ ("Can not handle file with mimetype \"%s\""), mime);
+		oregano_error_with_title (_ ("Could not load recent file"), msg);
 		g_clear_error (&e);
 		g_free (msg);
 
 	} else {
 		new_sm = schematic_read (uri, &e);
 		if (e) {
-			oregano_error_with_title (_("Could not load recent file"), e->message);
+			oregano_error_with_title (_ ("Could not load recent file"), e->message);
 			g_clear_error (&e);
 		}
 		if (new_sm) {
@@ -507,17 +486,15 @@ oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 
 			gtk_widget_show_all (new_sv->toplevel);
 			schematic_set_filename (new_sm, uri);
-			schematic_set_title (new_sm, g_path_get_basename(uri));
+			schematic_set_title (new_sm, g_path_get_basename (uri));
 		}
 	}
 
-	g_free(uri);
+	g_free (uri);
 	gtk_recent_info_unref (item);
 }
 
-
-static GtkWidget *
-create_recent_chooser_menu (GtkRecentManager *manager)
+static GtkWidget *create_recent_chooser_menu (GtkRecentManager *manager)
 {
 	GtkWidget *menu;
 	GtkRecentFilter *filter;
@@ -527,25 +504,22 @@ create_recent_chooser_menu (GtkRecentManager *manager)
 	gtk_recent_chooser_set_limit (GTK_RECENT_CHOOSER (menu), 10);
 
 	gtk_recent_chooser_set_local_only (GTK_RECENT_CHOOSER (menu), TRUE);
-	gtk_recent_chooser_set_sort_type (GTK_RECENT_CHOOSER (menu),
-			GTK_RECENT_SORT_MRU);
+	gtk_recent_chooser_set_sort_type (GTK_RECENT_CHOOSER (menu), GTK_RECENT_SORT_MRU);
 
 	filter = gtk_recent_filter_new ();
 	gtk_recent_filter_add_mime_type (filter, "application/x-oregano");
-	gtk_recent_filter_add_application (filter, g_get_application_name());
+	gtk_recent_filter_add_application (filter, g_get_application_name ());
 	gtk_recent_chooser_add_filter (GTK_RECENT_CHOOSER (menu), filter);
 	gtk_recent_chooser_set_filter (GTK_RECENT_CHOOSER (menu), filter);
 	gtk_recent_chooser_set_local_only (GTK_RECENT_CHOOSER (menu), TRUE);
-	g_signal_connect (menu, "item-activated",
-	        G_CALLBACK (oregano_recent_open), NULL);
+	g_signal_connect (menu, "item-activated", G_CALLBACK (oregano_recent_open), NULL);
 
 	gtk_widget_show_all (menu);
 
 	return menu;
 }
 
-static void
-display_recent_files (GtkWidget *menu, SchematicView *sv)
+static void display_recent_files (GtkWidget *menu, SchematicView *sv)
 {
 	SchematicViewPriv *priv = sv->priv;
 	GtkWidget *menuitem;
@@ -553,15 +527,14 @@ display_recent_files (GtkWidget *menu, SchematicView *sv)
 	GtkRecentManager *manager = NULL;
 
 	manager = gtk_recent_manager_get_default ();
-	menuitem = gtk_ui_manager_get_widget (priv->ui_manager,
-	    "/MainMenu/MenuFile/DisplayRecentFiles");
+	menuitem =
+	    gtk_ui_manager_get_widget (priv->ui_manager, "/MainMenu/MenuFile/DisplayRecentFiles");
 	recentmenu = create_recent_chooser_menu (manager);
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), recentmenu);
 	gtk_widget_show (menuitem);
 }
 
-static void
-save_cmd (GtkWidget *widget, SchematicView *sv)
+static void save_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
 	char *filename;
@@ -569,88 +542,78 @@ save_cmd (GtkWidget *widget, SchematicView *sv)
 	sm = sv->priv->schematic;
 	filename = schematic_get_filename (sm);
 
-	if (filename == NULL || !strcmp (filename, _("Untitled.oregano"))) {
+	if (filename == NULL || !strcmp (filename, _ ("Untitled.oregano"))) {
 		dialog_save_as (sv);
 		return;
 	} else {
 		if (!schematic_save_file (sm, &e)) {
-			log_append_error (schematic_get_log_store (sm), _("SchematicView"), _("Failed to save schematic file."), e);
+			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+			                  _ ("Failed to save schematic file."), e);
 			g_clear_error (&e);
 		}
 	}
 }
 
-static void
-save_as_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	dialog_save_as (sv);
-}
+static void save_as_cmd (GtkWidget *widget, SchematicView *sv) { dialog_save_as (sv); }
 
-static void
-close_cmd (GtkWidget *widget, SchematicView *sv)
+static void close_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (can_close (sv)) {
-		NG_DEBUG (" --- not dirty (anymore), do close schematic_view: %p -- vs -- toplevel: %p", sv, schematic_view_get_toplevel (sv));
+		NG_DEBUG (" --- not dirty (anymore), do close schematic_view: %p -- vs -- "
+		          "toplevel: %p",
+		          sv, schematic_view_get_toplevel (sv));
 		gtk_widget_destroy (GTK_WIDGET (schematic_view_get_toplevel (sv)));
 	}
 }
 
-static void
-select_all_cmd (GtkWidget *widget, SchematicView *sv)
+static void select_all_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	sheet_select_all (sv->priv->sheet, TRUE);
 }
 
-static void
-deselect_all_cmd (GtkWidget *widget, SchematicView *sv)
+static void deselect_all_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	sheet_select_all (sv->priv->sheet, FALSE);
 }
 
-static void
-delete_cmd (GtkWidget *widget, SchematicView *sv)
+static void delete_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	sheet_delete_selection (sv->priv->sheet);
 }
 
-static void
-rotate_cmd (GtkWidget *widget, SchematicView *sv)
+static void rotate_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state == SHEET_STATE_NONE)
 		sheet_rotate_selection (sv->priv->sheet, 90);
 	else if (sv->priv->sheet->state == SHEET_STATE_FLOAT ||
-			 sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
+	         sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
 		sheet_rotate_ghosts (sv->priv->sheet);
 }
 
-static void
-flip_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
+static void flip_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state == SHEET_STATE_NONE)
 		sheet_flip_selection (sv->priv->sheet, TRUE);
 	else if (sv->priv->sheet->state == SHEET_STATE_FLOAT ||
-			 sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
+	         sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
 		sheet_flip_ghosts (sv->priv->sheet, TRUE);
 }
 
-static void
-flip_vertical_cmd (GtkWidget *widget, SchematicView *sv)
+static void flip_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state == SHEET_STATE_NONE)
 		sheet_flip_selection (sv->priv->sheet, FALSE);
 	else if (sv->priv->sheet->state == SHEET_STATE_FLOAT ||
-			 sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
+	         sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
 		sheet_flip_ghosts (sv->priv->sheet, FALSE);
 }
 
-static void
-object_properties_cmd (GtkWidget *widget, SchematicView *sv)
+static void object_properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	sheet_provide_object_properties (sv->priv->sheet);
 }
 
-static void
-copy_cmd (GtkWidget *widget, SchematicView *sv)
+static void copy_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	SheetItem *item;
 	GList *list;
@@ -669,15 +632,14 @@ copy_cmd (GtkWidget *widget, SchematicView *sv)
 	g_list_free_full (list, g_object_unref);
 
 	if (clipboard_is_empty ())
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/MainMenu/MenuEdit/Paste"), FALSE);
+		gtk_action_set_sensitive (
+		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
 	else
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/MainMenu/MenuEdit/Paste"), TRUE);
+		gtk_action_set_sensitive (
+		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
 }
 
-static void
-cut_cmd (GtkWidget *widget, SchematicView *sv)
+static void cut_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state != SHEET_STATE_NONE)
 		return;
@@ -686,21 +648,16 @@ cut_cmd (GtkWidget *widget, SchematicView *sv)
 	sheet_delete_selection (sv->priv->sheet);
 
 	if (clipboard_is_empty ())
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/MainMenu/MenuEdit/Paste"), FALSE);
+		gtk_action_set_sensitive (
+		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
 	else
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/MainMenu/MenuEdit/Paste"), TRUE);
+		gtk_action_set_sensitive (
+		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
 }
 
-static void
-paste_objects (gpointer data, Sheet *sheet)
-{
-	sheet_item_paste (sheet, data);
-}
+static void paste_objects (gpointer data, Sheet *sheet) { sheet_item_paste (sheet, data); }
 
-static void
-paste_cmd (GtkWidget *widget, SchematicView *sv)
+static void paste_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state != SHEET_STATE_NONE)
 		return;
@@ -708,25 +665,16 @@ paste_cmd (GtkWidget *widget, SchematicView *sv)
 		sheet_clear_ghosts (sv->priv->sheet);
 
 	sheet_select_all (sv->priv->sheet, FALSE);
-	clipboard_foreach ((ClipBoardFunction) paste_objects, sv->priv->sheet);
+	clipboard_foreach ((ClipBoardFunction)paste_objects, sv->priv->sheet);
 	if (sheet_get_floating_objects (sv->priv->sheet))
-		sheet_connect_part_item_to_floating_group (sv->priv->sheet, (gpointer) sv);
+		sheet_connect_part_item_to_floating_group (sv->priv->sheet, (gpointer)sv);
 }
 
-static void
-about_cmd (GtkWidget *widget, Schematic *sm)
-{
-	dialog_about ();
-}
+static void about_cmd (GtkWidget *widget, Schematic *sm) { dialog_about (); }
 
-static void
-log_cmd (GtkWidget *widget, SchematicView *sv)
-{
-	schematic_view_log_show (sv, TRUE);
-}
+static void log_cmd (GtkWidget *widget, SchematicView *sv) { schematic_view_log_show (sv, TRUE); }
 
-static void
-show_label_cmd (GtkToggleAction *toggle, SchematicView *sv)
+static void show_label_cmd (GtkToggleAction *toggle, SchematicView *sv)
 {
 	gboolean show;
 	Schematic *sm;
@@ -740,11 +688,13 @@ show_label_cmd (GtkToggleAction *toggle, SchematicView *sv)
 	netlist_helper_create (sm, &netlist, &e);
 	if (e != NULL) {
 		if (g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-			g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
-			g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			log_append_error (schematic_get_log_store (sm), _("SchematicView"), _("Could not create a netlist."), e);
+		    g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+		    g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+			                  _ ("Could not create a netlist."), e);
 		} else {
-			log_append_error (schematic_get_log_store (sm), _("SchematicView"), _("Unexpect failure occured."), e);
+			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+			                  _ ("Unexpect failure occured."), e);
 		}
 		g_clear_error (&e);
 		return;
@@ -754,31 +704,26 @@ show_label_cmd (GtkToggleAction *toggle, SchematicView *sv)
 	sheet_update_parts (sv->priv->sheet);
 }
 
-static void
-print_cmd (GtkWidget *widget, SchematicView *sv)
+static void print_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	schematic_print (schematic_view_get_schematic (sv),
-		sv->priv->page_setup,
-		sv->priv->print_settings, FALSE);
+	schematic_print (schematic_view_get_schematic (sv), sv->priv->page_setup,
+	                 sv->priv->print_settings, FALSE);
 }
 
-static void
-print_preview_cmd (GtkWidget *widget, SchematicView *sv)
+static void print_preview_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	schematic_print (schematic_view_get_schematic (sv),
-		sv->priv->page_setup,
-		sv->priv->print_settings, TRUE);
+	schematic_print (schematic_view_get_schematic (sv), sv->priv->page_setup,
+	                 sv->priv->print_settings, TRUE);
 }
 
-static void
-quit_cmd (GtkWidget *widget, SchematicView *sv)
+static void quit_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	GList *iter, *copy;
 
 	// Duplicate the list as the list is modified during destruction.
 	copy = g_list_copy (schematic_view_list);
 
-	for (iter=copy; iter; iter=iter->next) {
+	for (iter = copy; iter; iter = iter->next) {
 		if (can_close (iter->data))
 			g_object_unref (iter->data);
 	}
@@ -787,8 +732,7 @@ quit_cmd (GtkWidget *widget, SchematicView *sv)
 	g_application_quit (g_application_get_default ());
 }
 
-static void
-v_clamp_cmd (SchematicView *sv)
+static void v_clamp_cmd (SchematicView *sv)
 {
 	LibraryPart *library_part;
 	Coords pos;
@@ -803,7 +747,7 @@ v_clamp_cmd (SchematicView *sv)
 	// Find default lib
 	for (lib = oregano.libraries; lib; lib = lib->next) {
 		l = (Library *)(lib->data);
-		if (!g_ascii_strcasecmp(l->name, "Default"))
+		if (!g_ascii_strcasecmp (l->name, "Default"))
 			break;
 	}
 
@@ -821,35 +765,32 @@ v_clamp_cmd (SchematicView *sv)
 	sheet_select_all (sv->priv->sheet, FALSE);
 	sheet_clear_ghosts (sv->priv->sheet);
 	sheet_add_ghost_item (sv->priv->sheet, ITEM_DATA (part));
-	sheet_connect_part_item_to_floating_group (sheet, (gpointer) sv);
+	sheet_connect_part_item_to_floating_group (sheet, (gpointer)sv);
 }
 
-static void
-tool_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
+static void tool_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
 {
 	switch (gtk_radio_action_get_current_value (current)) {
-		case 0:
-			set_tool (sv, SCHEMATIC_TOOL_ARROW);
-			break;
-		case 1:
-			set_tool (sv, SCHEMATIC_TOOL_TEXT);
-			break;
-		case 2:
-			set_tool (sv, SCHEMATIC_TOOL_WIRE);
-			break;
-		case 3:
-			v_clamp_cmd (sv);
+	case 0:
+		set_tool (sv, SCHEMATIC_TOOL_ARROW);
+		break;
+	case 1:
+		set_tool (sv, SCHEMATIC_TOOL_TEXT);
+		break;
+	case 2:
+		set_tool (sv, SCHEMATIC_TOOL_WIRE);
+		break;
+	case 3:
+		v_clamp_cmd (sv);
 	}
 }
 
-static void
-part_browser_cmd (GtkToggleAction *action, SchematicView *sv)
+static void part_browser_cmd (GtkToggleAction *action, SchematicView *sv)
 {
 	part_browser_toggle_visibility (sv);
 }
 
-static void
-grid_toggle_snap_cmd (GtkToggleAction *action, SchematicView *sv)
+static void grid_toggle_snap_cmd (GtkToggleAction *action, SchematicView *sv)
 {
 	sv->priv->grid = !sv->priv->grid;
 
@@ -857,9 +798,7 @@ grid_toggle_snap_cmd (GtkToggleAction *action, SchematicView *sv)
 	grid_show (sv->priv->sheet->grid, sv->priv->grid);
 }
 
-
-static void
-log_toggle_visibility_cmd (GtkToggleAction *action, SchematicView *sv)
+static void log_toggle_visibility_cmd (GtkToggleAction *action, SchematicView *sv)
 {
 	g_return_if_fail (sv);
 	g_return_if_fail (sv->priv->logview);
@@ -867,22 +806,20 @@ log_toggle_visibility_cmd (GtkToggleAction *action, SchematicView *sv)
 	GtkAllocation allocation;
 	gboolean b = gtk_toggle_action_get_active (action);
 	static int pos = 0;
-	if (pos==0)
+	if (pos == 0)
 		pos = gtk_paned_get_position (GTK_PANED (sv->priv->paned));
 
 	gtk_widget_get_allocation (GTK_WIDGET (sv->priv->paned), &allocation);
 	gtk_paned_set_position (GTK_PANED (sv->priv->paned), b ? pos : allocation.height);
 }
 
-static void
-smartsearch_cmd (GtkWidget *widget, SchematicView *sv)
+static void smartsearch_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	// Perform a research of a part within all librarys
 	g_print ("TODO: search_smart ()\n");
 }
 
-static void
-netlist_cmd (GtkWidget *widget, SchematicView *sv)
+static void netlist_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
 	gchar *netlist_name;
@@ -907,25 +844,25 @@ netlist_cmd (GtkWidget *widget, SchematicView *sv)
 
 	if (e) {
 		if (g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||
-			g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND)   ||
-			g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
-			log_append_error (schematic_get_log_store (sm), _("SchematicView"), _("Could not create a netlist."), e);
+		    g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND) ||
+		    g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_IO_ERROR)) {
+			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+			                  _ ("Could not create a netlist."), e);
 		} else {
-			log_append_error (schematic_get_log_store (sm), _("SchematicView"), _("Unexpect failure occured."), e);
+			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+			                  _ ("Unexpect failure occured."), e);
 		}
 		g_clear_error (&e);
 		return;
 	}
 }
 
-static void
-netlist_view_cmd (GtkWidget *widget, SchematicView *sv)
+static void netlist_view_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	netlist_editor_new_from_schematic_view (sv);
 }
 
-static void
-zoom_check (SchematicView *sv)
+static void zoom_check (SchematicView *sv)
 {
 	double zoom;
 
@@ -934,14 +871,15 @@ zoom_check (SchematicView *sv)
 
 	sheet_get_zoom (sv->priv->sheet, &zoom);
 
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-	    "/StandardToolbar/ZoomIn"), zoom < ZOOM_MAX);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-	    "/StandardToolbar/ZoomOut"), zoom > ZOOM_MIN);
+	gtk_action_set_sensitive (
+	    gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandardToolbar/ZoomIn"),
+	    zoom < ZOOM_MAX);
+	gtk_action_set_sensitive (
+	    gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandardToolbar/ZoomOut"),
+	    zoom > ZOOM_MIN);
 }
 
-static void
-zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
+static void zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
@@ -950,8 +888,7 @@ zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
 	zoom_check (sv);
 }
 
-static void
-zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
+static void zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
@@ -960,31 +897,29 @@ zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 	zoom_check (sv);
 }
 
-static void
-zoom_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
+static void zoom_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
 {
 	switch (gtk_radio_action_get_current_value (current)) {
-		case 0:
-			g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 0.50, NULL);
-			break;
-		case 1:
-			g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 0.75, NULL);
-			break;
-		case 2:
-			g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.0, NULL);
-			break;
-		case 3:
-			g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.25, NULL);
-			break;
-		case 4:
-			g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.5, NULL);
+	case 0:
+		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 0.50, NULL);
+		break;
+	case 1:
+		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 0.75, NULL);
+		break;
+	case 2:
+		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.0, NULL);
+		break;
+	case 3:
+		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.25, NULL);
+		break;
+	case 4:
+		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.5, NULL);
 		break;
 	}
 	zoom_check (sv);
 }
 
-static void
-simulate_cmd (GtkWidget *widget, SchematicView *sv)
+static void simulate_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	simulation_show (NULL, sv);
 
@@ -992,36 +927,26 @@ simulate_cmd (GtkWidget *widget, SchematicView *sv)
 	return;
 }
 
-static void
-schematic_view_class_init (SchematicViewClass *klass)
+static void schematic_view_class_init (SchematicViewClass *klass)
 {
 	GObjectClass *object_class;
 
 	object_class = G_OBJECT_CLASS (klass);
 	parent_class = g_type_class_peek_parent (klass);
-	schematic_view_signals[CHANGED] = g_signal_new ("changed",
-					G_TYPE_FROM_CLASS (object_class),
-					G_SIGNAL_RUN_FIRST,
-					G_STRUCT_OFFSET (SchematicViewClass, changed),
-					NULL,
-					NULL,
-					g_cclosure_marshal_VOID__VOID,
-					G_TYPE_NONE, 0);
-	schematic_view_signals[RESET_TOOL] = g_signal_new ("reset_tool",
-					G_TYPE_FROM_CLASS (object_class),
-					G_SIGNAL_RUN_FIRST,
-					G_STRUCT_OFFSET (SchematicViewClass, reset_tool),
-					NULL,
-					NULL,
-					g_cclosure_marshal_VOID__VOID,
-					G_TYPE_NONE, 0);
+	schematic_view_signals[CHANGED] =
+	    g_signal_new ("changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (SchematicViewClass, changed), NULL, NULL,
+	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+	schematic_view_signals[RESET_TOOL] =
+	    g_signal_new ("reset_tool", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (SchematicViewClass, reset_tool), NULL, NULL,
+	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
 	object_class->finalize = schematic_view_finalize;
 	object_class->dispose = schematic_view_dispose;
 }
 
-static void
-schematic_view_init (SchematicView *sv)
+static void schematic_view_init (SchematicView *sv)
 {
 	sv->priv = g_new0 (SchematicViewPriv, 1);
 	sv->priv->log_info = g_new0 (LogInfo, 1);
@@ -1033,11 +958,9 @@ schematic_view_init (SchematicView *sv)
 	sv->priv->logview = NULL;
 }
 
-static void
-schematic_view_finalize (GObject *object)
+static void schematic_view_finalize (GObject *object)
 {
 	SchematicView *sv = SCHEMATIC_VIEW (object);
-
 
 	if (sv->priv) {
 		g_free (sv->priv);
@@ -1052,8 +975,7 @@ schematic_view_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-schematic_view_dispose (GObject *object)
+static void schematic_view_dispose (GObject *object)
 {
 	SchematicView *sv = SCHEMATIC_VIEW (object);
 
@@ -1061,15 +983,13 @@ schematic_view_dispose (GObject *object)
 
 	// Disconnect sheet's events
 	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->priv->sheet),
-			G_CALLBACK (sheet_event_callback), sv->priv->sheet);
+	                                      G_CALLBACK (sheet_event_callback), sv->priv->sheet);
 
 	// Disconnect focus signal
-	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel),
-			G_CALLBACK (set_focus), sv);
+	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel), G_CALLBACK (set_focus), sv);
 
 	// Disconnect destroy event from toplevel
-	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel),
-			G_CALLBACK (delete_event), sv);
+	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel), G_CALLBACK (delete_event), sv);
 
 	if (sv->priv) {
 		g_object_unref (G_OBJECT (sv->priv->schematic));
@@ -1077,42 +997,41 @@ schematic_view_dispose (GObject *object)
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
-static void
-show_help (GtkWidget *widget, SchematicView *sv)
+static void show_help (GtkWidget *widget, SchematicView *sv)
 {
 	GError *e = NULL;
 
 	GtkWidget *temp;
 	temp = sv->toplevel;
 
-	if (!gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano",
-	             gtk_get_current_event_time (), &e)) {
+	if (!gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano", gtk_get_current_event_time (),
+	                   &e)) {
 		NG_DEBUG ("Error %s\n", e->message);
 		g_clear_error (&e);
 	}
 }
 
-
 /**
- * make the window occupy 3/4 of the screen with a padding of 50px in each direction
+ * make the window occupy 3/4 of the screen with a padding of 50px in each
+ * direction
  */
-static void
-set_window_size (SchematicView *sv)
+static void set_window_size (SchematicView *sv)
 {
 	// Set the window size to something reasonable
 	GdkScreen *screen = gdk_screen_get_default ();
 	if (screen) {
 		gint monitor_count = gdk_screen_get_n_monitors (screen);
 		// usually the bigger one is the primary one
-		// as the window is not realized yet (or for some other reason does not make a difference)
+		// as the window is not realized yet (or for some other reason does not make
+		// a difference)
 		gint monitor = gdk_screen_get_primary_monitor (screen);
 		GdkRectangle rect;
 		gdk_screen_get_monitor_geometry (screen, monitor, &rect);
 
-		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x, rect.y);
+		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x,
+		          rect.y);
 
-		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel),
-		                             3 * (rect.width - 50) / 4,
+		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 3 * (rect.width - 50) / 4,
 		                             3 * (rect.height - 50) / 4);
 	} else {
 		g_warning ("No default screen found. Falling back to 1024x768 window size.");
@@ -1121,8 +1040,7 @@ set_window_size (SchematicView *sv)
 }
 #include "schematic-view-menu.h"
 
-SchematicView *
-schematic_view_new (Schematic *schematic)
+SchematicView *schematic_view_new (Schematic *schematic)
 {
 	SchematicView *sv;
 	SchematicViewPriv *priv;
@@ -1143,25 +1061,22 @@ schematic_view_new (Schematic *schematic)
 	g_return_val_if_fail (schematic, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
 
-	sv = SCHEMATIC_VIEW (g_object_new (schematic_view_get_type(), NULL));
+	sv = SCHEMATIC_VIEW (g_object_new (schematic_view_get_type (), NULL));
 
 	schematic_view_list = g_list_prepend (schematic_view_list, sv);
 
 	sm = schematic_view_get_schematic (sv);
 
 	if ((builder = gtk_builder_new ()) == NULL) {
-		log_append (schematic_get_log_store (sm),
-		            _("SchematicView"),
-		            _("Failed to spawn builder object."));
+		log_append (schematic_get_log_store (sm), _ ("SchematicView"),
+		            _ ("Failed to spawn builder object."));
 		return NULL;
 	}
 	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/oregano-main.ui",
-	    &e) <= 0) {
-		log_append_error (schematic_get_log_store (sm),
-		                  _("SchematicView"),
-		                  _("Could not create main window from file."), e);
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/oregano-main.ui", &e) <= 0) {
+		log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+		                  _ ("Could not create main window from file."), e);
 		g_clear_error (&e);
 		return NULL;
 	}
@@ -1171,19 +1086,18 @@ schematic_view_new (Schematic *schematic)
 	paned = GTK_PANED (gtk_builder_get_object (builder, "paned"));
 	sv->priv->paned = paned;
 
-	//TODO make the size allocation dynamic - bug #45
-	sv->priv->sheet = SHEET (sheet_new (10000.,10000.));
+	// TODO make the size allocation dynamic - bug #45
+	sv->priv->sheet = SHEET (sheet_new (10000., 10000.));
 
-	g_signal_connect (G_OBJECT (sv->priv->sheet),
-	    "event", G_CALLBACK (sheet_event_callback),
-	    sv->priv->sheet);
+	g_signal_connect (G_OBJECT (sv->priv->sheet), "event", G_CALLBACK (sheet_event_callback),
+	                  sv->priv->sheet);
 
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 
 	w = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w),
-	    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w), GTK_POLICY_AUTOMATIC,
+	                                GTK_POLICY_AUTOMATIC);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (w), GTK_SHADOW_IN);
 	gtk_widget_set_hexpand (w, TRUE);
 	gtk_widget_set_vexpand (w, TRUE);
@@ -1193,8 +1107,7 @@ schematic_view_new (Schematic *schematic)
 
 	part_browser = part_browser_create (sv);
 	gtk_widget_set_hexpand (part_browser, FALSE);
-	gtk_grid_attach_next_to (grid, part_browser,
-	                         GTK_WIDGET (paned), GTK_POS_RIGHT, 1, 1);
+	gtk_grid_attach_next_to (grid, part_browser, GTK_WIDGET (paned), GTK_POS_RIGHT, 1, 1);
 
 	priv = sv->priv;
 	priv->log_info->log_window = NULL;
@@ -1202,11 +1115,11 @@ schematic_view_new (Schematic *schematic)
 	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
 	gtk_action_group_set_translation_domain (action_group, GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), sv);
-	gtk_action_group_add_radio_actions (action_group, zoom_entries,
-	                                    G_N_ELEMENTS (zoom_entries), 2, G_CALLBACK (zoom_cmd), sv);
-	gtk_action_group_add_radio_actions (action_group, tools_entries,
-	                                    G_N_ELEMENTS (tools_entries), 0, G_CALLBACK (tool_cmd), sv);
-	g_assert_cmpint (G_N_ELEMENTS (toggle_entries),>=,4);
+	gtk_action_group_add_radio_actions (action_group, zoom_entries, G_N_ELEMENTS (zoom_entries), 2,
+	                                    G_CALLBACK (zoom_cmd), sv);
+	gtk_action_group_add_radio_actions (action_group, tools_entries, G_N_ELEMENTS (tools_entries),
+	                                    0, G_CALLBACK (tool_cmd), sv);
+	g_assert_cmpint (G_N_ELEMENTS (toggle_entries), >=, 4);
 	gtk_action_group_add_toggle_actions (action_group, toggle_entries,
 	                                     G_N_ELEMENTS (toggle_entries), sv);
 
@@ -1216,8 +1129,7 @@ schematic_view_new (Schematic *schematic)
 	accel_group = gtk_ui_manager_get_accel_group (ui_manager);
 	gtk_window_add_accel_group (GTK_WINDOW (sv->toplevel), accel_group);
 
-	if (!gtk_ui_manager_add_ui_from_string (ui_manager, ui_description, -1,
-	    &e)) {
+	if (!gtk_ui_manager_add_ui_from_string (ui_manager, ui_description, -1, &e)) {
 		g_message ("building menus failed: %s", e->message);
 		g_clear_error (&e);
 		return NULL;
@@ -1237,17 +1149,14 @@ schematic_view_new (Schematic *schematic)
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
 	gtk_paned_pack1 (paned, vbox, FALSE, TRUE);
-	gtk_window_set_focus (GTK_WINDOW (sv->toplevel),
-	    GTK_WIDGET (sv->priv->sheet));
+	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), GTK_WIDGET (sv->priv->sheet));
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 
-	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus",
-	    G_CALLBACK (set_focus), sv);
-	g_signal_connect (G_OBJECT (sv->toplevel), "delete_event",
-	    G_CALLBACK (delete_event), sv);
+	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus", G_CALLBACK (set_focus), sv);
+	g_signal_connect (G_OBJECT (sv->toplevel), "delete_event", G_CALLBACK (delete_event), sv);
 
 	sv->priv->logview = logview = GTK_WIDGET (log_view_new ());
-	log_view_set_store (LOG_VIEW (logview), schematic_get_log_store(schematic));
+	log_view_set_store (LOG_VIEW (logview), schematic_get_log_store (schematic));
 
 	logview_scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
@@ -1256,48 +1165,47 @@ schematic_view_new (Schematic *schematic)
 	setup_dnd (sv);
 
 	// Set default sensitive for items
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager,
-	    "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager,
-	    "/MainMenu/MenuEdit/Paste"), FALSE);
+	gtk_action_set_sensitive (
+	    gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Paste"),
+	                          FALSE);
 
-	g_signal_connect_object (G_OBJECT (sv), "reset_tool",
-		G_CALLBACK (reset_tool_cb), G_OBJECT (sv), 0);
+	g_signal_connect_object (G_OBJECT (sv), "reset_tool", G_CALLBACK (reset_tool_cb), G_OBJECT (sv),
+	                         0);
 
 	set_window_size (sv);
 
 	schematic_view_load (sv, schematic);
 
 	if (!schematic_get_title (sv->priv->schematic)) {
-		gtk_window_set_title (GTK_WINDOW (sv->toplevel), _("Untitled.oregano"));
+		gtk_window_set_title (GTK_WINDOW (sv->toplevel), _ ("Untitled.oregano"));
 	} else {
-		gtk_window_set_title (GTK_WINDOW (sv->toplevel),
-					schematic_get_title (sv->priv->schematic));
+		gtk_window_set_title (GTK_WINDOW (sv->toplevel), schematic_get_title (sv->priv->schematic));
 	}
-	schematic_set_filename (sv->priv->schematic, _("Untitled.oregano"));
-	schematic_set_netlist_filename (sv->priv->schematic, _("Untitled.netlist"));
+	schematic_set_filename (sv->priv->schematic, _ ("Untitled.oregano"));
+	schematic_set_netlist_filename (sv->priv->schematic, _ ("Untitled.netlist"));
 
 	gtk_window_set_application (GTK_WINDOW (schematic_view_get_toplevel (sv)),
-		                            GTK_APPLICATION (g_application_get_default ()));
+	                            GTK_APPLICATION (g_application_get_default ()));
 
 	return sv;
 }
 
-static void
-schematic_view_load (SchematicView *sv, Schematic *sm)
+static void schematic_view_load (SchematicView *sv, Schematic *sm)
 {
 	GList *list;
 	g_return_if_fail (sv->priv->empty != FALSE);
 	g_return_if_fail (sm != NULL);
 
-	if (sv->priv->schematic) g_object_unref (G_OBJECT (sv->priv->schematic));
+	if (sv->priv->schematic)
+		g_object_unref (G_OBJECT (sv->priv->schematic));
 
 	sv->priv->schematic = sm;
 
-	g_signal_connect_object (G_OBJECT (sm), "title_changed",
-			G_CALLBACK (title_changed_callback), G_OBJECT (sv), 0);
+	g_signal_connect_object (G_OBJECT (sm), "title_changed", G_CALLBACK (title_changed_callback),
+	                         G_OBJECT (sv), 0);
 	g_signal_connect_object (G_OBJECT (sm), "item_data_added",
-			G_CALLBACK (item_data_added_callback), G_OBJECT (sv), 0);
+	                         G_CALLBACK (item_data_added_callback), G_OBJECT (sv), 0);
 
 	list = schematic_get_items (sm);
 
@@ -1310,31 +1218,29 @@ schematic_view_load (SchematicView *sv, Schematic *sm)
 	g_list_free_full (list, g_object_unref);
 }
 
-static void
-item_selection_changed_callback (SheetItem *item, gboolean selected,
-	SchematicView *sv)
+static void item_selection_changed_callback (SheetItem *item, gboolean selected, SchematicView *sv)
 {
 	guint length;
 
 	if (selected) {
 		sheet_prepend_selected_object (sv->priv->sheet, item);
-	}
-	else {
+	} else {
 		sheet_remove_selected_object (sv->priv->sheet, item);
 	}
 
 	length = sheet_get_selected_objects_length (sv->priv->sheet);
 	if (length && item_data_has_properties (sheet_item_get_data (item)))
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/MainMenu/MenuEdit/ObjectProperties"), TRUE);
+		gtk_action_set_sensitive (
+		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/ObjectProperties"),
+		    TRUE);
 	else
-		gtk_action_set_sensitive (gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
+		gtk_action_set_sensitive (
+		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/ObjectProperties"),
+		    FALSE);
 }
 
 // An ItemData got added; create an Item and set up the neccessary handlers.
-static void
-item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *sv)
+static void item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *sv)
 {
 	Sheet *sheet;
 	SheetItem *item;
@@ -1346,11 +1252,10 @@ item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *s
 	if (item != NULL) {
 		sheet_item_place (item, sv->priv->sheet);
 
-		g_object_set (G_OBJECT (item), "action_group", sv->priv->action_group,
-		    NULL);
+		g_object_set (G_OBJECT (item), "action_group", sv->priv->action_group, NULL);
 
 		g_signal_connect (G_OBJECT (item), "selection_changed",
-			G_CALLBACK (item_selection_changed_callback), sv);
+		                  G_CALLBACK (item_selection_changed_callback), sv);
 
 		sheet_add_item (sheet, item);
 		sv->priv->empty = FALSE;
@@ -1363,8 +1268,7 @@ item_data_added_callback (Schematic *schematic, ItemData *data, SchematicView *s
 	}
 }
 
-static void
-title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv)
+static void title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv)
 {
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
@@ -1374,8 +1278,7 @@ title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv
 	gtk_window_set_title (GTK_WINDOW (sv->toplevel), new_title);
 }
 
-static void
-set_focus (GtkWindow *window, GtkWidget *focus, SchematicView *sv)
+static void set_focus (GtkWindow *window, GtkWidget *focus, SchematicView *sv)
 {
 	g_return_if_fail (sv->priv != NULL);
 	g_return_if_fail (sv->priv->sheet != NULL);
@@ -1384,19 +1287,16 @@ set_focus (GtkWindow *window, GtkWidget *focus, SchematicView *sv)
 		gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 }
 
-static int
-delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
+static int delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 {
 	if (can_close (sv)) {
 		g_object_unref (G_OBJECT (sv));
 		return FALSE;
-	}
-	else
+	} else
 		return TRUE;
 }
 
-static int
-can_close (SchematicView *sv)
+static int can_close (SchematicView *sv)
 {
 	GtkWidget *dialog;
 	gchar *text, *filename;
@@ -1404,27 +1304,21 @@ can_close (SchematicView *sv)
 	gint result;
 
 	if (!schematic_is_dirty (schematic_view_get_schematic (sv)))
-			return TRUE;
+		return TRUE;
 
 	filename = schematic_get_filename (sv->priv->schematic);
-	text = g_strdup_printf (_("<span weight=\"bold\" size=\"large\">Save "
-	    "changes to schematic %s before closing?</span>\n\nIf you don't save, "
-	    "all changes since you last saved will be permanently lost."),
-		filename ?	g_path_get_basename (filename) : NULL );
+	text =
+	    g_strdup_printf (_ ("<span weight=\"bold\" size=\"large\">Save "
+	                        "changes to schematic %s before closing?</span>\n\nIf you don't save, "
+	                        "all changes since you last saved will be permanently lost."),
+	                     filename ? g_path_get_basename (filename) : NULL);
 
-	dialog = gtk_message_dialog_new_with_markup (
-			NULL,
-			GTK_DIALOG_MODAL,
-			GTK_MESSAGE_WARNING,
-			GTK_BUTTONS_NONE,
-			_(text), NULL);
+	dialog = gtk_message_dialog_new_with_markup (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
+	                                             GTK_BUTTONS_NONE, _ (text), NULL);
 
-	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
-			_("Close _without Saving"),
-			GTK_RESPONSE_NO,
-			GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-			GTK_STOCK_SAVE, GTK_RESPONSE_YES,
-			NULL);
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog), _ ("Close _without Saving"), GTK_RESPONSE_NO,
+	                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_YES,
+	                        NULL);
 
 	g_free (text);
 
@@ -1433,24 +1327,23 @@ can_close (SchematicView *sv)
 	gtk_widget_destroy (dialog);
 
 	switch (result) {
-		case GTK_RESPONSE_YES:
-			schematic_save_file (sv->priv->schematic, &e);
-			if (e) {
-				g_clear_error (&e);
-			}
-			break;
-		case GTK_RESPONSE_NO:
-			schematic_set_dirty (sv->priv->schematic, FALSE);
-			break;
-		case GTK_RESPONSE_CANCEL:
-			default:
-				return FALSE;
+	case GTK_RESPONSE_YES:
+		schematic_save_file (sv->priv->schematic, &e);
+		if (e) {
+			g_clear_error (&e);
+		}
+		break;
+	case GTK_RESPONSE_NO:
+		schematic_set_dirty (sv->priv->schematic, FALSE);
+		break;
+	case GTK_RESPONSE_CANCEL:
+	default:
+		return FALSE;
 	}
 	return TRUE;
 }
 
-Sheet *
-schematic_view_get_sheet (SchematicView *sv)
+Sheet *schematic_view_get_sheet (SchematicView *sv)
 {
 	g_return_val_if_fail (sv != NULL, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), NULL);
@@ -1458,8 +1351,7 @@ schematic_view_get_sheet (SchematicView *sv)
 	return sv->priv->sheet;
 }
 
-Schematic *
-schematic_view_get_schematic (SchematicView *sv)
+Schematic *schematic_view_get_schematic (SchematicView *sv)
 {
 	g_return_val_if_fail (sv != NULL, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), NULL);
@@ -1467,8 +1359,7 @@ schematic_view_get_schematic (SchematicView *sv)
 	return sv->priv->schematic;
 }
 
-void
-schematic_view_reset_tool (SchematicView *sv)
+void schematic_view_reset_tool (SchematicView *sv)
 {
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
@@ -1476,83 +1367,74 @@ schematic_view_reset_tool (SchematicView *sv)
 	g_signal_emit_by_name (G_OBJECT (sv), "reset_tool");
 }
 
-static void
-setup_dnd (SchematicView *sv)
+static void setup_dnd (SchematicView *sv)
 {
-	static GtkTargetEntry dnd_types[] = {
-			{ "text/uri-list", 0, DRAG_URI_INFO },
-			{ "x-application/oregano-part", 0, DRAG_PART_INFO }
-	};
-	static gint dnd_num_types = sizeof (dnd_types) / sizeof (dnd_types[0]);
+	static GtkTargetEntry dnd_types[] = {{"text/uri-list", 0, DRAG_URI_INFO},
+	                                     {"x-application/oregano-part", 0, DRAG_PART_INFO}};
+	static gint dnd_num_types = sizeof(dnd_types) / sizeof(dnd_types[0]);
 
 	gtk_drag_dest_set (GTK_WIDGET (sv->priv->sheet),
-			GTK_DEST_DEFAULT_MOTION |
-			GTK_DEST_DEFAULT_HIGHLIGHT |
-			GTK_DEST_DEFAULT_DROP,
-			dnd_types, dnd_num_types, GDK_ACTION_MOVE);
+	                   GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_HIGHLIGHT | GTK_DEST_DEFAULT_DROP,
+	                   dnd_types, dnd_num_types, GDK_ACTION_MOVE);
 
-	g_signal_connect (G_OBJECT (sv->priv->sheet), "drag_data_received",
-			G_CALLBACK (data_received),
-			"koko");
+	g_signal_connect (G_OBJECT (sv->priv->sheet), "drag_data_received", G_CALLBACK (data_received),
+	                  "koko");
 }
 
-static void
-data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
-		 GtkSelectionData *selection_data, guint info, guint32 time,
-		 SchematicView *sv)
+static void data_received (GtkWidget *widget, GdkDragContext *context, gint x, gint y,
+                           GtkSelectionData *selection_data, guint info, guint32 time,
+                           SchematicView *sv)
 {
 	gchar **files;
 	GError *e = NULL;
 
 	// Extract the filenames from the URI-list we received.
 	switch (info) {
-		case DRAG_PART_INFO:
-			part_browser_dnd (selection_data, x, y);
+	case DRAG_PART_INFO:
+		part_browser_dnd (selection_data, x, y);
 		break;
-		case DRAG_URI_INFO:
-			files = g_strsplit ((gchar *) gtk_selection_data_get_data (selection_data), "\n", -1);
-			if (files) {
-				int i=0;
-				while (files[i]) {
-					Schematic *new_sm = NULL;
-					int l = strlen (files[i]);
-					// Algo remains bad after the split: we agregate back into one \0
-					files[i][l-1] = '\0';
+	case DRAG_URI_INFO:
+		files = g_strsplit ((gchar *)gtk_selection_data_get_data (selection_data), "\n", -1);
+		if (files) {
+			int i = 0;
+			while (files[i]) {
+				Schematic *new_sm = NULL;
+				int l = strlen (files[i]);
+				// Algo remains bad after the split: we agregate back into one \0
+				files[i][l - 1] = '\0';
 
-					if (l <= 0) {
-						// Empty file name, ignore!
-						i++;
-						continue;
-					}
-
-					gchar *fname = files[i];
-
-					new_sm = schematic_read (fname, &e);
-					if (e) {
-//						g_warning ()
-						g_clear_error (&e);
-					}
-					if (new_sm) {
-						SchematicView *new_view;
-						new_view = schematic_view_new (new_sm);
-						if (new_view) {
-							gtk_widget_show_all (new_view->toplevel);
-							schematic_set_filename (new_sm, fname);
-						}
-						// schematic_set_title (new_sm, fname);
-						while (gtk_events_pending ()) // Show something.
-							gtk_main_iteration ();
-						}
-						i++;
-					}
+				if (l <= 0) {
+					// Empty file name, ignore!
+					i++;
+					continue;
 				}
+
+				gchar *fname = files[i];
+
+				new_sm = schematic_read (fname, &e);
+				if (e) {
+					//						g_warning ()
+					g_clear_error (&e);
+				}
+				if (new_sm) {
+					SchematicView *new_view;
+					new_view = schematic_view_new (new_sm);
+					if (new_view) {
+						gtk_widget_show_all (new_view->toplevel);
+						schematic_set_filename (new_sm, fname);
+					}
+					// schematic_set_title (new_sm, fname);
+					while (gtk_events_pending ()) // Show something.
+						gtk_main_iteration ();
+				}
+				i++;
+			}
+		}
 	}
 	gtk_drag_finish (context, TRUE, TRUE, time);
 }
 
-
-static void
-set_tool (SchematicView *sv, SchematicTool tool)
+static void set_tool (SchematicView *sv, SchematicTool tool)
 {
 	// Switch from this tool...
 	switch (sv->priv->tool) {
@@ -1562,19 +1444,19 @@ set_tool (SchematicView *sv, SchematicTool tool)
 		sheet_item_cancel_floating (sv->priv->sheet);
 		break;
 	case SCHEMATIC_TOOL_WIRE:
-			/*if (sv->priv->create_wire_context) {
-					create_wire_exit (sv->priv->create_wire_context);
-					sv->priv->create_wire_context = NULL;
-			}*/
-			sheet_stop_create_wire (sv->priv->sheet);
-			break;
+		/*if (sv->priv->create_wire_context) {
+		                create_wire_exit (sv->priv->create_wire_context);
+		                sv->priv->create_wire_context = NULL;
+		}*/
+		sheet_stop_create_wire (sv->priv->sheet);
+		break;
 	case SCHEMATIC_TOOL_TEXT:
-			textbox_item_cancel_listen (sv->priv->sheet);
-			break;
+		textbox_item_cancel_listen (sv->priv->sheet);
+		break;
 	case SCHEMATIC_TOOL_PART:
-			sheet_item_cancel_floating (sv->priv->sheet);
+		sheet_item_cancel_floating (sv->priv->sheet);
 	default:
-			break;
+		break;
 	}
 
 	// ...to this tool.
@@ -1584,8 +1466,7 @@ set_tool (SchematicView *sv, SchematicTool tool)
 		sv->priv->sheet->state = SHEET_STATE_NONE;
 		break;
 	case SCHEMATIC_TOOL_WIRE:
-		cursor_set_widget (GTK_WIDGET (sv->priv->sheet),
-			OREGANO_CURSOR_PENCIL);
+		cursor_set_widget (GTK_WIDGET (sv->priv->sheet), OREGANO_CURSOR_PENCIL);
 		sv->priv->sheet->state = SHEET_STATE_WIRE;
 		sheet_initiate_create_wire (sv->priv->sheet);
 		break;
@@ -1596,8 +1477,7 @@ set_tool (SchematicView *sv, SchematicTool tool)
 		textbox_item_listen (sv->priv->sheet);
 		break;
 	case SCHEMATIC_TOOL_PART:
-		cursor_set_widget (GTK_WIDGET (sv->priv->sheet),
-		                   OREGANO_CURSOR_LEFT_PTR);
+		cursor_set_widget (GTK_WIDGET (sv->priv->sheet), OREGANO_CURSOR_LEFT_PTR);
 	default:
 		break;
 	}
@@ -1605,18 +1485,16 @@ set_tool (SchematicView *sv, SchematicTool tool)
 	sv->priv->tool = tool;
 }
 
-static void
-reset_tool_cb (Sheet *sheet, SchematicView *sv)
+static void reset_tool_cb (Sheet *sheet, SchematicView *sv)
 {
 	set_tool (sv, SCHEMATIC_TOOL_ARROW);
 
-	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (
-	    gtk_ui_manager_get_action (sv->priv->ui_manager,
-		    "/StandardToolbar/Arrow")), 0);
+	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (gtk_ui_manager_get_action (
+	                                        sv->priv->ui_manager, "/StandardToolbar/Arrow")),
+	                                    0);
 }
 
-gpointer
-schematic_view_get_browser (SchematicView *sv)
+gpointer schematic_view_get_browser (SchematicView *sv)
 {
 	g_return_val_if_fail (sv != NULL, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), NULL);
@@ -1624,8 +1502,7 @@ schematic_view_get_browser (SchematicView *sv)
 	return sv->priv->browser;
 }
 
-void
-schematic_view_set_browser (SchematicView *sv, gpointer p)
+void schematic_view_set_browser (SchematicView *sv, gpointer p)
 {
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
@@ -1633,28 +1510,24 @@ schematic_view_set_browser (SchematicView *sv, gpointer p)
 	sv->priv->browser = p;
 }
 
-static gboolean
-log_window_delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
+static gboolean log_window_delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 {
 	sv->priv->log_info->log_window = NULL;
 	return FALSE;
 }
 
-static void
-log_window_destroy_event (GtkWidget *widget, SchematicView *sv)
+static void log_window_destroy_event (GtkWidget *widget, SchematicView *sv)
 {
 	sv->priv->log_info->log_window = NULL;
 }
 
-static void
-log_window_close_cb (GtkWidget *widget, SchematicView *sv)
+static void log_window_close_cb (GtkWidget *widget, SchematicView *sv)
 {
 	gtk_widget_destroy (sv->priv->log_info->log_window);
 	sv->priv->log_info->log_window = NULL;
 }
 
-static void
-log_window_clear_cb (GtkWidget *widget, SchematicView *sv)
+static void log_window_clear_cb (GtkWidget *widget, SchematicView *sv)
 {
 	GtkTextTagTable *tag;
 	GtkTextBuffer *buf;
@@ -1664,18 +1537,15 @@ log_window_clear_cb (GtkWidget *widget, SchematicView *sv)
 
 	schematic_log_clear (sv->priv->schematic);
 
-	gtk_text_view_set_buffer (GTK_TEXT_VIEW (sv->priv->log_info->log_text),
-			GTK_TEXT_BUFFER (buf));
+	gtk_text_view_set_buffer (GTK_TEXT_VIEW (sv->priv->log_info->log_text), GTK_TEXT_BUFFER (buf));
 }
 
-static void
-log_updated_callback (Schematic *sm, SchematicView *sv)
+static void log_updated_callback (Schematic *sm, SchematicView *sv)
 {
 	schematic_view_log_show (sv, FALSE);
 }
 
-void
-schematic_view_log_show (SchematicView *sv, gboolean explicit)
+void schematic_view_log_show (SchematicView *sv, gboolean explicit)
 {
 	GtkWidget *w;
 	Schematic *sm;
@@ -1687,7 +1557,8 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 	sm = sv->priv->schematic;
 
 	if ((sv->priv->log_info->log_gui = gtk_builder_new ()) == NULL) {
-		log_append (schematic_get_log_store (sm), _("SchematicView"), _("Could not create the log window."));
+		log_append (schematic_get_log_store (sm), _ ("SchematicView"),
+		            _ ("Could not create the log window."));
 		return;
 	}
 	gtk_builder_set_translation_domain (sv->priv->log_info->log_gui, NULL);
@@ -1697,79 +1568,64 @@ schematic_view_log_show (SchematicView *sv, gboolean explicit)
 		if (!explicit && !oregano.show_log)
 			return;
 
-		if (gtk_builder_add_from_file (sv->priv->log_info->log_gui,
-		    OREGANO_UIDIR "/log-window.ui", &e) <= 0) {
+		if (gtk_builder_add_from_file (sv->priv->log_info->log_gui, OREGANO_UIDIR "/log-window.ui",
+		                               &e) <= 0) {
 
-			log_append_error (schematic_get_log_store (sm), _("SchematicView"), _("Could not create the log window."), e);
+			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+			                  _ ("Could not create the log window."), e);
 			g_clear_error (&e);
 			return;
 		}
 
-		sv->priv->log_info->log_window = GTK_WIDGET (
-		    gtk_builder_get_object (sv->priv->log_info->log_gui,
-			"log-window"));
-		sv->priv->log_info->log_text = GTK_TEXT_VIEW (
-			gtk_builder_get_object (sv->priv->log_info->log_gui,
-			"log-text"));
+		sv->priv->log_info->log_window =
+		    GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, "log-window"));
+		sv->priv->log_info->log_text =
+		    GTK_TEXT_VIEW (gtk_builder_get_object (sv->priv->log_info->log_gui, "log-text"));
 
-		gtk_window_set_default_size (GTK_WINDOW (sv->priv->log_info->log_window),
-				500, 250);
+		gtk_window_set_default_size (GTK_WINDOW (sv->priv->log_info->log_window), 500, 250);
 
 		// Delete event.
-		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window),
-		    "delete_event", G_CALLBACK (log_window_delete_event), sv);
+		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window), "delete_event",
+		                  G_CALLBACK (log_window_delete_event), sv);
 
-		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window),
-		    "destroy_event", G_CALLBACK (log_window_destroy_event), sv);
+		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window), "destroy_event",
+		                  G_CALLBACK (log_window_destroy_event), sv);
 
-		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui,
-		    "close-button"));
-		g_signal_connect (G_OBJECT (w), "clicked",
-		    G_CALLBACK (log_window_close_cb), sv);
+		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, "close-button"));
+		g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (log_window_close_cb), sv);
 
-		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui,
-		    "clear-button"));
-		g_signal_connect (G_OBJECT (w), "clicked",
-		    G_CALLBACK (log_window_clear_cb), sv);
-		g_signal_connect (G_OBJECT (sm), "log_updated",
-		    G_CALLBACK (log_updated_callback), sv);
-	}
-	else {
+		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, "clear-button"));
+		g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (log_window_clear_cb), sv);
+		g_signal_connect (G_OBJECT (sm), "log_updated", G_CALLBACK (log_updated_callback), sv);
+	} else {
 		gdk_window_raise (gtk_widget_get_window (sv->priv->log_info->log_window));
 	}
 
-	gtk_text_view_set_buffer (sv->priv->log_info->log_text,
-	        schematic_get_log_text (sm));
+	gtk_text_view_set_buffer (sv->priv->log_info->log_text, schematic_get_log_text (sm));
 
 	gtk_widget_show_all (sv->priv->log_info->log_window);
 }
 
-gboolean
-schematic_view_get_log_window_exists (SchematicView *sv)
+gboolean schematic_view_get_log_window_exists (SchematicView *sv)
 {
 	if (sv->priv->log_info->log_window != NULL)
-			return TRUE;
+		return TRUE;
 	else
-			return FALSE;
+		return FALSE;
 }
 
-GtkWidget	*
-schematic_view_get_toplevel (SchematicView *sv)
-{
-	return sv->toplevel;
-}
+GtkWidget *schematic_view_get_toplevel (SchematicView *sv) { return sv->toplevel; }
 
-Schematic	   *
-schematic_view_get_schematic_from_sheet (Sheet *sheet)
+Schematic *schematic_view_get_schematic_from_sheet (Sheet *sheet)
 {
 	g_return_val_if_fail ((sheet != NULL), NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
 	GList *iter, *copy;
 	Schematic *s = NULL;
-	copy = g_list_copy (schematic_view_list); //really needed? probably not
+	copy = g_list_copy (schematic_view_list); // really needed? probably not
 
-	for (iter=copy; iter; iter=iter->next) {
+	for (iter = copy; iter; iter = iter->next) {
 		SchematicView *sv = SCHEMATIC_VIEW (iter->data);
 		if (sv->priv->sheet == sheet) {
 			s = sv->priv->schematic;
@@ -1780,8 +1636,7 @@ schematic_view_get_schematic_from_sheet (Sheet *sheet)
 	return s;
 }
 
-SchematicView  *
-schematic_view_get_schematicview_from_sheet (Sheet *sheet)
+SchematicView *schematic_view_get_schematicview_from_sheet (Sheet *sheet)
 {
 	g_return_val_if_fail (sheet, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
@@ -1789,9 +1644,9 @@ schematic_view_get_schematicview_from_sheet (Sheet *sheet)
 	GList *iter, *copy;
 	SchematicView *sv;
 
-	copy = g_list_copy (schematic_view_list); //really needed? probably not
+	copy = g_list_copy (schematic_view_list); // really needed? probably not
 
-	for (iter=copy; iter; iter=iter->next) {
+	for (iter = copy; iter; iter = iter->next) {
 		sv = SCHEMATIC_VIEW (iter->data);
 		if (sv->priv->sheet == sheet)
 			break;
@@ -1800,8 +1655,7 @@ schematic_view_get_schematicview_from_sheet (Sheet *sheet)
 	return sv;
 }
 
-void
-run_context_menu (SchematicView *sv, GdkEventButton *event)
+void run_context_menu (SchematicView *sv, GdkEventButton *event)
 {
 	GtkWidget *menu;
 
@@ -1810,6 +1664,5 @@ run_context_menu (SchematicView *sv, GdkEventButton *event)
 
 	menu = gtk_ui_manager_get_widget (sv->priv->ui_manager, "/MainPopup");
 
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button,
-	    event->time);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button, event->time);
 }

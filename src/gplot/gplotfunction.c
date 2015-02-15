@@ -4,7 +4,7 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- * 
+ *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
@@ -30,56 +30,48 @@
 #include "gplot-internal.h"
 #include "gplotfunction.h"
 
-	
-static void
-g_plot_function_base_init (gpointer g_class)
+static void g_plot_function_base_init (gpointer g_class)
 {
 	static gboolean initialized = FALSE;
 	if (!initialized) {
 		// create interface signals here.
 		initialized = TRUE;
 
-		g_object_interface_install_property (g_class,
-			g_param_spec_boolean ("visible",
-				"gplot_function_visible",
-				"Get/Set if function is visible",
-				TRUE,
-				G_PARAM_READWRITE));
+		g_object_interface_install_property (
+		    g_class,
+		    g_param_spec_boolean ("visible", "gplot_function_visible",
+		                          "Get/Set if function is visible", TRUE, G_PARAM_READWRITE));
 	}
 }
 
-GType
-g_plot_function_get_type (void)
+GType g_plot_function_get_type (void)
 {
 	static GType type = 0;
-		if (type == 0) {
-			static const GTypeInfo info = {
-				sizeof (GPlotFunctionClass),
-				g_plot_function_base_init,   // base_init
-				NULL,   // base_finalize
-				NULL,   // class_init
-				NULL,   // class_finalize
-				NULL,   // class_data
-				0,
-				0,      // n_preallocs
-				NULL    // instance_init
-			};
-			type = g_type_register_static (G_TYPE_INTERFACE, "GPlotFunction", &info, 0);
-		}
-		return type;
+	if (type == 0) {
+		static const GTypeInfo info = {
+		    sizeof(GPlotFunctionClass),
+		    g_plot_function_base_init, // base_init
+		    NULL,                      // base_finalize
+		    NULL,                      // class_init
+		    NULL,                      // class_finalize
+		    NULL,                      // class_data
+		    0,
+		    0,   // n_preallocs
+		    NULL // instance_init
+		};
+		type = g_type_register_static (G_TYPE_INTERFACE, "GPlotFunction", &info, 0);
+	}
+	return type;
 }
 
-void
-g_plot_function_draw (GPlotFunction *self, cairo_t * cr, GPlotFunctionBBox *bbox)
+void g_plot_function_draw (GPlotFunction *self, cairo_t *cr, GPlotFunctionBBox *bbox)
 {
-  if (GPLOT_FUNCTION_GET_CLASS (self)->draw)
-  	GPLOT_FUNCTION_GET_CLASS (self)->draw (self, cr, bbox);
+	if (GPLOT_FUNCTION_GET_CLASS (self)->draw)
+		GPLOT_FUNCTION_GET_CLASS (self)->draw (self, cr, bbox);
 }
 
-void
-g_plot_function_get_bbox (GPlotFunction *self, GPlotFunctionBBox *bbox) 
+void g_plot_function_get_bbox (GPlotFunction *self, GPlotFunctionBBox *bbox)
 {
-  if (GPLOT_FUNCTION_GET_CLASS (self)->get_bbox)
-  	GPLOT_FUNCTION_GET_CLASS (self)->get_bbox (self, bbox);
+	if (GPLOT_FUNCTION_GET_CLASS (self)->get_bbox)
+		GPLOT_FUNCTION_GET_CLASS (self)->get_bbox (self, bbox);
 }
-

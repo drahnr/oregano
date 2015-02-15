@@ -36,13 +36,13 @@
 #include "sheet-item.h"
 #include "clipboard.h"
 
-struct _ClipboardData {
+struct _ClipboardData
+{
 	ItemData *item_data;
 	SheetItemClass *item_class;
 };
 
-void
-clipboard_empty (void)
+void clipboard_empty (void)
 {
 	GSList *list;
 	ClipboardData *cb_data;
@@ -61,8 +61,7 @@ clipboard_empty (void)
 	oregano.clipboard = NULL;
 }
 
-gboolean
-clipboard_is_empty (void)
+gboolean clipboard_is_empty (void)
 {
 	if (oregano.clipboard == NULL)
 		return TRUE;
@@ -70,8 +69,7 @@ clipboard_is_empty (void)
 	return g_slist_length (oregano.clipboard) > 0 ? FALSE : TRUE;
 }
 
-void
-clipboard_foreach (ClipBoardFunction callback, gpointer user_data)
+void clipboard_foreach (ClipBoardFunction callback, gpointer user_data)
 {
 	GSList *list;
 	ClipboardData *data;
@@ -85,8 +83,7 @@ clipboard_foreach (ClipBoardFunction callback, gpointer user_data)
 	}
 }
 
-void
-clipboard_add_object (GObject *item)
+void clipboard_add_object (GObject *item)
 {
 	ItemDataClass *id_class;
 	ItemData *item_data, *clone;
@@ -111,16 +108,14 @@ clipboard_add_object (GObject *item)
 	oregano.clipboard = g_slist_prepend (oregano.clipboard, cb_data);
 }
 
-GObject *
-clipboard_data_get_item_data (ClipboardData *data)
+GObject *clipboard_data_get_item_data (ClipboardData *data)
 {
 	g_return_val_if_fail (data != NULL, NULL);
 
 	return G_OBJECT (data->item_data);
 }
 
-GObjectClass *
-clipboard_data_get_item_class (ClipboardData *data)
+GObjectClass *clipboard_data_get_item_class (ClipboardData *data)
 {
 	g_return_val_if_fail (data != NULL, NULL);
 

@@ -5,7 +5,7 @@
  * Author:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- * 
+ *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001	Richard Hult
@@ -35,11 +35,12 @@
 
 typedef struct _Splash Splash;
 
-struct _Splash {
+struct _Splash
+{
 	GtkWindow *win;
 	GtkWidget *progress;
 	GtkWidget *event;
-	GtkLabel  *lbl;
+	GtkLabel *lbl;
 	gboolean can_destroy;
 };
 

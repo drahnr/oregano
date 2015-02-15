@@ -43,15 +43,13 @@
 
 static void item_data_class_init (ItemDataClass *klass);
 static void item_data_init (ItemData *item_data);
-static void item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value, GParamSpec *spec);
-static void item_data_get_gproperty (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
+static void item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
+                                     GParamSpec *spec);
+static void item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
+                                     GParamSpec *spec);
 static void item_data_copy (ItemData *dest, ItemData *src);
 
-enum {
-	ARG_0,
-	ARG_STORE,
-	ARG_POS
-};
+enum { ARG_0, ARG_STORE, ARG_POS };
 
 enum {
 	MOVED,
@@ -62,7 +60,8 @@ enum {
 	LAST_SIGNAL
 };
 
-struct _ItemDataPriv {
+struct _ItemDataPriv
+{
 	NodeStore *store;
 
 	// modificator matrices
@@ -76,10 +75,9 @@ struct _ItemDataPriv {
 
 G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT);
 
-static guint item_data_signals [LAST_SIGNAL] = { 0 };
+static guint item_data_signals[LAST_SIGNAL] = {0};
 
-static void
-item_data_init (ItemData *item_data)
+static void item_data_init (ItemData *item_data)
 {
 	ItemDataPriv *priv;
 
@@ -94,8 +92,7 @@ item_data_init (ItemData *item_data)
 	item_data->priv = priv;
 }
 
-static void
-item_data_dispose (GObject *object)
+static void item_data_dispose (GObject *object)
 {
 	ItemDataPriv *priv = ITEM_DATA (object)->priv;
 	// Remove the item from the sheet node store if there.
@@ -106,16 +103,13 @@ item_data_dispose (GObject *object)
 	G_OBJECT_CLASS (item_data_parent_class)->dispose (object);
 }
 
-
-static void
-item_data_finalize (GObject *object)
+static void item_data_finalize (GObject *object)
 {
 	g_return_if_fail (object != NULL);
 	G_OBJECT_CLASS (item_data_parent_class)->finalize (object);
 }
 
-static void
-item_data_class_init (ItemDataClass *klass)
+static void item_data_class_init (ItemDataClass *klass)
 {
 	GObjectClass *object_class;
 
@@ -128,68 +122,36 @@ item_data_class_init (ItemDataClass *klass)
 	object_class->set_property = item_data_set_gproperty;
 	object_class->get_property = item_data_get_gproperty;
 
-	g_object_class_install_property (object_class, ARG_STORE,
-	    g_param_spec_pointer ("store", "ItemData::store",
-	    "the store data", G_PARAM_READWRITE));
+	g_object_class_install_property (
+	    object_class, ARG_STORE,
+	    g_param_spec_pointer ("store", "ItemData::store", "the store data", G_PARAM_READWRITE));
 
-	g_object_class_install_property (object_class, ARG_POS,
-	    g_param_spec_pointer ("pos", "ItemData::pos",
-	    "the pos data", G_PARAM_READWRITE));
+	g_object_class_install_property (
+	    object_class, ARG_POS,
+	    g_param_spec_pointer ("pos", "ItemData::pos", "the pos data", G_PARAM_READWRITE));
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
-	item_data_signals [MOVED] = g_signal_new ("moved",
-	    G_TYPE_FROM_CLASS (object_class),
-	    G_SIGNAL_RUN_FIRST,
-	    G_STRUCT_OFFSET (ItemDataClass, moved),
-	    NULL,
-	    NULL,
-	    g_cclosure_marshal_VOID__POINTER,
-	    G_TYPE_NONE,
-	    1,
-	    G_TYPE_POINTER);
+	item_data_signals[MOVED] =
+	    g_signal_new ("moved", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (ItemDataClass, moved), NULL, NULL,
+	                  g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
-	item_data_signals [ROTATED] = g_signal_new ("rotated",
-	    G_TYPE_FROM_CLASS (object_class),
-	    G_SIGNAL_RUN_FIRST,
-	    0,
-	    NULL,
-	    NULL,
-	    g_cclosure_marshal_VOID__INT,
-	    G_TYPE_NONE,
-	    1,
-	    G_TYPE_INT);
+	item_data_signals[ROTATED] =
+	    g_signal_new ("rotated", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
+	                  NULL, g_cclosure_marshal_VOID__INT, G_TYPE_NONE, 1, G_TYPE_INT);
 
-	item_data_signals [FLIPPED] = g_signal_new ("flipped",
-	    G_TYPE_FROM_CLASS (object_class),
-	    G_SIGNAL_RUN_FIRST,
-	    0,
-	    NULL,
-	    NULL,
-	    g_cclosure_marshal_VOID__INT,
-	    G_TYPE_NONE,
-	    1,
-	    G_TYPE_INT);
+	item_data_signals[FLIPPED] =
+	    g_signal_new ("flipped", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
+	                  NULL, g_cclosure_marshal_VOID__INT, G_TYPE_NONE, 1, G_TYPE_INT);
 
-	item_data_signals [CHANGED] = g_signal_new ("changed",
-	    G_TYPE_FROM_CLASS (object_class),
-	    G_SIGNAL_RUN_FIRST,
-	    0,
-	    NULL,
-	    NULL,
-	    g_cclosure_marshal_VOID__VOID,
-	    G_TYPE_NONE,
-	    0);
+	item_data_signals[CHANGED] =
+	    g_signal_new ("changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
+	                  NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
-	item_data_signals [HIGHLIGHT] = g_signal_new ("highlight",
-	    G_TYPE_FROM_CLASS (object_class),
-	    G_SIGNAL_RUN_FIRST,
-	    0,
-	    NULL,
-	    NULL,
-	    g_cclosure_marshal_VOID__VOID,
-	    G_TYPE_NONE,
-	    0);
+	item_data_signals[HIGHLIGHT] =
+	    g_signal_new ("highlight", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
+	                  NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
 	// Methods.
 	klass->clone = NULL;
@@ -208,19 +170,17 @@ item_data_class_init (ItemDataClass *klass)
 // END BOILER PLATE
 ////////////////////////////////////////////////////////////////////////////////
 
-ItemData *
-item_data_new (void)
+ItemData *item_data_new (void)
 {
 	ItemData *item_data;
 
-	item_data = ITEM_DATA (g_object_new (item_data_get_type(), NULL));
+	item_data = ITEM_DATA (g_object_new (item_data_get_type (), NULL));
 
 	return item_data;
 }
 
-static void
-item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
-						GParamSpec *spec)
+static void item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
+                                     GParamSpec *spec)
 {
 	ItemData *item_data = ITEM_DATA (object);
 
@@ -233,9 +193,8 @@ item_data_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 	}
 }
 
-static void
-item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
-						GParamSpec *spec)
+static void item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
+                                     GParamSpec *spec)
 {
 	ItemData *item_data = ITEM_DATA (object);
 
@@ -251,8 +210,7 @@ item_data_get_gproperty (GObject *object, guint prop_id, GValue *value,
 /**
  * returns the top left corner of the item
  */
-void
-item_data_get_pos (ItemData *item_data, Coords *pos)
+void item_data_get_pos (ItemData *item_data, Coords *pos)
 {
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -263,8 +221,7 @@ item_data_get_pos (ItemData *item_data, Coords *pos)
 	pos->y = priv->translate.y0;
 }
 
-void
-item_data_set_pos (ItemData *item_data, Coords *pos)
+void item_data_set_pos (ItemData *item_data, Coords *pos)
 {
 	ItemDataPriv *priv;
 	gboolean handler_connected;
@@ -277,19 +234,19 @@ item_data_set_pos (ItemData *item_data, Coords *pos)
 
 	cairo_matrix_init_translate (&(priv->translate), pos->x, pos->y);
 
-
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
+	handler_connected =
+	    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
 	if (handler_connected) {
 		g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
 	}
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
+	handler_connected =
+	    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
 	if (handler_connected) {
 		g_signal_emit_by_name (G_OBJECT (item_data), "changed");
 	}
 }
 
-void
-item_data_move (ItemData *item_data, const Coords *delta)
+void item_data_move (ItemData *item_data, const Coords *delta)
 {
 	ItemDataPriv *priv;
 
@@ -303,7 +260,6 @@ item_data_move (ItemData *item_data, const Coords *delta)
 	cairo_matrix_translate (&(priv->translate), delta->x, delta->y);
 }
 
-
 /**
  * \brief snaps to the grid, updates the model if snapping was necessary
  *
@@ -313,8 +269,7 @@ item_data_move (ItemData *item_data, const Coords *delta)
  * @param item_data
  * @param grid
  */
-void
-item_data_snap (ItemData *item_data, Grid *grid)
+void item_data_snap (ItemData *item_data, Grid *grid)
 {
 	gboolean handler_connected;
 
@@ -323,26 +278,26 @@ item_data_snap (ItemData *item_data, Grid *grid)
 	g_return_if_fail (grid);
 	g_return_if_fail (IS_GRID (grid));
 
-	if (snap_to_grid (grid,
-	                  &(item_data->priv->translate.x0),
-	                  &(item_data->priv->translate.y0))) {
+	if (snap_to_grid (grid, &(item_data->priv->translate.x0), &(item_data->priv->translate.y0))) {
 
-#if 1 //TODO FIXME XXX rename this to "snapped" instead of moved
-		handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
+#if 1 // TODO FIXME XXX rename this to "snapped" instead of moved
+		handler_connected =
+		    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
 		if (handler_connected) {
-			g_signal_emit_by_name (G_OBJECT (item_data), "moved"); //FIXME replace this by a "snapped" signal
+			g_signal_emit_by_name (G_OBJECT (item_data),
+			                       "moved"); // FIXME replace this by a "snapped" signal
 		}
 #endif
-		handler_connected = g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
+		handler_connected =
+		    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
 		if (handler_connected) {
 			g_signal_emit_by_name (G_OBJECT (item_data), "changed");
 		}
 	}
 }
 
-
 gpointer // NodeStore *
-item_data_get_store (ItemData *item_data)
+    item_data_get_store (ItemData *item_data)
 {
 	g_return_val_if_fail (item_data != NULL, NULL);
 	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);
@@ -350,8 +305,7 @@ item_data_get_store (ItemData *item_data)
 	return item_data->priv->store;
 }
 
-ItemData *
-item_data_clone (ItemData *src)
+ItemData *item_data_clone (ItemData *src)
 {
 	ItemDataClass *id_class;
 
@@ -365,8 +319,7 @@ item_data_clone (ItemData *src)
 	return id_class->clone (src);
 }
 
-static void
-item_data_copy (ItemData *dest, ItemData *src)
+static void item_data_copy (ItemData *dest, ItemData *src)
 {
 	g_return_if_fail (dest != NULL);
 	g_return_if_fail (IS_ITEM_DATA (dest));
@@ -378,8 +331,7 @@ item_data_copy (ItemData *dest, ItemData *src)
 	dest->priv->store = NULL;
 }
 
-void
-item_data_get_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
+void item_data_get_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -395,12 +347,10 @@ item_data_get_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
 	}
 }
 
-void
-item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
+void item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
-
 
 	ItemDataPriv *priv;
 
@@ -418,8 +368,7 @@ item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 	}
 }
 
-void
-item_data_set_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
+void item_data_set_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
@@ -435,9 +384,7 @@ item_data_set_relative_bbox (ItemData *data, Coords *p1, Coords *p2)
 	}
 }
 
-void
-item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
-	Coords *p2)
+void item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1, Coords *p2)
 {
 	GList *iter;
 	Coords b1, b2;
@@ -448,7 +395,7 @@ item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 	item_data_get_absolute_bbox (item_data_list->data, p1, p2);
 
 	for (iter = item_data_list; iter; iter = iter->next) {
-		if (G_UNLIKELY (iter->data==NULL))
+		if (G_UNLIKELY (iter->data == NULL))
 			continue;
 		item_data_get_absolute_bbox (iter->data, &b1, &b2);
 
@@ -464,8 +411,7 @@ item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1,
 	}
 }
 
-void
-item_data_rotate (ItemData *data, int angle, Coords *center)
+void item_data_rotate (ItemData *data, int angle, Coords *center)
 {
 	ItemDataClass *id_class;
 
@@ -478,8 +424,7 @@ item_data_rotate (ItemData *data, int angle, Coords *center)
 	}
 }
 
-void
-item_data_flip (ItemData *data, IDFlip direction, Coords *center)
+void item_data_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 	ItemDataClass *id_class;
 
@@ -492,8 +437,7 @@ item_data_flip (ItemData *data, IDFlip direction, Coords *center)
 	}
 }
 
-void
-item_data_unregister (ItemData *data)
+void item_data_unregister (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -506,8 +450,7 @@ item_data_unregister (ItemData *data)
 	}
 }
 
-gboolean
-item_data_register (ItemData *data)
+gboolean item_data_register (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -521,8 +464,7 @@ item_data_register (ItemData *data)
 	return FALSE;
 }
 
-char *
-item_data_get_refdes_prefix (ItemData *data)
+char *item_data_get_refdes_prefix (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -537,8 +479,7 @@ item_data_get_refdes_prefix (ItemData *data)
 	return NULL;
 }
 
-void
-item_data_set_property (ItemData *data, char *property, char *value)
+void item_data_set_property (ItemData *data, char *property, char *value)
 {
 	ItemDataClass *id_class;
 
@@ -552,8 +493,7 @@ item_data_set_property (ItemData *data, char *property, char *value)
 	}
 }
 
-gboolean
-item_data_has_properties (ItemData *data)
+gboolean item_data_has_properties (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -567,8 +507,7 @@ item_data_has_properties (ItemData *data)
 	return FALSE;
 }
 
-void
-item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
+void item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	ItemDataClass *id_class;
 
@@ -582,16 +521,15 @@ item_data_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	}
 }
 
-
 /**
- * \brief changed, forcefully emits a changed signal to recalculate the morph matrix
+ * \brief changed, forcefully emits a changed signal to recalculate the morph
+ *matrix
  *
  * @param data determines which item to refresh
  *
  * \note this function does _not_ request a redraw
  */
-void
-item_data_changed (ItemData *data)
+void item_data_changed (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -605,13 +543,12 @@ item_data_changed (ItemData *data)
 	return id_class->changed (data);
 }
 
-
 /**
  * @param data
- * @returns [transfer-none] pointer to cairo matrix which only includes the translation
+ * @returns [transfer-none] pointer to cairo matrix which only includes the
+ * translation
  */
-cairo_matrix_t *
-item_data_get_translate (ItemData *data)
+cairo_matrix_t *item_data_get_translate (ItemData *data)
 {
 	g_return_val_if_fail (data != NULL, NULL);
 	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
@@ -620,10 +557,10 @@ item_data_get_translate (ItemData *data)
 
 /**
  * @param data
- * @returns [transfer-none] pointer to cairo matrix which only includes the rotation
+ * @returns [transfer-none] pointer to cairo matrix which only includes the
+ * rotation
  */
-cairo_matrix_t *
-item_data_get_rotate (ItemData *data)
+cairo_matrix_t *item_data_get_rotate (ItemData *data)
 {
 	g_return_val_if_fail (data != NULL, NULL);
 	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);

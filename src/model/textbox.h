@@ -38,35 +38,36 @@
 #include "clipboard.h"
 #include "item-data.h"
 
-#define TYPE_TEXTBOX		(textbox_get_type ())
-#define TEXTBOX(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_TEXTBOX, Textbox))
-#define TEXTBOX_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_TEXTBOX, TextboxClass))
-#define IS_TEXTBOX(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_TEXTBOX))
+#define TYPE_TEXTBOX (textbox_get_type ())
+#define TEXTBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_TEXTBOX, Textbox))
+#define TEXTBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_TEXTBOX, TextboxClass))
+#define IS_TEXTBOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_TEXTBOX))
 #define IS_TEXTBOX_CLASS(klass) (G_TYPE_CHECK_GET_CLASS ((klass), TYPE_TEXTBOX))
 
 typedef struct _Textbox Textbox;
 typedef struct _TextboxClass TextboxClass;
 typedef struct _TextboxPriv TextboxPriv;
 
-struct _Textbox {
-	ItemData     parent;
+struct _Textbox
+{
+	ItemData parent;
 	TextboxPriv *priv;
-	gulong	     text_changed_handler_id;
-	gulong       font_changed_handler_id;
+	gulong text_changed_handler_id;
+	gulong font_changed_handler_id;
 };
 
 struct _TextboxClass
 {
 	ItemDataClass parent_class;
-	Textbox *(*dup) (Textbox *textbox);
+	Textbox *(*dup)(Textbox *textbox);
 };
 
-GType    textbox_get_type (void);
+GType textbox_get_type (void);
 Textbox *textbox_new (char *font);
-void     textbox_set_text (Textbox *textbox, const char *text);
-char    *textbox_get_text (Textbox *textbox);
-void     textbox_set_font (Textbox *textbox, char *font);
-char    *textbox_get_font (Textbox *textbox);
-void     textbox_update_bbox (Textbox *textbox);
+void textbox_set_text (Textbox *textbox, const char *text);
+char *textbox_get_text (Textbox *textbox);
+void textbox_set_font (Textbox *textbox, char *font);
+char *textbox_get_font (Textbox *textbox);
+void textbox_update_bbox (Textbox *textbox);
 
 #endif

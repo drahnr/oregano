@@ -35,14 +35,13 @@
 
 typedef struct _ClipboardData ClipboardData;
 
-typedef void (*ClipBoardFunction) (ClipboardData *data, gpointer user_data);
+typedef void (*ClipBoardFunction)(ClipboardData *data, gpointer user_data);
 
-void		   clipboard_empty (void);
-gboolean	   clipboard_is_empty (void);
-void		   clipboard_foreach (ClipBoardFunction callback,
-								  gpointer user_data);
-void		   clipboard_add_object (GObject *item);
-GObjectClass   *clipboard_data_get_item_class (ClipboardData *data);
-GObject		   *clipboard_data_get_item_data (ClipboardData *data);
+void clipboard_empty (void);
+gboolean clipboard_is_empty (void);
+void clipboard_foreach (ClipBoardFunction callback, gpointer user_data);
+void clipboard_add_object (GObject *item);
+GObjectClass *clipboard_data_get_item_class (ClipboardData *data);
+GObject *clipboard_data_get_item_data (ClipboardData *data);
 
 #endif

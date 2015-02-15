@@ -56,11 +56,10 @@ static void part_class_init (PartClass *klass);
 
 static void part_init (Part *part);
 
-static void part_set_gproperty (GObject *object, guint prop_id,
-	const GValue *value, GParamSpec *spec);
+static void part_set_gproperty (GObject *object, guint prop_id, const GValue *value,
+                                GParamSpec *spec);
 
-static void part_get_gproperty (GObject *object, guint prop_id, GValue *value,
-	GParamSpec *spec);
+static void part_get_gproperty (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
 
 static int part_set_properties (Part *part, GSList *properties);
 static gboolean part_has_properties (ItemData *part);
@@ -98,22 +97,11 @@ G_DEFINE_TYPE (Part, part, TYPE_ITEM_DATA);
 
 static ItemDataClass *parent_class = NULL;
 
-static void
-part_init (Part *part)
-{
-	part->priv = g_slice_new0 (PartPriv);
-}
+static void part_init (Part *part) { part->priv = g_slice_new0 (PartPriv); }
 
+static void part_dispose (GObject *object) { G_OBJECT_CLASS (parent_class)->dispose (object); }
 
-static void
-part_dispose (GObject *object)
-{
-	G_OBJECT_CLASS (parent_class)->dispose (object);
-}
-
-
-static void
-part_finalize (GObject *object)
+static void part_finalize (GObject *object)
 {
 	PartPriv *priv;
 	GSList *list;
@@ -149,9 +137,7 @@ part_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-
-static void
-part_class_init (PartClass *klass)
+static void part_class_init (PartClass *klass)
 {
 	GObjectClass *object_class;
 	ItemDataClass *item_data_class;
@@ -166,12 +152,12 @@ part_class_init (PartClass *klass)
 	object_class->dispose = part_dispose;
 	object_class->finalize = part_finalize;
 
-	g_object_class_install_property (object_class,	ARG_PROPERTIES,
-		g_param_spec_pointer ("properties", "properties",
-			"the properties", G_PARAM_READWRITE));
-	g_object_class_install_property (object_class, ARG_LABELS,
-		g_param_spec_pointer ("labels", "labels", "the labels",
-			G_PARAM_READWRITE));
+	g_object_class_install_property (
+	    object_class, ARG_PROPERTIES,
+	    g_param_spec_pointer ("properties", "properties", "the properties", G_PARAM_READWRITE));
+	g_object_class_install_property (
+	    object_class, ARG_LABELS,
+	    g_param_spec_pointer ("labels", "labels", "the labels", G_PARAM_READWRITE));
 
 	item_data_class->clone = part_clone;
 	item_data_class->copy = part_copy;
@@ -185,15 +171,13 @@ part_class_init (PartClass *klass)
 	item_data_class->set_property = part_set_property;
 	item_data_class->has_properties = part_has_properties;
 	item_data_class->print = part_print;
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // END BOILER PLATE
 ////////////////////////////////////////////////////////////////////////////////
 
-Part *
-part_new ()
+Part *part_new ()
 {
 	Part *part;
 
@@ -202,8 +186,7 @@ part_new ()
 	return part;
 }
 
-Part *
-part_new_from_library_part (LibraryPart *library_part)
+Part *part_new_from_library_part (LibraryPart *library_part)
 {
 	Part *part;
 	GSList *pins;
@@ -219,11 +202,10 @@ part_new_from_library_part (LibraryPart *library_part)
 	priv = part->priv;
 
 	symbol = library_get_symbol (library_part->symbol_name);
-	if (symbol ==  NULL) {
-		oregano_warning (g_strdup_printf (_("Couldn't find the requested symbol"
-		"%s for part %s in library.\n"),
-			library_part->symbol_name,
-			library_part->name));
+	if (symbol == NULL) {
+		oregano_warning (g_strdup_printf (_ ("Couldn't find the requested symbol"
+		                                     "%s for part %s in library.\n"),
+		                                  library_part->symbol_name, library_part->name));
 		return NULL;
 	}
 
@@ -232,10 +214,8 @@ part_new_from_library_part (LibraryPart *library_part)
 	if (pins)
 		part_set_pins (part, pins);
 
-	g_object_set (G_OBJECT (part),
-		"Part::properties", library_part->properties,
-		"Part::labels", library_part->labels,
-		NULL);
+	g_object_set (G_OBJECT (part), "Part::properties", library_part->properties, "Part::labels",
+	              library_part->labels, NULL);
 
 	priv->name = g_strdup (library_part->name);
 	priv->symbol_name = g_strdup (library_part->symbol_name);
@@ -246,9 +226,8 @@ part_new_from_library_part (LibraryPart *library_part)
 	return part;
 }
 
-static void
-part_set_gproperty (GObject *object, guint prop_id, const GValue *value,
-	GParamSpec *spec)
+static void part_set_gproperty (GObject *object, guint prop_id, const GValue *value,
+                                GParamSpec *spec)
 {
 	GSList *list;
 	Part *part = PART (object);
@@ -265,9 +244,7 @@ part_set_gproperty (GObject *object, guint prop_id, const GValue *value,
 	}
 }
 
-static void
-part_get_gproperty (GObject *object, guint prop_id, GValue *value,
-	GParamSpec *spec)
+static void part_get_gproperty (GObject *object, guint prop_id, GValue *value, GParamSpec *spec)
 {
 	Part *part = PART (object);
 	PartPriv *priv = part->priv;
@@ -281,8 +258,7 @@ part_get_gproperty (GObject *object, guint prop_id, GValue *value,
 	}
 }
 
-gint
-part_get_num_pins (Part *part)
+gint part_get_num_pins (Part *part)
 {
 	PartPriv *priv;
 
@@ -297,11 +273,10 @@ part_get_num_pins (Part *part)
  * @returns the rotation in degrees
  * @attention steps of 90 degrees only!
  */
-gint
-part_get_rotation (Part *part)
+gint part_get_rotation (Part *part)
 {
 	ItemData *item;
-	gdouble register a,b,c,d, sx,sy;
+	gdouble register a, b, c, d, sx, sy;
 	cairo_matrix_t *t;
 
 	g_return_val_if_fail (part != NULL, 0);
@@ -311,27 +286,26 @@ part_get_rotation (Part *part)
 
 	t = item_data_get_rotate (item);
 	a = t->xx;
-	b =	t->xy;
+	b = t->xy;
 	c = t->yx;
-	d =	t->yy;
+	d = t->yy;
 
-	sx = a*a + c*c;
-	sy = b*b + d*d;
-    if (G_UNLIKELY (abs(sx)<1e-10 && abs(sy)<1e-10)) {
+	sx = a * a + c * c;
+	sy = b * b + d * d;
+	if (G_UNLIKELY (abs (sx) < 1e-10 && abs (sy) < 1e-10)) {
 		g_warning ("Unabled to calculate rotation from matrix. Assuming 0°.");
 		return 0;
-    }
+	}
 
 	gint register r = -1;
-	if (abs(sx)>abs(sy))
-		r = 90 * (gint)(2. * acos(a / sqrt(sx)) / M_PI);
+	if (abs (sx) > abs (sy))
+		r = 90 * (gint)(2. * acos (a / sqrt (sx)) / M_PI);
 	else
-		r = 90 * (gint)(2. * acos(d / sqrt(sy)) / M_PI);
+		r = 90 * (gint)(2. * acos (d / sqrt (sy)) / M_PI);
 	return r;
 }
 
-IDFlip
-part_get_flip (Part *part)
+IDFlip part_get_flip (Part *part)
 {
 	PartPriv *priv;
 
@@ -342,8 +316,7 @@ part_get_flip (Part *part)
 	return priv->flip;
 }
 
-Pin *
-part_get_pins (Part *part)
+Pin *part_get_pins (Part *part)
 {
 	PartPriv *priv;
 
@@ -354,16 +327,14 @@ part_get_pins (Part *part)
 	return priv->pins;
 }
 
-static gboolean
-part_has_properties (ItemData *item)
+static gboolean part_has_properties (ItemData *item)
 {
 	Part *part = PART (item);
 
 	return part->priv->properties != NULL;
 }
 
-static gboolean
-part_set_properties (Part *part, GSList *properties)
+static gboolean part_set_properties (Part *part, GSList *properties)
 {
 	PartPriv *priv;
 	GSList *list;
@@ -391,8 +362,7 @@ part_set_properties (Part *part, GSList *properties)
 	return TRUE;
 }
 
-GSList *
-part_get_properties (Part *part)
+GSList *part_get_properties (Part *part)
 {
 	PartPriv *priv;
 
@@ -407,8 +377,7 @@ part_get_properties (Part *part)
 /**
  * @returns [transfer-full]
  */
-char *
-part_get_property (Part *part, char *name)
+char *part_get_property (Part *part, char *name)
 {
 	PartPriv *priv;
 	GSList *props;
@@ -429,8 +398,7 @@ part_get_property (Part *part, char *name)
 	return NULL;
 }
 
-static gboolean
-part_set_labels (Part *part, GSList *labels)
+static gboolean part_set_labels (Part *part, GSList *labels)
 {
 	PartPriv *priv;
 	GSList *list;
@@ -468,12 +436,10 @@ part_set_labels (Part *part, GSList *labels)
 	return TRUE;
 }
 
-
 /**
  * overwrite the pins with those given in the list
  */
-gboolean
-part_set_pins (Part *part, GSList *pins)
+gboolean part_set_pins (Part *part, GSList *pins)
 {
 	PartPriv *priv;
 	GSList *list;
@@ -486,7 +452,6 @@ part_set_pins (Part *part, GSList *pins)
 	priv = part->priv;
 
 	num_pins = g_slist_length (pins);
-
 
 	if (priv->pins)
 		g_free (priv->pins);
@@ -505,19 +470,18 @@ part_set_pins (Part *part, GSList *pins)
 		Pin *pin = list->data;
 
 		priv->pins_orig[i].pin_nr = i;
-		priv->pins_orig[i].node_nr= 0;
+		priv->pins_orig[i].node_nr = 0;
 		priv->pins_orig[i].offset.x = pin->offset.x;
 		priv->pins_orig[i].offset.y = pin->offset.y;
 		priv->pins_orig[i].part = part;
 
-		memcpy (priv->pins, priv->pins_orig, sizeof(Pin)*num_pins);
+		memcpy (priv->pins, priv->pins_orig, sizeof(Pin) * num_pins);
 	}
 
 	return TRUE;
 }
 
-GSList *
-part_get_labels (Part *part)
+GSList *part_get_labels (Part *part)
 {
 	PartPriv *priv;
 
@@ -529,15 +493,14 @@ part_get_labels (Part *part)
 	return priv->labels;
 }
 
-
 /**
  * \brief rotate an item by an @angle increment (may be negative)
  *
  * @angle the increment the item will be rotated (usually 90° steps)
- * @center_pos if rotated as part of a group, this is the center to rotate around
+ * @center_pos if rotated as part of a group, this is the center to rotate
+ *around
  */
-static void
-part_rotate (ItemData *data, int angle, Coords *center_pos)
+static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 {
 	g_return_if_fail (data);
 	g_return_if_fail (IS_PART (data));
@@ -546,40 +509,34 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	Part *part;
 	PartPriv *priv;
 	gboolean handler_connected;
-	//Coords b1, b2;
+	// Coords b1, b2;
 
 	part = PART (data);
 
 	priv = part->priv;
-
 
 	// FIXME store vanilla coords, apply the morph
 	// FIXME to these and store the result in the
 	// FIXME instance then everything will be fine
 	// XXX also prevents rounding yiggle up downs
 
-
 	angle /= 90;
 	angle *= 90;
 
 	cairo_matrix_init_rotate (&local_rot, (double)angle * M_PI / 180.);
 
-	cairo_matrix_multiply (item_data_get_rotate (data),
-	                       item_data_get_rotate (data),
-	                       &local_rot);
+	cairo_matrix_multiply (item_data_get_rotate (data), item_data_get_rotate (data), &local_rot);
 
 	morph_rot = *(item_data_get_rotate (data));
 
-	cairo_matrix_multiply (&morph,
-	                       &morph_rot,
-	                       item_data_get_translate (data));
+	cairo_matrix_multiply (&morph, &morph_rot, item_data_get_translate (data));
 
 	Coords delta_to_center, delta_to_center_transformed;
 	Coords delta_to_apply, delta_bbox;
 	Coords bbox_center, bbox_center_transformed;
 	Coords item_pos;
 
-	//get bbox
+// get bbox
 #if 0 // this causes #115 to reappear
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	bbox_center = coords_average (&b1, &b2);
@@ -588,20 +545,17 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	Coords rotation_center;
 
-	if (center_pos==NULL) {
+	if (center_pos == NULL) {
 		rotation_center = coords_sum (&bbox_center, &item_pos);
 	} else {
 		rotation_center = *center_pos;
 	}
 
 	delta_to_center_transformed = delta_to_center = coords_sub (&rotation_center, &item_pos);
-	cairo_matrix_transform_point (&local_rot,
-			                      &(delta_to_center_transformed.x),
-			                      &(delta_to_center_transformed.y));
+	cairo_matrix_transform_point (&local_rot, &(delta_to_center_transformed.x),
+	                              &(delta_to_center_transformed.y));
 
 	delta_to_apply = coords_sub (&delta_to_center, &delta_to_center_transformed);
-
-
 
 #define DEBUG_THIS 0
 	// use the cairo matrix funcs to transform the pin
@@ -611,7 +565,7 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 	// pin tests work being used to detect connections
 
 	gint i;
-	gdouble x,y;
+	gdouble x, y;
 	// Rotate the pins.
 	for (i = 0; i < priv->num_pins; i++) {
 		x = priv->pins_orig[i].offset.x;
@@ -629,25 +583,21 @@ part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	item_data_move (data, &delta_to_apply);
 
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (data),
-	                                   data->changed_handler_id);
+	handler_connected = g_signal_handler_is_connected (G_OBJECT (data), data->changed_handler_id);
 	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (data),
-		                       "changed");
+		g_signal_emit_by_name (G_OBJECT (data), "changed");
 	} else {
 		NG_DEBUG ("handler not yet registerd.");
 	}
 	NG_DEBUG ("\n\n");
 }
 
-
 /**
  * flip a part in a given direction
  * @direction gives the direction the item will be flipped, end users pov!
  * @center the center to flip over - currently ignored FIXME
  */
-static void
-part_flip (ItemData *data, IDFlip direction, Coords *center)
+static void part_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 #if 0
 	Part *part;
@@ -756,8 +706,7 @@ part_flip (ItemData *data, IDFlip direction, Coords *center)
 #endif
 }
 
-static ItemData *
-part_clone (ItemData *src)
+static ItemData *part_clone (ItemData *src)
 {
 	Part *src_part, *new_part;
 	ItemDataClass *id_class;
@@ -765,7 +714,7 @@ part_clone (ItemData *src)
 	g_return_val_if_fail (src != NULL, NULL);
 	g_return_val_if_fail (IS_PART (src), NULL);
 
-	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS(src));
+	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (src));
 	if (id_class->copy == NULL)
 		return NULL;
 
@@ -777,8 +726,7 @@ part_clone (ItemData *src)
 	return ITEM_DATA (new_part);
 }
 
-static void
-part_copy (ItemData *dest, ItemData *src)
+static void part_copy (ItemData *dest, ItemData *src)
 {
 	Part *dest_part, *src_part;
 	GSList *list;
@@ -795,21 +743,19 @@ part_copy (ItemData *dest, ItemData *src)
 	dest_part = PART (dest);
 	src_part = PART (src);
 
-//	dest_part->priv->rotation = src_part->priv->rotation;
+	//	dest_part->priv->rotation = src_part->priv->rotation;
 	dest_part->priv->flip = src_part->priv->flip;
 	dest_part->priv->num_pins = src_part->priv->num_pins;
 	dest_part->priv->library = src_part->priv->library;
 	dest_part->priv->name = g_strdup (src_part->priv->name);
 	dest_part->priv->symbol_name = g_strdup (src_part->priv->symbol_name);
 
-	memcpy (dest_part->priv->pins, src_part->priv->pins,
-		src_part->priv->num_pins * sizeof (Pin));
+	memcpy (dest_part->priv->pins, src_part->priv->pins, src_part->priv->num_pins * sizeof(Pin));
 	for (i = 0; i < dest_part->priv->num_pins; i++)
 		dest_part->priv->pins[i].part = dest_part;
 
 	// Copy properties and labels.
-	dest_part->priv->properties =
-		g_slist_copy (src_part->priv->properties);
+	dest_part->priv->properties = g_slist_copy (src_part->priv->properties);
 	for (list = dest_part->priv->properties; list; list = list->next) {
 		PartProperty *prop, *new_prop;
 
@@ -833,8 +779,7 @@ part_copy (ItemData *dest, ItemData *src)
 	}
 }
 
-static void
-part_update_bbox (Part *part)
+static void part_update_bbox (Part *part)
 {
 	GSList *iter;
 	LibrarySymbol *symbol;
@@ -852,7 +797,7 @@ part_update_bbox (Part *part)
 
 	b1.x = b1.y = b2.x = b2.y = 0.0;
 
-	for (iter = symbol->symbol_objects; iter; iter=iter->next) {
+	for (iter = symbol->symbol_objects; iter; iter = iter->next) {
 		object = iter->data;
 		switch (object->type) {
 		case SYMBOL_OBJECT_LINE:
@@ -882,19 +827,16 @@ part_update_bbox (Part *part)
 
 			break;
 
-		case SYMBOL_OBJECT_TEXT:
-			{
-				//FIXME use cairo pango layout
-				/*GdkFont *font = gdk_font_load ("Sans 10");
-				 b1.x = b1.y =  0;
-				 b2.x = 2*object->u.text.x +
-				 gdk_string_width (font, object->u.text.str );
-				 b2.y = 2*object->u.text.y +
-				 gdk_string_height (font,object->u.text.str );
-				*/
-			}
-			break;
-
+		case SYMBOL_OBJECT_TEXT: {
+			// FIXME use cairo pango layout
+			/*GdkFont *font = gdk_font_load ("Sans 10");
+			 b1.x = b1.y =  0;
+			 b2.x = 2*object->u.text.x +
+			 gdk_string_width (font, object->u.text.str );
+			 b2.y = 2*object->u.text.y +
+			 gdk_string_height (font,object->u.text.str );
+			*/
+		} break;
 
 		default:
 			g_warning ("Unknown symbol object.\n");
@@ -905,8 +847,7 @@ part_update_bbox (Part *part)
 	item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
 }
 
-static void
-part_unregister (ItemData *data)
+static void part_unregister (ItemData *data)
 {
 	NodeStore *store;
 
@@ -921,8 +862,7 @@ part_unregister (ItemData *data)
  * @param data the part
  * @attention the @data has to have a valid nodestore set
  */
-static int
-part_register (ItemData *data)
+static int part_register (ItemData *data)
 {
 	NodeStore *store;
 
@@ -934,12 +874,10 @@ part_register (ItemData *data)
 	return TRUE;
 }
 
-
 /**
  * simply signal a change in the part
  */
-static void
-part_changed (ItemData *data)
+static void part_changed (ItemData *data)
 {
 	g_return_if_fail (IS_PART (data));
 
@@ -964,9 +902,7 @@ part_changed (ItemData *data)
 	g_signal_emit_by_name (data, "changed");
 }
 
-
-static char *
-part_get_refdes_prefix (ItemData *data)
+static char *part_get_refdes_prefix (ItemData *data)
 {
 	Part *part;
 	char *refdes;
@@ -983,16 +919,15 @@ part_get_refdes_prefix (ItemData *data)
 	// Get the 'prefix' i.e R for resistors.
 	length = strlen (refdes);
 	for (i = 0; i < length; i++) {
-		if (isdigit (refdes[length-i -1])) {
-			refdes[length -i -1] = '\0';
-		}
-		else break;
+		if (isdigit (refdes[length - i - 1])) {
+			refdes[length - i - 1] = '\0';
+		} else
+			break;
 	}
 	return g_strdup (refdes);
 }
 
-static void
-part_set_property (ItemData *data, char *property, char *value)
+static void part_set_property (ItemData *data, char *property, char *value)
 {
 	Part *part;
 	PartPriv *priv;
@@ -1021,10 +956,10 @@ part_set_property (ItemData *data, char *property, char *value)
 }
 
 /**
- * print the part onto a physical sheet of paper or pdf, which is represented by @cr
+ * print the part onto a physical sheet of paper or pdf, which is represented by
+ * @cr
  */
-static void
-part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
+static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 {
 	GSList *objects, *labels;
 	SymbolObject *object;
@@ -1066,50 +1001,46 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 		cairo_scale (cr, 1, -1);
 
 	if (rotation %= 360)
-		cairo_rotate (cr, rotation*M_PI/180);
+		cairo_rotate (cr, rotation * M_PI / 180);
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
 		object = (SymbolObject *)(objects->data);
 
 		switch (object->type) {
-			case SYMBOL_OBJECT_LINE:
-				line = object->u.uline.line;
-				for (i = 0; i < line->num_points; i++) {
-					double x, y;
+		case SYMBOL_OBJECT_LINE:
+			line = object->u.uline.line;
+			for (i = 0; i < line->num_points; i++) {
+				double x, y;
 
-					x = line->coords[i * 2];
-					y = line->coords[i * 2 + 1];
+				x = line->coords[i * 2];
+				y = line->coords[i * 2 + 1];
 
-					if (i == 0)
-						cairo_move_to (cr, x0 + x, y0 + y);
-					else
-						cairo_line_to (cr, x0 + x, y0 + y);
-				}
-			break;
-			case SYMBOL_OBJECT_ARC: {
-				gdouble x1 = object->u.arc.x1;
-				gdouble y1 = object->u.arc.y1;
-				gdouble x2 = object->u.arc.x2;
-				gdouble y2 = object->u.arc.y2;
-				gdouble width, height, x, y;
-
-				x = (x2 + x1) / 2;
-				y = (y2 + y1) / 2;
-				width = x2 - x1;
-				height = y2 - y1;
-
-				cairo_save (cr);
-					cairo_translate (cr, x0 + x, y0 + y);
-					cairo_scale (cr, width / 2.0, height / 2.0);
-					cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
-				cairo_restore (cr);
+				if (i == 0)
+					cairo_move_to (cr, x0 + x, y0 + y);
+				else
+					cairo_line_to (cr, x0 + x, y0 + y);
 			}
 			break;
-			default:
-				g_warning (
-					"Print part: Part %s contains unknown object.",
-					priv->name
-				);
+		case SYMBOL_OBJECT_ARC: {
+			gdouble x1 = object->u.arc.x1;
+			gdouble y1 = object->u.arc.y1;
+			gdouble x2 = object->u.arc.x2;
+			gdouble y2 = object->u.arc.y2;
+			gdouble width, height, x, y;
+
+			x = (x2 + x1) / 2;
+			y = (y2 + y1) / 2;
+			width = x2 - x1;
+			height = y2 - y1;
+
+			cairo_save (cr);
+			cairo_translate (cr, x0 + x, y0 + y);
+			cairo_scale (cr, width / 2.0, height / 2.0);
+			cairo_arc (cr, 0.0, 0.0, 1.0, 0.0, 2 * M_PI);
+			cairo_restore (cr);
+		} break;
+		default:
+			g_warning ("Print part: Part %s contains unknown object.", priv->name);
 			continue;
 		}
 
@@ -1130,22 +1061,22 @@ part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 		text = part_property_expand_macros (part, label->text);
 		/* Align the label.
 		switch (rotation) {
-			case 90:
-				y += text_height*opc->scale;
-			break;
-			case 180:
-			break;
-			case 270:
-				x -= text_width*opc->scale;
-			break;
-			case 0:
-			default:
-			break;
+		        case 90:
+		                y += text_height*opc->scale;
+		        break;
+		        case 180:
+		        break;
+		        case 270:
+		                x -= text_width*opc->scale;
+		        break;
+		        case 0:
+		        default:
+		        break;
 		} */
 
 		cairo_save (cr);
-			cairo_move_to (cr, x, y);
-			cairo_show_text (cr, text);
+		cairo_move_to (cr, x, y);
+		cairo_show_text (cr, text);
 		cairo_restore (cr);
 		g_free (text);
 	}

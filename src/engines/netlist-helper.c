@@ -51,21 +51,18 @@
 
 #include "debug.h"
 
-static void 	netlist_helper_node_foreach_reset (gpointer key, gpointer value,
-    				gpointer user_data);
-static void 	netlist_helper_wire_traverse (Wire *wire, NetlistData *data);
-static void 	netlist_helper_node_traverse (Node *node, NetlistData *data);
-static void 	netlist_helper_node_foreach_traverse (gpointer key,
-    				gpointer value, NetlistData *data);
+static void netlist_helper_node_foreach_reset (gpointer key, gpointer value, gpointer user_data);
+static void netlist_helper_wire_traverse (Wire *wire, NetlistData *data);
+static void netlist_helper_node_traverse (Node *node, NetlistData *data);
+static void netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData *data);
 static gboolean netlist_helper_foreach_model_free (gpointer key, gpointer model,
-    				gpointer user_data);
+                                                   gpointer user_data);
 static gboolean netlist_helper_foreach_model_save (gpointer key, gpointer model,
-    					gpointer user_data);
-static char *	netlist_helper_linebreak (char *str);
-static void 	netlist_helper_nl_node_traverse (Node *node, GSList **lst);
+                                                   gpointer user_data);
+static char *netlist_helper_linebreak (char *str);
+static void netlist_helper_nl_node_traverse (Node *node, GSList **lst);
 
-static void
-netlist_helper_nl_wire_traverse (Wire *wire, GSList **lst)
+static void netlist_helper_nl_wire_traverse (Wire *wire, GSList **lst)
 {
 	GSList *iter;
 	GSList *iter2;
@@ -108,8 +105,7 @@ netlist_helper_nl_wire_traverse (Wire *wire, GSList **lst)
 	}
 }
 
-static void
-netlist_helper_nl_node_traverse (Node *node, GSList **lst)
+static void netlist_helper_nl_node_traverse (Node *node, GSList **lst)
 {
 	GSList *iter;
 
@@ -135,8 +131,7 @@ netlist_helper_nl_node_traverse (Node *node, GSList **lst)
  *
  * @returns a list of parts whose type is clamp
  */
-static GSList *
-netlist_helper_get_clamp_parts (NodeStore *store, Node *node)
+static GSList *netlist_helper_get_clamp_parts (NodeStore *store, Node *node)
 {
 	GList *iter;
 	GSList *iter2;
@@ -146,9 +141,7 @@ netlist_helper_get_clamp_parts (NodeStore *store, Node *node)
 	if (!node)
 		return NULL;
 
-	node_store_node_foreach (store,
-	                         (GHFunc *)netlist_helper_node_foreach_reset,
-	                         NULL);
+	node_store_node_foreach (store, (GHFunc *)netlist_helper_node_foreach_reset, NULL);
 
 	for (iter = store->wires; iter; iter = iter->next) {
 		wire = iter->data;
@@ -163,8 +156,7 @@ netlist_helper_get_clamp_parts (NodeStore *store, Node *node)
 	return ret;
 }
 
-void
-netlist_helper_init_data (NetlistData *data)
+void netlist_helper_init_data (NetlistData *data)
 {
 	data->pins = g_hash_table_new (g_direct_hash, g_direct_equal);
 	data->models = g_hash_table_new (g_str_hash, g_str_equal);
@@ -175,16 +167,14 @@ netlist_helper_init_data (NetlistData *data)
 	data->node_and_number_list = NULL;
 }
 
-void
-netlist_helper_node_foreach_reset (gpointer key, gpointer value, gpointer user_data)
+void netlist_helper_node_foreach_reset (gpointer key, gpointer value, gpointer user_data)
 {
 	Node *node = value;
 
 	node_set_visited (node, FALSE);
 }
 
-void
-netlist_helper_wire_traverse (Wire *wire, NetlistData *data)
+void netlist_helper_wire_traverse (Wire *wire, NetlistData *data)
 {
 	GSList *iter;
 
@@ -196,15 +186,14 @@ netlist_helper_wire_traverse (Wire *wire, NetlistData *data)
 
 	wire_set_visited (wire, TRUE);
 
-	for (iter = wire_get_nodes(wire); iter; iter = iter->next) {
+	for (iter = wire_get_nodes (wire); iter; iter = iter->next) {
 		Node *node = iter->data;
 
 		netlist_helper_node_traverse (node, data);
 	}
 }
 
-void
-netlist_helper_node_traverse (Node *node, NetlistData *data)
+void netlist_helper_node_traverse (Node *node, NetlistData *data)
 {
 	GSList *iter;
 	gchar *prop;
@@ -222,8 +211,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 	nan = g_new0 (NodeAndNumber, 1);
 	nan->node_nr = data->node_nr;
 	nan->node = node;
-	data->node_and_number_list = g_list_prepend (data->node_and_number_list,
-		nan);
+	data->node_and_number_list = g_list_prepend (data->node_and_number_list, nan);
 
 	// Traverse the pins at this node.
 	for (iter = node->pins; iter; iter = iter->next) {
@@ -254,11 +242,12 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 				marker->name = value;
 				data->mark_list = g_slist_prepend (data->mark_list, marker);
 
-			} else if (g_ascii_strcasecmp (prop, "ground")==0) {
+			} else if (g_ascii_strcasecmp (prop, "ground") == 0) {
 				data->gnd_list = g_slist_prepend (data->gnd_list, GINT_TO_POINTER (data->node_nr));
 
-			} else if (g_ascii_strcasecmp (prop, "clamp")==0) {
-				data->clamp_list = g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
+			} else if (g_ascii_strcasecmp (prop, "clamp") == 0) {
+				data->clamp_list =
+				    g_slist_prepend (data->clamp_list, GINT_TO_POINTER (data->node_nr));
 			}
 			g_free (prop);
 		}
@@ -281,8 +270,7 @@ netlist_helper_node_traverse (Node *node, NetlistData *data)
 	}
 }
 
-void
-netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData *data)
+void netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData *data)
 {
 	Node *node = value;
 
@@ -295,8 +283,7 @@ netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData 
 	data->node_nr++;
 }
 
-gint
-compare_marker (gconstpointer a, gconstpointer b)
+gint compare_marker (gconstpointer a, gconstpointer b)
 {
 	const Marker *ma;
 	gint node_nr;
@@ -310,10 +297,7 @@ compare_marker (gconstpointer a, gconstpointer b)
 		return 1;
 }
 
-gboolean
-netlist_helper_foreach_model_save (gpointer key,
-                                   gpointer model,
-                                   gpointer user_data)
+gboolean netlist_helper_foreach_model_save (gpointer key, gpointer model, gpointer user_data)
 {
 	GList **l = user_data;
 
@@ -322,18 +306,14 @@ netlist_helper_foreach_model_save (gpointer key,
 	return TRUE;
 }
 
-gboolean
-netlist_helper_foreach_model_free (gpointer key,
-                                   gpointer model,
-                                   gpointer user_data)
+gboolean netlist_helper_foreach_model_free (gpointer key, gpointer model, gpointer user_data)
 {
 	g_free (key);
 
 	return FALSE;
 }
 
-char *
-netlist_helper_linebreak (char *str)
+char *netlist_helper_linebreak (char *str)
 {
 	char **split, *tmp;
 	GString *out;
@@ -350,8 +330,7 @@ netlist_helper_linebreak (char *str)
 				out = g_string_append_c (out, '\n');
 				out = g_string_append (out, split[i] + 1);
 			}
-		}
-		else {
+		} else {
 			out = g_string_append (out, split[i]);
 		}
 
@@ -365,8 +344,7 @@ netlist_helper_linebreak (char *str)
 }
 
 // FIXME this one piece of uggly+bad code
-void
-netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
+void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 {
 	NetlistData data;
 	GList *iter;
@@ -399,30 +377,26 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 	// Check if there is a Ground node
 	if (num_gnd_nodes == 0) {
-		g_set_error (error,
-			OREGANO_ERROR,
-			OREGANO_SIMULATE_ERROR_NO_GND,
-			_("At least one GND is required. Add at least one and try again."));
+		g_set_error (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_GND,
+		             _ ("At least one GND is required. Add at least one and try again."));
 	}
 
 	else if (num_clamps == 0) {
 		// FIXME put a V/I clamp on each and every subtree
 		// FIXME and let the user toggle visibility in the plot window
 		// FIXME see also TODO/FIXME above
-		g_set_error (error,
-			OREGANO_ERROR,
-			OREGANO_SIMULATE_ERROR_NO_CLAMP,
-			_("No test clamps found. Add at least one and try again."));
+		g_set_error (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP,
+		             _ ("No test clamps found. Add at least one and try again."));
 	}
 
 	else {
 
 		num_nodes = data.node_nr - 1;
 
-	 	// Build an array for going from node nr to "real node nr",
-	 	// where gnd nodes are nr 0 and the rest of the nodes are
-	 	// 1, 2, 3, ...
-		node2real = g_new0 (gchar*, num_nodes + 1 + 1);
+		// Build an array for going from node nr to "real node nr",
+		// where gnd nodes are nr 0 and the rest of the nodes are
+		// 1, 2, 3, ...
+		node2real = g_new0 (gchar *, num_nodes + 1 + 1);
 		node2real[num_nodes + 1] = NULL; // so we can use g_strfreev
 
 		for (i = 1, j = 1; i <= num_nodes; i++) {
@@ -430,18 +404,16 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 			if (g_slist_find (data.gnd_list, GINT_TO_POINTER (i))) {
 				node2real[i] = g_strdup ("0");
-			}
-			else if ((mlist = g_slist_find_custom (data.mark_list,
-				GINT_TO_POINTER (i), compare_marker))) {
+			} else if ((mlist = g_slist_find_custom (data.mark_list, GINT_TO_POINTER (i),
+			                                         compare_marker))) {
 				Marker *marker = mlist->data;
 				node2real[i] = g_strdup (marker->name);
-			}
-			else {
+			} else {
 				node2real[i] = g_strdup_printf ("%d", j++);
 			}
 		}
 
-	 	// Fill in the netlist node names for all the used nodes.
+		// Fill in the netlist node names for all the used nodes.
 		for (iter = data.node_and_number_list; iter; iter = iter->next) {
 			NodeAndNumber *nan = iter->data;
 			if (nan->node->netlist_node_name != NULL)
@@ -472,8 +444,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[0]));
 				if (!node_nr) {
 					g_warning ("Couln't find part, pin_nr %d.", 0);
-				}
-				else {
+				} else {
 					// need to substrac 1, netlist starts in 0, and node_nr in 1
 					pins[0].node_nr = atoi (node2real[node_nr]);
 				}
@@ -487,7 +458,9 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			}
 
 			template = part_property_expand_macros (part, tmp);
-			NG_DEBUG ("Template: '%s'\n" "macro   : '%s'\n", tmp, template);
+			NG_DEBUG ("Template: '%s'\n"
+			          "macro   : '%s'\n",
+			          tmp, template);
 
 			g_free (tmp);
 			tmp = netlist_helper_linebreak (template);
@@ -508,7 +481,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			i = 0;
 			while (template_split[i] != NULL && template_split[i][0] != '%') {
 				g_string_append (str, template_split[i++]);
-				g_string_append_c (str , ' ');
+				g_string_append_c (str, ' ');
 				NG_DEBUG ("str: %s\n", str->str);
 			}
 
@@ -518,13 +491,10 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				gint node_nr = 0;
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[pin_nr]));
 				if (!node_nr) {
-					g_set_error (error,
-					             OREGANO_ERROR,
-					             OREGANO_SIMULATE_ERROR_NO_SUCH_PART,
-					             _("Could not find part in library, pin #%d."), pin_nr);
-					return; //FIXME wtf?? this leaks like hell and did for ages!
-				}
-				else {
+					g_set_error (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_SUCH_PART,
+					             _ ("Could not find part in library, pin #%d."), pin_nr);
+					return; // FIXME wtf?? this leaks like hell and did for ages!
+				} else {
 					gchar *tmp;
 					tmp = node2real[node_nr];
 
@@ -577,8 +547,7 @@ netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	g_list_free_full (data.node_and_number_list, (GDestroyNotify)g_free);
 }
 
-char *
-netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
+char *netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 {
 	GList *iter;
 	Part *part;
@@ -600,16 +569,17 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 				if (!g_ascii_strcasecmp (prop, "v")) {
 					if (!do_ac) {
 						g_string_append_printf (out, " %s(%d)", prop, pins[0].node_nr);
-					}
-					else {
+					} else {
 						gchar *ac_type, *ac_db;
 						ac_type = part_get_property (part, "ac_type");
 						ac_db = part_get_property (part, "ac_db");
 
 						if (!g_ascii_strcasecmp (ac_db, "true"))
-							g_string_append_printf (out, " %s%sdb(%d)", prop, ac_type, pins[0].node_nr);
+							g_string_append_printf (out, " %s%sdb(%d)", prop, ac_type,
+							                        pins[0].node_nr);
 						else
-							g_string_append_printf (out, " %s%s(%d)", prop, ac_type, pins[0].node_nr);
+							g_string_append_printf (out, " %s%s(%d)", prop, ac_type,
+							                        pins[0].node_nr);
 					}
 				} else {
 					Node *node;
@@ -643,8 +613,7 @@ netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 	return ret;
 }
 
-GSList 	*
-netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
+GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 {
 	Netlist netlist_data;
 	GError *e = NULL;
@@ -672,10 +641,11 @@ netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 				prop = part_get_property (part, "type");
 
 				if (!g_ascii_strcasecmp (prop, "v")) {
-					gchar * tmp;
+					gchar *tmp;
 					tmp = g_strdup_printf ("%d", pins[0].node_nr);
 					clamp_list = g_slist_prepend (clamp_list, tmp);
-					if (0) printf ("clamp_list = %s\n", tmp);
+					if (0)
+						printf ("clamp_list = %s\n", tmp);
 				}
 			}
 		}
@@ -692,12 +662,12 @@ netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 		slist = g_slist_copy (clamp_list);
 		text = g_strdup_printf ("V(%d)", atoi (slist->data));
 		slist = slist->next;
-		while (slist)
-		{
+		while (slist) {
 			text = g_strdup_printf ("%s V(%d)", text, atoi (slist->data));
 			slist = slist->next;
 		}
-		if (0) printf ("clamp_list = %s\n", text);
+		if (0)
+			printf ("clamp_list = %s\n", text);
 	}
 
 	return clamp_list;

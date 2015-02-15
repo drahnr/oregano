@@ -4,7 +4,7 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- * 
+ *
  * Web page: https://srctwig.com/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
@@ -30,17 +30,13 @@
 #ifndef _GPLOT_LINES_H_
 #define _GPLOT_LINES_H_
 
-#include "gplotfunction.h" 
+#include "gplotfunction.h"
 
+typedef enum { FUNCTIONAL_CURVE = 0, FREQUENCY_PULSE } GraphicType;
 
-typedef enum {
-	FUNCTIONAL_CURVE=0,
-	FREQUENCY_PULSE
-} GraphicType;
+#define GPLOT_LINES(obj) G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_LINES, GPlotLines)
+#define IS_GPLOT_LINES(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_LINES)
 
-#define GPLOT_LINES(obj)        G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_LINES, GPlotLines)
-#define IS_GPLOT_LINES(obj)     G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_LINES)
-
-GPlotFunction* g_plot_lines_new (gdouble *x, gdouble *y, guint points);
+GPlotFunction *g_plot_lines_new (gdouble *x, gdouble *y, guint points);
 
 #endif

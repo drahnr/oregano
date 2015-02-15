@@ -35,7 +35,6 @@
 
 #include "sheet-item.h"
 
-SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, 
-                                                 ItemData *data);
+SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data);
 
 #endif /* __SHEET_ITEM_FACTORY_H */

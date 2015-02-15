@@ -6,7 +6,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *
  * Web page: https://srctwig.com/oregano
- * 
+ *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2010  Marc Lorber
@@ -32,19 +32,20 @@
 
 #include <gtk/gtk.h>
 
-#define GPLOT_FUNCTION(obj)     G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_FUNCTION, GPlotFunction)
-#define IS_GPLOT_FUNCTION(obj)  G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_FUNCTION)
+#define GPLOT_FUNCTION(obj) G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_GPLOT_FUNCTION, GPlotFunction)
+#define IS_GPLOT_FUNCTION(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_GPLOT_FUNCTION)
 
-typedef struct _GPlotFunctionBBox {
+typedef struct _GPlotFunctionBBox
+{
 	gdouble xmin;
 	gdouble ymin;
 	gdouble xmax;
 	gdouble ymax;
 } GPlotFunctionBBox;
 
-void     g_plot_function_draw (GPlotFunction *, cairo_t *, GPlotFunctionBBox *);
-void     g_plot_function_get_bbox (GPlotFunction *, GPlotFunctionBBox *);
-void     g_plot_function_set_visible (GPlotFunction *, gboolean);
+void g_plot_function_draw (GPlotFunction *, cairo_t *, GPlotFunctionBBox *);
+void g_plot_function_get_bbox (GPlotFunction *, GPlotFunctionBBox *);
+void g_plot_function_set_visible (GPlotFunction *, gboolean);
 gboolean g_plot_function_get_visible (GPlotFunction *);
 
 #endif
