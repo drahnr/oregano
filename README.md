@@ -13,7 +13,7 @@ Build matrix:
 
 OS           | Build Status
 ------------ | ------------------
-Fedora 21    | [![Build Status](http://drone.beerbach.me/api/badge/github.com/drahnr/oregano/status.svg?branch=master)](http://drone.beerbach.me/github.com/drahnr/oregano)  
+Fedora 21    | [![Build Status](http://ahoi.io/api/badge/github.com/drahnr/oregano/status.svg?branch=master)](http://ahoi.io/github.com/drahnr/oregano)  
 Ubuntu 12.04 | [![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)  
 
 The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
@@ -49,13 +49,11 @@ In order to simulate a schematic you need either `ngspice` or `gnucap`.
 
 To build the oregano application issue the following for a debug build
 
-    ./waf configure
-    ./waf debug -j
+    ./waf configure debug -j
 
 or the following for a release build
 
-    ./waf configure
-    ./waf release -j
+    ./waf configure release -j
 
 For additional options like specifying the install directory, consult
 
@@ -86,22 +84,10 @@ On subsequent installs with different prefixes this will only remove the last in
 
 ----
 
-### Web
-
-The [official oregano website](https://beerbach.me/project/oregano)
-
-### Mailinglist
-
-Mailinglist is at `oregano@librelist.com`, just drop a mail to subscribe. To unsubscribe again send a mail to `oregano-unsubscribe@librelist.com`.
-
-As every mailinglist, we also expect appropriate behavior, respect and a positive manner.
-
-----
-
 ### Contributions
 
 are very welcome! We provide `TODO`,`ARCHITECTURE.md`, `HACKING.md` and the files under `docs/*` as a starting point, an overview that should help you going.
-If you want to discuss an issue or something you would like to implement, don't be shy, drop a mail to the mailinglist (see above).
+If you want to discuss an issue or something you would like to implement, don't be shy, drop a message to [gitter.im](gitter.im/drahnr/oregano)
 
 
 #### Bugs
