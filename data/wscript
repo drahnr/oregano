@@ -42,8 +42,8 @@ def build(bld):
 
 	bld(
 		features  = 'intltool_in',
-		podir     = '../po',
-		flags     = ['-d', '-q', '-u'],
+		podir     = "../po",
+		style     = "desktop",
 		source    = 'oregano.desktop.in',
 		target    = 'oregano.desktop',
 		install_path = '${DATADIR}/applications',
@@ -51,8 +51,8 @@ def build(bld):
 
 	bld(
 		features  = 'intltool_in',
-		podir     = '../po',
-		flags     = ['-d', '-q', '-u'],
+		podir     = "../po",
+		style     = "xml",
 		source    = 'mime/oregano-mimetypes.xml.in',
 		target    = 'mime/oregano.xml',
 		install_path = '${DATADIR}/mime/packages/',
