@@ -11,27 +11,45 @@ def spawn_pot(ctx):
 	Create the initial pot file containing strings to translate.
 	"""
 
+	def spawn_pot_run(task):
+		srcs = task.inputs
+		tgt = task.outputs[0].abspath()
+		print ("srcs: "+str(srcs))
+		print ("tgts: "+str(tgt))
+		content = ""
+		for src in srcs:
+			if str(src).endswith(".ui"):
+				content += "[type: gettext/glade]%s\n" % (str(src.abspath()))
+			elif str(src).endswith(".in"):
+				content += "%s\n" % (str(src.abspath()))
+
+		cmd = 'echo "{0}" > "{1}"'.format(content, tgt)
+		print(cmd)
+		return task.exec_command(cmd)
+
 	# convert all secondary dataformats (ui files, desktop, mimetypes) to headers
-
-	nodes = ctx.path.ant_glob('*.ui')
-	nodes.append(ctx.path.search(['oregano-mimetypes.xml.in', 'oregano.desktop.in']))
-	ctx(rule='echo "[type: gettext/glade]${SRC}" >> '+build+'/po/POTFILES.in',
+	nodes = ctx.path.parent.ant_glob('**/*.ui')
+	nodes.extend(ctx.path.parent.ant_glob('**/*.in'))
+	print ("inputshit: "+str(nodes) + "</END>")
+	ctx(rule=spawn_pot_run,
 		source = nodes,
-		target = 'po/POTFILES.in')
+		target = 'POTFILES.in')
 
+	# gen .h files for all non source files
 	ctx(rule='cd po; intltool-update --headers --verbose',
-		source = 'po/POTFILES.in',
-		target = [ctx.path.search(str(node)+'.h') for item in nodes])
+		source = 'POTFILES.in',
+		target = [ctx.path.find_node(str(node)+'.h') for node in nodes])
 
+	# seek for all header and source files to translate and enlist them
 	totranslate = ctx.path.ant_glob('**.{c,h}')
-	ctx(rule = 'echo "${SRC}" >> '+build+'/${TGT}',
+	ctx(rule = 'echo "${SRC}" >> ${TGT}',
 		source = totranslate,
-		target = 'po/potfiles.in')
+		target = 'potfiles.in')
 
 	# extract translateable strings from all c/h/generated h files
-	bld(rule = 'xgettext -k_ -kN_ -E -f '+build+'/${SRC} --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o '+build+'/${TGT}',
-		source = 'po/potfiles.in',
-		target = 'po/'+ctx.env.appname+'.pot')
+	ctx(rule = 'xgettext -k_ -kN_ -E -f ./${SRC} --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o ${TGT}',
+		source = 'potfiles.in',
+		target = ctx.env.appname+'.pot')
 
 
 def update_po(ctx):
