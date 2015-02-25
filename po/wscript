@@ -10,46 +10,100 @@ def spawn_pot(ctx):
 	"""
 	Create the initial pot file containing strings to translate.
 	"""
-
-	def spawn_pot_run(task):
+####################################################################################################
+####################################################################################################
+####################################################################################################
+	def spawn_pot_run_stage1(task):
 		srcs = task.inputs
-		tgt = task.outputs[0].abspath()
-		print ("srcs: "+str(srcs))
-		print ("tgts: "+str(tgt))
-		content = ""
+		tgt = task.outputs[0]
+
+		node = tgt.get_bld()
+		print ("cnt: {0}".format(len(srcs)))
 		for src in srcs:
+
+#	this would work pretty well if intltool-update would not prefix another "../" - retarded
+#	so now we go for hardcoding build/po and thus just prefixing another "../" for the source path and we are done"
+			a = src.parent.get_bld() # cut off the filename, 
+			a = task.generator.bld.path
+			b = src.get_src()
+			src = b.path_from(a)
+			
 			if str(src).endswith(".ui"):
-				content += "[type: gettext/glade]%s\n" % (str(src.abspath()))
+				node.write("[type: gettext/glade]../{0}\n".format(src), 'a')
 			elif str(src).endswith(".in"):
-				content += "%s\n" % (str(src.abspath()))
+				node.write("../{0}\n".format(src), 'a')
+		return 0
 
-		cmd = 'echo "{0}" > "{1}"'.format(content, tgt)
-		print(cmd)
-		return task.exec_command(cmd)
 
-	# convert all secondary dataformats (ui files, desktop, mimetypes) to headers
-	nodes = ctx.path.parent.ant_glob('**/*.ui')
-	nodes.extend(ctx.path.parent.ant_glob('**/*.in'))
-	print ("inputshit: "+str(nodes) + "</END>")
-	ctx(rule=spawn_pot_run,
+	# gen a list of all ui and translateable files alias *.in
+	nodes = []
+	nodes.extend(ctx.path.parent.ant_glob('**/*.in', excl=['*POTFILES*','*potfiles*','**/po/**', '**/*spec.in']))
+	nodes.extend(ctx.path.parent.ant_glob('**/*.ui'))
+	ctx(rule = spawn_pot_run_stage1,
+		name = "spawnpot - enlist",
 		source = nodes,
 		target = 'POTFILES.in')
+####################################################################################################
+####################################################################################################
+####################################################################################################
+
+### FIXME FIXME FIXME this pollutes the source directory! copy all nodes from "nodes" to the bld subdir and let intltool-update work from there
+### FIXME FIXME FIXME this also would get rid of the hack reequireing a another "../" prefix
+
+	def spawn_pot_run_stage2(task):
+		
+		srcs = task.inputs[0]
+		tgt = task.outputs
+		import os
+		ret = task.exec_command('pwd; cd po; pwd; intltool-update --headers; cd ..; pwd')
+		return ret
 
 	# gen .h files for all non source files
-	ctx(rule='cd po; intltool-update --headers --verbose',
-		source = 'POTFILES.in',
-		target = [ctx.path.find_node(str(node)+'.h') for node in nodes])
+	target_nodes = [str(node) + '.h' for node in nodes]
+	ctx(rule=spawn_pot_run_stage2,
+		name = "spawnpot - generate headers",
+		source = 'POTFILES.in')
+#		,
+#		target = target_nodes)
 
-	# seek for all header and source files to translate and enlist them
-	totranslate = ctx.path.ant_glob('**.{c,h}')
-	ctx(rule = 'echo "${SRC}" >> ${TGT}',
-		source = totranslate,
-		target = 'potfiles.in')
+####################################################################################################
+####################################################################################################
+####################################################################################################
+
+#	def spawn_pot_run_stage3(task):
+#		srcs = task.inputs
+#		tgt = task.outputs[0]
+
+#		node = tgt.get_bld()
+#		print ("target3 {0} {1}".format(len(srcs),str(node.abspath())))
+#		for src in srcs:
+##	this would work pretty well if intltool-update would not prefix another "../" - retarded
+##	so now we go for hardcoding build/po and thus just prefixing another "../" for the source path and we are done"
+#			a = src.parent.get_bld() # cut off the filename, 
+#			a = task.generator.bld.srcpath
+#			b = src.get_src()
+#			src = b.path_from(a)
+#			src = src.srcpath
+#			print ("tgt xx {0}".format(src) )
+#			node.write("{0}".format(src), 'a')
+#		return 0
+
+#	# seek for all header and source files to translate and enlist them
+#	totranslate = []
+#	totranslate.extend(ctx.path.parent.ant_glob('**/*.c', excl=['test/*.c']))
+#	totranslate.extend(ctx.path.parent.ant_glob('**/*.h', excl=['test/*.h']))
+#	ctx(rule = spawn_pot_run_stage3,
+#		name = "spawnpot - collect",
+#		source = totranslate,
+#		target = 'potfiles.in',
+#		after = "spawnpot - generate headers")
 
 	# extract translateable strings from all c/h/generated h files
-	ctx(rule = 'xgettext -k_ -kN_ -E -f ./${SRC} --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o ${TGT}',
-		source = 'potfiles.in',
-		target = ctx.env.appname+'.pot')
+#	ctx(rule = 'xgettext -k_ -kN_ -E -f ./${SRC} --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o ${TGT}',
+#		name = "spawnpot - generate .pot",
+#		source = 'potfiles.in',
+#		target = ctx.env.appname+'.pot')
+
 
 
 def update_po(ctx):

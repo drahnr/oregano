@@ -239,49 +239,7 @@ def codeformat_fun(ctx):
 def spawn_pot(ctx):
 #	"create a .pot from all sources (.ui,.c,.h,.desktop)"
 
-
-	def spawn_pot_run(task):
-		ctx = task.generator.bld;
-
-		srcs = task.inputs
-		tgt = task.outputs[0]
-		print ("srcs: "+str(srcs))
-		print ("tgts: "+str(tgt))
-
-		node = ctx.bldnode.make_node(str(tgt))
-		for src in srcs:
-			if str(src).endswith(".ui"):
-				node.write("[type: gettext/glade]{0}\n".format(src), 'a')
-			elif str(src).endswith(".in"):
-				node.write("{0}\n".format(src), 'a')
-		return 0
-
-
-	# gen a list of all ui and translateable files alias *.in
-	nodes = ctx.path.ant_glob('**/*.in')
-	nodes.extend(ctx.path.ant_glob('**/*.ui'))
-	ctx(rule = spawn_pot_run,
-		source = nodes,
-		target = 'POTFILES.in')
-
-	# gen .h files for all non source files
-#	target_nodes = [ctx.path.find_node(node.abspath()+'.h') for node in nodes];
-#	ctx(rule='intltool-update --headers --verbose',
-#		source = 'POTFILES.in',
-#		target = target_nodes)
-
-#	# seek for all header and source files to translate and enlist them
-#	totranslate = ctx.path.ant_glob('**.{c,h}')
-#	ctx(rule = 'echo "${SRC}" >> ${TGT}',
-#		source = totranslate,
-#		target = 'potfiles.in')
-
-#	# extract translateable strings from all c/h/generated h files
-#	ctx(rule = 'xgettext -k_ -kN_ -E -f ./${SRC} --package-name='+ctx.env.appname+' --package-version '+ctx.env.version+' -o ${TGT}',
-#		source = 'potfiles.in',
-#		target = ctx.env.appname+'.pot')
-
-	#ctx.recurse ('po')
+	ctx.recurse ('po')
 
 
 def update_po(ctx):
