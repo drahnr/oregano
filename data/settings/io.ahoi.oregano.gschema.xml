@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-	<schema path="/apps/oregano/" id="apps.oregano" gettext-domain="oregano">
+	<schema path="/io/ahoi/oregano/" id="io.ahoi.oregano" gettext-domain="oregano">
 		<key type="i" name="engine">
 			<default>1</default>
 			<summary>The spice engine ngspice or gnucap.</summary>

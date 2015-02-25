@@ -55,7 +55,7 @@ def configure(conf):
 #	conf.define('OREGANO_SCHEMASDIR', conf.env.path_schemas)
 
 
-	conf.env.gschema_name = "apps.oregano.gschema.xml"
+	conf.env.gschema_name = "io.ahoi.oregano.gschema.xml"
 	conf.define('OREGANO_SCHEMA_NAME', conf.env.gschema_name)
 
 
