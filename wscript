@@ -234,6 +234,23 @@ def codeformat_fun(ctx):
 		logs.warn ("Did not find \"clang-format\". Re-configure if you installed it in the meantime.")
 
 
+import platform
+from waflib.Context import Context
+import re
+def bumprpmver_fun(ctx):
+
+	spec = ctx.path.find_node('oregano.spec')
+	data = None
+	with open(spec.abspath()) as f:
+		data = f.read()
+
+	if data:
+		data = (re.sub(r'^(\s*Version\s*:\s*)[\w.]+\s*', r'\1 {0}\n'.format(VERSION), data, flags=re.MULTILINE))
+
+		with open(spec.abspath(),'w') as f:
+			f.write(data)
+	else:
+		logs.warn("Didn't find that spec file: '{0}'".format(spec.abspath()))
 
 
 def spawn_pot(ctx):
@@ -280,10 +297,11 @@ class gdb(BuildContext):
 	cmd = 'gdb'
 	fun = 'gdb_fun'
 
+class bumprpmver(Context):
+	"""Bump version"""
+	cmd = 'bumprpmver'
+	fun = 'bumprpmver_fun'
 
-
-import platform
-from waflib.Context import Context
 
 def builddeps_fun(ctx):
 	pl = platform.linux_distribution()

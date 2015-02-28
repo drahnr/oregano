@@ -18,7 +18,6 @@ def spawn_pot(ctx):
 		tgt = task.outputs[0]
 
 		node = tgt.get_bld()
-		print ("cnt: {0}".format(len(srcs)))
 		for src in srcs:
 
 #	this would work pretty well if intltool-update would not prefix another "../" - retarded
@@ -30,6 +29,8 @@ def spawn_pot(ctx):
 			
 			if str(src).endswith(".ui"):
 				node.write("[type: gettext/glade]../{0}\n".format(src), 'a')
+			elif str(src).endswith(".gschema.xml") or str(src).endswith(".gschema.xml.in"):
+				node.write("[type: gettext/gsettings]../{0}\n".format(src), 'a')
 			elif str(src).endswith(".in"):
 				node.write("../{0}\n".format(src), 'a')
 		return 0

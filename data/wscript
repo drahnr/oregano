@@ -52,6 +52,13 @@ def build(bld):
 	bld(
 		features  = 'intltool_in',
 		podir     = "../po",
+		style     = "schemas",
+		source    = 'settings/io.ahoi.oregano.gschema.xml',
+	)
+
+	bld(
+		features  = 'intltool_in',
+		podir     = "../po",
 		style     = "xml",
 		source    = 'mime/oregano-mimetypes.xml.in',
 		target    = 'mime/oregano.xml',
