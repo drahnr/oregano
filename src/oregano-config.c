@@ -49,7 +49,7 @@ static void load_library_error (gchar *name);
 
 void oregano_config_load (void)
 {
-	oregano.settings = g_settings_new ("apps.oregano");
+	oregano.settings = g_settings_new ("io.ahoi.oregano");
 	oregano.engine = g_settings_get_int (oregano.settings, "engine");
 	oregano.compress_files = g_settings_get_boolean (oregano.settings, "compress-files");
 	oregano.show_log = g_settings_get_boolean (oregano.settings, "show-log");
