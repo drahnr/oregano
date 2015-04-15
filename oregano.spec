@@ -5,7 +5,7 @@ Release:		1%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
 Source0:		https://github.com/drahnr/oregano/archive/master.tar.gz
-Url:			https://beerbach.me/project/oregano
+Url:			https://ahoi.io/project/oregano
 
 BuildRequires: gtk3-devel
 BuildRequires: libxml2-devel
@@ -18,6 +18,7 @@ Requires: gtk3
 Requires: glib2 >= 2.24
 Requires: goocanvas2
 Provides: oregano = %{version}-%{release}
+Conflicts: oregano-master
 
 %description
 Schematic capture and simulation of electrical circuits utilizing gtk3
@@ -79,8 +80,11 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/glib-2.0/schemas/apps.oregano.gschema.xml
 
 %changelog
-* Sun Dec 25 2014  Bernhard Schuster  <bernhard@beerbach.me> 0.83.2-1
-- Bump version to 0.82
+* Thu Apr 16 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.2-4
+- Minor spec updates
 
-* Sun Dec 07 2014  Bernhard Schuster  <bernhard@beerbach.me> 0.83.1-3
+* Sun Dec 25 2014  Bernhard Schuster  <bernhard@ahoi.io> 0.83.2-1
+- Bump version to 0.83.2
+
+* Sun Dec 07 2014  Bernhard Schuster  <bernhard@ahoi.io> 0.83.1-3
 - Initial RPM release with changelog
