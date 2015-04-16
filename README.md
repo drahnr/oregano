@@ -44,6 +44,7 @@ You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0`
 These are usually included in your favorite distributions repositories and can otherwise be found at the [gnome public ftp](ftp://ftp.gnome.org) server.
 In order to simulate a schematic you need either `ngspice` or `gnucap`.
 
+If you are running a recent `Fedora` or `Ubuntu`, you can simply use `su -c./waf builddeps` to do that automatically.
 
 #### Building
 
