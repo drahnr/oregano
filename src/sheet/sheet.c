@@ -151,14 +151,18 @@ static void sheet_finalize (GObject *object)
 		(*G_OBJECT_CLASS (sheet_parent_class)->finalize)(object);
 }
 
-/*
+/**
  * position within the sheet in pixel coordinates
+ *
  * coordinates are clamped to grid if grid is enabled
  * see snap_to_grid
  * zero point : top left corner of the window (not widget!)
- * x : horizontal, left to right
- * y : vertical, top to bottom
- * returns wether the position could be detected properly
+ *
+ * @param x horizontal, left to right
+ * @param y vertical, top to bottom
+ * @returns wether the position could be detected properly
+ *
+ * @attention never call in event handlers!
  */
 gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 {
@@ -223,6 +227,7 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 
 /**
  * get the pointer position in goocanvas coordinates
+ *
  * @attention shall not be called in event callbacks,
  * except for GDK_MOTION_... where it is useless since
  * the event itself contains the cursor position
@@ -253,8 +258,9 @@ static void sheet_set_zoom (const Sheet *sheet, double zoom)
 }
 
 /*
- * gets the sheets parent adjustments
- * returns TRUE on success
+ * \brief gets the sheets parent adjustments
+ *
+ * @returns TRUE on success
  */
 gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdjustment **vadj)
 {
@@ -283,7 +289,7 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
 }
 
 /**
- * change the zoom by factor
+ * \brief change the zoom by factor
  *
  * zoom origin when zooming in is the cursor
  * zoom origin when zooming out is the center of the current viewport

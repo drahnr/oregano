@@ -297,7 +297,7 @@ void item_data_snap (ItemData *item_data, Grid *grid)
 }
 
 gpointer // NodeStore *
-    item_data_get_store (ItemData *item_data)
+item_data_get_store (ItemData *item_data)
 {
 	g_return_val_if_fail (item_data != NULL, NULL);
 	g_return_val_if_fail (IS_ITEM_DATA (item_data), NULL);

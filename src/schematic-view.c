@@ -613,6 +613,9 @@ static void object_properties_cmd (GtkWidget *widget, SchematicView *sv)
 	sheet_provide_object_properties (sv->priv->sheet);
 }
 
+/**
+ * copy the currently selected items
+ */
 static void copy_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	SheetItem *item;
@@ -639,6 +642,9 @@ static void copy_cmd (GtkWidget *widget, SchematicView *sv)
 		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
 }
 
+/**
+ * snip the currently selected items
+ */
 static void cut_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	if (sv->priv->sheet->state != SHEET_STATE_NONE)
