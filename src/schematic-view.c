@@ -619,7 +619,7 @@ static void object_properties_cmd (GtkWidget *widget, SchematicView *sv)
 static void copy_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	SheetItem *item;
-	GList *list;
+	GList *iter;
 
 	if (sv->priv->sheet->state != SHEET_STATE_NONE)
 		return;
@@ -627,12 +627,11 @@ static void copy_cmd (GtkWidget *widget, SchematicView *sv)
 	sheet_clear_ghosts (sv->priv->sheet);
 	clipboard_empty ();
 
-	list = sheet_get_selection (sv->priv->sheet);
-	for (; list; list = list->next) {
-		item = list->data;
+	iter = sheet_get_selection (sv->priv->sheet);
+	for (; iter; iter = iter->next) {
+		item = iter->data;
 		clipboard_add_object (G_OBJECT (item));
 	}
-	g_list_free_full (list, g_object_unref);
 
 	if (clipboard_is_empty ())
 		gtk_action_set_sensitive (
