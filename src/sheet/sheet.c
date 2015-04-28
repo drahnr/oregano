@@ -766,6 +766,11 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			if (sheet->state == SHEET_STATE_NONE)
 				sheet_rotate_selection (sheet, 90);
 			break;
+		case GDK_KEY_L:
+		case GDK_KEY_l:
+			if (sheet->state == SHEET_STATE_NONE)
+				sheet_rotate_selection (sheet, -90);
+			break;
 		case GDK_KEY_Home:
 		case GDK_KEY_End:
 			break;
