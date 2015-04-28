@@ -318,7 +318,11 @@ class bumprpmver(Context):
 def builddeps_fun(ctx):
 	pl = platform.linux_distribution()
 	if pl[0] == 'Fedora':
-		os.system('yum install gtk3-devel libxml2-devel gtksourceview3-devel intltool glib2-devel goocanvas2-devel desktop-file-utils')
+		tool = "dnf"
+		if int(pl[1]) <= 21:
+			tool = "yum"
+		logs.info("Using \"{0}\" with {1} {2} ...".format(tool,pl[0],pl[1]))
+		os.system(tool+' install gtk3-devel libxml2-devel gtksourceview3-devel intltool glib2-devel goocanvas2-devel desktop-file-utils')
 	elif pl[0] == 'Ubuntu':
 		os.system('apt-get install libglib2.0-dev intltool libgtk-3-dev libxml2-dev libgoocanvas-2.0-dev libgtksourceview-3.0-dev gnucap')
 	else:
