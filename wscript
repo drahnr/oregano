@@ -75,6 +75,7 @@ def configure(conf):
 
 	conf.find_program('clang-format', var='CODEFORMAT', mandatory=False)
 	conf.find_program('gdb', var='GDB', mandatory=False)
+	conf.find_program('nemiver', var='NEMIVER', mandatory=False)
 	conf.find_program('valgrind', var='VALGRIND', mandatory=False)
 
 
@@ -200,6 +201,12 @@ def gdb_fun(ctx):
 	else:
 		logs.warn ("Did not find \"gdb\". Re-configure if you installed it in the meantime.")
 
+def nemiver_fun(ctx):
+	if ctx.env.NEMIVER:
+		os.system (" "+ctx.env.NEMIVER[0]+" --env=\"G_DEBUG=resident-modules,fatal-warnings\" ./build/debug/"+APPNAME+" --debug-all")
+	else:
+		logs.warn ("Did not find \"nemiver\". Re-configure if you installed it in the meantime.")
+
 
 def valgrind_fun(ctx):
 	if ctx.env.VALGRIND:
@@ -296,6 +303,11 @@ class gdb(BuildContext):
 	"""Run with \"gdb\""""
 	cmd = 'gdb'
 	fun = 'gdb_fun'
+
+class nemiver(BuildContext):
+	"""Run with \"nemiver\""""
+	cmd = 'nemiver'
+	fun = 'nemiver_fun'
 
 class bumprpmver(Context):
 	"""Bump version"""
