@@ -4,9 +4,9 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- *  Bernhard Schuster <schuster.bernhard@gmail.com>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
- * Web page: https://srctwig.com/oregano
+ * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
@@ -138,7 +138,7 @@ void dialog_about (void)
 	gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (about),
 	                               _ ("Schematic capture and circuit simulation.\n"));
 	gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (about), "GNU General Public License");
-	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), "https://srctwig.com/oregano");
+	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), "https://ahoi.io/project/oregano");
 	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
 	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
 	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);

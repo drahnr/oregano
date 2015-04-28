@@ -4,9 +4,9 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- *  Bernhard Schuster <schuster.bernhard@gmail.com>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
- * Web page: https://srctwig.com/oregano
+ * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz

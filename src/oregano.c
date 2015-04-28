@@ -7,9 +7,9 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
- *  Bernhard Schuster <schuster.bernhard@gmail.com>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
- * Web page: https://srctwig.com/oregano
+ * Web page: https://ahoi.io/project/oregano
  *
  * Oregano, a tool for schematic capture and simulation of electronic
  * circuits.

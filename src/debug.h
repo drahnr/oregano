@@ -3,9 +3,9 @@
  *
  *
  * Authors:
- *  Bernhard Schuster <schuster.bernhard@gmail.com>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
- * Web page: https://srctwig.com/oregano
+ * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 2012-2013  Bernhard Schuster
  *
