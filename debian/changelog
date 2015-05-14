@@ -1,3 +1,10 @@
+oregano (0.83.2-0) unstable; urgency=high
+
+  * Update upstream
+
+ -- Bernhard Schuster <bernhard@ahoi.io>  Fri, 15 May 2015 00:35:44 +0200
+
+
 oregano (0.70-2) unstable; urgency=medium
 
   * Replace libpng12-dev with libpng-dev. (Closes: #662459)
