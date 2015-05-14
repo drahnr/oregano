@@ -3,18 +3,8 @@
 #export DH_VERBOSE=1
 #export DH_OPTIONS=-v
 
+PWD   := $(shell pwd)
 
-
-
-
-CFLAGS = -Wall -g
-LDFLAGS = -Wl,-z,defs -Wl,--as-needed
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2 -fno-omit-frame-pointer
-endif
 
 %:
 	dh $@
@@ -31,4 +21,4 @@ override_dh_auto_build:
 
 
 override_dh_auto_install:
-	./waf --prefix=/usr --destdir $(pwd)/debian/oregano install
+	./waf --prefix=/usr --destdir $(PWD)/debian/oregano install
