@@ -1,0 +1,16 @@
+Source: oregano
+Section: electronics
+Priority: optional
+Maintainer: Bernhard Schuster <bernhard@ahoi.io>
+Build-Depends: debhelper (>= 7.0.50~), quilt, libtool, libglib2.0-dev ,intltool, libgtk-3-dev, libxml2-dev, libgoocanvas-2.0-dev, libgtksourceview-3.0-dev, gnucap
+Standards-Version: 3.9.2
+Homepage: https://github.com/drahnr/oregano
+
+Package: oregano
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${perl:Depends}
+Recommends: gnucap
+Description: tool for schematical capture of electronic circuits
+ Oregano is a GNOME application for schematic capture and printing of
+ electronic circuits. It can simulate the circuits using Gnucap,
+ ng-spice or Berkeley spice.

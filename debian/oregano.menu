@@ -1,0 +1,6 @@
+?package(oregano):\
+	needs="X11"\
+	section="Applications/Science/Electronics"\
+	hints="CAD,Simulation,Electric,Schematics"\
+	title="Oregano"\
+	command="/usr/bin/oregano"

@@ -1,0 +1,3 @@
+version=3
+opts=filenamemangle=s|^.*/archive/v|oregano-| \
+    https://github.com/drahnr/oregano/tags .*/archive/v(\d[\d\.]+).tar.gz

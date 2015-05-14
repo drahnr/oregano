@@ -1,0 +1,301 @@
+oregano (0.70-2) unstable; urgency=medium
+
+  * Replace libpng12-dev with libpng-dev. (Closes: #662459)
+  * Update watch file.
+  * New patch: clang_FTBFS_Wreturn-type.patch (Closes: #743871) Thanks
+    to Nicolas Sévelin-Radiguet.
+
+ -- Maximiliano Curia <maxy@debian.org>  Fri, 25 Apr 2014 15:39:20 +0200
+
+oregano (0.70-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+
+  [ Petter Reinholdtsen ]
+  * New patch math-library.patch to make sure to link with -lm and
+    fix build failure (Closes: #713450).
+
+ -- gregor herrmann <gregoa@debian.org>  Sat, 13 Jul 2013 15:54:33 +0200
+
+oregano (0.70-1) unstable; urgency=low
+
+  * New upstream release.
+  * New upstream, Marc Lorber
+  * debian/patches/format-security.patch: fixes format-security errors
+  * debian/patches/missing.potfiles.patch: add missing files to POTFILES.in
+    and POTFILES.skip
+  * debian/patches/remove.unneeded.docs.patch: avoid duplication of license
+    and the installation of the INSTALL file
+
+ -- Maximiliano Curia <maxy@debian.org>  Tue, 03 Jan 2012 20:00:53 -0300
+
+oregano (0.69.1-3) unstable; urgency=low
+
+  * Merge pending ubuntu patch.
+  * debian/patches/line.drawing.patch: When moving a wire so that it joins
+    with another delete the moved one, as well as extending the other.
+  * Remove obsolete dependency of libgnomeprint (Closes: #644563)
+  * Migrate to format 3.0 (quilt)
+  * Update Standards-Version to 3.9.2.
+
+ -- Maximiliano Curia <maxy@debian.org>  Mon, 28 Nov 2011 13:08:58 -0300
+
+oregano (0.69.1-2) unstable; urgency=low
+
+  * Disable omit-frame-pointer optimization to avoid segfault in amd64.
+    Further analysis pending. (Closes: #590688)
+
+ -- Maximiliano Curia <maxy@debian.org>  Sun, 15 Aug 2010 16:50:23 -0300
+
+oregano (0.69.1-1) unstable; urgency=low
+
+  * New upstream release.
+    - Migration to gtksourceview2.0 (Closes: #532939)
+    - Fix png export (Closes: #528911)
+    - Add black and white export support (Closes: #527448)
+  * Update old patches.
+    - Use shorter name as Name in desktop file (Closes: #509948)
+  * Update Standards-Version, no changes needed.
+
+ -- Maximiliano Curia <maxy@debian.org>  Wed, 22 Jul 2009 19:27:35 -0300
+
+oregano (0.69.0-2) unstable; urgency=low
+
+  * Fixed dpkg-shlibs warnings.
+    - Set LDFLAGS in rules file.
+    - Added patch to make scons receive LDFLAGS
+       (patches/scons.env.ldflags.dpatch)
+  * Fixed invalid characters in power.oreglib
+    - Added patch to fix the invalid characters.
+       (patches/power.lib.mess.dpatch)
+  * Moved Homepage pseudo field to real field.
+  * Updated Standards-Version, no changes needed.
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Tue, 19 Feb 2008 21:01:27 -0200
+
+oregano (0.69.0-1) unstable; urgency=low
+
+  * New upstream release.
+    - Added 1N4148.model (Closes: #432997)
+  * Removed upstream.sync patch. (patches/upstream.sync.dpatch)
+  * Removed headers.missing patch. (patches/headers.missing.dpatch)
+  * Updated desktop.update patch. (patches/desktop.update.dpatch)
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Thu, 16 Aug 2007 23:22:15 -0300
+
+oregano (0.60.0-2) unstable; urgency=low
+
+  * Fixes FTBFS, by adding gnome-print-paper header in the print.c source file
+    (patch headers-missing), thanks to Lucas Nussbaum and Luis Rodrigo
+    Gallardo Cruz (Closes: #422397)
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Sat, 16 Jun 2007 13:09:53 -0300
+
+oregano (0.60.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * Fixes typo in the package description, thanks to Simon Waters for
+    the report (Closes: #390245)
+  * Updates desktop file, thanks to Jordi Mallach for the patch
+    (Closes: #393952)
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Thu, 19 Oct 2006 12:01:03 -0300
+
+oregano (0.50.1-2) unstable; urgency=low
+
+  * Fixes problem with encodings, thanks to Viktor Bindewald for the report
+    and testing. (Closes: #369602)
+  * Fixes a possible crash when editing part properties (upstream fix).
+  * Changes the installation path of the desktop file.
+  * Honors the CFLAGS value.
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Fri, 25 Aug 2006 00:28:24 -0300
+
+oregano (0.50.1-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Thu, 03 Aug 2006 19:35:28 -0300
+
+oregano (0.40.5-2) unstable; urgency=low
+
+  * Fixes translations of dialogs - thanks to Jordi Mallach <jordi@debian.org>.
+  * Updates catalan translation - thanks to Jordi Mallach <jordi@debian.org>
+    (Closes: #350293).
+  * Updates french translation - thanks to Jean-Luc Coulon
+    <jean-luc.coulon@wanadoo.fr> (Closes: #354596).
+  
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Fri, 14 Apr 2006 14:02:59 -0300
+
+oregano (0.40.5-1) unstable; urgency=low
+
+  * Updates russian translation - thanks to Yuri Kozlov <yuray@id.ru>
+    (Closes: #326925).
+  * Updates brazilian portuguese translation - thanks to 
+    "Felipe Augusto van de Wiel (faw)" <felipe@cathedrallabs.org>
+    (Closes: #348130).
+  * New upstream release.
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Mon, 23 Jan 2006 19:42:49 -0300
+
+oregano (0.40.4-2) unstable; urgency=low
+
+  * Building now against libcairo2-dev (Closes: #321058).
+  * Leaving names on oregano.1 without funny characters.
+
+ -- David Moreno Garza <damog@debian.org>  Mon,  5 Sep 2005 20:20:53 -0500
+
+oregano (0.40.4-1) unstable; urgency=low
+
+  * New upstream release (Closes: #293094).
+  * Adds --disable-update-mime to the configure parameters - thanks to Aaron
+    M. Ucko <ucko@debian.org> (Closes: #313132).
+  * Updates german translation - thanks to Jens Seidel
+    <jensseidel@users.sf.net> (Closes: #313950).
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Tue, 21 Jun 2005 11:25:09 -0300
+
+oregano (0.40.0-5) unstable; urgency=high
+
+  * Fixes segfaults on ia64 - thanks to David Mosberger-Tang <davidm@mostang.com>
+    (Closes: #310936).
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Sun, 29 May 2005 14:23:24 -0300
+
+oregano (0.40.0-4) unstable; urgency=high
+
+  * Fixes incompatibility bug with libcairo 0.4 (Closes: #309645).
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Thu, 26 May 2005 16:47:43 -0300
+
+oregano (0.40.0-3) unstable; urgency=low
+
+  * Patched file.c which now allows GTK 2.4 or newer (Closes: #300456).
+  * Updated catalan translation (Closes: #288388).
+  * Changed to a proper more "generic" section: electronics (Closes: #296673).
+
+ -- David Moreno Garza <damog@damog.net>  Fri, 25 Mar 2005 17:30:24 -0600
+
+oregano (0.40.0-2) unstable; urgency=low
+
+  * Adds postinst, postrm script that manage mime files cleanly - thanks
+    to the accurate Manuel Enrique observations (Closes: #286158).
+  * Minor change in the package description.
+
+ -- Maximiliano Curia <maxy@gnuservers.com.ar>  Thu,  9 Dec 2004 00:20:56 -0300
+
+oregano (0.40.0-1) unstable; urgency=low
+
+  * New upstream release (Closes: #283237).
+  * Fixes documentation (README.Debian) as suggested by upstream
+  	(its a great thing to have upstream using Debian).
+  * Adds perl (needed by the parser) and gnucap as Recommended.
+  * Renamed all oregano_parser instances to oregano_parser.
+  * Replaces debian/oregano.mime for the new upstream oregano.mime.
+
+ -- David Moreno Garza <damog@damog.net>  Mon,  6 Dec 2004 16:12:45 -0600
+
+oregano (0.23-3) unstable; urgency=low
+
+  * New maintainer: David Moreno Garza.
+  * Bringing updated config.{guess,sub} from autotools-dev (Closes: #274500).
+  * Updated Standards-Version.
+  * Corrected missing quotes on debian/menu.
+  * Corrected version depended on debhelper.
+
+ -- David Moreno Garza <damog@damog.net>  Thu, 11 Nov 2004 10:45:27 -0600
+
+oregano (0.23-2) unstable; urgency=low
+
+  * Included Toni Cunyat's newest Catalan translation (Closes: #131527)
+  * Changed upstream email address in copyright file - was already
+    changed in the README by upstream.
+
+ -- Hugo van der Merwe <hvdm@debian.org>  Fri,  1 Feb 2002 10:56:16 +0200
+
+oregano (0.23-1) unstable; urgency=low
+
+  * New upstream release (Closes: #128833)
+  * Added symlink for the samples in /usr/share/doc to ease their finding.
+  * Updated Standards-Version to 3.5.6
+  * Provide menu hints - Thanks Yann Dirson (Closes: #128766)
+
+ -- Hugo van der Merwe <hvdm@debian.org>  Sat, 12 Jan 2002 10:52:52 +0200
+
+oregano (0.22-4) unstable; urgency=low
+
+  * Rebuild against X packages in sid (not 4.1.0)
+
+ -- Hugo van der Merwe <hvdm@debian.org>  Sat, 22 Jul 2001 12:10:36 +0200
+
+oregano (0.22-3) unstable; urgency=low
+
+  * Updated config.sub and config.guess to fix compiling on hppa
+    (Closes: #104827)
+
+ -- Hugo van der Merwe <hvdm@debian.org>  Wed, 18 Jul 2001 12:47:55 +0200
+
+oregano (0.22-2) unstable; urgency=low
+
+  * Rebuilt with newer libraries (Closes: #96533)
+  * Wrote simple man page for pspice2oregano
+  * Updated web site and email addresses in copyright and man page.
+    (Closes: #96630)
+
+ -- Hugo van der Merwe <hvdm@debian.org>  Tue, 15 May 2001 18:06:50 +0200
+
+oregano (0.22-1) unstable; urgency=low
+
+  * New upstream release
+  * Changed maintainer address to debian.org
+  * Updated Standards-Version to 3.5.2
+  * Updated man page
+
+ -- Hugo van der Merwe <hvdm@debian.org>  Sat, 10 Mar 2001 23:29:12 +0200
+
+oregano (0.21-2) unstable; urgency=low
+
+  * Updated Standards-Version in debian/rules.
+
+ -- Hugo van der Merwe <hugovdm@mail.com>  Tue, 19 Dec 2000 10:26:42 +0200
+
+oregano (0.21-1) unstable; urgency=low
+
+  * New upstream release
+  * Added new dependencies to Build-Depends.
+  * Updated man page and debian/control - oregano can now print.
+  * Added debug support for DEB_BUILD_OPTIONS in debian/rules.
+
+ -- Hugo van der Merwe <hugovdm@mail.com>  Thu, 14 Dec 2000 11:20:00 +0200
+
+oregano (0.20-2) unstable; urgency=low
+
+  * Cosmetic change in menu entry.
+  * Couple of minor changes in debian/rules.
+
+ -- Hugo van der Merwe <hugovdm@mail.com>  Wed, 13 Dec 2000 08:49:08 +0200
+
+oregano (0.20-1) unstable; urgency=low
+
+  * New upstream release (Closes: #77874)
+  * Updated maintainer email address in debian/control.
+
+ -- Hugo van der Merwe <hugovdm@mail.com>  Wed, 13 Dec 2000 08:48:58 +0200
+
+oregano (0.18-2) unstable; urgency=low
+
+  * Corrected copyright info.
+  * Updated maintainer email address in changelog.
+
+ -- Hugo van der Merwe <hugovdm@mail.com>  Sat, 28 Oct 2000 17:05:13 +0200
+
+oregano (0.18-1) unstable; urgency=low
+
+  * First release. (Closes: #72012)
+  * Wrote man page.
+
+ -- Hugo van der Merwe <hugo@mailroom.com>  Mon, 16 Oct 2000 17:54:48 +0200
+
+Local variables:
+mode: debian-changelog
+End:
