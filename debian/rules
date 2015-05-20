@@ -10,7 +10,7 @@ PWD   := $(shell pwd)
 	dh $@
 
 override_dh_auto_configure:
-	./waf configure
+	./waf --prefix="/usr" configure
 
 override_dh_auto_clean:
 	./waf distclean
@@ -19,7 +19,7 @@ override_dh_auto_build:
 	./waf debug
 
 override_dh_auto_install:
-	./waf --prefix=/usr --destdir=$(PWD)/debian/oregano install
+	./waf --prefix="/usr" --destdir=$(PWD)/debian/oregano install
 
 override_dh_usrlocal:
 	@echo "skippy skip <dh_usrlocal>"
