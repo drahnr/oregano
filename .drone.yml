@@ -1,13 +1,20 @@
-image: oregano-test-fedora:latest
+image: $$os
+
 git:
   depth: 1
   path: github.com/drahnr/oregano
 script:
-    - ./.drone/build.sh
+    - ./waf configure --prefix="/usr" debug install
 deploy:
   bash:
     script:
       - ./.drone/deploy.sh
+matrix:
+	os:
+		- fedora-oregano-test:22
+		- fedora-oregano-test:21
+		- ubuntu-oregano-test:15.04
+		- ubuntu-oregano-test:14.04.2
 notify:
   webhook:
     urls:
