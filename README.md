@@ -36,7 +36,7 @@ The preferred way of supporting oregano is by sending patches and pull requests 
 If you are not going to build it yourself from source (which in fact is quite straightforward) you can grab a either a ready to install packages or distribution specific recipes:
 
 * Fedora - [stable and git](https://copr.fedoraproject.org/coprs/drahnr/oregano/) or via `dnf copr enable drahnr/oregano`
-* ArchLinux - [stable](https://aur.archlinux.org/packages/oregano/), [git](https://aur.archlinux.org/packages/oregano/)
+* ArchLinux - [stable](https://aur4.archlinux.org/packages/oregano/), [git](https://aur4.archlinux.org/packages/oregano/)
 
 #### Requirements
 
