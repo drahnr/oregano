@@ -1,6 +1,7 @@
 # oregano - an electrical engineering tool
 
 [![Join the chat at https://gitter.im/drahnr/oregano](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drahnr/oregano?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Stories in Ready](https://badge.waffle.io/drahnr/oregano.svg?label=ready&title=Ready)](http://waffle.io/drahnr/oregano) 
 
 ### About
 oregano is an application for schematic capture and simulation of electronic circuits. The actual simulation is performed by Berkeley Spice, GNUcap or the new generation ngspice.
@@ -13,7 +14,7 @@ Build matrix:
 
 OS           | Build Status
 ------------ | ------------------
-Fedora 21    | [![Build Status](http://drone.ahoi.io/api/badge/github.com/drahnr/oregano/status.svg?branch=master)](http://drone.ahoi.io/github.com/drahnr/oregano)  
+Fedora 22    | [![Build Status](http://drone.ahoi.io/api/badge/github.com/drahnr/oregano/status.svg?branch=master)](http://drone.ahoi.io/github.com/drahnr/oregano)  
 Ubuntu 12.04 | [![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)  
 
 The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
@@ -93,7 +94,7 @@ If you want to discuss an issue or something you would like to implement, don't 
 
 #### Bugs
 
-For bug and issue tracking as well as feature requests, the github built in issue tracker is used.
+For bug and issue tracking as well as feature requests, the github built in issue tracker plus [waffle.io](waffle.io/drahnr/oregano)
 
 #### Translations
 
