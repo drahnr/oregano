@@ -1,10 +1,10 @@
-Name:			oregano-master
+Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
 Version:		0.83.3
 Release:		1%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
-Source0:		https://github.com/drahnr/oregano/archive/master.tar.gz
+Source0:		https://github.com/drahnr/oregano/archive/oregano-%{version}.tar.xz
 Url:			https://ahoi.io/project/oregano
 
 BuildRequires: gtk3-devel
@@ -25,10 +25,10 @@ Schematic capture and simulation of electrical circuits utilizing gtk3
 as frontend and ngpsice/gnucap as backend
 
 %prep
-%setup -q -n oregano-master
+%setup -q -n oregano
 
 %build
-./waf distclean
+./waf distclean || true
 ./waf configure --prefix="%{_prefix}" release
 
 
@@ -77,9 +77,13 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/icons/hicolor/*/*
 %{_datadir}/oregano/*/*
 %{_datadir}/mime/packages/oregano-mimetypes.xml
-%{_datadir}/glib-2.0/schemas/apps.oregano.gschema.xml
+%{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
 
 %changelog
+* Thu Jul 15 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-1
+- Version bump
+- Ignore distclean exit codes not equal 0
+
 * Thu Apr 16 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.2-4
 - Minor spec updates
 
