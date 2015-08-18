@@ -1354,7 +1354,7 @@ gboolean sheet_pointer_grab (Sheet *sheet, GdkEvent *event)
 {
 	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
-#if not DEBUG_DISABLE_GRABBING
+#if !DEBUG_DISABLE_GRABBING
 	if (sheet->priv->pointer_grabbed == 0 &&
 	    goo_canvas_pointer_grab (GOO_CANVAS (sheet), GOO_CANVAS_ITEM (sheet->grid),
 	                             GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK |
@@ -1372,7 +1372,7 @@ void sheet_pointer_ungrab (Sheet *sheet, GdkEvent *event)
 {
 	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
-#if not DEBUG_DISABLE_GRABBING
+#if !DEBUG_DISABLE_GRABBING
 	if (sheet->priv->pointer_grabbed) {
 		sheet->priv->pointer_grabbed = FALSE;
 		goo_canvas_pointer_ungrab (GOO_CANVAS (sheet), GOO_CANVAS_ITEM (sheet->grid),
@@ -1385,7 +1385,7 @@ gboolean sheet_keyboard_grab (Sheet *sheet, GdkEvent *event)
 {
 	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
-#if not DEBUG_DISABLE_GRABBING
+#if !DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed == FALSE &&
 	    goo_canvas_keyboard_grab (GOO_CANVAS (sheet), GOO_CANVAS_ITEM (sheet->grid),
 	                              TRUE, /*do not reroute signals through sheet->grid*/
@@ -1402,7 +1402,7 @@ void sheet_keyboard_ungrab (Sheet *sheet, GdkEvent *event)
 {
 	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
-#if not DEBUG_DISABLE_GRABBING
+#if !DEBUG_DISABLE_GRABBING
 	if (sheet->priv->keyboard_grabbed) {
 		sheet->priv->keyboard_grabbed = FALSE;
 		goo_canvas_keyboard_ungrab (GOO_CANVAS (sheet), GOO_CANVAS_ITEM (sheet->grid),
