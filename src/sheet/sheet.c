@@ -1278,7 +1278,7 @@ void sheet_connect_node_dots_to_signals (Sheet *sheet)
 	                         G_CALLBACK (node_dot_removed_callback), G_OBJECT (sheet), 0);
 
 	list = node_store_get_node_positions (schematic_get_store (sm));
-	for (list = iter; iter; iter = iter->next)
+	for (iter = list; iter; iter = iter->next)
 		node_dot_added_callback (sm, iter->data, sheet);
 }
 
