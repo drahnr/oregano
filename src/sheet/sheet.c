@@ -1046,8 +1046,8 @@ static void flip_items (Sheet *sheet, GList *items, IDFlip direction)
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
 	// FIXME center is currently not used by item_data_flip (part.c implentation)
-	center.x = (b2.x + b1.x) / 2;
-	center.y = (b2.y + b1.y) / 2;
+	center.x = b2.x / 2 + b1.x / 2;
+	center.y = b2.y / 2 + b1.y / 2;
 
 	// FIXME - registering an item after flipping it still creates an offset as
 	// the position is still 0
@@ -1221,8 +1221,9 @@ static void node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet 
 	if (found) {
 		goo_canvas_item_remove (GOO_CANVAS_ITEM (node_item));
 		g_hash_table_remove (sheet->priv->node_dots, pos);
-	} else
+	} else {
 		g_warning ("No dot to remove!");
+	}
 }
 
 /**
@@ -1266,7 +1267,7 @@ void sheet_connect_node_dots_to_signals (Sheet *sheet)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	GList *list;
+	GList *iter, *list;
 	Schematic *sm;
 
 	sm = schematic_view_get_schematic_from_sheet (sheet);
@@ -1277,8 +1278,8 @@ void sheet_connect_node_dots_to_signals (Sheet *sheet)
 	                         G_CALLBACK (node_dot_removed_callback), G_OBJECT (sheet), 0);
 
 	list = node_store_get_node_positions (schematic_get_store (sm));
-	for (; list; list = list->next)
-		node_dot_added_callback (sm, list->data, sheet);
+	for (list = iter; iter; iter = iter->next)
+		node_dot_added_callback (sm, iter->data, sheet);
 }
 
 /**
