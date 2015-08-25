@@ -4,7 +4,7 @@ set -ev
 ./waf configure --prefix="/usr"
 
 version=$(cat ./build/VERSION)
-git archive -v --prefix=oregano -o oregano-$version.tar.xz HEAD
+git archive -v --prefix=oregano/ -o oregano-$version.tar.xz HEAD
 
 rpmdev-setuptree
 set +ev
