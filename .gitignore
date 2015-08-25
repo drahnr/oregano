@@ -5,4 +5,7 @@ po/build
 src/build
 po/.intlcache
 waftools/__pycache__*
-*.pyc
+**.pyc
+**.tar.xz
+**.tar.gz
+.waf-*
