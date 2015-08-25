@@ -22,14 +22,15 @@ Conflicts: oregano-master
 
 %description
 Schematic capture and simulation of electrical circuits utilizing gtk3
-as frontend and ngpsice/gnucap as backend
+as front-end and ng-spice/gnu-cap as back-end
 
 %prep
 %setup -q -n oregano
 
 %build
 ./waf distclean || true
-./waf configure --prefix="%{_prefix}" release
+#seems we always need to be able to do debug builds to allow fedora stripping them into a pkg
+./waf configure --prefix="%{_prefix}" debug
 
 
 %install
