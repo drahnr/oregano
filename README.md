@@ -89,12 +89,12 @@ On subsequent installs with different prefixes this will only remove the last in
 ### Contributions
 
 are very welcome! We provide `TODO`,`ARCHITECTURE.md`, `HACKING.md` and the files under `docs/*` as a starting point, an overview that should help you going.
-If you want to discuss an issue or something you would like to implement, don't be shy, drop a message to [gitter.im](gitter.im/drahnr/oregano)
+If you want to discuss an issue or something you would like to implement, don't be shy, drop a message to [gitter.im](https://gitter.im/drahnr/oregano)
 
 
 #### Bugs
 
-For bug and issue tracking as well as feature requests, the github built in issue tracker plus [waffle.io](waffle.io/drahnr/oregano)
+For bug and issue tracking as well as feature requests, the github built in issue tracker plus [waffle.io](https://waffle.io/drahnr/oregano)
 
 #### Translations
 
