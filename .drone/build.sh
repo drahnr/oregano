@@ -1,15 +1,24 @@
 #!/usr/bin/env bash
-set -e
-./waf configure --prefix="/usr" debug install
+set -ev
+git archive -v --prefix=oregano -o oregano.tar.gz HEAD
 
+./waf configure --prefix="/usr"
 
-#rpmdev-setuptree
-#cp oregano.spec.in ~/rpmbuild/SPECS/oregano.spec
+rpmdev-setuptree
+set +ev
+tag=$(git describe --exact-match --tags HEAD) > /dev/null 2>&1
+skip=$?
+set -ev
+if [[ $skip -ne 0 ]]; then
+	./waf debug install
+elif [[ $tag =~ ^v?[0-9]+\.[0-9]+(\.[0-9]+(\.[0-9]+)?)?$ ]]; then
+	./waf release install
+else
+	./waf debug install
+fi
 
-#cd ~/rpmbuild/SOURCES
-#wget https://github.com/drahnr/oregano/archive/master.tar.gz
-
-#cd ~/rpmbuild/
-#rpmbuild -ba SPECS/oregano.spec
-#rpmlint RPMS/x86_64/oregano*.rpm
-
+cp oregano.spec ~/rpmbuild/SPECS/oregano.spec
+cp oregano.tar.gz ~/rpmbuild/SOURCES/oregano.tar.gz
+cd ~/rpmbuild/
+rpmbuild -ba SPECS/oregano.spec
+rpmlint RPMS/x86_64/oregano*.rpm
