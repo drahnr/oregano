@@ -25,4 +25,4 @@ cp oregano.spec ~/rpmbuild/SPECS/oregano.spec
 cp oregano-$version.tar.xz ~/rpmbuild/SOURCES/oregano-$version.tar.xz
 cd ~/rpmbuild/
 rpmbuild -ba SPECS/oregano.spec
-rpmlint RPMS/x86_64/oregano*.rpm
+rpmlint RPMS/x86_64/oregano*.rpm || true
