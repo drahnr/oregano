@@ -88,8 +88,8 @@ def configure(conf):
 	conf.setenv('release', env=conf.env.derive())
 	conf.env.CFLAGS = ['-O2', '-Wall']
 	conf.define('RELEASE',1)
-
-
+	with open(os.path.join(out,"VERSION"),"w+") as f:
+		f.write(str(VERSION)+os.linesep)
 
 
 
