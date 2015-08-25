@@ -189,7 +189,7 @@ static void item_data_set_gproperty (GObject *object, guint prop_id, const GValu
 		item_data->priv->store = g_value_get_pointer (value);
 		break;
 	default:
-		break;
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (item_data, prop_id, spec);
 	}
 }
 
