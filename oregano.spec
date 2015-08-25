@@ -80,14 +80,14 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
 
 %changelog
-* Thu Jul 15 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-1
+* Wed Jul 15 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-1
 - Version bump
 - Ignore distclean exit codes not equal 0
 
 * Thu Apr 16 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.2-4
 - Minor spec updates
 
-* Sun Dec 25 2014  Bernhard Schuster  <bernhard@ahoi.io> 0.83.2-1
+* Thu Dec 25 2014  Bernhard Schuster  <bernhard@ahoi.io> 0.83.2-1
 - Bump version to 0.83.2
 
 * Sun Dec 07 2014  Bernhard Schuster  <bernhard@ahoi.io> 0.83.1-3
