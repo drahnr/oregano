@@ -85,14 +85,14 @@ gdouble coords_euclid (const Coords *a);
 
 gdouble coords_euclid2 (const Coords *a);
 
-inline gdouble coords_distance (const Coords *a, const Coords *b);
+gdouble coords_distance (const Coords *a, const Coords *b);
 
 gboolean coords_equal (const Coords *a, const Coords *b);
 
 /*
  * used for GHashTable key hashing
  */
-inline guint coords_hash (gconstpointer v);
+guint coords_hash (gconstpointer v);
 
 /*
  * used for comparsion in GHashTable

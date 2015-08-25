@@ -131,14 +131,14 @@ inline gdouble coords_distance (const Coords *a, const Coords *b)
 	return sqrt (coords_dot (a, b));
 }
 
-#define CIRCLERSHIFT(x, r) ((x >> r) | (x << (sizeof(x) * 8 - r)))
-#define CIRCLELSHIFT(x, l) ((x << l) | (x >> (sizeof(x) * 8 - l)))
+#define CIRCLE_R_SHIFT(x, r) ((x >> r) | (x << (sizeof(x) * 8 - r)))
+#define CIRCLE_L_SHIFT(x, l) ((x << l) | (x >> (sizeof(x) * 8 - l)))
 inline guint coords_hash (gconstpointer v)
 {
 	const Coords *c = v;
 	const guint x = (guint)(c->x);
 	const guint y = (guint)(c->y);
-	return CIRCLELSHIFT (x, 7) ^ CIRCLERSHIFT (y, 3);
+	return CIRCLE_L_SHIFT (x, 7) ^ CIRCLE_R_SHIFT (y, 3);
 }
 
 inline gboolean coords_equal (const Coords *a, const Coords *b)
