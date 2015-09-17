@@ -91,6 +91,9 @@ On subsequent installs with different prefixes this will only remove the last in
 are very welcome! We provide `TODO`,`ARCHITECTURE.md`, `HACKING.md` and the files under `docs/*` as a starting point, an overview that should help you going.
 If you want to discuss an issue or something you would like to implement, don't be shy, drop a message to [gitter.im](https://gitter.im/drahnr/oregano)
 
+#### Packaging
+
+This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS), Ubuntu (and thus Debian unstable) and soon to come for Mac. If you see the need for more platforms we'd be happy to include even more.
 
 #### Bugs
 
