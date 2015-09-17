@@ -79,6 +79,12 @@ def configure(conf):
 	conf.find_program('valgrind', var='VALGRIND', mandatory=False)
 
 
+	with open(os.path.join(out,"VERSION"),"w+") as f:
+		f.write(str(VERSION)+os.linesep)
+
+
+	conf.define('RELEASE',1)
+
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
 	conf.setenv('debug', env=conf.env.derive())
 	conf.env.CFLAGS = ['-ggdb', '-Wall']
@@ -88,8 +94,6 @@ def configure(conf):
 	conf.setenv('release', env=conf.env.derive())
 	conf.env.CFLAGS = ['-O2', '-Wall']
 	conf.define('RELEASE',1)
-	with open(os.path.join(out,"VERSION"),"w+") as f:
-		f.write(str(VERSION)+os.linesep)
 
 
 
@@ -126,12 +130,10 @@ def build(bld):
 	if bld.cmd != 'install' and bld.cmd != 'uninstall':
 		if not bld.variant:
 			bld.variant = 'debug'
-			logs.warn ('Defaulting to \'debug\' build variant')
-			logs.warn ('Do "waf debug" or "waf release" to avoid this warning')
+			logs.warn ('Use \'debug\' or \'release\' targets for manual builds!')
 	else:
 		if not os.geteuid()==0:
 			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
-
 
 
 	nodes =  bld.path.ant_glob(\
