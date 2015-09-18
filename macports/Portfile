@@ -1,0 +1,42 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+# $Id$
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        drahnr oregano 0.83.3 v
+revision            1
+categories          gnome science
+maintainers         Bernhard Schuster
+license             GPL-2+
+
+description         A graphical software application for schematic capture and simulation of electrical circuits.
+long_description    ${description} It uses Gtk+ 3.x for the frontend and ngspice or gnucap as backend for crunching numbers. File bugs for this port at https://github.com/drahnr/oregano
+
+platforms           darwin
+
+depends_build       port:python \
+                    port:intltool \
+                    port:libtool \
+                    port:pkgconfig
+
+depends_lib         port:gtk3 \
+                    port:gtksourceview3 \
+                    port:goocanvas2 \
+                    port:rarian \
+                    port:desktop-file-utils \
+                    port:shared-mime-info
+
+depends_run         port:yelp \
+                    port:docbook-xml
+
+configure.cmd       ./waf configure
+
+#configure.args
+
+post-activate {
+    system "${prefix}/bin/scrollkeeper-update"
+    system "${prefix}/bin/update-desktop-database ${prefix}/share/applications"
+    system "${prefix}/bin/update-mime-database ${prefix}/share/mime"
+    system "${prefix}/bin/glib-compile-schemas ${prefix}/share/glib-2.0/schemas"
+}
