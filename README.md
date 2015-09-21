@@ -93,7 +93,7 @@ If you want to discuss an issue or something you would like to implement, don't 
 
 #### Packaging
 
-This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS), Ubuntu (and thus Debian unstable) and soon to come for Mac. If you see the need for more platforms we'd be happy to include even more.
+This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS, `oregano.spec`), Ubuntu (and thus Debian unstable, see the `debian` subdir) and soon to come for Mac (`macports` only contains a draft right now). If you see the need for more platforms we'd be happy to include even more.
 
 #### Bugs
 
