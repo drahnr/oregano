@@ -1,4 +1,4 @@
-image: drahnr/fedora-oregano-test:latest
+image: drahnr/fedora-oregano-test:22
 git:
   depth: 1
   path: github.com/drahnr/oregano
