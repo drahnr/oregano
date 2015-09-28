@@ -51,9 +51,7 @@ static gchar *analysis_names[] = {
 #define CPU_TIME "CPU time since last call:"
 
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
-#include "debug.h"
 #define IS_THIS_ITEM(str, item) (!strncmp (str, item, strlen (item)))
-#define DEBUG_THIS 1
 
 /**
  * \brief extract the resulting variables from ngspice output
@@ -104,11 +102,11 @@ gchar **get_variables (const gchar *str, gint *count)
 	return out;
 }
 
-void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+void parse_dc_analysis (NgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gboolean found = FALSE;
@@ -117,7 +115,7 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	gdouble val[10];
 	gdouble np1;
 
-	NG_DEBUG ("DC: result str\n>>>\n%s<<<\n", tmp);
+	oregano_echo ("DC: result str\n>>>\n%s<<<\n", tmp);
 
 	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 	data = g_new0 (Analysis, 1);
@@ -195,11 +193,11 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	return;
 }
 
-void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+void parse_transient_analysis (NgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gboolean found = FALSE;
@@ -213,7 +211,7 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	GArray **val_tmp2;
 	GArray **val_tmp3;
 
-	NG_DEBUG ("TRANSIENT: result str\n>>>\n%s<<<\n", tmp);
+	oregano_echo ("TRANSIENT: result str\n>>>\n%s<<<\n", tmp);
 
 	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 	data = g_new0 (Analysis, 1);
@@ -420,11 +418,11 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	}
 }
 
-void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+void parse_fourier_analysis (NgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gchar **variables;
@@ -433,7 +431,7 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	gchar **node_ids;
 	gchar *vout;
 
-	NG_DEBUG ("F{}: result str\n>>>\n%s<<<\n", tmp);
+	oregano_echo ("F{}: result str\n>>>\n%s<<<\n", tmp);
 
 	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 
@@ -532,14 +530,14 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 			sdata->got_points++;
 			sdata->got_var = n;
 		}
-		NG_DEBUG ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]);
+		oregano_echo ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]);
 	}
 	return;
 }
 
-void ngspice_parse (OreganoNgSpice *ngspice)
+void ngspice_parse (NgSpice *ngspice)
 {
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gchar *tmp = NULL;
@@ -588,7 +586,7 @@ void ngspice_parse (OreganoNgSpice *ngspice)
 	}
 
 	fgets (buf, 255, priv->inputfp);
-	NG_DEBUG ("1 buf = %s\n", buf);
+	oregano_echo ("1 buf = %s\n", buf);
 	tmp = &buf[0];
 	tmp = g_strchug (tmp);
 
@@ -606,7 +604,7 @@ void ngspice_parse (OreganoNgSpice *ngspice)
 		}
 	}
 	fgets (buf, 255, priv->inputfp);
-	NG_DEBUG ("2 buf = %s\n", buf);
+	oregano_echo ("2 buf = %s\n", buf);
 	tmp = &buf[0];
 	tmp = g_strchug (tmp);
 

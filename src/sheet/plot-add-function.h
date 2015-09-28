@@ -34,6 +34,6 @@
 #include "simulation.h"
 #include "engine.h"
 
-void plot_add_function_show (OreganoEngine *engine, SimulationData *current);
+void plot_add_function_show (Engine *engine, SimulationData *current);
 
 #endif

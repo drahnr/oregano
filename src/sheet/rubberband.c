@@ -60,7 +60,7 @@ inline static cairo_pattern_t *create_stipple (const char *color_name, guchar st
 	*/
 	stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, width);
 	g_assert (stride > 0);
-	NG_DEBUG ("stride = %i", stride);
+	oregano_echo ("stride = %i", stride);
 	surface = cairo_image_surface_create_for_data (stipple_data, CAIRO_FORMAT_ARGB32, width, height,
 	                                               stride);
 	pattern = cairo_pattern_create_for_surface (surface);
@@ -86,10 +86,10 @@ RubberbandInfo *rubberband_info_new (Sheet *sheet)
 	cairo_pattern_t *pattern;
 	cairo_matrix_t matrix;
 
-	NG_DEBUG ("0x%x A", COLOR_A);
-	NG_DEBUG ("0x%x B", COLOR_B);
-	NG_DEBUG ("0x%x A PRE", COLOR_A_PRE);
-	NG_DEBUG ("0x%x B PRE", COLOR_B_PRE);
+	oregano_echo ("0x%x A", COLOR_A);
+	oregano_echo ("0x%x B", COLOR_B);
+	oregano_echo ("0x%x A PRE", COLOR_A_PRE);
+	oregano_echo ("0x%x B PRE", COLOR_B_PRE);
 	static guint32 stipple_data[8 * 8] = {
 	    COLOR_A_PRE, COLOR_A_PRE, COLOR_A_PRE, COLOR_B_PRE, COLOR_B_PRE, COLOR_B_PRE, COLOR_B_PRE,
 	    COLOR_A_PRE, COLOR_A_PRE, COLOR_A_PRE, COLOR_B_PRE, COLOR_B_PRE, COLOR_B_PRE, COLOR_B_PRE,
@@ -200,7 +200,7 @@ gboolean rubberband_update (Sheet *sheet, GdkEvent *event)
 
 	dx = fabs (width_ng - width);
 	dy = fabs (height_ng - height);
-	NG_DEBUG ("motion :: dx=%lf, dy=%lf :: x=%lf, y=%lf :: w_ng=%lf, h_ng=%lf", dx, dy, cur.x,
+	oregano_echo ("motion :: dx=%lf, dy=%lf :: x=%lf, y=%lf :: w_ng=%lf, h_ng=%lf", dx, dy, cur.x,
 	          cur.y, width_ng, height_ng);
 
 	// TODO FIXME scroll window if needed (use

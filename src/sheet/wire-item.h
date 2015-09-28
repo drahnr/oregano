@@ -45,12 +45,12 @@
 	(G_TYPE_CHECK_CLASS_CAST (klass, wire_item_get_type (), WireItemClass))
 #define IS_WIRE_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE (obj, wire_item_get_type ()))
 
-typedef struct _WireItemPriv WireItemPriv;
+typedef struct _WireItemPrivate WireItemPrivate;
 
 typedef struct
 {
 	SheetItem parent_object;
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 } WireItem;
 
 typedef struct

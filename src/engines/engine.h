@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2010  Marc Lorber
+ * Copyright (C) 2015       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,25 +37,27 @@
 #include "schematic.h"
 #include "simulation.h"
 
-#define OREGANO_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_ENGINE, OreganoEngine))
-#define OREGANO_IS_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_ENGINE))
+#define ENGINE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_ENGINE, Engine))
+#define IS_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_ENGINE))
 
-typedef struct _OreganoEngine OreganoEngine;
+typedef struct _Engine Engine;
 
 // Engines IDs
-enum { OREGANO_ENGINE_GNUCAP = 0, OREGANO_ENGINE_NGSPICE, OREGANO_ENGINE_COUNT };
+enum { ENGINE_GNUCAP = 0, ENGINE_NGSPICE, ENGINE_COUNT };
 
-OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (Engine, g_object_unref)
 
-GType oregano_engine_get_type (void);
-void oregano_engine_start (OreganoEngine *engine);
-void oregano_engine_stop (OreganoEngine *engine);
-gboolean oregano_engine_has_warnings (OreganoEngine *engine);
-void oregano_engine_get_progress (OreganoEngine *engine, double *p);
-gboolean oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
-GList *oregano_engine_get_results (OreganoEngine *engine);
-gchar *oregano_engine_get_current_operation (OreganoEngine *);
-gboolean oregano_engine_is_available (OreganoEngine *);
-gchar *oregano_engine_get_analysis_name (SimulationData *id);
+Engine *engine_factory_create_engine (gint type, Schematic *sm);
+
+GType engine_get_type (void);
+void engine_start (Engine *engine);
+void engine_stop (Engine *engine);
+gboolean engine_has_warnings (Engine *engine);
+void engine_get_progress (Engine *engine, double *p);
+gboolean engine_generate_netlist (Engine *engine, const gchar *file, GError **error);
+GList *engine_get_results (Engine *engine);
+gchar *engine_get_current_operation (Engine *);
+gboolean engine_is_available (Engine *);
+gchar *engine_get_analysis_name (SimulationData *id);
 
 #endif

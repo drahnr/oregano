@@ -48,7 +48,7 @@
 
 typedef struct _Wire Wire;
 typedef struct _WireClass WireClass;
-typedef struct _WirePriv WirePriv;
+typedef struct _WirePrivate WirePrivate;
 
 #include "node-store.h"
 #include "node.h"
@@ -64,7 +64,7 @@ typedef enum {
 struct _Wire
 {
 	ItemData parent;
-	WirePriv *priv;
+	WirePrivate *priv;
 };
 
 struct _WireClass

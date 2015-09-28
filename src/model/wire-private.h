@@ -33,7 +33,7 @@
 #ifndef __WIRE_PRIVATE_H
 #define __WIRE_PRIVATE_H
 
-struct _WirePriv
+struct _WirePrivate
 {
 	// Used to traverse the wires during netlist generation.
 	gboolean visited : 1;

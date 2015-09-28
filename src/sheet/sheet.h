@@ -41,7 +41,7 @@
 #include "item-data.h"
 
 typedef struct _Sheet Sheet;
-typedef struct _SheetPriv SheetPriv;
+typedef struct _SheetPrivate SheetPrivate;
 typedef struct _SheetClass SheetClass;
 typedef struct _SheetItem SheetItem;
 
@@ -69,7 +69,7 @@ struct _Sheet
 	GooCanvasGroup *object_group;
 
 	Grid *grid;
-	SheetPriv *priv;
+	SheetPrivate *priv;
 };
 
 struct _SheetClass
@@ -81,6 +81,8 @@ struct _SheetClass
 	void (*context_click)(Sheet *sheet, const char *name, gpointer data);
 	void (*cancel)(Sheet *sheet);
 };
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (Sheet, g_object_unref)
 
 GType sheet_get_type (void);
 GtkWidget *sheet_new (gdouble height, gdouble width);

@@ -43,9 +43,10 @@
 #include "oregano.h"
 #include "sheet-private.h"
 #include "sheet-item.h"
-#include "stock.h"
 #include "clipboard.h"
 #include "options.h"
+#include "schematic.h"
+
 
 static void sheet_item_class_init (SheetItemClass *klass);
 static void sheet_item_init (SheetItem *item);
@@ -60,13 +61,13 @@ static void sheet_item_dispose (GObject *object);
 
 #include "debug.h"
 
-struct _SheetItemPriv
+struct _SheetItemPrivate
 {
 	guint selected : 1;
 	guint preserve_selection : 1;
 	ItemData *data;
 	GtkActionGroup *action_group;
-	GtkUIManager *ui_manager;
+	GtkMenu *menu;
 };
 
 enum {
@@ -79,12 +80,12 @@ enum {
 	// Sheet item properties
 	ARG_DATA,
 	ARG_SHEET,
-	ARG_ACTION_GROUP
 };
 
 enum { MOVED, PLACED, SELECTION_CHANGED, MOUSE_OVER, DOUBLE_CLICKED, LAST_SIGNAL };
 
 static guint so_signals[LAST_SIGNAL] = {0};
+
 
 // This is the upper part of the object popup menu. It contains actions
 // that are the same for all objects, e.g. parts and wires.
@@ -101,18 +102,19 @@ static const char *sheet_item_context_menu = "<ui>"
                                              "  </popup>"
                                              "</ui>";
 
-static GtkActionEntry action_entries[] = {
-    {"Copy", GTK_STOCK_COPY, N_ ("_Copy"), "<control>C", NULL, NULL},
-    {"Cut", GTK_STOCK_CUT, N_ ("C_ut"), "<control>X", NULL, NULL},
-    {"Delete", GTK_STOCK_DELETE, N_ ("_Delete"), "<control>D", N_ ("Delete the selection"), NULL},
-    {"Rotate", STOCK_PIXMAP_ROTATE, N_ ("_Rotate"), "<control>R",
-     N_ ("Rotate the selection clockwise"), NULL},
-    {"FlipH", NULL, N_ ("Flip _horizontally"), "<control>F", N_ ("Flip the selection horizontally"),
-     NULL},
-    {"FlipV", NULL, N_ ("Flip _vertically"), "<control><shift>F",
-     N_ ("Flip the selection vertically"), NULL}};
+static void cb (GSimpleAction *simple, GVariant *parameter, gpointer user_data)
+{
+	g_print ("so we print something stupid here: %s\n", g_variant_get_string (parameter, NULL));
+}
 
-G_DEFINE_TYPE (SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
+static GActionEntry action_entries[] = {{"item.copy", cb, "meh"},
+                                        {"item.cut", cb, "foo"},
+                                        {"item.delete", cb, "bar"},
+                                        {"item.rotate", cb, "baz"},
+                                        {"item.flipH", cb, "gnah"},
+                                        {"item.flipV", cb, "xaz"}};
+
+G_DEFINE_TYPE_WITH_PRIVATE (SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
 
 static void sheet_item_dispose (GObject *object)
 {
@@ -145,11 +147,6 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 	    object_class, ARG_SHEET,
 	    g_param_spec_pointer ("sheet", "SheetItem::sheet", "the sheet", G_PARAM_READABLE));
 
-	g_object_class_install_property (object_class, ARG_ACTION_GROUP,
-	                                 g_param_spec_pointer ("action_group",
-	                                                       "SheetItem::action_group",
-	                                                       "action group", G_PARAM_READWRITE));
-
 	sheet_item_class->is_in_area = NULL;
 	sheet_item_class->show_labels = NULL;
 	sheet_item_class->paste = NULL;
@@ -179,31 +176,19 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 	so_signals[DOUBLE_CLICKED] =
 	    g_signal_new ("double_clicked", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0,
 	                  NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+
+
+	g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()), action_entries,
+	                                 G_N_ELEMENTS (action_entries), NULL);
 }
 
 static void sheet_item_init (SheetItem *item)
 {
-	GError *error = NULL;
-
-	item->priv = g_new0 (SheetItemPriv, 1);
+	item->priv = sheet_item_get_instance_private (item);
 	item->priv->selected = FALSE;
 	item->priv->preserve_selection = FALSE;
 	item->priv->data = NULL;
-	item->priv->ui_manager = NULL;
-	item->priv->action_group = NULL;
-
-	item->priv->ui_manager = gtk_ui_manager_new ();
-	item->priv->action_group = gtk_action_group_new ("action_group");
-	gtk_action_group_set_translation_domain (item->priv->action_group, GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (item->priv->action_group, action_entries,
-	                              G_N_ELEMENTS (action_entries), NULL);
-	gtk_ui_manager_insert_action_group (item->priv->ui_manager, item->priv->action_group, 0);
-
-	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, sheet_item_context_menu, -1,
-	                                        &error)) {
-		g_warning ("building menus failed: %s", error->message);
-		g_error_free (error);
-	}
+	item->priv->menu = NULL;
 }
 
 static void sheet_item_set_property (GObject *object, guint prop_id, const GValue *value,
@@ -238,11 +223,6 @@ static void sheet_item_set_property (GObject *object, guint prop_id, const GValu
 		sheet_item->x = pos.x;
 		sheet_item->y = pos.y;
 		break;
-	case ARG_ACTION_GROUP:
-		sheet_item->priv->action_group = g_value_get_pointer (value);
-		gtk_ui_manager_insert_action_group (sheet_item->priv->ui_manager,
-		                                    sheet_item->priv->action_group, 0);
-		break;
 	default:
 		break;
 	}
@@ -275,9 +255,6 @@ static void sheet_item_get_property (GObject *object, guint prop_id, GValue *val
 	case ARG_SHEET:
 		g_value_set_pointer (value, sheet_item_get_sheet (sheet_item));
 		break;
-	case ARG_ACTION_GROUP:
-		g_value_set_pointer (value, sheet_item->priv->action_group);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (sheet_item, prop_id, spec);
 		break;
@@ -300,12 +277,16 @@ static void sheet_item_finalize (GObject *object)
 	G_OBJECT_CLASS (sheet_item_parent_class)->finalize (object);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// END BOILER PLATE
+////////////////////////////////////////////////////////////////////////////////
+
 static void sheet_item_run_menu (SheetItem *item, Sheet *sheet, GdkEventButton *event)
 {
-	GtkWidget *menu;
+	g_assert (IS_SHEET_ITEM (item));
+	SheetItemPrivate *priv = sheet_item_get_instance_private (item);
 
-	menu = gtk_ui_manager_get_widget (item->priv->ui_manager, "/ItemMenu");
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sheet, event->button, event->time);
+	gtk_menu_popup (GTK_MENU (priv->menu), NULL, NULL, NULL, sheet, event->button, event->time);
 }
 
 // Event handler for a SheetItem
@@ -314,17 +295,17 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 {
 	// Remember the last position of the mouse cursor.
 	GooCanvas *canvas;
-	SheetPriv *priv;
+	SheetPrivate *priv;
 	GList *list;
 
-	static Coords last, current, snapped;
+	static Coords last, snapped;
 	// snapped : Mouse cursor position in window coordinates, snapped to the grid
 	// spacing.
 	// delta   : Move the selected item(s) by this movement.
 	Coords delta;
 
-	g_return_val_if_fail (sheet_item != NULL, FALSE);
-	g_return_val_if_fail (sheet != NULL, FALSE);
+	g_assert (sheet_item != NULL);
+	g_assert (sheet != NULL);
 
 	priv = sheet->priv;
 
@@ -542,8 +523,8 @@ void sheet_item_cancel_floating (Sheet *sheet)
 	GooCanvasGroup *group;
 	GList *list;
 
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
+	g_assert (sheet != NULL);
+	g_assert (IS_SHEET (sheet));
 
 	group = GOO_CANVAS_GROUP (sheet->priv->floating_group);
 	if (group == NULL)
@@ -575,7 +556,7 @@ void sheet_item_cancel_floating (Sheet *sheet)
 // Event handler for a "floating" group of objects.
 int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 {
-	SheetPriv *priv;
+	SheetPrivate *priv;
 	GList *list;
 	static gboolean keep = FALSE;
 
@@ -588,9 +569,9 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 	// Move the selected item(s) by this movement.
 	Coords delta = {0., 0.};
 
-	g_return_val_if_fail (sheet != NULL, FALSE);
-	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
-	g_return_val_if_fail (sheet->priv->floating_objects != NULL, FALSE);
+	g_assert (sheet != NULL);
+	g_assert (IS_SHEET (sheet));
+	g_assert (sheet->priv->floating_objects != NULL);
 
 	priv = sheet->priv;
 
@@ -638,7 +619,7 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				}
 				g_object_ref (G_OBJECT (floating_data));
 
-				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
+				oregano_echo ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
 
 				item_data_set_pos (floating_data, &snapped);
 				item_data_snap (floating_data, sheet->grid);
@@ -705,15 +686,15 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			GooCanvasBounds box;
 			goo_canvas_item_get_bounds (priv->floating_group, &box);
 #endif
-			NG_DEBUG ("\n\n\nFLOAT ### START\n\n\n\n");
+			oregano_echo ("\n\n\nFLOAT ### START\n\n\n\n");
 		}
 
 		sheet_get_pointer_snapped (sheet, &snapped.x, &snapped.y);
 
 		delta = coords_sub (&snapped, &last);
-		NG_DEBUG ("drag floating current      sx=%lf sy=%lf \n", snapped.x, snapped.y);
-		NG_DEBUG ("drag floating last         lx=%lf ly=%lf \n", last.x, last.y);
-		NG_DEBUG ("drag floating delta     -> dx=%lf dy=%lf \n", delta.x, delta.y);
+		oregano_echo ("drag floating current      sx=%lf sy=%lf \n", snapped.x, snapped.y);
+		oregano_echo ("drag floating last         lx=%lf ly=%lf \n", last.x, last.y);
+		oregano_echo ("drag floating delta     -> dx=%lf dy=%lf \n", delta.x, delta.y);
 
 #if !FIXME_INCREMENTAL_MOVMENT_DOES_NOT_WORK
 		last = snapped;
@@ -761,8 +742,8 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 gboolean sheet_item_select (SheetItem *item, gboolean select)
 {
-	g_return_val_if_fail (item != NULL, FALSE);
-	g_return_val_if_fail (IS_SHEET_ITEM (item), FALSE);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	if ((item->priv->selected && select) || (!item->priv->selected && !select)) {
 		return FALSE;
@@ -779,10 +760,10 @@ void sheet_item_select_in_area (SheetItem *item, Coords *p1, Coords *p2)
 	SheetItemClass *sheet_item_class;
 	gboolean in_area;
 
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
-	g_return_if_fail (p1 != NULL);
-	g_return_if_fail (p2 != NULL);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
+	g_assert (p1 != NULL);
+	g_assert (p2 != NULL);
 
 	sheet_item_class = SHEET_ITEM_CLASS (G_OBJECT_GET_CLASS (item));
 	in_area = sheet_item_class->is_in_area (item, p1, p2);
@@ -796,9 +777,9 @@ void sheet_item_select_in_area (SheetItem *item, Coords *p1, Coords *p2)
 // Reparent a sheet object without moving it on the sheet.
 void sheet_item_reparent (SheetItem *item, GooCanvasGroup *group)
 {
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
-	g_return_if_fail (group != NULL);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
+	g_assert (group != NULL);
 
 	g_object_ref (item);
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
@@ -810,8 +791,8 @@ void sheet_item_edit_properties (SheetItem *item)
 {
 	SheetItemClass *sheet_item_class;
 
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	sheet_item_class = SHEET_ITEM_CLASS (G_OBJECT_GET_CLASS (item));
 
@@ -821,8 +802,8 @@ void sheet_item_edit_properties (SheetItem *item)
 
 void sheet_item_rotate (SheetItem *sheet_item, int angle, Coords *center)
 {
-	g_return_if_fail (sheet_item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (sheet_item));
+	g_assert (sheet_item != NULL);
+	g_assert (IS_SHEET_ITEM (sheet_item));
 
 	item_data_rotate (sheet_item->priv->data, angle, center);
 }
@@ -833,9 +814,9 @@ void sheet_item_paste (Sheet *sheet, ClipboardData *data)
 	ItemDataClass *id_class;
 	ItemData *item_data, *clone;
 
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
-	g_return_if_fail (data != NULL);
+	g_assert (sheet != NULL);
+	g_assert (IS_SHEET (sheet));
+	g_assert (data != NULL);
 
 	item_data = ITEM_DATA (clipboard_data_get_item_data (data));
 
@@ -853,40 +834,40 @@ void sheet_item_paste (Sheet *sheet, ClipboardData *data)
 
 ItemData *sheet_item_get_data (SheetItem *item)
 {
-	g_return_val_if_fail (item != NULL, NULL);
-	g_return_val_if_fail (IS_SHEET_ITEM (item), NULL);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return item->priv->data;
 }
 
 Sheet *sheet_item_get_sheet (SheetItem *item)
 {
-	g_return_val_if_fail (item != NULL, NULL);
-	g_return_val_if_fail (IS_SHEET_ITEM (item), NULL);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (item)));
 }
 
 gboolean sheet_item_get_selected (SheetItem *item)
 {
-	g_return_val_if_fail (item != NULL, FALSE);
-	g_return_val_if_fail (IS_SHEET_ITEM (item), FALSE);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return item->priv->selected;
 }
 
 gboolean sheet_item_get_preserve_selection (SheetItem *item)
 {
-	g_return_val_if_fail (item != NULL, FALSE);
-	g_return_val_if_fail (IS_SHEET_ITEM (item), FALSE);
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return item->priv->preserve_selection;
 }
 
 void sheet_item_set_preserve_selection (SheetItem *item, gboolean set)
 {
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	item->priv->preserve_selection = set;
 }
@@ -895,8 +876,8 @@ void sheet_item_place (SheetItem *item, Sheet *sheet)
 {
 	SheetItemClass *sheet_item_class;
 
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	sheet_item_class = SHEET_ITEM_CLASS (G_OBJECT_GET_CLASS (item));
 
@@ -908,8 +889,8 @@ void sheet_item_place_ghost (SheetItem *item, Sheet *sheet)
 {
 	SheetItemClass *sheet_item_class;
 
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	sheet_item_class = SHEET_ITEM_CLASS (G_OBJECT_GET_CLASS (item));
 
@@ -917,15 +898,14 @@ void sheet_item_place_ghost (SheetItem *item, Sheet *sheet)
 		sheet_item_class->place_ghost (item, sheet);
 }
 
-void sheet_item_add_menu (SheetItem *item, const char *menu, const GtkActionEntry *action_entries,
-                          int nb_entries)
+void sheet_item_add_menu (SheetItem *item, const char *uipath)
 {
-	GError *error = NULL;
+	g_assert (IS_SHEET_ITEM (item));
 
-	gtk_action_group_add_actions (item->priv->action_group, action_entries, nb_entries, NULL);
-
-	if (!gtk_ui_manager_add_ui_from_string (item->priv->ui_manager, menu, -1, &error)) {
-		g_message ("building menus failed: %s", error->message);
-		g_error_free (error);
-	}
+	gchar *path = g_strconcat (OREGANO_UIDIR, "/", uipath);
+	g_autoptr (GtkBuilder) builder = gtk_builder_new_from_file (path);
+	g_free (path);
+	g_autoptr (GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
+	SheetItemPrivate *priv = sheet_item_get_instance_private (item);
+	priv->menu = gtk_menu_new_from_model (menu);
 }

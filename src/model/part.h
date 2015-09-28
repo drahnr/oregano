@@ -51,7 +51,7 @@
 typedef struct _Part Part;
 typedef struct _PartClass PartClass;
 typedef struct _Pin Pin;
-typedef struct _PartPriv PartPriv;
+typedef struct _PartPrivate PartPrivate;
 
 #include "item-data.h"
 
@@ -68,7 +68,7 @@ struct _Pin
 struct _Part
 {
 	ItemData parent;
-	PartPriv *priv;
+	PartPrivate *priv;
 };
 
 struct _PartClass

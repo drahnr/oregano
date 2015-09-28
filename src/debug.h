@@ -36,7 +36,7 @@
 #define DEBUG_ALL 0
 #endif
 
-#define NG_DEBUG(msg, ...)                                                                         \
+#define oregano_echo(msg, ...)                                                                         \
 	{                                                                                              \
 		if (DEBUG_THIS || DEBUG_ALL) {                                                             \
 			g_printf ("%s:%d @ %s +++ " msg "\n", __FILE__, __LINE__, __FUNCTION__,                \

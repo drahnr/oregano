@@ -79,7 +79,7 @@ typedef struct
 
 	gboolean show_cursor;
 
-	OreganoEngine *sim;
+	Engine *sim;
 	SimulationData *current;
 
 	gboolean logx;
@@ -206,7 +206,7 @@ static GPlotFunction *create_plot_function_from_simulation_data (guint i, Simula
 		next_pulse++;
 		width = 5.0;
 		shift_step = X[1] / 20;
-		NG_DEBUG ("shift_step = %lf\n", shift_step);
+		oregano_echo ("shift_step = %lf\n", shift_step);
 	} else {
 		next_pulse = 0;
 		width = 1.0;
@@ -217,7 +217,7 @@ static GPlotFunction *create_plot_function_from_simulation_data (guint i, Simula
 	g_object_set (G_OBJECT (f), "graph-type", graphic_type, NULL);
 	g_object_set (G_OBJECT (f), "shift", shift_step * next_pulse, NULL);
 	g_object_set (G_OBJECT (f), "width", width, NULL);
-	NG_DEBUG ("plot: create_plot_function_from_simulation_data: shift = %lf\n", 0.1 * next_pulse);
+	oregano_echo ("plot: create_plot_function_from_simulation_data: shift = %lf\n", 0.1 * next_pulse);
 
 	return f;
 }
@@ -241,10 +241,10 @@ static void analysis_selected (GtkWidget *combo_box, Plot *plot)
 	ca = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (combo_box));
 
 	plot->current = NULL;
-	analysis = oregano_engine_get_results (plot->sim);
+	analysis = engine_get_results (plot->sim);
 	for (; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
-		if (!strcmp (ca, oregano_engine_get_analysis_name (sdat))) {
+		if (!strcmp (ca, engine_get_analysis_name (sdat))) {
 			plot->current = sdat;
 			break;
 		}
@@ -262,8 +262,7 @@ static void analysis_selected (GtkWidget *combo_box, Plot *plot)
 	plot->ytitle = get_variable_units (plot->current->var_units[1]);
 
 	g_free (plot->title);
-	plot->title =
-	    g_strdup_printf (_ ("Plot - %s"), oregano_engine_get_analysis_name (plot->current));
+	plot->title = g_strdup_printf (_ ("Plot - %s"), engine_get_analysis_name (plot->current));
 
 	//  Set the variable names in the list
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
@@ -459,7 +458,7 @@ static GtkWidget *plot_window_create (Plot *plot)
 	return window;
 }
 
-int plot_show (OreganoEngine *engine)
+int plot_show (Engine *engine)
 {
 	GList *analysis = NULL;
 	GList *combo_items = NULL;
@@ -486,11 +485,11 @@ int plot_show (OreganoEngine *engine)
 	next_color = 0;
 
 	//  Get the analysis we have
-	analysis = oregano_engine_get_results (engine);
+	analysis = engine_get_results (engine);
 
 	for (; analysis; analysis = analysis->next) {
 		SimulationData *sdat = SIM_DATA (analysis->data);
-		gchar *str = oregano_engine_get_analysis_name (sdat);
+		gchar *str = engine_get_analysis_name (sdat);
 		if (sdat->type == OP_POINT) {
 			continue;
 		}

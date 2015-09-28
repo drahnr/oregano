@@ -5,9 +5,9 @@ po/build
 src/build
 po/.intlcache
 waftools/__pycache__*
-**.pyc
-**.tar.xz
-**.tar.gz
+**/*.pyc
+**/*.tar.xz
+**/*.tar.gz
 .waf*
 credentials.yml
 .credentials.yml

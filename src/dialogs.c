@@ -32,10 +32,21 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "echo.h"
 #include "dialogs.h"
 #include "oregano.h"
+#include "icons.h"
 
-void oregano_error (gchar *msg) { oregano_error_with_title (msg, NULL); }
+
+void oregano_error (const char *format, ...)
+{
+	va_list args;
+	va_start (args, format);
+	char *tmp = g_strdup_vprintf (format, args);
+	va_end (args);
+	oregano_error_with_title (tmp, NULL);
+	g_free (tmp);
+}
 
 void oregano_error_with_title (gchar *title, gchar *desc)
 {
@@ -107,7 +118,6 @@ gint oregano_question (gchar *msg)
 void dialog_about (void)
 {
 	static GtkWidget *about = NULL;
-	GdkPixbuf *logo;
 
 	const gchar *authors[] = {"Richard Hult",       "Margarita Manterola", "Andres de Barbara",
 	                          "Gustavo M. Pereyra", "Maximiliano Curia",   "Ricardo Markiewicz",
@@ -116,9 +126,9 @@ void dialog_about (void)
 	const char *docs[] = {"Ricardo Markiewicz <rmarkie@fi.uba.ar> (es)",
 	                      "Jordi Mallach <tradgnome@softcatala.net> (ca)",
 	                      "Marc Lorber <lorber.marc@wanadoo.fr> (en)",
-	                      "Bernhard Schuster <bernhard@ahoi.io> (de,en,sv)", NULL};
+	                      "Bernhard Schuster <bernhard@ahoi.io> (de,en,sv)"};
 
-	const gchar *copy = _ ("(c) 2012-2013 Bernhard Schuster\n"
+	const gchar *copy = _ ("(c) 2012-2015 Bernhard Schuster\n"
 	                       "(c) 2009-2012 Marc Lorber\n"
 	                       "(c) 2003-2006 LUGFi\n"
 	                       "(c) 1999-2001 Richard Hult");
@@ -139,7 +149,7 @@ void dialog_about (void)
 	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), "https://ahoi.io/project/oregano");
 	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
 	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
-	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), oregano_get_icon("oregano-logo"));
+	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), oregano_get_icon ("oregano-logo"));
 
 	gtk_dialog_run (GTK_DIALOG (about));
 

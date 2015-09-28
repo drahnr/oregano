@@ -56,7 +56,7 @@ void oregano_config_load (void)
 	oregano.show_splash = g_settings_get_boolean (oregano.settings, "show-splash");
 
 	// Let's deal with first use -I don't like this-
-	if ((oregano.engine < 0) || (oregano.engine >= OREGANO_ENGINE_COUNT))
+	if ((oregano.engine < 0) || (oregano.engine >= ENGINE_COUNT))
 		oregano.engine = 0;
 }
 

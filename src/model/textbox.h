@@ -46,14 +46,14 @@
 
 typedef struct _Textbox Textbox;
 typedef struct _TextboxClass TextboxClass;
-typedef struct _TextboxPriv TextboxPriv;
+typedef struct _TextboxPrivate TextboxPrivate;
 
 struct _Textbox
 {
 	ItemData parent;
-	TextboxPriv *priv;
 	gulong text_changed_handler_id;
 	gulong font_changed_handler_id;
+	TextboxPrivate *priv;
 };
 
 struct _TextboxClass

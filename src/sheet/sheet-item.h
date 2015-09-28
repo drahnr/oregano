@@ -46,7 +46,7 @@
 #define IS_SHEET_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_SHEET_ITEM))
 
 typedef struct _SheetItemClass SheetItemClass;
-typedef struct _SheetItemPriv SheetItemPriv;
+typedef struct _SheetItemPrivate SheetItemPrivate;
 
 #include "sheet.h"
 #include "clipboard.h"
@@ -58,7 +58,7 @@ struct _SheetItem
 	gdouble height;
 	gdouble x; // left
 	gdouble y; // top
-	SheetItemPriv *priv;
+	SheetItemPrivate *priv;
 };
 
 struct _SheetItemClass
@@ -97,7 +97,6 @@ void sheet_item_set_preserve_selection (SheetItem *item, gboolean set);
 void sheet_item_select_in_area (SheetItem *item, Coords *p1, Coords *p2);
 void sheet_item_place (SheetItem *item, Sheet *sheet);
 void sheet_item_place_ghost (SheetItem *item, Sheet *sheet);
-void sheet_item_add_menu (SheetItem *item, const char *menu, const GtkActionEntry *action_entries,
-                          int nb_entries);
+void sheet_item_add_menu (SheetItem *item, const char *menu_ui);
 
 #endif

@@ -33,9 +33,11 @@
 #ifndef __DIALOGS_H
 #define __DIALOGS_H
 
+#include <stdarg.h>
+
 #include "schematic.h"
 
-void oregano_error (gchar *msg);
+void oregano_error (const gchar *format, ...);
 void oregano_error_with_title (gchar *title, gchar *desc);
 void oregano_warning (gchar *msg);
 void oregano_warning_with_title (gchar *title, gchar *desc);

@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -40,6 +40,7 @@
 #include "textbox-item.h"
 #include "textbox.h"
 #include "dialogs.h"
+#include "sheet.h"
 
 #define NORMAL_COLOR "black"
 #define SELECTED_COLOR "green"
@@ -74,19 +75,9 @@ typedef struct
 
 static TextboxPropDialog *prop_dialog = NULL;
 
-static const char *textbox_item_context_menu = "<ui>"
-                                               "  <popup name='ItemMenu'>"
-                                               "    <menuitem action='EditText'/>"
-                                               "  </popup>"
-                                               "</ui>";
-
-static GtkActionEntry action_entries[] = {{"EditText", GTK_STOCK_PROPERTIES,
-                                           N_ ("_Edit the text..."), NULL, N_ ("Edit the text"),
-                                           G_CALLBACK (edit_cmd)}};
-
 enum { TEXTBOX_ITEM_ARG_0, TEXTBOX_ITEM_ARG_NAME };
 
-struct _TextboxItemPriv
+struct _TextboxItemPrivate
 {
 	guint cache_valid : 1;
 	guint highlight : 1;
@@ -97,7 +88,7 @@ struct _TextboxItemPriv
 	Coords bbox_end;
 };
 
-G_DEFINE_TYPE (TextboxItem, textbox_item, TYPE_SHEET_ITEM)
+G_DEFINE_TYPE_WITH_PRIVATE (TextboxItem, textbox_item, TYPE_SHEET_ITEM)
 
 static void textbox_item_class_init (TextboxItemClass *textbox_item_class)
 {
@@ -121,27 +112,18 @@ static void textbox_item_class_init (TextboxItemClass *textbox_item_class)
 
 static void textbox_item_init (TextboxItem *item)
 {
-	TextboxItemPriv *priv;
+	TextboxItemPrivate *priv = textbox_item_get_instance_private (item);
 
-	priv = g_new0 (TextboxItemPriv, 1);
 	item->priv = priv;
 
 	priv->highlight = FALSE;
 	priv->cache_valid = FALSE;
 
-	sheet_item_add_menu (SHEET_ITEM (item), textbox_item_context_menu, action_entries,
-	                     G_N_ELEMENTS (action_entries));
+	sheet_item_add_menu (SHEET_ITEM (item), "textbox-menu.ui");
 }
 
 static void textbox_item_finalize (GObject *object)
 {
-	TextboxItem *item;
-
-	item = TEXTBOX_ITEM (object);
-
-	if (item->priv)
-		g_free (item->priv);
-
 	G_OBJECT_CLASS (textbox_item_parent_class)->finalize (object);
 }
 
@@ -149,7 +131,7 @@ static void textbox_item_finalize (GObject *object)
 static void textbox_item_moved (SheetItem *object)
 {
 	TextboxItem *item;
-	TextboxItemPriv *priv;
+	TextboxItemPrivate *priv;
 
 	item = TEXTBOX_ITEM (object);
 	priv = item->priv;
@@ -161,7 +143,7 @@ TextboxItem *textbox_item_new (Sheet *sheet, Textbox *textbox)
 {
 	GooCanvasItem *item;
 	TextboxItem *textbox_item;
-	TextboxItemPriv *priv;
+	TextboxItemPrivate *priv;
 	Coords pos;
 	ItemData *item_data;
 
@@ -229,12 +211,11 @@ static void textbox_rotated_callback (ItemData *data, int angle, SheetItem *shee
 
 static void textbox_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 {
-	TextboxItem *item;
+	g_assert (data);
+	g_assert (sheet_item);
+	g_assert (IS_TEXTBOX_ITEM (sheet_item));
 
-	g_return_if_fail (sheet_item);
-	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));
-
-	item = TEXTBOX_ITEM (sheet_item);
+	TextboxItem *item = TEXTBOX_ITEM (sheet_item);
 
 	item->priv->cache_valid = FALSE;
 }
@@ -242,7 +223,7 @@ static void textbox_flipped_callback (ItemData *data, IDFlip direction, SheetIte
 static int select_idle_callback (TextboxItem *item)
 {
 	Coords bbox_start, bbox_end;
-	TextboxItemPriv *priv = item->priv;
+	TextboxItemPrivate *priv = item->priv;
 
 	get_cached_bounds (item, &bbox_start, &bbox_end);
 	g_object_set (priv->text_canvas_item, "fill_color", SELECTED_COLOR, NULL);
@@ -254,7 +235,7 @@ static int select_idle_callback (TextboxItem *item)
 
 static int deselect_idle_callback (TextboxItem *item)
 {
-	TextboxItemPriv *priv = item->priv;
+	TextboxItemPrivate *priv = item->priv;
 
 	g_object_set (priv->text_canvas_item, "fill_color", NORMAL_COLOR, NULL);
 
@@ -266,17 +247,16 @@ static int deselect_idle_callback (TextboxItem *item)
 static void selection_changed (TextboxItem *item, gboolean select, gpointer user_data)
 {
 	if (select)
-		g_idle_add ((gpointer)select_idle_callback, item);
+		g_idle_add ((GSourceFunc)select_idle_callback, (gpointer)item);
 	else
-		g_idle_add ((gpointer)deselect_idle_callback, item);
+		g_idle_add ((GSourceFunc)deselect_idle_callback, (gpointer)item);
 }
 
 static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 {
-	TextboxItem *item;
+	TextboxItem *item = TEXTBOX_ITEM (object);
+	;
 	Coords bbox_start, bbox_end;
-
-	item = TEXTBOX_ITEM (object);
 
 	get_cached_bounds (item, &bbox_start, &bbox_end);
 
@@ -293,8 +273,7 @@ inline static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
 	PangoFontDescription *font;
 	Coords pos;
 
-	TextboxItemPriv *priv;
-	priv = item->priv;
+	TextboxItemPrivate *priv = item->priv;
 
 	if (!priv->cache_valid) {
 		Coords start_pos, end_pos;
@@ -320,10 +299,10 @@ inline static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
 
 static void textbox_item_paste (Sheet *sheet, ItemData *data)
 {
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_TEXTBOX (data));
+	g_assert (sheet);
+	g_assert (IS_SHEET (sheet));
+	g_assert (data);
+	g_assert (IS_TEXTBOX (data));
 
 	sheet_add_ghost_item (sheet, data);
 }
@@ -331,17 +310,15 @@ static void textbox_item_paste (Sheet *sheet, ItemData *data)
 // This is called when the textbox data was moved. Update the view accordingly.
 static void textbox_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	TextboxItem *textbox_item;
-
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (data));
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_TEXTBOX_ITEM (item));
+	g_assert (item);
+	g_assert (IS_SHEET_ITEM (item));
+	g_assert (data);
+	g_assert (IS_TEXTBOX (data));
 
 	if (pos == NULL)
 		return;
 
-	textbox_item = TEXTBOX_ITEM (item);
+	TextboxItem *textbox_item = TEXTBOX_ITEM (item);
 
 	// Move the canvas item and invalidate the bbox cache.
 	goo_canvas_item_translate (GOO_CANVAS_ITEM (item), pos->x, pos->y);
@@ -350,14 +327,12 @@ static void textbox_moved_callback (ItemData *data, Coords *pos, SheetItem *item
 
 static void textbox_text_changed_callback (ItemData *data, gchar *new_text, SheetItem *item)
 {
-	TextboxItem *textbox_item;
+	g_assert (item);
+	g_assert (IS_SHEET_ITEM (item));
+	g_assert (data);
+	g_assert (IS_TEXTBOX (data));
 
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_ITEM_DATA (data));
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_TEXTBOX_ITEM (item));
-
-	textbox_item = TEXTBOX_ITEM (item);
+	TextboxItem *textbox_item = TEXTBOX_ITEM (item);
 
 	g_object_set (textbox_item->priv->text_canvas_item, "text", new_text, NULL);
 	goo_canvas_item_ensure_updated (GOO_CANVAS_ITEM (textbox_item));
@@ -439,8 +414,8 @@ void textbox_item_cancel_listen (Sheet *sheet)
 
 void textbox_item_listen (Sheet *sheet)
 {
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
+	g_assert (sheet);
+	g_assert (IS_SHEET (sheet));
 
 	// Connect to a signal handler that will let the user create a new textbox.
 	sheet->state = SHEET_STATE_TEXTBOX_WAIT;
@@ -450,30 +425,27 @@ void textbox_item_listen (Sheet *sheet)
 // Go through the properties and commit the changes.
 void edit_dialog_ok (TextboxItem *item)
 {
-	const gchar *value;
-	Textbox *textbox;
+	g_assert (item);
+	g_assert (IS_TEXTBOX (item));
 
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_TEXTBOX_ITEM (item));
-
-	textbox = TEXTBOX (sheet_item_get_data (SHEET_ITEM (item)));
-	value = gtk_entry_get_text (GTK_ENTRY (prop_dialog->entry));
+	Textbox *textbox = TEXTBOX (sheet_item_get_data (SHEET_ITEM (item)));
+	gchar *value = gtk_entry_get_text (GTK_ENTRY (prop_dialog->entry));
 	textbox_set_text (textbox, value);
 }
 
 static void edit_textbox (SheetItem *sheet_item)
 {
+	g_assert (sheet_item);
+	g_assert (IS_TEXTBOX (sheet_item));
+
 	TextboxItem *item;
 	Textbox *textbox;
 	const char *value;
-	GtkBuilder *builder;
 	GError *e = NULL;
 	Sheet *sheet = sheet_item_get_sheet (sheet_item);
 
-	g_return_if_fail (sheet_item != NULL);
-	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));
-
-	if ((builder = gtk_builder_new ()) == NULL) {
+	g_autoptr (GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		oregano_error (_ ("Could not create textbox properties dialog"));
 		return;
 	}
@@ -502,7 +474,6 @@ static void edit_textbox (SheetItem *sheet_item)
 
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 	g_free (prop_dialog);
-	g_object_unref (builder);
 }
 
 static void edit_cmd (GtkWidget *widget, Sheet *sheet)

@@ -54,13 +54,13 @@ SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
 	// Pick the right model.
 	if (IS_PART (data)) {
 		item = SHEET_ITEM (part_item_new (sheet, PART (data)));
-		NG_DEBUG ("part %p", item);
+		oregano_echo ("part %p", item);
 	} else if (IS_WIRE (data)) {
 		item = SHEET_ITEM (wire_item_new (sheet, WIRE (data)));
-		NG_DEBUG ("wire %p", item);
+		oregano_echo ("wire %p", item);
 	} else if (IS_TEXTBOX (data)) {
 		item = SHEET_ITEM (textbox_item_new (sheet, TEXTBOX (data)));
-		NG_DEBUG ("text %p", item);
+		oregano_echo ("text %p", item);
 	} else {
 		g_warning ("Unknown Item type.");
 	}

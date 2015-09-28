@@ -474,7 +474,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			}
 
 			template = part_property_expand_macros (part, tmp);
-			NG_DEBUG ("Template: '%s'\n"
+			oregano_echo ("Template: '%s'\n"
 			          "macro   : '%s'\n",
 			          tmp, template);
 
@@ -499,6 +499,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 			str = g_string_new ("");
 
+			// TODO review again
 			NG_DEBUG ("Reading pins.\n)");
 
 			int i;

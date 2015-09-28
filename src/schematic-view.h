@@ -35,7 +35,8 @@
 
 #include <gtk/gtk.h>
 
-#include "schematic.h"
+typedef struct _Schematic Schematic;
+
 #include "sheet.h"
 
 typedef enum { DRAG_URI_INFO, DRAG_PART_INFO } DragTypes;
@@ -50,7 +51,7 @@ typedef enum { DRAG_URI_INFO, DRAG_PART_INFO } DragTypes;
 
 typedef struct _SchematicView SchematicView;
 typedef struct _SchematicViewClass SchematicViewClass;
-typedef struct _SchematicViewPriv SchematicViewPriv;
+typedef struct _SchematicViewPrivate SchematicViewPrivate;
 
 GType schematic_view_get_type (void);
 SchematicView *schematic_view_new (Schematic *schematic);

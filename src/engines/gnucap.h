@@ -34,32 +34,30 @@
 
 #include "engine.h"
 
-#define OREGANO_TYPE_GNUCAP (oregano_gnucap_get_type ())
-#define OREGANO_GNUCAP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_GNUCAP, OreganoGnuCap))
-#define OREGANO_GNUCAP_CLASS(vtable)                                                               \
-	(G_TYPE_CHECK_CLASS_CAST ((vtable), OREGANO_TYPE_GNUCAP, OreganoGnuCapClass))
-#define OREGANO_IS_GNUCAP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_GNUCAP))
-#define OREGANO_IS_GNUCAP_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), OREGANO_TYPE_GNUCAP))
-#define OREGANO_GNUCAP_GET_CLASS(inst)                                                             \
-	(G_TYPE_INSTANCE_GET_CLASS ((inst), OREGANO_TYPE_GNUCAP, OreganoGnuCapClass))
+#define TYPE_GNUCAP (gnucap_get_type ())
+#define GNUCAP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_GNUCAP, GnuCap))
+#define GNUCAP_CLASS(vtable) (G_TYPE_CHECK_CLASS_CAST ((vtable), TYPE_GNUCAP, GnuCapClass))
+#define IS_GNUCAP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_GNUCAP))
+#define IS_GNUCAP_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), TYPE_GNUCAP))
+#define GNUCAP_GET_CLASS(inst) (G_TYPE_INSTANCE_GET_CLASS ((inst), TYPE_GNUCAP, GnuCapClass))
 
-typedef struct _OreganoGnuCap OreganoGnuCap;
-typedef struct _OreganoGnuCapPriv OreganoGnuCapPriv;
-typedef struct _OreganoGnuCapClass OreganoGnuCapClass;
+typedef struct _GnuCap GnuCap;
+typedef struct _GnuCapPrivate GnuCapPrivate;
+typedef struct _GnuCapClass GnuCapClass;
 
-struct _OreganoGnuCap
+struct _GnuCap
 {
 	GObject parent;
 
-	OreganoGnuCapPriv *priv;
+	GnuCapPrivate *priv;
 };
 
-struct _OreganoGnuCapClass
+struct _GnuCapClass
 {
 	GObjectClass parent;
 };
 
-GType oregano_gnucap_get_type (void);
-OreganoEngine *oregano_gnucap_new (Schematic *sm);
+GType gnucap_get_type (void);
+Engine *gnucap_new (Schematic *sm);
 
 #endif

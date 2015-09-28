@@ -163,7 +163,7 @@ def nemiver_fun(ctx):
 
 def valgrind_fun(ctx):
 	if ctx.env.VALGRIND:
-		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND[0]+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
+		os.system ("G_DEBUG=resident-modules,always-malloc,fatal-warnings "+ctx.env.VALGRIND[0]+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
 	else:
 		logs.warn ("Did not find \"valgrind\". Re-configure if you installed it in the meantime.")
 

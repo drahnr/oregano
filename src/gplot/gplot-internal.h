@@ -39,13 +39,13 @@
 // Internal definitions associated to gplot.h
 
 typedef struct _GPlotClass GPlotClass;
-typedef struct _GPlotPriv GPlotPriv;
+typedef struct _GPlotPrivate GPlotPrivate;
 
 struct _GPlot
 {
 	GtkLayout parent;
 
-	GPlotPriv *priv;
+	GPlotPrivate *priv;
 };
 struct _GPlotClass
 {

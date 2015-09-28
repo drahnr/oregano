@@ -27,40 +27,37 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef __NGSPICE_H
-#define __NGSPICE_H
+#ifndef _NGSPICE_H_
+#define _NGSPICE_H_
 
 #include <gtk/gtk.h>
 
 #include "engine.h"
 
-#define OREGANO_TYPE_NGSPICE (oregano_ngspice_get_type ())
-#define OREGANO_NGSPICE(obj)                                                                       \
-	(G_TYPE_CHECK_INSTANCE_CAST ((obj), OREGANO_TYPE_NGSPICE, OreganoNgSpice))
-#define OREGANO_NGSPICE_CLASS(vtable)                                                              \
-	(G_TYPE_CHECK_CLASS_CAST ((vtable), OREGANO_TYPE_NGSPICE, OreganoNgSpiceClass))
-#define OREGANO_IS_NGSPICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), OREGANO_TYPE_NGSPICE))
-#define OREGANO_IS_NGSPICE_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), OREGANO_TYPE_NGSPICE))
-#define OREGANO_NGSPICE_GET_CLASS(inst)                                                            \
-	(G_TYPE_INSTANCE_GET_CLASS ((inst), OREGANO_TYPE_NGSPICE, OreganoNgSpiceClass))
+#define TYPE_NGSPICE (ngspice_get_type ())
+#define NGSPICE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NGSPICE, NgSpice))
+#define NGSPICE_CLASS(vtable) (G_TYPE_CHECK_CLASS_CAST ((vtable), TYPE_NGSPICE, NgSpiceClass))
+#define IS_NGSPICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NGSPICE))
+#define IS_NGSPICE_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), TYPE_NGSPICE))
+#define NGSPICE_GET_CLASS(inst) (G_TYPE_INSTANCE_GET_CLASS ((inst), TYPE_NGSPICE, NgSpiceClass))
 
-typedef struct _OreganoNgSpice OreganoNgSpice;
-typedef struct _OreganoNgSpicePriv OreganoNgSpicePriv;
-typedef struct _OreganoNgSpiceClass OreganoNgSpiceClass;
+typedef struct _NgSpice NgSpice;
+typedef struct _NgSpicePrivate NgSpicePrivate;
+typedef struct _NgSpiceClass NgSpiceClass;
 
-struct _OreganoNgSpice
+struct _NgSpice
 {
 	GObject parent;
 
-	OreganoNgSpicePriv *priv;
+	NgSpicePrivate *priv;
 };
 
-struct _OreganoNgSpiceClass
+struct _NgSpiceClass
 {
 	GObjectClass parent;
 };
 
-GType oregano_ngspice_get_type (void);
-OreganoEngine *oregano_ngspice_new (Schematic *sm);
+GType ngspice_get_type (void);
+Engine *ngspice_new (Schematic *sm);
 
-#endif
+#endif /* _NGSPICE_H_ */

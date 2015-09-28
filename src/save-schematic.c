@@ -243,7 +243,7 @@ static void write_xml_label (PartLabel *label, parseXmlContext *ctxt)
 
 static void write_xml_part (Part *part, parseXmlContext *ctxt)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 	xmlNodePtr node_part;
 	gchar *str;
 	Coords pos;

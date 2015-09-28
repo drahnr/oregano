@@ -67,17 +67,17 @@ static void sheet_finalize (GObject *object);
 static int dot_equal (gconstpointer a, gconstpointer b);
 static guint dot_hash (gconstpointer key);
 
-#define ZOOM_MIN 0.35
-#define ZOOM_MAX 3
+#define ZOREGANO_MIN 0.35
+#define ZOREGANO_MAX 3
 
 #include "debug.h"
 
 enum { SELECTION_CHANGED, BUTTON_PRESS, CONTEXT_CLICK, CANCEL, LAST_SIGNAL };
 static guint signals[LAST_SIGNAL] = {0};
 
-enum { ARG_0, ARG_ZOOM };
+enum { ARG_0, ARG_ZOREGANO };
 
-G_DEFINE_TYPE (Sheet, sheet, GOO_TYPE_CANVAS)
+G_DEFINE_TYPE_WITH_PRIVATE (Sheet, sheet, GOO_TYPE_CANVAS)
 
 static void sheet_class_init (SheetClass *sheet_class)
 {
@@ -90,7 +90,7 @@ static void sheet_class_init (SheetClass *sheet_class)
 	object_class->finalize = sheet_finalize;
 	sheet_parent_class = g_type_class_peek (GOO_TYPE_CANVAS);
 
-	g_object_class_install_property (object_class, ARG_ZOOM,
+	g_object_class_install_property (object_class, ARG_ZOREGANO,
 	                                 g_param_spec_double ("zoom", "Sheet::zoom", "the zoom factor",
 	                                                      0.01f, 10.0f, 1.0f, G_PARAM_READWRITE));
 
@@ -116,26 +116,28 @@ static void sheet_class_init (SheetClass *sheet_class)
 	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
-static void sheet_init (Sheet *sheet)
+static void sheet_init (Sheet *instance)
 {
-	sheet->priv = g_new0 (SheetPriv, 1);
-	sheet->priv->zoom = 1.0;
-	sheet->priv->selected_group = NULL;
-	sheet->priv->floating_group = NULL;
-	sheet->priv->floating_objects = NULL;
-	sheet->priv->selected_objects = NULL;
-	sheet->priv->wire_handler_id = 0;
-	sheet->priv->float_handler_id = 0;
+	SheetPrivate *priv = sheet_get_instance_private (instance);
+	priv->zoom = 1.0;
+	priv->selected_group = NULL;
+	priv->floating_group = NULL;
+	priv->floating_objects = NULL;
+	priv->selected_objects = NULL;
+	priv->wire_handler_id = 0;
+	priv->float_handler_id = 0;
 
-	sheet->priv->items = NULL;
-	sheet->priv->rubberband_info = NULL;
-	sheet->priv->create_wire_info = NULL;
-	sheet->priv->preserve_selection_items = NULL;
-	sheet->priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
-	sheet->priv->voltmeter_items = NULL;
-	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	priv->items = NULL;
+	priv->rubberband_info = NULL;
+	priv->create_wire_info = NULL;
+	priv->preserve_selection_items = NULL;
+	priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
+	priv->voltmeter_items = NULL;
+	priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
-	sheet->state = SHEET_STATE_NONE;
+	instance->state = SHEET_STATE_NONE;
+	
+	instance->priv = priv;
 }
 
 static void sheet_finalize (GObject *object)
@@ -179,7 +181,7 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	// replaced by a code copied from evince
 
 	if (G_UNLIKELY (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
-		NG_DEBUG ("Widget is not realized.");
+		oregano_echo ("Widget is not realized.");
 		return FALSE;
 	}
 
@@ -191,7 +193,7 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	window = gtk_widget_get_window (GTK_WIDGET (sheet));
 
 	if (!window) {
-		NG_DEBUG ("Window is not realized.");
+		oregano_echo ("Window is not realized.");
 		return FALSE;
 	}
 	// even though above is all defined the below will always return NUL for
@@ -199,11 +201,11 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	gdk_window_get_device_position (window, device_pointer, &_x, &_y, NULL);
 #if 0
 	if (!window) { //fails always
-		NG_DEBUG ("Window does not seem to be realized yet?");
+		oregano_echo ("Window does not seem to be realized yet?");
 		return FALSE;
 	}
 #else
-	NG_DEBUG ("\n%p %p %p %p %i %i\n\n", display, device_manager, device_pointer, window, _x, _y);
+	oregano_echo ("\n%p %p %p %p %i %i\n\n", display, device_manager, device_pointer, window, _x, _y);
 #endif
 
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
@@ -484,16 +486,16 @@ GtkWidget *sheet_new (gdouble height, gdouble width)
 
 	// Finally, create the object group that holds all objects.
 	sheet->object_group = GOO_CANVAS_GROUP (goo_canvas_group_new (root, "x", 0.0, "y", 0.0, NULL));
-	NG_DEBUG ("root group %p", sheet->object_group);
+	oregano_echo ("root group %p", sheet->object_group);
 
 	sheet->priv->selected_group = GOO_CANVAS_GROUP (
 	    goo_canvas_group_new (GOO_CANVAS_ITEM (sheet->object_group), "x", 0.0, "y", 0.0, NULL));
-	NG_DEBUG ("selected group %p", sheet->priv->selected_group);
+	oregano_echo ("selected group %p", sheet->priv->selected_group);
 
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (
 	    goo_canvas_group_new (GOO_CANVAS_ITEM (sheet->object_group), "x", 0.0, "y", 0.0, NULL));
 
-	NG_DEBUG ("floating group %p", sheet->priv->floating_group);
+	oregano_echo ("floating group %p", sheet->priv->floating_group);
 
 	// Hash table that maps coordinates to a specific dot.
 	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, NULL);
@@ -511,7 +513,7 @@ static void sheet_set_property (GObject *object, guint prop_id, const GValue *va
 	const Sheet *sheet = SHEET (object);
 
 	switch (prop_id) {
-	case ARG_ZOOM:
+	case ARG_ZOREGANO:
 		sheet_set_zoom (sheet, g_value_get_double (value));
 		break;
 	}
@@ -522,7 +524,7 @@ static void sheet_get_property (GObject *object, guint prop_id, GValue *value, G
 	const Sheet *sheet = SHEET (object);
 
 	switch (prop_id) {
-	case ARG_ZOOM:
+	case ARG_ZOREGANO:
 		g_value_set_double (value, sheet->priv->zoom);
 		break;
 
@@ -543,7 +545,7 @@ void sheet_scroll_pixel (const Sheet *sheet, int delta_x, int delta_y)
 	gfloat vnew, hnew;
 	gfloat hmax, vmax;
 	gfloat x1, y1;
-	const SheetPriv *priv = sheet->priv;
+	const SheetPrivate *priv = sheet->priv;
 
 	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
 		x1 = gtk_adjustment_get_value (hadj);
@@ -735,12 +737,12 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			if (scr_event->direction == GDK_SCROLL_UP) {
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
-				if (zoom < ZOOM_MAX)
+				if (zoom < ZOREGANO_MAX)
 					sheet_change_zoom (sheet, 1.1);
 			} else if (scr_event->direction == GDK_SCROLL_DOWN) {
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
-				if (zoom > ZOOM_MIN)
+				if (zoom > ZOREGANO_MIN)
 					sheet_change_zoom (sheet, 0.9);
 			}
 		}

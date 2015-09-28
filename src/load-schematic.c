@@ -89,7 +89,7 @@ typedef enum {
 	PARSE_OPTION_NAME,
 	PARSE_OPTION_VALUE,
 
-	PARSE_ZOOM,
+	PARSE_ZOREGANO,
 
 	PARSE_PARTS,
 	PARSE_PART,
@@ -332,7 +332,7 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 			state->state = PARSE_COMMENTS;
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:zoom")) {
-			state->state = PARSE_ZOOM;
+			state->state = PARSE_ZOREGANO;
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:simulation-settings")) {
 			state->state = PARSE_SIMULATION_SETTINGS;
@@ -664,7 +664,7 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 	case PARSE_PART_PROPERTY_VALUE:
 	case PARSE_TEXTBOX_POSITION:
 	case PARSE_TEXTBOX_TEXT:
-	case PARSE_ZOOM:
+	case PARSE_ZOREGANO:
 	case PARSE_TITLE:
 	case PARSE_AUTHOR:
 	case PARSE_VERSION:
@@ -717,7 +717,7 @@ static void end_element (ParseState *state, const xmlChar *name)
 		state->comments = g_strdup (state->content->str);
 		state->state = PARSE_SCHEMATIC;
 		break;
-	case PARSE_ZOOM: {
+	case PARSE_ZOREGANO: {
 		double zoom;
 
 		zoom = g_strtod (state->content->str, NULL);

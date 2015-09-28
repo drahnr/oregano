@@ -45,7 +45,7 @@
 
 typedef struct _Grid Grid;
 typedef struct _GridClass GridClass;
-typedef struct _GridPriv GridPriv;
+typedef struct _GridPrivate GridPrivate;
 
 struct _Grid
 {
@@ -54,7 +54,7 @@ struct _Grid
 	gdouble height;
 	gdouble x;
 	gdouble y;
-	GridPriv *priv;
+	GridPrivate *priv;
 };
 
 struct _GridClass

@@ -51,7 +51,7 @@ enum { ACTION_NONE, ACTION_STARTING_PAN, ACTION_PAN, ACTION_STARTING_REGION, ACT
 
 static GtkLayoutClass *parent_class = NULL;
 
-struct _GPlotPriv
+struct _GPlotPrivate
 {
 	GList *functions;
 
@@ -83,18 +83,8 @@ struct _GPlotPriv
 	GPlotFunctionBBox rubberband;
 };
 
-GType g_plot_get_type ()
-{
-	static GType g_plot_type = 0;
 
-	if (!g_plot_type) {
-		static const GTypeInfo g_plot_info = {
-		    sizeof(GPlotClass), NULL,          NULL, (GClassInitFunc)g_plot_class_init, NULL,
-		    NULL,               sizeof(GPlot), 0,    (GInstanceInitFunc)g_plot_init,    NULL};
-		g_plot_type = g_type_register_static (GTK_TYPE_LAYOUT, "GPlot", &g_plot_info, 0);
-	}
-	return g_plot_type;
-}
+G_DEFINE_TYPE_WITH_PRIVATE(GPlot, g_plot, GTK_TYPE_LAYOUT);
 
 static void g_plot_class_init (GPlotClass *class)
 {
@@ -299,7 +289,7 @@ static gboolean g_plot_draw (GtkWidget *widget, cairo_t *cr)
 	static double offset = -0.2;
 
 	GPlot *plot;
-	GPlotPriv *priv;
+	GPlotPrivate *priv;
 	guint width;
 	guint height;
 	guint graph_width;
@@ -491,9 +481,9 @@ static gboolean g_plot_draw (GtkWidget *widget, cairo_t *cr)
 
 static void g_plot_init (GPlot *plot)
 {
-	plot->priv = g_new0 (GPlotPriv, 1);
+	plot->priv = g_plot_get_instance_private (plot);
 
-	plot->priv->zoom_mode = GPLOT_ZOOM_REGION;
+	plot->priv->zoom_mode = GPLOT_ZOREGANO_REGION;
 	plot->priv->functions = NULL;
 	plot->priv->action = ACTION_NONE;
 	plot->priv->zoom = 1.0;
@@ -542,7 +532,7 @@ int g_plot_add_function (GPlot *plot, GPlotFunction *func)
 static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 {
 	switch (p->priv->zoom_mode) {
-	case GPLOT_ZOOM_INOUT:
+	case GPLOT_ZOREGANO_INOUT:
 		if ((p->priv->action == ACTION_STARTING_PAN) || (p->priv->action == ACTION_PAN)) {
 			gdouble dx, dy;
 			cairo_matrix_t t = p->priv->matrix;
@@ -567,7 +557,7 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 			gtk_widget_queue_draw (w);
 		}
 		break;
-	case GPLOT_ZOOM_REGION:
+	case GPLOT_ZOREGANO_REGION:
 		if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
 			GdkCursor *cursor = gdk_cursor_new (GDK_CROSS);
 			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
@@ -595,14 +585,14 @@ static gboolean g_plot_button_press_cb (GtkWidget *w, GdkEventButton *e, GPlot *
 		/* TODO : Check function below cursor and open a property dialog :) */
 	} else {
 		switch (p->priv->zoom_mode) {
-		case GPLOT_ZOOM_INOUT:
+		case GPLOT_ZOREGANO_INOUT:
 			if (e->button == 1) {
 				p->priv->action = ACTION_STARTING_PAN;
 				p->priv->press_x = e->x;
 				p->priv->press_y = e->y;
 			}
 			break;
-		case GPLOT_ZOOM_REGION:
+		case GPLOT_ZOREGANO_REGION:
 			if (e->button == 1) {
 				p->priv->action = ACTION_STARTING_REGION;
 				p->priv->rubberband.xmin = e->x;
@@ -625,7 +615,7 @@ static gboolean g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot
 	g_return_val_if_fail (IS_GPLOT (p), TRUE);
 
 	switch (p->priv->zoom_mode) {
-	case GPLOT_ZOOM_INOUT:
+	case GPLOT_ZOREGANO_INOUT:
 		if (p->priv->action != ACTION_PAN) {
 			switch (e->button) {
 			case 1:
@@ -646,7 +636,7 @@ static gboolean g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot
 			gdk_flush ();
 		}
 		break;
-	case GPLOT_ZOOM_REGION:
+	case GPLOT_ZOREGANO_REGION:
 		if ((e->button == 1) && (p->priv->action == ACTION_REGION)) {
 			gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
 			gdk_flush ();
@@ -700,7 +690,7 @@ static void g_plot_update_bbox (GPlot *p)
 {
 	GPlotFunction *f;
 	GPlotFunctionBBox bbox;
-	GPlotPriv *priv;
+	GPlotPrivate *priv;
 	GList *lst;
 
 	priv = p->priv;

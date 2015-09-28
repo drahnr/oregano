@@ -15,7 +15,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -60,7 +60,7 @@ enum {
 	LAST_SIGNAL
 };
 
-struct _ItemDataPriv
+struct _ItemDataPrivate
 {
 	NodeStore *store;
 
@@ -73,15 +73,13 @@ struct _ItemDataPriv
 	GooCanvasBounds bounds;
 };
 
-G_DEFINE_TYPE (ItemData, item_data, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (ItemData, item_data, G_TYPE_OBJECT);
 
 static guint item_data_signals[LAST_SIGNAL] = {0};
 
-static void item_data_init (ItemData *item_data)
+static void item_data_init (ItemData *instance)
 {
-	ItemDataPriv *priv;
-
-	priv = g_slice_new0 (ItemDataPriv);
+	ItemDataPrivate *priv = item_data_get_instance_private (instance);
 
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 
@@ -89,17 +87,16 @@ static void item_data_init (ItemData *item_data)
 	cairo_matrix_init_identity (&(priv->rotate));
 	cairo_matrix_init_identity (&(priv->flip));
 
-	item_data->priv = priv;
+	instance->priv = priv;
 }
 
 static void item_data_dispose (GObject *object)
 {
-	ItemDataPriv *priv = ITEM_DATA (object)->priv;
+	ItemDataPrivate *priv = ITEM_DATA (object)->priv;
 	// Remove the item from the sheet node store if there.
 	if (priv->store) {
 		item_data_unregister (ITEM_DATA (object));
 	}
-	g_slice_free (ItemDataPriv, priv);
 	G_OBJECT_CLASS (item_data_parent_class)->dispose (object);
 }
 
@@ -153,7 +150,7 @@ static void item_data_class_init (ItemDataClass *klass)
 	    g_signal_new ("highlight", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
 	                  NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
-	// Methods.
+	// virtual methods
 	klass->clone = NULL;
 	klass->copy = item_data_copy;
 	klass->rotate = NULL;
@@ -162,7 +159,7 @@ static void item_data_class_init (ItemDataClass *klass)
 	klass->unreg = NULL;
 	klass->changed = NULL;
 
-	// Signals.
+	// signals
 	klass->moved = NULL;
 }
 
@@ -215,7 +212,7 @@ void item_data_get_pos (ItemData *item_data, Coords *pos)
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
 	g_return_if_fail (pos != NULL);
-	ItemDataPriv *priv;
+	ItemDataPrivate *priv;
 	priv = item_data->priv;
 	pos->x = priv->translate.x0;
 	pos->y = priv->translate.y0;
@@ -223,7 +220,7 @@ void item_data_get_pos (ItemData *item_data, Coords *pos)
 
 void item_data_set_pos (ItemData *item_data, Coords *pos)
 {
-	ItemDataPriv *priv;
+	ItemDataPrivate *priv;
 	gboolean handler_connected;
 
 	g_return_if_fail (pos);
@@ -248,7 +245,7 @@ void item_data_set_pos (ItemData *item_data, Coords *pos)
 
 void item_data_move (ItemData *item_data, const Coords *delta)
 {
-	ItemDataPriv *priv;
+	ItemDataPrivate *priv;
 
 	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
@@ -352,7 +349,7 @@ void item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2)
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (data));
 
-	ItemDataPriv *priv;
+	ItemDataPrivate *priv;
 
 	item_data_get_relative_bbox (data, p1, p2);
 	priv = data->priv;

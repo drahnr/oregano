@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2015       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,8 +33,9 @@
 
 #include "engine.h"
 #include "engine-internal.h"
-#include "gnucap.h"
 #include "ngspice.h"
+#include "gnucap.h"
+#include "echo.h"
 
 static gchar *analysis_names[] = {
     N_ ("Operating Point"),  N_ ("Transient Analysis"), N_ ("DC transfer characteristic"),
@@ -45,101 +48,64 @@ enum { DONE, ABORTED, LAST_SIGNAL };
 
 static guint engine_signals[LAST_SIGNAL] = {0};
 
-static void oregano_engine_base_init (gpointer g_class);
+static void engine_default_init (EngineInterface *iface);
 
-GType oregano_engine_get_type (void)
+
+G_DEFINE_INTERFACE (Engine, engine, G_TYPE_OBJECT)
+
+static void engine_default_init (EngineInterface *iface)
 {
-	static GType type = 0;
+	engine_signals[DONE] = g_signal_new ("done", G_TYPE_FROM_INTERFACE (iface), G_SIGNAL_RUN_FIRST,
+	                                     G_STRUCT_OFFSET (EngineInterface, done), NULL, NULL,
+	                                     g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
-	if (type == 0) {
-		static const GTypeInfo info = {
-		    sizeof(OreganoEngineClass),
-		    oregano_engine_base_init, // base_init
-		    NULL,                     // base_finalize
-		    NULL,                     // class_init
-		    NULL,                     // class_finalize
-		    NULL,                     // class_data
-		    0,
-		    0,   // n_preallocs
-		    NULL // instance_init
-		};
-		type = g_type_register_static (G_TYPE_INTERFACE, "OreganoEngine", &info, 0);
-	}
-	return type;
+	engine_signals[ABORTED] =
+	    g_signal_new ("aborted", G_TYPE_FROM_INTERFACE (iface), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (EngineInterface, abort), NULL, NULL,
+	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
-static void oregano_engine_base_init (gpointer g_class)
+void engine_start (Engine *self) { ENGINE_GET_IFACE (self)->start (self); }
+
+void engine_stop (Engine *self) { ENGINE_GET_IFACE (self)->stop (self); }
+
+gboolean engine_has_warnings (Engine *self) { return ENGINE_GET_IFACE (self)->has_warnings (self); }
+
+gboolean engine_is_available (Engine *self) { return ENGINE_GET_IFACE (self)->is_available (self); }
+
+void engine_get_progress (Engine *self, double *p) { ENGINE_GET_IFACE (self)->progress (self, p); }
+
+gboolean engine_generate_netlist (Engine *self, const gchar *file, GError **error)
 {
-	static gboolean initialized = FALSE;
-
-	if (!initialized) {
-		// create interface signals here.
-		engine_signals[DONE] =
-		    g_signal_new ("done", G_TYPE_FROM_CLASS (g_class), G_SIGNAL_RUN_FIRST,
-		                  G_STRUCT_OFFSET (OreganoEngineClass, done), NULL, NULL,
-		                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-
-		engine_signals[ABORTED] =
-		    g_signal_new ("aborted", G_TYPE_FROM_CLASS (g_class), G_SIGNAL_RUN_FIRST,
-		                  G_STRUCT_OFFSET (OreganoEngineClass, abort), NULL, NULL,
-		                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-
-		initialized = TRUE;
-	}
+	return ENGINE_GET_IFACE (self)->get_netlist (self, file, error);
 }
 
-void oregano_engine_start (OreganoEngine *self) { OREGANO_ENGINE_GET_CLASS (self)->start (self); }
+GList *engine_get_results (Engine *self) { return ENGINE_GET_IFACE (self)->get_results (self); }
 
-void oregano_engine_stop (OreganoEngine *self) { OREGANO_ENGINE_GET_CLASS (self)->stop (self); }
-
-gboolean oregano_engine_has_warnings (OreganoEngine *self)
+gchar *engine_get_current_operation (Engine *self)
 {
-	return OREGANO_ENGINE_GET_CLASS (self)->has_warnings (self);
+	return ENGINE_GET_IFACE (self)->get_operation (self);
 }
 
-gboolean oregano_engine_is_available (OreganoEngine *self)
+Engine *engine_factory_create_engine (gint type, Schematic *sm)
 {
-	return OREGANO_ENGINE_GET_CLASS (self)->is_available (self);
-}
-
-void oregano_engine_get_progress (OreganoEngine *self, double *p)
-{
-	OREGANO_ENGINE_GET_CLASS (self)->progress (self, p);
-}
-
-gboolean oregano_engine_generate_netlist (OreganoEngine *self, const gchar *file, GError **error)
-{
-	return OREGANO_ENGINE_GET_CLASS (self)->get_netlist (self, file, error);
-}
-
-GList *oregano_engine_get_results (OreganoEngine *self)
-{
-	return OREGANO_ENGINE_GET_CLASS (self)->get_results (self);
-}
-
-gchar *oregano_engine_get_current_operation (OreganoEngine *self)
-{
-	return OREGANO_ENGINE_GET_CLASS (self)->get_operation (self);
-}
-
-OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm)
-{
-	OreganoEngine *engine;
+	Engine *engine;
 
 	switch (type) {
-	case OREGANO_ENGINE_GNUCAP:
-		engine = oregano_gnucap_new (sm);
+	case ENGINE_NGSPICE:
+		engine = ngspice_new (sm);
 		break;
-	case OREGANO_ENGINE_NGSPICE:
-		engine = oregano_ngspice_new (sm);
+	case ENGINE_GNUCAP:
+		engine = gnucap_new (sm);
 		break;
 	default:
+		oregano_echo("Unknown engine type with index %u", (unsigned)type);
 		engine = NULL;
 	}
 	return engine;
 }
 
-gchar *oregano_engine_get_analysis_name (SimulationData *sdat)
+gchar *engine_get_analysis_name (SimulationData *sdat)
 {
 	if (sdat == NULL) {
 		return g_strdup (_ (analysis_names[ANALYSIS_UNKNOWN]));

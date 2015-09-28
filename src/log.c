@@ -54,7 +54,7 @@ gchar *log_append_trim_message(const gchar *string) {
  *
  * Leading and trailing '\n's will be truncated.
  */
-void log_append (Log *log, const gchar *prefix, const gchar *message)
+void log_append (Log *log, const gchar *prefix, const gchar *format, ...)
 {
 	//trim message (only newlines), because newlines do not make sense in the log view
 	gchar *message_trimed = log_append_trim_message(message);
@@ -76,9 +76,9 @@ void log_append (Log *log, const gchar *prefix, const gchar *message)
 	} else {
 		gtk_list_store_prepend (GTK_LIST_STORE (log), &iter);
 	}
-	gtk_list_store_set (GTK_LIST_STORE (log), &iter, 0, g_strdup (prefix), 1, g_strdup (message_trimed),
+	gtk_list_store_set (GTK_LIST_STORE (log), &iter, 0, g_strdup (prefix), 1, message_trimed,
                         -1);
-	g_free(message_trimed);
+	// do not free message_trimed, list store takes over ownership
 }
 
 void log_append_error (Log *log, const gchar *prefix, const gchar *message, GError *error)
@@ -97,6 +97,7 @@ void log_append_error (Log *log, const gchar *prefix, const gchar *message, GErr
 	GtkTreeIter item;
 	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
 	gtk_list_store_set (GTK_LIST_STORE (log), &item, 0, g_strdup (prefix), 1, concat, -1);
+	// do not free tmp!, the liststore takes over ownership
 }
 
 void log_clear (Log *log) { gtk_list_store_clear (GTK_LIST_STORE (log)); }

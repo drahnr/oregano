@@ -48,7 +48,7 @@
 
 #include "part.h"
 #include "wire.h"
-#include "node-store.h"
+#include "echo.h"
 #include "log.h"
 
 #define TYPE_SCHEMATIC (schematic_get_type ())
@@ -58,16 +58,19 @@
 #define IS_SCHEMATIC_CLASS(klass)                                                                  \
 	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC, SchematicClass))
 
+		
+typedef struct _NodeStore NodeStore;
+
 typedef struct _Schematic Schematic;
 typedef struct _SchematicClass SchematicClass;
-typedef struct _SchematicPriv SchematicPriv;
+typedef struct _SchematicPrivate SchematicPrivate;
 
 typedef void (*ForeachItemDataFunc)(ItemData *item_data, gpointer user_data);
 
 struct _Schematic
 {
 	GObject parent;
-	SchematicPriv *priv;
+	SchematicPrivate *priv;
 };
 
 struct _SchematicClass
@@ -112,7 +115,7 @@ gpointer schematic_get_simulation (Schematic *schematic);
 Log *schematic_get_log_store (Schematic *schematic);
 void schematic_log_clear (Schematic *schematic);
 void schematic_log_append (Schematic *schematic, const char *message);
-void schematic_log_append_error (Schematic *schematic, const char *message);
+void schematic_log_append_error (Schematic *schematic, const char *format, ...);
 void schematic_log_show (Schematic *schematic);
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic);
 int schematic_count (void);

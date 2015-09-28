@@ -55,11 +55,9 @@ static gboolean wire_has_properties (ItemData *data);
 static void wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 static void wire_changed (ItemData *data);
 
-#include "debug.h"
-
 enum { ARG_0, ARG_DELETE, ARG_LAST_SIGNAL };
 
-G_DEFINE_TYPE (Wire, wire, TYPE_ITEM_DATA)
+G_DEFINE_TYPE_WITH_PRIVATE (Wire, wire, TYPE_ITEM_DATA)
 
 static guint wire_signals[ARG_LAST_SIGNAL] = {0};
 static ItemDataClass *parent_class = NULL;
@@ -67,12 +65,10 @@ static ItemDataClass *parent_class = NULL;
 static void wire_finalize (GObject *object)
 {
 	Wire *wire = WIRE (object);
-	WirePriv *priv = wire->priv;
+	WirePrivate *priv = wire->priv;
 
 	if (priv) {
 		g_slist_free (priv->nodes);
-		g_free (priv);
-		wire->priv = NULL;
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -110,7 +106,7 @@ static void wire_class_init (WireClass *klass)
 
 static void wire_init (Wire *wire)
 {
-	WirePriv *priv = g_new0 (WirePriv, 1);
+	WirePrivate *priv = wire_get_instance_private (wire);
 
 	// For debugging purposes.
 	priv->length.x = -1;
@@ -127,7 +123,7 @@ void wire_dbg_print (Wire *w)
 {
 	Coords pos;
 	item_data_get_pos (ITEM_DATA (w), &pos);
-	NG_DEBUG ("Wire %p is defined by (%lf,%lf) + lambda * (%lf,%lf)\n", w, pos.x, pos.y,
+	oregano_echo ("Wire %p is defined by (%lf,%lf) + lambda * (%lf,%lf)\n", w, pos.x, pos.y,
 	          w->priv->length.x, w->priv->length.y);
 }
 
@@ -135,7 +131,7 @@ Wire *wire_new () { return WIRE (g_object_new (TYPE_WIRE, NULL)); }
 
 gint wire_add_node (Wire *wire, Node *node)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
@@ -154,7 +150,7 @@ gint wire_add_node (Wire *wire, Node *node)
 
 gint wire_remove_node (Wire *wire, Node *node)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
@@ -174,7 +170,7 @@ gint wire_remove_node (Wire *wire, Node *node)
 
 GSList *wire_get_nodes (Wire *wire)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
@@ -195,7 +191,7 @@ void wire_get_start_pos (Wire *wire, Coords *pos)
 
 void wire_get_end_pos (Wire *wire, Coords *pos)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -211,7 +207,7 @@ void wire_get_end_pos (Wire *wire, Coords *pos)
 
 void wire_get_start_and_end_pos (Wire *wire, Coords *start, Coords *end)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -226,7 +222,7 @@ void wire_get_start_and_end_pos (Wire *wire, Coords *start, Coords *end)
 
 void wire_get_pos_and_length (Wire *wire, Coords *pos, Coords *length)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -240,7 +236,7 @@ void wire_get_pos_and_length (Wire *wire, Coords *pos, Coords *length)
 
 void wire_set_length (Wire *wire, Coords *length)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -262,7 +258,7 @@ void wire_set_length (Wire *wire, Coords *length)
 
 gboolean wire_is_visited (Wire *wire)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_val_if_fail (wire != NULL, FALSE);
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
@@ -274,7 +270,7 @@ gboolean wire_is_visited (Wire *wire)
 
 void wire_set_visited (Wire *wire, gboolean is_visited)
 {
-	WirePriv *priv;
+	WirePrivate *priv;
 
 	g_return_if_fail (wire != NULL);
 	g_return_if_fail (IS_WIRE (wire));
@@ -326,7 +322,7 @@ static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
 	cairo_matrix_t affine;
 	double x, y;
 	Wire *wire;
-	WirePriv *priv;
+	WirePrivate *priv;
 	Coords b1, b2;
 	Coords wire_center_before, wire_center_after, delta;
 	Coords delta_cp_before, delta_cp_after;

@@ -44,12 +44,12 @@
 
 typedef struct _NodeItem NodeItem;
 typedef struct _NodeItemClass NodeItemClass;
-typedef struct _NodeItemPriv NodeItemPriv;
+typedef struct _NodeItemPrivate NodeItemPrivate;
 
 struct _NodeItem
 {
 	GooCanvasGroup parent;
-	NodeItemPriv *priv;
+	NodeItemPrivate *priv;
 };
 
 struct _NodeItemClass

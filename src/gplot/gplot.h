@@ -43,7 +43,7 @@ typedef struct _GPlotFunction
 {
 } GPlotFunction;
 
-enum { GPLOT_ZOOM_INOUT, GPLOT_ZOOM_REGION };
+enum { GPLOT_ZOREGANO_INOUT, GPLOT_ZOREGANO_REGION };
 
 GType g_plot_get_type ();
 GtkWidget *g_plot_new ();
