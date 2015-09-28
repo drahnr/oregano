@@ -43,7 +43,6 @@
 
 #include "schematic-view.h"
 #include "part-browser.h"
-#include "stock.h"
 #include "oregano.h"
 #include "load-library.h"
 #include "netlist-helper.h"
@@ -96,7 +95,7 @@ struct _SchematicViewClass
 	void (*reset_tool)(SchematicView *schematic_view);
 };
 
-struct _SchematicViewPriv
+struct _SchematicViewPrivate
 {
 	Schematic *schematic;
 
@@ -122,7 +121,7 @@ struct _SchematicViewPriv
 	LogInfo *log_info;
 };
 
-G_DEFINE_TYPE (SchematicView, schematic_view, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (SchematicView, schematic_view, G_TYPE_OBJECT)
 
 // Class functions and members.
 static void schematic_view_init (SchematicView *sv);
@@ -165,7 +164,7 @@ static void new_cmd (GtkWidget *widget, Schematic *sv)
 static void properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *s;
-	GtkBuilder *builder;
+
 	GError *e = NULL;
 	GtkWidget *window;
 	GtkEntry *title, *author;
@@ -174,9 +173,11 @@ static void properties_cmd (GtkWidget *widget, SchematicView *sv)
 	gchar *s_title, *s_author, *s_comments;
 	gint button;
 
+
 	s = schematic_view_get_schematic (sv);
 
-	if ((builder = gtk_builder_new ()) == NULL) {
+	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		log_append (schematic_get_log_store (s), _ ("SchematicView"),
 		            _ ("Could not create properties dialog"));
 		return;
@@ -542,15 +543,14 @@ static void save_cmd (GtkWidget *widget, SchematicView *sv)
 	sm = sv->priv->schematic;
 	filename = schematic_get_filename (sm);
 
-	if (filename == NULL || !strcmp (filename, _ ("Untitled.oregano"))) {
+	if (filename == NULL || strcmp (filename, _ ("Untitled.oregano")) == 0) {
 		dialog_save_as (sv);
 		return;
-	} else {
-		if (!schematic_save_file (sm, &e)) {
-			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
-			                  _ ("Failed to save schematic file."), e);
-			g_clear_error (&e);
-		}
+	}
+	if (!schematic_save_file (sm, &e)) {
+		log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
+		                  _ ("Failed to save schematic file."), e);
+		g_clear_error (&e);
 	}
 }
 
@@ -953,7 +953,7 @@ static void schematic_view_class_init (SchematicViewClass *klass)
 
 static void schematic_view_init (SchematicView *sv)
 {
-	sv->priv = g_new0 (SchematicViewPriv, 1);
+	sv->priv = schematic_view_get_instance_priv(sv);
 	sv->priv->log_info = g_new0 (LogInfo, 1);
 	sv->priv->empty = TRUE;
 	sv->priv->schematic = NULL;
@@ -966,11 +966,6 @@ static void schematic_view_init (SchematicView *sv)
 static void schematic_view_finalize (GObject *object)
 {
 	SchematicView *sv = SCHEMATIC_VIEW (object);
-
-	if (sv->priv) {
-		g_free (sv->priv);
-		sv->priv = NULL;
-	}
 
 	if (sv->toplevel) {
 		g_object_unref (G_OBJECT (sv->toplevel));
@@ -1061,7 +1056,6 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	GtkGrid *grid;
 	GtkPaned *paned;
 	GError *e = NULL;
-	GtkBuilder *builder;
 
 	g_return_val_if_fail (schematic, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
@@ -1072,7 +1066,8 @@ SchematicView *schematic_view_new (Schematic *schematic)
 
 	sm = schematic_view_get_schematic (sv);
 
-	if ((builder = gtk_builder_new ()) == NULL) {
+	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		log_append (schematic_get_log_store (sm), _ ("SchematicView"),
 		            _ ("Failed to spawn builder object."));
 		return NULL;
@@ -1561,21 +1556,20 @@ void schematic_view_log_show (SchematicView *sv, gboolean explicit)
 
 	sm = sv->priv->schematic;
 
-	if ((sv->priv->log_info->log_gui = gtk_builder_new ()) == NULL) {
+	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		log_append (schematic_get_log_store (sm), _ ("SchematicView"),
 		            _ ("Could not create the log window."));
 		return;
 	}
-	gtk_builder_set_translation_domain (sv->priv->log_info->log_gui, NULL);
 
 	if (sv->priv->log_info->log_window == NULL) {
 		// Create the log window if not already done.
 		if (!explicit && !oregano.show_log)
 			return;
 
-		if (gtk_builder_add_from_file (sv->priv->log_info->log_gui, OREGANO_UIDIR "/log-window.ui",
-		                               &e) <= 0) {
-
+		gtk_builder_add_from_file (builder, OREGANO_UIDIR "/log-window.ui", &e)
+		if (e) {
 			log_append_error (schematic_get_log_store (sm), _ ("SchematicView"),
 			                  _ ("Could not create the log window."), e);
 			g_clear_error (&e);

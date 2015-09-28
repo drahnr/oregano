@@ -86,7 +86,7 @@ static GtkActionEntry action_entries[] = {{"EditText", GTK_STOCK_PROPERTIES,
 
 enum { TEXTBOX_ITEM_ARG_0, TEXTBOX_ITEM_ARG_NAME };
 
-struct _TextboxItemPriv
+struct _TextboxItemPrivate
 {
 	guint cache_valid : 1;
 	guint highlight : 1;
@@ -97,7 +97,7 @@ struct _TextboxItemPriv
 	Coords bbox_end;
 };
 
-G_DEFINE_TYPE (TextboxItem, textbox_item, TYPE_SHEET_ITEM)
+G_DEFINE_TYPE_WITH_PRIVATE (TextboxItem, textbox_item, TYPE_SHEET_ITEM)
 
 static void textbox_item_class_init (TextboxItemClass *textbox_item_class)
 {
@@ -121,9 +121,8 @@ static void textbox_item_class_init (TextboxItemClass *textbox_item_class)
 
 static void textbox_item_init (TextboxItem *item)
 {
-	TextboxItemPriv *priv;
+	TextboxItemPriv *priv = textbox_get_instance_priv(item);
 
-	priv = g_new0 (TextboxItemPriv, 1);
 	item->priv = priv;
 
 	priv->highlight = FALSE;

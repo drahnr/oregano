@@ -37,7 +37,7 @@
 
 typedef struct _PartItem PartItem;
 typedef struct _PartItemClass PartItemClass;
-typedef struct _PartItemPriv PartItemPriv;
+typedef struct _PartItemPrivate PartItemPrivate;
 
 #include "sheet-item.h"
 #include "load-library.h"

@@ -43,9 +43,10 @@
 #include "oregano.h"
 #include "sheet-private.h"
 #include "sheet-item.h"
-#include "stock.h"
 #include "clipboard.h"
 #include "options.h"
+
+G_DEFINE_TYPE_WITH_PRIVATE(SheetItem, sheet_item, TYPE_SHEET_ITEM)
 
 static void sheet_item_class_init (SheetItemClass *klass);
 static void sheet_item_init (SheetItem *item);
@@ -60,7 +61,7 @@ static void sheet_item_dispose (GObject *object);
 
 #include "debug.h"
 
-struct _SheetItemPriv
+struct _SheetItemPrivate
 {
 	guint selected : 1;
 	guint preserve_selection : 1;
@@ -183,9 +184,7 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 
 static void sheet_item_init (SheetItem *item)
 {
-	GError *error = NULL;
-
-	item->priv = g_new0 (SheetItemPriv, 1);
+	item->priv = sheet_item_get_instance_priv(item);
 	item->priv->selected = FALSE;
 	item->priv->preserve_selection = FALSE;
 	item->priv->data = NULL;

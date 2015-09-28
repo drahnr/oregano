@@ -47,29 +47,30 @@ static void oregano_splash_destroy (GtkWidget *w, GdkEvent *event, Splash *sp)
 
 Splash *oregano_splash_new (GError **error)
 {
-	GtkBuilder *gui;
+	GtkBuilder *builder;
 	Splash *sp;
 	GtkEventBox *event;
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		g_set_error_literal (error, OREGANO_ERROR, OREGANO_UI_ERROR_NO_BUILDER,
 		                     _ ("Failed to spawn builder"));
 		return NULL;
 	}
-	gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/splash.ui", error) <= 0) {
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/splash.ui", error) <= 0) {
 		return NULL;
 	}
 
 	sp = g_new0 (Splash, 1);
 	sp->can_destroy = FALSE;
 
-	sp->win = GTK_WINDOW (gtk_builder_get_object (gui, "splash"));
-	sp->lbl = GTK_LABEL (gtk_builder_get_object (gui, "label"));
-	sp->progress = GTK_WIDGET (gtk_builder_get_object (gui, "pbar"));
+	sp->win = GTK_WINDOW (gtk_builder_get_object (builder, "splash"));
+	sp->lbl = GTK_LABEL (gtk_builder_get_object (builder, "label"));
+	sp->progress = GTK_WIDGET (gtk_builder_get_object (builder, "pbar"));
 
-	event = GTK_EVENT_BOX (gtk_builder_get_object (gui, "event"));
+	event = GTK_EVENT_BOX (gtk_builder_get_object (builder, "event"));
 	sp->event = GTK_WIDGET (event);
 
 	gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR (sp->progress), 0.07);

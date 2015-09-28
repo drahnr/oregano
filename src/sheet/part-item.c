@@ -45,7 +45,6 @@
 #include "load-library.h"
 #include "load-common.h"
 #include "part-label.h"
-#include "stock.h"
 #include "dialogs.h"
 #include "sheet.h"
 #include "oregano-utils.h"
@@ -101,7 +100,7 @@ enum {
 	ARG_MODEL
 };
 
-struct _PartItemPriv
+struct _PartItemPrivate
 {
 	guint cache_valid : 1;
 	GooCanvasItem *label_group;
@@ -139,7 +138,7 @@ static GtkActionEntry action_entries[] = {{"ObjectProperties", GTK_STOCK_PROPERT
 
 enum { ANCHOR_NORTH, ANCHOR_SOUTH, ANCHOR_WEST, ANCHOR_EAST };
 
-G_DEFINE_TYPE (PartItem, part_item, TYPE_SHEET_ITEM)
+G_DEFINE_TYPE_WITH_PRIVATE  (PartItem, part_item, TYPE_SHEET_ITEM)
 
 static void part_item_class_init (PartItemClass *part_item_class)
 {
@@ -168,9 +167,7 @@ static void part_item_class_init (PartItemClass *part_item_class)
 
 static void part_item_init (PartItem *item)
 {
-	PartItemPriv *priv;
-
-	priv = g_slice_new0 (PartItemPriv);
+	PartItemPrivate *priv = part_item_get_instance_priv (item);
 	priv->rect = NULL;
 	priv->cache_valid = FALSE;
 
@@ -215,8 +212,7 @@ static void part_item_finalize (GObject *object)
 
 	g_slist_free (priv->label_nodes);
 	g_slist_free (priv->label_items);
-	g_slice_free (PartItemPriv, priv);
-	priv = NULL;
+
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -247,7 +243,7 @@ static void part_item_moved (SheetItem *sheet_item)
 PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 {
 	PartItem *part_item;
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 	GooCanvasItem *goo_item;
 	ItemData *item_data;
 
@@ -295,7 +291,6 @@ PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 
 static void update_canvas_labels (PartItem *item)
 {
-	PartItemPriv *priv;
 	Part *part;
 	GSList *labels, *label_items;
 	GooCanvasItem *canvas_item;
@@ -303,10 +298,9 @@ static void update_canvas_labels (PartItem *item)
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
 
-	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
-	label_items = priv->label_items;
+	label_items = item->priv->label_items;
 
 	// Put the label of each item
 	for (labels = part_get_labels (part); labels;
@@ -324,7 +318,6 @@ static void update_canvas_labels (PartItem *item)
 
 void part_item_update_node_label (PartItem *item)
 {
-	PartItemPriv *priv;
 	Part *part;
 	GSList *labels;
 	GooCanvasItem *canvas_item;
@@ -333,7 +326,6 @@ void part_item_update_node_label (PartItem *item)
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
-	priv = item->priv;
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
 	g_return_if_fail (IS_PART (part));
@@ -343,8 +335,8 @@ void part_item_update_node_label (PartItem *item)
 
 	if (num_pins == 1) {
 		pins = part_get_pins (part);
-		labels = priv->label_nodes;
-		for (labels = priv->label_nodes; labels; labels = labels->next) {
+		labels = item->priv->label_nodes;
+		for (labels = item->priv->label_nodes; labels; labels = labels->next) {
 			char *txt;
 
 			txt = g_strdup_printf ("V(%d)", pins[0].node_nr);
@@ -405,7 +397,6 @@ static void edit_properties_point (PartItem *item)
 {
 	GSList *properties;
 	Part *part;
-	GtkBuilder *gui;
 	GError *error = NULL;
 	GtkRadioButton *radio_v, *radio_c;
 	GtkRadioButton *ac_r, *ac_m, *ac_i, *ac_p;
@@ -413,13 +404,14 @@ static void edit_properties_point (PartItem *item)
 
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		oregano_error (_ ("Could not create part properties dialog."));
 		return;
 	}
-	gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/clamp-properties-dialog.ui", &error) <= 0) {
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/clamp-properties-dialog.ui", &error) <= 0) {
 		oregano_error_with_title (_ ("Could not create part properties dialog."), error->message);
 		g_error_free (error);
 		return;
@@ -429,19 +421,19 @@ static void edit_properties_point (PartItem *item)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, "clamp-properties-dialog"));
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (builder, "clamp-properties-dialog"));
 
-	radio_v = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_v"));
-	radio_c = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_c"));
+	radio_v = GTK_RADIO_BUTTON (gtk_builder_get_object (builder, "radio_v"));
+	radio_c = GTK_RADIO_BUTTON (gtk_builder_get_object (builder, "radio_c"));
 
 	gtk_widget_set_sensitive (GTK_WIDGET (radio_c), FALSE);
 
-	ac_r = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_r"));
-	ac_m = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_m"));
-	ac_p = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_p"));
-	ac_i = GTK_RADIO_BUTTON (gtk_builder_get_object (gui, "radio_i"));
+	ac_r = GTK_RADIO_BUTTON (gtk_builder_get_object (builder, "radio_r"));
+	ac_m = GTK_RADIO_BUTTON (gtk_builder_get_object (builder, "radio_m"));
+	ac_p = GTK_RADIO_BUTTON (gtk_builder_get_object (builder, "radio_p"));
+	ac_i = GTK_RADIO_BUTTON (gtk_builder_get_object (builder, "radio_i"));
 
-	chk_db = GTK_CHECK_BUTTON (gtk_builder_get_object (gui, "check_db"));
+	chk_db = GTK_CHECK_BUTTON (gtk_builder_get_object (builder, "check_db"));
 
 	// Setup GUI from properties
 	for (properties = part_get_properties (part); properties; properties = properties->next) {
@@ -522,7 +514,6 @@ static void edit_properties (SheetItem *object)
 	PartItem *item;
 	Part *part;
 	char *internal, *msg;
-	GtkBuilder *gui;
 	GError *error = NULL;
 	GtkGrid *prop_grid;
 	GtkNotebook *notebook;
@@ -550,13 +541,15 @@ static void edit_properties (SheetItem *object)
 
 	g_free (internal);
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	if (builder == NULL) {
 		oregano_error (_ ("Could not create part properties dialog."));
 		return;
-	} else
-		gtk_builder_set_translation_domain (gui, NULL);
+	}
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/part-properties-dialog.ui", &error) <= 0) {
+	gtk_builder_set_translation_domain (builder, NULL);
+
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/part-properties-dialog.ui", &error) <= 0) {
 		msg = error->message;
 		oregano_error_with_title (_ ("Could not create part properties dialog."), msg);
 		g_error_free (error);
@@ -567,10 +560,10 @@ static void edit_properties (SheetItem *object)
 
 	prop_dialog->part_item = item;
 
-	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (gui, "part-properties-dialog"));
+	prop_dialog->dialog = GTK_DIALOG (gtk_builder_get_object (builder, "part-properties-dialog"));
 
-	prop_grid = GTK_GRID (gtk_builder_get_object (gui, "prop_grid"));
-	notebook = GTK_NOTEBOOK (gtk_builder_get_object (gui, "notebook"));
+	prop_grid = GTK_GRID (gtk_builder_get_object (builder, "prop_grid"));
+	notebook = GTK_NOTEBOOK (gtk_builder_get_object (builder, "notebook"));
 
 	g_signal_connect (prop_dialog->dialog, "destroy", G_CALLBACK (prop_dialog_destroy),
 	                  prop_dialog);
@@ -626,15 +619,13 @@ static void edit_properties (SheetItem *object)
 		}
 	}
 
-	if (!has_model) {
-		gtk_notebook_remove_page (notebook, 1);
-	} else {
+	if (has_model) {
 		GtkTextBuffer *txtbuffer;
 		GtkTextView *txtmodel;
 		gchar *filename, *str;
 		GError *read_error = NULL;
 
-		txtmodel = GTK_TEXT_VIEW (gtk_builder_get_object (gui, "txtmodel"));
+		txtmodel = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "txtmodel"));
 		txtbuffer = gtk_text_buffer_new (NULL);
 
 		filename = g_strdup_printf ("%s/%s.model", OREGANO_MODELDIR, model_name);
@@ -650,6 +641,8 @@ static void edit_properties (SheetItem *object)
 		g_free (model_name);
 
 		gtk_text_view_set_buffer (txtmodel, txtbuffer);
+	} else {
+		gtk_notebook_remove_page (notebook, 1);
 	}
 
 	gtk_dialog_set_default_response (prop_dialog->dialog, 1);
