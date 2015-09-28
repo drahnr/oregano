@@ -35,8 +35,6 @@
 #include "dialogs.h"
 #include "oregano.h"
 
-#include "pixmaps/logo.xpm"
-
 void oregano_error (gchar *msg) { oregano_error_with_title (msg, NULL); }
 
 void oregano_error_with_title (gchar *title, gchar *desc)
@@ -117,7 +115,8 @@ void dialog_about (void)
 
 	const char *docs[] = {"Ricardo Markiewicz <rmarkie@fi.uba.ar> (es)",
 	                      "Jordi Mallach <tradgnome@softcatala.net> (ca)",
-	                      "Marc Lorber <lorber.marc@wanadoo.fr> (en)", NULL};
+	                      "Marc Lorber <lorber.marc@wanadoo.fr> (en)",
+	                      "Bernhard Schuster <bernhard@ahoi.io> (de,en,sv)", NULL};
 
 	const gchar *copy = _ ("(c) 2012-2013 Bernhard Schuster\n"
 	                       "(c) 2009-2012 Marc Lorber\n"
@@ -130,7 +129,6 @@ void dialog_about (void)
 		return;
 	}
 
-	logo = gdk_pixbuf_new_from_xpm_data ((const char **)logo_xpm);
 	about = gtk_about_dialog_new ();
 	gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (about), "Oregano");
 	gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (about), VERSION);
@@ -141,8 +139,10 @@ void dialog_about (void)
 	gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (about), "https://ahoi.io/project/oregano");
 	gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (about), authors);
 	gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (about), docs);
-	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), logo);
+	gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (about), oregano_get_icon("oregano-logo"));
+
 	gtk_dialog_run (GTK_DIALOG (about));
+
 	gtk_widget_destroy (about);
 	about = NULL;
 }

@@ -29,6 +29,9 @@ def build(bld):
 		bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
 		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
 		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
+		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*.png'))
+		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*.svg'))
+		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*.jpg'))
 
 		try:
 			bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])

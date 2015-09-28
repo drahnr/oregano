@@ -54,9 +54,9 @@
 #include "load-schematic.h"
 #include "load-common.h"
 #include "oregano-config.h"
-#include "stock.h"
 #include "oregano.h"
 #include "splash.h"
+#include "icons.h"
 
 #include <libintl.h>
 
@@ -87,14 +87,15 @@ static void oregano_class_init (OreganoClass *klass)
 static void oregano_init (Oregano *object)
 {
 	cursors_init ();
-	stock_init ();
+
+	oregano_icon_init();
 
 	oregano_config_load ();
 }
 
 Oregano *oregano_new (void)
 {
-	return g_object_new (oregano_get_type (), "application-id", "org.gnome.oregano", "flags",
+	return g_object_new (oregano_get_type (), "application-id", "io.ahoi.oregano", "flags",
 	                     G_APPLICATION_HANDLES_OPEN, NULL);
 }
 

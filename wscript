@@ -33,11 +33,11 @@ def configure(conf):
 
 	#things the applications needs to know about, for easier re-use in subdir wscript(s)
 	conf.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', conf.env)
+	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/icons/', conf.env)
 	conf.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', conf.env)
 	conf.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', conf.env)
 	conf.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', conf.env)
 	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', conf.env)
-#	conf.env.path_icons = '${DATADIR}/oregano/icons/'
 #	conf.env.path_mime = '${DATADIR}/oregano/mime/'
 #	conf.env.path_locale = '${DATADIR}/oregano/locale/'
 #	conf.env.path_schemas =  utils.subst_vars('${DATADIR}/glib-2.0/schemas/', conf.env)
@@ -45,11 +45,11 @@ def configure(conf):
 
 	#define the above paths so the application does know about files locations
 	conf.define('OREGANO_UIDIR', conf.env.path_ui)
+	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
 	conf.define('OREGANO_MODELDIR', conf.env.path_model)
 	conf.define('OREGANO_LIBRARYDIR', conf.env.path_partslib)
 	conf.define('OREGANO_LANGDIR', conf.env.path_lang)
 	conf.define('OREGANO_EXAMPLEDIR', conf.env.path_examples)
-#	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
 #	conf.define('OREGANO_MIMEDIR', conf.env.path_mime)
 #	conf.define('OREGANO_LOCALEDIR', conf.env.path_locale)
 #	conf.define('OREGANO_SCHEMASDIR', conf.env.path_schemas)
