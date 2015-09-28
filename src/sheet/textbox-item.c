@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -74,16 +74,6 @@ typedef struct
 
 static TextboxPropDialog *prop_dialog = NULL;
 
-static const char *textbox_item_context_menu = "<ui>"
-                                               "  <popup name='ItemMenu'>"
-                                               "    <menuitem action='EditText'/>"
-                                               "  </popup>"
-                                               "</ui>";
-
-static GtkActionEntry action_entries[] = {{"EditText", GTK_STOCK_PROPERTIES,
-                                           N_ ("_Edit the text..."), NULL, N_ ("Edit the text"),
-                                           G_CALLBACK (edit_cmd)}};
-
 enum { TEXTBOX_ITEM_ARG_0, TEXTBOX_ITEM_ARG_NAME };
 
 struct _TextboxItemPrivate
@@ -128,8 +118,7 @@ static void textbox_item_init (TextboxItem *item)
 	priv->highlight = FALSE;
 	priv->cache_valid = FALSE;
 
-	sheet_item_add_menu (SHEET_ITEM (item), textbox_item_context_menu, action_entries,
-	                     G_N_ELEMENTS (action_entries));
+	sheet_item_add_menu (SHEET_ITEM (item), "textbox-menu.ui");
 }
 
 static void textbox_item_finalize (GObject *object)

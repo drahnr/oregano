@@ -30,6 +30,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#ifndef GLIB_DISABLE_DEPRECATION_WARNINGS
+#define GLIB_DISABLE_DEPRECATION_WARNINGS
+#endif
+
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 

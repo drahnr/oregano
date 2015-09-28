@@ -1,0 +1,21 @@
+<interface>
+  <menu id="menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">moves</attribute>
+        <attribute name="action">item.copy</attribute>
+        <attribute name="action">item.cut</attribute>
+        <attribute name="action">item.delete</attribute>
+        <attribute name="action">item.flipH</attribute>
+        <attribute name="action">item.flipV</attribute>
+      </item>
+    </section>
+    <section>
+      <attribute name="label" translatable="yes">test</attribute>
+      <item>
+        <attribute name="label" translatable="yes">unused</attribute>
+        <attribute name="action">item.properties</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

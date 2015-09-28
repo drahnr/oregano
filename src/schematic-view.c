@@ -106,9 +106,6 @@ struct _SchematicViewPrivate
 
 	gboolean empty;
 
-	GtkActionGroup *action_group;
-	GtkUIManager *ui_manager;
-
 	GtkWidget *floating_part_browser;
 	gpointer browser;
 
@@ -520,19 +517,15 @@ static GtkWidget *create_recent_chooser_menu (GtkRecentManager *manager)
 	return menu;
 }
 
+// TODO steal gedit recent menu
 static void display_recent_files (GtkWidget *menu, SchematicView *sv)
 {
-	SchematicViewPriv *priv = sv->priv;
-	GtkWidget *menuitem;
-	GtkWidget *recentmenu;
-	GtkRecentManager *manager = NULL;
-
-	manager = gtk_recent_manager_get_default ();
-	menuitem =
-	    gtk_ui_manager_get_widget (priv->ui_manager, "/MainMenu/MenuFile/DisplayRecentFiles");
-	recentmenu = create_recent_chooser_menu (manager);
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), recentmenu);
-	gtk_widget_show (menuitem);
+/*	GtkRecentManager *manager = gtk_recent_manager_get_default ();*/
+/*	menuitem = NULL;*/
+/*	    gtk_ui_manager_get_widget (priv->ui_manager, "/MainMenu/MenuFile/DisplayRecentFiles");*/
+/*	recentmenu = create_recent_chooser_menu (manager);*/
+/*	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), recentmenu);*/
+/*	gtk_widget_show (menuitem);*/
 }
 
 static void save_cmd (GtkWidget *widget, SchematicView *sv)
@@ -633,12 +626,8 @@ static void copy_cmd (GtkWidget *widget, SchematicView *sv)
 		clipboard_add_object (G_OBJECT (item));
 	}
 
-	if (clipboard_is_empty ())
-		gtk_action_set_sensitive (
-		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
-	else
-		gtk_action_set_sensitive (
-		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
+	//TODO set the menu item sensitive or insensitive "/MainMenu/MenuEdit/Paste"
+	// clipboard_is_empty ();
 }
 
 /**
@@ -652,12 +641,8 @@ static void cut_cmd (GtkWidget *widget, SchematicView *sv)
 	copy_cmd (NULL, sv);
 	sheet_delete_selection (sv->priv->sheet);
 
-	if (clipboard_is_empty ())
-		gtk_action_set_sensitive (
-		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
-	else
-		gtk_action_set_sensitive (
-		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/Paste"), TRUE);
+	//TODO set the menu item sensitive or insensitive "/MainMenu/MenuEdit/Paste"
+	// clipboard_is_empty ();
 }
 
 static void paste_objects (gpointer data, Sheet *sheet) { sheet_item_paste (sheet, data); }
@@ -831,7 +816,7 @@ static void netlist_cmd (GtkWidget *widget, SchematicView *sv)
 	GError *e = NULL;
 	OreganoEngine *engine;
 
-	g_return_if_fail (sv != NULL);
+	g_assert (IS_SCHEMATIC_VIEW (sv));
 
 	sm = sv->priv->schematic;
 
@@ -871,23 +856,21 @@ static void zoom_check (SchematicView *sv)
 {
 	double zoom;
 
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	g_assert (IS_SCHEMATIC_VIEW (sv));
 
 	sheet_get_zoom (sv->priv->sheet, &zoom);
 
-	gtk_action_set_sensitive (
-	    gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandardToolbar/ZoomIn"),
-	    zoom < ZOOM_MAX);
-	gtk_action_set_sensitive (
-	    gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandardToolbar/ZoomOut"),
-	    zoom > ZOOM_MIN);
+/*	gtk_action_set_sensitive (*/
+/*	    gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandardToolbar/ZoomIn"),*/
+/*	    zoom < ZOOM_MAX);*/
+/*	gtk_action_set_sensitive (*/
+/*	    gtk_ui_manager_get_action (sv->priv->ui_manager, "/StandardToolbar/ZoomOut"),*/
+/*	    zoom > ZOOM_MIN);*/
 }
 
 static void zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	g_assert (IS_SCHEMATIC_VIEW (sv));
 
 	sheet_change_zoom (sv->priv->sheet, 1.1);
 	zoom_check (sv);
@@ -895,8 +878,7 @@ static void zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
 
 static void zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	g_return_if_fail (sv != NULL);
-	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+	g_assert (IS_SCHEMATIC_VIEW (sv));
 
 	sheet_change_zoom (sv->priv->sheet, 0.9);
 	zoom_check (sv);
@@ -904,21 +886,24 @@ static void zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 
 static void zoom_cmd (GtkAction *action, GtkRadioAction *current, SchematicView *sv)
 {
+	g_assert (IS_SCHEMATIC_VIEW (sv));
+	GObject *sheet = G_OBJECT (schematic_view_get_instance_priv(sv)->sheet);
+
 	switch (gtk_radio_action_get_current_value (current)) {
 	case 0:
-		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 0.50, NULL);
+		g_object_set (sheet, "zoom", 0.50, NULL);
 		break;
 	case 1:
-		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 0.75, NULL);
+		g_object_set (sheet, "zoom", 0.75, NULL);
 		break;
 	case 2:
-		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.0, NULL);
+		g_object_set (sheet, "zoom", 1.0, NULL);
 		break;
 	case 3:
-		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.25, NULL);
+		g_object_set (sheet, "zoom", 1.25, NULL);
 		break;
 	case 4:
-		g_object_set (G_OBJECT (sv->priv->sheet), "zoom", 1.5, NULL);
+		g_object_set (sheet, "zoom", 1.5, NULL);
 		break;
 	}
 	zoom_check (sv);
@@ -1004,8 +989,9 @@ static void show_help (GtkWidget *widget, SchematicView *sv)
 	GtkWidget *temp;
 	temp = sv->toplevel;
 
-	if (!gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano", gtk_get_current_event_time (),
-	                   &e)) {
+	gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano", gtk_get_current_event_time (),
+	                   &e);
+	if (e) {
 		NG_DEBUG ("Error %s\n", e->message);
 		g_clear_error (&e);
 	}
@@ -1050,7 +1036,6 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	GtkWidget *logview;
 	GtkWidget *logview_scrolled;
 	GtkActionGroup *action_group;
-	GtkUIManager *ui_manager;
 	GtkAccelGroup *accel_group;
 	GtkWidget *menubar;
 	GtkGrid *grid;
@@ -1083,14 +1068,14 @@ SchematicView *schematic_view_new (Schematic *schematic)
 
 	sv->toplevel = GTK_WIDGET (gtk_builder_get_object (builder, "toplevel"));
 	grid = GTK_GRID (gtk_builder_get_object (builder, "grid"));
-	paned = GTK_PANED (gtk_builder_get_object (builder, "paned"));
-	sv->priv->paned = paned;
+	g_autoptr(Paned) paned = GTK_PANED (gtk_builder_get_object (builder, "paned"));
+	sv->priv->paned = g_object_ref (paned);
 
 	// TODO make the size allocation dynamic - bug #45
-	sv->priv->sheet = SHEET (sheet_new (10000., 10000.));
-
-	g_signal_connect (G_OBJECT (sv->priv->sheet), "event", G_CALLBACK (sheet_event_callback),
-	                  sv->priv->sheet);
+	g_autoptr(Sheet) sheet = SHEET (sheet_new (10000., 10000.));
+	sv->priv->sheet = g_object_ref (sheet);
+	
+	g_signal_connect (sheet, "event", G_CALLBACK (sheet_event_callback), sheet);
 
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -1102,7 +1087,7 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	gtk_widget_set_hexpand (w, TRUE);
 	gtk_widget_set_vexpand (w, TRUE);
 
-	gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (sv->priv->sheet));
+	gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (sheet));
 	gtk_box_pack_start (GTK_BOX (hbox), w, TRUE, TRUE, 5);
 
 	part_browser = part_browser_create (sv);
@@ -1112,38 +1097,6 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	priv = sv->priv;
 	priv->log_info->log_window = NULL;
 
-	priv->action_group = action_group = gtk_action_group_new ("MenuActions");
-	gtk_action_group_set_translation_domain (action_group, GETTEXT_PACKAGE);
-	gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), sv);
-	gtk_action_group_add_radio_actions (action_group, zoom_entries, G_N_ELEMENTS (zoom_entries), 2,
-	                                    G_CALLBACK (zoom_cmd), sv);
-	gtk_action_group_add_radio_actions (action_group, tools_entries, G_N_ELEMENTS (tools_entries),
-	                                    0, G_CALLBACK (tool_cmd), sv);
-	g_assert_cmpint (G_N_ELEMENTS (toggle_entries), >=, 4);
-	gtk_action_group_add_toggle_actions (action_group, toggle_entries,
-	                                     G_N_ELEMENTS (toggle_entries), sv);
-
-	priv->ui_manager = ui_manager = gtk_ui_manager_new ();
-	gtk_ui_manager_insert_action_group (ui_manager, action_group, 0);
-
-	accel_group = gtk_ui_manager_get_accel_group (ui_manager);
-	gtk_window_add_accel_group (GTK_WINDOW (sv->toplevel), accel_group);
-
-	if (!gtk_ui_manager_add_ui_from_string (ui_manager, ui_description, -1, &e)) {
-		g_message ("building menus failed: %s", e->message);
-		g_clear_error (&e);
-		return NULL;
-	}
-
-	menubar = gtk_ui_manager_get_widget (ui_manager, "/MainMenu");
-
-	// Upgrade the menu bar with the recent files used by oregano
-	display_recent_files (menubar, sv);
-	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
-
-	toolbar = gtk_ui_manager_get_widget (ui_manager, "/StandardToolbar");
-	gtk_toolbar_set_style (GTK_TOOLBAR (toolbar), GTK_TOOLBAR_ICONS);
-	gtk_box_pack_start (GTK_BOX (vbox), toolbar, FALSE, FALSE, 0);
 
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
@@ -1155,20 +1108,16 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus", G_CALLBACK (set_focus), sv);
 	g_signal_connect (G_OBJECT (sv->toplevel), "delete_event", G_CALLBACK (delete_event), sv);
 
-	sv->priv->logview = logview = GTK_WIDGET (log_view_new ());
+	logview = GTK_WIDGET (log_view_new ());
 	log_view_set_store (LOG_VIEW (logview), schematic_get_log_store (schematic));
-
+	sv->priv->logview = logview;
+	
 	logview_scrolled = gtk_scrolled_window_new (NULL, NULL);
 	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
 	gtk_paned_pack2 (paned, logview_scrolled, FALSE, TRUE);
 
 	setup_dnd (sv);
 
-	// Set default sensitive for items
-	gtk_action_set_sensitive (
-	    gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Paste"),
-	                          FALSE);
 
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool", G_CALLBACK (reset_tool_cb), G_OBJECT (sv),
 	                         0);
@@ -1229,14 +1178,8 @@ static void item_selection_changed_callback (SheetItem *item, gboolean selected,
 	}
 
 	length = sheet_get_selected_objects_length (sv->priv->sheet);
-	if (length && item_data_has_properties (sheet_item_get_data (item)))
-		gtk_action_set_sensitive (
-		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/ObjectProperties"),
-		    TRUE);
-	else
-		gtk_action_set_sensitive (
-		    gtk_ui_manager_get_action (sv->priv->ui_manager, "/MainMenu/MenuEdit/ObjectProperties"),
-		    FALSE);
+/*	if (length && item_data_has_properties (sheet_item_get_data (item)))*/
+	// TODO FIXME set_sensitive of menu item / GAction
 }
 
 // An ItemData got added; create an Item and set up the neccessary handlers.
@@ -1330,6 +1273,7 @@ static int can_close (SchematicView *sv)
 	case GTK_RESPONSE_YES:
 		schematic_save_file (sv->priv->schematic, &e);
 		if (e) {
+			oregano_error_with_title ("Failed to save schematic!", error);
 			g_clear_error (&e);
 		}
 		break;
@@ -1489,9 +1433,10 @@ static void reset_tool_cb (Sheet *sheet, SchematicView *sv)
 {
 	set_tool (sv, SCHEMATIC_TOOL_ARROW);
 
-	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (gtk_ui_manager_get_action (
-	                                        sv->priv->ui_manager, "/StandardToolbar/Arrow")),
-	                                    0);
+/*	gtk_radio_action_set_current_value (GTK_RADIO_ACTION (gtk_ui_manager_get_action (*/
+/*	                                        sv->priv->ui_manager, "/StandardToolbar/Arrow")),*/
+/*	                                    0);*/
+/*TODO FIXME*/
 }
 
 gpointer schematic_view_get_browser (SchematicView *sv)
@@ -1576,12 +1521,14 @@ void schematic_view_log_show (SchematicView *sv, gboolean explicit)
 			return;
 		}
 
-		sv->priv->log_info->log_window =
-		    GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, "log-window"));
-		sv->priv->log_info->log_text =
-		    GTK_TEXT_VIEW (gtk_builder_get_object (sv->priv->log_info->log_gui, "log-text"));
+		GtkWidget *log_window = GTK_WIDGET (gtk_builder_get_object (builder, "log-window"));
+		GtkTextView *log_text =
+		    GTK_TEXT_VIEW (gtk_builder_get_object (builder, "log-text"));
 
 		gtk_window_set_default_size (GTK_WINDOW (sv->priv->log_info->log_window), 500, 250);
+
+		sv->priv->log_info->log_window = log_window;
+		sv->priv->log_info->log_text = log_text;
 
 		// Delete event.
 		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window), "delete_event",
@@ -1590,19 +1537,19 @@ void schematic_view_log_show (SchematicView *sv, gboolean explicit)
 		g_signal_connect (G_OBJECT (sv->priv->log_info->log_window), "destroy_event",
 		                  G_CALLBACK (log_window_destroy_event), sv);
 
-		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, "close-button"));
+		w = GTK_WIDGET (gtk_builder_get_object (builder, "close-button"));
 		g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (log_window_close_cb), sv);
 
-		w = GTK_WIDGET (gtk_builder_get_object (sv->priv->log_info->log_gui, "clear-button"));
+		w = GTK_WIDGET (gtk_builder_get_object (builder, "clear-button"));
 		g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (log_window_clear_cb), sv);
 		g_signal_connect (G_OBJECT (sm), "log_updated", G_CALLBACK (log_updated_callback), sv);
 	} else {
-		gdk_window_raise (gtk_widget_get_window (sv->priv->log_info->log_window));
+		gdk_window_raise (gtk_widget_get_window (log_window));
 	}
 
-	gtk_text_view_set_buffer (sv->priv->log_info->log_text, schematic_get_log_text (sm));
+	gtk_text_view_set_buffer (log_text, schematic_get_log_text (sm));
 
-	gtk_widget_show_all (sv->priv->log_info->log_window);
+	gtk_widget_show_all (log_window);
 }
 
 gboolean schematic_view_get_log_window_exists (SchematicView *sv)
@@ -1661,7 +1608,7 @@ void run_context_menu (SchematicView *sv, GdkEventButton *event)
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
-	menu = gtk_ui_manager_get_widget (sv->priv->ui_manager, "/MainPopup");
+/*	menu = gtk_ui_manager_get_widget (sv->priv->ui_manager, "/MainPopup");*/
 
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button, event->time);
+/*	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, sv, event->button, event->time);*/
 }

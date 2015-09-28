@@ -126,11 +126,7 @@ typedef struct
 static PartPropDialog *prop_dialog = NULL;
 static SheetItemClass *parent_class = NULL;
 
-static const char *part_item_context_menu = "<ui>"
-                                            "  <popup name='ItemMenu'>"
-                                            "    <menuitem action='ObjectProperties'/>"
-                                            "  </popup>"
-                                            "</ui>";
+static const char *part_item_context_menu = NULL;
 
 static GtkActionEntry action_entries[] = {{"ObjectProperties", GTK_STOCK_PROPERTIES,
                                            N_ ("_Object Properties..."), NULL,
@@ -173,8 +169,7 @@ static void part_item_init (PartItem *item)
 
 	item->priv = priv;
 
-	sheet_item_add_menu (SHEET_ITEM (item), part_item_context_menu, action_entries,
-	                     G_N_ELEMENTS (action_entries));
+	sheet_item_add_menu (SHEET_ITEM (item), OREGANO_UIDIR"/part-item-menu.ui");
 }
 
 static void part_item_set_property (GObject *object, guint propety_id, const GValue *value,
@@ -704,7 +699,6 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	PartItemPriv *priv;
 	Part *part;
 	int index = 0;
-	Coords pos;
 
 	item = PART_ITEM (sheet_item);
 	// group = GOO_CANVAS_GROUP (item);

@@ -116,7 +116,7 @@ void dialog_about (void)
 	const char *docs[] = {"Ricardo Markiewicz <rmarkie@fi.uba.ar> (es)",
 	                      "Jordi Mallach <tradgnome@softcatala.net> (ca)",
 	                      "Marc Lorber <lorber.marc@wanadoo.fr> (en)",
-	                      "Bernhard Schuster <bernhard@ahoi.io> (de,en,sv)", NULL};
+	                      "Bernhard Schuster <bernhard@ahoi.io> (de,en,sv)"};
 
 	const gchar *copy = _ ("(c) 2012-2013 Bernhard Schuster\n"
 	                       "(c) 2009-2012 Marc Lorber\n"

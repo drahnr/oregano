@@ -87,14 +87,14 @@ def configure(conf):
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
 	conf.setenv('debug', env=conf.env.derive())
-	conf.env.CFLAGS = ['-ggdb', '-Wall']
+	conf.env.CFLAGS = ['-ggdb', '-Wall', '-Wno-deprecated-declarations']
 	conf.define('DEBUG',1)
 	conf.define('DEBUG_DISABLE_GRABBING',1)
+#	conf.define('GLIB_DISABLE_DEPRECATION_WARNINGS', )
 
 	conf.setenv('release', env=conf.env.derive())
 	conf.env.CFLAGS = ['-O2', '-Wall']
 	conf.define('RELEASE',1)
-
 
 
 def docs(ctx):
@@ -149,6 +149,7 @@ def build(bld):
 		source = nodes,
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
+		defines=['GLIB_DISABLE_DEPRECATION_WARNINGS'],
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		target = 'shared_objects'
 	)
@@ -160,6 +161,7 @@ def build(bld):
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		use = 'shared_objects',
+		defines=['GLIB_DISABLE_DEPRECATION_WARNINGS'],
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
 		install_path = "${BINDIR}"
@@ -212,7 +214,7 @@ def nemiver_fun(ctx):
 
 def valgrind_fun(ctx):
 	if ctx.env.VALGRIND:
-		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND[0]+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
+		os.system ("G_DEBUG=resident-modules,always-malloc,fatal-warnings "+ctx.env.VALGRIND[0]+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
 	else:
 		logs.warn ("Did not find \"valgrind\". Re-configure if you installed it in the meantime.")
 

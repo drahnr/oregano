@@ -383,6 +383,8 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 				Node *sn = node_store_get_node (store, eo);
 				Node *en = node_store_get_node (store, so);
 #if 1
+				(void)en;
+				(void)sn;
 				wire = vulcanize_wire (store, wire, other, &so, &eo);
 				node_store_remove_wire (store, g_object_ref (other)); // equiv
 				                                                      // wire_unregister

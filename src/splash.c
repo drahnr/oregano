@@ -51,8 +51,7 @@ Splash *oregano_splash_new (GError **error)
 	Splash *sp;
 	GtkEventBox *event;
 
-	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
-	if (builder == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		g_set_error_literal (error, OREGANO_ERROR, OREGANO_UI_ERROR_NO_BUILDER,
 		                     _ ("Failed to spawn builder"));
 		return NULL;

@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2008-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -46,7 +46,7 @@
 #include "oregano-utils.h"
 #include "oregano-config.h"
 
-// Engines Types
+// Engine Types
 static const gchar *engine[] = {"gnucap", "ngspice"};
 
 typedef struct
@@ -120,33 +120,37 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	gint i;
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
-	GtkBuilder *gui;
+	GtkBuilder *builder;
 	GError *perror = NULL;
 	gchar *msg;
 	Settings *s;
 	Schematic *sm;
-
+	guint8 engines_found = 0;
+		
 	g_return_if_fail (sv != NULL);
 
 	// If no engine available, stop oregano
-	if ((g_find_program_in_path (engine[0]) == NULL) &&
-	    (g_find_program_in_path (engine[1]) == NULL)) {
+	
+	for (guint8 i=0; i<sizeof(engine)/sizeof(*engine); i++) {
+		if (g_find_program_in_path(engine[i]) == NULL)
+			engines_found++;
+	}
+	if (engines_found == 0) {
 		gchar *msg;
 		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
-		                          "You might install one, at least! \n"
-		                          "Either ngspice or gnucap."));
+			                      "You might install one, at least! \n"
+			                      "Either ngspice or gnucap."));
 		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_free (msg);
-		return;
 	}
-
+	
 	g_return_if_fail (sv != NULL);
 
-	if ((gui = gtk_builder_new ()) == NULL) {
+	if ((builder = gtk_builder_new ()) == NULL) {
 		oregano_error (_ ("Could not create settings dialog"));
 		return;
 	}
-	gtk_builder_set_translation_domain (gui, NULL);
+	gtk_builder_set_translation_domain (builder, NULL);
 
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_settings (sm);
@@ -157,14 +161,14 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 		return;
 	}
 
-	if (gtk_builder_add_from_file (gui, OREGANO_UIDIR "/settings.ui", &perror) <= 0) {
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/settings.ui", &perror) <= 0) {
 		msg = perror->message;
 		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_error_free (perror);
 		return;
 	}
 
-	w = toplevel = GTK_WIDGET (gtk_builder_get_object (gui, "toplevel"));
+	w = toplevel = GTK_WIDGET (gtk_builder_get_object (builder, "toplevel"));
 	if (!w) {
 		oregano_error (_ ("Could not create settings dialog"));
 		return;
@@ -174,26 +178,26 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	pbox = toplevel;
 	s->pbox = GTK_WIDGET (pbox);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "close_bt"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "close_bt"));
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (apply_callback), s);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "splash-enable"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "splash-enable"));
 	s->w_show_splash = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_splash);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "compress-enable"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "compress-enable"));
 	s->w_compress_files = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.compress_files);
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "log-enable"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "log-enable"));
 	s->w_show_log = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_log);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid-size"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "grid-size"));
 	gtk_widget_set_sensitive (w, FALSE);
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "realtime-enable"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "realtime-enable"));
 	gtk_widget_set_sensitive (w, FALSE);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "engine_table"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "engine_table"));
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
 		if (engine_group)
 			button[i] = gtk_radio_button_new_with_label_from_widget (
@@ -215,17 +219,6 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	// Otherwise the button is inactive
 	else
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), FALSE);
-
-	// If no engine available, stop oregano
-	if ((g_find_program_in_path (engine[0]) == NULL) &&
-	    (g_find_program_in_path (engine[1]) == NULL)) {
-		gchar *msg;
-		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
-		                          "You might install one, at least! \n"
-		                          "Either ngspice or gnucap."));
-		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
-		g_free (msg);
-	}
 
 	gtk_widget_show_all (toplevel);
 }
