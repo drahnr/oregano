@@ -43,6 +43,8 @@ typedef struct _OreganoEngine OreganoEngine;
 // Engines IDs
 enum { OREGANO_ENGINE_GNUCAP = 0, OREGANO_ENGINE_NGSPICE, OREGANO_ENGINE_COUNT };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(OreganoEngine, g_object_unref)
+
 OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm);
 
 GType oregano_engine_get_type (void);

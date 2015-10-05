@@ -43,8 +43,6 @@
 #include "ngspice-analysis.h"
 #include "errors.h"
 
-#include "debug.h"
-
 static void ngspice_class_init (OreganoNgSpiceClass *klass);
 static void ngspice_finalize (GObject *object);
 static void ngspice_dispose (GObject *object);

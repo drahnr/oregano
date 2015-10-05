@@ -82,6 +82,8 @@ struct _SheetClass
 	void (*cancel)(Sheet *sheet);
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(Sheet, g_object_unref)
+
 GType sheet_get_type (void);
 GtkWidget *sheet_new (gdouble height, gdouble width);
 void sheet_scroll_pixel (const Sheet *sheet, int dx, int dy);

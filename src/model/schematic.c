@@ -58,7 +58,7 @@ typedef struct _SchematicsPrintOptions
 	GtkColorButton *background;
 } SchematicPrintOptions;
 
-struct _SchematicPriv
+struct _SchematicPrivate
 {
 	char *title;
 	char *filename;
@@ -116,7 +116,7 @@ enum {
 	LAST_SIGNAL
 };
 
-G_DEFINE_TYPE (Schematic, schematic, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (Schematic, schematic, G_TYPE_OBJECT)
 
 static void schematic_init (Schematic *schematic);
 static void schematic_class_init (SchematicClass *klass);
@@ -193,9 +193,8 @@ static void node_dot_removed_callback (NodeStore *store, Coords *pos, Schematic 
 
 static void schematic_init (Schematic *schematic)
 {
-	SchematicPriv *priv;
-
-	priv = schematic->priv = g_new0 (SchematicPriv, 1);
+	SchematicPrivate *priv = schematic_get_instance_private(schematic);
+	schematic->priv = priv;
 
 	priv->printoptions = NULL;
 	// Colors
@@ -279,7 +278,7 @@ static void schematic_dispose (GObject *object)
 static void schematic_finalize (GObject *object)
 {
 	Schematic *sm = SCHEMATIC (object);
-	SchematicPriv *priv = sm->priv;
+	SchematicPrivate *priv = sm->priv;
 	if (priv) {
 		g_free (priv->simulation);
 		g_hash_table_destroy (priv->symbols);
@@ -289,7 +288,6 @@ static void schematic_finalize (GObject *object)
 		g_free (priv->comments);
 		g_free (priv->author);
 		g_free (priv->filename);
-		g_free (priv);
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (G_OBJECT (sm));
@@ -297,32 +295,32 @@ static void schematic_finalize (GObject *object)
 
 char *schematic_get_title (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->title;
 }
 
 char *schematic_get_author (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->author;
 }
 
 char *schematic_get_comments (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->comments;
 }
 
 void schematic_set_title (Schematic *schematic, const gchar *title)
 {
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	if (!title)
 		return;
@@ -336,8 +334,8 @@ void schematic_set_title (Schematic *schematic, const gchar *title)
 
 void schematic_set_author (Schematic *schematic, const gchar *author)
 {
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	if (!author)
 		return;
@@ -349,8 +347,8 @@ void schematic_set_author (Schematic *schematic, const gchar *author)
 
 void schematic_set_comments (Schematic *schematic, const gchar *comments)
 {
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	if (schematic->priv->comments)
 		g_free (schematic->priv->comments);
@@ -359,16 +357,16 @@ void schematic_set_comments (Schematic *schematic, const gchar *comments)
 
 char *schematic_get_filename (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->filename;
 }
 
 void schematic_set_filename (Schematic *schematic, const gchar *filename)
 {
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	g_free (schematic->priv->filename);
 	schematic->priv->filename = g_strdup (filename);
@@ -376,16 +374,16 @@ void schematic_set_filename (Schematic *schematic, const gchar *filename)
 
 char *schematic_get_netlist_filename (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->netlist_filename;
 }
 
 void schematic_set_netlist_filename (Schematic *schematic, char *filename)
 {
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	if (schematic->priv->netlist_filename)
 		g_free (schematic->priv->netlist_filename);
@@ -395,8 +393,8 @@ void schematic_set_netlist_filename (Schematic *schematic, char *filename)
 
 double schematic_get_zoom (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, 1.0);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), 1.0);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->zoom;
 }
@@ -411,48 +409,48 @@ void schematic_set_zoom (Schematic *schematic, double zoom)
 
 NodeStore *schematic_get_store (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->store;
 }
 
 gpointer schematic_get_settings (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->settings;
 }
 
 gpointer schematic_get_sim_settings (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->sim_settings;
 }
 
 gpointer schematic_get_simulation (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->simulation;
 }
 
 Log *schematic_get_log_store (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->logstore;
 }
 
 void schematic_log_append (Schematic *schematic, const char *message)
 {
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	log_append (schematic->priv->logstore, "Schematic Info", message);
 
@@ -463,7 +461,7 @@ void schematic_log_append (Schematic *schematic, const char *message)
 void schematic_log_append_error (Schematic *schematic, const char *message)
 {
 	GtkTextIter iter;
-	SchematicPriv *priv;
+	SchematicPrivate *priv;
 
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
@@ -495,8 +493,8 @@ void schematic_log_clear (Schematic *schematic)
 
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic)
 {
-	g_return_val_if_fail (schematic != NULL, NULL);
-	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+	g_assert(schematic);
+	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->log;
 }

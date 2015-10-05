@@ -53,7 +53,7 @@ typedef struct _PartItemPrivate PartItemPrivate;
 struct _PartItem
 {
 	SheetItem parent_object;
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 };
 
 struct _PartItemClass

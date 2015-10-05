@@ -60,14 +60,14 @@
 
 typedef struct _Schematic Schematic;
 typedef struct _SchematicClass SchematicClass;
-typedef struct _SchematicPriv SchematicPriv;
+typedef struct _SchematicPrivate SchematicPrivate;
 
 typedef void (*ForeachItemDataFunc)(ItemData *item_data, gpointer user_data);
 
 struct _Schematic
 {
 	GObject parent;
-	SchematicPriv *priv;
+	SchematicPrivate *priv;
 };
 
 struct _SchematicClass

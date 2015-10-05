@@ -45,8 +45,8 @@
 #include "sheet-item.h"
 #include "clipboard.h"
 #include "options.h"
+#include "schematic.h"
 
-G_DEFINE_TYPE_WITH_PRIVATE(SheetItem, sheet_item, TYPE_SHEET_ITEM)
 
 static void sheet_item_class_init (SheetItemClass *klass);
 static void sheet_item_init (SheetItem *item);
@@ -86,6 +86,7 @@ enum { MOVED, PLACED, SELECTION_CHANGED, MOUSE_OVER, DOUBLE_CLICKED, LAST_SIGNAL
 
 static guint so_signals[LAST_SIGNAL] = {0};
 
+	
 // This is the upper part of the object popup menu. It contains actions
 // that are the same for all objects, e.g. parts and wires.
 static const char *sheet_item_context_menu = "<ui>"
@@ -117,7 +118,7 @@ static GActionEntry action_entries[] = {
     {"item.flipV", cb, "xaz"}
 };
 
-G_DEFINE_TYPE (SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
+G_DEFINE_TYPE_WITH_PRIVATE(SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
 
 static void sheet_item_dispose (GObject *object)
 {
@@ -189,7 +190,7 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 
 static void sheet_item_init (SheetItem *item)
 {
-	item->priv = sheet_item_get_instance_priv(item);
+	item->priv = sheet_item_get_instance_private(item);
 	item->priv->selected = FALSE;
 	item->priv->preserve_selection = FALSE;
 	item->priv->data = NULL;
@@ -289,7 +290,7 @@ static void sheet_item_finalize (GObject *object)
 static void sheet_item_run_menu (SheetItem *item, Sheet *sheet, GdkEventButton *event)
 {
 	g_assert (IS_SHEET_ITEM (item));
-	SheetItemPriv *priv = sheet_item_get_instance_priv(item);
+	SheetItemPrivate *priv = sheet_item_get_instance_private(item);
 
 	gtk_menu_popup (GTK_MENU (priv->menu),
 	                NULL, NULL, NULL,
@@ -306,7 +307,7 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 	SheetPriv *priv;
 	GList *list;
 
-	static Coords last, current, snapped;
+	static Coords last, snapped;
 	// snapped : Mouse cursor position in window coordinates, snapped to the grid
 	// spacing.
 	// delta   : Move the selected item(s) by this movement.
@@ -910,7 +911,10 @@ void sheet_item_add_menu (SheetItem *item, const char *uipath)
 {
 	g_assert (IS_SHEET_ITEM (item));
 
-	g_autoptr(GtkBuilder) builder = gtk_builder_new_from_file (OREGANO_UIDIR uipath);
+	gchar *path = g_strconcat(OREGANO_UIDIR, "/", uipath);
+	g_autoptr(GtkBuilder) builder = gtk_builder_new_from_file (path);
+	g_free (path);
 	g_autoptr(GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
-	sheet_item_get_instance_private(item)->menu = gtk_menu_new_from_model (menumodel);
+	SheetItemPrivate *priv = sheet_item_get_instance_private(item);
+	priv->menu = gtk_menu_new_from_model (menu);
 }

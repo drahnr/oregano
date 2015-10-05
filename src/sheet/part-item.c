@@ -128,13 +128,12 @@ static SheetItemClass *parent_class = NULL;
 
 static const char *part_item_context_menu = NULL;
 
-static GtkActionEntry action_entries[] = {{"ObjectProperties", GTK_STOCK_PROPERTIES,
-                                           N_ ("_Object Properties..."), NULL,
-                                           N_ ("Modify object properties"), NULL}};
+static GActionEntry action_entries[] = {{"Object Properties", NULL},
+										{"Modify object properties", NULL}, NULL};
 
 enum { ANCHOR_NORTH, ANCHOR_SOUTH, ANCHOR_WEST, ANCHOR_EAST };
 
-G_DEFINE_TYPE_WITH_PRIVATE  (PartItem, part_item, TYPE_SHEET_ITEM)
+G_DEFINE_TYPE_WITH_PRIVATE (PartItem, part_item, TYPE_SHEET_ITEM)
 
 static void part_item_class_init (PartItemClass *part_item_class)
 {
@@ -163,7 +162,7 @@ static void part_item_class_init (PartItemClass *part_item_class)
 
 static void part_item_init (PartItem *item)
 {
-	PartItemPrivate *priv = part_item_get_instance_priv (item);
+	PartItemPrivate *priv = part_item_get_instance_private (item);
 	priv->rect = NULL;
 	priv->cache_valid = FALSE;
 
@@ -201,7 +200,7 @@ static void part_item_dispose (GObject *object) { G_OBJECT_CLASS (parent_class)-
 
 static void part_item_finalize (GObject *object)
 {
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 
 	priv = PART_ITEM (object)->priv;
 
@@ -217,7 +216,7 @@ static void part_item_finalize (GObject *object)
 
 static void part_item_set_label_items (PartItem *item, GSList *item_list)
 {
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_PART_ITEM (item));
@@ -696,7 +695,7 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	// GooCanvasGroup *group;
 	GooCanvasItem *canvas_item;
 	PartItem *item;
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 	Part *part;
 	int index = 0;
 
@@ -714,9 +713,22 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	inv = *(item_data_get_rotate (data)); // copy
 	cairo_matrix_multiply (&morph, &inv, item_data_get_translate (data));
 
+	
+
+	{
+		const cairo_matrix_t *matrix = &inv;
+		const double a = matrix->xx;
+		const double b = matrix->yx;
+		const double c = matrix->xy;
+		const double d = matrix->yy;
+
+		const double det = a*d - b*c;
+		g_assert(fabs(det) > 1e-3);
+	}
+	
 	done = cairo_matrix_invert (&inv);
 	if (done != CAIRO_STATUS_SUCCESS) {
-		g_warning ("Failed to invert matrix. This should never happen. Ever!");
+		g_error ("Failed to invert matrix. This should never happen. Ever!");
 		return;
 	}
 	// no translations
@@ -724,7 +736,7 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	Sheet *sheet = SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (sheet_item)));
 	if (G_UNLIKELY (!sheet)) {
-		g_warning ("Failed to determine the Sheet the item is glued to. This should "
+		g_error("Failed to determine the Sheet the item is glued to. This should "
 		           "never happen. Ever!");
 	} else {
 		item_data_snap (data, sheet->grid); //&morph.x0, &morph.y0); //FIXME recheck
@@ -862,7 +874,7 @@ static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 static void show_labels (SheetItem *sheet_item, gboolean show)
 {
 	PartItem *item;
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_PART_ITEM (sheet_item));
@@ -880,7 +892,7 @@ static void show_labels (SheetItem *sheet_item, gboolean show)
 // since it's too expensive to calculate it every time we need it.
 inline static void get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
 {
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 	priv = item->priv;
 
 	if (G_LIKELY (priv->cache_valid)) {
@@ -1128,7 +1140,7 @@ static void part_item_place_ghost (SheetItem *item, Sheet *sheet)
 
 void part_item_show_node_labels (PartItem *part, gboolean show)
 {
-	PartItemPriv *priv;
+	PartItemPrivate *priv;
 
 	priv = part->priv;
 

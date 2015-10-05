@@ -45,7 +45,7 @@
 	G_TYPE_CHECK_CLASS_CAST (klass, textbox_item_get_type (), TextboxItemClass)
 #define IS_TEXTBOX_ITEM(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, textbox_item_get_type ())
 
-typedef struct _TextboxItemPriv TextboxItemPriv;
+typedef struct _TextboxItemPrivate TextboxItemPrivate;
 
 typedef enum {
 	TEXTBOX_DIR_NONE = 0,
@@ -57,7 +57,7 @@ typedef enum {
 typedef struct
 {
 	SheetItem parent_object;
-	TextboxItemPriv *priv;
+	TextboxItemPrivate *priv;
 } TextboxItem;
 
 typedef struct

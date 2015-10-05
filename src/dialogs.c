@@ -34,6 +34,7 @@
 
 #include "dialogs.h"
 #include "oregano.h"
+#include "icons.h"
 
 void oregano_error (gchar *msg) { oregano_error_with_title (msg, NULL); }
 
@@ -107,7 +108,6 @@ gint oregano_question (gchar *msg)
 void dialog_about (void)
 {
 	static GtkWidget *about = NULL;
-	GdkPixbuf *logo;
 
 	const gchar *authors[] = {"Richard Hult",       "Margarita Manterola", "Andres de Barbara",
 	                          "Gustavo M. Pereyra", "Maximiliano Curia",   "Ricardo Markiewicz",

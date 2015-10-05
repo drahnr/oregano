@@ -35,7 +35,8 @@
 
 #include <gtk/gtk.h>
 
-#include "schematic.h"
+typedef struct _Schematic Schematic;
+
 #include "sheet.h"
 
 typedef enum { DRAG_URI_INFO, DRAG_PART_INFO } DragTypes;
