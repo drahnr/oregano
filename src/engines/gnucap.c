@@ -62,7 +62,7 @@ static struct analysis_tag analysis_tags[] = {
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
 
 // Parser STATUS
-struct _OreganoGnuCapPriv
+struct _OreganoGnuCapPrivate
 {
 	GPid child_pid;
 	gint child_stdout;
@@ -80,8 +80,6 @@ struct _OreganoGnuCapPriv
 	guint status;
 	guint buf_count;
 };
-
-#include "debug.h"
 
 static void gnucap_class_init (OreganoGnuCapClass *klass);
 static void gnucap_finalize (GObject *object);
@@ -421,7 +419,7 @@ static GList *gnucap_get_results (OreganoEngine *self)
 
 static gchar *gnucap_get_operation (OreganoEngine *self)
 {
-	OreganoGnuCapPriv *priv = OREGANO_GNUCAP (self)->priv;
+	OreganoGnuCapPrivate *priv = OREGANO_GNUCAP (self)->priv;
 
 	if (priv->current == NULL)
 		return _ ("None");
@@ -562,7 +560,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 	static Analysis *data;
 	static char buf[1024];
 	GCap_Variable *variables;
-	OreganoGnuCapPriv *priv = gnucap->priv;
+	OreganoGnuCapPrivate *priv = gnucap->priv;
 	gint i, j, n;
 	gdouble val;
 	gchar *s;

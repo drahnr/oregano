@@ -44,14 +44,14 @@
 	(G_TYPE_INSTANCE_GET_CLASS ((inst), OREGANO_TYPE_GNUCAP, OreganoGnuCapClass))
 
 typedef struct _OreganoGnuCap OreganoGnuCap;
-typedef struct _OreganoGnuCapPriv OreganoGnuCapPriv;
+typedef struct _OreganoGnuCapPrivate OreganoGnuCapPrivate;
 typedef struct _OreganoGnuCapClass OreganoGnuCapClass;
 
 struct _OreganoGnuCap
 {
 	GObject parent;
 
-	OreganoGnuCapPriv *priv;
+	OreganoGnuCapPrivate *priv;
 };
 
 struct _OreganoGnuCapClass

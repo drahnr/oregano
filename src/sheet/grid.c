@@ -40,7 +40,7 @@
 
 enum { ARG_0, ARG_COLOR, ARG_SPACING, ARG_SNAP };
 
-struct _GridPriv
+struct _GridPrivate
 {
 	GooCanvasItem *canvas_grid;
 	guint snap;
@@ -50,7 +50,7 @@ struct _GridPriv
 	cairo_t *cairo;
 };
 
-G_DEFINE_TYPE (Grid, grid, GOO_TYPE_CANVAS_GROUP)
+G_DEFINE_TYPE_WITH_PRIVATE (Grid, grid, GOO_TYPE_CANVAS_GROUP)
 
 static void grid_class_init (GridClass *class);
 static void grid_init (Grid *grid);
@@ -89,9 +89,7 @@ static void grid_class_init (GridClass *class)
 
 static void grid_init (Grid *grid)
 {
-	GridPriv *priv;
-
-	priv = g_new0 (GridPriv, 1);
+	GridPrivate *priv = grid_get_instance_private(grid);
 
 	grid->priv = priv;
 
@@ -99,14 +97,13 @@ static void grid_init (Grid *grid)
 	priv->snap = TRUE;
 }
 
-static void grid_dispose (GObject *object) { G_OBJECT_CLASS (grid_parent_class)->dispose (object); }
+static void grid_dispose (GObject *object) {
+	G_OBJECT_CLASS (grid_parent_class)->dispose (object);
+}
 
 static void grid_finalize (GObject *object)
 {
-	Grid *grid;
-
-	grid = GRID (object);
-	grid->priv = NULL;
+	Grid *grid = GRID (object);
 
 	G_OBJECT_CLASS (grid_parent_class)->finalize (object);
 }
@@ -114,10 +111,8 @@ static void grid_finalize (GObject *object)
 static void grid_set_property (GObject *object, guint prop_id, const GValue *value,
                                GParamSpec *spec)
 {
-	Grid *grid;
-	GridPriv *priv;
-	grid = GRID (object);
-	priv = grid->priv;
+	Grid *grid = GRID (object);;
+	GridPrivate *priv = grid->priv;
 
 	switch (prop_id) {
 
@@ -136,11 +131,9 @@ static void grid_set_property (GObject *object, guint prop_id, const GValue *val
 
 static void grid_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec)
 {
-	Grid *grid;
-	GridPriv *priv;
+	Grid *grid = GRID (object);;
+	GridPrivate *priv = grid->priv;
 
-	grid = GRID (object);
-	priv = grid->priv;
 	switch (prop_id) {
 	case ARG_SPACING:
 		g_value_set_double (value, priv->spacing);
@@ -157,9 +150,7 @@ static void grid_get_property (GObject *object, guint prop_id, GValue *value, GP
 
 Grid *grid_new (GooCanvasItem *root, gdouble width, gdouble height)
 {
-	Grid *grid = NULL;
-
-	grid = g_object_new (TYPE_GRID, NULL);
+	Grid *grid = g_object_new (TYPE_GRID, NULL);
 
 	g_object_set (G_OBJECT (grid), "parent", root, NULL);
 
@@ -175,11 +166,8 @@ Grid *grid_new (GooCanvasItem *root, gdouble width, gdouble height)
 
 inline gboolean snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 {
-	GridPriv *priv;
-	gdouble spacing;
-
-	priv = grid->priv;
-	spacing = priv->spacing;
+	GridPrivate *priv = grid->priv;;
+	gdouble spacing = priv->spacing;;
 
 	Coords old = {0., 0.};
 	gboolean moved = FALSE;
@@ -209,8 +197,6 @@ void grid_show (Grid *grid, gboolean show)
 
 void grid_snap (Grid *grid, gboolean snap)
 {
-	GridPriv *priv;
-
-	priv = grid->priv;
+	GridPrivate *priv = grid->priv;
 	priv->snap = snap;
 }

@@ -238,7 +238,7 @@ static int select_idle_callback (TextboxItem *item)
 
 static int deselect_idle_callback (TextboxItem *item)
 {
-	TextboxItemPriv *priv = item->priv;
+	TextboxItemPrivate *priv = item->priv;
 
 	g_object_set (priv->text_canvas_item, "fill_color", NORMAL_COLOR, NULL);
 
@@ -275,7 +275,7 @@ inline static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
 	PangoFontDescription *font;
 	Coords pos;
 
-	TextboxItemPriv *priv = item->priv;
+	TextboxItemPrivate *priv = item->priv;
 
 	if (!priv->cache_valid) {
 		Coords start_pos, end_pos;

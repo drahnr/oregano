@@ -69,7 +69,7 @@ static guint textbox_signals[LAST_SIGNAL] = {0};
 static void textbox_finalize (GObject *object)
 {
 	Textbox *textbox = TEXTBOX (object);
-	TextboxPriv *priv = textbox->priv;
+	TextboxPrivate *priv = textbox->priv;
 
 	g_free (priv);
 
@@ -113,7 +113,7 @@ static void textbox_class_init (TextboxClass *klass)
 
 static void textbox_init (Textbox *textbox)
 {
-	TextboxPriv *priv = g_new0 (TextboxPriv, 1);
+	TextboxPrivate *priv = g_new0 (TextboxPriv, 1);
 	textbox->priv = priv;
 }
 
@@ -319,7 +319,7 @@ static void textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *c
 	        double affine[6];
 	        int i;
 	        Textbox *textbox;
-	        TextboxPriv *priv;
+	        TextboxPrivate *priv;
 	        Coords pos;
 
 	        g_return_if_fail (data != NULL);

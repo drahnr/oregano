@@ -147,7 +147,7 @@ static void wire_item_get_property (GObject *object, guint property_id, GValue *
 
 static void wire_item_init (WireItem *item)
 {
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 
 	priv = g_new0 (WireItemPriv, 1);
 
@@ -163,7 +163,7 @@ static void wire_item_init (WireItem *item)
 
 static void wire_item_dispose (GObject *object)
 {
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 
 	priv = WIRE_ITEM (object)->priv;
 
@@ -175,7 +175,7 @@ static void wire_item_dispose (GObject *object)
 
 static void wire_item_finalize (GObject *object)
 {
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 
 	priv = WIRE_ITEM (object)->priv;
 
@@ -198,7 +198,7 @@ WireItem *wire_item_new (Sheet *sheet, Wire *wire)
 	WireItem *wire_item;
 	ItemData *item_data;
 	GooCanvasPoints *points;
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 	Coords start_pos, length;
 
 	g_return_val_if_fail (sheet != NULL, NULL);
@@ -468,7 +468,7 @@ static void wire_flipped_callback (ItemData *data, IDFlip direction, SheetItem *
 {
 	GooCanvasPoints *points;
 	WireItem *item;
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 	Coords start_pos, length;
 
 	g_return_if_fail (sheet_item != NULL);
@@ -496,7 +496,7 @@ static void wire_flipped_callback (ItemData *data, IDFlip direction, SheetItem *
 
 static int select_idle_callback (WireItem *item)
 {
-	WireItemPriv *priv = item->priv;
+	WireItemPrivate *priv = item->priv;
 
 	g_object_set (priv->line, "stroke-color", SELECTED_COLOR, NULL);
 	g_object_set (item->priv->resize1, "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
@@ -510,7 +510,7 @@ static int select_idle_callback (WireItem *item)
 
 static int deselect_idle_callback (WireItem *item)
 {
-	WireItemPriv *priv = item->priv;
+	WireItemPrivate *priv = item->priv;
 
 	g_object_set (priv->line, "stroke_color", NORMAL_COLOR, NULL);
 	g_object_set (item->priv->resize1, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
@@ -546,7 +546,7 @@ void wire_item_get_start_pos (WireItem *item, Coords *pos)
 // This function returns the length of the canvas item.
 void wire_item_get_length (WireItem *item, Coords *pos)
 {
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 	GooCanvasPoints *points;
 
 	g_return_if_fail (item != NULL);
@@ -587,7 +587,7 @@ inline static void get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_WIRE_ITEM (item));
 
-	WireItemPriv *priv;
+	WireItemPrivate *priv;
 	priv = item->priv;
 
 	if (!priv->cache_valid) {
@@ -689,7 +689,7 @@ static void mouse_over_wire_callback (WireItem *item, Sheet *sheet)
 
 static void highlight_wire_callback (Wire *wire, WireItem *item)
 {
-	WireItemPriv *priv = item->priv;
+	WireItemPrivate *priv = item->priv;
 
 	g_object_set (priv->line, "stroke-color", HIGHLIGHT_COLOR, NULL);
 
@@ -702,7 +702,7 @@ static void highlight_wire_callback (Wire *wire, WireItem *item)
 static int unhighlight_wire (WireItem *item)
 {
 	char *color;
-	WireItemPriv *priv = item->priv;
+	WireItemPrivate *priv = item->priv;
 
 	color = sheet_item_get_selected (SHEET_ITEM (item)) ? SELECTED_COLOR : NORMAL_COLOR;
 

@@ -415,7 +415,7 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condit
 static void ngspice_start (OreganoEngine *self)
 {
 	OreganoNgSpice *ngspice;
-	OreganoNgSpicePriv *priv;
+	OreganoNgSpicePrivate *priv;
 	GError *e = NULL;
 	char *argv[] = {"ngspice", "-b", "/tmp/netlist.tmp", NULL};
 
@@ -473,7 +473,7 @@ static GList *ngspice_get_results (OreganoEngine *self)
 
 static gchar *ngspice_get_operation (OreganoEngine *self)
 {
-	OreganoNgSpicePriv *priv = OREGANO_NGSPICE (self)->priv;
+	OreganoNgSpicePrivate *priv = OREGANO_NGSPICE (self)->priv;
 
 	if (priv->current == NULL)
 		return _ ("None");

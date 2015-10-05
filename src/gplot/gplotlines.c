@@ -40,7 +40,7 @@ struct _GPlotLines
 {
 	GObject parent;
 
-	GPlotLinesPriv *priv;
+	GPlotLinesPrivate *priv;
 };
 
 struct _GPlotLinesClass
@@ -175,7 +175,7 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 
 static void g_plot_lines_init (GPlotLines *plot)
 {
-	GPlotLinesPriv *priv = g_new0 (GPlotLinesPriv, 1);
+	GPlotLinesPrivate *priv = g_new0 (GPlotLinesPriv, 1);
 
 	priv->bbox_valid = FALSE;
 

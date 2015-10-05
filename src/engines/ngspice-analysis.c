@@ -108,7 +108,7 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	OreganoNgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gboolean found = FALSE;
@@ -199,7 +199,7 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	OreganoNgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gboolean found = FALSE;
@@ -420,7 +420,7 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	OreganoNgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gchar **variables;
@@ -535,7 +535,7 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 
 void ngspice_parse (OreganoNgSpice *ngspice)
 {
-	OreganoNgSpicePriv *priv = ngspice->priv;
+	OreganoNgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gchar *tmp = NULL;

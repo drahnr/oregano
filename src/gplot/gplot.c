@@ -292,7 +292,7 @@ static gboolean g_plot_draw (GtkWidget *widget, cairo_t *cr)
 	static double offset = -0.2;
 
 	GPlot *plot;
-	GPlotPriv *priv;
+	GPlotPrivate *priv;
 	guint width;
 	guint height;
 	guint graph_width;
@@ -684,7 +684,7 @@ static void g_plot_update_bbox (GPlot *p)
 {
 	GPlotFunction *f;
 	GPlotFunctionBBox bbox;
-	GPlotPriv *priv;
+	GPlotPrivate *priv;
 	GList *lst;
 
 	priv = p->priv;

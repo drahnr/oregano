@@ -304,7 +304,7 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 {
 	// Remember the last position of the mouse cursor.
 	GooCanvas *canvas;
-	SheetPriv *priv;
+	SheetPrivate *priv;
 	GList *list;
 
 	static Coords last, snapped;
@@ -565,7 +565,7 @@ void sheet_item_cancel_floating (Sheet *sheet)
 // Event handler for a "floating" group of objects.
 int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 {
-	SheetPriv *priv;
+	SheetPrivate *priv;
 	GList *list;
 	static gboolean keep = FALSE;
 

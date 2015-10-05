@@ -46,7 +46,7 @@ G_DEFINE_TYPE (NodeItem, node_item, GOO_TYPE_CANVAS_GROUP);
 static void node_item_dispose (GObject *object)
 {
 	NodeItem *item = NODE_ITEM (object);
-	NodeItemPriv *priv = item->priv;
+	NodeItemPrivate *priv = item->priv;
 
 	g_clear_object (&(priv->dot_item));
 	g_clear_object (&(priv->circle_item));
@@ -55,7 +55,7 @@ static void node_item_dispose (GObject *object)
 
 static void node_item_finalize (GObject *object)
 {
-	NodeItemPriv *priv;
+	NodeItemPrivate *priv;
 
 	G_OBJECT_CLASS (node_item_parent_class)->finalize (object);
 }

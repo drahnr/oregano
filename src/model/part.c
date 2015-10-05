@@ -93,17 +93,17 @@ enum {
 	ARG_LABELS,
 };
 
-G_DEFINE_TYPE (Part, part, TYPE_ITEM_DATA);
+G_DEFINE_TYPE_WITH_PRIVATE (Part, part, TYPE_ITEM_DATA);
 
 static ItemDataClass *parent_class = NULL;
 
-static void part_init (Part *part) { part->priv = g_slice_new0 (PartPriv); }
+static void part_init (Part *part) { part->priv = part_get_instance_private(part); }
 
 static void part_dispose (GObject *object) { G_OBJECT_CLASS (parent_class)->dispose (object); }
 
 static void part_finalize (GObject *object)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 	GSList *list;
 
 	priv = PART (object)->priv;
@@ -131,8 +131,6 @@ static void part_finalize (GObject *object)
 
 		g_free (priv->pins);
 		g_free (priv->symbol_name);
-
-		g_slice_free (PartPriv, priv);
 	}
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -190,7 +188,7 @@ Part *part_new_from_library_part (LibraryPart *library_part)
 {
 	Part *part;
 	GSList *pins;
-	PartPriv *priv;
+	PartPrivate *priv;
 	LibrarySymbol *symbol;
 
 	g_return_val_if_fail (library_part != NULL, NULL);
@@ -247,7 +245,7 @@ static void part_set_gproperty (GObject *object, guint prop_id, const GValue *va
 static void part_get_gproperty (GObject *object, guint prop_id, GValue *value, GParamSpec *spec)
 {
 	Part *part = PART (object);
-	PartPriv *priv = part->priv;
+	PartPrivate *priv = part->priv;
 
 	switch (prop_id) {
 	case ARG_LABELS:
@@ -260,7 +258,7 @@ static void part_get_gproperty (GObject *object, guint prop_id, GValue *value, G
 
 gint part_get_num_pins (Part *part)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 
 	g_return_val_if_fail (part != NULL, 0);
 	g_return_val_if_fail (IS_PART (part), 0);
@@ -307,7 +305,7 @@ gint part_get_rotation (Part *part)
 
 IDFlip part_get_flip (Part *part)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 
 	g_return_val_if_fail (part != NULL, 0);
 	g_return_val_if_fail (IS_PART (part), 0);
@@ -318,7 +316,7 @@ IDFlip part_get_flip (Part *part)
 
 Pin *part_get_pins (Part *part)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 
 	g_return_val_if_fail (part != NULL, NULL);
 	g_return_val_if_fail (IS_PART (part), NULL);
@@ -336,7 +334,7 @@ static gboolean part_has_properties (ItemData *item)
 
 static gboolean part_set_properties (Part *part, GSList *properties)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 	GSList *list;
 
 	g_return_val_if_fail (part != NULL, FALSE);
@@ -364,7 +362,7 @@ static gboolean part_set_properties (Part *part, GSList *properties)
 
 GSList *part_get_properties (Part *part)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 
 	g_return_val_if_fail (part != NULL, FALSE);
 	g_return_val_if_fail (IS_PART (part), FALSE);
@@ -379,7 +377,7 @@ GSList *part_get_properties (Part *part)
  */
 char *part_get_property (Part *part, char *name)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 	GSList *props;
 	PartProperty *prop;
 
@@ -400,7 +398,7 @@ char *part_get_property (Part *part, char *name)
 
 static gboolean part_set_labels (Part *part, GSList *labels)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 	GSList *list;
 
 	g_return_val_if_fail (part != NULL, FALSE);
@@ -441,7 +439,7 @@ static gboolean part_set_labels (Part *part, GSList *labels)
  */
 gboolean part_set_pins (Part *part, GSList *pins)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 	GSList *list;
 	int num_pins, i;
 
@@ -483,7 +481,7 @@ gboolean part_set_pins (Part *part, GSList *pins)
 
 GSList *part_get_labels (Part *part)
 {
-	PartPriv *priv;
+	PartPrivate *priv;
 
 	g_return_val_if_fail (part != NULL, NULL);
 	g_return_val_if_fail (IS_PART (part), NULL);
@@ -507,7 +505,7 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	cairo_matrix_t morph, morph_rot, local_rot;
 	Part *part;
-	PartPriv *priv;
+	PartPrivate *priv;
 	gboolean handler_connected;
 	// Coords b1, b2;
 
@@ -601,7 +599,7 @@ static void part_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 #if 0
 	Part *part;
-	PartPriv *priv;
+	PartPrivate *priv;
 	int i;
 	cairo_matrix_t affine;
 	double x, y;
@@ -930,7 +928,7 @@ static char *part_get_refdes_prefix (ItemData *data)
 static void part_set_property (ItemData *data, char *property, char *value)
 {
 	Part *part;
-	PartPriv *priv;
+	PartPrivate *priv;
 	GSList *props;
 	PartProperty *prop;
 
@@ -967,7 +965,7 @@ static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	double x0, y0;
 	int i, rotation;
 	Part *part;
-	PartPriv *priv;
+	PartPrivate *priv;
 	Coords pos;
 	IDFlip flip;
 	GooCanvasPoints *line;

@@ -929,7 +929,7 @@ PartItem *part_item_new (Sheet *sheet, Part *part)
 {
 	Library *library;
 	LibraryPart *library_part;
-	PartPriv *priv;
+	PartPrivate *priv;
 	PartItem *item;
 
 	priv = part->priv;

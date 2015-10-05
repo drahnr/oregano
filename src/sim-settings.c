@@ -48,7 +48,7 @@
 #include "errors.h"
 #include "log.h"
 
-struct _SimSettingsPriv
+struct _SimSettingsPrivate
 {
 	// Transient analysis.
 	GtkWidget *w_main;
@@ -114,8 +114,6 @@ static SimOption default_options[] = {{"TEMP", NULL},
                                       {"DEFL", NULL},
                                       {"DEFW", NULL},
                                       {NULL, NULL}};
-
-#include "debug.h"
 
 static void fourier_add_vout_cb (GtkButton *w, SimSettings *sim)
 {
@@ -730,7 +728,7 @@ static void response_callback (GtkButton *button, Schematic *sm)
 	g_return_if_fail (GTK_IS_BUTTON (button));
 	gint page;
 	SimSettings *s;
-	SimSettingsPriv *priv;
+	SimSettingsPrivate *priv;
 	gchar *tmp = NULL;
 	gchar **node_ids = NULL;
 
@@ -836,7 +834,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	GtkBuilder *builder;
 	GError *e = NULL;
 	SimSettings *s;
-	SimSettingsPriv *priv;
+	SimSettingsPrivate *priv;
 	Schematic *sm;
 	GList *iter;
 	GSList *siter;
@@ -1193,7 +1191,7 @@ GList *sim_settings_get_options (SimSettings *s)
 void sim_settings_add_option (SimSettings *s, SimOption *opt)
 {
 	GList *iter;
-	SimSettingsPriv *priv = s->priv;
+	SimSettingsPrivate *priv = s->priv;
 	// Remove the option if already in the list.
 	for (iter = priv->options; iter; iter = iter->next) {
 		SimOption *so = iter->data;

@@ -543,7 +543,7 @@ void sheet_scroll_pixel (const Sheet *sheet, int delta_x, int delta_y)
 	gfloat vnew, hnew;
 	gfloat hmax, vmax;
 	gfloat x1, y1;
-	const SheetPriv *priv = sheet->priv;
+	const SheetPrivate *priv = sheet->priv;
 
 	if (sheet_get_adjustments (sheet, &hadj, &vadj)) {
 		x1 = gtk_adjustment_get_value (hadj);

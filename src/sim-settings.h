@@ -40,14 +40,14 @@ typedef struct _SimSettings SimSettings;
 #include "schematic-view.h"
 #include "schematic.h"
 
-typedef struct _SimSettingsPriv SimSettingsPriv;
+typedef struct _SimSettingsPrivate SimSettingsPrivate;
 
 struct _SimSettings
 {
 	Schematic *sm;
 	GtkWidget *pbox;
 	GtkNotebook *notebook;
-	SimSettingsPriv *priv;
+	SimSettingsPrivate *priv;
 };
 
 typedef struct _SimOption SimOption;
@@ -56,7 +56,7 @@ struct _SimOption
 {
 	gchar *name;
 	gchar *value;
-} _SimOption;
+};
 
 void sim_settings_show (GtkWidget *widget, SchematicView *sv);
 

@@ -51,7 +51,7 @@
 
 typedef struct _ItemData ItemData;
 typedef struct _ItemDataClass ItemDataClass;
-typedef struct _ItemDataPriv ItemDataPriv;
+typedef struct _ItemDataPrivate ItemDataPrivate;
 
 typedef enum {
 	ID_FLIP_NONE = 0,
@@ -67,7 +67,7 @@ struct _ItemData
 	gulong rotated_handler_id;
 	gulong flipped_handler_id;
 	gulong changed_handler_id;
-	ItemDataPriv *priv;
+	ItemDataPrivate *priv;
 };
 
 struct _ItemDataClass
