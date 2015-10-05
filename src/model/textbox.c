@@ -113,7 +113,7 @@ static void textbox_class_init (TextboxClass *klass)
 
 static void textbox_init (Textbox *textbox)
 {
-	TextboxPrivate *priv = g_new0 (TextboxPriv, 1);
+	TextboxPrivate *priv = textbox_get_instance_private(textbox);
 	textbox->priv = priv;
 }
 

@@ -37,7 +37,7 @@
 
 #include <glib.h>
 
-struct _PartPriv
+struct _PartPrivate
 {
 	guint16 num_pins : 16;
 	//	guint16	 rotation : 16;

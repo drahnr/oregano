@@ -51,7 +51,7 @@ enum { ACTION_NONE, ACTION_STARTING_PAN, ACTION_PAN, ACTION_STARTING_REGION, ACT
 
 static GtkLayoutClass *parent_class = NULL;
 
-struct _GPlotPriv
+struct _GPlotPrivate
 {
 	GList *functions;
 
@@ -87,7 +87,7 @@ GType g_plot_get_type ()
 {
 	static GType g_plot_type = 0;
 
-	if (!g_plot_type) {
+	if (g_plot_type == 0) {
 		static const GTypeInfo g_plot_info = {
 		    sizeof(GPlotClass), NULL,          NULL, (GClassInitFunc)g_plot_class_init, NULL,
 		    NULL,               sizeof(GPlot), 0,    (GInstanceInitFunc)g_plot_init,    NULL};
@@ -468,7 +468,7 @@ static gboolean g_plot_draw (GtkWidget *widget, cairo_t *cr)
 
 static void g_plot_init (GPlot *plot)
 {
-	plot->priv = g_new0 (GPlotPriv, 1);
+	plot->priv = g_plot_get_instance_private(plot);
 
 	plot->priv->zoom_mode = GPLOT_ZOOM_REGION;
 	plot->priv->functions = NULL;

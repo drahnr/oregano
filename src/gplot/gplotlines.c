@@ -33,7 +33,7 @@
 #include "gplotlines.h"
 
 typedef struct _GPlotLines GPlotLines;
-typedef struct _GPlotLinesPriv GPlotLinesPriv;
+typedef struct _GPlotLinesPrivate GPlotLinesPrivate;
 typedef struct _GPlotLinesClass GPlotLinesClass;
 
 struct _GPlotLines
@@ -64,7 +64,7 @@ static GObjectClass *parent_class = NULL;
 
 enum { ARG_0, ARG_WIDTH, ARG_COLOR, ARG_COLOR_GDKCOLOR, ARG_VISIBLE, ARG_GRAPH_TYPE, ARG_SHIFT };
 
-struct _GPlotLinesPriv
+struct _GPlotLinesPrivate
 {
 	gboolean bbox_valid;
 	GPlotFunctionBBox bbox;
@@ -89,10 +89,9 @@ struct _GPlotLinesPriv
 
 #define TYPE_GPLOT_LINES (g_plot_lines_get_type ())
 #define TYPE_GPLOT_GRAPHIC_TYPE (g_plot_lines_graphic_get_type ())
-#include "debug.h"
 
 G_DEFINE_TYPE_WITH_CODE (GPlotLines, g_plot_lines, G_TYPE_OBJECT,
-                         G_IMPLEMENT_INTERFACE (TYPE_GPLOT_FUNCTION, g_plot_lines_function_init));
+                         G_IMPLEMENT_INTERFACE (TYPE_GPLOT_FUNCTION, g_plot_lines_function_init); G_ADD_PRIVATE(GPlotLines));
 
 GType g_plot_lines_graphic_get_type (void)
 {
@@ -127,7 +126,6 @@ static void g_plot_lines_finalize (GObject *object)
 		g_free (lines->priv->x);
 		g_free (lines->priv->y);
 		g_free (lines->priv->color_string);
-		g_free (lines->priv);
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -175,7 +173,7 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 
 static void g_plot_lines_init (GPlotLines *plot)
 {
-	GPlotLinesPrivate *priv = g_new0 (GPlotLinesPriv, 1);
+	GPlotLinesPrivate *priv = g_plot_lines_get_instance_private(plot);
 
 	priv->bbox_valid = FALSE;
 

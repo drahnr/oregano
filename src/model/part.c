@@ -258,13 +258,9 @@ static void part_get_gproperty (GObject *object, guint prop_id, GValue *value, G
 
 gint part_get_num_pins (Part *part)
 {
-	PartPrivate *priv;
-
-	g_return_val_if_fail (part != NULL, 0);
-	g_return_val_if_fail (IS_PART (part), 0);
-
-	priv = part->priv;
-	return priv->num_pins;
+	g_assert (part);
+	g_assert (IS_PART (part));
+	return part->priv->num_pins;
 }
 
 /**

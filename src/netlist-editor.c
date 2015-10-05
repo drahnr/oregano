@@ -45,8 +45,6 @@
 #include "dialogs.h"
 #include "oregano.h"
 
-#include "debug.h"
-
 static void netlist_editor_finalize (GObject *object);
 static void netlist_editor_dispose (GObject *object);
 static void netlist_editor_class_init (NetlistEditorClass *klass);
