@@ -309,13 +309,11 @@ NetlistEditor *netlist_editor_new_from_schematic_view (SchematicView *sv)
 	gchar *name = "/tmp/oregano.netlist";
 	GError *e = NULL;
 	Schematic *sm;
-	OreganoEngine *engine;
 
 	sm = schematic_view_get_schematic (sv);
 
-	engine = oregano_engine_factory_create_engine (oregano.engine, sm);
-	oregano_engine_generate_netlist (engine, name, &e);
-	g_object_unref (engine);
+	g_autoptr(Engine) engine = engine_factory_create_engine (oregano.engine, sm);
+	engine_generate_netlist (engine, name, &e);
 
 	if (e) {
 		if (g_error_matches (e, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_CLAMP) ||

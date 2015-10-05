@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2015       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,28 +36,28 @@
 #include "schematic.h"
 #include "simulation.h"
 
-#define OREGANO_TYPE_ENGINE (oregano_engine_get_type ())
-#define OREGANO_ENGINE_CLASS(klass)                                                                \
-	(G_TYPE_CHECK_CLASS_CAST ((klass), OREGANO_TYPE_ENGINE, OreganoEngineClass))
-#define OREGANO_IS_ENGINE_CLASS(klass)                                                             \
-	(G_TYPE_CLASS_TYPE ((klass), OREGANO_TYPE_ENGINE, OreganoEngineClass))
-#define OREGANO_ENGINE_GET_CLASS(klass)                                                            \
-	(G_TYPE_INSTANCE_GET_INTERFACE ((klass), OREGANO_TYPE_ENGINE, OreganoEngineClass))
+#define TYPE_ENGINE (engine_get_type ())
+#define ENGINE_CLASS(klass)                                                                \
+	(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_ENGINE, EngineClass))
+#define IS_ENGINE_CLASS(klass)                                                             \
+	(G_TYPE_CLASS_TYPE ((klass), TYPE_ENGINE, EngineClass))
+#define ENGINE_GET_IFACE(klass)                                                            \
+	(G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_ENGINE, EngineClass))
 
-typedef struct _OreganoEngineClass OreganoEngineClass;
+typedef struct _EngineInterface EngineInterface;
 
-struct _OreganoEngineClass
+struct _EngineInterface
 {
 	GTypeInterface parent;
 
-	void (*start)(OreganoEngine *engine);
-	void (*stop)(OreganoEngine *engine);
-	void (*progress)(OreganoEngine *engine, double *p);
-	gboolean (*get_netlist)(OreganoEngine *engine, const gchar *sm, GError **error);
-	GList *(*get_results)(OreganoEngine *engine);
-	gchar *(*get_operation)(OreganoEngine *engine);
-	gboolean (*has_warnings)(OreganoEngine *engine);
-	gboolean (*is_available)(OreganoEngine *engine);
+	void (*start)(Engine *engine);
+	void (*stop)(Engine *engine);
+	void (*progress)(Engine *engine, double *p);
+	gboolean (*get_netlist)(Engine *engine, const gchar *sm, GError **error);
+	GList *(*get_results)(Engine *engine);
+	gchar *(*get_operation)(Engine *engine);
+	gboolean (*has_warnings)(Engine *engine);
+	gboolean (*is_available)(Engine *engine);
 
 	// Signals
 	void (*done)();

@@ -51,9 +51,7 @@ static gchar *analysis_names[] = {
 #define CPU_TIME "CPU time since last call:"
 
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
-#include "debug.h"
 #define IS_THIS_ITEM(str, item) (!strncmp (str, item, strlen (item)))
-#define DEBUG_THIS 1
 
 /**
  * \brief extract the resulting variables from ngspice output
@@ -104,11 +102,11 @@ gchar **get_variables (const gchar *str, gint *count)
 	return out;
 }
 
-void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+void parse_dc_analysis (NgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePrivate *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gboolean found = FALSE;
@@ -195,11 +193,11 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	return;
 }
 
-void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+void parse_transient_analysis (NgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePrivate *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gboolean found = FALSE;
@@ -416,11 +414,11 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	}
 }
 
-void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+void parse_fourier_analysis (NgSpice *ngspice, gchar *tmp)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePrivate *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gchar **variables;
@@ -533,9 +531,9 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	return;
 }
 
-void ngspice_parse (OreganoNgSpice *ngspice)
+void ngspice_parse (NgSpice *ngspice)
 {
-	OreganoNgSpicePrivate *priv = ngspice->priv;
+	NgSpicePrivate *priv = ngspice->priv;
 	SimSettings *sim_settings;
 	static gchar buf[256];
 	gchar *tmp = NULL;

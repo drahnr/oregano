@@ -10,6 +10,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2015       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -62,7 +63,7 @@ static struct analysis_tag analysis_tags[] = {
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
 
 // Parser STATUS
-struct _OreganoGnuCapPrivate
+struct _GnuCapPrivate
 {
 	GPid child_pid;
 	gint child_stdout;
@@ -81,46 +82,21 @@ struct _OreganoGnuCapPrivate
 	guint buf_count;
 };
 
-static void gnucap_class_init (OreganoGnuCapClass *klass);
+static void gnucap_class_init (GnuCapClass *klass);
 static void gnucap_finalize (GObject *object);
 static void gnucap_dispose (GObject *object);
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition,
-                                        OreganoGnuCap *gnucap);
-static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap);
+                                        GnuCap *gnucap);
+static void gnucap_parse (gchar *raw, gint len, GnuCap *gnucap);
 static gdouble strtofloat (char *s);
 
 static GObjectClass *parent_class = NULL;
 
-GType oregano_gnucap_get_type (void)
-{
-	static GType type = 0;
-	if (type == 0) {
-		static const GTypeInfo info = {sizeof(OreganoGnuCapClass),
-		                               NULL,                              // base_init
-		                               NULL,                              // base_finalize
-		                               (GClassInitFunc)gnucap_class_init, // class_init
-		                               NULL,                              // class_finalize
-		                               NULL,                              // class_data
-		                               sizeof(OreganoGnuCap),
-		                               0,                                       // n_preallocs
-		                               (GInstanceInitFunc)gnucap_instance_init, // instance_init
-		                               NULL};
+G_DEFINE_TYPE_EXTENDED(GnuCap, gnucap, G_TYPE_OBJECT, 0, G_ADD_PRIVATE(GnuCap); G_IMPLEMENT_INTERFACE(TYPE_ENGINE, gnucap_interface_init))
 
-		static const GInterfaceInfo gnucap_info = {
-		    (GInterfaceInitFunc)gnucap_interface_init, // interface_init
-		    NULL,                                      // interface_finalize
-		    NULL                                       // interface_data
-		};
-
-		type = g_type_register_static (G_TYPE_OBJECT, "OreganoGnuCap", &info, 0);
-		g_type_add_interface_static (type, OREGANO_TYPE_ENGINE, &gnucap_info);
-	}
-	return type;
-}
-
-static void gnucap_class_init (OreganoGnuCapClass *klass)
+static void gnucap_class_init (GnuCapClass *klass)
 {
 	GObjectClass *object_class;
 
@@ -135,11 +111,11 @@ static void gnucap_class_init (OreganoGnuCapClass *klass)
 static void gnucap_finalize (GObject *object)
 {
 	SimulationData *data;
-	OreganoGnuCap *gnucap;
+	GnuCap *gnucap;
 	GList *iter;
 	int i;
 
-	gnucap = OREGANO_GNUCAP (object);
+	gnucap = GNUCAP (object);
 
 	iter = gnucap->priv->analysis;
 	for (; iter; iter = iter->next) {
@@ -165,9 +141,9 @@ static void gnucap_finalize (GObject *object)
 
 static void gnucap_dispose (GObject *object) { parent_class->dispose (object); }
 
-static gboolean gnucap_has_warnings (OreganoEngine *self) { return FALSE; }
+static gboolean gnucap_has_warnings (Engine *self) { return FALSE; }
 
-static gboolean gnucap_is_available (OreganoEngine *self)
+static gboolean gnucap_is_available (Engine *self)
 {
 	gchar *exe;
 	exe = g_find_program_in_path ("gnucap");
@@ -179,17 +155,17 @@ static gboolean gnucap_is_available (OreganoEngine *self)
 	return TRUE;
 }
 
-static gboolean gnucap_generate_netlist (OreganoEngine *engine, const gchar *filename,
+static gboolean gnucap_generate_netlist (Engine *engine, const gchar *filename,
                                          GError **error)
 {
-	OreganoGnuCap *gnucap;
+	GnuCap *gnucap;
 	Netlist output;
 	SimOption *so;
 	GList *iter;
 	FILE *file;
 	GError *local_error = NULL;
 
-	gnucap = OREGANO_GNUCAP (engine);
+	gnucap = GNUCAP (engine);
 
 	netlist_helper_create (gnucap->priv->schematic, &output, &local_error);
 	if (local_error != NULL) {
@@ -308,24 +284,24 @@ static gboolean gnucap_generate_netlist (OreganoEngine *engine, const gchar *fil
 	return TRUE;
 }
 
-static void gnucap_progress (OreganoEngine *self, double *d)
+static void gnucap_progress (Engine *self, double *d)
 {
-	OreganoGnuCap *gnucap = OREGANO_GNUCAP (self);
+	GnuCap *gnucap = GNUCAP (self);
 
 	gnucap->priv->progress += 0.1;
 	(*d) = gnucap->priv->progress;
 }
 
-static void gnucap_stop (OreganoEngine *self)
+static void gnucap_stop (Engine *self)
 {
-	OreganoGnuCap *gnucap = OREGANO_GNUCAP (self);
+	GnuCap *gnucap = GNUCAP (self);
 	g_io_channel_shutdown (gnucap->priv->child_iochannel, TRUE, NULL);
 	g_source_remove (gnucap->priv->child_iochannel_watch);
 	g_spawn_close_pid (gnucap->priv->child_pid);
 	g_spawn_close_pid (gnucap->priv->child_stdout);
 }
 
-static void gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
+static void gnucap_watch_cb (GPid pid, gint status, GnuCap *gnucap)
 {
 	// check for status, see man waitpid(2)
 	if (WIFEXITED (status)) {
@@ -355,7 +331,7 @@ static void gnucap_watch_cb (GPid pid, gint status, OreganoGnuCap *gnucap)
 }
 
 static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition,
-                                        OreganoGnuCap *gnucap)
+                                        GnuCap *gnucap)
 {
 	gchar *line;
 	gsize len, terminator;
@@ -373,13 +349,13 @@ static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition conditi
 	return TRUE;
 }
 
-static void gnucap_start (OreganoEngine *self)
+static void gnucap_start (Engine *self)
 {
-	OreganoGnuCap *gnucap;
+	GnuCap *gnucap;
 	GError *error = NULL;
 	char *argv[] = {"gnucap", "-b", "/tmp/netlist.tmp", NULL};
 
-	gnucap = OREGANO_GNUCAP (self);
+	gnucap = GNUCAP (self);
 	oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &error);
 	if (error != NULL) {
 		gnucap->priv->aborted = TRUE;
@@ -412,14 +388,14 @@ static void gnucap_start (OreganoEngine *self)
 	}
 }
 
-static GList *gnucap_get_results (OreganoEngine *self)
+static GList *gnucap_get_results (Engine *self)
 {
-	return OREGANO_GNUCAP (self)->priv->analysis;
+	return GNUCAP (self)->priv->analysis;
 }
 
-static gchar *gnucap_get_operation (OreganoEngine *self)
+static gchar *gnucap_get_operation (Engine *self)
 {
-	OreganoGnuCapPrivate *priv = OREGANO_GNUCAP (self)->priv;
+	GnuCapPrivate *priv = GNUCAP (self)->priv;
 
 	if (priv->current == NULL)
 		return _ ("None");
@@ -429,7 +405,7 @@ static gchar *gnucap_get_operation (OreganoEngine *self)
 
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 {
-	OreganoEngineClass *klass = (OreganoEngineClass *)g_iface;
+	EngineClass *klass = (EngineClass *)g_iface;
 	klass->start = gnucap_start;
 	klass->stop = gnucap_stop;
 	klass->progress = gnucap_progress;
@@ -442,9 +418,9 @@ static void gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 {
-	OreganoGnuCap *self = OREGANO_GNUCAP (instance);
+	GnuCap *self = GNUCAP (instance);
 
-	self->priv = g_new0 (OreganoGnuCapPriv, 1);
+	self->priv = gnucap_get_instance_private(self);
 	self->priv->progress = 0.0;
 	self->priv->char_last_newline = TRUE;
 	self->priv->status = 0;
@@ -455,14 +431,14 @@ static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 	self->priv->aborted = FALSE;
 }
 
-OreganoEngine *oregano_gnucap_new (Schematic *sc)
+Engine *oregano_gnucap_new (Schematic *sc)
 {
-	OreganoGnuCap *gnucap;
+	GnuCap *gnucap;
 
-	gnucap = OREGANO_GNUCAP (g_object_new (OREGANO_TYPE_GNUCAP, NULL));
+	gnucap = GNUCAP (g_object_new (TYPE_GNUCAP, NULL));
 	gnucap->priv->schematic = sc;
 
-	return OREGANO_ENGINE (gnucap);
+	return ENGINE (gnucap);
 }
 
 typedef struct
@@ -554,13 +530,13 @@ gdouble strtofloat (gchar *s)
 
 // Main method. Here we'll transform GnuCap output
 // into SimulationResults!
-static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
+static void gnucap_parse (gchar *raw, gint len, GnuCap *gnucap)
 {
 	static SimulationData *sdata;
 	static Analysis *data;
 	static char buf[1024];
 	GCap_Variable *variables;
-	OreganoGnuCapPrivate *priv = gnucap->priv;
+	GnuCapPrivate *priv = gnucap->priv;
 	gint i, j, n;
 	gdouble val;
 	gchar *s;

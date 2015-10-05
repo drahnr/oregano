@@ -42,7 +42,7 @@
 #include "ngspice.h"
 
 // Parser STATUS
-struct _OreganoNgSpicePriv
+struct _NgSpicePriv
 {
 	GPid child_pid;
 	gint child_stdout;
@@ -67,6 +67,6 @@ struct _OreganoNgSpicePriv
 	FILE *inputfp;
 };
 
-void ngspice_parse (OreganoNgSpice *ngspice);
+void ngspice_parse (NgSpice *ngspice);
 
 #endif
