@@ -37,12 +37,9 @@
 #include "simulation.h"
 
 #define TYPE_ENGINE (engine_get_type ())
-#define ENGINE_CLASS(klass)                                                                \
-	(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_ENGINE, EngineClass))
-#define IS_ENGINE_CLASS(klass)                                                             \
-	(G_TYPE_CLASS_TYPE ((klass), TYPE_ENGINE, EngineClass))
-#define ENGINE_GET_IFACE(klass)                                                            \
-	(G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_ENGINE, EngineClass))
+#define ENGINE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_ENGINE, EngineInterface))
+#define IS_ENGINE_CLASS(klass) (G_TYPE_CLASS_TYPE ((klass), TYPE_ENGINE, EngineInterface))
+#define ENGINE_GET_IFACE(klass) (G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_ENGINE, EngineInterface))
 
 typedef struct _EngineInterface EngineInterface;
 

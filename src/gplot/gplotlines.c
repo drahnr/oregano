@@ -91,7 +91,8 @@ struct _GPlotLinesPrivate
 #define TYPE_GPLOT_GRAPHIC_TYPE (g_plot_lines_graphic_get_type ())
 
 G_DEFINE_TYPE_WITH_CODE (GPlotLines, g_plot_lines, G_TYPE_OBJECT,
-                         G_IMPLEMENT_INTERFACE (TYPE_GPLOT_FUNCTION, g_plot_lines_function_init); G_ADD_PRIVATE(GPlotLines));
+                         G_IMPLEMENT_INTERFACE (TYPE_GPLOT_FUNCTION, g_plot_lines_function_init);
+                         G_ADD_PRIVATE (GPlotLines));
 
 GType g_plot_lines_graphic_get_type (void)
 {
@@ -173,7 +174,7 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 
 static void g_plot_lines_init (GPlotLines *plot)
 {
-	GPlotLinesPrivate *priv = g_plot_lines_get_instance_private(plot);
+	GPlotLinesPrivate *priv = g_plot_lines_get_instance_private (plot);
 
 	priv->bbox_valid = FALSE;
 

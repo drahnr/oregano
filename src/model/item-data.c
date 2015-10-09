@@ -60,7 +60,7 @@ enum {
 	LAST_SIGNAL
 };
 
-struct _ItemDataPriv
+struct _ItemDataPrivate
 {
 	NodeStore *store;
 
@@ -79,7 +79,7 @@ static guint item_data_signals[LAST_SIGNAL] = {0};
 
 static void item_data_init (ItemData *item_data)
 {
-	ItemDataPrivate *priv = item_date_get_instance_private(item_data);
+	ItemDataPrivate *priv = item_date_get_instance_private (item_data);
 
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 

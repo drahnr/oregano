@@ -2,6 +2,7 @@
 #define __LOG_H__
 
 #include <gtk/gtk.h>
+#include <stdarg.h>
 
 G_BEGIN_DECLS
 
@@ -32,7 +33,7 @@ struct _LogClass
 GType log_get_type (void) G_GNUC_CONST;
 Log *log_new (void);
 
-void log_append (Log *log, const gchar *prefix, const gchar *message);
+void log_append (Log *log, const gchar *prefix, const gchar *format, ...);
 
 void log_append_error (Log *log, const gchar *prefix, const gchar *message, GError *error);
 

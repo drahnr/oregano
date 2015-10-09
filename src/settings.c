@@ -126,24 +126,24 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	Settings *s;
 	Schematic *sm;
 	guint8 engines_found = 0;
-		
+
 	g_return_if_fail (sv != NULL);
 
 	// If no engine available, stop oregano
-	
-	for (guint8 i=0; i<sizeof(engine)/sizeof(*engine); i++) {
-		if (g_find_program_in_path(engine[i]) == NULL)
+
+	for (guint8 i = 0; i < sizeof(engine) / sizeof(*engine); i++) {
+		if (g_find_program_in_path (engine[i]) == NULL)
 			engines_found++;
 	}
 	if (engines_found == 0) {
 		gchar *msg;
 		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
-			                      "You might install one, at least! \n"
-			                      "Either ngspice or gnucap."));
+		                          "You might install one, at least! \n"
+		                          "Either ngspice or gnucap."));
 		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_free (msg);
 	}
-	
+
 	g_return_if_fail (sv != NULL);
 
 	if ((builder = gtk_builder_new ()) == NULL) {

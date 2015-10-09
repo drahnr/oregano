@@ -37,19 +37,15 @@
 #include "schematic.h"
 #include "simulation.h"
 
-#define ENGINE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj),TYPE_ENGINE, Engine))
-#define IS_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj),TYPE_ENGINE))
+#define ENGINE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_ENGINE, Engine))
+#define IS_ENGINE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_ENGINE))
 
 typedef struct _Engine Engine;
 
 // Engines IDs
-enum {
-	ENGINE_GNUCAP = 0,
-	ENGINE_NGSPICE,
-	ENGINE_COUNT
-};
+enum { ENGINE_GNUCAP = 0, ENGINE_NGSPICE, ENGINE_COUNT };
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(Engine, g_object_unref)
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (Engine, g_object_unref)
 
 Engine *engine_factory_create_engine (gint type, Schematic *sm);
 

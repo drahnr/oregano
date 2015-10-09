@@ -33,14 +33,20 @@ Log *log_new () { return g_object_new (LOG_TYPE, NULL); }
  * show on top of the items in the logview but
  * if exported at the end of the exported debug output
  */
-void log_append (Log *log, const gchar *prefix, const gchar *message)
+void log_append (Log *log, const gchar *prefix, const gchar *format, ...)
 {
-	g_return_if_fail (message != NULL);
+	g_assert (format);
+
+	va_list args;
+	va_start (args, format);
+	const char *tmp = g_strdup_vprintf (format, args);
+	va_end (args);
+	oregano_echo_static (tmp);
 
 	GtkTreeIter item;
 	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
-	gtk_list_store_set (GTK_LIST_STORE (log), &item, 0, g_strdup (prefix), 1, g_strdup (message),
-	                    -1);
+	gtk_list_store_set (GTK_LIST_STORE (log), &item, 0, g_strdup (prefix), 1, tmp, -1);
+	// do not free tmp!, the liststore takes over ownership
 }
 
 void log_append_error (Log *log, const gchar *prefix, const gchar *message, GError *error)
@@ -59,6 +65,7 @@ void log_append_error (Log *log, const gchar *prefix, const gchar *message, GErr
 	GtkTreeIter item;
 	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
 	gtk_list_store_set (GTK_LIST_STORE (log), &item, 0, g_strdup (prefix), 1, concat, -1);
+	// do not free tmp!, the liststore takes over ownership
 }
 
 void log_clear (Log *log) { gtk_list_store_clear (GTK_LIST_STORE (log)); }

@@ -38,6 +38,7 @@
 
 #include "ngspice.h"
 #include "netlist-helper.h"
+#include "echo.h"
 #include "dialogs.h"
 #include "engine-internal.h"
 #include "ngspice-analysis.h"
@@ -55,8 +56,9 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condit
 
 static GObjectClass *parent_class = NULL;
 
-G_DEFINE_TYPE_EXTENDED(NgSpice, ngspice, G_TYPE_OBJECT, 0, G_ADD_PRIVATE(NgSpice); G_IMPLEMENT_INTERFACE(TYPE_ENGINE, ngspice_interface_init))
-	
+G_DEFINE_TYPE_EXTENDED (NgSpice, ngspice, G_TYPE_OBJECT, 0, G_ADD_PRIVATE (NgSpice);
+                        G_IMPLEMENT_INTERFACE (TYPE_ENGINE, ngspice_interface_init))
+
 static void ngspice_class_init (NgSpiceClass *klass)
 {
 	GObjectClass *object_class;
@@ -122,7 +124,6 @@ static GString *ngspice_generate_netlist_buffer (Engine *engine, GError **error)
 	NgSpice *ngspice = NGSPICE (engine);
 	Netlist output;
 	GList *iter;
-	FILE *file;
 
 	GString *buffer = NULL;
 
@@ -134,7 +135,7 @@ static GString *ngspice_generate_netlist_buffer (Engine *engine, GError **error)
 
 	buffer = g_string_sized_new (500);
 	if (!buffer) {
-		g_set_error_literal (&e, ERROR, OOM,
+		g_set_error_literal (&e, OREGANO_ERROR, OREGANO_OUT_OF_MEMORY,
 		                     "Failed to allocate intermediate buffer.");
 		g_propagate_error (error, e);
 		return NULL;
@@ -188,10 +189,11 @@ static GString *ngspice_generate_netlist_buffer (Engine *engine, GError **error)
 
 		if ((stop - start) <= 0) {
 			// FIXME ask for swapping or cancel simulation
-			error (_ ("Transient: Start time is after Stop time - fix this."
-			                  "stop figure\n"));
-			g_string_free (buffer, TRUE);
-			return NULL;
+			oregano_echo (_ ("Transient: Start time is after Stop time - fix this."
+			                 "stop figure\n Swapping."));
+			guint32 tmp = stop;
+			stop = start;
+			start = tmp;
 		}
 
 		g_string_append_printf (buffer, ".tran %lf %lf %lf\n", st, stop, start);
@@ -245,8 +247,7 @@ static GString *ngspice_generate_netlist_buffer (Engine *engine, GError **error)
  * @filename target netlist file, user selected
  * @error [allow-none]
  */
-static gboolean ngspice_generate_netlist (Engine *engine, const gchar *filename,
-                                          GError **error)
+static gboolean ngspice_generate_netlist (Engine *engine, const gchar *filename, GError **error)
 {
 	GError *e = NULL;
 	GString *buffer;
@@ -254,7 +255,7 @@ static gboolean ngspice_generate_netlist (Engine *engine, const gchar *filename,
 
 	buffer = ngspice_generate_netlist_buffer (engine, &e);
 	if (!buffer) {
-		error (g_strdup_printf ("Failed generate netlist buffer\n"));
+		oregano_error ("Failed to generate netlist buffer\n");
 		g_propagate_error (error, e);
 		return FALSE;
 	}
@@ -264,7 +265,7 @@ static gboolean ngspice_generate_netlist (Engine *engine, const gchar *filename,
 
 	if (!success) {
 		g_propagate_error (error, e);
-		error (g_strdup_printf ("Failed to open file \"%s\" in 'w' mode.\n", filename));
+		oregano_error ("Failed to open file \"%s\" in 'w' mode.\n", filename);
 		return FALSE;
 	}
 	return TRUE;
@@ -307,7 +308,6 @@ static void ngspice_watch_cb (GPid pid, gint status, NgSpice *ngspice)
 		if (e) {
 			schematic_log_append_error (ngspice->priv->schematic,
 			                            "Failed to read from subprocess \"ngpsice\"");
-			g_print ("ngspice pipe pid: %s - %i", e->message, e->code);
 			g_clear_error (&e);
 			ngspice->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
@@ -331,7 +331,7 @@ static void ngspice_watch_cb (GPid pid, gint status, NgSpice *ngspice)
 
 		if (ngspice->priv->num_analysis == 0) {
 			schematic_log_append_error (ngspice->priv->schematic,
-			                            _ ("### Too few or none analysis found ###\n"));
+			                            "### Too few or none analysis found ###\n");
 			ngspice->priv->aborted = TRUE;
 			g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
 		} else {
@@ -345,14 +345,15 @@ static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condit
 {
 	gchar *line = NULL;
 	gsize len, terminator;
-	GIOStatus status;
 	GError *e = NULL;
 
 	g_io_channel_read_line (source, &line, &len, &terminator, &e);
 	if (e) {
-		g_printf ("ngspice pipe stdout: %s - %i", e->message, e->code);
+		schematic_log_append_error (ngspice->priv->schematic, "ngspice pipe stdout: %s - %i",
+		                            e->message, e->code);
 		g_clear_error (&e);
 	} else if (len > 0) {
+		// not an error ...
 		fprintf (ngspice->priv->inputfp, "%s", line);
 	}
 	g_free (line);
@@ -367,12 +368,11 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condit
 {
 	gchar *line;
 	gsize len, terminator;
-	GIOStatus status;
 	GError *e = NULL;
 
 	g_io_channel_read_line (source, &line, &len, &terminator, &e);
 	if (e) {
-		g_printf ("ngspice pipe stderr: %s - %i", e->message, e->code);
+		oregano_error ("ngspice pipe stderr: %s - %i", e->message, e->code);
 		g_clear_error (&e);
 	} else if (len > 0) {
 		schematic_log_append_error (ngspice->priv->schematic, line);
@@ -386,10 +386,12 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condit
 
 static void ngspice_start (Engine *self)
 {
-	NgSpice *ngspice = NGSPICE (self);;
-	NgSpicePrivate *priv = ngspice->priv;;
+	NgSpice *ngspice = NGSPICE (self);
+	;
+	NgSpicePrivate *priv = ngspice->priv;
+	;
 	GError *e = NULL;
-	const char *argv[] = {"ngspice", "-b", "/tmp/netlist.tmp", NULL};
+	char *argv[] = {"ngspice", "-b", "/tmp/netlist.tmp", NULL};
 
 	engine_generate_netlist (self, "/tmp/netlist.tmp", &e);
 	if (e) {
@@ -437,7 +439,7 @@ static void ngspice_start (Engine *self)
 static GList *ngspice_get_results (Engine *self)
 {
 	if (NGSPICE (self)->priv->analysis == NULL)
-		printf ("pas d'analyse\n");
+		oregano_error ("No frickin analysis there...");
 	return NGSPICE (self)->priv->analysis;
 }
 
@@ -453,7 +455,7 @@ static gchar *ngspice_get_operation (Engine *self)
 
 static void ngspice_interface_init (gpointer g_iface, gpointer iface_data)
 {
-	EngineClass *klass = (EngineClass *)g_iface;
+	EngineInterface *klass = (EngineInterface *)g_iface;
 	klass->start = ngspice_start;
 	klass->stop = ngspice_stop;
 	klass->progress = ngspice_progress;
@@ -464,11 +466,11 @@ static void ngspice_interface_init (gpointer g_iface, gpointer iface_data)
 	klass->is_available = ngspice_is_available;
 }
 
-static void ngspice_init (GTypeInstance *instance, gpointer g_class)
+static void ngspice_init (GTypeInstance *instance)
 {
 	NgSpice *self = NGSPICE (instance);
 
-	self->priv = ngspice_get_instance_private(self);
+	self->priv = ngspice_get_instance_private (self);
 	self->priv->progress = 0.0;
 	self->priv->char_last_newline = TRUE;
 	self->priv->status = 0;

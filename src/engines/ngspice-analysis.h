@@ -42,7 +42,7 @@
 #include "ngspice.h"
 
 // Parser STATUS
-struct _NgSpicePriv
+struct _NgSpicePrivate
 {
 	GPid child_pid;
 	gint child_stdout;

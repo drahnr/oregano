@@ -50,6 +50,7 @@
 #include "schematic-print-context.h"
 #include "dialogs.h"
 
+#include "echo.h"
 #include "debug.h"
 
 static void part_class_init (PartClass *klass);
@@ -97,7 +98,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (Part, part, TYPE_ITEM_DATA);
 
 static ItemDataClass *parent_class = NULL;
 
-static void part_init (Part *part) { part->priv = part_get_instance_private(part); }
+static void part_init (Part *part) { part->priv = part_get_instance_private (part); }
 
 static void part_dispose (GObject *object) { G_OBJECT_CLASS (parent_class)->dispose (object); }
 
@@ -581,9 +582,8 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	if (handler_connected) {
 		g_signal_emit_by_name (G_OBJECT (data), "changed");
 	} else {
-		NG_DEBUG ("handler not yet registerd.");
+		oregano_echo ("handler not yet registerd.");
 	}
-	NG_DEBUG ("\n\n");
 }
 
 /**

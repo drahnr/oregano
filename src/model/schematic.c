@@ -193,7 +193,7 @@ static void node_dot_removed_callback (NodeStore *store, Coords *pos, Schematic 
 
 static void schematic_init (Schematic *schematic)
 {
-	SchematicPrivate *priv = schematic_get_instance_private(schematic);
+	SchematicPrivate *priv = schematic_get_instance_private (schematic);
 	schematic->priv = priv;
 
 	priv->printoptions = NULL;
@@ -458,21 +458,27 @@ void schematic_log_append (Schematic *schematic, const char *message)
 	gtk_text_buffer_insert_at_cursor (schematic->priv->log, message, strlen (message));
 }
 
-void schematic_log_append_error (Schematic *schematic, const char *message)
+void schematic_log_append_error (Schematic *schematic, const char *format, ...)
 {
-	GtkTextIter iter;
-	SchematicPrivate *priv;
+	va_list args;
+	va_start (args, format);
+	const char *tmp = g_strdup_vprintf (format, args);
+	va_end (args);
+	oregano_echo_static (tmp);
 
-	g_return_if_fail (schematic != NULL);
-	g_return_if_fail (IS_SCHEMATIC (schematic));
+	g_assert (schematic != NULL);
+	g_assert (IS_SCHEMATIC (schematic));
 
-	priv = schematic->priv;
-
-	log_append (schematic->priv->logstore, "Schematic Error", message);
+	log_append (schematic->priv->logstore, "Schematic Error", tmp);
 
 	// LEGACY
+	GtkTextIter iter;
+	SchematicPrivate *priv = schematic->priv;
+	;
 	gtk_text_buffer_get_end_iter (priv->log, &iter);
-	gtk_text_buffer_insert_with_tags (priv->log, &iter, message, -1, priv->tag_error, NULL);
+	gtk_text_buffer_insert_with_tags (priv->log, &iter, tmp, -1, priv->tag_error, NULL);
+
+	g_free (tmp);
 }
 
 void schematic_log_show (Schematic *schematic)
@@ -493,7 +499,7 @@ void schematic_log_clear (Schematic *schematic)
 
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic)
 {
-	g_assert(schematic);
+	g_assert (schematic);
 	g_assert (IS_SCHEMATIC (schematic));
 
 	return schematic->priv->log;

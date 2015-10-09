@@ -87,14 +87,14 @@ static void gnucap_finalize (GObject *object);
 static void gnucap_dispose (GObject *object);
 static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
-static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition,
-                                        GnuCap *gnucap);
+static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, GnuCap *gnucap);
 static void gnucap_parse (gchar *raw, gint len, GnuCap *gnucap);
 static gdouble strtofloat (char *s);
 
 static GObjectClass *parent_class = NULL;
 
-G_DEFINE_TYPE_EXTENDED(GnuCap, gnucap, G_TYPE_OBJECT, 0, G_ADD_PRIVATE(GnuCap); G_IMPLEMENT_INTERFACE(TYPE_ENGINE, gnucap_interface_init))
+G_DEFINE_TYPE_EXTENDED (GnuCap, gnucap, G_TYPE_OBJECT, 0, G_ADD_PRIVATE (GnuCap);
+                        G_IMPLEMENT_INTERFACE (TYPE_ENGINE, gnucap_interface_init))
 
 static void gnucap_class_init (GnuCapClass *klass)
 {
@@ -155,8 +155,7 @@ static gboolean gnucap_is_available (Engine *self)
 	return TRUE;
 }
 
-static gboolean gnucap_generate_netlist (Engine *engine, const gchar *filename,
-                                         GError **error)
+static gboolean gnucap_generate_netlist (Engine *engine, const gchar *filename, GError **error)
 {
 	GnuCap *gnucap;
 	Netlist output;
@@ -330,8 +329,7 @@ static void gnucap_watch_cb (GPid pid, gint status, GnuCap *gnucap)
 	}
 }
 
-static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition,
-                                        GnuCap *gnucap)
+static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, GnuCap *gnucap)
 {
 	gchar *line;
 	gsize len, terminator;
@@ -356,7 +354,7 @@ static void gnucap_start (Engine *self)
 	char *argv[] = {"gnucap", "-b", "/tmp/netlist.tmp", NULL};
 
 	gnucap = GNUCAP (self);
-	oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &error);
+	engine_generate_netlist (self, "/tmp/netlist.tmp", &error);
 	if (error != NULL) {
 		gnucap->priv->aborted = TRUE;
 		schematic_log_append_error (gnucap->priv->schematic, error->message);
@@ -388,10 +386,7 @@ static void gnucap_start (Engine *self)
 	}
 }
 
-static GList *gnucap_get_results (Engine *self)
-{
-	return GNUCAP (self)->priv->analysis;
-}
+static GList *gnucap_get_results (Engine *self) { return GNUCAP (self)->priv->analysis; }
 
 static gchar *gnucap_get_operation (Engine *self)
 {
@@ -400,12 +395,12 @@ static gchar *gnucap_get_operation (Engine *self)
 	if (priv->current == NULL)
 		return _ ("None");
 
-	return oregano_engine_get_analysis_name (priv->current);
+	return engine_get_analysis_name (priv->current);
 }
 
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 {
-	EngineClass *klass = (EngineClass *)g_iface;
+	EngineInterface *klass = (EngineInterface *)g_iface;
 	klass->start = gnucap_start;
 	klass->stop = gnucap_stop;
 	klass->progress = gnucap_progress;
@@ -420,7 +415,7 @@ static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 {
 	GnuCap *self = GNUCAP (instance);
 
-	self->priv = gnucap_get_instance_private(self);
+	self->priv = gnucap_get_instance_private (self);
 	self->priv->progress = 0.0;
 	self->priv->char_last_newline = TRUE;
 	self->priv->status = 0;

@@ -106,7 +106,7 @@ static void wire_class_init (WireClass *klass)
 
 static void wire_init (Wire *wire)
 {
-	WirePrivate *priv = g_new0 (WirePriv, 1);
+	WirePrivate *priv = wire_get_instance_private (wire);
 
 	// For debugging purposes.
 	priv->length.x = -1;

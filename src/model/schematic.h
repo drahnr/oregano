@@ -110,7 +110,7 @@ gpointer schematic_get_simulation (Schematic *schematic);
 Log *schematic_get_log_store (Schematic *schematic);
 void schematic_log_clear (Schematic *schematic);
 void schematic_log_append (Schematic *schematic, const char *message);
-void schematic_log_append_error (Schematic *schematic, const char *message);
+void schematic_log_append_error (Schematic *schematic, const char *format, ...);
 void schematic_log_show (Schematic *schematic);
 GtkTextBuffer *schematic_get_log_text (Schematic *schematic);
 int schematic_count (void);

@@ -49,54 +49,37 @@ static guint engine_signals[LAST_SIGNAL] = {0};
 
 static void engine_default_init (EngineInterface *iface);
 
-	
-G_DEFINE_INTERFACE(Engine, engine, G_TYPE_OBJECT)
+
+G_DEFINE_INTERFACE (Engine, engine, G_TYPE_OBJECT)
 
 static void engine_default_init (EngineInterface *iface)
 {
-	engine_signals[DONE] =
-		    g_signal_new ("done", G_TYPE_FROM_INTERFACE (iface), G_SIGNAL_RUN_FIRST,
-		                  G_STRUCT_OFFSET (EngineInterface, done), NULL, NULL,
-		                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+	engine_signals[DONE] = g_signal_new ("done", G_TYPE_FROM_INTERFACE (iface), G_SIGNAL_RUN_FIRST,
+	                                     G_STRUCT_OFFSET (EngineInterface, done), NULL, NULL,
+	                                     g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
 	engine_signals[ABORTED] =
-		    g_signal_new ("aborted", G_TYPE_FROM_INTERFACE (iface), G_SIGNAL_RUN_FIRST,
-		                  G_STRUCT_OFFSET (EngineInterface, abort), NULL, NULL,
-		                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
+	    g_signal_new ("aborted", G_TYPE_FROM_INTERFACE (iface), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (EngineInterface, abort), NULL, NULL,
+	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
-void engine_start (Engine *self) {
-	ENGINE_GET_IFACE (self)->start (self);
-}
+void engine_start (Engine *self) { ENGINE_GET_IFACE (self)->start (self); }
 
-void engine_stop (Engine *self) {
-	ENGINE_GET_IFACE (self)->stop (self);
-}
+void engine_stop (Engine *self) { ENGINE_GET_IFACE (self)->stop (self); }
 
-gboolean engine_has_warnings (Engine *self)
-{
-	return ENGINE_GET_IFACE (self)->has_warnings (self);
-}
+gboolean engine_has_warnings (Engine *self) { return ENGINE_GET_IFACE (self)->has_warnings (self); }
 
-gboolean engine_is_available (Engine *self)
-{
-	return ENGINE_GET_IFACE (self)->is_available (self);
-}
+gboolean engine_is_available (Engine *self) { return ENGINE_GET_IFACE (self)->is_available (self); }
 
-void engine_get_progress (Engine *self, double *p)
-{
-	ENGINE_GET_IFACE (self)->progress (self, p);
-}
+void engine_get_progress (Engine *self, double *p) { ENGINE_GET_IFACE (self)->progress (self, p); }
 
 gboolean engine_generate_netlist (Engine *self, const gchar *file, GError **error)
 {
 	return ENGINE_GET_IFACE (self)->get_netlist (self, file, error);
 }
 
-GList *engine_get_results (Engine *self)
-{
-	return ENGINE_GET_IFACE (self)->get_results (self);
-}
+GList *engine_get_results (Engine *self) { return ENGINE_GET_IFACE (self)->get_results (self); }
 
 gchar *engine_get_current_operation (Engine *self)
 {

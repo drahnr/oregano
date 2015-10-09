@@ -36,12 +36,10 @@
 
 #define TYPE_GNUCAP (gnucap_get_type ())
 #define GNUCAP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_GNUCAP, GnuCap))
-#define GNUCAP_CLASS(vtable)                                                               \
-	(G_TYPE_CHECK_CLASS_CAST ((vtable), TYPE_GNUCAP, GnuCapClass))
+#define GNUCAP_CLASS(vtable) (G_TYPE_CHECK_CLASS_CAST ((vtable), TYPE_GNUCAP, GnuCapClass))
 #define IS_GNUCAP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_GNUCAP))
 #define IS_GNUCAP_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), TYPE_GNUCAP))
-#define GNUCAP_GET_CLASS(inst)                                                             \
-	(G_TYPE_INSTANCE_GET_CLASS ((inst), TYPE_GNUCAP, GnuCapClass))
+#define GNUCAP_GET_CLASS(inst) (G_TYPE_INSTANCE_GET_CLASS ((inst), TYPE_GNUCAP, GnuCapClass))
 
 typedef struct _GnuCap GnuCap;
 typedef struct _GnuCapPrivate GnuCapPrivate;

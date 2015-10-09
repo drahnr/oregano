@@ -35,14 +35,11 @@
 #include "engine.h"
 
 #define TYPE_NGSPICE (ngspice_get_type ())
-#define NGSPICE(obj)                                                                       \
-	(G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NGSPICE, NgSpice))
-#define NGSPICE_CLASS(vtable)                                                              \
-	(G_TYPE_CHECK_CLASS_CAST ((vtable), TYPE_NGSPICE, NgSpiceClass))
+#define NGSPICE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_NGSPICE, NgSpice))
+#define NGSPICE_CLASS(vtable) (G_TYPE_CHECK_CLASS_CAST ((vtable), TYPE_NGSPICE, NgSpiceClass))
 #define IS_NGSPICE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NGSPICE))
 #define IS_NGSPICE_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), TYPE_NGSPICE))
-#define NGSPICE_GET_CLASS(inst)                                                            \
-	(G_TYPE_INSTANCE_GET_CLASS ((inst), TYPE_NGSPICE, NgSpiceClass))
+#define NGSPICE_GET_CLASS(inst) (G_TYPE_INSTANCE_GET_CLASS ((inst), TYPE_NGSPICE, NgSpiceClass))
 
 typedef struct _NgSpice NgSpice;
 typedef struct _NgSpicePrivate NgSpicePrivate;

@@ -67,15 +67,15 @@ static void sheet_finalize (GObject *object);
 static int dot_equal (gconstpointer a, gconstpointer b);
 static guint dot_hash (gconstpointer key);
 
-#define ZOOM_MIN 0.35
-#define ZOOM_MAX 3
+#define ZOREGANO_MIN 0.35
+#define ZOREGANO_MAX 3
 
 #include "debug.h"
 
 enum { SELECTION_CHANGED, BUTTON_PRESS, CONTEXT_CLICK, CANCEL, LAST_SIGNAL };
 static guint signals[LAST_SIGNAL] = {0};
 
-enum { ARG_0, ARG_ZOOM };
+enum { ARG_0, ARG_ZOREGANO };
 
 G_DEFINE_TYPE (Sheet, sheet, GOO_TYPE_CANVAS)
 
@@ -90,7 +90,7 @@ static void sheet_class_init (SheetClass *sheet_class)
 	object_class->finalize = sheet_finalize;
 	sheet_parent_class = g_type_class_peek (GOO_TYPE_CANVAS);
 
-	g_object_class_install_property (object_class, ARG_ZOOM,
+	g_object_class_install_property (object_class, ARG_ZOREGANO,
 	                                 g_param_spec_double ("zoom", "Sheet::zoom", "the zoom factor",
 	                                                      0.01f, 10.0f, 1.0f, G_PARAM_READWRITE));
 
@@ -511,7 +511,7 @@ static void sheet_set_property (GObject *object, guint prop_id, const GValue *va
 	const Sheet *sheet = SHEET (object);
 
 	switch (prop_id) {
-	case ARG_ZOOM:
+	case ARG_ZOREGANO:
 		sheet_set_zoom (sheet, g_value_get_double (value));
 		break;
 	}
@@ -522,7 +522,7 @@ static void sheet_get_property (GObject *object, guint prop_id, GValue *value, G
 	const Sheet *sheet = SHEET (object);
 
 	switch (prop_id) {
-	case ARG_ZOOM:
+	case ARG_ZOREGANO:
 		g_value_set_double (value, sheet->priv->zoom);
 		break;
 
@@ -735,12 +735,12 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 			if (scr_event->direction == GDK_SCROLL_UP) {
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
-				if (zoom < ZOOM_MAX)
+				if (zoom < ZOREGANO_MAX)
 					sheet_change_zoom (sheet, 1.1);
 			} else if (scr_event->direction == GDK_SCROLL_DOWN) {
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
-				if (zoom > ZOOM_MIN)
+				if (zoom > ZOREGANO_MIN)
 					sheet_change_zoom (sheet, 0.9);
 			}
 		}

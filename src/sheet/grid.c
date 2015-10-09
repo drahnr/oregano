@@ -89,7 +89,7 @@ static void grid_class_init (GridClass *class)
 
 static void grid_init (Grid *grid)
 {
-	GridPrivate *priv = grid_get_instance_private(grid);
+	GridPrivate *priv = grid_get_instance_private (grid);
 
 	grid->priv = priv;
 
@@ -97,9 +97,7 @@ static void grid_init (Grid *grid)
 	priv->snap = TRUE;
 }
 
-static void grid_dispose (GObject *object) {
-	G_OBJECT_CLASS (grid_parent_class)->dispose (object);
-}
+static void grid_dispose (GObject *object) { G_OBJECT_CLASS (grid_parent_class)->dispose (object); }
 
 static void grid_finalize (GObject *object)
 {
@@ -111,7 +109,8 @@ static void grid_finalize (GObject *object)
 static void grid_set_property (GObject *object, guint prop_id, const GValue *value,
                                GParamSpec *spec)
 {
-	Grid *grid = GRID (object);;
+	Grid *grid = GRID (object);
+	;
 	GridPrivate *priv = grid->priv;
 
 	switch (prop_id) {
@@ -131,7 +130,8 @@ static void grid_set_property (GObject *object, guint prop_id, const GValue *val
 
 static void grid_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec)
 {
-	Grid *grid = GRID (object);;
+	Grid *grid = GRID (object);
+	;
 	GridPrivate *priv = grid->priv;
 
 	switch (prop_id) {
@@ -166,8 +166,10 @@ Grid *grid_new (GooCanvasItem *root, gdouble width, gdouble height)
 
 inline gboolean snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 {
-	GridPrivate *priv = grid->priv;;
-	gdouble spacing = priv->spacing;;
+	GridPrivate *priv = grid->priv;
+	;
+	gdouble spacing = priv->spacing;
+	;
 
 	Coords old = {0., 0.};
 	gboolean moved = FALSE;

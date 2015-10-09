@@ -86,7 +86,7 @@ enum { MOVED, PLACED, SELECTION_CHANGED, MOUSE_OVER, DOUBLE_CLICKED, LAST_SIGNAL
 
 static guint so_signals[LAST_SIGNAL] = {0};
 
-	
+
 // This is the upper part of the object popup menu. It contains actions
 // that are the same for all objects, e.g. parts and wires.
 static const char *sheet_item_context_menu = "<ui>"
@@ -102,23 +102,19 @@ static const char *sheet_item_context_menu = "<ui>"
                                              "  </popup>"
                                              "</ui>";
 
-static void cb (GSimpleAction *simple,
-                GVariant      *parameter,
-                gpointer       user_data)
+static void cb (GSimpleAction *simple, GVariant *parameter, gpointer user_data)
 {
 	g_print ("so we print something stupid here: %s\n", g_variant_get_string (parameter, NULL));
 }
 
-static GActionEntry action_entries[] = {
-    {"item.copy", cb, "meh"},
-    {"item.cut", cb, "foo"},
-    {"item.delete", cb, "bar"},
-    {"item.rotate", cb, "baz"},
-    {"item.flipH", cb, "gnah"},
-    {"item.flipV", cb, "xaz"}
-};
+static GActionEntry action_entries[] = {{"item.copy", cb, "meh"},
+                                        {"item.cut", cb, "foo"},
+                                        {"item.delete", cb, "bar"},
+                                        {"item.rotate", cb, "baz"},
+                                        {"item.flipH", cb, "gnah"},
+                                        {"item.flipV", cb, "xaz"}};
 
-G_DEFINE_TYPE_WITH_PRIVATE(SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
+G_DEFINE_TYPE_WITH_PRIVATE (SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
 
 static void sheet_item_dispose (GObject *object)
 {
@@ -181,16 +177,14 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 	    g_signal_new ("double_clicked", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0,
 	                  NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
-	    
-	g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default()),
-	                                 action_entries, G_N_ELEMENTS (action_entries),
-	                                 NULL);
-	
+
+	g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()), action_entries,
+	                                 G_N_ELEMENTS (action_entries), NULL);
 }
 
 static void sheet_item_init (SheetItem *item)
 {
-	item->priv = sheet_item_get_instance_private(item);
+	item->priv = sheet_item_get_instance_private (item);
 	item->priv->selected = FALSE;
 	item->priv->preserve_selection = FALSE;
 	item->priv->data = NULL;
@@ -290,12 +284,9 @@ static void sheet_item_finalize (GObject *object)
 static void sheet_item_run_menu (SheetItem *item, Sheet *sheet, GdkEventButton *event)
 {
 	g_assert (IS_SHEET_ITEM (item));
-	SheetItemPrivate *priv = sheet_item_get_instance_private(item);
+	SheetItemPrivate *priv = sheet_item_get_instance_private (item);
 
-	gtk_menu_popup (GTK_MENU (priv->menu),
-	                NULL, NULL, NULL,
-	                sheet,
-	                event->button, event->time);
+	gtk_menu_popup (GTK_MENU (priv->menu), NULL, NULL, NULL, sheet, event->button, event->time);
 }
 
 // Event handler for a SheetItem
@@ -313,8 +304,8 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 	// delta   : Move the selected item(s) by this movement.
 	Coords delta;
 
-	g_assert(sheet_item != NULL);
-	g_assert(sheet != NULL);
+	g_assert (sheet_item != NULL);
+	g_assert (sheet != NULL);
 
 	priv = sheet->priv;
 
@@ -578,9 +569,9 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 	// Move the selected item(s) by this movement.
 	Coords delta = {0., 0.};
 
-	g_assert(sheet != NULL);
-	g_assert(IS_SHEET (sheet));
-	g_assert(sheet->priv->floating_objects != NULL);
+	g_assert (sheet != NULL);
+	g_assert (IS_SHEET (sheet));
+	g_assert (sheet->priv->floating_objects != NULL);
 
 	priv = sheet->priv;
 
@@ -751,8 +742,8 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 gboolean sheet_item_select (SheetItem *item, gboolean select)
 {
-	g_assert(item != NULL);
-	g_assert(IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	if ((item->priv->selected && select) || (!item->priv->selected && !select)) {
 		return FALSE;
@@ -843,32 +834,32 @@ void sheet_item_paste (Sheet *sheet, ClipboardData *data)
 
 ItemData *sheet_item_get_data (SheetItem *item)
 {
-	g_assert(item != NULL);
-	g_assert(IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return item->priv->data;
 }
 
 Sheet *sheet_item_get_sheet (SheetItem *item)
 {
-	g_assert(item != NULL);
-	g_assert(IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (item)));
 }
 
 gboolean sheet_item_get_selected (SheetItem *item)
 {
-	g_assert(item != NULL);
-	g_assert(IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return item->priv->selected;
 }
 
 gboolean sheet_item_get_preserve_selection (SheetItem *item)
 {
-	g_assert(item != NULL);
-	g_assert(IS_SHEET_ITEM (item));
+	g_assert (item != NULL);
+	g_assert (IS_SHEET_ITEM (item));
 
 	return item->priv->preserve_selection;
 }
@@ -911,10 +902,10 @@ void sheet_item_add_menu (SheetItem *item, const char *uipath)
 {
 	g_assert (IS_SHEET_ITEM (item));
 
-	gchar *path = g_strconcat(OREGANO_UIDIR, "/", uipath);
-	g_autoptr(GtkBuilder) builder = gtk_builder_new_from_file (path);
+	gchar *path = g_strconcat (OREGANO_UIDIR, "/", uipath);
+	g_autoptr (GtkBuilder) builder = gtk_builder_new_from_file (path);
 	g_free (path);
-	g_autoptr(GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
-	SheetItemPrivate *priv = sheet_item_get_instance_private(item);
+	g_autoptr (GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
+	SheetItemPrivate *priv = sheet_item_get_instance_private (item);
 	priv->menu = gtk_menu_new_from_model (menu);
 }

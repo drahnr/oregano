@@ -111,7 +111,7 @@ static void textbox_item_class_init (TextboxItemClass *textbox_item_class)
 
 static void textbox_item_init (TextboxItem *item)
 {
-	TextboxItemPrivate *priv = textbox_item_get_instance_private(item);
+	TextboxItemPrivate *priv = textbox_item_get_instance_private (item);
 
 	item->priv = priv;
 
@@ -257,7 +257,8 @@ static void selection_changed (TextboxItem *item, gboolean select, gpointer user
 
 static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 {
-	TextboxItem *item = TEXTBOX_ITEM (object);;
+	TextboxItem *item = TEXTBOX_ITEM (object);
+	;
 	Coords bbox_start, bbox_end;
 
 	get_cached_bounds (item, &bbox_start, &bbox_end);
@@ -439,14 +440,14 @@ static void edit_textbox (SheetItem *sheet_item)
 {
 	g_assert (item);
 	g_assert (IS_TEXTBOX (item));
-	
+
 	TextboxItem *item;
 	Textbox *textbox;
 	const char *value;
 	GError *e = NULL;
 	Sheet *sheet = sheet_item_get_sheet (sheet_item);
 
-	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	g_autoptr (GtkBuilder) builder = gtk_builder_new ();
 	if (builder == NULL) {
 		oregano_error (_ ("Could not create textbox properties dialog"));
 		return;

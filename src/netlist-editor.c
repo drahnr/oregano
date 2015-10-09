@@ -310,7 +310,7 @@ NetlistEditor *netlist_editor_new_from_schematic_view (SchematicView *sv)
 
 	sm = schematic_view_get_schematic (sv);
 
-	g_autoptr(Engine) engine = engine_factory_create_engine (oregano.engine, sm);
+	g_autoptr (Engine) engine = engine_factory_create_engine (oregano.engine, sm);
 	engine_generate_netlist (engine, name, &e);
 
 	if (e) {

@@ -88,7 +88,7 @@ static void oregano_init (Oregano *object)
 {
 	cursors_init ();
 
-	oregano_icon_init();
+	oregano_icon_init ();
 
 	oregano_config_load ();
 }

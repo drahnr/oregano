@@ -56,13 +56,13 @@ static void textbox_flip (ItemData *data, IDFlip direction, Coords *center);
 
 enum { TEXT_CHANGED, FONT_CHANGED, LAST_SIGNAL };
 
-struct _TextboxPriv
+struct _TextboxPrivate
 {
 	char *text;
 	char *font;
 };
 
-G_DEFINE_TYPE (Textbox, textbox, TYPE_ITEM_DATA)
+G_DEFINE_TYPE_WITH_PRIVATE (Textbox, textbox, TYPE_ITEM_DATA)
 
 static guint textbox_signals[LAST_SIGNAL] = {0};
 
@@ -113,7 +113,7 @@ static void textbox_class_init (TextboxClass *klass)
 
 static void textbox_init (Textbox *textbox)
 {
-	TextboxPrivate *priv = textbox_get_instance_private(textbox);
+	TextboxPrivate *priv = textbox_get_instance_private (textbox);
 	textbox->priv = priv;
 }
 

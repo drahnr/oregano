@@ -128,8 +128,8 @@ static SheetItemClass *parent_class = NULL;
 
 static const char *part_item_context_menu = NULL;
 
-static GActionEntry action_entries[] = {{"Object Properties", NULL},
-										{"Modify object properties", NULL}, NULL};
+static GActionEntry action_entries[] = {
+    {"Object Properties", NULL}, {"Modify object properties", NULL}, NULL};
 
 enum { ANCHOR_NORTH, ANCHOR_SOUTH, ANCHOR_WEST, ANCHOR_EAST };
 
@@ -168,7 +168,7 @@ static void part_item_init (PartItem *item)
 
 	item->priv = priv;
 
-	sheet_item_add_menu (SHEET_ITEM (item), OREGANO_UIDIR"/part-item-menu.ui");
+	sheet_item_add_menu (SHEET_ITEM (item), OREGANO_UIDIR "/part-item-menu.ui");
 }
 
 static void part_item_set_property (GObject *object, guint propety_id, const GValue *value,
@@ -398,14 +398,15 @@ static void edit_properties_point (PartItem *item)
 
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
-	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	g_autoptr (GtkBuilder) builder = gtk_builder_new ();
 	if (builder == NULL) {
 		oregano_error (_ ("Could not create part properties dialog."));
 		return;
 	}
 	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/clamp-properties-dialog.ui", &error) <= 0) {
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/clamp-properties-dialog.ui", &error) <=
+	    0) {
 		oregano_error_with_title (_ ("Could not create part properties dialog."), error->message);
 		g_error_free (error);
 		return;
@@ -535,7 +536,7 @@ static void edit_properties (SheetItem *object)
 
 	g_free (internal);
 
-	g_autoptr(GtkBuilder) builder = gtk_builder_new ();
+	g_autoptr (GtkBuilder) builder = gtk_builder_new ();
 	if (builder == NULL) {
 		oregano_error (_ ("Could not create part properties dialog."));
 		return;
@@ -543,7 +544,8 @@ static void edit_properties (SheetItem *object)
 
 	gtk_builder_set_translation_domain (builder, NULL);
 
-	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/part-properties-dialog.ui", &error) <= 0) {
+	if (gtk_builder_add_from_file (builder, OREGANO_UIDIR "/part-properties-dialog.ui", &error) <=
+	    0) {
 		msg = error->message;
 		oregano_error_with_title (_ ("Could not create part properties dialog."), msg);
 		g_error_free (error);
@@ -713,7 +715,7 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	inv = *(item_data_get_rotate (data)); // copy
 	cairo_matrix_multiply (&morph, &inv, item_data_get_translate (data));
 
-	
+
 
 	{
 		const cairo_matrix_t *matrix = &inv;
@@ -722,10 +724,10 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 		const double c = matrix->xy;
 		const double d = matrix->yy;
 
-		const double det = a*d - b*c;
-		g_assert(fabs(det) > 1e-3);
+		const double det = a * d - b * c;
+		g_assert (fabs (det) > 1e-3);
 	}
-	
+
 	done = cairo_matrix_invert (&inv);
 	if (done != CAIRO_STATUS_SUCCESS) {
 		g_error ("Failed to invert matrix. This should never happen. Ever!");
@@ -736,8 +738,8 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	Sheet *sheet = SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (sheet_item)));
 	if (G_UNLIKELY (!sheet)) {
-		g_error("Failed to determine the Sheet the item is glued to. This should "
-		           "never happen. Ever!");
+		g_error ("Failed to determine the Sheet the item is glued to. This should "
+		         "never happen. Ever!");
 	} else {
 		item_data_snap (data, sheet->grid); //&morph.x0, &morph.y0); //FIXME recheck
 		                                    // if this works as expected FIXME

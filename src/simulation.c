@@ -144,15 +144,14 @@ static int progress_bar_timeout_cb (Simulation *s)
 	double p;
 	g_return_val_if_fail (s != NULL, FALSE);
 
-	oregano_engine_get_progress (s->engine, &p);
+	engine_get_progress (s->engine, &p);
 
 	if (p >= 1)
 		p = 0;
 
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), p);
 
-	str = g_strdup_printf (_ ("Progress: <b>%s</b>"),
-	                       oregano_engine_get_current_operation (s->engine));
+	str = g_strdup_printf (_ ("Progress: <b>%s</b>"), engine_get_current_operation (s->engine));
 	gtk_label_set_markup (s->progress_label, str);
 	g_free (str);
 
@@ -174,7 +173,7 @@ static void engine_done_cb (OreganoEngine *engine, Simulation *s)
 
 	plot_show (s->engine);
 
-	if (oregano_engine_has_warnings (s->engine)) {
+	if (engine_has_warnings (s->engine)) {
 		schematic_view_log_show (s->sv, FALSE);
 		log_append (s->logstore, _ ("Simulation"),
 		            _ ("Finished with warnings:")); // FIXME add actual warnings
@@ -214,7 +213,7 @@ static void cancel_cb (GtkWidget *widget, gint arg1, Simulation *s)
 	}
 
 	if (s->engine)
-		oregano_engine_stop (s->engine);
+		engine_stop (s->engine);
 
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
 	s->dialog = NULL;
@@ -231,7 +230,7 @@ static gboolean simulate_cmd (Simulation *s)
 		g_clear_object (&(s->engine));
 	}
 
-	engine = oregano_engine_factory_create_engine (oregano.engine, s->sm);
+	engine = engine_factory_create_engine (oregano.engine, s->sm);
 	s->engine = engine;
 
 	s->progress_timeout_id = g_timeout_add (100, (GSourceFunc)progress_bar_timeout_cb, s);
@@ -239,7 +238,7 @@ static gboolean simulate_cmd (Simulation *s)
 	g_signal_connect (G_OBJECT (engine), "done", G_CALLBACK (engine_done_cb), s);
 	g_signal_connect (G_OBJECT (engine), "aborted", G_CALLBACK (engine_aborted_cb), s);
 
-	oregano_engine_start (engine);
+	engine_start (engine);
 
 	return TRUE;
 }
