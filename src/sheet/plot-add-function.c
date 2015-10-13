@@ -37,7 +37,7 @@
 #include "plot-add-function.h"
 #include "dialogs.h"
 
-void plot_add_function_show (OreganoEngine *engine, SimulationData *current)
+void plot_add_function_show (Engine *engine, SimulationData *current)
 {
 	GtkBuilder *gui;
 	GError *perror = NULL;

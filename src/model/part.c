@@ -109,30 +109,31 @@ static void part_finalize (GObject *object)
 
 	priv = PART (object)->priv;
 
-	if (priv) {
-		g_free (priv->name);
+	g_assert (priv);
 
-		for (list = priv->properties; list; list = list->next) {
-			PartProperty *property = list->data;
+	g_free (priv->name);
 
-			g_free (property->name);
-			g_free (property->value);
-			g_free (property);
-		}
-		g_slist_free (priv->properties);
+	for (list = priv->properties; list; list = list->next) {
+		PartProperty *property = list->data;
 
-		for (list = priv->labels; list; list = list->next) {
-			PartLabel *label = list->data;
-
-			g_free (label->name);
-			g_free (label->text);
-			g_free (label);
-		}
-		g_slist_free (priv->labels);
-
-		g_free (priv->pins);
-		g_free (priv->symbol_name);
+		g_free (property->name);
+		g_free (property->value);
+		g_free (property);
 	}
+	g_slist_free (priv->properties);
+
+	for (list = priv->labels; list; list = list->next) {
+		PartLabel *label = list->data;
+
+		g_free (label->name);
+		g_free (label->text);
+		g_free (label);
+	}
+	g_slist_free (priv->labels);
+
+	g_free (priv->pins);
+	g_free (priv->symbol_name);
+
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 

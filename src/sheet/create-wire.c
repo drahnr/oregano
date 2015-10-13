@@ -18,7 +18,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2012-2013  Bernhard Schuster
+ * Copyright (C) 2012-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,6 +47,7 @@
 #include "wire.h"
 #include "sheet-private.h"
 
+#include "echo.h"
 #include "debug.h"
 
 CreateWireInfo *create_wire_info_new (Sheet *sheet)
@@ -124,7 +125,7 @@ inline static gboolean create_wire_start (Sheet *sheet, GdkEvent *event)
 #if 0
 	Coords p;
 	sheet_get_pointer (sheet, &p.x, &p.y);
-	NG_DEBUG ("diff_x=%lf; diff_y=%lf;", p.x-x, p.y-y);
+	oregano_echo ("diff_x=%lf; diff_y=%lf;", p.x-x, p.y-y);
 #endif
 
 	// start point
@@ -177,7 +178,7 @@ inline static gboolean create_wire_update (Sheet *sheet, GdkEvent *event)
 #if 0
 	Coords p;
 	sheet_get_pointer (sheet, &p.x, &p.y);
-	NG_DEBUG ("diff_x=%lf; diff_y=%lf;", p.x-new_x, p.y-new_y);
+	oregano_echo ("diff_x=%lf; diff_y=%lf;", p.x-new_x, p.y-new_y);
 #endif
 
 	snapped_x = (gint32)new_x;
@@ -201,7 +202,7 @@ inline static gboolean create_wire_update (Sheet *sheet, GdkEvent *event)
 		create_wire_info->points->coords[2] = x1;
 		create_wire_info->points->coords[3] = y1;
 	}
-	NG_DEBUG ("update ~._.~ start=(%lf,%lf) → end=(%i,%i)", x1, y1, snapped_x, snapped_y);
+	oregano_echo ("update ~._.~ start=(%lf,%lf) → end=(%i,%i)", x1, y1, snapped_x, snapped_y);
 	// end pos
 	create_wire_info->points->coords[4] = snapped_x;
 	create_wire_info->points->coords[5] = snapped_y;
@@ -235,7 +236,7 @@ inline static gboolean create_wire_discard (Sheet *sheet, GdkEvent *event)
 	CreateWireInfo *create_wire_info;
 
 	// g_signal_stop_emission_by_name (sheet, "event");
-	NG_DEBUG ("wire got discarded");
+	oregano_echo ("wire got discarded");
 	sheet_keyboard_ungrab (sheet, event);
 	sheet_pointer_ungrab (sheet, event);
 
@@ -254,7 +255,7 @@ inline static Wire *create_wire_spawn (Sheet *sheet, Coords start_pos, Coords en
 	Wire *wire = NULL;
 	Coords length;
 
-	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning...");
+	oregano_echo ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning...");
 	g_assert (sheet);
 	g_assert (IS_SHEET (sheet));
 
@@ -267,7 +268,7 @@ inline static Wire *create_wire_spawn (Sheet *sheet, Coords start_pos, Coords en
 	item_data_set_pos (ITEM_DATA (wire), &start_pos);
 	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), ITEM_DATA (wire));
 
-	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
+	oregano_echo ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
 
 	return wire;
 }
@@ -305,7 +306,7 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	p2.x = x;
 	p2.y = y;
 
-	NG_DEBUG ("x: %lf ?= %lf | y: %lf ?= %lf", p1.x, p2.x, p1.y, p2.y);
+	oregano_echo ("x: %lf ?= %lf | y: %lf ?= %lf", p1.x, p2.x, p1.y, p2.y);
 
 	// if we are back at the starting point of our wire,
 	// and the user tries to fixate, just ignore it
@@ -327,9 +328,9 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	end_pos.x = create_wire_info->points->coords[4];
 	end_pos.y = create_wire_info->points->coords[5];
 
-	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", start_pos.x, start_pos.y, mid_pos.x, mid_pos.y,
+	oregano_echo ("A(%g, %g) B(%g, %g) -> same = %i", start_pos.x, start_pos.y, mid_pos.x, mid_pos.y,
 	          coords_equal (&start_pos, &mid_pos));
-	NG_DEBUG ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y,
+	oregano_echo ("A(%g, %g) B(%g, %g) -> same = %i", mid_pos.x, mid_pos.y, end_pos.x, end_pos.y,
 	          coords_equal (&mid_pos, &end_pos));
 
 #if FINISH_ON_WIRE_CLICK
@@ -341,7 +342,7 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	b_mid_eq_end = coords_equal (&mid_pos, &end_pos);
 
 	if (!b_mid_eq_end && !b_start_eq_mid) {
-		NG_DEBUG ("we should get exactly 2 wires");
+		oregano_echo ("we should get exactly 2 wires");
 	}
 
 	if (!b_start_eq_mid) {
@@ -349,7 +350,7 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 		g_assert (wire);
 		g_assert (IS_WIRE (wire));
 	} else {
-		NG_DEBUG ("looks like start == midpos");
+		oregano_echo ("looks like start == midpos");
 	}
 
 	if (!b_mid_eq_end) {
@@ -357,7 +358,7 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 		g_assert (wire);
 		g_assert (IS_WIRE (wire));
 	} else {
-		NG_DEBUG ("looks like midpos == endpos");
+		oregano_echo ("looks like midpos == endpos");
 	}
 
 /* check if target location is either wire or node,
@@ -432,7 +433,7 @@ gboolean create_wire_orientationtoggle (Sheet *sheet)
 	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
 
-	NG_DEBUG ("toggle orientation")
+	oregano_echo ("toggle orientation");
 	create_wire_info = sheet->priv->create_wire_info;
 	g_return_val_if_fail (create_wire_info, FALSE);
 
@@ -492,10 +493,10 @@ gboolean create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
 			return create_wire_update (sheet, event);
 		break;
 	case GDK_KEY_PRESS:
-		NG_DEBUG ("keypress 0");
+		oregano_echo ("keypress 0");
 		if (create_wire_info->state != WIRE_ACTIVE)
 			return FALSE;
-		NG_DEBUG ("keypress 1");
+		oregano_echo ("keypress 1");
 		switch (event->key.keyval) {
 		case GDK_KEY_Escape:
 			return create_wire_discard (sheet, event);

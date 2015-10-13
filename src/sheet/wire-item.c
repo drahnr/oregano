@@ -79,7 +79,7 @@ static void wire_item_set_property (GObject *object, guint prop_id, const GValue
 
 enum { WIRE_RESIZER_NONE, WIRE_RESIZER_1, WIRE_RESIZER_2 };
 
-struct _WireItemPriv
+struct _WireItemPrivate
 {
 	guint cache_valid : 1;
 	guint resize_state;
@@ -96,7 +96,7 @@ struct _WireItemPriv
 	Coords bbox_end;
 };
 
-G_DEFINE_TYPE (WireItem, wire_item, TYPE_SHEET_ITEM)
+G_DEFINE_TYPE_WITH_PRIVATE (WireItem, wire_item, TYPE_SHEET_ITEM)
 
 static void wire_item_class_init (WireItemClass *wire_item_class)
 {
@@ -145,11 +145,11 @@ static void wire_item_get_property (GObject *object, guint property_id, GValue *
 	}
 }
 
-static void wire_item_init (WireItem *item)
+static void wire_item_init (WireItem *instance)
 {
 	WireItemPrivate *priv;
 
-	priv = g_new0 (WireItemPriv, 1);
+	priv = wire_get_instance_private(instance);
 
 	priv->direction = WIRE_DIR_NONE;
 	priv->highlight = FALSE;
@@ -158,7 +158,7 @@ static void wire_item_init (WireItem *item)
 	priv->resize1 = NULL;
 	priv->resize2 = NULL;
 
-	item->priv = priv;
+	instance->priv = priv;
 }
 
 static void wire_item_dispose (GObject *object)
@@ -179,9 +179,7 @@ static void wire_item_finalize (GObject *object)
 
 	priv = WIRE_ITEM (object)->priv;
 
-	if (priv != NULL) {
-		g_free (priv);
-	}
+	g_assert (priv);
 
 	G_OBJECT_CLASS (wire_item_parent_class)->finalize (object);
 }

@@ -40,7 +40,7 @@
 #include "create-wire.h"
 #include "rubberband.h"
 
-struct _SheetPriv
+struct _SheetPrivate
 {
 	// Keeps the current signal handler for wire creation
 	int wire_handler_id;

@@ -40,6 +40,7 @@
 #include "textbox-item.h"
 #include "textbox.h"
 #include "dialogs.h"
+#include "sheet.h"
 
 #define NORMAL_COLOR "black"
 #define SELECTED_COLOR "green"
@@ -123,10 +124,6 @@ static void textbox_item_init (TextboxItem *item)
 
 static void textbox_item_finalize (GObject *object)
 {
-	TextboxItem *item;
-
-	item = TEXTBOX_ITEM (object);
-
 	G_OBJECT_CLASS (textbox_item_parent_class)->finalize (object);
 }
 
@@ -313,8 +310,8 @@ static void textbox_item_paste (Sheet *sheet, ItemData *data)
 // This is called when the textbox data was moved. Update the view accordingly.
 static void textbox_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	g_assert (sheet);
-	g_assert (IS_SHEET (sheet));
+	g_assert (item);
+	g_assert (IS_SHEET_ITEM (item));
 	g_assert (data);
 	g_assert (IS_TEXTBOX (data));
 
@@ -330,8 +327,8 @@ static void textbox_moved_callback (ItemData *data, Coords *pos, SheetItem *item
 
 static void textbox_text_changed_callback (ItemData *data, gchar *new_text, SheetItem *item)
 {
-	g_assert (sheet);
-	g_assert (IS_SHEET (sheet));
+	g_assert (item);
+	g_assert (IS_SHEET_ITEM (item));
 	g_assert (data);
 	g_assert (IS_TEXTBOX (data));
 
@@ -417,8 +414,8 @@ void textbox_item_cancel_listen (Sheet *sheet)
 
 void textbox_item_listen (Sheet *sheet)
 {
-	g_return_if_fail (sheet != NULL);
-	g_return_if_fail (IS_SHEET (sheet));
+	g_assert (sheet);
+	g_assert (IS_SHEET (sheet));
 
 	// Connect to a signal handler that will let the user create a new textbox.
 	sheet->state = SHEET_STATE_TEXTBOX_WAIT;
@@ -438,8 +435,8 @@ void edit_dialog_ok (TextboxItem *item)
 
 static void edit_textbox (SheetItem *sheet_item)
 {
-	g_assert (item);
-	g_assert (IS_TEXTBOX (item));
+	g_assert (sheet_item);
+	g_assert (IS_TEXTBOX (sheet_item));
 
 	TextboxItem *item;
 	Textbox *textbox;

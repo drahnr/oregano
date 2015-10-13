@@ -52,7 +52,7 @@ typedef struct
 	Schematic *sm;
 	SchematicView *sv;
 	GtkDialog *dialog;
-	OreganoEngine *engine;
+	Engine *engine;
 	GtkProgressBar *progress;
 	GtkLabel *progress_label;
 	int progress_timeout_id;
@@ -61,8 +61,8 @@ typedef struct
 
 static int progress_bar_timeout_cb (Simulation *s);
 static void cancel_cb (GtkWidget *widget, gint arg1, Simulation *s);
-static void engine_done_cb (OreganoEngine *engine, Simulation *s);
-static void engine_aborted_cb (OreganoEngine *engine, Simulation *s);
+static void engine_done_cb (Engine *engine, Simulation *s);
+static void engine_aborted_cb (Engine *engine, Simulation *s);
 static gboolean simulate_cmd (Simulation *s);
 
 static int delete_event_cb (GtkWidget *widget, GdkEvent *event, gpointer data) { return FALSE; }
@@ -158,7 +158,7 @@ static int progress_bar_timeout_cb (Simulation *s)
 	return TRUE;
 }
 
-static void engine_done_cb (OreganoEngine *engine, Simulation *s)
+static void engine_done_cb (Engine *engine, Simulation *s)
 {
 	if (s->progress_timeout_id != 0) {
 		g_source_remove (s->progress_timeout_id);
@@ -188,7 +188,7 @@ static void engine_done_cb (OreganoEngine *engine, Simulation *s)
 	s->engine = NULL;
 }
 
-static void engine_aborted_cb (OreganoEngine *engine, Simulation *s)
+static void engine_aborted_cb (Engine *engine, Simulation *s)
 {
 	if (s->progress_timeout_id != 0) {
 		g_source_remove (s->progress_timeout_id);
@@ -224,7 +224,7 @@ static void cancel_cb (GtkWidget *widget, gint arg1, Simulation *s)
 
 static gboolean simulate_cmd (Simulation *s)
 {
-	OreganoEngine *engine;
+	Engine *engine;
 
 	if (s->engine != NULL) {
 		g_clear_object (&(s->engine));

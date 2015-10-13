@@ -35,6 +35,6 @@
 
 #include "engine.h"
 
-int plot_show (OreganoEngine *engine);
+int plot_show (Engine *engine);
 
 #endif

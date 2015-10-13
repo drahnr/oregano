@@ -108,18 +108,22 @@ static void gnucap_class_init (GnuCapClass *klass)
 	object_class->finalize = gnucap_finalize;
 }
 
+static void gnucap_init (GnuCap *instance) {
+	GnuCapPrivate *priv = gnucap_get_instance_private (instance);
+	// TODO null everything
+	instance->priv = priv;
+}
+
 static void gnucap_finalize (GObject *object)
 {
-	SimulationData *data;
-	GnuCap *gnucap;
-	GList *iter;
-	int i;
+	GnuCap *gnucap = GNUCAP (object);
 
-	gnucap = GNUCAP (object);
+	g_assert (gnucap->priv);
 
-	iter = gnucap->priv->analysis;
+	GList *iter = gnucap->priv->analysis;
 	for (; iter; iter = iter->next) {
-		data = SIM_DATA (iter->data);
+		SimulationData *data = SIM_DATA (iter->data);
+		gint i;
 		for (i = 0; i < data->n_variables; i++) {
 			g_free (data->var_names[i]);
 			g_free (data->var_units[i]);
@@ -162,13 +166,13 @@ static gboolean gnucap_generate_netlist (Engine *engine, const gchar *filename, 
 	SimOption *so;
 	GList *iter;
 	FILE *file;
-	GError *local_error = NULL;
+	GError *e = NULL;
 
 	gnucap = GNUCAP (engine);
 
-	netlist_helper_create (gnucap->priv->schematic, &output, &local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
+	netlist_helper_create (gnucap->priv->schematic, &output, &e);
+	if (e) {
+		g_propagate_error (error, e);
 		return FALSE;
 	}
 
@@ -545,7 +549,7 @@ static void gnucap_parse (gchar *raw, gint len, GnuCap *gnucap)
 
 		// Got a complete line
 		s = buf;
-		NG_DEBUG ("%s", s);
+		oregano_echo ("%s", s);
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
 			gdouble np1;

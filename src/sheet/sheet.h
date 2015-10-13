@@ -41,7 +41,7 @@
 #include "item-data.h"
 
 typedef struct _Sheet Sheet;
-typedef struct _SheetPriv SheetPriv;
+typedef struct _SheetPrivate SheetPrivate;
 typedef struct _SheetClass SheetClass;
 typedef struct _SheetItem SheetItem;
 
@@ -69,7 +69,7 @@ struct _Sheet
 	GooCanvasGroup *object_group;
 
 	Grid *grid;
-	SheetPriv *priv;
+	SheetPrivate *priv;
 };
 
 struct _SheetClass

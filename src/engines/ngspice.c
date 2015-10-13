@@ -466,19 +466,18 @@ static void ngspice_interface_init (gpointer g_iface, gpointer iface_data)
 	klass->is_available = ngspice_is_available;
 }
 
-static void ngspice_init (GTypeInstance *instance)
+static void ngspice_init (NgSpice *instance)
 {
-	NgSpice *self = NGSPICE (instance);
-
-	self->priv = ngspice_get_instance_private (self);
-	self->priv->progress = 0.0;
-	self->priv->char_last_newline = TRUE;
-	self->priv->status = 0;
-	self->priv->buf_count = 0;
-	self->priv->num_analysis = 0;
-	self->priv->analysis = NULL;
-	self->priv->current = NULL;
-	self->priv->aborted = FALSE;
+	NgSpicePrivate *priv = ngspice_get_instance_private (instance);
+	priv->progress = 0.0;
+	priv->char_last_newline = TRUE;
+	priv->status = 0;
+	priv->buf_count = 0;
+	priv->num_analysis = 0;
+	priv->analysis = NULL;
+	priv->current = NULL;
+	priv->aborted = FALSE;
+	instance->priv = priv;
 }
 
 Engine *ngspice_new (Schematic *sc)

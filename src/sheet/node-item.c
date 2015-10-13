@@ -35,7 +35,7 @@
 static void node_item_init (NodeItem *item);
 static void node_item_class_init (NodeItemClass *klass);
 
-struct _NodeItemPriv
+struct _NodeItemPrivate
 {
 	GooCanvasItem *dot_item;
 	GooCanvasItem *circle_item; // debug
@@ -55,8 +55,6 @@ static void node_item_dispose (GObject *object)
 
 static void node_item_finalize (GObject *object)
 {
-	NodeItemPrivate *priv;
-
 	G_OBJECT_CLASS (node_item_parent_class)->finalize (object);
 }
 
@@ -68,16 +66,17 @@ static void node_item_class_init (NodeItemClass *klass)
 	object_class->dispose = node_item_dispose;
 }
 
-static void node_item_init (NodeItem *item)
+static void node_item_init (NodeItem *instance)
 {
-	item->priv = g_new0 (NodeItemPriv, 1);
-	item->priv->dot_item =
-	    goo_canvas_ellipse_new (GOO_CANVAS_ITEM (item), 0.0, 0.0, 2.0, 2.0, "fill-color", "black",
+	NodeItemPrivate *priv = node_item_get_instance_private(instance);
+	priv->dot_item =
+	    goo_canvas_ellipse_new (GOO_CANVAS_ITEM (instance), 0.0, 0.0, 2.0, 2.0, "fill-color", "black",
 	                            "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
-	item->priv->circle_item = goo_canvas_ellipse_new (
-	    GOO_CANVAS_ITEM (item), 0.0, 0.0, 3.0, 3.0, "stroke-color-rgba", 0x3399FFFF, "line-width",
+	priv->circle_item = goo_canvas_ellipse_new (
+	    GOO_CANVAS_ITEM (instance), 0.0, 0.0, 3.0, 3.0, "stroke-color-rgba", 0x3399FFFF, "line-width",
 	    1.0, "visibility",
 	    oregano_options_debug_dots () ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
+	instance->priv = priv;
 }
 
 void node_item_show_dot (NodeItem *item, gboolean show)

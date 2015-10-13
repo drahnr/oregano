@@ -439,7 +439,7 @@ SimSettings *sim_settings_new (Schematic *sm)
 	s = g_new0 (SimSettings, 1);
 	s->sm = sm;
 
-	s->priv = g_new0 (SimSettingsPriv, 1);
+	s->priv = g_new0 (SimSettingsPrivate, 1);
 
 	// Set some default settings.
 	// transient

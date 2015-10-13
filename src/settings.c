@@ -198,7 +198,7 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_widget_set_sensitive (w, FALSE);
 
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "engine_table"));
-	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+	for (i = 0; i < ENGINE_COUNT; i++) {
 		if (engine_group)
 			button[i] = gtk_radio_button_new_with_label_from_widget (
 			    GTK_RADIO_BUTTON (engine_group), engine[i]);

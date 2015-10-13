@@ -878,7 +878,7 @@ static void netlist_cmd (GSimpleAction *action, GVariant *parameter, gpointer us
 
 	schematic_set_netlist_filename (sm, netlist_name);
 
-	g_autoptr (OreganoEngine) engine = engine_factory_create_engine (oregano.engine, sm);
+	g_autoptr (Engine) engine = engine_factory_create_engine (oregano.engine, sm);
 	engine_generate_netlist (engine, netlist_name, &e);
 
 	sheet_update_parts (sv->priv->sheet);

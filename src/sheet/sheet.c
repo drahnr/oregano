@@ -77,7 +77,7 @@ static guint signals[LAST_SIGNAL] = {0};
 
 enum { ARG_0, ARG_ZOREGANO };
 
-G_DEFINE_TYPE (Sheet, sheet, GOO_TYPE_CANVAS)
+G_DEFINE_TYPE_WITH_PRIVATE (Sheet, sheet, GOO_TYPE_CANVAS)
 
 static void sheet_class_init (SheetClass *sheet_class)
 {
@@ -116,26 +116,28 @@ static void sheet_class_init (SheetClass *sheet_class)
 	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 }
 
-static void sheet_init (Sheet *sheet)
+static void sheet_init (Sheet *instance)
 {
-	sheet->priv = g_new0 (SheetPriv, 1);
-	sheet->priv->zoom = 1.0;
-	sheet->priv->selected_group = NULL;
-	sheet->priv->floating_group = NULL;
-	sheet->priv->floating_objects = NULL;
-	sheet->priv->selected_objects = NULL;
-	sheet->priv->wire_handler_id = 0;
-	sheet->priv->float_handler_id = 0;
+	SheetPrivate *priv = sheet_get_instance_private (instance);
+	priv->zoom = 1.0;
+	priv->selected_group = NULL;
+	priv->floating_group = NULL;
+	priv->floating_objects = NULL;
+	priv->selected_objects = NULL;
+	priv->wire_handler_id = 0;
+	priv->float_handler_id = 0;
 
-	sheet->priv->items = NULL;
-	sheet->priv->rubberband_info = NULL;
-	sheet->priv->create_wire_info = NULL;
-	sheet->priv->preserve_selection_items = NULL;
-	sheet->priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
-	sheet->priv->voltmeter_items = NULL;
-	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	priv->items = NULL;
+	priv->rubberband_info = NULL;
+	priv->create_wire_info = NULL;
+	priv->preserve_selection_items = NULL;
+	priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
+	priv->voltmeter_items = NULL;
+	priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
-	sheet->state = SHEET_STATE_NONE;
+	state = SHEET_STATE_NONE;
+	
+	instance->priv = priv;
 }
 
 static void sheet_finalize (GObject *object)

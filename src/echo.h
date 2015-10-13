@@ -4,7 +4,9 @@
 #include <glib.h>
 #include <glib/gprintf.h>
 
-void oregano_echo_static (const char *message) { g_printf ("[echo] %s\n", message); }
+void oregano_echo_static (const char *message) {
+	g_printf ("[echo] %s\n", message);
+}
 
 void oregano_echo (const char *format, ...)
 {
@@ -16,4 +18,4 @@ void oregano_echo (const char *format, ...)
 	g_free (tmp);
 }
 
-#endif
+#endif /* OREGANO_ECHO_H_ */
