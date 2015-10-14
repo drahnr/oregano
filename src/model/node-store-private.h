@@ -40,7 +40,7 @@ gboolean do_wires_intersect (Wire *a, Wire *b, Coords *where)
 	// parallel check
 	const gdouble d = coords_cross (&delta1, &delta2);
 	if (fabs (d) < NODE_EPSILON) {
-		NG_DEBUG ("do_wires_intersect(%p,%p): NO! d=%lf\n", a, b, d);
+		oregano_echo ("do_wires_intersect(%p,%p): NO! d=%lf\n", a, b, d);
 		return FALSE;
 	}
 
@@ -54,14 +54,14 @@ gboolean do_wires_intersect (Wire *a, Wire *b, Coords *where)
 
 	if (t >= -NODE_EPSILON && t - NODE_EPSILON <= 1.f && u >= -NODE_EPSILON &&
 	    u - NODE_EPSILON <= 1.f) {
-		NG_DEBUG ("do_wires_intersect(%p,%p): YES! t,u = %lf,%lf\n", a, b, t, u);
+		oregano_echo ("do_wires_intersect(%p,%p): YES! t,u = %lf,%lf\n", a, b, t, u);
 		if (where) {
 			where->x = start1.x + u * delta1.x;
 			where->y = start1.y + u * delta1.y;
 		}
 		return TRUE;
 	}
-	NG_DEBUG ("do_wires_intersect(%p,%p): NO! t,u = %lf,%lf\n", a, b, t, u);
+	oregano_echo ("do_wires_intersect(%p,%p): NO! t,u = %lf,%lf\n", a, b, t, u);
 	return FALSE;
 }
 

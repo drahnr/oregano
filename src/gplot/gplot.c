@@ -83,18 +83,8 @@ struct _GPlotPrivate
 	GPlotFunctionBBox rubberband;
 };
 
-GType g_plot_get_type ()
-{
-	static GType g_plot_type = 0;
 
-	if (g_plot_type == 0) {
-		static const GTypeInfo g_plot_info = {
-		    sizeof(GPlotClass), NULL,          NULL, (GClassInitFunc)g_plot_class_init, NULL,
-		    NULL,               sizeof(GPlot), 0,    (GInstanceInitFunc)g_plot_init,    NULL};
-		g_plot_type = g_type_register_static (GTK_TYPE_LAYOUT, "GPlot", &g_plot_info, 0);
-	}
-	return g_plot_type;
-}
+G_DEFINE_TYPE_WITH_PRIVATE(GPlot, g_plot, GTK_TYPE_LAYOUT);
 
 static void g_plot_class_init (GPlotClass *class)
 {

@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,8 +47,9 @@
 #include "errors.h"
 #include "schematic-print-context.h"
 #include "log.h"
-
+#include "echo.h"
 #include "debug.h"
+
 typedef struct _SchematicsPrintOptions
 {
 	GtkColorButton *components;
@@ -462,7 +463,7 @@ void schematic_log_append_error (Schematic *schematic, const char *format, ...)
 {
 	va_list args;
 	va_start (args, format);
-	const char *tmp = g_strdup_vprintf (format, args);
+	char *tmp = g_strdup_vprintf (format, args);
 	va_end (args);
 	oregano_echo_static (tmp);
 

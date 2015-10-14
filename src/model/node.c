@@ -114,14 +114,14 @@ gboolean node_needs_dot (Node *node)
 	Coords start_pos1, length1, end_pos1;
 	Coords start_pos2, length2, end_pos2;
 
-	NG_DEBUG ("node: %p --- pins: %i --- wires: %i", node, node->pin_count, node->wire_count);
+	oregano_echo ("node: %p --- pins: %i --- wires: %i", node, node->pin_count, node->wire_count);
 
 	// always display a black dot if a part hits a wire
 	if (node->pin_count > 0 && node->wire_count > 0) {
-		NG_DEBUG ("  TRUE (pins>0 && wires>0)");
+		oregano_echo ("  TRUE (pins>0 && wires>0)");
 		return TRUE;
 	} else if (node->pin_count > 1 || node->wire_count > 2) {
-		NG_DEBUG ("  TRUE (pins>1 || wires>2)");
+		oregano_echo ("  TRUE (pins>1 || wires>2)");
 		return TRUE;
 	} else if (node->wire_count == 2) {
 		// Check that we don't have two wire endpoints.
@@ -142,7 +142,7 @@ gboolean node_needs_dot (Node *node)
 		}
 		return FALSE;
 	}
-	NG_DEBUG (" FALSE (else)");
+	oregano_echo (" FALSE (else)");
 	return FALSE;
 }
 
@@ -155,7 +155,7 @@ gboolean node_add_pin (Node *node, Pin *pin)
 	g_return_val_if_fail (pin != NULL, FALSE);
 
 	if (g_slist_find (node->pins, pin)) {
-		NG_DEBUG ("node_add_pin: pin already there.\n");
+		oregano_echo ("node_add_pin: pin already there.\n");
 		return FALSE;
 	}
 
@@ -201,7 +201,7 @@ gboolean node_add_wire (Node *node, Wire *wire)
 	g_return_val_if_fail (IS_WIRE (wire), FALSE);
 
 	if (g_slist_find (node->wires, wire)) {
-		NG_DEBUG ("node_add_wire: wire already there.\n");
+		oregano_echo ("node_add_wire: wire already there.\n");
 		return FALSE;
 	}
 
@@ -229,7 +229,7 @@ gboolean node_remove_wire (Node *node, Wire *wire)
 		return FALSE;
 
 	if (!g_slist_find (node->wires, wire)) {
-		NG_DEBUG ("node_remove_wire: not there.\n");
+		oregano_echo ("node_remove_wire: not there.\n");
 		return FALSE;
 	}
 

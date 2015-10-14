@@ -48,7 +48,7 @@
 
 #include "part.h"
 #include "wire.h"
-#include "node-store.h"
+#include "echo.h"
 #include "log.h"
 
 #define TYPE_SCHEMATIC (schematic_get_type ())
@@ -57,6 +57,9 @@
 #define IS_SCHEMATIC(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_SCHEMATIC))
 #define IS_SCHEMATIC_CLASS(klass)                                                                  \
 	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC, SchematicClass))
+
+		
+typedef struct _NodeStore NodeStore;
 
 typedef struct _Schematic Schematic;
 typedef struct _SchematicClass SchematicClass;

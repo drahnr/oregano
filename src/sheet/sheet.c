@@ -135,7 +135,7 @@ static void sheet_init (Sheet *instance)
 	priv->voltmeter_items = NULL;
 	priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
-	state = SHEET_STATE_NONE;
+	instance->state = SHEET_STATE_NONE;
 	
 	instance->priv = priv;
 }
@@ -181,7 +181,7 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	// replaced by a code copied from evince
 
 	if (G_UNLIKELY (!sheet || !gtk_widget_get_realized (GTK_WIDGET (sheet)))) {
-		NG_DEBUG ("Widget is not realized.");
+		oregano_echo ("Widget is not realized.");
 		return FALSE;
 	}
 
@@ -193,7 +193,7 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	window = gtk_widget_get_window (GTK_WIDGET (sheet));
 
 	if (!window) {
-		NG_DEBUG ("Window is not realized.");
+		oregano_echo ("Window is not realized.");
 		return FALSE;
 	}
 	// even though above is all defined the below will always return NUL for
@@ -201,11 +201,11 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	gdk_window_get_device_position (window, device_pointer, &_x, &_y, NULL);
 #if 0
 	if (!window) { //fails always
-		NG_DEBUG ("Window does not seem to be realized yet?");
+		oregano_echo ("Window does not seem to be realized yet?");
 		return FALSE;
 	}
 #else
-	NG_DEBUG ("\n%p %p %p %p %i %i\n\n", display, device_manager, device_pointer, window, _x, _y);
+	oregano_echo ("\n%p %p %p %p %i %i\n\n", display, device_manager, device_pointer, window, _x, _y);
 #endif
 
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
@@ -486,16 +486,16 @@ GtkWidget *sheet_new (gdouble height, gdouble width)
 
 	// Finally, create the object group that holds all objects.
 	sheet->object_group = GOO_CANVAS_GROUP (goo_canvas_group_new (root, "x", 0.0, "y", 0.0, NULL));
-	NG_DEBUG ("root group %p", sheet->object_group);
+	oregano_echo ("root group %p", sheet->object_group);
 
 	sheet->priv->selected_group = GOO_CANVAS_GROUP (
 	    goo_canvas_group_new (GOO_CANVAS_ITEM (sheet->object_group), "x", 0.0, "y", 0.0, NULL));
-	NG_DEBUG ("selected group %p", sheet->priv->selected_group);
+	oregano_echo ("selected group %p", sheet->priv->selected_group);
 
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (
 	    goo_canvas_group_new (GOO_CANVAS_ITEM (sheet->object_group), "x", 0.0, "y", 0.0, NULL));
 
-	NG_DEBUG ("floating group %p", sheet->priv->floating_group);
+	oregano_echo ("floating group %p", sheet->priv->floating_group);
 
 	// Hash table that maps coordinates to a specific dot.
 	sheet->priv->node_dots = g_hash_table_new_full (dot_hash, dot_equal, g_free, NULL);

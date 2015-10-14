@@ -458,7 +458,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			}
 
 			template = part_property_expand_macros (part, tmp);
-			NG_DEBUG ("Template: '%s'\n"
+			oregano_echo ("Template: '%s'\n"
 			          "macro   : '%s'\n",
 			          tmp, template);
 
@@ -482,10 +482,10 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			while (template_split[i] != NULL && template_split[i][0] != '%') {
 				g_string_append (str, template_split[i++]);
 				g_string_append_c (str, ' ');
-				NG_DEBUG ("str: %s\n", str->str);
+				oregano_echo ("str: %s\n", str->str);
 			}
 
-			NG_DEBUG ("Reading %d pins.\n)", num_pins);
+			oregano_echo ("Reading %d pins.\n)", num_pins);
 
 			for (pin_nr = 0; pin_nr < num_pins; pin_nr++) {
 				gint node_nr = 0;
@@ -502,7 +502,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 					pins[pin_nr].node_nr = atoi (node2real[node_nr]);
 					g_string_append (str, tmp);
 					g_string_append_c (str, ' ');
-					NG_DEBUG ("str: %s\n", str->str);
+					oregano_echo ("str: %s\n", str->str);
 					i++;
 				}
 
@@ -512,24 +512,24 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 
 					g_string_append (str, template_split[i]);
 					g_string_append_c (str, ' ');
-					NG_DEBUG ("str: %s\n", str->str);
+					oregano_echo ("str: %s\n", str->str);
 					i++;
 				}
 			}
 
-			NG_DEBUG ("Done with pins, i = %d\n", i);
+			oregano_echo ("Done with pins, i = %d\n", i);
 
 			while (template_split[i] != NULL) {
 				if (template_split[i][0] == '%')
 					break;
 				g_string_append (str, template_split[i]);
 				g_string_append_c (str, ' ');
-				NG_DEBUG ("str: %s\n", str->str);
+				oregano_echo ("str: %s\n", str->str);
 				i++;
 			}
 
 			g_strfreev (template_split);
-			NG_DEBUG ("str: %s\n", str->str);
+			oregano_echo ("str: %s\n", str->str);
 			out->template = g_string_append (out->template, str->str);
 			out->template = g_string_append_c (out->template, '\n');
 			g_string_free (str, TRUE);

@@ -15,7 +15,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -77,9 +77,9 @@ G_DEFINE_TYPE_WITH_PRIVATE (ItemData, item_data, G_TYPE_OBJECT);
 
 static guint item_data_signals[LAST_SIGNAL] = {0};
 
-static void item_data_init (ItemData *item_data)
+static void item_data_init (ItemData *instance)
 {
-	ItemDataPrivate *priv = item_date_get_instance_private (item_data);
+	ItemDataPrivate *priv = item_data_get_instance_private (instance);
 
 	priv->bounds.x1 = priv->bounds.x2 = priv->bounds.y1 = priv->bounds.y2 = 0;
 
@@ -87,7 +87,7 @@ static void item_data_init (ItemData *item_data)
 	cairo_matrix_init_identity (&(priv->rotate));
 	cairo_matrix_init_identity (&(priv->flip));
 
-	item_data->priv = priv;
+	instance->priv = priv;
 }
 
 static void item_data_dispose (GObject *object)
@@ -150,7 +150,7 @@ static void item_data_class_init (ItemDataClass *klass)
 	    g_signal_new ("highlight", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
 	                  NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
-	// Methods.
+	// virtual methods
 	klass->clone = NULL;
 	klass->copy = item_data_copy;
 	klass->rotate = NULL;
@@ -159,7 +159,7 @@ static void item_data_class_init (ItemDataClass *klass)
 	klass->unreg = NULL;
 	klass->changed = NULL;
 
-	// Signals.
+	// signals
 	klass->moved = NULL;
 }
 

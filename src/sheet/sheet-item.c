@@ -619,7 +619,7 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				}
 				g_object_ref (G_OBJECT (floating_data));
 
-				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
+				oregano_echo ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
 
 				item_data_set_pos (floating_data, &snapped);
 				item_data_snap (floating_data, sheet->grid);
@@ -686,15 +686,15 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 			GooCanvasBounds box;
 			goo_canvas_item_get_bounds (priv->floating_group, &box);
 #endif
-			NG_DEBUG ("\n\n\nFLOAT ### START\n\n\n\n");
+			oregano_echo ("\n\n\nFLOAT ### START\n\n\n\n");
 		}
 
 		sheet_get_pointer_snapped (sheet, &snapped.x, &snapped.y);
 
 		delta = coords_sub (&snapped, &last);
-		NG_DEBUG ("drag floating current      sx=%lf sy=%lf \n", snapped.x, snapped.y);
-		NG_DEBUG ("drag floating last         lx=%lf ly=%lf \n", last.x, last.y);
-		NG_DEBUG ("drag floating delta     -> dx=%lf dy=%lf \n", delta.x, delta.y);
+		oregano_echo ("drag floating current      sx=%lf sy=%lf \n", snapped.x, snapped.y);
+		oregano_echo ("drag floating last         lx=%lf ly=%lf \n", last.x, last.y);
+		oregano_echo ("drag floating delta     -> dx=%lf dy=%lf \n", delta.x, delta.y);
 
 #if !FIXME_INCREMENTAL_MOVMENT_DOES_NOT_WORK
 		last = snapped;

@@ -47,7 +47,6 @@
 static void ngspice_class_init (NgSpiceClass *klass);
 static void ngspice_finalize (GObject *object);
 static void ngspice_dispose (GObject *object);
-static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class);
 static void ngspice_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition,
                                          NgSpice *ngspice);

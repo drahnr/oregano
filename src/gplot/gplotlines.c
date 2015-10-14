@@ -329,7 +329,7 @@ static void g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox 
 		for (point = 1; point < points; point++) {
 			x1 = x[point - 1] + plot->priv->shift;
 			y1 = 0;
-			NG_DEBUG ("gplotlines: x= %lf\ty= %lf\n", x1, y1);
+			oregano_echo ("gplotlines: x= %lf\ty= %lf\n", x1, y1);
 			cairo_line_to (cr, x1, y1);
 			cairo_move_to (cr, x[point] + plot->priv->shift, y[point]);
 		}

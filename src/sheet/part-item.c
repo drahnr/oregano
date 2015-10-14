@@ -49,12 +49,11 @@
 #include "sheet.h"
 #include "oregano-utils.h"
 #include "options.h"
+#include "echo.h"
 
 #define NORMAL_COLOR "red"
 #define LABEL_COLOR "dark cyan"
 #define SELECTED_COLOR "green"
-
-#include "debug.h"
 
 static void part_item_class_init (PartItemClass *klass);
 static void part_item_init (PartItem *gspart);

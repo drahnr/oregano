@@ -85,7 +85,6 @@ struct _GnuCapPrivate
 static void gnucap_class_init (GnuCapClass *klass);
 static void gnucap_finalize (GObject *object);
 static void gnucap_dispose (GObject *object);
-static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class);
 static void gnucap_interface_init (gpointer g_iface, gpointer iface_data);
 static gboolean gnucap_child_stdout_cb (GIOChannel *source, GIOCondition condition, GnuCap *gnucap);
 static void gnucap_parse (gchar *raw, gint len, GnuCap *gnucap);
@@ -110,7 +109,17 @@ static void gnucap_class_init (GnuCapClass *klass)
 
 static void gnucap_init (GnuCap *instance) {
 	GnuCapPrivate *priv = gnucap_get_instance_private (instance);
-	// TODO null everything
+
+	priv = gnucap_get_instance_private (instance);
+	priv->progress = 0.0;
+	priv->char_last_newline = TRUE;
+	priv->status = 0;
+	priv->buf_count = 0;
+	priv->num_analysis = 0;
+	priv->analysis = NULL;
+	priv->current = NULL;
+	priv->aborted = FALSE;
+
 	instance->priv = priv;
 }
 
@@ -415,22 +424,7 @@ static void gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 	klass->is_available = gnucap_is_available;
 }
 
-static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
-{
-	GnuCap *self = GNUCAP (instance);
-
-	self->priv = gnucap_get_instance_private (self);
-	self->priv->progress = 0.0;
-	self->priv->char_last_newline = TRUE;
-	self->priv->status = 0;
-	self->priv->buf_count = 0;
-	self->priv->num_analysis = 0;
-	self->priv->analysis = NULL;
-	self->priv->current = NULL;
-	self->priv->aborted = FALSE;
-}
-
-Engine *oregano_gnucap_new (Schematic *sc)
+Engine *gnucap_new (Schematic *sc)
 {
 	GnuCap *gnucap;
 

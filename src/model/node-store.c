@@ -193,7 +193,7 @@ Node *node_store_get_or_create_node (NodeStore *self, Coords pos)
  */
 gboolean node_store_add_part (NodeStore *self, Part *part)
 {
-	NG_DEBUG ("-0-");
+	oregano_echo ("-0-");
 	g_return_val_if_fail (self, FALSE);
 	g_return_val_if_fail (IS_NODE_STORE (self), FALSE);
 	g_return_val_if_fail (part, FALSE);
@@ -347,11 +347,11 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 				wire_add_node (wire, node);
 				wire_add_node (other, node);
 
-				NG_DEBUG ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
+				oregano_echo ("Add wire %p to wire %p @ %lf,%lf.\n", wire, other, where.x, where.y);
 			} else {
 				// magic node removal if a x crossing is overlapped with another wire
 				node = node_store_get_node (store, where);
-				NG_DEBUG ("Nuke that node [ %p ] at coords inbetween", node);
+				oregano_echo ("Nuke that node [ %p ] at coords inbetween", node);
 				if (node) {
 					Coords c[4];
 					wire_get_start_and_end_pos (other, c + 0, c + 1);
@@ -377,7 +377,7 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 			Wire *other = list->data;
 			Coords so, eo;
 			const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
-			NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other,
+			oregano_echo ("overlap [ %p] and [ %p ] -- %s", wire, other,
 			          overlap == TRUE ? "YES" : "NO");
 			if (overlap) {
 				Node *sn = node_store_get_node (store, eo);
@@ -397,20 +397,20 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 				// this is not fancy nor nice but seems to work fairly nicly
 				g_idle_add (delayed_wire_delete, other);
 				break;
-				NG_DEBUG ("overlapping of %p with %p ", wire, other);
+				oregano_echo ("overlapping of %p with %p ", wire, other);
 #else
 				if (!sn && !en) {
 					wire = vulcanize_wire (store, wire, other, &so, &eo);
 				} else if (!sn) {
-					NG_DEBUG ("do_something(TM) : %p sn==NULL ", other);
+					oregano_echo ("do_something(TM) : %p sn==NULL ", other);
 				} else if (!en) {
-					NG_DEBUG ("do_something(TM) : %p en==NULL ", other);
+					oregano_echo ("do_something(TM) : %p en==NULL ", other);
 				} else {
-					NG_DEBUG ("do_something(TM) : %p else ", other);
+					oregano_echo ("do_something(TM) : %p else ", other);
 				}
 #endif
 			} else {
-				NG_DEBUG ("not of %p with %p ", wire, other);
+				oregano_echo ("not of %p with %p ", wire, other);
 			}
 		}
 	} while (list);
@@ -447,7 +447,7 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 					// Add the wire to the node (pin) that it intersected.
 					node_add_wire (node, wire);
 					wire_add_node (wire, node);
-					NG_DEBUG ("Add wire %p to pin (node) %p.\n", wire, node);
+					oregano_echo ("Add wire %p to pin (node) %p.\n", wire, node);
 				} else {
 					g_warning ("Bug: Found no node at pin at (%g %g).\n", lookup_pos.x,
 					           lookup_pos.y);
@@ -547,9 +547,9 @@ Node *node_store_get_node (NodeStore *store, Coords pos)
 	node = g_hash_table_lookup (store->nodes, &pos);
 
 	if (!node) {
-		NG_DEBUG ("No node at (%g, %g)", pos.x, pos.y);
+		oregano_echo ("No node at (%g, %g)", pos.x, pos.y);
 	} else {
-		NG_DEBUG ("Found node at (%g, %g)", pos.x, pos.y);
+		oregano_echo ("Found node at (%g, %g)", pos.x, pos.y);
 	}
 	return node;
 }

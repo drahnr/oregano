@@ -149,7 +149,7 @@ static void wire_item_init (WireItem *instance)
 {
 	WireItemPrivate *priv;
 
-	priv = wire_get_instance_private(instance);
+	priv = wire_item_get_instance_private(instance);
 
 	priv->direction = WIRE_DIR_NONE;
 	priv->highlight = FALSE;
@@ -187,7 +187,7 @@ static void wire_item_finalize (GObject *object)
 // TODO get rid of this
 static void wire_item_moved (SheetItem *object)
 {
-	//	NG_DEBUG ("wire MOVED callback called - LEGACY");
+	//	oregano_echo ("wire MOVED callback called - LEGACY");
 }
 
 WireItem *wire_item_new (Sheet *sheet, Wire *wire)
@@ -714,7 +714,7 @@ static int unhighlight_wire (WireItem *item)
 // FIXME get rid of
 static void wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	// NG_DEBUG ("wire MOVED callback called - LEGACY");
+	// oregano_echo ("wire MOVED callback called - LEGACY");
 }
 
 static void wire_item_place (SheetItem *item, Sheet *sheet)

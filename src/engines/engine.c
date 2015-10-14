@@ -33,8 +33,9 @@
 
 #include "engine.h"
 #include "engine-internal.h"
-#include "gnucap.h"
 #include "ngspice.h"
+#include "gnucap.h"
+#include "echo.h"
 
 static gchar *analysis_names[] = {
     N_ ("Operating Point"),  N_ ("Transient Analysis"), N_ ("DC transfer characteristic"),
@@ -91,13 +92,14 @@ Engine *engine_factory_create_engine (gint type, Schematic *sm)
 	Engine *engine;
 
 	switch (type) {
-	case ENGINE_GNUCAP:
-		engine = gnucap_new (sm);
-		break;
 	case ENGINE_NGSPICE:
 		engine = ngspice_new (sm);
 		break;
+	case ENGINE_GNUCAP:
+		engine = gnucap_new (sm);
+		break;
 	default:
+		oregano_echo("Unknown engine type with index %u", (unsigned)type);
 		engine = NULL;
 	}
 	return engine;

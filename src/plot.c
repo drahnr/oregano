@@ -206,7 +206,7 @@ static GPlotFunction *create_plot_function_from_simulation_data (guint i, Simula
 		next_pulse++;
 		width = 5.0;
 		shift_step = X[1] / 20;
-		NG_DEBUG ("shift_step = %lf\n", shift_step);
+		oregano_echo ("shift_step = %lf\n", shift_step);
 	} else {
 		next_pulse = 0;
 		width = 1.0;
@@ -217,7 +217,7 @@ static GPlotFunction *create_plot_function_from_simulation_data (guint i, Simula
 	g_object_set (G_OBJECT (f), "graph-type", graphic_type, NULL);
 	g_object_set (G_OBJECT (f), "shift", shift_step * next_pulse, NULL);
 	g_object_set (G_OBJECT (f), "width", width, NULL);
-	NG_DEBUG ("plot: create_plot_function_from_simulation_data: shift = %lf\n", 0.1 * next_pulse);
+	oregano_echo ("plot: create_plot_function_from_simulation_data: shift = %lf\n", 0.1 * next_pulse);
 
 	return f;
 }

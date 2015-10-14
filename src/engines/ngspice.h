@@ -27,8 +27,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef __NGSPICE_H
-#define __NGSPICE_H
+#ifndef _NGSPICE_H_
+#define _NGSPICE_H_
 
 #include <gtk/gtk.h>
 
@@ -60,4 +60,4 @@ struct _NgSpiceClass
 GType ngspice_get_type (void);
 Engine *ngspice_new (Schematic *sm);
 
-#endif
+#endif /* _NGSPICE_H_ */

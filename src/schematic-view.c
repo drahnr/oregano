@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -59,6 +59,7 @@
 #include "textbox-item.h"
 #include "log-view.h"
 #include "log.h"
+#include "echo.h"
 #include "debug.h"
 
 #define ZOREGANO_MIN 0.35
@@ -90,7 +91,7 @@ struct _SchematicViewClass
 {
 	GObjectClass parent_class;
 
-	// Signals go here
+	// signals
 	void (*changed)(SchematicView *schematic_view);
 	void (*reset_tool)(SchematicView *schematic_view);
 };
@@ -436,9 +437,11 @@ static void open_cmd (GSimpleAction *action, GVariant *parameter, gpointer user_
 	g_free (fname);
 }
 
+/**
+ * TODO replace this by something like GEdit provides, a popover with search
+ */
 static void oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 {
-	gchar *uri;
 	const gchar *mime;
 	GtkRecentInfo *item;
 	GtkRecentManager *manager;
@@ -446,7 +449,7 @@ static void oregano_recent_open (GtkRecentChooser *chooser, SchematicView *sv)
 	SchematicView *new_sv = NULL;
 	GError *e = NULL;
 
-	uri = gtk_recent_chooser_get_current_uri (GTK_RECENT_CHOOSER (chooser));
+	gchar *uri = gtk_recent_chooser_get_current_uri (GTK_RECENT_CHOOSER (chooser));
 	if (!uri)
 		return;
 
@@ -561,7 +564,7 @@ static void close_cmd (GSimpleAction *action, GVariant *parameter, gpointer user
 {
 	SchematicView *sv = user_data;
 	if (can_close (sv)) {
-		NG_DEBUG (" --- not dirty (anymore), do close schematic_view: %p -- vs -- "
+		oregano_echo (" --- not dirty (anymore), do close schematic_view: %p -- vs -- "
 		          "toplevel: %p",
 		          sv, schematic_view_get_toplevel (sv));
 		gtk_widget_destroy (GTK_WIDGET (schematic_view_get_toplevel (sv)));
@@ -999,7 +1002,7 @@ static void show_help (GSimpleAction *action, GVariant *parameter, gpointer user
 
 	gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano", gtk_get_current_event_time (), &e);
 	if (e) {
-		NG_DEBUG ("Error %s\n", e->message);
+		oregano_echo ("Error %s\n", e->message);
 		g_clear_error (&e);
 	}
 }
@@ -1127,7 +1130,7 @@ static void set_window_size (SchematicView *sv)
 		GdkRectangle rect;
 		gdk_screen_get_monitor_geometry (screen, monitor, &rect);
 
-		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x,
+		oregano_echo ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x,
 		          rect.y);
 
 		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 3 * (rect.width - 50) / 4,
