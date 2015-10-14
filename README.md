@@ -1,5 +1,8 @@
 # oregano - an electrical engineering tool
 
+![oregano application icon](https://raw.github.com/drahnr/oregano/wip-deprecation-refactor/data/icons/oregano.png)
+
+
 [![Join the chat at https://gitter.im/drahnr/oregano](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drahnr/oregano?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Stories in Ready](https://badge.waffle.io/drahnr/oregano.svg?label=ready&title=Ready)](http://waffle.io/drahnr/oregano) 
 
