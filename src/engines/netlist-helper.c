@@ -500,7 +500,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			str = g_string_new ("");
 
 			// TODO review again
-			NG_DEBUG ("Reading pins.\n)");
+			oregano_echo ("Reading pins.\n)");
 
 			int i;
 			for (i = 0; g_match_info_matches(match_info); i++) {
@@ -523,7 +523,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 					// need to substrac 1, netlist starts in 0, and node_nr in 1
 					pins[pin_nr].node_nr = atoi (node2real[node_nr]);
 					g_string_append (str, tmp);
-					NG_DEBUG ("str: %s\n", str->str);
+					oregano_echo ("str: %s\n", str->str);
 				}
 
 				g_free(word);
@@ -542,9 +542,9 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				g_error_free(error);
 			}
 
-			NG_DEBUG ("Done with pins, i = %d\n", i);
+			oregano_echo ("Done with pins, i = %d\n", i);
 
-			NG_DEBUG ("str: %s\n", str->str);
+			oregano_echo ("str: %s\n", str->str);
 			out->template = g_string_append (out->template, str->str);
 			out->template = g_string_append_c (out->template, '\n');
 			g_string_free (str, TRUE);

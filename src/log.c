@@ -54,7 +54,7 @@ gchar *log_append_trim_message(const gchar *string) {
  *
  * Leading and trailing '\n's will be truncated.
  */
-void log_append (Log *log, const gchar *prefix, const gchar *format, ...)
+void log_append (Log *log, const gchar *prefix, const gchar *message, ...)
 {
 	//trim message (only newlines), because newlines do not make sense in the log view
 	gchar *message_trimed = log_append_trim_message(message);

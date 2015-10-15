@@ -29,6 +29,7 @@
 
 #include <string.h>
 
+#include "debug.h"
 #include "gplot-internal.h"
 #include "gplotlines.h"
 

@@ -481,11 +481,11 @@ void schematic_log_append (Schematic *schematic, const char *message)
 	gtk_text_buffer_insert_at_cursor (schematic->priv->log, message, strlen (message));
 }
 
-void schematic_log_append_error (Schematic *schematic, const char *format, ...)
+void schematic_log_append_error (Schematic *schematic, const char *message, ...)
 {
 	va_list args;
-	va_start (args, format);
-	char *tmp = g_strdup_vprintf (format, args);
+	va_start (args, message);
+	char *tmp = g_strdup_vprintf (message, args);
 	va_end (args);
 	oregano_echo_static (tmp);
 

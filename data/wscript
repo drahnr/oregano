@@ -7,14 +7,11 @@ out = '../build'
 from waflib import Logs as logs
 from waflib import Utils as utils
 
-
 def options(opts):
-	pass
-
+    pass
 
 def configure(conf):
-	pass
-
+    pass
 
 def build(bld):
 	if bld.cmd == 'install':
@@ -24,14 +21,13 @@ def build(bld):
 		bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
 		bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
 		#things we need to be known by the app are already defined and stored in the main wscript
-		bld.install_files (bld.env.path_lang, 'netlist.lang')
-		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
-		bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
-		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
+
 		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
-		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*.png'))
-		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*.svg'))
-		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*.jpg'))
+		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
+		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
+		bld.install_files (bld.env.path_lang, 'netlist.lang')
+		bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
+		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*'))
 
 		try:
 			bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
@@ -44,30 +40,18 @@ def build(bld):
 			logs.warn('Failed to execute xdg mime database update.')
 
 	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "desktop",
+		features  = 'subst',
 		source    = 'oregano.desktop.in',
 		target    = 'oregano.desktop',
 		install_path = '${DATADIR}/applications',
 	)
 
 	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "schemas",
-		source    = 'settings/io.ahoi.oregano.gschema.xml',
-	)
-
-	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "xml",
+		features  = 'subst',
 		source    = 'mime/oregano-mimetypes.xml.in',
 		target    = 'mime/oregano.xml',
 		install_path = '${DATADIR}/mime/packages/',
 	)
-
 
 	bld(rule = "groff ${SRC} > ${TGT}", source="oregano.MAN.in", target="oregano.5")
 	bld.install_files ('${MANDIR}/man5', 'oregano.5')

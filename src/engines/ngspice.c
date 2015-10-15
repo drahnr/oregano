@@ -123,7 +123,6 @@ static GString *ngspice_generate_netlist_buffer (Engine *engine, GError **error)
 	NgSpice *ngspice = NGSPICE (engine);
 	Netlist output;
 	GList *iter;
-	GError *e = NULL;
 	GString *buffer = NULL;
 
 	netlist_helper_create (ngspice->priv->schematic, &output, &e);
