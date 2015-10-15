@@ -35,28 +35,20 @@ def configure(conf):
 
 	#things the applications needs to know about, for easier re-use in subdir wscript(s)
 	conf.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', conf.env)
-	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/icons/', conf.env)
 	conf.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', conf.env)
 	conf.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', conf.env)
 	conf.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', conf.env)
 	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', conf.env)
-#	conf.env.path_mime = '${DATADIR}/oregano/mime/'
-#	conf.env.path_locale = '${DATADIR}/oregano/locale/'
-#	conf.env.path_schemas =  utils.subst_vars('${DATADIR}/glib-2.0/schemas/', conf.env)
+	conf.env.path_icons = utils.subst_vars('${DATADIR}/oregano/icons/', conf.env)
 
-
-	conf.recurse(['po','data'])
 
 	#define the above paths so the application does know about files locations
 	conf.define('OREGANO_UIDIR', conf.env.path_ui)
-	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
 	conf.define('OREGANO_MODELDIR', conf.env.path_model)
 	conf.define('OREGANO_LIBRARYDIR', conf.env.path_partslib)
 	conf.define('OREGANO_LANGDIR', conf.env.path_lang)
 	conf.define('OREGANO_EXAMPLEDIR', conf.env.path_examples)
-#	conf.define('OREGANO_MIMEDIR', conf.env.path_mime)
-#	conf.define('OREGANO_LOCALEDIR', conf.env.path_locale)
-#	conf.define('OREGANO_SCHEMASDIR', conf.env.path_schemas)
+	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
 
 
 	conf.env.gschema_name = "io.ahoi.oregano.gschema.xml"
@@ -90,18 +82,15 @@ def configure(conf):
 	conf.define('RELEASE',1)
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
-	env_debug = conf.env.derive();
-	env_release = conf.env.derive();
-
-	conf.setenv('debug', env=env_debug)
-	conf.env.append_value('CFLAGS', ['-ggdb', '-Wall', '-Wno-deprecated-declarations'])
+	conf.setenv('debug', env=conf.env.derive())
+	conf.env.CFLAGS = ['-ggdb', '-Wall']
 	conf.define('DEBUG',1)
 	conf.define('DEBUG_DISABLE_GRABBING',1)
-#	conf.define('GLIB_DISABLE_DEPRECATION_WARNINGS', )
 
-	conf.setenv('release', env=env_release)
-	conf.env.append_value('CFLAGS', ['-O2', '-Wall'])
+	conf.setenv('release', env=conf.env.derive())
+	conf.env.CFLAGS = ['-O2', '-Wall']
 	conf.define('RELEASE',1)
+
 
 
 def docs(ctx):
@@ -156,7 +145,6 @@ def build(bld):
 		source = nodes,
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		defines=['GLIB_DISABLE_DEPRECATION_WARNINGS'],
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		target = 'shared_objects'
 	)
@@ -168,7 +156,6 @@ def build(bld):
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
 		use = 'shared_objects',
-		defines=['GLIB_DISABLE_DEPRECATION_WARNINGS'],
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
 		install_path = "${BINDIR}"
