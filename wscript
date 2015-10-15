@@ -19,6 +19,8 @@ def options(opt):
 	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
 #	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
 
+	opt.recurse(['po','data'])
+
 
 def configure(conf):
 	conf.load('compiler_c gnu_dirs glib2 intltool')
@@ -42,6 +44,8 @@ def configure(conf):
 #	conf.env.path_locale = '${DATADIR}/oregano/locale/'
 #	conf.env.path_schemas =  utils.subst_vars('${DATADIR}/glib-2.0/schemas/', conf.env)
 
+
+	conf.recurse(['po','data'])
 
 	#define the above paths so the application does know about files locations
 	conf.define('OREGANO_UIDIR', conf.env.path_ui)
@@ -86,14 +90,17 @@ def configure(conf):
 	conf.define('RELEASE',1)
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
-	conf.setenv('debug', env=conf.env.derive())
-	conf.env.CFLAGS = ['-ggdb', '-Wall', '-Wno-deprecated-declarations']
+	env_debug = conf.env.derive();
+	env_release = conf.env.derive();
+
+	conf.setenv('debug', env=env_debug)
+	conf.env.append_value('CFLAGS', ['-ggdb', '-Wall', '-Wno-deprecated-declarations'])
 	conf.define('DEBUG',1)
 	conf.define('DEBUG_DISABLE_GRABBING',1)
 #	conf.define('GLIB_DISABLE_DEPRECATION_WARNINGS', )
 
-	conf.setenv('release', env=conf.env.derive())
-	conf.env.CFLAGS = ['-O2', '-Wall']
+	conf.setenv('release', env=env_release)
+	conf.env.append_value('CFLAGS', ['-O2', '-Wall'])
 	conf.define('RELEASE',1)
 
 
@@ -322,11 +329,7 @@ class bumprpmver(Context):
 def builddeps_fun(ctx):
 	pl = platform.linux_distribution()
 	if pl[0] == 'Fedora':
-		tool = "dnf"
-		if int(pl[1]) <= 21:
-			tool = "yum"
-		logs.info("Using \"{0}\" with {1} {2} ...".format(tool,pl[0],pl[1]))
-		os.system(tool+' install gtk3-devel libxml2-devel gtksourceview3-devel intltool glib2-devel goocanvas2-devel desktop-file-utils')
+		os.system('dnf install gtk3-devel libxml2-devel gtksourceview3-devel intltool glib2-devel goocanvas2-devel desktop-file-utils')
 	elif pl[0] == 'Ubuntu':
 		os.system('apt-get install libglib2.0-dev intltool libgtk-3-dev libxml2-dev libgoocanvas-2.0-dev libgtksourceview-3.0-dev gnucap')
 	else:

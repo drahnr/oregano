@@ -9,14 +9,16 @@ from waflib import Utils as utils
 
 
 def options(opts):
-	pass
+	opts.load('gnu_dirs intltool')
 
 
 def configure(conf):
-	pass
+	conf.load('gnu_dirs intltool')
 
 
 def build(bld):
+	bld.load('gnu_dirs intltool')
+
 	if bld.cmd == 'install':
 		#intl does not like the keys in (not an xml and no translation strings)
 		#add to potfiles in for another try
