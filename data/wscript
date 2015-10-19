@@ -2,7 +2,7 @@
 # encoding: utf-8
 
 top = '..'
-build = '../build'
+out = '../build'
 
 from waflib import Logs as logs
 from waflib import Utils as utils
@@ -64,3 +64,7 @@ def build(bld):
 		target    = 'mime/oregano.xml',
 		install_path = '${DATADIR}/mime/packages/',
 	)
+
+
+	bld(rule = "groff ${SRC} > ${TGT}", source="oregano.MAN.in", target="oregano.5")
+	bld.install_files ('${MANDIR}/man5', 'oregano.5')

@@ -81,7 +81,12 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/mime/packages/oregano-mimetypes.xml
 %{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
 
+%{_mandir}/man5/
+
 %changelog
+* Mon Oct 19 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-2
+- Add manpage
+
 * Wed Jul 15 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-1
 - Version bump
 - Ignore distclean exit codes not equal 0
