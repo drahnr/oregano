@@ -197,7 +197,11 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	g_string_append (buffer, "*------------- Models -------------------------\n");
 	for (iter = output.models; iter; iter = iter->next) {
 		const gchar *model = iter->data;
-		g_string_append_printf (buffer, ".include %s/%s.model\n", OREGANO_MODELDIR, model);
+		const gchar *model_with_ext = g_strdup_printf ("%s.model", model);
+		const gchar *model_path = g_build_filename (OREGANO_MODELDIR, model_with_ext, NULL);
+		g_string_append_printf (buffer, ".include %s\n", model_path);
+		g_free (model_path);
+		g_free (model_with_ext);
 	}
 
 	// Prints template parts
