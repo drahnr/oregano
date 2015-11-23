@@ -107,12 +107,12 @@ static void cb (GSimpleAction *simple, GVariant *parameter, gpointer user_data)
 	g_print ("so we print something stupid here: %s\n", g_variant_get_string (parameter, NULL));
 }
 
-static GActionEntry action_entries[] = {{"item.copy", cb, "meh"},
-                                        {"item.cut", cb, "foo"},
-                                        {"item.delete", cb, "bar"},
-                                        {"item.rotate", cb, "baz"},
-                                        {"item.flipH", cb, "gnah"},
-                                        {"item.flipV", cb, "xaz"}};
+static GActionEntry action_entries[] = {{"item.copy", cb, "s"},
+                                        {"item.cut", cb, "s"},
+                                        {"item.delete", cb, "s"},
+                                        {"item.rotate", cb, "s"},
+                                        {"item.flipH", cb, "s"},
+                                        {"item.flipV", cb, "s"}};
 
 G_DEFINE_TYPE_WITH_PRIVATE (SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
 
@@ -898,11 +898,11 @@ void sheet_item_place_ghost (SheetItem *item, Sheet *sheet)
 		sheet_item_class->place_ghost (item, sheet);
 }
 
-void sheet_item_add_menu (SheetItem *item, const char *uipath)
+void sheet_item_add_menu (SheetItem *item, const char *whichui)
 {
 	g_assert (IS_SHEET_ITEM (item));
 
-	gchar *path = g_strconcat (OREGANO_UIDIR, "/", uipath);
+	gchar *path = g_build_filename(OREGANO_UIDIR, uipath, NULL);
 	g_autoptr (GtkBuilder) builder = gtk_builder_new_from_file (path);
 	g_free (path);
 	g_autoptr (GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));

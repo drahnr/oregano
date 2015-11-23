@@ -167,7 +167,7 @@ static void part_item_init (PartItem *item)
 
 	item->priv = priv;
 
-	sheet_item_add_menu (SHEET_ITEM (item), OREGANO_UIDIR "/part-item-menu.ui");
+	sheet_item_add_menu (SHEET_ITEM (item), "part-item-menu.ui");
 }
 
 static void part_item_set_property (GObject *object, guint propety_id, const GValue *value,
