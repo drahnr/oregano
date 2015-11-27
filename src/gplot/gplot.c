@@ -536,9 +536,7 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		if ((p->priv->action == ACTION_STARTING_PAN) || (p->priv->action == ACTION_PAN)) {
 			gdouble dx, dy;
 			cairo_matrix_t t = p->priv->matrix;
-			GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
-			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
-			gdk_flush ();
+			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_window (w), GDK_FLEUR);
 
 			dx = p->priv->press_x - e->x;
 			dy = p->priv->press_y - e->y;
@@ -559,9 +557,8 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		break;
 	case GPLOT_ZOREGANO_REGION:
 		if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
-			GdkCursor *cursor = gdk_cursor_new (GDK_CROSS);
-			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
-			gdk_flush ();
+			gdouble dx, dy;
+			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_window (w), GDK_CROSS);
 
 			p->priv->rubberband.xmin = MIN(e->x, p->priv->press_x);
 			p->priv->rubberband.xmax = MAX(e->x, p->priv->press_x);
@@ -633,13 +630,11 @@ static gboolean g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot
 			gtk_widget_queue_draw (w);
 		} else {
 			gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
-			gdk_flush ();
 		}
 		break;
 	case GPLOT_ZOREGANO_REGION:
 		if ((e->button == 1) && (p->priv->action == ACTION_REGION)) {
 			gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
-			gdk_flush ();
 
 			if (e->x < p->priv->press_x || e->y < p->priv->press_y) {
 				g_plot_reset_zoom(p);
@@ -663,7 +658,6 @@ static gboolean g_plot_button_release_cb (GtkWidget *w, GdkEventButton *e, GPlot
 			}
 		} else if (e->button == 3) {
 			gdk_window_set_cursor (gtk_widget_get_window (w), NULL);
-			gdk_flush ();
 		}
 		gtk_widget_queue_draw (w);
 	}
