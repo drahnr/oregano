@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2015       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -42,23 +44,24 @@
 char *dialog_open_file (SchematicView *sv)
 {
 	GtkWidget *dialog;
-	GtkFileFilter *allfilter, *orefilter;
 	char *name;
 
-	allfilter = gtk_file_filter_new ();
-	orefilter = gtk_file_filter_new ();
+	GtkFileFilter *filter_all = gtk_file_filter_new ();
+	GtkFileFilter *filter_oregano = gtk_file_filter_new ();
 
-	gtk_file_filter_set_name (orefilter, _ ("Oregano Files"));
-	gtk_file_filter_add_pattern (orefilter, "*.oregano");
-	gtk_file_filter_set_name (allfilter, _ ("All Files"));
-	gtk_file_filter_add_pattern (allfilter, "*");
+	gtk_file_filter_set_name (filter_oregano, _("Oregano Files"));
+	gtk_file_filter_add_pattern (filter_oregano, "*.oregano");
+	gtk_file_filter_set_name (filter_all, _("All Files"));
+	gtk_file_filter_add_pattern (filter_all, "*");
 
-	dialog = gtk_file_chooser_dialog_new (_ ("Open File"), NULL, GTK_FILE_CHOOSER_ACTION_OPEN,
-	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
-	                                      GTK_RESPONSE_ACCEPT, NULL);
+	dialog = gtk_file_chooser_dialog_new (_ ("Open File"), NULL,
+										  GTK_FILE_CHOOSER_ACTION_OPEN,
+	                                      _("_Cancel"), GTK_RESPONSE_CANCEL,
+										  _("_Open"), GTK_RESPONSE_ACCEPT,
+										  NULL);
 
-	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), orefilter);
-	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), allfilter);
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter_oregano);
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter_all);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		name = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
@@ -66,8 +69,9 @@ char *dialog_open_file (SchematicView *sv)
 			name = NULL;
 		else
 			name = g_strdup (name);
-	} else
+	} else {
 		name = NULL;
+	}
 
 	gtk_widget_destroy (dialog);
 	return name;
@@ -76,24 +80,26 @@ char *dialog_open_file (SchematicView *sv)
 void dialog_save_as (SchematicView *sv)
 {
 	GtkWidget *dialog;
-	GtkFileFilter *orefilter, *allfilter;
 	char *name;
 	Schematic *sm;
 	GError *error = NULL;
 
-	orefilter = gtk_file_filter_new ();
-	allfilter = gtk_file_filter_new ();
-	gtk_file_filter_set_name (orefilter, _ ("Oregano Files"));
-	gtk_file_filter_add_pattern (orefilter, "*.oregano");
-	gtk_file_filter_set_name (allfilter, _ ("All Files"));
-	gtk_file_filter_add_pattern (allfilter, "*");
+	GtkFileFilter *filter_all = gtk_file_filter_new ();
+	GtkFileFilter *filter_oregano = gtk_file_filter_new ();
 
-	dialog = gtk_file_chooser_dialog_new (_ ("Save File"), NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
-	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE,
-	                                      GTK_RESPONSE_ACCEPT, NULL);
+	gtk_file_filter_set_name (filter_oregano, _("Oregano Files"));
+	gtk_file_filter_add_pattern (filter_oregano, "*.oregano");
+	gtk_file_filter_set_name (filter_all, _("All Files"));
+	gtk_file_filter_add_pattern (filter_all, "*");
 
-	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), orefilter);
-	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), allfilter);
+	dialog = gtk_file_chooser_dialog_new (_ ("Save Schematic"), NULL,
+										  GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                      _("_Cancel"), GTK_RESPONSE_CANCEL,
+										  _("_Save"), GTK_RESPONSE_ACCEPT,
+										  NULL);
+
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter_oregano);
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER (dialog), filter_all);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 
@@ -121,7 +127,6 @@ void dialog_save_as (SchematicView *sv)
 			g_free (tmp);
 		}
 	}
-
 	gtk_widget_destroy (dialog);
 }
 
@@ -130,10 +135,12 @@ char *dialog_netlist_file (SchematicView *sv)
 	GtkWidget *dialog;
 	char *name = NULL;
 
-	dialog = gtk_file_chooser_dialog_new (_ ("Netlist File"), NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
-	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE,
-	                                      GTK_RESPONSE_ACCEPT, NULL);
-	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (dialog), TRUE);
+	dialog = gtk_file_chooser_dialog_new (_("Save Netlist"), NULL,
+										  GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                      _("_Cancel"), GTK_RESPONSE_CANCEL,
+										  _("_Save"), GTK_RESPONSE_ACCEPT,
+										  NULL);
+
 	gtk_file_chooser_set_do_overwrite_confirmation (GTK_FILE_CHOOSER (dialog), TRUE);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
@@ -144,32 +151,9 @@ char *dialog_netlist_file (SchematicView *sv)
 		} else {
 			name = g_strdup (name);
 		}
-	} else
+	} else {
 		name = NULL;
-
-	gtk_widget_destroy (dialog);
-	return name;
-}
-
-char *dialog_file_open (const gchar *title)
-{
-	GtkWidget *dialog;
-	char *name = NULL;
-
-	dialog = gtk_file_chooser_dialog_new (title, NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
-	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE,
-	                                      GTK_RESPONSE_ACCEPT, NULL);
-
-	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-		name = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-
-		if (name[strlen (name) - 1] == '/') {
-			g_free (name);
-			name = NULL;
-		} else
-			name = g_strdup (name);
-	} else
-		name = NULL;
+	}
 
 	gtk_widget_destroy (dialog);
 	return name;

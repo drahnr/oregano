@@ -97,6 +97,6 @@ void sheet_item_set_preserve_selection (SheetItem *item, gboolean set);
 void sheet_item_select_in_area (SheetItem *item, Coords *p1, Coords *p2);
 void sheet_item_place (SheetItem *item, Sheet *sheet);
 void sheet_item_place_ghost (SheetItem *item, Sheet *sheet);
-void sheet_item_add_menu (SheetItem *item, const char *whichui);
+void sheet_item_add_menu (SheetItem *item, const char *uifilename);
 
 #endif

@@ -898,11 +898,11 @@ void sheet_item_place_ghost (SheetItem *item, Sheet *sheet)
 		sheet_item_class->place_ghost (item, sheet);
 }
 
-void sheet_item_add_menu (SheetItem *item, const char *whichui)
+void sheet_item_add_menu (SheetItem *item, const char *uifilename)
 {
 	g_assert (IS_SHEET_ITEM (item));
 
-	gchar *path = g_build_filename(OREGANO_UIDIR, uipath, NULL);
+	gchar *path = g_build_filename(OREGANO_UIDIR, uifilename, NULL);
 	g_autoptr (GtkBuilder) builder = gtk_builder_new_from_file (path);
 	g_free (path);
 	g_autoptr (GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));

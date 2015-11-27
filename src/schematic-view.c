@@ -228,18 +228,18 @@ static void properties_cmd (GSimpleAction *action, GVariant *parameter, gpointer
 	gtk_widget_destroy (window);
 }
 
-static void find_file (GtkButton *button, GtkEntry *text)
+static void find_file_cb (GtkButton *button, GtkEntry *text)
 {
 	GtkWidget *dialog;
 
-	dialog = gtk_file_chooser_dialog_new (_ ("Export to..."), NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
-	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
-	                                      GTK_RESPONSE_ACCEPT, NULL);
+	dialog = gtk_file_chooser_dialog_new (_("Export to..."), NULL,
+										  GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                      _("_Cancel"), GTK_RESPONSE_CANCEL,
+										  _("_Open"), GTK_RESPONSE_ACCEPT,
+										  NULL);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
-		char *filename;
-
-		filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+		char *filename = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 		gtk_entry_set_text (text, filename);
 		g_free (filename);
 	}
@@ -303,7 +303,7 @@ static void export_cmd (GSimpleAction *action, GVariant *parameter, gpointer use
 	file = GTK_ENTRY (gtk_builder_get_object (builder, "file"));
 
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "find"));
-	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file), file);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (find_file_cb), file);
 
 	gtk_combo_box_set_active (GTK_COMBO_BOX (combo), 0);
 
@@ -1344,18 +1344,21 @@ static int delete_event (GtkWidget *widget, GdkEvent *event, SchematicView *sv)
 	if (can_close (sv)) {
 		g_object_unref (G_OBJECT (sv));
 		return FALSE;
-	} else
+	} else {
 		return TRUE;
+	}
 }
 
+// TODO: make this an UI file
 static int can_close (SchematicView *sv)
 {
 	GError *e = NULL;
 
 	GtkWidget *dialog;
 
-	if (!schematic_is_dirty (schematic_view_get_schematic (sv)))
+	if (!schematic_is_dirty (schematic_view_get_schematic (sv))) {
 		return TRUE;
+	}
 
 	gchar *filename = schematic_get_filename (sv->priv->schematic);
 	gchar *text =
@@ -1367,8 +1370,10 @@ static int can_close (SchematicView *sv)
 	dialog = gtk_message_dialog_new_with_markup (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
 	                                             GTK_BUTTONS_NONE, _ (text), NULL);
 
-	gtk_dialog_add_buttons (GTK_DIALOG (dialog), _ ("Close _without Saving"), GTK_RESPONSE_NO,
-	                        GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_SAVE, GTK_RESPONSE_YES,
+	gtk_dialog_add_buttons (GTK_DIALOG (dialog),
+							_("Wait, what about saving?"),
+							_("No, drop it"), GTK_RESPONSE_NO,
+							_("Yes, save it!"), GTK_RESPONSE_YES,
 	                        NULL);
 
 	g_free (text);
@@ -1530,6 +1535,7 @@ static void set_tool (SchematicView *sv, SchematicTool tool)
 		break;
 	case SCHEMATIC_TOOL_PART:
 		cursor_set_widget (GTK_WIDGET (sv->priv->sheet), OREGANO_CURSOR_LEFT_PTR);
+		break;
 	default:
 		break;
 	}

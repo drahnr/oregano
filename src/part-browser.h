@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard.schuster@ahoi.io>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2015       Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,6 +43,5 @@ void part_browser_toggle_visibility (SchematicView *schematic_view);
 GtkWidget *part_browser_create (SchematicView *schematic_view);
 void part_browser_dnd (GtkSelectionData *selection_data, gint x, gint y);
 void part_browser_place_selected_part (Schematic *sm);
-void part_browser_reparent (gpointer *br, GtkWidget *new_parent);
 
 #endif

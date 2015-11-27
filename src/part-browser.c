@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -622,13 +622,6 @@ static void wrap_string (char *str, int width)
 	}
 }
 
-static void preview_realized (GtkWidget *widget, Browser *br) { update_preview (br); }
-
-void part_browser_reparent (gpointer *br, GtkWidget *new_parent)
-{
-	Browser *b;
-	g_return_if_fail (br != NULL);
-
-	b = (Browser *)br;
-	gtk_widget_reparent (GTK_WIDGET (b->viewport), new_parent);
+static void preview_realized (GtkWidget *widget, Browser *br) {
+  update_preview (br);
 }

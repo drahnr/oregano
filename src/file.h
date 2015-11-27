@@ -40,6 +40,5 @@
 char *dialog_open_file (SchematicView *sv);
 void dialog_save_as (SchematicView *sv);
 char *dialog_netlist_file (SchematicView *sv);
-char *dialog_file_open (const gchar *file);
 
 #endif
