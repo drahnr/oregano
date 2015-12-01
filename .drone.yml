@@ -1,26 +1,26 @@
 clone:
-	depth: 1
-	recursive: true
-	path: github.com/drahnr/oregano
+  depth: 1
+  recursive: true
+  path: github.com/drahnr/oregano
 
 build:
-  image: $${DISTRO}:latest
+  image: $$DISTRO
   commands:
-	- ./waf configure --prefix="/usr" debug install --dest=/tmp
+    - whoami
+    - chmod +x ./builddeps.sh && ./builddeps.sh
+    - ./waf configure --prefix="/usr" debug install --dest=/tmp
 
 notify:
-	gitter:
-		when:
-			branch: master
-			success: true
-			failure: true
-			webhook:
-				- "https://webhooks.gitter.im/e/9968ae95acf021e9cb37"
-
-
+  gitter:
+    when:
+      branch: master
+      success: true
+      failure: true
+      webhook:
+        - "https://webhooks.gitter.im/e/9968ae95acf021e9cb37"
 
 matrix:
   DISTRO:
-	- fedora
-	- ubuntu
+  - fedora
+  - ubuntu
 
