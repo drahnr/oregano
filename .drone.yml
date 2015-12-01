@@ -1,16 +1,26 @@
-image: drahnr/fedora-oregano-test:22
-git:
-  depth: 1
-  path: github.com/drahnr/oregano
-script:
-    - ./.drone/build.sh
-deploy:
-  bash:
-    script:
-      - ./.drone/deploy.sh
+clone:
+	depth: 1
+	recursive: true
+	path: github.com/drahnr/oregano
+
+build:
+  image: $${DISTRO}:latest
+  commands:
+	- ./waf configure --prefix="/usr" debug install --dest=/tmp
+
 notify:
-  webhook:
-    urls:
-      - "https://webhooks.gitter.im/e/9968ae95acf021e9cb37"
-    on_success: true
-    on_failure: true
+	gitter:
+		when:
+			branch: master
+			success: true
+			failure: true
+			webhook:
+				- "https://webhooks.gitter.im/e/9968ae95acf021e9cb37"
+
+
+
+matrix:
+  DISTRO:
+	- fedora
+	- ubuntu
+

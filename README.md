@@ -14,7 +14,7 @@ Build matrix:
 
 OS           | Build Status
 ------------ | ------------------
-Fedora 22    | [![Build Status](http://drone.ahoi.io/api/badge/github.com/drahnr/oregano/status.svg?branch=master)](http://drone.ahoi.io/github.com/drahnr/oregano)  
+Fedora 22    | [![Build Status](http://drone.ahoi.io/api/badges/drahnr/oregano/status.svg)](http://drone.ahoi.io/drahnr/oregano)
 Ubuntu 12.04 | [![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)  
 
 The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
