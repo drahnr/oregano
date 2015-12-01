@@ -10,18 +10,15 @@ file COPYING.
 
 ### Status
 
-Build matrix:
+[![Build Status](http://drone.ahoi.io/api/badges/drahnr/oregano/status.svg)](http://drone.ahoi.io/drahnr/oregano)
 
-OS           | Build Status
------------- | ------------------
-Fedora 22    | [![Build Status](http://drone.ahoi.io/api/badges/drahnr/oregano/status.svg)](http://drone.ahoi.io/drahnr/oregano)
-Ubuntu 12.04 | [![Build Status](https://travis-ci.org/drahnr/oregano.png?branch=master)](https://travis-ci.org/drahnr/oregano)  
+The buildmatrix contains Fedora 22, Fedora 23, Ubuntu 15.10.
 
 The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
 
 ### Donations
 
-Donations are welcome!  
+Donations are very welcome!  
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=drahnr&url=https://github.com/drahnr/oregano&title=oregano&language=&tags=github&category=software)
 
 ### Support
