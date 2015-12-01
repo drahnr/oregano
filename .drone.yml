@@ -1,23 +1,25 @@
-image: $$os
+build:
+  image: $${DISTRO}
+  commands:
+	- ./.drone/build.sh
 
-git:
-  depth: 1
-  path: github.com/drahnr/oregano
-script:
-    - ./waf configure --prefix="/usr" debug install
-deploy:
-  bash:
-    script:
-      - ./.drone/deploy.sh
 matrix:
-	os:
-		- fedora-oregano-test:22
-		- fedora-oregano-test:21
-		- ubuntu-oregano-test:15.04
-		- ubuntu-oregano-test:14.04.2
+  DISTRO:
+	- fedora:22
+	- fedora:23
+	- ubuntu:1510
+
+clone:
+	depth: 1
+	recursive: true
+	path: github.com/drahnr/oregano
+
 notify:
-  webhook:
-    urls:
-      - "https://webhooks.gitter.im/e/9968ae95acf021e9cb37"
-    on_success: true
-    on_failure: true
+	gitter:
+		when:
+			branch: master
+			success: true
+			failure: true
+			webhook:
+				- "https://webhooks.gitter.im/e/9968ae95acf021e9cb37"
+
