@@ -1,13 +1,5 @@
 #include "log-view.h"
 
-#define LOG_VIEW_GET_PRIVATE(object)                                                               \
-	(G_TYPE_INSTANCE_GET_PRIVATE ((object), TYPE_LOG_VIEW, LogViewPrivate))
-
-struct _LogViewPrivate
-{
-	char x;
-};
-
 G_DEFINE_TYPE (LogView, log_view, GTK_TYPE_TREE_VIEW);
 
 static void log_view_finalize (GObject *object)
@@ -20,11 +12,11 @@ static void log_view_class_init (LogViewClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = log_view_finalize;
-
-	g_type_class_add_private (object_class, sizeof(LogViewPrivate));
 }
 
-static void log_view_init (LogView *self) { self->priv = LOG_VIEW_GET_PRIVATE (self); }
+static void log_view_init (LogView *self)
+{
+}
 
 LogView *log_view_new ()
 {

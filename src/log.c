@@ -1,34 +1,31 @@
 #include <string.h>
 #include "log.h"
-
-#define LOG_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object), LOG_TYPE, LogPrivate))
-
-struct _LogPrivate
-{
-	char x;
-};
+#include "echo.h"
 
 G_DEFINE_TYPE (Log, log, GTK_TYPE_LIST_STORE);
 
-static void log_finalize (GObject *object) { G_OBJECT_CLASS (log_parent_class)->finalize (object); }
+static void log_finalize (GObject *object)
+{
+	G_OBJECT_CLASS (log_parent_class)->finalize (object);
+}
 
 static void log_class_init (LogClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = log_finalize;
-
-	g_type_class_add_private (object_class, sizeof(LogPrivate));
 }
 
 static void log_init (Log *self)
 {
 	static GType v[] = {G_TYPE_STRING, G_TYPE_STRING};
-	self->priv = LOG_GET_PRIVATE (self);
 	gtk_list_store_set_column_types (GTK_LIST_STORE (self), 2, v);
 }
 
-Log *log_new () { return g_object_new (LOG_TYPE, NULL); }
+Log *log_new ()
+{
+	return g_object_new (LOG_TYPE, NULL);
+}
 
 /**
  * trim only newlines
@@ -94,13 +91,17 @@ void log_append_error (Log *log, const gchar *prefix, const gchar *message, GErr
 		concat = g_strdup_printf ("\n%s - %i", error->message, error->code);
 	}
 
+  	g_assert (log);
 	GtkTreeIter item;
 	gtk_list_store_insert (GTK_LIST_STORE (log), &item, 0);
 	gtk_list_store_set (GTK_LIST_STORE (log), &item, 0, g_strdup (prefix), 1, concat, -1);
 	// do not free tmp!, the liststore takes over ownership
 }
 
-void log_clear (Log *log) { gtk_list_store_clear (GTK_LIST_STORE (log)); }
+void log_clear (Log *log)
+{
+	gtk_list_store_clear (GTK_LIST_STORE (log));
+}
 
 void log_export (Log *log, const gchar *path)
 {
