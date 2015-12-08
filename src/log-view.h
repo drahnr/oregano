@@ -18,13 +18,10 @@ G_BEGIN_DECLS
 
 typedef struct _LogView LogView;
 typedef struct _LogViewClass LogViewClass;
-typedef struct _LogViewPrivate LogViewPrivate;
 
 struct _LogView
 {
 	GtkTreeView parent;
-
-	LogViewPrivate *priv;
 };
 
 struct _LogViewClass
