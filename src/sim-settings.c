@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2013-2015  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -340,8 +340,10 @@ static void add_option (GtkWidget *w, SimSettings *s)
 {
 	GtkEntry *entry;
 	GtkWidget *dialog = gtk_dialog_new_with_buttons (
-	    _ ("Add new option"), NULL, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-	    GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
+	    _("Add new option"), NULL, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+	    _("Cancel"), GTK_RESPONSE_REJECT,
+		_("Save"), GTK_RESPONSE_OK,
+		NULL);
 
 	entry = GTK_ENTRY (gtk_entry_new ());
 	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
