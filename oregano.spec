@@ -1,7 +1,7 @@
 Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
 Version:		0.83.3
-Release:		1%{?dist}
+Release:		2%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
 Source0:		https://github.com/drahnr/oregano/archive/oregano-%{version}.tar.xz
@@ -81,7 +81,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/mime/packages/oregano-mimetypes.xml
 %{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
 
-%{_mandir}/man5/
+%{_mandir}/man5/oregano.*
 
 %changelog
 * Mon Oct 19 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-2

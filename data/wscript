@@ -66,5 +66,5 @@ def build(bld):
 	)
 
 
-	bld(rule = "groff ${SRC} > ${TGT}", source="oregano.MAN.in", target="oregano.5")
+	bld(rule = "groff ${SRC} | gzip > ${TGT}", source="oregano.MAN.in", target="oregano.5")
 	bld.install_files ('${MANDIR}/man5', 'oregano.5')
