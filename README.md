@@ -12,7 +12,7 @@ file COPYING.
 
 [![Build Status](http://drone.ahoi.io/api/badges/drahnr/oregano/status.svg)](http://drone.ahoi.io/drahnr/oregano)
 
-The buildmatrix contains Fedora 22, Fedora 23, Ubuntu 15.10.
+The buildmatrix contains <kbd>Fedora 22</kbd>, <kbd>Fedora 23</kbd>, <kbd>Ubuntu 15.10</kbd>.
 
 The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
 
