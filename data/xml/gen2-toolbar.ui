@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.19.0 -->
+<interface>
+  <requires lib="gtk+" version="3.20"/>
+  <object class="GtkToolbar">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">document.new</property>
+        <property name="label" translatable="yes">New Schematic</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">document-new</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">document.open</property>
+        <property name="label" translatable="yes">Open Schematic</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">document-open</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">document.save-as</property>
+        <property name="label" translatable="yes">Save Schematic As</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">document-save-as</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.cut</property>
+        <property name="label" translatable="yes">Cut</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">edit-cut</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.copy</property>
+        <property name="label" translatable="yes">Copy</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">edit-copy</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.delete</property>
+        <property name="label" translatable="yes">Delete</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">edit-delete</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">pointer.normal</property>
+        <property name="label" translatable="yes">Pointer</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">pointer-normal</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">pointer.add-text</property>
+        <property name="label" translatable="yes">Text Cursor</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">format-text-bold</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">pointer.add-wire</property>
+        <property name="label" translatable="yes">Draw Wire</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">draw-wire</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">pointer.add-clamp</property>
+        <property name="label" translatable="yes">Add Clamp</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">add-clamp</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">simulation.run</property>
+        <property name="label" translatable="yes">Run Simulation</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">system-run</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">simulation.edit</property>
+        <property name="label" translatable="yes">Edit Simulation</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">document-properties</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.zoom-out</property>
+        <property name="label" translatable="yes">Zoom In</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">zoom-in</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.zoom-orig</property>
+        <property name="label" translatable="yes">Zoom Reset</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">zoom-original</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.zoom-in</property>
+        <property name="label" translatable="yes">Zoom Out</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">zoom-out</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkSeparatorToolItem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToggleToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.grid</property>
+        <property name="label" translatable="yes">Toggle Grid</property>
+        <property name="use_underline">True</property>
+        <property name="icon_name">toggle-grid</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.parts</property>
+        <property name="label" translatable="yes">Toggle Parts Pane</property>
+        <property name="use_underline">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkToolButton">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="action_name">view.log</property>
+        <property name="label" translatable="yes">Toggle Log</property>
+        <property name="use_underline">True</property>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="homogeneous">True</property>
+      </packing>
+    </child>
+  </object>
+</interface>
