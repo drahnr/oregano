@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -905,7 +905,7 @@ void sheet_item_add_menu (SheetItem *item, const char *uifilename)
 	gchar *path = g_build_filename(OREGANO_UIDIR, uifilename, NULL);
 	g_autoptr (GtkBuilder) builder = gtk_builder_new_from_file (path);
 	g_free (path);
-	g_autoptr (GMenuModel) menu = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
+	g_autoptr (GMenuModel) menu_model = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
 	SheetItemPrivate *priv = sheet_item_get_instance_private (item);
-	priv->menu = gtk_menu_new_from_model (menu);
+	priv->menu = gtk_menu_new_from_model (menu_model);
 }
