@@ -5,6 +5,8 @@ OreganoOptions opts = {
     .debug = {.wires = FALSE, .boxes = FALSE, .dots = FALSE, .directions = FALSE, .all = FALSE}};
 
 GOptionEntry entries[] = {
+    {"version", 0, 0, G_OPTION_ARG_NONE, &(opts.version),
+     "Print the version and quit.", NULL},
     {"debug-wires", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.wires),
      "Give them randomly alternating colors.", NULL},
     {"debug-boundingboxes", 0, 0, G_OPTION_ARG_NONE, &(opts.debug.boxes),
@@ -41,6 +43,9 @@ gboolean oregano_options_parse (int *argc, char **argv[], GError **e)
 	g_option_context_free (context);
 	return r;
 }
+
+
+inline gboolean oregano_options_version () { return opts.version; }
 
 inline gboolean oregano_options_debug_wires () { return opts.debug.wires || opts.debug.all; }
 

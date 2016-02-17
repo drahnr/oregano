@@ -61,6 +61,13 @@ int main (int argc, char *argv[])
 		g_clear_error (&error);
 		return 1;
 	}
+	if (oregano_options_version()) {
+		g_printf("Oregano "VERSION"\n"
+			 " Website: https://ahoi.io/projects/oregano\n"
+			 " License: GPLv2/GPLv3\n"
+			 " Main Developer: Bernhard Schuster\n");
+		return 0;
+	}
 
 	// required?
 	gtk_init (&argc, &argv);

@@ -9,6 +9,7 @@
 
 typedef struct
 {
+	gboolean version;
 	struct
 	{
 		gboolean wires;
@@ -21,6 +22,8 @@ typedef struct
 } OreganoOptions;
 
 gboolean oregano_options_parse (int *argc, char **argv[], GError **e);
+
+gboolean oregano_options_version ();
 
 gboolean oregano_options_debug_wires ();
 
