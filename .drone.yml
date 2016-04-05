@@ -7,7 +7,7 @@ build:
   image: $$DISTRO
   commands:
     - whoami
-    - ./builddeps.sh
+    - ./builddeps.sh ci
     - ./waf configure --prefix="/usr" debug install --dest=/tmp
 
 notify:
