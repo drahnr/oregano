@@ -34,6 +34,7 @@
 #include <math.h>
 
 #include "grid.h"
+#include "echo.h"
 
 #define ROUND(x) (floor ((x)+0.5))
 #include "debug.h"
