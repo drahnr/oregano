@@ -50,6 +50,8 @@
 #include "options.h"
 #include "rubberband.h"
 #include "create-wire.h"
+#include "schematic.h"
+#include "echo.h"
 
 static void sheet_class_init (SheetClass *klass);
 static void sheet_init (Sheet *sheet);
@@ -57,7 +59,7 @@ static void sheet_set_property (GObject *object, guint prop_id, const GValue *va
                                 GParamSpec *spec);
 static void sheet_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
 static void sheet_set_zoom (const Sheet *sheet, double zoom);
-static GList *sheet_preserve_selection (Sheet *sheet);
+static GList *sheet_preserve_selection (Sheet *sheet) G_GNUC_UNUSED;
 static void rotate_items (Sheet *sheet, GList *items, gint angle);
 static void move_items (Sheet *sheet, GList *items, const Coords *delta);
 static void flip_items (Sheet *sheet, GList *items, IDFlip direction);
@@ -66,6 +68,7 @@ static void node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet 
 static void sheet_finalize (GObject *object);
 static int dot_equal (gconstpointer a, gconstpointer b);
 static guint dot_hash (gconstpointer key);
+static guint32 extract_time (GdkEvent *event) G_GNUC_UNUSED;
 
 #define ZOREGANO_MIN 0.35
 #define ZOREGANO_MAX 3
@@ -1310,7 +1313,7 @@ void sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 	g_object_unref (data);
 }
 
-inline static guint32 extract_time (GdkEvent *event)
+static guint32 extract_time (GdkEvent *event)
 {
 	if (event) {
 		switch (event->type) {

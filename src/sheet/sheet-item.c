@@ -86,22 +86,6 @@ enum { MOVED, PLACED, SELECTION_CHANGED, MOUSE_OVER, DOUBLE_CLICKED, LAST_SIGNAL
 
 static guint so_signals[LAST_SIGNAL] = {0};
 
-
-// This is the upper part of the object popup menu. It contains actions
-// that are the same for all objects, e.g. parts and wires.
-static const char *sheet_item_context_menu = "<ui>"
-                                             "  <popup name='ItemMenu'>"
-                                             "    <menuitem action='Copy'/>"
-                                             "    <menuitem action='Cut'/>"
-                                             "    <menuitem action='Delete'/>"
-                                             "    <separator/>"
-                                             "    <menuitem action='Rotate'/>"
-                                             "    <menuitem action='FlipH'/>"
-                                             "    <menuitem action='FlipV'/>"
-                                             "    <separator/>"
-                                             "  </popup>"
-                                             "</ui>";
-
 static void cb (GSimpleAction *simple, GVariant *parameter, gpointer user_data)
 {
 	g_print ("so we print something stupid here: %s\n", g_variant_get_string (parameter, NULL));
@@ -907,5 +891,5 @@ void sheet_item_add_menu (SheetItem *item, const char *uifilename)
 	g_free (path);
 	g_autoptr (GMenuModel) menu_model = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
 	SheetItemPrivate *priv = sheet_item_get_instance_private (item);
-	priv->menu = gtk_menu_new_from_model (menu_model);
+	priv->menu = GTK_MENU (gtk_menu_new_from_model (menu_model));
 }

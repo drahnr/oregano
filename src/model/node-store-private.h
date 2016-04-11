@@ -9,6 +9,7 @@
 
 #include "debug.h"
 static gboolean is_point_on_wire (Wire *w, Coords *where);
+static gboolean is_point_at_end_of_wire (Wire *w, Coords *p) G_GNUC_UNUSED;
 
 static void add_node (gpointer key, Node *node, GList **list)
 {

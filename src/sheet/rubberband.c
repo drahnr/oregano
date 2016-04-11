@@ -41,6 +41,7 @@
 
 #include "rubberband.h"
 #include "sheet-private.h"
+#include "schematic.h"
 
 #include "debug.h"
 

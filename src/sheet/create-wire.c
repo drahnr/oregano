@@ -46,6 +46,8 @@
 #include "create-wire.h"
 #include "wire.h"
 #include "sheet-private.h"
+#include "schematic.h"
+
 
 #include "echo.h"
 #include "debug.h"

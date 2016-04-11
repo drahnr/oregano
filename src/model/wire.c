@@ -41,6 +41,7 @@
 #include "wire-private.h"
 #include "clipboard.h"
 #include "schematic-print-context.h"
+#include "echo.h"
 #include "oregano-utils.h"
 
 static void wire_class_init (WireClass *klass);
