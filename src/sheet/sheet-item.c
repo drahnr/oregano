@@ -46,7 +46,7 @@
 #include "clipboard.h"
 #include "options.h"
 #include "schematic.h"
-
+#include "marshaller.h"
 
 static void sheet_item_class_init (SheetItemClass *klass);
 static void sheet_item_init (SheetItem *item);
@@ -166,7 +166,7 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 	so_signals[SELECTION_CHANGED] =
 	    g_signal_new ("selection_changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
 	                  G_STRUCT_OFFSET (SheetItemClass, selection_changed), NULL, NULL,
-	                  g_cclosure_marshal_VOID__INT, G_TYPE_NONE, 1, G_TYPE_INT);
+	                  marshaller_VOID__OBJECT_BOOLEAN_POINTER, G_TYPE_NONE, 3, G_TYPE_OBJECT, G_TYPE_BOOLEAN, G_TYPE_POINTER);
 
 	so_signals[MOUSE_OVER] =
 	    g_signal_new ("mouse_over", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,

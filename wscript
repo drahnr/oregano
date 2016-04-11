@@ -108,9 +108,6 @@ def build(bld):
 		bld.add_post_fun(unites_summary)
 		bld.recurse(rec)
 
-
-
-
 class rpmspec(BuildContext):
 	"""fill rpmspec"""
 	cmd = 'rpmspec'
