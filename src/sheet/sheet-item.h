@@ -75,7 +75,7 @@ struct _SheetItemClass
 
 	// Signal handlers.
 	void (*moved)(SheetItem *item);
-	void (*selection_changed)(SheetItem *item);
+	void (*selection_changed)(SheetItem *item, gboolean select, gpointer user_data);
 	void (*mouse_over)(SheetItem *item);
 };
 

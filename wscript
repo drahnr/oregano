@@ -149,7 +149,7 @@ def build(bld):
 		target = 'shared_objects'
 	)
 
-	exe = bld.program(
+	app = bld.program(
 		features = ['c', 'glib2'],
 		target = APPNAME,
 		source = ['src/main.c'],
@@ -160,8 +160,10 @@ def build(bld):
 		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
 		install_path = "${BINDIR}"
 	)
+	
+	app.add_marshal_file('./src/marshaller.list', 'marshaller')
 
-	for item in exe.includes:
+	for item in app.includes:
 		logs.debug(item)
 	test = bld.program(
 		features = ['c', 'glib2', 'unites'],
@@ -172,6 +174,8 @@ def build(bld):
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)
+	test.add_marshal_file('./src/marshaller.list', 'marshaller')
+
 
 	bld.add_post_fun(unites_summary)
 
