@@ -24,14 +24,6 @@ The tests are declared by adding the **test** feature to programs::
 When the build is executed, the program 'test' will be built and executed without arguments.
 The success/failure is detected by looking at the return code. The status and the standard output/error
 are stored on the build context.
-
-The results can be displayed by registering a callback function. Here is how to call
-the predefined callback::
-
-	def build(bld):
-		bld(features='c cprogram unites', source='main.c', target='app')
-		from waflib.Tools import unites
-		bld.add_post_fun(unites.summary)
 """
 
 import os, sys
@@ -41,9 +33,15 @@ from waflib import Utils, Task, Logs, Options, Errors, Context
 @feature('unites')
 @after_method('apply_link')
 def make_test(self):
-	"""Create the unit test task. There can be only one unit test task by task generator."""
+	"""
+	Create the unit test task. There can be only one unit test task by task generator.
+	"""
+	if not getattr(self.bld, 'unites_group', None):
+		self.bld.unites_group = self.bld.add_group(name="unites", move=False)
+
 	if getattr(self, 'link_task', None):
 		tsk = self.create_task('unites', self.link_task.outputs)
+		self.bld.add_to_group(tsk, group=self.bld.unites_group)
 
 
 class unites(Task.Task):
@@ -139,33 +137,6 @@ class unites(Task.Task):
 			bld.to_log(msg)
 			if not getattr(Options.options, 'permissive_tests', False):
 				raise Errors.WafError('Test \'%s\' failed' % (testname))
-		if not getattr(bld,'unites_summary',None):
-			bld.unites_summary = {}
-		bld.unites_summary[testname] = (proc.returncode!=0)
-
-
-def summary(bld):
-	"""
-	Display an execution summary::
-
-		def build(bld):
-			bld(features='cxx cxxprogram unites', source='main.c', target='app')
-			from waflib.Tools import unites
-			bld.add_post_fun(unites.summary)
-	"""
-	dic = getattr(bld, 'unites_summary', {})
-	if dic:
-		total = len(dic)
-		tfail = len([k for k in dic if dic[k]])
-
-		if tfail>0:
-			if getattr(Options.options, 'permissive_tests', False):
-				col = 'YELLOW'
-			else:
-				col = 'RED'
-		else:
-			col = 'PINK'
-		Logs.pprint (col, 'unites:  %d of %d tests passed' % (total-tfail, total))
 
 def options(opt):
 	"""

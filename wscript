@@ -116,8 +116,6 @@ def post(ctx):
 		ctx.exec_command('')
 
 
-from waftools.unites import summary as unites_summary
-
 def build(bld):
 	bld.add_pre_fun(pre)
 	bld.add_post_fun(post)
@@ -175,9 +173,6 @@ def build(bld):
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)
 	test.add_marshal_file('./src/marshaller.list', 'marshaller')
-
-
-	bld.add_post_fun(unites_summary)
 
 
 
