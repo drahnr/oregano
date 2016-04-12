@@ -113,19 +113,6 @@ class rpmspec(BuildContext):
 	cmd = 'rpmspec'
 	variant = 'rpmspec'
 
-class release(BuildContext):
-	"""compile release binary"""
-	cmd = 'release'
-	variant = 'release'
-
-class debug(BuildContext):
-	"""compile debug binary"""
-	cmd = 'debug'
-	variant = 'debug'
-
-
-
-
 def docs(ctx):
 	logs.info("TODO: docs generation is not yet supported")
 
