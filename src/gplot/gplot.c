@@ -513,8 +513,8 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		if ((p->priv->action == ACTION_STARTING_PAN) || (p->priv->action == ACTION_PAN)) {
 			gdouble dx, dy;
 			cairo_matrix_t t = p->priv->matrix;
-			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_window (w), GDK_FLEUR);
-
+			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_display (w), GDK_FLEUR);
+			gdk_window_set_cursor (gtk_widget_get_window(w), cursor);
 			dx = p->priv->last_x - e->x;
 			dy = p->priv->last_y - e->y;
 
@@ -535,8 +535,8 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 	case GPLOT_ZOREGANO_REGION:
 		if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
 			gdouble dx, dy;
-			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_window (w), GDK_CROSS);
-
+			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_display (w), GDK_CROSS);
+			gdk_window_set_cursor (gtk_widget_get_window(w), cursor);
 
 			/* dx < 0 == moving to the left */
 			dx = e->x - p->priv->last_x;
