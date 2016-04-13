@@ -32,6 +32,7 @@
 #include "debug.h"
 #include "gplot-internal.h"
 #include "gplotlines.h"
+#include "echo.h"
 
 typedef struct _GPlotLines GPlotLines;
 typedef struct _GPlotLinesPrivate GPlotLinesPrivate;
@@ -63,7 +64,7 @@ static void g_plot_lines_get_property (GObject *object, guint prop_id, GValue *v
 
 static GObjectClass *parent_class = NULL;
 
-enum { ARG_0, ARG_WIDTH, ARG_COLOR, ARG_COLOR_GDKCOLOR, ARG_VISIBLE, ARG_GRAPH_TYPE, ARG_SHIFT };
+enum { ARG_0, ARG_WIDTH, ARG_COLOR, ARG_COLOR_RGBA, ARG_VISIBLE, ARG_GRAPH_TYPE, ARG_SHIFT };
 
 struct _GPlotLinesPrivate
 {
@@ -79,7 +80,7 @@ struct _GPlotLinesPrivate
 
 	// Line Color
 	gchar *color_string;
-	GdkColor color;
+	GdkRGBA color;
 
 	// Graphic type
 	GraphicType graphic_type;
@@ -157,7 +158,7 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 	                                                      "the string color line", "white",
 	                                                      G_PARAM_READWRITE));
 
-	g_object_class_install_property (object_class, ARG_COLOR_GDKCOLOR,
+	g_object_class_install_property (object_class, ARG_COLOR_RGBA,
 	                                 g_param_spec_pointer ("color-rgb", "GPlotLines::color-rgb",
 	                                                       "the GdkColor of the line",
 	                                                       G_PARAM_READWRITE));
@@ -202,7 +203,7 @@ static void g_plot_lines_set_property (GObject *object, guint prop_id, const GVa
 	case ARG_COLOR:
 		g_free (plot->priv->color_string);
 		plot->priv->color_string = g_strdup (g_value_get_string (value));
-		gdk_color_parse (plot->priv->color_string, &plot->priv->color);
+		gdk_rgba_parse (&plot->priv->color, plot->priv->color_string);
 		break;
 	case ARG_GRAPH_TYPE:
 		plot->priv->graphic_type = g_value_get_enum (value);

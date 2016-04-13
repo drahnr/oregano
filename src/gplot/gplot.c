@@ -536,10 +536,11 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		if ((p->priv->action == ACTION_STARTING_PAN) || (p->priv->action == ACTION_PAN)) {
 			gdouble dx, dy;
 			cairo_matrix_t t = p->priv->matrix;
-			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_window (w), GDK_FLEUR);
 
-			dx = p->priv->press_x - e->x;
-			dy = p->priv->press_y - e->y;
+			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_display (w), GDK_FLEUR);
+			gdk_window_set_cursor (gtk_widget_get_window(w), cursor);
+			dx = p->priv->last_x - e->x;
+			dy = p->priv->last_y - e->y;
 
 			cairo_matrix_invert (&t);
 			cairo_matrix_transform_distance (&t, &dx, &dy);
@@ -557,11 +558,8 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		break;
 	case GPLOT_ZOREGANO_REGION:
 		if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
-			gdouble dx, dy;
-			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_window (w), GDK_CROSS);
-
-			p->priv->rubberband.xmin = MIN(e->x, p->priv->press_x);
-			p->priv->rubberband.xmax = MAX(e->x, p->priv->press_x);
+			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_display (w), GDK_CROSS);
+			gdk_window_set_cursor (gtk_widget_get_window(w), cursor);
 
 			p->priv->rubberband.ymin = MIN(e->y, p->priv->press_y);
 			p->priv->rubberband.ymax = MAX(e->y, p->priv->press_y);
