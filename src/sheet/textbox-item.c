@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2015  Bernhard Schuster
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,6 +41,7 @@
 #include "textbox.h"
 #include "dialogs.h"
 #include "sheet.h"
+#include "echo.h"
 
 #define NORMAL_COLOR "black"
 #define SELECTED_COLOR "green"
@@ -63,7 +64,7 @@ inline static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
 static void textbox_item_place (SheetItem *item, Sheet *sheet);
 static void textbox_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void edit_textbox (SheetItem *sheet_item);
-static void edit_cmd (GtkWidget *widget, Sheet *sheet);
+static void edit_cmd (GtkWidget *widget, Sheet *sheet) G_GNUC_UNUSED;
 
 #include "debug.h"
 
@@ -429,7 +430,7 @@ void edit_dialog_ok (TextboxItem *item)
 	g_assert (IS_TEXTBOX (item));
 
 	Textbox *textbox = TEXTBOX (sheet_item_get_data (SHEET_ITEM (item)));
-	gchar *value = gtk_entry_get_text (GTK_ENTRY (prop_dialog->entry));
+	const gchar *value = gtk_entry_get_text (GTK_ENTRY (prop_dialog->entry));
 	textbox_set_text (textbox, value);
 }
 
@@ -442,7 +443,7 @@ static void edit_textbox (SheetItem *sheet_item)
 	Textbox *textbox;
 	const char *value;
 	GError *e = NULL;
-	Sheet *sheet = sheet_item_get_sheet (sheet_item);
+//	Sheet *sheet = sheet_item_get_sheet (sheet_item);
 
 	g_autoptr (GtkBuilder) builder = gtk_builder_new ();
 	if (builder == NULL) {
