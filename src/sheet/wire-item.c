@@ -523,6 +523,7 @@ static int deselect_idle_callback (WireItem *item)
 static void selection_changed (SheetItem *item, gboolean select, gpointer user)
 {
 	g_object_ref (G_OBJECT (item));
+	// FIXME XXX dafuq?????
 	if (select) {
 		g_idle_add ((gpointer)select_idle_callback, item);
 	} else {
