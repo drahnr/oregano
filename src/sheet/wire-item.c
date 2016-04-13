@@ -60,7 +60,7 @@ static void wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void wire_changed_callback (Wire *, WireItem *item);
 static void wire_delete_callback (Wire *, WireItem *item);
 static void wire_item_paste (Sheet *sheet, ItemData *data);
-static void selection_changed (WireItem *item, gboolean select, gpointer user_data);
+static void selection_changed (SheetItem *item, gboolean select, gpointer user_data);
 static int select_idle_callback (WireItem *item);
 static int deselect_idle_callback (WireItem *item);
 static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2);
@@ -520,7 +520,7 @@ static int deselect_idle_callback (WireItem *item)
 	return FALSE;
 }
 
-static void selection_changed (WireItem *item, gboolean select, gpointer user)
+static void selection_changed (SheetItem *item, gboolean select, gpointer user)
 {
 	g_object_ref (G_OBJECT (item));
 	if (select) {

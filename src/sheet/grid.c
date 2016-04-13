@@ -8,12 +8,12 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
  *
- * Web page: https://github.com/marc-lorber/oregano
+ * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -102,7 +102,7 @@ static void grid_dispose (GObject *object) { G_OBJECT_CLASS (grid_parent_class)-
 
 static void grid_finalize (GObject *object)
 {
-	Grid *grid = GRID (object);
+//	Grid *grid = GRID (object);
 
 	G_OBJECT_CLASS (grid_parent_class)->finalize (object);
 }
@@ -111,7 +111,6 @@ static void grid_set_property (GObject *object, guint prop_id, const GValue *val
                                GParamSpec *spec)
 {
 	Grid *grid = GRID (object);
-	;
 	GridPrivate *priv = grid->priv;
 
 	switch (prop_id) {

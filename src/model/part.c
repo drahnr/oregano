@@ -528,8 +528,8 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	cairo_matrix_multiply (&morph, &morph_rot, item_data_get_translate (data));
 
 	Coords delta_to_center, delta_to_center_transformed;
-	Coords delta_to_apply, delta_bbox;
-	Coords bbox_center, bbox_center_transformed;
+	Coords delta_to_apply;
+	Coords bbox_center;
 	Coords item_pos;
 
 // get bbox
