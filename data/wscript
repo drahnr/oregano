@@ -44,6 +44,10 @@ def build(bld):
 		except:
 			logs.warn('Failed to execute xdg mime database update.')
 
+
+	for uifile in bld.path.ant_glob('xml/gen2-*.ui'):
+		bld(rule="gtk-builder-tool validate ${SRC}", source=uifile)
+
 	bld(
 		features  = 'intltool_in',
 		podir     = "../po",
