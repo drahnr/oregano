@@ -138,7 +138,7 @@ def build(bld):
 	     'src/model/*.c'],
 	     excl='*/main.c')
 
-	bld.objects (
+	objs = bld.objects (
 		['c','glib2'],
 		source = nodes,
 		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
@@ -146,6 +146,7 @@ def build(bld):
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		target = 'shared_objects'
 	)
+	objs.add_marshal_file('./src/marshaller.list', 'marshaller')
 
 	app = bld.program(
 		features = ['c', 'glib2'],
@@ -158,8 +159,6 @@ def build(bld):
 		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
 		install_path = "${BINDIR}"
 	)
-	
-	app.add_marshal_file('./src/marshaller.list', 'marshaller')
 
 	for item in app.includes:
 		logs.debug(item)
@@ -172,7 +171,6 @@ def build(bld):
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)
-	test.add_marshal_file('./src/marshaller.list', 'marshaller')
 
 
 
@@ -269,7 +267,8 @@ def update_po(ctx):
 
 # we need to subclass BuildContext instead of Context
 # in order to access ctx.env.some_variable
-# TODO create a custom subclass of waflib.Context.Context which implements the load_env from BuildContext
+# TODO create a custom subclass of waflib.Context.Context\
+# TODO which implements the load_env from BuildContext
 class spawnpot(BuildContext):
 	"""spawn .pot files"""
 	cmd = 'spawnpot'
