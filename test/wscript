@@ -1,0 +1,28 @@
+#! /usr/bin/env python3
+# encoding: utf-8
+
+import os.path
+
+def options(opt):
+	opt.load('unites', tooldir='waftools')
+
+def configure(cfg):
+	cfg.load('unites', tooldir='waftools')
+
+def build(bld):
+	bld.load('unites', tooldir='waftools')
+
+	includes = ['.', 'engines', 'gplot', 'model', 'sheet']
+	includes = [os.path.join('..','src',item) for item in includes ]
+
+	microtests = bld.program(
+		features = ['c', 'glib2'],
+		target = 'microtests',
+		source = ['test_microtests.c'],
+		includes = includes,
+		export_includes = includes,
+		use = 'shared_objects',
+		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
+		install_path = None
+	)
+

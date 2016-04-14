@@ -11,7 +11,7 @@ import os
 from waflib import Logs as logs
 from waflib import Utils as utils
 
-rec = ['src', 'po', 'data']
+rec = ['src', 'po', 'data', 'test']
 
 def options(opt):
 	opt.load('compiler_c gnu_dirs glib2')
@@ -116,7 +116,6 @@ class rpmspec(BuildContext):
 def docs(ctx):
 	logs.info("TODO: docs generation is not yet supported")
 
-
 def dist(ctx):
 	ctx.tar_prefix = APPNAME
 	ctx.base_name = APPNAME+'-'+VERSION
@@ -125,8 +124,6 @@ def dist(ctx):
 	ctx.files = ctx.path.ant_glob('src/**/*', excl=['**/*~'])
 	ctx.files.extend(ctx.path.ant_glob('**/wscript'))
 	ctx.files.extend(ctx.path.ant_glob('**/*', excl=['**/.*', 'build', 'buildrpm', '*.tar.*']))
-
-
 
 def gdb_fun(ctx):
 	if ctx.env.GDB:
@@ -186,7 +183,8 @@ def update_po(ctx):
 
 # we need to subclass BuildContext instead of Context
 # in order to access ctx.env.some_variable
-# TODO create a custom subclass of waflib.Context.Context which implements the load_env from BuildContext
+# TODO create a custom subclass of waflib.Context.Context\
+# TODO which implements the load_env from BuildContext
 class spawnpot(BuildContext):
 	"""spawn .pot files"""
 	cmd = 'spawnpot'
