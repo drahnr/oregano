@@ -14,6 +14,8 @@ def configure(conf):
     pass
 
 def build(bld):
+	bld.load('gtkbuilder', tooldir='waftools')
+
 	if bld.cmd == 'install':
 		#intl does not like the keys in (not an xml and no translation strings)
 		#add to potfiles in for another try
@@ -22,7 +24,6 @@ def build(bld):
 		bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
 		#things we need to be known by the app are already defined and stored in the main wscript
 
-		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
 		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
 		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
 		bld.install_files (bld.env.path_lang, 'netlist.lang')
@@ -38,6 +39,8 @@ def build(bld):
 			bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
 		except:
 			logs.warn('Failed to execute xdg mime database update.')
+
+	bld(source=bld.path.ant_glob('xml/*.ui'), install_path = bld.env.path_ui)
 
 	bld(
 		features  = 'subst',
