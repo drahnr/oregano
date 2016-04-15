@@ -18,6 +18,7 @@ def configure(conf):
 
 def build(bld):
 	bld.load('gnu_dirs intltool')
+	bld.load('gtkbuilder', tooldir='waftools')
 
 	if bld.cmd == 'install':
 		#intl does not like the keys in (not an xml and no translation strings)
@@ -44,9 +45,7 @@ def build(bld):
 		except:
 			logs.warn('Failed to execute xdg mime database update.')
 
-
-	for uifile in bld.path.ant_glob('xml/gen2-*.ui'):
-		bld(rule="gtk-builder-tool validate ${SRC}", source=uifile)
+	bld(source=bld.path.ant_glob('xml/*.ui'), install_path = bld.env.path_ui)
 
 	bld(
 		features  = 'intltool_in',
