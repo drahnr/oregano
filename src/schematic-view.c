@@ -1192,14 +1192,16 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 
 	w = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w), GTK_POLICY_AUTOMATIC,
-	                                GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w),
+	                                GTK_POLICY_ALWAYS,
+	                                GTK_POLICY_ALWAYS);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (w), GTK_SHADOW_IN);
 	gtk_widget_set_hexpand (w, TRUE);
 	gtk_widget_set_vexpand (w, TRUE);
 
 	gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (sheet));
-	gtk_box_pack_start (GTK_BOX (hbox), w, TRUE, TRUE, 5);
+	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET(w), TRUE, TRUE, 5);
+
 
 	part_browser = part_browser_create (sv);
 	gtk_widget_set_hexpand (part_browser, FALSE);
@@ -1212,7 +1214,7 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	// Fill the window
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
-	gtk_paned_pack1 (paned, vbox, FALSE, TRUE);
+	gtk_paned_pack1 (paned, vbox, TRUE, TRUE);
 	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), GTK_WIDGET (sv->priv->sheet));
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 
@@ -1224,6 +1226,9 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	sv->priv->logview = logview;
 
 	logview_scrolled = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (logview_scrolled),
+	                                GTK_POLICY_NEVER,
+	                                GTK_POLICY_ALWAYS);
 	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
 	gtk_paned_pack2 (paned, logview_scrolled, FALSE, TRUE);
 
