@@ -852,7 +852,16 @@ static void log_toggle_visibility_cmd (GSimpleAction *action, GVariant *paramete
 		pos = gtk_paned_get_position (GTK_PANED (sv->priv->paned));
 
 	gtk_widget_get_allocation (GTK_WIDGET (sv->priv->paned), &allocation);
-	gtk_paned_set_position (GTK_PANED (sv->priv->paned), b ? pos : allocation.height);
+
+	GValue min, max;
+	g_object_get(G_OBJECT(sv->priv->paned), "min-position", &min);
+	g_object_get(G_OBJECT(sv->priv->paned), "max-position", &max);
+
+
+	const gint miv = g_value_get_int(&min);
+	const gint mav = g_value_get_int(&max);
+	const gint v = MAX (miv, MIN (mav, pos));
+	gtk_paned_set_position (GTK_PANED (sv->priv->paned), v);
 }
 
 static void smartsearch_cmd (GSimpleAction *action, GVariant *parameter, gpointer user_data)
@@ -1198,6 +1207,7 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (w), GTK_SHADOW_IN);
 	gtk_widget_set_hexpand (w, TRUE);
 	gtk_widget_set_vexpand (w, TRUE);
+	gtk_widget_set_size_request(w, -1, 50);
 
 	gtk_container_add (GTK_CONTAINER (w), GTK_WIDGET (sheet));
 	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET(w), TRUE, TRUE, 5);
@@ -1229,8 +1239,11 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (logview_scrolled),
 	                                GTK_POLICY_NEVER,
 	                                GTK_POLICY_ALWAYS);
+
+	gtk_widget_set_size_request(logview_scrolled, -1, 50);
 	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
 	gtk_paned_pack2 (paned, logview_scrolled, FALSE, TRUE);
+	gtk_widget_set_size_request(GTK_WIDGET(paned), -1, 150);
 
 	setup_dnd (sv);
 
