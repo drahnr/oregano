@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2015  Bernhard Schuster
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -1136,11 +1136,10 @@ static void set_window_size (SchematicView *sv)
 		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 3 * (rect.width - 50) / 4,
 		                             3 * (rect.height - 50) / 4);
 	} else {
-		g_message ("No default screen found. Falling back to 1024x768 window size.");
+		g_message ("No default screen found. Falling back to 1024x480 window size.");
 		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 1024, 480);
 	}
 }
-#include "schematic-view-menu.h"
 
 SchematicView *schematic_view_new (Schematic *schematic)
 {
