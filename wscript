@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # encoding: utf-8
 
 VERSION = '0.83.3'
@@ -11,90 +11,36 @@ import os
 from waflib import Logs as logs
 from waflib import Utils as utils
 
+
+recurse = ['src', 'test', 'po', 'data']
+
+
 def options(opt):
-	opt.load('compiler_c gnu_dirs glib2')
-	opt.load('unites', tooldir='waftools')
-
+	opt.load('gnu_dirs')
 	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
-	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
-#	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
+	opt.recurse(recurse)
 
-	opt.recurse(['po','data'])
-
-
-def configure(conf):
-	conf.load('compiler_c gnu_dirs glib2 intltool')
-	conf.load('unites', tooldir='waftools')
-
-	conf.env.appname = APPNAME
-	conf.env.version = VERSION
-
-	conf.define('VERSION', VERSION)
-	conf.define('GETTEXT_PACKAGE', APPNAME)
-
+def configure(cfg):
+	cfg.load('gnu_dirs')
+	cfg.env.appname = APPNAME
+	cfg.env.version = VERSION
 
 	#things the applications needs to know about, for easier re-use in subdir wscript(s)
-	conf.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', conf.env)
-	conf.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', conf.env)
-	conf.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', conf.env)
-	conf.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', conf.env)
-	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', conf.env)
-	conf.env.path_icons = utils.subst_vars('${DATADIR}/oregano/icons/', conf.env)
+	cfg.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', cfg.env)
+	cfg.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', cfg.env)
+	cfg.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', cfg.env)
+	cfg.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', cfg.env)
+	cfg.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', cfg.env)
+	cfg.env.path_icons = utils.subst_vars('${DATADIR}/oregano/icons/', cfg.env)
+	cfg.env.gschema_name = "io.ahoi.oregano.gschema.xml"
+
+	cfg.recurse(recurse)
 
 
-	#define the above paths so the application does know about files locations
-	conf.define('OREGANO_UIDIR', conf.env.path_ui)
-	conf.define('OREGANO_MODELDIR', conf.env.path_model)
-	conf.define('OREGANO_LIBRARYDIR', conf.env.path_partslib)
-	conf.define('OREGANO_LANGDIR', conf.env.path_lang)
-	conf.define('OREGANO_EXAMPLEDIR', conf.env.path_examples)
-	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
-
-
-	conf.env.gschema_name = "io.ahoi.oregano.gschema.xml"
-	conf.define('OREGANO_SCHEMA_NAME', conf.env.gschema_name)
-
-
-	conf.check_cc(lib='m', uselib_store='M', mandatory=True)
-
-	conf.check_cfg(atleast_pkgconfig_version='0.26')
-	conf.check_cfg(package='glib-2.0', uselib_store='GLIB', args=['glib-2.0 >= 2.44', '--cflags', '--libs'], mandatory=True, msg="Checking for 'glib-2.0' >= 2.44")
-	conf.check_cfg(package='gobject-2.0', uselib_store='GOBJECT', args=['--cflags', '--libs'], mandatory=True)
-	conf.check_cfg(package='gtk+-3.0', uselib_store='GTK3', args=['--cflags', '--libs'], mandatory=True)
-	conf.check_cfg(package='libxml-2.0', uselib_store='XML', args=['--cflags', '--libs'], mandatory=True)
-	conf.check_cfg(package='goocanvas-2.0', uselib_store='GOOCANVAS', args=['--cflags', '--libs'], mandatory=True)
-	conf.check_cfg(package='gtksourceview-3.0', uselib_store='GTKSOURCEVIEW3', args=['--cflags', '--libs'], mandatory=True)
-
-	conf.check_large_file(mandatory=False)
-	conf.check_endianness(mandatory=False)
-	conf.check_inline(mandatory=False)
-
-	conf.find_program('clang-format', var='CODEFORMAT', mandatory=False)
-	conf.find_program('gdb', var='GDB', mandatory=False)
-	conf.find_program('nemiver', var='NEMIVER', mandatory=False)
-	conf.find_program('valgrind', var='VALGRIND', mandatory=False)
-
-
-	with open(os.path.join(out,"VERSION"),"w+") as f:
-		f.write(str(VERSION)+os.linesep)
-
-
-	conf.define('RELEASE',1)
-
-	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
-	conf.setenv('debug', env=conf.env.derive())
-	conf.env.CFLAGS = ['-ggdb', '-Wall']
-	conf.define('DEBUG',1)
-	conf.define('DEBUG_DISABLE_GRABBING',1)
-
-	conf.setenv('release', env=conf.env.derive())
-	conf.env.CFLAGS = ['-O2', '-Wall']
-	conf.define('RELEASE',1)
-
-
-
-def docs(ctx):
-	logs.info("TODO: docs generation is not yet supported")
+def build(bld):
+	bld.load('gnu_dirs')
+	bld(features='subst', source='oregano.spec.in', target='oregano.spec', install_path=None, VERSION=bld.env.version)
+	bld.recurse(recurse)
 
 
 def dist(ctx):
@@ -102,75 +48,6 @@ def dist(ctx):
 	ctx.algo = 'tar.xz'
 	ctx.excl = ['.*', '*~','./build','*.'+ctx.algo],
 	ctx.files = ctx.path.ant_glob('**/wscript')
-
-
-
-def pre(ctx):
-	if ctx.cmd != 'install':
-		logs.info ('Variant: \'' + ctx.variant + '\'')
-
-
-
-def post(ctx):
-	if ctx.options.run:
-		ctx.exec_command('')
-
-
-def build(bld):
-	bld.add_pre_fun(pre)
-	bld.add_post_fun(post)
-	bld.recurse(['po','data'])
-
-	if bld.cmd != 'install' and bld.cmd != 'uninstall':
-		if not bld.variant:
-			bld.variant = 'debug'
-			logs.warn ('Use \'debug\' or \'release\' targets for manual builds!')
-	else:
-		if not os.geteuid()==0:
-			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
-
-
-	nodes =  bld.path.ant_glob(\
-	    ['src/*.c',
-	     'src/gplot/*.c',
-	     'src/engines/*.c',
-	     'src/sheet/*.c',
-	     'src/model/*.c'],
-	     excl='*/main.c')
-
-	objs = bld.objects (
-		['c','glib2'],
-		source = nodes,
-		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		target = 'shared_objects'
-	)
-	objs.add_marshal_file('./src/marshaller.list', 'marshaller')
-
-	app = bld.program(
-		features = ['c', 'glib2'],
-		target = APPNAME,
-		source = ['src/main.c'],
-		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
-		install_path = "${BINDIR}"
-	)
-
-	for item in app.includes:
-		logs.debug(item)
-	test = bld.program(
-		features = ['c', 'glib2', 'unites'],
-		target = 'microtests',
-		source = ['test/test.c'],
-		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
-	)
 
 
 
@@ -194,20 +71,20 @@ def gdb_fun(ctx):
 	if ctx.env.GDB:
 		os.system ("G_DEBUG=resident-modules,fatal-warnings "+ctx.env.GDB[0]+" --args ./build/debug/"+APPNAME+" --debug-all")
 	else:
-		logs.warn ("Did not find \"gdb\". Re-configure if you installed it in the meantime.")
+		logs.warn ("Did not find \"gdb\". Re-cfgigure if you installed it in the meantime.")
 
 def nemiver_fun(ctx):
 	if ctx.env.NEMIVER:
 		os.system (" "+ctx.env.NEMIVER[0]+" --env=\"G_DEBUG=resident-modules,fatal-warnings\" ./build/debug/"+APPNAME+" --debug-all")
 	else:
-		logs.warn ("Did not find \"nemiver\". Re-configure if you installed it in the meantime.")
+		logs.warn ("Did not find \"nemiver\". Re-cfgigure if you installed it in the meantime.")
 
 
 def valgrind_fun(ctx):
 	if ctx.env.VALGRIND:
 		os.system ("G_DEBUG=resident-modules,always-malloc,fatal-warnings "+ctx.env.VALGRIND[0]+" --leak-check=full --leak-resolution=high --show-reachable=no --track-origins=yes --undef-value-errors=yes --show-leak-kinds=definite --free-fill=0x77 ./build/debug/"+APPNAME+" --debug-all")
 	else:
-		logs.warn ("Did not find \"valgrind\". Re-configure if you installed it in the meantime.")
+		logs.warn ("Did not find \"valgrind\". Re-cfgigure if you installed it in the meantime.")
 
 
 
@@ -215,7 +92,7 @@ def massif_fun(ctx):
 	if ctx.env.VALGRIND:
 		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND[0]+" --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
 	else:
-		logs.warn ("Did not find \"massif\". Re-configure if you installed it in the meantime.")
+		logs.warn ("Did not find \"massif\". Re-cfgigure if you installed it in the meantime.")
 
 
 
@@ -233,27 +110,12 @@ def codeformat_fun(ctx):
 			args += str(item.abspath())+' '
 		os.system (''+ctx.env.CODEFORMAT[0]+' -i '+ args)
 	else:
-		logs.warn ("Did not find \"clang-format\". Re-configure if you installed it in the meantime.")
+		logs.warn ("Did not find \"clang-format\". Re-cfgigure if you installed it in the meantime.")
 
 
 import platform
 from waflib.Context import Context
 import re
-def bumprpmver_fun(ctx):
-
-	spec = ctx.path.find_node('oregano.spec')
-	data = None
-	with open(spec.abspath()) as f:
-		data = f.read()
-
-	if data:
-		data = (re.sub(r'^(\s*Version\s*:\s*)[\w.]+\s*', r'\1 {0}\n'.format(VERSION), data, flags=re.MULTILINE))
-
-		with open(spec.abspath(),'w') as f:
-			f.write(data)
-	else:
-		logs.warn("Didn't find that spec file: '{0}'".format(spec.abspath()))
-
 
 def spawn_pot(ctx):
 #	"create a .pot from all sources (.ui,.c,.h,.desktop)"
@@ -304,12 +166,6 @@ class nemiver(BuildContext):
 	"""Run with \"nemiver\""""
 	cmd = 'nemiver'
 	fun = 'nemiver_fun'
-
-class bumprpmver(Context):
-	"""Bump version"""
-	cmd = 'bumprpmver'
-	fun = 'bumprpmver_fun'
-
 
 def builddeps_fun(ctx):
 	pl = platform.linux_distribution()

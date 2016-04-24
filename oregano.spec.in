@@ -1,6 +1,6 @@
 Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
-Version:		0.83.3
+Version:		@VERSION@
 Release:		1%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
@@ -36,7 +36,6 @@ CFLAGS="%{optflags}" ./waf configure --prefix="%{_prefix}" debug
 
 %install
 ./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
-rm -f "$RPM_BUILD_ROOT/%{_bindir}/microtests"
 %find_lang oregano
 
 %post

@@ -1,15 +1,15 @@
 #! /usr/bin/env python
 # encoding: utf-8
 
-top = '..'
-build = '../build'
-
 from waflib import Logs as logs
 from waflib import Utils as utils
 
 
-def options(opts):
-	opts.load('gnu_dirs intltool')
+def options(opt):
+	opt.load('gnu_dirs intltool')
+	opt.add_option('--no-gtk-update-icon-cache', action='store_true', default=False, help='do not udapte iconcache')
+	opt.add_option('--no-xdg-update-desktop-database', action='store_true', default=False, help='do not update desktop database')
+	opt.add_option('--no-xdg-update-mime-database', action='store_true', default=False, help='do not update mime database')
 
 
 def configure(conf):
@@ -20,30 +20,43 @@ def build(bld):
 	bld.load('gnu_dirs intltool')
 	bld.load('gtkbuilder', tooldir='waftools')
 
+	#intl does not like the keys in (not an xml and no translation strings)
+	#add to potfiles in for another try
+
+	#things we need to be known by the app are already defined and stored in the main wscript
+
+	bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
+	bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
+	bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
+	bld.install_files (bld.env.path_lang, 'netlist.lang')
+	bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
+	bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*'))
+
 	if bld.cmd == 'install':
-		#intl does not like the keys in (not an xml and no translation strings)
-		#add to potfiles in for another try
-		bld.install_as ('${DATADIR}/mime-info/oregano.keys', 'mime/oregano.keys.in')
-		bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
-		bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
-		#things we need to be known by the app are already defined and stored in the main wscript
+		if not bld.env.no_update_desktop_database:
+			try:
+				bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg desktop database update.')
 
-		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
-		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
-		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
-		bld.install_files (bld.env.path_lang, 'netlist.lang')
-		bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
-		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*'))
+		if not bld.env.no_update_mime_database:
+			try:
+				bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg mime database update.')
 
-		try:
-			bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
-		except:
-			logs.warn('Failed to execute xdg desktop database update.')
 
-		try:
-			bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
-		except:
-			logs.warn('Failed to execute xdg mime database update.')
+	bld.install_as ('${DATADIR}/mime-info/oregano.keys', 'mime/oregano.keys.in')
+	bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
+	bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
+	if bld.cmd == 'install':
+		if not bld.env.no_update_icon_cache:
+			try:
+				bld.exec_command(['gtk-update-icon-cache', utils.subst_vars('${DATADIR}/icons/hicolor', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg mime database update.')
+
+
 
 	bld(source=bld.path.ant_glob('xml/*.ui'), install_path = bld.env.path_ui)
 
@@ -54,13 +67,6 @@ def build(bld):
 		source    = 'oregano.desktop.in',
 		target    = 'oregano.desktop',
 		install_path = '${DATADIR}/applications',
-	)
-
-	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "schemas",
-		source    = 'settings/io.ahoi.oregano.gschema.xml',
 	)
 
 	bld(

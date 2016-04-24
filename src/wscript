@@ -1,0 +1,109 @@
+#! /usr/bin/env python3
+# encoding: utf-8
+
+import os
+from waflib import Logs as logs
+from waflib import Utils as utils
+
+
+def options(opt):
+	opt.load('compiler_c gnu_dirs glib2')
+
+
+def configure(cfg):
+	cfg.load('compiler_c gnu_dirs glib2 intltool')
+
+	cfg.define('VERSION', cfg.env.version)
+	cfg.define('GETTEXT_PACKAGE', cfg.env.appname)
+
+
+	#define the above paths so the application does know about files locations
+	cfg.define('OREGANO_UIDIR', cfg.env.path_ui)
+	cfg.define('OREGANO_MODELDIR', cfg.env.path_model)
+	cfg.define('OREGANO_LIBRARYDIR', cfg.env.path_partslib)
+	cfg.define('OREGANO_LANGDIR', cfg.env.path_lang)
+	cfg.define('OREGANO_EXAMPLEDIR', cfg.env.path_examples)
+	cfg.define('OREGANO_ICONDIR', cfg.env.path_icons)
+	cfg.define('OREGANO_SCHEMA_NAME', cfg.env.gschema_name)
+
+
+	cfg.check_cc(lib='m', uselib_store='M', mandatory=True)
+
+	cfg.check_cfg(atleast_pkgconfig_version='0.26')
+	cfg.check_cfg(package='glib-2.0', uselib_store='GLIB', args=['glib-2.0 >= 2.44', '--cflags', '--libs'], mandatory=True, msg="Checking for 'glib-2.0' >= 2.44")
+	cfg.check_cfg(package='gobject-2.0', uselib_store='GOBJECT', args=['--cflags', '--libs'], mandatory=True)
+	cfg.check_cfg(package='gtk+-3.0', uselib_store='GTK3', args=['--cflags', '--libs'], mandatory=True)
+	cfg.check_cfg(package='libxml-2.0', uselib_store='XML', args=['--cflags', '--libs'], mandatory=True)
+	cfg.check_cfg(package='goocanvas-2.0', uselib_store='GOOCANVAS', args=['--cflags', '--libs'], mandatory=True)
+	cfg.check_cfg(package='gtksourceview-3.0', uselib_store='GTKSOURCEVIEW3', args=['--cflags', '--libs'], mandatory=True)
+
+	cfg.check_large_file(mandatory=False)
+	cfg.check_endianness(mandatory=False)
+	cfg.check_inline(mandatory=False)
+
+	cfg.find_program('clang-format', var='CODEFORMAT', mandatory=False)
+	cfg.find_program('gdb', var='GDB', mandatory=False)
+	cfg.find_program('nemiver', var='NEMIVER', mandatory=False)
+	cfg.find_program('valgrind', var='VALGRIND', mandatory=False)
+
+
+	cfg.define('RELEASE',1)
+
+	cfg.setenv('release', env=cfg.env.derive())
+	cfg.env.CFLAGS = ['-O2', '-Wall']
+	cfg.define('RELEASE',1)
+	cfg.define('DEBUG',0)
+
+	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
+	cfg.setenv('debug', env=cfg.env.derive())
+	cfg.env.CFLAGS = ['-ggdb', '-Wall']
+	cfg.define('DEBUG',1)
+	cfg.define('DEBUG_DISABLE_GRABBING',1)
+
+
+
+
+def build(bld):
+	bld.load('compiler_c gnu_dirs glib2 intltool')
+
+	bld(
+		features  = 'intltool_in',
+		podir     = "../po",
+		style     = "schemas",
+		source    = bld.env.gschema_name,
+	)
+
+	nodes =  bld.path.ant_glob(
+	    ['*.c',
+	     'gplot/*.c',
+	     'engines/*.c',
+	     'sheet/*.c',
+	     'model/*.c'],
+	     excl='main.c')
+
+	includes = ['.', 'engines', 'gplot', 'model', 'sheet']
+
+	#also used for tests
+	objs = bld.objects (
+		['c','glib2'],
+		source = nodes,
+		includes = includes,
+		export_includes = includes,
+		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
+		target = 'shared_objects'
+	)
+	objs.add_marshal_file('marshaller.list', 'marshaller')
+
+
+	app = bld.program(
+		features = ['c', 'glib2'],
+		target = bld.env.appname,
+		source = ['main.c'],
+		includes = includes,
+		export_includes = includes,
+		use = 'shared_objects',
+		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
+		settings_schema_files = [bld.env.gschema_name],
+		install_path = "${BINDIR}"
+	)
+
