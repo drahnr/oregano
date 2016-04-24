@@ -47,8 +47,8 @@ def build(bld):
 
 
 	bld.install_as ('${DATADIR}/mime-info/oregano.keys', 'mime/oregano.keys.in')
-	bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
-	bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
+	bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'icons/oregano.png')
+	bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'icons/oregano.svg')
 	if bld.cmd == 'install':
 		if not bld.env.no_update_icon_cache:
 			try:
