@@ -13,6 +13,7 @@ BuildRequires: gtksourceview3-devel
 BuildRequires: intltool
 BuildRequires: glib2-devel
 BuildRequires: goocanvas2-devel
+BuildRequires: desktop-file-utils
 Requires: gtksourceview3
 Requires: gtk3
 Requires: glib2 >= 2.24
@@ -44,12 +45,14 @@ CFLAGS="%{optflags}" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_pr
 /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 /usr/bin/update-desktop-database &> /dev/null || :
+/bin/touch --no-create %{_datadir}/mime/packages &>/dev/null || :
 
 %postun
 if [ $1 -eq 0 ] ; then
     /usr/bin/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
     /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
     /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+	/usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 fi
 /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
 /usr/bin/update-desktop-database &> /dev/null || :
@@ -58,7 +61,7 @@ fi
 %posttrans
 /usr/bin/glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-
+/usr/bin/update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 
 
 %clean
