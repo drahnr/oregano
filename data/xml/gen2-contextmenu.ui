@@ -1,139 +1,33 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.19.0 -->
+<?xml version="1.0"?>
 <interface>
-  <requires lib="gtk+" version="3.20"/>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">edit-cut</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">edit-delete</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">object-flip-horizontal</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">object-flip-vertical</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">object-rotate-left</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">object-rotate-right</property>
-  </object>
-  <object class="GtkImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="icon_name">edit-copy</property>
-  </object>
-  <object class="GtkMenu">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Copy</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="action_name">item.copy</property>
-        <property name="image">__glade_unnamed_8</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Cut</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="action_name">item.cut</property>
-        <property name="image">__glade_unnamed_10</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Delete</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Delete this object from the schematic</property>
-        <property name="action_name">item.delete</property>
-        <property name="image">__glade_unnamed_12</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Rotate Left</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Rotate the item counter clockwise</property>
-        <property name="action_name">item.rotate-left</property>
-        <property name="image">__glade_unnamed_5</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Rotate Right</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Rotate the item clockwise</property>
-        <property name="action_name">item.rotate-right</property>
-        <property name="image">__glade_unnamed_6</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Flip Horizontal</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Flip item horizontally</property>
-        <property name="action_name">item.flip-horizontal</property>
-        <property name="image">__glade_unnamed_14</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImageMenuItem">
-        <property name="label" translatable="yes">Flip Vertical</property>
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Flip item vertically</property>
-        <property name="action_name">item.flip-vertical</property>
-        <property name="image">__glade_unnamed_16</property>
-        <property name="use_stock">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparatorMenuItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="tooltip_text" translatable="yes">Edit further object properties used for the actual simulation</property>
-        <property name="label" translatable="yes">Object Properties...</property>
-      </object>
-    </child>
-  </object>
-</interface>
+  <menu id="appmenu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">Preferences</attribute>
+        <attribute name="action">app.preferences</attribute>
+      </item>
+    </section>
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">About</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Quit</attribute>
+        <attribute name="action">app.quit</attribute>
+        <attribute name="accel">&lt;Primary&gt;q</attribute>
+      </item>
+    </section>
+  </menu>
+  <menu id="menubar">
+    <submenu>
+      <attribute name="label">_Help</attribute>
+      <section>
+        <item>
+              <attribute name="label">_About</attribute>
+              <attribute name="action">app.about</attribute>
+            </item>
+          </section>
+        </submenu>
+      </menu>
+    </interface>

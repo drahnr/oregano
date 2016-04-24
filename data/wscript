@@ -56,7 +56,7 @@ def build(bld):
 			except:
 				logs.warn('Failed to execute xdg mime database update.')
 
-
+		
 
 	bld(source=bld.path.ant_glob('xml/*.ui'), install_path = bld.env.path_ui)
 

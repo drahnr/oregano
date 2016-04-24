@@ -852,12 +852,12 @@ static void log_toggle_visibility_cmd (GSimpleAction *action, GVariant *paramete
 		pos = gtk_paned_get_position (GTK_PANED (sv->priv->paned));
 
 	gtk_widget_get_allocation (GTK_WIDGET (sv->priv->paned), &allocation);
-
+	
 	GValue min, max;
 	g_object_get(G_OBJECT(sv->priv->paned), "min-position", &min);
 	g_object_get(G_OBJECT(sv->priv->paned), "max-position", &max);
-
-
+	
+	
 	const gint miv = g_value_get_int(&min);
 	const gint mav = g_value_get_int(&max);
 	const gint v = MAX (miv, MIN (mav, pos));
@@ -1239,7 +1239,7 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (logview_scrolled),
 	                                GTK_POLICY_NEVER,
 	                                GTK_POLICY_ALWAYS);
-
+	
 	gtk_widget_set_size_request(logview_scrolled, -1, 50);
 	gtk_container_add (GTK_CONTAINER (logview_scrolled), logview);
 	gtk_paned_pack2 (paned, logview_scrolled, FALSE, TRUE);

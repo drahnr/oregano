@@ -12,13 +12,16 @@
         <property name="vexpand">True</property>
         <child>
           <object class="GtkPaned" id="paned">
+            <property name="width_request">100</property>
+            <property name="height_request">100</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
+            <property name="border_width">2</property>
             <property name="orientation">vertical</property>
+            <property name="position">100</property>
             <property name="position_set">True</property>
-            <property name="wide_handle">True</property>
             <child>
               <placeholder/>
             </child>
