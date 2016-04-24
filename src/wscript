@@ -8,6 +8,7 @@ from waflib import Utils as utils
 
 def options(opt):
 	opt.load('compiler_c gnu_dirs glib2')
+	opt.add_option('--no-gsettings-schema', action='store_true', default=False, help='do not install gsettings schema')
 
 
 def configure(cfg):
@@ -103,7 +104,7 @@ def build(bld):
 		export_includes = includes,
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = [bld.env.gschema_name],
+		settings_schema_files = [None if bld.options.no_gsettings_schema else bld.env.gschema_name],
 		install_path = "${BINDIR}"
 	)
 
