@@ -1,7 +1,7 @@
 Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
 Version:		@VERSION@
-Release:		1%{?dist}
+Release:		2%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
 Source0:		https://github.com/drahnr/oregano/archive/oregano-%{version}.tar.xz
@@ -25,17 +25,19 @@ Schematic capture and simulation of electrical circuits utilizing gtk3
 as front-end and ng-spice/gnu-cap as back-end
 
 %prep
-%setup -q -n oregano
+%setup -q -n oregano-%{version}
 
 %build
 ./waf distclean || true
-#seems we always need to be able to do debug builds to allow fedora stripping them into a pkg
-echo "Building with rpm CFLAGS=\"%{optflags}\""
-CFLAGS="%{optflags}" ./waf configure --prefix="%{_prefix}" debug
 
+# the bare "build" target does not mangle any additional cflags into the build
+CFLAGS="%{optflags}" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" build
 
 %install
-./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
+./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" \
+	--no-gtk-update-icon-cache \
+	--no-xdg-update-desktop-database \
+	--no-xdg-update-mime-database
 %find_lang oregano
 
 %post
@@ -63,9 +65,6 @@ fi
 rm -rf "$RPM_BUILD_ROOT"
 
 
-
-
-
 %files -f oregano.lang
 %defattr(-, root, root)
 
@@ -81,6 +80,9 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
 
 %changelog
+* Sun Apr 24 2016 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-2
+- Use new waf options to prevent stuff rpm does
+
 * Wed Jul 15 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-1
 - Version bump
 - Ignore distclean exit codes not equal 0
