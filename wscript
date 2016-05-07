@@ -32,7 +32,7 @@ def configure(cfg):
 	cfg.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', cfg.env)
 	cfg.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', cfg.env)
 	cfg.env.path_icons = utils.subst_vars('${DATADIR}/oregano/icons/', cfg.env)
-	cfg.env.gschema_name = "io.ahoi.oregano.gschema.xml"
+	cfg.env.gschema_name = "io.ahoi.oregano.gschema"
 
 	cfg.recurse(recurse)
 

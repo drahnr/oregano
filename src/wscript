@@ -7,7 +7,7 @@ from waflib import Utils as utils
 
 
 def options(opt):
-	opt.load('compiler_c gnu_dirs glib2')
+	opt.load('compiler_c gnu_dirs glib2 intltool')
 	opt.add_option('--no-gsettings-schema', action='store_true', default=False, help='do not install gsettings schema')
 
 
@@ -71,7 +71,7 @@ def build(bld):
 		features  = 'intltool_in',
 		podir     = "../po",
 		style     = "schemas",
-		source    = bld.env.gschema_name,
+		source    = bld.env.gschema_name+".in",
 	)
 
 	nodes =  bld.path.ant_glob(
