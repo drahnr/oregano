@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
 	// information within oregano.c _before_ the
 	// first Schematic instance exists
 	class = g_type_class_ref (TYPE_SCHEMATIC);
-	app = oregano_new ();
+	app = oregano_app ();
 
 	status = g_application_run (G_APPLICATION (app), argc, argv);
 

@@ -17,7 +17,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -93,7 +93,7 @@ static void oregano_init (Oregano *object)
 	oregano_config_load ();
 }
 
-Oregano *oregano_new (void)
+static Oregano *oregano_new (void)
 {
 	return g_object_new (oregano_get_type (), "application-id", "io.ahoi.oregano", "flags",
 	                     G_APPLICATION_HANDLES_OPEN, NULL);
@@ -178,4 +178,15 @@ static void oregano_application (GApplication *app, GFile *file)
 
 	if (oregano.show_splash && splash)
 		oregano_splash_done (splash, _ ("Welcome to Oregano"));
+}
+
+Oregano *oregano_app() {
+	static GOnce once = G_ONCE_INIT;
+	g_once (&once, (GThreadFunc)oregano_new, NULL);
+	return once.retval;
+}
+
+void oregano_add_action_entries(const GActionEntry *entries, gint n_elements) {
+	GApplication *app = G_APPLICATION (oregano_app());
+	g_action_map_add_action_entries(G_ACTION_MAP (app), entries, n_elements, app);
 }
