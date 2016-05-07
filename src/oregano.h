@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -74,16 +76,25 @@ typedef struct
 	GHashTable *models;
 
 	GSettings *settings;
+
+	// engine index
 	gint engine;
+
+	// if files shall be compressed, unused
 	gboolean compress_files;
+
+	// if the log is shown
 	gboolean show_log;
+
+	// if the splash screnn shall be shown on startup
 	gboolean show_splash;
 } OreganoApp;
 
 extern OreganoApp oregano;
 extern int oregano_debugging;
 
-Oregano *oregano_new (void);
+Oregano *oregano_app();
+void oregano_add_action_entries(const GActionEntry *entries, gint n_elements);
 
 G_END_DECLS
 
