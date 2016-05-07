@@ -16,7 +16,6 @@ def build(bld):
 		if not os.geteuid()==0:
 			logs.warn ('You most likely need root privileges to install or uninstall properly.')
 
-
 	nodes =  bld.path.ant_glob(\
 	    ['*.c',
 	     'gplot/*.c',
@@ -25,7 +24,7 @@ def build(bld):
 	     'model/*.c'],
 	     excl='main.c')
 
-	bld.objects (
+	objs = bld.objects (
 		['c','glib2'],
 		source = nodes,
 		includes = ['.', 'engines/', 'gplot/', 'model/', 'sheet/'],
@@ -36,7 +35,7 @@ def build(bld):
 
 	exe = bld.program(
 		features = ['c', 'glib2'],
-		target = bld.env.appname,
+		target = os.path.join('..', bld.env.appname),
 		source = ['main.c'],
 		includes = ['.', 'engines/', 'gplot/', 'model/', 'sheet/'],
 		use = 'shared_objects',

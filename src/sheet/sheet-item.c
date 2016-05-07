@@ -602,7 +602,7 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 				}
 				g_object_ref (G_OBJECT (floating_data));
 
-				oregano_echo ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
+				oregano_echo ("Item Data Pos will be %lf %lf", snapped.x, snapped.y);
 
 				item_data_set_pos (floating_data, &snapped);
 				item_data_snap (floating_data, sheet->grid);

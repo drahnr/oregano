@@ -49,6 +49,7 @@ def configure(conf):
 	conf.env.path_lang = utils.subst_vars('${DATADIR}/oregano/language-specs/', conf.env)
 	conf.env.path_examples =  utils.subst_vars('${DATADIR}/oregano/examples/', conf.env)
 	conf.env.path_icons = utils.subst_vars('${DATADIR}/oregano/icons/', conf.env)
+	conf.env.gschema_name = "io.ahoi.oregano.gschema"
 
 
 	#define the above paths so the application does know about files locations
@@ -60,7 +61,7 @@ def configure(conf):
 	conf.define('OREGANO_ICONDIR', conf.env.path_icons)
 
 
-	conf.env.gschema_name = "io.ahoi.oregano.gschema.xml"
+	conf.env.gschema_name = "io.ahoi.oregano.gschema"
 	conf.define('OREGANO_SCHEMA_NAME', conf.env.gschema_name)
 
 
