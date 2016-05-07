@@ -14,7 +14,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2013-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -72,7 +72,9 @@ static void part_rotated_callback (ItemData *data, int angle, SheetItem *item);
 static void part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item);
 static void part_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void part_changed_callback (ItemData *data, SheetItem *sheet_item);
-
+static void part_action_show_object_properties(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	g_printf("part action got executed!");
+}
 static void part_item_place (SheetItem *item, Sheet *sheet);
 static void part_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part);
@@ -128,7 +130,7 @@ static SheetItemClass *parent_class = NULL;
 static const char *part_item_context_menu = NULL;
 
 static GActionEntry action_entries[] = {
-    {"Object Properties", NULL}, {"Modify object properties", NULL}, NULL};
+    {"Object Properties", part_action_show_object_properties, NULL, NULL, NULL}};
 
 enum { ANCHOR_NORTH, ANCHOR_SOUTH, ANCHOR_WEST, ANCHOR_EAST };
 
@@ -157,6 +159,7 @@ static void part_item_class_init (PartItemClass *part_item_class)
 
 	sheet_item_class->place = part_item_place;
 	sheet_item_class->place_ghost = part_item_place_ghost;
+	oregano_add_action_entries(action_entries, G_N_ELEMENTS(action_entries));
 }
 
 static void part_item_init (PartItem *item)

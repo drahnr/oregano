@@ -91,12 +91,12 @@ static void cb (GSimpleAction *simple, GVariant *parameter, gpointer user_data)
 	g_print ("so we print something stupid here: %s\n", g_variant_get_string (parameter, NULL));
 }
 
-static GActionEntry action_entries[] = {{"item.copy", cb, "s"},
-                                        {"item.cut", cb, "s"},
-                                        {"item.delete", cb, "s"},
-                                        {"item.rotate", cb, "s"},
-                                        {"item.flipH", cb, "s"},
-                                        {"item.flipV", cb, "s"}};
+static GActionEntry action_entries[] = {{"item.copy", cb, "s", NULL, NULL},
+                                        {"item.cut", cb, "s", NULL, NULL},
+                                        {"item.delete", cb, "s", NULL, NULL},
+                                        {"item.rotate", cb, "s", NULL, NULL},
+                                        {"item.flipH", cb, "s", NULL, NULL},
+                                        {"item.flipV", cb, "s", NULL, NULL}};
 
 G_DEFINE_TYPE_WITH_PRIVATE (SheetItem, sheet_item, GOO_TYPE_CANVAS_GROUP)
 
@@ -162,8 +162,7 @@ static void sheet_item_class_init (SheetItemClass *sheet_item_class)
 	                  NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
 
-	g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()), action_entries,
-	                                 G_N_ELEMENTS (action_entries), NULL);
+	oregano_add_action_entries (action_entries, G_N_ELEMENTS(action_entries));
 }
 
 static void sheet_item_init (SheetItem *item)
