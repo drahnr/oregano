@@ -510,7 +510,7 @@ static void edit_properties (SheetItem *object)
 	GSList *properties;
 	PartItem *item;
 	Part *part;
-	char *internal, *msg;
+	char  *msg;
 	GError *error = NULL;
 	GtkGrid *prop_grid;
 	GtkNotebook *notebook;
@@ -524,19 +524,18 @@ static void edit_properties (SheetItem *object)
 	item = PART_ITEM (object);
 	part = PART (sheet_item_get_data (SHEET_ITEM (item)));
 
-	internal = part_get_property (part, "internal");
-	if (internal) {
-		if (g_ascii_strcasecmp (internal, "ground") == 0) {
-			g_free (internal);
-			return;
-		}
-		if (g_ascii_strcasecmp (internal, "point") == 0) {
-			edit_properties_point (item);
-			return;
+	{
+		g_autofree gchar* internal = part_get_property (part, "internal");
+		if (internal) {
+			if (g_ascii_strcasecmp (internal, "ground") == 0) {
+				return;
+			}
+			if (g_ascii_strcasecmp (internal, "point") == 0) {
+				edit_properties_point (item);
+				return;
+			}
 		}
 	}
-
-	g_free (internal);
 
 	g_autoptr (GtkBuilder) builder = gtk_builder_new ();
 	if (builder == NULL) {
@@ -620,7 +619,8 @@ static void edit_properties (SheetItem *object)
 	if (has_model) {
 		GtkTextBuffer *txtbuffer;
 		GtkTextView *txtmodel;
-		gchar *filename, *str;
+		g_autofree gchar *filename = NULL;
+		g_autofree gchar *str = NULL;
 		GError *read_error = NULL;
 
 		txtmodel = GTK_TEXT_VIEW (gtk_builder_get_object (builder, "txtmodel"));
@@ -629,14 +629,10 @@ static void edit_properties (SheetItem *object)
 		filename = g_strdup_printf ("%s/%s.model", OREGANO_MODELDIR, model_name);
 		if (g_file_get_contents (filename, &str, NULL, &read_error)) {
 			gtk_text_buffer_set_text (txtbuffer, str, -1);
-			g_free (str);
 		} else {
 			gtk_text_buffer_set_text (txtbuffer, read_error->message, -1);
 			g_error_free (read_error);
 		}
-
-		g_free (filename);
-		g_free (model_name);
 
 		gtk_text_view_set_buffer (txtmodel, txtbuffer);
 	} else {
