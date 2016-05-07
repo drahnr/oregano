@@ -68,10 +68,9 @@ def build(bld):
 	bld.load('compiler_c gnu_dirs glib2 intltool')
 
 	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "schemas",
-		source    = bld.env.gschema_name+".in",
+		rule='cp -f ${SRC} ${TGT}',
+		source = bld.env.gschema_name+".in",
+		target = bld.env.gschema_name,
 	)
 
 	nodes =  bld.path.ant_glob(

@@ -60,19 +60,13 @@ def build(bld):
 
 	bld(source=bld.path.ant_glob('xml/*.ui'), install_path = bld.env.path_ui)
 
-	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "desktop",
+	bld(rule='cp -vf ${SRC} ${TGT}',
 		source    = 'oregano.desktop.in',
 		target    = 'oregano.desktop',
 		install_path = '${DATADIR}/applications',
 	)
 
-	bld(
-		features  = 'intltool_in',
-		podir     = "../po",
-		style     = "xml",
+	bld(rule='cp -vf ${SRC} ${TGT}',
 		source    = 'mime/oregano-mimetypes.xml.in',
 		target    = 'mime/oregano.xml',
 		install_path = '${DATADIR}/mime/packages/',
