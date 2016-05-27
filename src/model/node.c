@@ -88,6 +88,7 @@ static void node_class_init (NodeClass *klass)
 
 static void node_init (Node *node)
 {
+	node->number = 0;
 	node->pin_count = 0;
 	node->wire_count = 0;
 	node->pins = NULL;
@@ -95,13 +96,14 @@ static void node_init (Node *node)
 	node->visited = FALSE;
 }
 
-Node *node_new (Coords pos)
+Node *node_new (Coords pos, gint number)
 {
 	Node *node;
 
-	node = NODE (g_object_new (node_get_type (), NULL));
+	node = NODE (g_object_new (TYPE_NODE, NULL));
 
 	node->key = pos;
+	node->number = number;
 
 	return node;
 }

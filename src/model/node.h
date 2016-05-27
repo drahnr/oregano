@@ -61,6 +61,8 @@ struct _Node
 	guint16 pin_count;
 	guint16 wire_count;
 
+	gint number;
+
 	GSList *pins;
 	GSList *wires;
 
@@ -73,7 +75,7 @@ struct _NodeClass
 };
 
 GType node_get_type (void);
-Node *node_new (Coords pos);
+Node *node_new (Coords pos, gint number);
 gint node_is_empty (Node *node);
 
 gboolean node_add_pin (Node *node, Pin *pin);
