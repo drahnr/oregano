@@ -19,7 +19,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2012-2013  Bernhard Schuster
+ * Copyright (C) 2012-2016  Bernhard Schuster
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -88,6 +88,7 @@ static void node_store_finalize (GObject *object)
 
 	if (self->nodes) {
 		g_hash_table_destroy (self->nodes);
+		g_hash_table_destroy (self->map);
 		self->nodes = NULL;
 	}
 
@@ -131,6 +132,8 @@ static void node_store_class_init (NodeStoreClass *klass)
 static void node_store_init (NodeStore *self)
 {
 	self->nodes = g_hash_table_new (node_hash, node_equal);
+	self->map = g_hash_table_new (g_int_hash, g_int_equal);
+	self->unused_indices = NULL;
 	self->wires = NULL;
 	self->parts = NULL;
 	self->items = NULL;
@@ -174,7 +177,7 @@ Node *node_store_get_or_create_node (NodeStore *self, Coords pos)
 
 	if (!node) {
 		// Create a node at (x, y) and return it.
-		node = node_new (pos);
+		node = node_new (pos, 27); // FIXME properly set unique number
 
 		g_signal_connect_object (G_OBJECT (node), "node_dot_added",
 		                         G_CALLBACK (node_dot_added_callback), G_OBJECT (self), 0);
@@ -183,6 +186,7 @@ Node *node_store_get_or_create_node (NodeStore *self, Coords pos)
 		                         G_CALLBACK (node_dot_removed_callback), G_OBJECT (self), 0);
 
 		g_hash_table_insert (self->nodes, &node->key, node);
+		g_hash_table_insert (self->map, &node->number, node);
 	}
 
 	return node;
@@ -279,6 +283,7 @@ gboolean node_store_remove_part (NodeStore *self, Part *part)
 			// remove the node as well.
 			if (node_is_empty (node)) {
 				g_hash_table_remove (self->nodes, &pin_pos);
+				g_hash_table_remove (self->map, &pin_pos);
 				g_object_unref (G_OBJECT (node));
 			}
 		} else {
@@ -498,8 +503,10 @@ gboolean node_store_remove_wire (NodeStore *store, Wire *wire)
 		node_remove_wire (node, wire);
 		wire_remove_node (wire, node);
 
-		if (node_is_empty (node))
+		if (node_is_empty (node)) {
 			g_hash_table_remove (store->nodes, &lookup_key);
+			g_hash_table_remove (store->nodes, &node->number);
+		}
 	}
 
 	g_slist_free (copy);

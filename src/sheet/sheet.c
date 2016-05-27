@@ -1193,14 +1193,18 @@ static void node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *s
 	NodeItem *node_item;
 	Coords *key;
 
+	g_return_if_fail (pos != NULL);
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
 	node_item = g_hash_table_lookup (sheet->priv->node_dots, pos);
 	if (node_item == NULL) {
 		node_item = NODE_ITEM (g_object_new (TYPE_NODE_ITEM, NULL));
-		g_object_set (node_item, "parent", goo_canvas_get_root_item (GOO_CANVAS (sheet)), "x",
-		              pos->x, "y", pos->y, NULL);
+		g_object_set (node_item,
+		              "parent", goo_canvas_get_root_item (GOO_CANVAS (sheet)),
+		              "x", pos->x,
+		              "y", pos->y,
+		              NULL);
 	}
 
 	node_item_show_dot (node_item, TRUE);

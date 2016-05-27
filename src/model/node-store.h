@@ -61,6 +61,11 @@ struct _NodeStore
 	GObject parent;
 
 	GHashTable *nodes;
+
+	GHashTable *map; // number to Node
+	GList *unused_indices; // covering delete operations
+	gint pivot; // the last popped
+
 	GList *items;
 	GList *wires;
 	GList *parts;
