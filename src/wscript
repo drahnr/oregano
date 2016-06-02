@@ -97,7 +97,7 @@ def build(bld):
 
 	app = bld.program(
 		features = ['c', 'glib2'],
-		target = bld.env.appname,
+		target = os.path.join('..', bld.env.appname),
 		source = ['main.c'],
 		includes = includes,
 		export_includes = includes,

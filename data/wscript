@@ -7,9 +7,9 @@ from waflib import Utils as utils
 
 def options(opt):
 	opt.load('gnu_dirs intltool')
-	opt.add_option('--no-gtk-update-icon-cache', action='store_true', default=False, help='do not udapte iconcache')
-	opt.add_option('--no-xdg-update-desktop-database', action='store_true', default=False, help='do not update desktop database')
-	opt.add_option('--no-xdg-update-mime-database', action='store_true', default=False, help='do not update mime database')
+	opt.add_option('--no-gtk-update-icon-cache', action='store_true', dest='update_icon_cache', default=False, help='do not udapte iconcache')
+	opt.add_option('--no-xdg-update-desktop-database', action='store_true', dest='update_desktop_database', default=False, help='do not update desktop database')
+	opt.add_option('--no-xdg-update-mime-database', action='store_true', dest='update_mime_database', default=False, help='do not update mime database')
 
 
 def configure(conf):
@@ -33,13 +33,13 @@ def build(bld):
 	bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*'))
 
 	if bld.cmd == 'install':
-		if not bld.options.no_update_desktop_database:
+		if not bld.options.update_desktop_database:
 			try:
 				bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
 			except:
 				logs.warn('Failed to execute xdg desktop database update.')
 
-		if not bld.options.no_update_mime_database:
+		if not bld.options.update_mime_database:
 			try:
 				bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
 			except:
@@ -50,7 +50,7 @@ def build(bld):
 	bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'icons/oregano.png')
 	bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'icons/oregano.svg')
 	if bld.cmd == 'install':
-		if not bld.options.no_update_icon_cache:
+		if bld.options.update_icon_cache:
 			try:
 				bld.exec_command(['gtk-update-icon-cache', utils.subst_vars('${DATADIR}/icons/hicolor', bld.env)])
 			except:
