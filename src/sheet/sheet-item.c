@@ -885,7 +885,7 @@ void sheet_item_add_menu (SheetItem *item, const char *uifilename)
 {
 	g_assert (IS_SHEET_ITEM (item));
 
-	gchar *path = g_build_filename(OREGANO_UIDIR, "gen2-menumodel.ui", NULL);
+	gchar *path = g_build_filename(OREGANO_UIDIR, "menu-sheet-item.ui", NULL);
 	g_autoptr (GtkBuilder) builder = gtk_builder_new_from_file (path);
 	g_free (path);
 	g_autoptr (GMenuModel) menu_model = G_MENU_MODEL (gtk_builder_get_object (builder, "menu"));
