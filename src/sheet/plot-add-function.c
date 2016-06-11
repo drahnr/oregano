@@ -36,6 +36,7 @@
 
 #include "plot-add-function.h"
 #include "dialogs.h"
+#include "simulation.h"
 
 void plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 {
@@ -78,8 +79,9 @@ void plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	gtk_container_add (GTK_CONTAINER (container_temp), GTK_WIDGET (functiontype));
 	gtk_widget_show (GTK_WIDGET (functiontype));
 
-	gtk_combo_box_text_append_text (functiontype, _ ("Substraction"));
-	gtk_combo_box_text_append_text (functiontype, _ ("Division"));
+	for (i = 0; i < SIMULATIONFUNCTIONTYPE_LENGTH; i++) {
+		gtk_combo_box_text_append_text(functiontype, SimulationFunctionTypeString[i]);
+	}
 
 	for (i = 1; i < current->n_variables; i++) {
 		if (current->type != DC_TRANSFER) {
@@ -122,7 +124,8 @@ void plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	     (gtk_combo_box_get_active (GTK_COMBO_BOX (op2)) != -1) &&
 	     (gtk_combo_box_get_active (GTK_COMBO_BOX (functiontype)) != -1))) {
 
-		func->type = functiontype;
+		func->type = gtk_combo_box_get_active (GTK_COMBO_BOX (functiontype));
+
 		for (i = 1; i < current->n_variables; i++) {
 			if (g_strcmp0 (current->var_names[i], gtk_combo_box_text_get_active_text (op1)) == 0)
 				func->first = i;
