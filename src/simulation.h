@@ -56,7 +56,12 @@ typedef enum {
 
 #define INFINITE 1e50f
 
-typedef enum { FUNCTION_MINUS = 0, FUNCTION_TRANSFER } SimulationFunctionType;
+typedef enum { FUNCTION_MINUS = 0, FUNCTION_TRANSFER, SIMULATIONFUNCTIONTYPE_LENGTH } SimulationFunctionType;
+
+static const gchar *SimulationFunctionTypeString[] = {
+		"Subtraction",
+		"Division"
+};
 
 typedef struct _SimulationFunction
 {
