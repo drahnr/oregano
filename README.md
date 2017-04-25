@@ -90,7 +90,7 @@ If you want to discuss an issue or something you would like to implement, don't 
 
 #### Packaging
 
-This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS, `oregano.spec`), Ubuntu (and thus Debian unstable, see the `debian` subdir) and soon to come for Mac (`macports` only contains a draft right now). If you see the need for more platforms we'd be happy to include even more.
+This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS, `oregano.spec`, use `git archive --format tar --prefix oregano/ HEAD | xz > $HOME/rpmbuild/SOURCE/oregano-0.83.3.tar.xz && cp oregano.spec $HOME/rpmbuild/SPECS/oregano.spec`), Ubuntu (and thus Debian unstable, see the `debian` subdir) and soon to come for Mac (`macports` only contains a draft right now). If you see the need for more platforms we'd be happy to include even more.
 
 #### Bugs
 
