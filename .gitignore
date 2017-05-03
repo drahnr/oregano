@@ -9,3 +9,5 @@ waftools/__pycache__*
 **.tar.xz
 **.tar.gz
 .waf-*
+credentials.yml
+.credentials.yml

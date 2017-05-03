@@ -10,9 +10,9 @@ file COPYING.
 
 ### Status
 
-[![Build Status](http://drone.ahoi.io/api/badges/drahnr/oregano/status.svg)](http://drone.ahoi.io/drahnr/oregano)
+[![Build Status](http://ci.ratpoison.io/api/v1/teams/main/pipelines/oregano/jobs/compile/badge)](http://ci.ratpoison.io/teams/main/pipelines/oregano)
 
-The buildmatrix contains <kbd>Fedora 22</kbd>, <kbd>Fedora 23</kbd>, <kbd>Ubuntu 15.10</kbd>.
+The buildmatrix contains <kbd>Fedora 25</kbd>, <kbd>Ubuntu 17.04</kbd>.
 
 The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
 
@@ -42,7 +42,7 @@ You need `gtk+-3.0`, `glib-2.0`, `gio-2.0`, `gtksourceview-3.0`, `goocanvas-2.0`
 These are usually included in your favorite distributions repositories and can otherwise be found at the [gnome public ftp](ftp://ftp.gnome.org) server.
 In order to simulate a schematic you need either `ngspice` or `gnucap`.
 
-If you are running a recent `Fedora` or `Ubuntu`, you can simply use `su -c'./waf builddeps'` to do that automatically.
+If you are running a recent `Fedora` or `Ubuntu`, you can simply use `su -c'./builddeps.sh'` to do that automatically. To install the packages yourself find the package lists under `pkg-list.fedora` respectivly `pkg-list.ubuntu` required for compilation.
 
 #### Building
 
@@ -102,3 +102,10 @@ Translators are welcome to translate at transifex which will be synced into the 
 
 **Attention!**  
 Currently translations are out of sync and will stay so until the next stable release since many error and ui strings are in the process of being unified.
+
+----
+
+### FAQ
+
+Q: Why are you doing this?
+A: If I don't nobody else does. Also: I really like to tinker with electronics and the workflow of geda and friends or running wine to use a glitchy windows shareware never was an option for me.

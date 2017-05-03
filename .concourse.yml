@@ -1,0 +1,105 @@
+resources:
+- name: git-clone-resource
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/drahnr/oregano.git
+
+- name: oregano-test-fedora
+  type: docker-image
+  source:
+    repository: quay.io/ratpoison/oregano-test-fedora
+    username: {{quay-username}}
+    password: {{quay-password}}
+
+- name: oregano-test-ubuntu
+  type: docker-image
+  source:
+    repository: quay.io/ratpoison/oregano-test-ubuntu
+    username: {{quay-username}}
+    password: {{quay-password}}
+
+jobs:
+  - name: build-docker-image-fedora
+    public: true
+    plan:
+      - get: git-clone-resource
+        trigger: true
+      - put: oregano-test-fedora
+        params:
+          cache: true
+          tag_as_latest: true
+          build: git-clone-resource/.concourse/fedora
+
+  - name: build-docker-image-ubuntu
+    public: true
+    plan:
+      - get: git-clone-resource
+        trigger: true
+      - put: oregano-test-ubuntu
+        params:
+          cache: true
+          tag_as_latest: true
+          build: git-clone-resource/.concourse/ubuntu
+
+  - name: compile
+    public: true
+    plan:
+      - get: git-clone-resource
+        trigger: true
+      - task: compile
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: quay.io/ratpoison/oregano-test-fedora }
+          inputs:
+          - name: git-clone-resource
+          run:
+            path: ./waf
+            args: ["configure", "build", "--prefix=/tmp", "install"]
+            dir: "git-clone-resource"
+
+  - name: build-pkg-rpm
+    public: true
+    plan:
+      - get: git-clone-resource
+        trigger: true
+      - task: create-rpm
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: quay.io/ratpoison/oregano-test-fedora }
+          inputs:
+          - name: git-clone-resource
+          run:
+            path: bash
+            args:
+            - |
+              set -e
+              rpmdev-setuptree
+              cp oregano.spec $HOME/rpmbuild/SPECS/oregano-master.spec
+              ./waf dist
+              cp oregano-*.tar.xz $HOME/rpmbuild/SOURCES/
+              cd $HOME/rpmbuild
+              rpmbuild -ba SPECS/oregano.spec
+            dir: "git-clone-resource"
+
+  - name: build-pkg-deb
+    public: true
+    plan:
+      - get: git-clone-resource
+        trigger: true
+      - task: create-deb
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: { repository: quay.io/ratpoison/oregano-test-ubuntu }
+          inputs:
+          - name: git-clone-resource
+          run:
+            path: debuild
+            args: ["-i", "-us", "-uc", "-b"]
+            dir: "git-clone-resource"
