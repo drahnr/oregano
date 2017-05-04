@@ -30,6 +30,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <glib.h>
+#include <glib/gprintf.h>
+
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
