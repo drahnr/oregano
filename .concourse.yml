@@ -79,7 +79,7 @@ jobs:
             - |
               set -e
               rpmdev-setuptree
-              cp oregano.spec $HOME/rpmbuild/SPECS/oregano-master.spec
+              cp oregano.spec $HOME/rpmbuild/SPECS/
               ./waf dist
               cp oregano-*.tar.xz $HOME/rpmbuild/SOURCES/
               cd $HOME/rpmbuild
