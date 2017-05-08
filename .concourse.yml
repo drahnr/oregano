@@ -1,9 +1,21 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: jtarchie/pr
+
 resources:
 - name: git-clone-resource
   type: git
   source:
     branch: master
     uri: https://github.com/drahnr/oregano.git
+
+- name: git-pull-request-resource
+  type: pull-request
+  source:
+    repo: drahnr/oregano
+    access_token: {{github-token}}
 
 - name: oregano-test-fedora
   type: docker-image
@@ -23,10 +35,11 @@ jobs:
   - name: compile
     public: true
     plan:
-    - aggregate:
-      - get: git-clone-resource
-        trigger: true
-        passed: [build-docker-image-fedora]
+    - get: git-pull-request-resource
+      trigger: true
+    - get: git-clone-resource
+      trigger: true
+      passed: [build-docker-image-fedora]
     - task: compile
       config:
         platform: linux
@@ -43,10 +56,9 @@ jobs:
   - name: build-pkg-rpm
     public: true
     plan:
-    - aggregate:
-      - get: git-clone-resource
-        trigger: true
-        passed: [build-docker-image-fedora, compile]
+    - get: git-clone-resource
+      trigger: true
+      passed: [build-docker-image-fedora, compile]
     - task: create-rpm
       config:
         platform: linux
