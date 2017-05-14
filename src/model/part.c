@@ -276,7 +276,7 @@ gint part_get_num_pins (Part *part)
 gint part_get_rotation (Part *part)
 {
 	ItemData *item;
-	gdouble register a, b, c, d, sx, sy;
+	gdouble register a, b, c, d;
 	cairo_matrix_t *t;
 
 	g_return_val_if_fail (part != NULL, 0);
@@ -290,19 +290,24 @@ gint part_get_rotation (Part *part)
 	c = t->yx;
 	d = t->yy;
 
-	sx = a * a + c * c;
-	sy = b * b + d * d;
-	if (G_UNLIKELY (abs (sx) < 1e-10 && abs (sy) < 1e-10)) {
+	//check whether matrix is rotation matrix
+	//Let Q be the matrix. Q is a rotation matrix if and only if Q^T Q = I and det Q = 1.
+	//Then it is existing a real value alpha so that
+	//     ( a  b )     ( cos(alpha)  -sin(alpha) )
+	//Q = (        ) = (                           )
+	//     ( c  d )     ( sin(alpha)   cos(alpha) )
+	if (G_UNLIKELY (abs (1 - (a * a + c * c)) > 1e-10 || abs (1 - (b * b + d * d)) > 1e-10 || abs (a*b + c*d) > 1e-10 || abs (1 - (a*d - b*c)) > 1e-10)) {
 		g_warning ("Unabled to calculate rotation from matrix. Assuming 0°.");
 		return 0;
 	}
 
-	gint register r = -1;
-	if (abs (sx) > abs (sy))
-		r = 90 * (gint)(2. * acos (a / sqrt (sx)) / M_PI);
-	else
-		r = 90 * (gint)(2. * acos (d / sqrt (sy)) / M_PI);
-	return r;
+	//Now we want to extract alpha.
+	//this case differentiation is only for numerical stability at the edges of the domains of definition of acos and atan
+	if (-0.5 <= a && a <= 0.5) {
+		return 180. / M_PI * (acos(a) + (c < 0 ? M_PI : 0));
+	} else {
+		return 180. / M_PI * (atan(c/a) + (a < 0 ? M_PI : 0));
+	}
 }
 
 IDFlip part_get_flip (Part *part)
@@ -532,8 +537,8 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	cairo_matrix_multiply (&morph, &morph_rot, item_data_get_translate (data));
 
 	Coords delta_to_center, delta_to_center_transformed;
-	Coords delta_to_apply, delta_bbox;
-	Coords bbox_center, bbox_center_transformed;
+	Coords delta_to_apply;
+	Coords bbox_center;
 	Coords item_pos;
 
 // get bbox
