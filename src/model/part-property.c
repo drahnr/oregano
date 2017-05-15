@@ -43,7 +43,7 @@
 // @param cls2 returns second clause
 // @param sz   returns number of characters parsed
 // @return the name of a macro variable
-static char *get_macro_name (const char *str, char **cls1, char **cls2, size_t *sz)
+static char *get_macro_name (char macro, const char *str, char **cls1, char **cls2, size_t *sz)
 {
 	char separators[] = {",.;/|()"};
 	GString *out;
@@ -74,7 +74,7 @@ static char *get_macro_name (const char *str, char **cls1, char **cls2, size_t *
 		goto error;
 
 	// Look for conditional clauses
-	if (csep) {
+	if (csep && macro != '@' && macro != '&') {
 		// get the first one
 		GString *aux;
 		q++; // skip the separator and store the clause in tmp
@@ -125,6 +125,26 @@ error:
 	return NULL;
 }
 
+// Rules:
+// @<id>             value of <id>. If no value, error
+// &<id>             value of <id> if <id> is defined
+// ?<id>s...s        text between s...s separators if <id> defined
+// ?<id>s...ss...s   text between 1st s...s separators if <id> defined
+// else 2nd s...s clause
+// ~<id>s...s        text between s...s separators if <id> undefined
+// ~<id>s...ss...s   text between 1st s...s separators if <id> undefined
+// else 2nd s...s clause
+// #<id>s...s        text between s...s separators if <id> defined, but
+// delete rest of template if <id> undefined
+
+// Separators can be any of {',', '.', ';', '/', '|', '(', ')'}.
+// For an opening-closing pair of
+// separators the same character has to be used.
+
+// Examples:
+// R^@refdes %1 %2 @value
+// V^@refdes %+ %- SIN(@offset @ampl @freq 0 0)
+// ?DC|DC @DC|
 char *part_property_expand_macros (Part *part, char *string)
 {
 	static char mcode[] = {"@?~#&"};
@@ -140,24 +160,6 @@ char *part_property_expand_macros (Part *part, char *string)
 	g_return_val_if_fail (string != NULL, NULL);
 
 	cls1 = cls2 = q0 = NULL;
-	// Rules:
-	// @<id>             value of <id>. If no value, error
-	// &<id>             value of <id> if <id> is defined
-	// ?<id>s...s        text between s...s separators if <id> defined
-	// ?<id>s...ss...s   text between 1st s...s separators if <id> defined
-	// else 2nd s...s clause
-	// ~<id>s...s        text between s...s separators if <id> undefined
-	// ~<id>s...ss...s   text between 1st s...s separators if <id> undefined
-	// else 2nd s...s clause
-	// #<id>s...s        text between s...s separators if <id> defined, but
-	// delete rest of tempalte if <id> undefined
-
-	// Separators can be any of (, . ; / |) For an opening-closing pair of
-	// separators the same character ahs to be used.
-
-	// Examples: R^@refdes %1 %2 @value
-	// V^@refdes %+ %- SIN(@offset @ampl @freq 0 0)
-	// ?DC|DC @DC|
 
 	tmp0 = temp = g_strdup (string);
 
@@ -166,7 +168,7 @@ char *part_property_expand_macros (Part *part, char *string)
 	for (temp = string; *temp;) {
 		// Look for any of the macro char codes.
 		if (strchr (mcode, *temp)) {
-			qn = get_macro_name (temp + 1, &cls1, &cls2, &sln);
+			qn = get_macro_name (*temp, temp + 1, &cls1, &cls2, &sln);
 			if (qn == NULL)
 				return NULL;
 			value = part_get_property (part, qn);

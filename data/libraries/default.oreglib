@@ -1319,6 +1319,28 @@
     </ogo:symbol>
 
     <ogo:symbol>
+      <ogo:name>switchyswitch</ogo:name>
+      <ogo:objects>
+        <ogo:line>(-10 -30)(20 -30)(20 30)(-10 30)(-10 -30)</ogo:line>
+        <ogo:line>(-20 -20)(-10 -20)</ogo:line>
+        <ogo:line>(-20 20)(-10 20)</ogo:line>
+        <ogo:arc>(7 -13)(13 -7)</ogo:arc>
+        <ogo:arc>(7 7)(13 13)</ogo:arc>
+        <ogo:line>(30 -20)(10 -20)(10 -13)</ogo:line>
+        <ogo:line>(30 20)(10 20)(10 13)</ogo:line>
+        <ogo:line>(7.9 -7.9)(-4.1 4.1)</ogo:line>
+        <ogo:line>(-4.1 4.1)(-4.1 -0.9)</ogo:line>
+        <ogo:line>(-4.1 4.1)(0.9 4.1)</ogo:line>
+      </ogo:objects>
+      <ogo:connections>
+        <ogo:connection>(30 -20 1)</ogo:connection>
+        <ogo:connection>(30 20 2)</ogo:connection>
+        <ogo:connection>(-20 -20 3)</ogo:connection>
+        <ogo:connection>(-20 20 4)</ogo:connection>
+      </ogo:connections>
+    </ogo:symbol>
+
+    <ogo:symbol>
       <ogo:name>fuse</ogo:name>
       <ogo:objects>
         <ogo:arc>(-3 -3)(3 3)</ogo:arc>
@@ -4074,6 +4096,46 @@
         <ogo:property>
           <ogo:name>Template</ogo:name>
           <ogo:value>RL_@refdes %1 %2 %3 %4 @model</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
+      <ogo:name>Switch</ogo:name>
+      <ogo:symbol>switchyswitch</ogo:symbol>
+      <ogo:description>voltage controlled resistor (2 states)</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(5 -25)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>S</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VT</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>VH</ogo:name>
+          <ogo:value>0.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>RON</ogo:name>
+          <ogo:value>1.0</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>ROFF</ogo:name>
+          <ogo:value>100G</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>@refdes %1 %2 %3 %4 M_@refdes \n.model M_@refdes sw(VT=@vt VH=@vh RON=@ron ROFF=@roff)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
