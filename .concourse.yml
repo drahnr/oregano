@@ -32,11 +32,39 @@ resources:
     password: {{quay-password}}
 
 jobs:
-  - name: compile
+  - name: compile-pr
     public: true
+    serial: true
     plan:
     - get: git-pull-request-resource
       trigger: true
+      serial_groups: [web-access]
+    - task: compile
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source: { repository: quay.io/ratpoison/oregano-test-fedora }
+        inputs:
+        - name: git-pull-request-resource
+        run:
+          path: xvfb-run
+          args: ["./waf", "configure", "build", "--prefix=/tmp", "--notests", "install"]
+          dir: "git-pull-request-resource"
+          on_success:
+            put: git-pull-request-resource
+            params:
+              path: git-pull-request-resource
+              status: success
+          on_failure:
+            put: git-pull-request-resource
+            params:
+              path: git-pull-request-resource
+              status: failure
+
+  - name: compile
+    public: true
+    plan:
     - get: git-clone-resource
       trigger: true
       passed: [build-docker-image-fedora]
@@ -49,8 +77,8 @@ jobs:
         inputs:
         - name: git-clone-resource
         run:
-          path: ./waf
-          args: ["configure", "build", "--prefix=/tmp", "--notests", "install"]
+          path: xvfb-run
+          args: ["./waf", "configure", "debug", "--prefix=/tmp", "install"]
           dir: "git-clone-resource"
 
   - name: build-pkg-rpm
@@ -101,6 +129,7 @@ jobs:
           dir: "git-clone-resource"
 
   - name: build-docker-image-fedora
+    serial_groups: [web-access]
     public: true
     plan:
       - get: git-clone-resource
@@ -112,6 +141,7 @@ jobs:
           build: git-clone-resource/.concourse/fedora
 
   - name: build-docker-image-ubuntu
+    serial_groups: [web-access]
     public: true
     plan:
     - get: git-clone-resource
