@@ -34,9 +34,11 @@ resources:
 jobs:
   - name: compile-pr
     public: true
+    serial: true
     plan:
     - get: git-pull-request-resource
       trigger: true
+      serial_groups: [web-access]
     - task: compile
       config:
         platform: linux
@@ -127,6 +129,7 @@ jobs:
           dir: "git-clone-resource"
 
   - name: build-docker-image-fedora
+    serial_groups: [web-access]
     public: true
     plan:
       - get: git-clone-resource
@@ -138,6 +141,7 @@ jobs:
           build: git-clone-resource/.concourse/fedora
 
   - name: build-docker-image-ubuntu
+    serial_groups: [web-access]
     public: true
     plan:
     - get: git-clone-resource
