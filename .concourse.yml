@@ -78,7 +78,7 @@ jobs:
         - name: git-clone-resource
         run:
           path: xvfb-run
-          args: ["./waf", "configure", "build", "--prefix=/tmp", "--notests", "install"]
+          args: ["./waf", "configure", "debug", "--prefix=/tmp", "install"]
           dir: "git-clone-resource"
 
   - name: build-pkg-rpm
