@@ -228,7 +228,11 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 			return NULL;
 		}
 
-		g_string_append_printf (buffer, ".tran %lf %lf %lf\n", st, stop, start);
+		g_string_append_printf (buffer, ".tran %lf %lf %lf", st, stop, start);
+		if (sim_settings_get_trans_init_cond (output.settings)) {
+			g_string_append_printf (buffer, " uic");
+		}
+		g_string_append_printf (buffer, "\n");
 		{
 			gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
 			g_string_append_printf (buffer, ".print tran %s\n", tmp_str);
