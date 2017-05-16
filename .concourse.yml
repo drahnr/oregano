@@ -127,6 +127,7 @@ jobs:
         trigger: true
       - put: oregano-test-fedora
         params:
+          cache: true
           tag_as_latest: true
           build: git-clone-resource/.concourse/fedora
 
@@ -138,5 +139,6 @@ jobs:
       trigger: true
     - put: oregano-test-ubuntu
       params:
+        cache: true
         tag_as_latest: true
         build: git-clone-resource/.concourse/ubuntu
