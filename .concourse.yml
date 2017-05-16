@@ -32,13 +32,38 @@ resources:
     password: {{quay-password}}
 
 jobs:
+  - name: build-docker-image-fedora
+    serial_groups: [network]
+    public: true
+    plan:
+      - get: git-clone-resource
+        trigger: true
+      - put: oregano-test-fedora
+        params:
+          cache: true
+          tag_as_latest: true
+          build: git-clone-resource/.concourse/fedora
+
+  - name: build-docker-image-ubuntu
+    serial_groups: [network]
+    public: true
+    plan:
+    - get: git-clone-resource
+      trigger: true
+    - put: oregano-test-ubuntu
+      params:
+        cache: true
+        tag_as_latest: true
+        build: git-clone-resource/.concourse/ubuntu
+
   - name: compile-pr
     public: true
     plan:
-    - get: oregano-test-fedora
-    - get: git-pull-request-resource
-      trigger: true
-      serial_groups: [network]
+    - aggregate:
+      - get: oregano-test-fedora
+      - get: git-pull-request-resource
+        trigger: true
+        serial_groups: [network]
     - task: compile
       image: oregano-test-fedora
       config:
@@ -66,8 +91,8 @@ jobs:
     - aggregate:
       - get: oregano-test-fedora
       - get: git-clone-resource
-        passed: [build-docker-image-fedora]
         trigger: true
+        passed: [build-docker-image-fedora]
     - task: compile
       image: oregano-test-fedora
       config:
@@ -85,8 +110,8 @@ jobs:
     - aggregate:
       - get: oregano-test-fedora
       - get: git-clone-resource
-        passed: [build-docker-image-fedora, compile]
         trigger: true
+        passed: [build-docker-image-fedora, compile]
     - task: create-rpm
       image: oregano-test-fedora
       config:
@@ -115,27 +140,3 @@ jobs:
           path: debuild
           args: ["-i", "-us", "-uc", "-b"]
           dir: "git-clone-resource"
-
-  - name: build-docker-image-fedora
-    serial_groups: [network]
-    public: true
-    plan:
-      - get: git-clone-resource
-        trigger: true
-      - put: oregano-test-fedora
-        params:
-          cache: true
-          tag_as_latest: true
-          build: git-clone-resource/.concourse/fedora
-
-  - name: build-docker-image-ubuntu
-    serial_groups: [network]
-    public: true
-    plan:
-    - get: git-clone-resource
-      trigger: true
-    - put: oregano-test-ubuntu
-      params:
-        cache: true
-        tag_as_latest: true
-        build: git-clone-resource/.concourse/ubuntu
