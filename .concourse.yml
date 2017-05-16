@@ -34,17 +34,14 @@ resources:
 jobs:
   - name: compile-pr
     public: true
-    serial: true
     plan:
     - get: git-pull-request-resource
       trigger: true
       serial_groups: [web-access]
     - task: compile
+      image: oregano-test-fedora
       config:
         platform: linux
-        image_resource:
-          type: docker-image
-          source: { repository: quay.io/ratpoison/oregano-test-fedora }
         inputs:
         - name: git-pull-request-resource
         run:
@@ -69,11 +66,9 @@ jobs:
       trigger: true
       passed: [build-docker-image-fedora]
     - task: compile
+      image: oregano-test-fedora
       config:
         platform: linux
-        image_resource:
-          type: docker-image
-          source: { repository: quay.io/ratpoison/oregano-test-fedora }
         inputs:
         - name: git-clone-resource
         run:
@@ -88,11 +83,9 @@ jobs:
       trigger: true
       passed: [build-docker-image-fedora, compile]
     - task: create-rpm
+      image: oregano-test-fedora
       config:
         platform: linux
-        image_resource:
-          type: docker-image
-          source: { repository: quay.io/ratpoison/oregano-test-fedora }
         inputs:
         - name: git-clone-resource
         run:
@@ -116,11 +109,9 @@ jobs:
         trigger: true
         passed: [build-docker-image-ubuntu]
     - task: create-deb
+      image: oregano-test-ubuntu
       config:
         platform: linux
-        image_resource:
-          type: docker-image
-          source: { repository: quay.io/ratpoison/oregano-test-ubuntu }
         inputs:
         - name: git-clone-resource
         run:
