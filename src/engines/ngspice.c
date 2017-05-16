@@ -335,12 +335,8 @@ static void ngspice_stop (OreganoEngine *self)
  */
 static void ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
-	ngspice->priv->status = status;
 	// check for exit via return in main, exit() or _exit() of the child, see man
 	// waitpid(2)
-	//       WIFEXITED(wstatus)
-	//              returns true if the child terminated normally, that is, by call‐
-	//              ing exit(3) or _exit(2), or by returning from main().
 	if (WIFEXITED (status)) {
 		gchar *line = NULL;
 		gsize len;
@@ -455,7 +451,7 @@ static void ngspice_start (OreganoEngine *self)
 	                              &priv->child_error,  // STDERR
 	                              &e)) {
 		// Add a watch for process status
-		g_child_watch_add_full (G_PRIORITY_HIGH_IDLE, priv->child_pid,
+		g_child_watch_add_full (priv->child_pid, G_PRIORITY_HIGH_IDLE,
 		                        (GChildWatchFunc)ngspice_watch_cb, ngspice, NULL);
 		// Add a GIOChannel to read from process stdout
 		priv->child_iochannel = g_io_channel_unix_new (priv->child_stdout);
