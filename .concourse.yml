@@ -89,16 +89,7 @@ jobs:
         inputs:
         - name: git-clone-resource
         run:
-          path: bash
-          args:
-          - |
-            set -e
-            rpmdev-setuptree
-            cp oregano.spec $HOME/rpmbuild/SPECS/
-            ./waf dist
-            cp oregano-*.tar.xz $HOME/rpmbuild/SOURCES/
-            cd $HOME/rpmbuild
-            rpmbuild -ba SPECS/oregano.spec
+          path: ".concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
 
   - name: build-pkg-deb
