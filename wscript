@@ -11,10 +11,13 @@ import os
 from waflib import Logs as logs
 from waflib import Utils as utils
 
+rec = ['src', 'po', 'data']
+
 def options(opt):
 	opt.load('compiler_c gnu_dirs glib2')
 	opt.load('unites', tooldir='waftools')
 
+	opt.add_option('--no-install-gschema', dest='no_install_gschema', action='store_true', default=False, help='Do not install the schema file')
 	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
 #	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
@@ -102,10 +105,13 @@ def docs(ctx):
 
 
 def dist(ctx):
+	ctx.tar_prefix = APPNAME
 	ctx.base_name = APPNAME+'-'+VERSION
 	ctx.algo = 'tar.xz'
 	ctx.excl = ['.*', '*~','./build','*.'+ctx.algo],
-	ctx.files = ctx.path.ant_glob('**/wscript')
+	ctx.files = ctx.path.ant_glob('src/**/*', excl=['**/*~'])
+	ctx.files.extend(ctx.path.ant_glob('**/wscript'))
+	ctx.files.extend(ctx.path.ant_glob('**/*', excl=['**/.*', 'build', 'buildrpm', '*.tar.*']))
 
 
 
@@ -125,61 +131,8 @@ from waftools.unites import summary as unites_summary
 def build(bld):
 	bld.add_pre_fun(pre)
 	bld.add_post_fun(post)
-	bld.recurse(['po','data'])
-
-	if bld.cmd != 'install' and bld.cmd != 'uninstall':
-		if not bld.variant:
-			bld.variant = 'debug'
-			logs.warn ('Use \'debug\' or \'release\' targets for manual builds!')
-	else:
-		if not os.geteuid()==0:
-			logs.warn ('You most likely need root privileges to install or uninstall '+APPNAME+' properly.')
-
-
-	nodes =  bld.path.ant_glob(\
-	    ['src/*.c',
-	     'src/gplot/*.c',
-	     'src/engines/*.c',
-	     'src/sheet/*.c',
-	     'src/model/*.c'],
-	     excl='*/main.c')
-
-	bld.objects (
-		['c','glib2'],
-		source = nodes,
-		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		target = 'shared_objects'
-	)
-
-	exe = bld.program(
-		features = ['c', 'glib2'],
-		target = APPNAME,
-		source = ['src/main.c'],
-		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = ['data/settings/'+bld.env.gschema_name],
-		install_path = "${BINDIR}"
-	)
-
-	for item in exe.includes:
-		logs.debug(item)
-	test = bld.program(
-		features = ['c', 'glib2', 'unites'],
-		target = 'microtests',
-		source = ['test/test.c'],
-		includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		export_includes = ['src/', 'src/engines/', 'src/gplot/', 'src/model/', 'src/sheet/'],
-		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
-	)
-
 	bld.add_post_fun(unites_summary)
-
-
+	bld.recurse(rec)
 
 from waflib.Build import BuildContext
 

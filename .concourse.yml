@@ -37,7 +37,7 @@ jobs:
     plan:
     - get: git-pull-request-resource
       trigger: true
-      serial_groups: [web-access]
+      serial_groups: [network]
     - task: compile
       image: oregano-test-fedora
       config:
@@ -62,9 +62,11 @@ jobs:
   - name: compile
     public: true
     plan:
-    - get: git-clone-resource
-      trigger: true
-      passed: [build-docker-image-fedora]
+    - aggregate:
+      - get: oregano-test-fedora
+      - get: git-clone-resource
+        passed: [build-docker-image-fedora]
+        trigger: true
     - task: compile
       image: oregano-test-fedora
       config:
@@ -79,9 +81,11 @@ jobs:
   - name: build-pkg-rpm
     public: true
     plan:
-    - get: git-clone-resource
-      trigger: true
-      passed: [build-docker-image-fedora, compile]
+    - aggregate:
+      - get: oregano-test-fedora
+      - get: git-clone-resource
+        passed: [build-docker-image-fedora, compile]
+        trigger: true
     - task: create-rpm
       image: oregano-test-fedora
       config:
@@ -89,22 +93,14 @@ jobs:
         inputs:
         - name: git-clone-resource
         run:
-          path: bash
-          args:
-          - |
-            set -e
-            rpmdev-setuptree
-            cp oregano.spec $HOME/rpmbuild/SPECS/
-            ./waf dist
-            cp oregano-*.tar.xz $HOME/rpmbuild/SOURCES/
-            cd $HOME/rpmbuild
-            rpmbuild -ba SPECS/oregano.spec
+          path: "./.concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
 
   - name: build-pkg-deb
     public: true
     plan:
     - aggregate:
+      - get: oregano-test-ubuntu
       - get: git-clone-resource
         trigger: true
         passed: [build-docker-image-ubuntu]
@@ -120,7 +116,7 @@ jobs:
           dir: "git-clone-resource"
 
   - name: build-docker-image-fedora
-    serial_groups: [web-access]
+    serial_groups: [network]
     public: true
     plan:
       - get: git-clone-resource
@@ -132,7 +128,7 @@ jobs:
           build: git-clone-resource/.concourse/fedora
 
   - name: build-docker-image-ubuntu
-    serial_groups: [web-access]
+    serial_groups: [network]
     public: true
     plan:
     - get: git-clone-resource
