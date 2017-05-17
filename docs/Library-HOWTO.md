@@ -151,11 +151,13 @@ As you already noticed, you can reference local nodes by the '%' character.
 With "local" I mean that only the nodes listed in the `<ogo:connections>`-tag can be referenced.
 
 **definition: %\<number of connection\>**
+
 Because the `<ogo:connection>` tag of oreglib files do not have a designator,
 the only way to reference a connection is by its number. So the node
 designator is implicitly defined by the occurrence-number in the oreglib file.
 
 **example (oreglib)**
+
 The following example is a "non-linear current source"
 but because of the simple definition of the "Cur"-property,
 it is a simple resistor with resistance of 1k
@@ -192,6 +194,7 @@ it is a simple resistor with resistance of 1k
 ```
 
 **backward compatability**
+
 Old oregano files will not work anymore because there have been used arbitrary
 connection designators in the past (before 17.05.2017) very often. Arbitrary node
 designators are not allowed any more.
