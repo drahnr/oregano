@@ -228,11 +228,7 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 			return NULL;
 		}
 
-		g_string_append_printf (buffer, ".tran %lf %lf %lf", st, stop, start);
-		if (sim_settings_get_trans_init_cond (output.settings)) {
-			g_string_append_printf (buffer, " uic");
-		}
-		g_string_append_printf (buffer, "\n");
+		g_string_append_printf (buffer, ".tran %lf %lf %lf\n", st, stop, start);
 		{
 			gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
 			g_string_append_printf (buffer, ".print tran %s\n", tmp_str);
@@ -335,12 +331,8 @@ static void ngspice_stop (OreganoEngine *self)
  */
 static void ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
-	ngspice->priv->status = status;
 	// check for exit via return in main, exit() or _exit() of the child, see man
 	// waitpid(2)
-	//       WIFEXITED(wstatus)
-	//              returns true if the child terminated normally, that is, by call‐
-	//              ing exit(3) or _exit(2), or by returning from main().
 	if (WIFEXITED (status)) {
 		gchar *line = NULL;
 		gsize len;
@@ -455,7 +447,7 @@ static void ngspice_start (OreganoEngine *self)
 	                              &priv->child_error,  // STDERR
 	                              &e)) {
 		// Add a watch for process status
-		g_child_watch_add_full (G_PRIORITY_HIGH_IDLE, priv->child_pid,
+		g_child_watch_add_full (priv->child_pid, G_PRIORITY_HIGH_IDLE,
 		                        (GChildWatchFunc)ngspice_watch_cb, ngspice, NULL);
 		// Add a GIOChannel to read from process stdout
 		priv->child_iochannel = g_io_channel_unix_new (priv->child_stdout);
