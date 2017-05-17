@@ -35,6 +35,7 @@ jobs:
   - name: compile-pr
     public: true
     plan:
+    - get: oregano-test-fedora
     - get: git-pull-request-resource
       trigger: true
       serial_groups: [network]
