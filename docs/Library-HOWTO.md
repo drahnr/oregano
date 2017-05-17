@@ -1,14 +1,14 @@
 How to create a new library part
 ---------------------------------
 
-The libraries are stored in an XML based format, called *.oreglib, and are
-installed in <prefix>/share/oregano/libraries.
+The libraries are stored in an XML based format, called \*.oreglib, and are
+installed in `<prefix>/share/oregano/libraries`.
 
 The easiest way to describe how to create a part is to look at one from the
-default library, the resistor. In each library, there is first a <symbols> tag.
+default library, the resistor. In each library, there is first a `<symbols>` tag.
 This tag contains all the symbols used for the parts in the library. Take a look
 at the resistor symbol:
-
+```
     <ogo:symbol>
       <ogo:name>resistor</ogo:name>
       <ogo:objects>
@@ -20,12 +20,12 @@ at the resistor symbol:
         <ogo:connection>(40 10)</ogo:connection>
       </ogo:connections>
     </ogo:symbol>
-
+```
 It is built with a polyline, where each (x y) pair is a point on the line. So
-far so good. Now lets take a look at the <parts> section, containing all the
+far so good. Now lets take a look at the `<parts>` section, containing all the
 parts that are shown in the part browser. The resistor definition looks like
 this:
-
+```
     <ogo:part>
       <ogo:name>Resistor</ogo:name>
       <ogo:symbol>resistor</ogo:symbol>
@@ -62,7 +62,7 @@ this:
       </ogo:labels>
 
     </ogo:part>
-
+```
 This is a bit more compilicated than the symbol tag. First we define a name,
 which is what is shown in the part list in the browser. The description is the
 string shown below the part in the part preview. This could be a longer and more
@@ -75,10 +75,10 @@ designator to use. For a resistor, we use R. Likewise, a capacitor would use C.
 We also define a property named Res, which is the actual resistance. Finally,
 we have Template, which is the template to use when generating spice netlists.
 As you can see, when evaluating these strings, the proporties can be referred
-to as @<property name>.
+to as `@<property name>`.
 
 The use of label tags are more or less obvious. We can use properties, using the
-@ character. For example, the label whose text is <ogo:text>@refdes</ogo:text>
+@ character. For example, the label whose text is `<ogo:text>@refdes</ogo:text>`
 will display the reference designator.
 
 Part models
@@ -88,16 +88,16 @@ If you need to include a spice model for a part, you either add it inline in the
 library or by including a model file.
 
 For the former, you can do like this example (a diode):
-
+```
     <ogo:name>Template</ogo:name>
     <ogo:value>D_@refdes %1 %2 M_@refdes \n.model M_@refdes (IS=0.1PA, RS=16 CJO=2PF TT=12N BV=100 IBV=0.1PA)</ogo:value>
-
+```
 This will add the model below each instance of the diode in the netlist.
 
 For more complicated models, you should probably choose the latter method, which
 is to add a property called Model. If the value of this property is, for instance,
 PNP, the model file should be called PNP.model. The model file should be placed
-in <srcdir>/data/models/ and gets installed in <prefix>/share/oregano/models.
+in `<srcdir>/data/models/` and gets installed in `<prefix>/share/oregano/models`.
 
 Note that we can NOT ship most models that can be found on the internet. Most of
 these have some kind of restrictive license that keeps them from being used
@@ -109,10 +109,11 @@ part spice models.
 Advanced macros
 ---------------
 
-The reference macro '@<id>' is one of some macros defined in Oregano.
+The reference macro `@<id>` is one of some macros defined in Oregano.
 The full list of macros is described in this section.
 
-Rules:
+**Rules:**
+```
 @<id>             value of <id>. If no value, error
 &<id>             value of <id> if <id> is defined
 ?<id>s...s        text between s...s separators if <id> defined
@@ -120,13 +121,15 @@ Rules:
 ~<id>s...s        text between s...s separators if <id> undefined
 ~<id>s...ss...s   text between 1st s...s separators if <id> undefined else 2nd s...s clause
 #<id>s...s        text between s...s separators if <id> defined, but delete rest of template if <id> undefined
-
+```
 Separators can be any of {',', '.', ';', '/', '|', '(', ')'}.
 For an opening-closing pair of separators the same character has to be used.
 
-Examples:
-R^@refdes %1 %2 @value
-V^@refdes %1 %2 SIN(@offset @ampl @freq 0 0) ?DC|DC @DC|
+**Examples:**
+```
+R_@refdes %1 %2 @value
+V_@refdes %1 %2 SIN(@offset @ampl @freq 0 0) ?DC|DC @DC|
+```
 
 
 Advanced parts
