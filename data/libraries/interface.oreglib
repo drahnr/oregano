@@ -288,7 +288,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -346,7 +346,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %1 %2 %4 %6 @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 %4 @model</ogo:value>
         </ogo:property> 
       </ogo:properties>
     </ogo:part>

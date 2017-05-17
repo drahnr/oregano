@@ -506,7 +506,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -540,7 +540,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-<ogo:value>B_@refdes %out+ %out- V= @func (V( %i+ , %i- ))</ogo:value>
+<ogo:value>B_@refdes %1 %2 V= @func (V( %3 , %4 ))</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -564,7 +564,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-<ogo:value>B_@refdes %out 0 V=V( %i1+ , %i1- )*V( %i2+ , %i2- )</ogo:value>
+<ogo:value>B_@refdes %1 0 V=V( %2 , %3 )*V( %4 , %5 )</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -678,7 +678,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -792,7 +792,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -906,7 +906,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1026,7 +1026,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %cmp %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1140,7 +1140,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1242,7 +1242,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1332,7 +1332,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1434,7 +1434,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1524,7 +1524,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1614,7 +1614,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1704,7 +1704,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1812,7 +1812,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1902,7 +1902,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -1980,7 +1980,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2070,7 +2070,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2148,7 +2148,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2226,7 +2226,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2304,7 +2304,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2412,7 +2412,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @Vos @Gain @Iin @RT @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @Vos @Gain @Iin @RT @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2532,7 +2532,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2652,7 +2652,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %cmp %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2772,7 +2772,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %stb %Vo+ %Vo- %out @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @Vos @PSRR @CMRR @Gain @Rout @Rin @SR @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>

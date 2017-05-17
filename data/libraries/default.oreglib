@@ -1763,6 +1763,35 @@
     </ogo:part>
 
     <ogo:part>
+      <ogo:name>nlcs</ogo:name>
+      <ogo:symbol>resistor</ogo:symbol>
+      <ogo:description>non-linear current source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>G</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Cur</ogo:name>
+          <ogo:value>'expr'</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>@refdes %1 %2 cur=@cur</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+
+    <ogo:part>
       <ogo:name>Potentiometer</ogo:name>
       <ogo:symbol>resistor-var1</ogo:symbol>
       <ogo:description>Variable Resistor</ogo:description>
@@ -2695,7 +2724,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property> 
       </ogo:properties>
     </ogo:part>
@@ -2729,7 +2758,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property> 
       </ogo:properties>
     </ogo:part>
@@ -2763,7 +2792,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property> 
       </ogo:properties>
     </ogo:part>
@@ -2797,7 +2826,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property> 
       </ogo:properties>
     </ogo:part>
@@ -2831,7 +2860,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %e %K %a @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 %4 @model</ogo:value>
         </ogo:property> 
       </ogo:properties>
     </ogo:part>
@@ -2865,7 +2894,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2899,7 +2928,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>J_@refdes %d %s %g @model</ogo:value>
+          <ogo:value>J_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2933,7 +2962,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>J_@refdes %d %s %g @model</ogo:value>
+          <ogo:value>J_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -2967,7 +2996,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %b1 %b2 %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3001,7 +3030,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>Q_@refdes %c %b %e @model</ogo:value>
+          <ogo:value>Q_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3035,7 +3064,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>M_@refdes %d %g %s %b @model</ogo:value>
+          <ogo:value>M_@refdes %1 %2 %3 %4 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3069,7 +3098,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>M_@refdes %d %g1 %g2 %b @model</ogo:value>
+          <ogo:value>M_@refdes %1 %2 %3 %4 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3103,7 +3132,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>M_@refdes %d %g1 %g2 %b @model</ogo:value>
+          <ogo:value>M_@refdes %1 %2 %3 %4 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3137,7 +3166,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>M_@refdes %d %g %s %b @model</ogo:value>
+          <ogo:value>M_@refdes %1 %2 %3 %4 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3171,7 +3200,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>G_@refdes %out 0 %in- %in+ @model</ogo:value>
+          <ogo:value>G_@refdes %1 0 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3205,7 +3234,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %out @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3239,7 +3268,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %Vo+ %Vo- %out @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3273,7 +3302,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %in+ %in- %V+ %V- %gnd %Vo+ %Vo- %out @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3403,7 +3432,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>XV_@refdes %c %g %p %h1 %h2 %h3 @model</ogo:value>
+          <ogo:value>XV_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3455,7 +3484,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>XV_@refdes %c %g %p @model</ogo:value>
+          <ogo:value>XV_@refdes %1 %2 %3 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3526,7 +3555,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>XV_@refdes %c %g1 %g2 %p %h1 %h2 @model</ogo:value>
+          <ogo:value>XV_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3570,7 +3599,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3618,7 +3647,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac 1.0 sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac 1.0 sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3656,7 +3685,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>H_@refdes %+ %- V_@vcon @transresistance</ogo:value>
+          <ogo:value>H_@refdes %1 %2 V_@vcon @transresistance</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3698,7 +3727,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>E_@refdes %+ %- @ncp @ncn @gain</ogo:value>
+          <ogo:value>E_@refdes %1 %2 @ncp @ncn @gain</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3740,7 +3769,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>G_@refdes %+ %- @ncp @ncn @transconductance</ogo:value>
+          <ogo:value>G_@refdes %1 %2 @ncp @ncn @transconductance</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3778,7 +3807,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>F_@refdes %+ %- V_@vcon @gain</ogo:value>
+          <ogo:value>F_@refdes %1 %2 V_@vcon @gain</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3822,7 +3851,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>I_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+          <ogo:value>I_@refdes %1 %2 dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3882,7 +3911,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3910,7 +3939,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @DC</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @DC</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4419,7 +4448,7 @@
 				</ogo:property>
 				<ogo:property>
 					<ogo:name>Template</ogo:name>
-					<ogo:value>Q_@refdes %c %g %e npn</ogo:value>
+					<ogo:value>Q_@refdes %1 %2 %3 npn</ogo:value>
 				</ogo:property> 
 			</ogo:properties>
 		</ogo:part>
@@ -4453,7 +4482,7 @@
 				</ogo:property>
 				<ogo:property>
 					<ogo:name>Template</ogo:name>
-					<ogo:value>Q_@refdes %c %g %e pnp</ogo:value>
+					<ogo:value>Q_@refdes %1 %2 %3 pnp</ogo:value>
 				</ogo:property> 
 			</ogo:properties>
 		</ogo:part>
@@ -4487,7 +4516,7 @@
 				</ogo:property>
 				<ogo:property>
 					<ogo:name>Template</ogo:name>
-					<ogo:value>GTO_@refdes %a %k %g </ogo:value>
+					<ogo:value>GTO_@refdes %1 %2 %3 </ogo:value>
 				</ogo:property> 
 			</ogo:properties>
 		</ogo:part>
@@ -4661,7 +4690,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>XV_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %13 %14 @model</ogo:value>
+          <ogo:value>XV_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4873,7 +4902,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>XV_@refdes %1 %2 %3 %4 %6 %7 @model</ogo:value>
+          <ogo:value>XV_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
