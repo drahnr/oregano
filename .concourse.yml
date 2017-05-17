@@ -93,7 +93,7 @@ jobs:
         inputs:
         - name: git-clone-resource
         run:
-          path: ".concourse/fedora/buildrpm.sh"
+          path: "./.concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
 
   - name: build-pkg-deb
