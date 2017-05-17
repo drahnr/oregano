@@ -126,7 +126,7 @@ For an opening-closing pair of separators the same character has to be used.
 
 Examples:
 R^@refdes %1 %2 @value
-V^@refdes %+ %- SIN(@offset @ampl @freq 0 0) ?DC|DC @DC|
+V^@refdes %1 %2 SIN(@offset @ampl @freq 0 0) ?DC|DC @DC|
 
 
 Advanced parts
@@ -139,6 +139,67 @@ for this property and have special case code to handle them.
 
 If you need to hack in some kind of special behaviour, take a look at netlist.c
 and search for "internal", and "jumper". This should get you going.
+
+
+Node referencing (17.05.2017)
+-----------------------------
+
+As you already noticed, you can reference local nodes by the '%' character.
+With "local" I mean that only the nodes listed in the `<ogo:connections>`-tag can be referenced.
+
+**definition: %\<number of connection\>**
+Because the `<ogo:connection>` tag of oreglib files do not have a designator,
+the only way to reference a connection is by its number. So the node
+designator is implicitly defined by the occurrence-number in the oreglib file.
+
+**example (oreglib)**
+The following example is a "non-linear current source"
+but because of the simple definition of the "Cur"-property,
+it is a simple resistor with resistance of 1k
+(as long as the "Cur"-property will not be changed by the user).
+```
+    <ogo:part>
+      <ogo:name>nlcs</ogo:name>
+      <ogo:symbol>resistor</ogo:symbol>
+      <ogo:description>non-linear current source</ogo:description>
+      <ogo:labels>
+        <ogo:label>
+          <ogo:name>Reference designator</ogo:name>
+          <ogo:text>@refdes</ogo:text>
+          <ogo:position>(15 0)</ogo:position>
+          <ogo:modify>yes</ogo:modify>
+        </ogo:label>
+      </ogo:labels>
+
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>Refdes</ogo:name>
+          <ogo:value>G</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Cur</ogo:name>
+          <ogo:value>'0.001*(V(%1)-V(%2))'</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>Template</ogo:name>
+          <ogo:value>@refdes %1 %2 cur=@cur</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+    </ogo:part>
+```
+
+**backward compatability**
+Old oregano files will not work anymore because there have been used arbitrary
+connection designators in the past (before 17.05.2017) very often. Arbitrary node
+designators are not allowed any more.
+
+To be backward compatible, it has been implemented an algorithm that detects old syntax
+and the algorithm will transform the old syntax to the new syntax automatically.
+The algorithm has no known bug so far but for your safety, if you open a file that
+is older than 17.05.2017, you should save the file immediately after you opened it
+to another location of your hard drive. If there is any error, please report it at
+[this github website](https://github.com/drahnr/oregano/issues). The transformed
+file will not be openable by older versions of Oregano (before 17.05.2017) likely.
 
 
 The future
