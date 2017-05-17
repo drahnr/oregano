@@ -17,6 +17,7 @@ def options(opt):
 	opt.load('compiler_c gnu_dirs glib2')
 	opt.load('unites', tooldir='waftools')
 
+	opt.add_option('--no-install-gschema', dest='no_install_gschema', action='store_true', default=False, help='Do not install the schema file')
 	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
 #	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')

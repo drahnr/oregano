@@ -31,11 +31,11 @@ as front-end and ng-spice/gnu-cap as back-end
 ./waf distclean || true
 #seems we always need to be able to do debug builds to allow fedora stripping them into a pkg
 echo "Building with rpm CFLAGS=\"%{optflags}\""
-CFLAGS="%{optflags}" ./waf configure --prefix="%{_prefix}" debug
+CFLAGS="%{optflags}" ./waf configure --no-install-gschema --prefix="%{_prefix}" debug
 
 
 %install
-./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
+./waf install --no-install-gschema --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
 rm -f "$RPM_BUILD_ROOT/%{_bindir}/microtests"
 %find_lang oregano
 

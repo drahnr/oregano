@@ -44,7 +44,7 @@ def build(bld):
 		includes = ['.', 'engines/', 'gplot/', 'model/', 'sheet/'],
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = ['../data/settings/'+bld.env.gschema_name],
+		settings_schema_files = ['../data/settings/'+bld.env.gschema_name ] if not bld.options.no_install_gschema else [],
 		install_path = "${BINDIR}"
 	)
 
