@@ -38,6 +38,7 @@ CFLAGS="%{optflags}" ./waf configure --no-install-gschema --prefix="%{_prefix}" 
 ./waf install --no-install-gschema --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
 rm -f "$RPM_BUILD_ROOT/%{_bindir}/microtests"
 %find_lang oregano
+rm -rf %{_datadir}/glib-2.0/schemas/gschemas.compiled
 
 %post
 /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
