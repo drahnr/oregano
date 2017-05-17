@@ -471,23 +471,29 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			num_pins = part_get_num_pins (part);
 			pins = part_get_pins (part);
 
-			template_split = g_strsplit (template, " ", 0);
 
-			g_free (template);
-			template = NULL;
+
+
+			GRegex *regex;
+			GMatchInfo *match_info;
+			GError *error = NULL;
+
+			regex = g_regex_new("%\\d*", 0, 0, NULL);
+			g_regex_match_full(regex, template, -1, 0, 0, &match_info, &error);
+			template_split = g_regex_split(regex, template, 0);
 
 			str = g_string_new ("");
 
-			i = 0;
-			while (template_split[i] != NULL && template_split[i][0] != '%') {
-				g_string_append (str, template_split[i++]);
-				g_string_append_c (str, ' ');
-				NG_DEBUG ("str: %s\n", str->str);
-			}
+			NG_DEBUG ("Reading pins.\n)");
 
-			NG_DEBUG ("Reading %d pins.\n)", num_pins);
+			int i;
+			for (i = 0; g_match_info_matches(match_info); i++) {
+				g_string_append (str, template_split[i]);
 
-			for (pin_nr = 0; pin_nr < num_pins; pin_nr++) {
+				gchar *word = g_match_info_fetch(match_info, 0);
+
+
+				pin_nr = g_ascii_strtoll(word + 1, NULL, 10) - 1;
 				gint node_nr = 0;
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[pin_nr]));
 				if (!node_nr) {
@@ -501,34 +507,27 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 					// need to substrac 1, netlist starts in 0, and node_nr in 1
 					pins[pin_nr].node_nr = atoi (node2real[node_nr]);
 					g_string_append (str, tmp);
-					g_string_append_c (str, ' ');
 					NG_DEBUG ("str: %s\n", str->str);
-					i++;
 				}
 
-				while (template_split[i] != NULL) {
-					if (template_split[i][0] == '%')
-						break;
-
-					g_string_append (str, template_split[i]);
-					g_string_append_c (str, ' ');
-					NG_DEBUG ("str: %s\n", str->str);
-					i++;
-				}
+				g_free(word);
+				g_match_info_next(match_info, NULL);
+			}
+			g_match_info_free(match_info);
+			g_free (template);
+			template = NULL;
+			g_regex_unref(regex);
+			if (template_split[i] != NULL) {
+				g_string_append (str, template_split[i]);
+			}
+			g_strfreev (template_split);
+			if (error != NULL) {
+				g_printerr("Error while matching: %s\n", error->message);
+				g_error_free(error);
 			}
 
 			NG_DEBUG ("Done with pins, i = %d\n", i);
 
-			while (template_split[i] != NULL) {
-				if (template_split[i][0] == '%')
-					break;
-				g_string_append (str, template_split[i]);
-				g_string_append_c (str, ' ');
-				NG_DEBUG ("str: %s\n", str->str);
-				i++;
-			}
-
-			g_strfreev (template_split);
 			NG_DEBUG ("str: %s\n", str->str);
 			out->template = g_string_append (out->template, str->str);
 			out->template = g_string_append_c (out->template, '\n');

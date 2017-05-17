@@ -3626,7 +3626,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3678,7 +3678,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3730,7 +3730,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3782,7 +3782,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3846,7 +3846,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %14 %7 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3898,7 +3898,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -3951,7 +3951,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4003,7 +4003,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4068,7 +4068,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4120,7 +4120,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4172,7 +4172,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %3A %3B %3Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4224,7 +4224,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4A %4B %4Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4288,7 +4288,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4334,7 +4334,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4380,7 +4380,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %3A %3Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4426,7 +4426,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4A %4Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4472,7 +4472,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %5A %5Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4518,7 +4518,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %6A %6Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4588,7 +4588,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4634,7 +4634,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %3 %4 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4680,7 +4680,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4726,7 +4726,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %9 %8 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4772,7 +4772,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4818,7 +4818,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4882,7 +4882,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4934,7 +4934,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -4986,7 +4986,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5038,7 +5038,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5114,7 +5114,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5172,7 +5172,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5230,7 +5230,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %3A %3B %3Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5301,7 +5301,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5359,7 +5359,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5417,7 +5417,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %3A %3B %3Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5499,7 +5499,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5563,7 +5563,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2D %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5669,7 +5669,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %4 %5 %6 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5733,7 +5733,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5821,7 +5821,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D %1X %1G %1/X %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5903,7 +5903,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2D %VCC %VSS %2G %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -5979,7 +5979,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D %VCC %1G %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6055,7 +6055,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2D %VSS %2G %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6131,7 +6131,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6189,7 +6189,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6247,7 +6247,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %3A %3B %3C %3Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6353,7 +6353,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D %1E %1F %1G %1H %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6417,7 +6417,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6469,7 +6469,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6521,7 +6521,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %9 %10 %8 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6573,7 +6573,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -6803,7 +6803,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %A %B %C %D %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %VCC %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7003,7 +7003,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %A %B %C %D %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %VCC %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7221,7 +7221,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %A %B %C %D %0 %a %b %c %d %e %f %g %r %l %VCC %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7605,7 +7605,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %A %B %C %D %0 %a %b %c %d %e %f %g %VCC %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7681,7 +7681,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D %-X %X %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7757,7 +7757,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2D %VCC %VSS %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7833,7 +7833,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D %1E %1F %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -7909,7 +7909,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2A %2B %2C %2D %VCC %VSS %2Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8021,7 +8021,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D  %1E %1F %1G %1H %1J %1K %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4  %5 %6 %7 %8 %9 %10 %11 %12 %13 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8121,7 +8121,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1A %1B %1C %1D  %1E %1F %1G %1H %VCC %VSS %1Y @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4  %5 %6 %7 %8 %9 %10 %11 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8237,7 +8237,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1J %1C %1K %1CL %1Q %1Q- %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8354,7 +8354,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2J %2C %2K %2CL %2Q %2Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8470,7 +8470,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1D %1C %1S %1CL %1Q %1Q- %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8586,7 +8586,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2D %2C %2S %2CL %2Q %2Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8766,7 +8766,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %D0 %D1 %D2 %D3 %E1 %E2 %Q0 %Q0- %Q1 %Q1- %Q2 %Q2- %Q3 %Q3- %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -8893,7 +8893,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %14 %15 %13 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9020,7 +9020,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9177,7 +9177,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %D0 %D1 %D2 %D3 %E1 %E2 %Q0 %Q1 %Q2 %Q3 %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9377,7 +9377,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %E1 %E2 %E3 %E4 %C0 %C4 %A1 %A2 %A3 %A4 %B1 %B2 %B3 %B4 %VCC %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
         </ogo:property>
        </ogo:properties>
     </ogo:part>
@@ -9578,7 +9578,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %ia+ %ia- %oa+ %oa- %ia= %oa= %A1 %A2 %A3 %A4 %B1 %B2 %B3 %B4 %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>
         </ogo:property>
        </ogo:properties>
     </ogo:part>
@@ -9642,7 +9642,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9694,7 +9694,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9746,7 +9746,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9798,7 +9798,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -9954,7 +9954,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %R1 %R2 %S1 %S2 %Ca %Cb %QA %QB %QC %QD %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10070,7 +10070,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %A %CK %B %VSS %Q %Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10214,7 +10214,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %R1 %R2 %Ca %Cb %QA %QB %QC %QD %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10358,7 +10358,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %R1 %R2 %Ca %Cb %QA %QB %QC %QD %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10546,7 +10546,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %D %S %Ca %Cb %QA %QB %QC %QD %PA %PB %PC %PD %VCC %VSS @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10662,7 +10662,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1J %1C %1K %1CL %1Q %1Q- %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10779,7 +10779,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2J %2C %2K %2CL %2Q %2Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -10906,7 +10906,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1J %1C %1K %1CL %1S %1Q %1Q- %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11033,7 +11033,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2J %2C %2K %2CL %2S %2Q %2Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11160,7 +11160,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1J %1C %1K %1CL %1S %1Q %1Q- %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11287,7 +11287,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2J %2C %2K %2CL %2S %2Q %2Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11403,7 +11403,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1J %1C %1K %1S %1Q %1Q- %VSS @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11520,7 +11520,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %2J %2C %2K %2S %2Q %2Q- %VCC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11691,7 +11691,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %A1 %A2 %B1 %B2 %Q %Q- %VSS %VCC %CL %R %C %RC @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11818,7 +11818,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %8 %13 %14 %15 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -11945,7 +11945,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %5 %6 %7 %9 %10 %11 %12 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12003,7 +12003,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %14 %2 %3 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12061,7 +12061,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 %7 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12113,7 +12113,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12165,7 +12165,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12223,7 +12223,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %14 %2 %3 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12281,7 +12281,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 %7 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12333,7 +12333,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12385,7 +12385,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12868,7 +12868,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -12985,7 +12985,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -13180,7 +13180,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -13380,7 +13380,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -13580,7 +13580,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -14596,7 +14596,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %l4 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -14796,7 +14796,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -14997,7 +14997,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -16579,7 +16579,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %3 %4 %5 %6 %7 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -16679,7 +16679,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %10 %11 %12 %13 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -17958,7 +17958,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -18202,7 +18202,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -18447,7 +18447,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -18691,7 +18691,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -18847,7 +18847,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %13 %14 %1 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19005,7 +19005,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %13 %14 %1 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19235,7 +19235,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19447,7 +19447,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %16 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19523,7 +19523,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %5 %7 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19599,7 +19599,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %6 %8 %9 %10 %11 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19665,7 +19665,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19717,7 +19717,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19769,7 +19769,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -19821,7 +19821,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %13 %12 %11 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -20065,7 +20065,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -20143,7 +20143,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %15 %14 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -20221,7 +20221,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %16 %5 %6 %7 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -20377,7 +20377,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %9 %10 %11 %12 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -20544,7 +20544,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -20900,7 +20900,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %13 %3 %4 %5 %14 %7 %8 %9 %10 %11 %12 @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -21044,7 +21044,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 @model</ogo:value>
            </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -21665,7 +21665,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -21909,7 +21909,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -22977,7 +22977,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -23221,7 +23221,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -23645,7 +23645,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24269,7 +24269,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24333,7 +24333,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %1 %2 %3 %7 %14 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24385,7 +24385,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %4 %5 %6 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24437,7 +24437,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %8 %9 %10 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24489,7 +24489,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %11 %12 %13 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24689,7 +24689,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -24868,7 +24868,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -25701,7 +25701,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -25945,7 +25945,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -26189,7 +26189,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -26433,7 +26433,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -26771,7 +26771,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %25 %26 %27 %28 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -27033,7 +27033,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -27393,7 +27393,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -27672,7 +27672,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 %24 %1 %2 %3 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 %23 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -27917,7 +27917,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -28179,7 +28179,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %1 %2 %3 %4 %5 %6 %7 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -28445,7 +28445,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>X_@refdes %10 %11 %12 %13 %14 %15 %16 %17 %18 %20 %21 %22 %23 %24 %1 %2 %3 %4 %5 %6 %8 %9 @model</ogo:value>   
+          <ogo:value>X_@refdes %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 %18 %19 %20 %21 %22 @model</ogo:value>   
         </ogo:property>
       </ogo:properties>
     </ogo:part>

@@ -293,6 +293,10 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
 		gint k = 0;
 		if (strlen (buf) <= 2) {
+			if (priv->status != 0 && strcmp(buf, "\n") == 0) {
+				ANALYSIS (sdata)->transient.sim_length = val[0];
+				break;
+			}
 			fgets (buf, 255, priv->inputfp);
 			fgets (buf, 255, priv->inputfp);
 			fgets (buf, 255, priv->inputfp);

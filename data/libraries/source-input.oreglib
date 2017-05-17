@@ -278,7 +278,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -326,7 +326,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac 1.0 sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac 1.0 sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -364,7 +364,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>H_@refdes %+ %- V_@vcon @transresistance</ogo:value>
+          <ogo:value>H_@refdes %1 %2 V_@vcon @transresistance</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -406,7 +406,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>E_@refdes %+ %- @ncp @ncn @gain</ogo:value>
+          <ogo:value>E_@refdes %1 %2 @ncp @ncn @gain</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -448,7 +448,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>G_@refdes %+ %- @ncp @ncn @transconductance</ogo:value>
+          <ogo:value>G_@refdes %1 %2 @ncp @ncn @transconductance</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -486,7 +486,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>F_@refdes %+ %- V_@vcon @gain</ogo:value>
+          <ogo:value>F_@refdes %1 %2 V_@vcon @gain</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -530,7 +530,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>I_@refdes %+ %- dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
+          <ogo:value>I_@refdes %1 %2 dc @dc ac @ac sin(@Offset @Amplitude @Frequency 0 0)</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -590,7 +590,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
@@ -618,7 +618,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @DC</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @DC</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
