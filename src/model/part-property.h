@@ -41,6 +41,18 @@ typedef struct
 	gchar *value;
 } PartProperty;
 
+typedef enum {
+	PARSE_START,
+	PARSE_PERCENT,
+	PARSE_AT,
+	PARSE_AMPERSAND,
+	PARSE_QUESTION_MARK,
+	PARSE_TILDE,
+	PARSE_HASH,
+	PARSE_FINISH
+} State;
+
+void part_property_convert_connection_designators (Part *part, char **prop, int *node_ctr);
 gchar *part_property_expand_macros (Part *part, gchar *string);
 
 #endif

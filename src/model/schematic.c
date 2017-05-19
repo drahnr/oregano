@@ -60,6 +60,7 @@ typedef struct _SchematicsPrintOptions
 
 struct _SchematicPriv
 {
+	char *oregano_version;
 	char *title;
 	char *filename;
 	char *author;
@@ -311,6 +312,14 @@ char *schematic_get_author (Schematic *schematic)
 	return schematic->priv->author;
 }
 
+char *schematic_get_version (Schematic *schematic)
+{
+	g_return_val_if_fail (schematic != NULL, NULL);
+	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+
+	return schematic->priv->oregano_version;
+}
+
 char *schematic_get_comments (Schematic *schematic)
 {
 	g_return_val_if_fail (schematic != NULL, NULL);
@@ -345,6 +354,19 @@ void schematic_set_author (Schematic *schematic, const gchar *author)
 	if (schematic->priv->author)
 		g_free (schematic->priv->author);
 	schematic->priv->author = g_strdup (author);
+}
+
+void schematic_set_version (Schematic *schematic, const gchar *oregano_version)
+{
+	g_return_if_fail (schematic != NULL);
+	g_return_if_fail (IS_SCHEMATIC (schematic));
+
+	if (!oregano_version)
+		return;
+
+	if (schematic->priv->oregano_version)
+		g_free (schematic->priv->oregano_version);
+	schematic->priv->oregano_version = g_strdup (oregano_version);
 }
 
 void schematic_set_comments (Schematic *schematic, const gchar *comments)

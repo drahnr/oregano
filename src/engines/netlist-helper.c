@@ -343,6 +343,22 @@ char *netlist_helper_linebreak (char *str)
 	return tmp;
 }
 
+void update_schematic(Schematic *sm) {
+	char *version = schematic_get_version(sm);
+	if (version == NULL) {
+		NodeStore *store = schematic_get_store(sm);
+
+		for (GList *iter = store->parts; iter; iter = iter->next) {
+			int node_ctr = 1;
+			Part *part = iter->data;
+			part_property_convert_connection_designators(part, part_get_property_ref(part, "template"), &node_ctr);
+		}
+		schematic_set_version(sm, VERSION);
+	}
+
+	return;
+}
+
 // FIXME this one piece of uggly+bad code
 void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 {

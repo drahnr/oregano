@@ -89,6 +89,8 @@ char *schematic_get_title (Schematic *schematic);
 void schematic_set_title (Schematic *schematic, const gchar *title);
 char *schematic_get_author (Schematic *schematic);
 void schematic_set_author (Schematic *schematic, const gchar *author);
+char *schematic_get_version (Schematic *schematic);
+void schematic_set_version (Schematic *schematic, const gchar *author);
 char *schematic_get_comments (Schematic *schematic);
 void schematic_set_comments (Schematic *schematic, const gchar *comments);
 char *schematic_get_filename (Schematic *schematic);
