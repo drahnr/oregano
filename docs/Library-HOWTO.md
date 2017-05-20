@@ -1,5 +1,5 @@
 How to create a new library part
----------------------------------
+--------------------------------
 
 The libraries are stored in an XML based format, called \*.oreglib, and are
 installed in `<prefix>/share/oregano/libraries`.
@@ -196,10 +196,24 @@ designators are not allowed any more.
 
 To be backward compatible, it has been implemented an algorithm that detects old syntax
 and the algorithm will transform the old syntax to the new syntax automatically.
-The algorithm has no known bug so far but for your safety, if you open a file that
+The transformed circuit will not be the same under the following conditions:
+
+- one reference designator is used more than once in `template`
+AND the reference will actually be substitued more than once in `template`
+AND the reference contains `%`
+(this will lead to more referenced node connections than available)
+OR
+- there is a complex `template` expression
+AND there are many `%`s
+AND you are changing many expressions parts of many reference values
+(these factors increase the probability of failure)
+OR
+- no further conditions known
+
+so for your safety, if you open a file that
 is older than 17.05.2017, you should save the file immediately after you opened it
-to another location of your hard drive. If there is any error, please report it at
-[this github website](https://github.com/drahnr/oregano/issues). The transformed
+to another location of your hard drive. If there is any unexpected error, please report
+it at [this github website](https://github.com/drahnr/oregano/issues). The transformed
 file will not be openable by older versions of Oregano (before 17.05.2017) likely.
 
 

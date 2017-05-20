@@ -71,6 +71,7 @@ typedef struct
 	Node *node;
 } NodeAndNumber;
 
+void update_schematic(Schematic *sm);
 void netlist_helper_init_data (NetlistData *data);
 void netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
 char *netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac);

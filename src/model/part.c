@@ -380,9 +380,9 @@ GSList *part_get_properties (Part *part)
 }
 
 /**
- * @returns [transfer-full]
+ * @return no free() pls
  */
-char *part_get_property (Part *part, char *name)
+char **part_get_property_ref (Part *part, char *name)
 {
 	PartPriv *priv;
 	GSList *props;
@@ -397,8 +397,20 @@ char *part_get_property (Part *part, char *name)
 	for (props = priv->properties; props; props = props->next) {
 		prop = props->data;
 		if (g_ascii_strcasecmp (prop->name, name) == 0) {
-			return g_strdup (prop->value);
+			return &(prop->value);
 		}
+	}
+	return ((char **)0);
+}
+
+/**
+ * @returns [transfer-full]
+ */
+char *part_get_property (Part *part, char *name)
+{
+	char **prop = part_get_property_ref(part, name);
+	if (prop != NULL && *prop != NULL) {
+		return g_strdup(*prop);
 	}
 	return NULL;
 }

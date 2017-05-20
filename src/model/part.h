@@ -87,6 +87,7 @@ gboolean part_set_pins (Part *part, GSList *connections);
 gboolean part_get_rotation (Part *part);
 IDFlip part_get_flip (Part *part);
 void part_labels_rotate (Part *part, int rotation);
+char **part_get_property_ref (Part *part, char *name);
 char *part_get_property (Part *part, char *name);
 GSList *part_get_properties (Part *part);
 GSList *part_get_labels (Part *part);
