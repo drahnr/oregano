@@ -6,8 +6,8 @@
  */
 
 
-#ifndef TEST_UPDATE_SCHEMATIC
-#define TEST_UPDATE_SCHEMATIC
+#ifndef TEST_UPDATE_CONNECTION_DESIGNATORS
+#define TEST_UPDATE_CONNECTION_DESIGNATORS
 
 #include <glib.h>
 
@@ -130,7 +130,7 @@ void test_QUESTION_MARK_TRUE() {
 			"5555 %34 asdf",
 			"555",
 			"5555 %34 asdf",
-			"@refdes %qtg %sd SIN(@offset @freq 0 0) ?DC|DC @DC %agoi |(ampl @ampl %agoi (",
+			"@refdes %qtg %sd SIN(@offset 0 0) ?DC|DC @DC %agoi |(ampl @ampl %agoi ( ?DC|freq @freq %agoi |",
 			NULL };
 	char *expected_values[] = {
 			"V1",
@@ -138,7 +138,7 @@ void test_QUESTION_MARK_TRUE() {
 			"5555 %34 asdf",
 			"555",
 			"5555 %3 asdf",
-			"@refdes %1 %2 SIN(@offset @freq 0 0) ?DC|DC @DC %4 |(ampl @ampl %agoi (",
+			"@refdes %1 %2 SIN(@offset 0 0) ?DC|DC @DC %4 |(ampl @ampl %agoi ( ?DC|freq @freq %5 |",
 			NULL };
 	doit(names, test_values, expected_values);
 }
@@ -156,14 +156,14 @@ void test_QUESTION_MARK_FALSE() {
 			"5",
 			"5555 %34 asdf",
 			"555",
-			"@refdes %qtg %sd SIN(@offset @freq 0 0) ?DC|DC @DC %agoi |(ampl @ampl %agoi ( %-gh ",
+			"@refdes %qtg %sd SIN(@offset 0 0) ?DC|DC @DC %agoi |(ampl @ampl %agoi ( %-gh ?DC|freq @freq %agoi | %-gh ",
 			NULL };
 	char *expected_values[] = {
 			"V1",
 			"5",
 			"5555 %3 asdf",
 			"555",
-			"@refdes %1 %2 SIN(@offset @freq 0 0) ?DC|DC @DC %agoi |(ampl @ampl %4 ( %5 ",
+			"@refdes %1 %2 SIN(@offset 0 0) ?DC|DC @DC %agoi |(ampl @ampl %4 ( %5 ?DC|freq @freq %agoi | %6 ",
 			NULL };
 	doit(names, test_values, expected_values);
 }
@@ -181,17 +181,17 @@ void test_TILDE_TRUE() {
 			"V1",
 			"5",
 			"5555 %34 asdf",
-			"55",
+			"5555 %34 freq",
 			"5555 %34 asdf",
-			"@refdes %qtg %sd SIN(@offset @freq 0 0) ~DC|ampl %lkj @ampl|(DC %lkj @DC(",
+			"@refdes %qtg %sd SIN(@offset 0 0) ~DC|ampl %lkj @ampl|(DC %lkj @DC( ~DC|freq %lkj @freq|",
 			NULL };
 	char *expected_values[] = {
 			"V1",
 			"5",
 			"5555 %34 asdf",
-			"55",
+			"5555 %34 freq",
 			"5555 %4 asdf",
-			"@refdes %1 %2 SIN(@offset @freq 0 0) ~DC|ampl %lkj @ampl|(DC %3 @DC(",
+			"@refdes %1 %2 SIN(@offset 0 0) ~DC|ampl %lkj @ampl|(DC %3 @DC( ~DC|freq %lkj @freq|",
 			NULL };
 	doit(names, test_values, expected_values);
 }
@@ -208,15 +208,15 @@ void test_TILDE_FALSE() {
 			"V1",
 			"5",
 			"5555 %34 asdf",
-			"555",
-			"@refdes %qtg %sd SIN(@offset @freq 0 0) ~DC|ampl %lkj @ampl|(DC %lkj @DC( %-gh ",
+			"5555 %34 freq",
+			"@refdes %qtg %sd SIN(@offset 0 0) ~DC|freq %lkj @freq| ~DC|ampl %lkj @ampl|(DC %lkj @DC( %-gh ",
 			NULL };
 	char *expected_values[] = {
 			"V1",
 			"5",
-			"5555 %4 asdf",
-			"555",
-			"@refdes %1 %2 SIN(@offset @freq 0 0) ~DC|ampl %3 @ampl|(DC %lkj @DC( %5 ",
+			"5555 %6 asdf",
+			"5555 %4 freq",
+			"@refdes %1 %2 SIN(@offset 0 0) ~DC|freq %3 @freq| ~DC|ampl %5 @ampl|(DC %lkj @DC( %7 ",
 			NULL };
 	doit(names, test_values, expected_values);
 }
@@ -274,6 +274,8 @@ void test_HASHTAG_FALSE() {
 	doit(names, test_values, expected_values);
 }
 
+//this function does not free the allocated memory
+//do not use this function in productive code
 void doit(char *names[], char *test_values[], char *expected_values[]) {
 	Part *test_part = part_new();
 
