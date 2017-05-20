@@ -42,15 +42,15 @@ typedef struct
 } PartProperty;
 
 typedef enum {
-	PARSE_START,
-	PARSE_PERCENT,
-	PARSE_AT,
-	PARSE_AMPERSAND,
-	PARSE_QUESTION_MARK,
-	PARSE_TILDE,
-	PARSE_HASH,
-	PARSE_FINISH
-} State;
+	CONVERT_PARSE_START,
+	CONVERT_PARSE_PERCENT,
+	CONVERT_PARSE_AT,
+	CONVERT_PARSE_AMPERSAND,
+	CONVERT_PARSE_QUESTION_MARK,
+	CONVERT_PARSE_TILDE,
+	CONVERT_PARSE_HASHTAG,
+	CONVERT_PARSE_FINISH
+} State_convert;
 
 void part_property_convert_connection_designators (Part *part, char **prop, int *node_ctr);
 gchar *part_property_expand_macros (Part *part, gchar *string);

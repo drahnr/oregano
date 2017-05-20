@@ -262,18 +262,18 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 	if (part == NULL || !IS_PART(part))
 		return;
 
-	State state = PARSE_START;
+	State_convert state = CONVERT_PARSE_START;
 	char *temp = *prop;
 	GString *out = g_string_new ("");
 
 	while (TRUE) {
 		switch(state) {
-			case PARSE_START:
+			case CONVERT_PARSE_START:
 			{
 				char **prop_split = g_regex_split_simple("[@?~#&%].*", temp, 0, 0);
 				if (prop_split[0] == NULL) {
 					g_strfreev(prop_split);
-					state = PARSE_FINISH;
+					state = CONVERT_PARSE_FINISH;
 					break;
 				}
 				temp += strlen(prop_split[0]);
@@ -283,39 +283,39 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 				temp++;
 				switch (macro) {
 				case '%':
-					state = PARSE_PERCENT;
+					state = CONVERT_PARSE_PERCENT;
 					break;
 				case '@':
-					state = PARSE_AT;
+					state = CONVERT_PARSE_AT;
 					break;
 				case '&':
-					state = PARSE_AMPERSAND;
+					state = CONVERT_PARSE_AMPERSAND;
 					break;
 				case '?':
-					state = PARSE_QUESTION_MARK;
+					state = CONVERT_PARSE_QUESTION_MARK;
 					break;
 				case '~':
-					state = PARSE_TILDE;
+					state = CONVERT_PARSE_TILDE;
 					break;
 				case '#':
-					state = PARSE_HASH;
+					state = CONVERT_PARSE_HASHTAG;
 					break;
 				default:
-					state = PARSE_FINISH;
+					state = CONVERT_PARSE_FINISH;
 					break;
 				}
 				break;
 			}
-			case PARSE_PERCENT:
+			case CONVERT_PARSE_PERCENT:
 			{
 				char **prop_split = g_regex_split_simple(" .*", temp, 0, 0);
 				temp += strlen(prop_split[0]);
 				g_string_append_printf(out, "%%%d", (*node_ctr)++);
 				g_strfreev(prop_split);
-				state = PARSE_START;
+				state = CONVERT_PARSE_START;
 				break;
 			}
-			case PARSE_AT:
+			case CONVERT_PARSE_AT:
 			{
 				char **prop_split = g_regex_split_simple("[,.;/|() ].*", temp, 0, 0);
 				temp += strlen(prop_split[0]);
@@ -324,10 +324,10 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 				g_string_append_printf(out, "@%s", prop_ref_name);
 				part_property_convert_connection_designators(part, prop_ref_value, node_ctr);
 				g_strfreev(prop_split);
-				state = PARSE_START;
+				state = CONVERT_PARSE_START;
 				break;
 			}
-			case PARSE_AMPERSAND:
+			case CONVERT_PARSE_AMPERSAND:
 			{
 				char **prop_split = g_regex_split_simple("[,.;/|() ].*", temp, 0, 0);
 				temp += strlen(prop_split[0]);
@@ -337,10 +337,10 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 				if (prop_ref_value != NULL && *prop_ref_value != NULL)
 					part_property_convert_connection_designators(part, prop_ref_value, node_ctr);
 				g_strfreev(prop_split);
-				state = PARSE_START;
+				state = CONVERT_PARSE_START;
 				break;
 			}
-			case PARSE_QUESTION_MARK:
+			case CONVERT_PARSE_QUESTION_MARK:
 			{
 				char **prop_split_name = g_regex_split_simple("[,.;/|()].*", temp, 0, 0);
 				temp += strlen(prop_split_name[0]);
@@ -361,7 +361,7 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 
 				char separator2 = *temp;
 				char *cls2 = NULL;
-				if (strchr(",.;/|()", separator2)) {
+				if (strchr(",.;/|()", separator2) && separator2 != 0) {
 					temp++;
 					GString *pattern2 = g_string_new("");
 					g_string_append_printf(pattern2, "\\%c.*", separator2);
@@ -385,10 +385,10 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 
 				g_free(cls1);
 				g_free(prop_ref_name);
-				state = PARSE_START;
+				state = CONVERT_PARSE_START;
 				break;
 			}
-			case PARSE_TILDE:
+			case CONVERT_PARSE_TILDE:
 			{
 				char **prop_split_name = g_regex_split_simple("[,.;/|()].*", temp, 0, 0);
 				temp += strlen(prop_split_name[0]);
@@ -409,7 +409,7 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 
 				char separator2 = *temp;
 				char *cls2 = NULL;
-				if (strchr(",.;/|()", separator2)) {
+				if (strchr(",.;/|()", separator2) && separator2 != 0) {
 					temp++;
 					GString *pattern2 = g_string_new("");
 					g_string_append_printf(pattern2, "\\%c.*", separator2);
@@ -433,10 +433,10 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 
 				g_free(cls1);
 				g_free(prop_ref_name);
-				state = PARSE_START;
+				state = CONVERT_PARSE_START;
 				break;
 			}
-			case PARSE_HASH:
+			case CONVERT_PARSE_HASHTAG:
 			{
 				char **prop_split_name = g_regex_split_simple("[,.;/|()].*", temp, 0, 0);
 				temp += strlen(prop_split_name[0]);
@@ -457,18 +457,18 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 
 				if (prop_ref_value != NULL && *prop_ref_value != NULL) {
 					part_property_convert_connection_designators(part, &cls1, node_ctr);
-					g_string_append_printf(out, "#%c%s%c", separator, prop_ref_name, separator);
-					state = PARSE_START;
+					g_string_append_printf(out, "#%s%c%s%c", prop_ref_name, separator, cls1, separator);
+					state = CONVERT_PARSE_START;
 				} else {
-					g_string_append_printf(out, "#%c%s%c%s", separator, prop_ref_name, separator, temp);
-					state = PARSE_FINISH;
+					g_string_append_printf(out, "#%s%c%s%c%s", prop_ref_name, separator, cls1, separator, temp);
+					state = CONVERT_PARSE_FINISH;
 				}
 
 				g_free(cls1);
 				g_free(prop_ref_name);
 				break;
 			}
-			case PARSE_FINISH:
+			case CONVERT_PARSE_FINISH:
 			{
 				g_free(*prop);
 				*prop = out->str;

@@ -525,10 +525,10 @@ GtkTextBuffer *schematic_get_log_text (Schematic *schematic)
 
 int schematic_count (void) { return schematic_count_; }
 
-Schematic *schematic_read (char *name, GError **error)
+Schematic *schematic_read (const char *name, GError **error)
 {
 	Schematic *new_sm;
-	char *fname;
+	const char *fname;
 	GError *e = NULL;
 	FileType *ft;
 

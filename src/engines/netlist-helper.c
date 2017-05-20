@@ -365,7 +365,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 	NetlistData data;
 	GList *iter;
 	Part *part;
-	gint pin_nr, num_pins, num_nodes, num_gnd_nodes, i, j, num_clamps;
+	gint pin_nr, num_nodes, num_gnd_nodes, i, j, num_clamps;
 	Pin *pins;
 	gchar *template, **template_split;
 	NodeStore *store;
@@ -484,7 +484,6 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 			g_free (template);
 			template = tmp;
 
-			num_pins = part_get_num_pins (part);
 			pins = part_get_pins (part);
 
 
@@ -513,7 +512,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				gint node_nr = 0;
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[pin_nr]));
 				if (!node_nr) {
-					g_set_error (error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_SUCH_PART,
+					g_set_error (&error, OREGANO_ERROR, OREGANO_SIMULATE_ERROR_NO_SUCH_PART,
 					             _ ("Could not find part in library, pin #%d."), pin_nr);
 					return; // FIXME wtf?? this leaks like hell and did for ages!
 				} else {

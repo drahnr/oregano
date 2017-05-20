@@ -133,8 +133,8 @@ typedef struct
 	Schematic *schematic;
 	SimSettings *sim_settings;
 
-	char *title;
 	char *author;
+	char *title;
 	char *oregano_version;
 	char *comments;
 
@@ -252,9 +252,9 @@ int schematic_parse_xml_file (Schematic *sm, const char *filename, GError **erro
 
 	state.schematic = sm;
 	state.sim_settings = schematic_get_sim_settings (sm);
-	state.oregano_version = NULL;
-	state.title = NULL;
 	state.author = NULL;
+	state.title = NULL;
+	state.oregano_version = NULL;
 	state.comments = NULL;
 
 	if (!oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename)) {
@@ -274,10 +274,16 @@ int schematic_parse_xml_file (Schematic *sm, const char *filename, GError **erro
 		retval = -2;
 	}
 
-	schematic_set_version(sm, state.oregano_version);
+	schematic_set_filename(sm, filename);
 	schematic_set_author (sm, state.author);
 	schematic_set_title (sm, state.title);
+	schematic_set_version(sm, state.oregano_version);
 	schematic_set_comments (sm, state.comments);
+
+	g_free(state.author);
+	g_free(state.title);
+	g_free(state.oregano_version);
+	g_free(state.comments);
 
 	update_schematic(sm);
 
