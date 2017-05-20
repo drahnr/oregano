@@ -35,6 +35,7 @@ jobs:
   - name: compile-pr
     public: true
     plan:
+    - get: oregano-test-fedora
     - get: git-pull-request-resource
       trigger: true
       serial_groups: [network]
@@ -46,18 +47,18 @@ jobs:
         - name: git-pull-request-resource
         run:
           path: xvfb-run
-          args: ["./waf", "configure", "build", "--prefix=/tmp", "--notests", "install"]
+          args: ["./waf", "configure", "debug", "--prefix=/tmp", "--notests", "install"]
           dir: "git-pull-request-resource"
-          on_success:
-            put: git-pull-request-resource
-            params:
-              path: git-pull-request-resource
-              status: success
-          on_failure:
-            put: git-pull-request-resource
-            params:
-              path: git-pull-request-resource
-              status: failure
+      on_success:
+        put: git-pull-request-resource
+        params:
+          path: git-pull-request-resource
+          status: success
+      on_failure:
+        put: git-pull-request-resource
+        params:
+          path: git-pull-request-resource
+          status: failure
 
   - name: compile
     public: true
