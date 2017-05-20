@@ -9,7 +9,7 @@
 #include "test_wire.c"
 #include "test_engine.c"
 #include "test_nodestore.c"
-#include "test_update_schematic.c"
+#include "test_update_connection_designators.c"
 
 #if DEBUG_FORCE_FAIL
 void
@@ -34,7 +34,7 @@ main (int argc, char *argv[])
 	g_test_add_func ("/core/model/wire/tcrossing", test_wire_tcrossing);
 	g_test_add_func ("/core/model/nodestore", test_nodestore);
 	g_test_add_func ("/core/engine", test_engine);
-	g_test_add_func ("/core/engine/update_schematic", test_update_schematic);
+	g_test_add_func ("/core/model/part-property/update_connection_designators", test_update_connection_designators);
 #if DEBUG_FORCE_FAIL
 	g_test_add_func ("/false", test_false);
 #endif

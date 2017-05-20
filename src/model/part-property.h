@@ -52,7 +52,7 @@ typedef enum {
 	CONVERT_PARSE_FINISH
 } State_convert;
 
-void part_property_convert_connection_designators (Part *part, char **prop, int *node_ctr);
+void update_connection_designators (Part *part, char **prop, int *node_ctr);
 gchar *part_property_expand_macros (Part *part, gchar *string);
 
 #endif

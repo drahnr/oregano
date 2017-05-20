@@ -28,7 +28,7 @@ void test_HASHTAG_FALSE();
 void doit(char *names[], char *test_values[], char *expected_values[]);
 
 void
-test_update_schematic()
+test_update_connection_designators()
 {
 	test_basic();
 	test_AT();
@@ -287,7 +287,7 @@ void doit(char *names[], char *test_values[], char *expected_values[]) {
 	}
 
 	int node_ctr = 1;
-	part_property_convert_connection_designators(test_part, part_get_property_ref(test_part, "template"), &node_ctr);
+	update_connection_designators(test_part, part_get_property_ref(test_part, "template"), &node_ctr);
 	for (int i = 0; names[i] != NULL; i++)
 		g_assert_cmpstr(part_get_property(test_part, names[i]), ==, expected_values[i]);
 }

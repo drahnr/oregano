@@ -351,7 +351,7 @@ void update_schematic(Schematic *sm) {
 		for (GList *iter = store->parts; iter; iter = iter->next) {
 			int node_ctr = 1;
 			Part *part = iter->data;
-			part_property_convert_connection_designators(part, part_get_property_ref(part, "template"), &node_ctr);
+			update_connection_designators(part, part_get_property_ref(part, "template"), &node_ctr);
 		}
 		schematic_set_version(sm, VERSION);
 	}

@@ -253,7 +253,7 @@ char *part_property_expand_macros (Part *part, char *string)
 /**
  * see #168
  */
-void part_property_convert_connection_designators(Part *part, char **prop, int *node_ctr)
+void update_connection_designators(Part *part, char **prop, int *node_ctr)
 {
 	if (prop == NULL || *prop == NULL)
 		return;
@@ -322,7 +322,7 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 				char *prop_ref_name = prop_split[0];
 				char **prop_ref_value = part_get_property_ref(part, prop_ref_name);
 				g_string_append_printf(out, "@%s", prop_ref_name);
-				part_property_convert_connection_designators(part, prop_ref_value, node_ctr);
+				update_connection_designators(part, prop_ref_value, node_ctr);
 				g_strfreev(prop_split);
 				state = CONVERT_PARSE_START;
 				break;
@@ -335,7 +335,7 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 				char **prop_ref_value = part_get_property_ref(part, prop_ref_name);
 				g_string_append_printf(out, "&%s", prop_ref_name);
 				if (prop_ref_value != NULL && *prop_ref_value != NULL)
-					part_property_convert_connection_designators(part, prop_ref_value, node_ctr);
+					update_connection_designators(part, prop_ref_value, node_ctr);
 				g_strfreev(prop_split);
 				state = CONVERT_PARSE_START;
 				break;
@@ -373,9 +373,9 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 					temp++;
 				}
 				if (prop_ref_value != NULL && *prop_ref_value != NULL)
-					part_property_convert_connection_designators(part, &cls1, node_ctr);
+					update_connection_designators(part, &cls1, node_ctr);
 				else if (cls2 != NULL)
-					part_property_convert_connection_designators(part, &cls2, node_ctr);
+					update_connection_designators(part, &cls2, node_ctr);
 
 				g_string_append_printf(out, "?%s%c%s%c", prop_ref_name, separator, cls1, separator);
 				if (cls2 != NULL) {
@@ -421,9 +421,9 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 					temp++;
 				}
 				if (prop_ref_value == NULL || *prop_ref_value == NULL)
-					part_property_convert_connection_designators(part, &cls1, node_ctr);
+					update_connection_designators(part, &cls1, node_ctr);
 				else if (cls2 != NULL)
-					part_property_convert_connection_designators(part, &cls2, node_ctr);
+					update_connection_designators(part, &cls2, node_ctr);
 
 				g_string_append_printf(out, "~%s%c%s%c", prop_ref_name, separator, cls1, separator);
 				if (cls2 != NULL) {
@@ -456,7 +456,7 @@ void part_property_convert_connection_designators(Part *part, char **prop, int *
 				temp++;
 
 				if (prop_ref_value != NULL && *prop_ref_value != NULL) {
-					part_property_convert_connection_designators(part, &cls1, node_ctr);
+					update_connection_designators(part, &cls1, node_ctr);
 					g_string_append_printf(out, "#%s%c%s%c", prop_ref_name, separator, cls1, separator);
 					state = CONVERT_PARSE_START;
 				} else {
