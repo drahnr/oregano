@@ -99,11 +99,12 @@ jobs:
         platform: linux
         inputs:
         - name: git-clone-resource
-        outputs:
-        - name: git-clone-resource-compiled
         run:
-          path: xvfb-run
-          args: ["./waf", "configure", "debug", "--prefix=/tmp", "install"]
+          path: sh
+          args:
+          - -exc
+          - |
+            xvfb-run ./waf configure debug --prefix=/tmp install
           dir: "git-clone-resource"
 
   - name: build-pkg-rpm
@@ -119,9 +120,9 @@ jobs:
       config:
         platform: linux
         inputs:
-        - name: git-clone-resource-compiled
+        - name: git-clone-resource
         run:
-          path: "./.concourse/fedora/buildrpm.sh"
+          path: "../git-clone-resource/.concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
 
   - name: build-pkg-deb

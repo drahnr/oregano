@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
+set -e
+
 mkdir -p rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
-cp build/oregano.spec rpmbuild/SPECS/
+./waf configure rpmspec
+cp -v build/oregano.spec rpmbuild/SPECS/
 ./waf dist
-mv oregano*.tar.xz rpmbuild/SOURCES/
+cp -v oregano*.tar.xz rpmbuild/SOURCES/
 cd rpmbuild
 rpmbuild \
 --define "_topdir %(pwd)" \

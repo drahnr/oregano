@@ -98,6 +98,47 @@ def configure(conf):
 	conf.env.CFLAGS = ['-O2', '-Wall']
 	conf.define('RELEASE',1)
 
+from waflib.Context import Context
+from waflib.Build import BuildContext
+
+
+def pre_fun(ctx):
+	if ctx.cmd != 'install':
+		logs.info ('Variant: \'' + ctx.variant + '\'')
+
+def post_fun(ctx):
+	if ctx.options.run:
+		ctx.exec_command('')
+
+from waftools.unites import summary as unites_summary
+
+def build(bld):
+	bld(features='subst', source='oregano.spec.in', target='oregano.spec', install_path=None, VERSION=bld.env.version)
+	if bld.variant != 'rpmspec':
+		bld.add_pre_fun(pre_fun)
+		bld.add_post_fun(post_fun)
+		bld.add_post_fun(unites_summary)
+		bld.recurse(rec)
+
+
+
+
+class rpmspec(BuildContext):
+	"""fill rpmspec"""
+	cmd = 'rpmspec'
+	variant = 'rpmspec'
+
+class release(BuildContext):
+	"""compile release binary"""
+	cmd = 'release'
+	variant = 'release'
+
+class debug(BuildContext):
+	"""compile debug binary"""
+	cmd = 'debug'
+	variant = 'debug'
+
+
 
 
 def docs(ctx):
@@ -112,42 +153,6 @@ def dist(ctx):
 	ctx.files = ctx.path.ant_glob('src/**/*', excl=['**/*~'])
 	ctx.files.extend(ctx.path.ant_glob('**/wscript'))
 	ctx.files.extend(ctx.path.ant_glob('**/*', excl=['**/.*', 'build', 'buildrpm', '*.tar.*']))
-
-
-
-def pre(ctx):
-	if ctx.cmd != 'install':
-		logs.info ('Variant: \'' + ctx.variant + '\'')
-
-
-
-def post(ctx):
-	if ctx.options.run:
-		ctx.exec_command('')
-
-
-from waftools.unites import summary as unites_summary
-
-def build(bld):
-	bld.add_pre_fun(pre)
-	bld.add_post_fun(post)
-	bld.add_post_fun(unites_summary)
-	bld.recurse(rec)
-	bld(features='subst', source='oregano.spec.in', target='oregano.spec', install_path=None, VERSION=bld.env.version)
-
-from waflib.Build import BuildContext
-
-class release(BuildContext):
-	"""compile release binary"""
-	cmd = 'release'
-	variant = 'release'
-
-class debug(BuildContext):
-	"""compile debug binary"""
-	cmd = 'debug'
-	variant = 'debug'
-
-
 
 
 
@@ -174,7 +179,7 @@ def valgrind_fun(ctx):
 
 def massif_fun(ctx):
 	if ctx.env.VALGRIND:
-		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.VALGRIND[0]+" --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
+		os.system ("G_DEBUG=resident-modules,always-malloc "+ctx.env.MASSIF[0]+" --tool=massif --depth=10 --max-snapshots=1000 --alloc-fn=g_malloc --alloc-fn=g_realloc --alloc-fn=g_try_malloc --alloc-fn=g_malloc0 --alloc-fn=g_mem_chunk_alloc --threshold=0.01 build/debug/ ./build/debug/"+APPNAME+" --debug-all")
 	else:
 		logs.warn ("Did not find \"massif\". Re-configure if you installed it in the meantime.")
 
@@ -195,25 +200,6 @@ def codeformat_fun(ctx):
 		os.system (''+ctx.env.CODEFORMAT[0]+' -i '+ args)
 	else:
 		logs.warn ("Did not find \"clang-format\". Re-configure if you installed it in the meantime.")
-
-
-import platform
-from waflib.Context import Context
-import re
-def bumprpmver_fun(ctx):
-
-	spec = ctx.path.find_node('oregano.spec')
-	data = None
-	with open(spec.abspath()) as f:
-		data = f.read()
-
-	if data:
-		data = (re.sub(r'^(\s*Version\s*:\s*)[\w.]+\s*', r'\1 {0}\n'.format(VERSION), data, flags=re.MULTILINE))
-
-		with open(spec.abspath(),'w') as f:
-			f.write(data)
-	else:
-		logs.warn("Didn't find that spec file: '{0}'".format(spec.abspath()))
 
 
 def spawn_pot(ctx):
@@ -264,12 +250,6 @@ class nemiver(BuildContext):
 	"""Run with \"nemiver\""""
 	cmd = 'nemiver'
 	fun = 'nemiver_fun'
-
-class bumprpmver(Context):
-	"""Bump version"""
-	cmd = 'bumprpmver'
-	fun = 'bumprpmver_fun'
-
 
 def builddeps_fun(ctx):
 	os.system('./builddeps.sh')
