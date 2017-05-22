@@ -133,6 +133,7 @@ def build(bld):
 	bld.add_post_fun(post)
 	bld.add_post_fun(unites_summary)
 	bld.recurse(rec)
+	bld(features='subst', source='oregano.spec.in', target='oregano.spec', install_path=None, VERSION=bld.env.version)
 
 from waflib.Build import BuildContext
 

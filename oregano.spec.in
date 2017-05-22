@@ -1,6 +1,6 @@
 Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
-Version:		0.83.3
+Version:		@VERSION@
 Release:		1%{?dist}
 License:		GPLv2+
 Group:			Applications/Engineering
@@ -30,16 +30,15 @@ as front-end and ng-spice/gnu-cap as back-end
 
 %build
 ./waf distclean || true
-#seems we always need to be able to do debug builds to allow fedora stripping them into a pkg
-echo "Building with rpm CFLAGS=\"%{optflags}\""
-CFLAGS="%{optflags}" ./waf configure --prefix="%{_prefix}" debug
 
+# the bare "build" target does not mangle any additional cflags into the build 
+CFLAGS="%{optflags}" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" build
 
 %install
 ./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
 rm -f "$RPM_BUILD_ROOT/%{_bindir}/microtests"
-%find_lang oregano
 rm -rf "$RPM_BUILD_ROOT/%{_datadir}/glib-2.0/schemas/gschemas.compiled"
+%find_lang oregano
 
 %post
 /usr/bin/update-mime-database %{_datadir}/mime &> /dev/null || :
@@ -68,9 +67,6 @@ fi
 rm -rf "$RPM_BUILD_ROOT"
 
 
-
-
-
 %files -f oregano.lang
 %defattr(-, root, root)
 
@@ -85,11 +81,9 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/mime/packages/oregano-mimetypes.xml
 %{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
 
-%{_mandir}/man5/
-
 %changelog
-* Mon Oct 19 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-2
-- Add manpage
+* Mon May 22 2017 Bernhard Schuster <bernhard@ahoi.io> 0.84.0-1
+- Fix crash causing bugs
 
 * Wed Jul 15 2015 Bernhard Schuster <bernhard@ahoi.io> 0.83.3-1
 - Version bump

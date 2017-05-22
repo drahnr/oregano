@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 mkdir -p rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
-cp oregano.spec rpmbuild/SPECS/
+cp build/oregano.spec rpmbuild/SPECS/
 ./waf dist
 mv oregano*.tar.xz rpmbuild/SOURCES/
 cd rpmbuild
