@@ -99,6 +99,8 @@ jobs:
         platform: linux
         inputs:
         - name: git-clone-resource
+        outputs:
+        - name: git-clone-resource-compiled
         run:
           path: xvfb-run
           args: ["./waf", "configure", "debug", "--prefix=/tmp", "install"]
@@ -111,13 +113,13 @@ jobs:
       - get: oregano-test-fedora
       - get: git-clone-resource
         trigger: true
-        passed: [build-docker-image-fedora, compile]
+        passed: [compile, build-docker-image-fedora]
     - task: create-rpm
       image: oregano-test-fedora
       config:
         platform: linux
         inputs:
-        - name: git-clone-resource
+        - name: git-clone-resource-compiled
         run:
           path: "./.concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
