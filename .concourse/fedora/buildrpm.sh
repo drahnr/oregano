@@ -4,7 +4,7 @@ set -e
 
 mkdir -p rpmbuild/{SOURCES,BUILD,RPMS,SPECS}
 ./waf configure rpmspec
-cp -v build/oregano.spec rpmbuild/SPECS/
+cp -v build/rpmspec/oregano.spec rpmbuild/SPECS/
 ./waf dist
 cp -v oregano*.tar.xz rpmbuild/SOURCES/
 cd rpmbuild
