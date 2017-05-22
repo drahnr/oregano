@@ -110,7 +110,7 @@ static char *get_macro_name (char macro, const char *str, char **cls1, char **cl
 		}
 	}
 
-	*sz = out->len;
+	*sz = out->len + (*cls1 != NULL ? strlen(*cls1) + 2 : 0) + (*cls2 != NULL ? strlen(*cls2) + 2 : 0);
 	ret = NULL;
 	if (out->len > 0) {
 		out = g_string_append_c (out, '\0');
@@ -248,4 +248,137 @@ char *part_property_expand_macros (Part *part, char *string)
 	g_string_free (out, TRUE);
 
 	return ret;
+}
+
+/**
+ * see #168
+ */
+void update_connection_designators(Part *part, char **prop, int *node_ctr)
+{
+	if (prop == NULL || *prop == NULL)
+		return;
+	if (node_ctr == NULL)
+		return;
+	if (part == NULL || !IS_PART(part))
+		return;
+
+	char *temp = *prop;
+	GString *out = g_string_new ("");
+
+	int breakout = FALSE;
+	while (!breakout) {
+		char **prop_split = g_regex_split_simple("[@?~#&%].*", temp, 0, 0);
+		if (prop_split[0] == NULL) {
+			g_strfreev(prop_split);
+			break;
+		}
+		temp += strlen(prop_split[0]);
+		g_string_append_printf(out, "%s", prop_split[0]);
+		g_strfreev(prop_split);
+		char macro = *temp;
+		temp++;
+		switch (macro) {
+			case '%':
+			{
+				char **prop_split = g_regex_split_simple(" .*", temp, 0, 0);
+				temp += strlen(prop_split[0]);
+				g_string_append_printf(out, "%%%d", (*node_ctr)++);
+				g_strfreev(prop_split);
+				break;
+			}
+			case '@':
+			{
+				char **prop_split = g_regex_split_simple("[,.;/|() ].*", temp, 0, 0);
+				temp += strlen(prop_split[0]);
+				char *prop_ref_name = prop_split[0];
+				char **prop_ref_value = part_get_property_ref(part, prop_ref_name);
+				g_string_append_printf(out, "@%s", prop_ref_name);
+				update_connection_designators(part, prop_ref_value, node_ctr);
+				g_strfreev(prop_split);
+				break;
+			}
+			case '&':
+			{
+				char **prop_split = g_regex_split_simple("[,.;/|() ].*", temp, 0, 0);
+				temp += strlen(prop_split[0]);
+				char *prop_ref_name = prop_split[0];
+				char **prop_ref_value = part_get_property_ref(part, prop_ref_name);
+				g_string_append_printf(out, "&%s", prop_ref_name);
+				if (prop_ref_value != NULL && *prop_ref_value != NULL)
+					update_connection_designators(part, prop_ref_value, node_ctr);
+				g_strfreev(prop_split);
+				break;
+			}
+			case '?':
+			case '~':
+			{
+				char **prop_split = g_regex_split_simple("([,.;/|()])(.*?)(\\g{-3})(?(?=[,.;/|()])([,.;/|()])(.*?)(\\g{-3})).*", temp, 0, 0);
+				char *prop_ref_name = g_strdup(prop_split[0]);
+				char separator1 = *prop_split[1];
+				char *cls1 = g_strdup(prop_split[2]);
+				//separator1 == *prop_split_name[3]
+				char separator2 = prop_split[4] != NULL ? *prop_split[4] : 0;
+				char *cls2 = NULL;
+				if (separator2 != 0) {
+					cls2 = g_strdup(prop_split[5]);
+				}
+				char **prop_ref_value = part_get_property_ref(part, prop_ref_name);
+				for (int i = 0; prop_split[i] != NULL; i++)
+					temp += strlen(prop_split[i]);
+				g_strfreev(prop_split);
+
+				if	(
+						(macro == '?' && prop_ref_value != NULL && *prop_ref_value != NULL)
+						||
+						(macro == '~' && (prop_ref_value == NULL || *prop_ref_value == NULL))
+					)
+					update_connection_designators(part, &cls1, node_ctr);
+				else if (cls2 != NULL)
+					update_connection_designators(part, &cls2, node_ctr);
+
+				g_string_append_printf(out, "%c%s%c%s%c", macro, prop_ref_name, separator1, cls1, separator1);
+				if (cls2 != NULL) {
+					g_string_append_printf(out, "%c%s%c", separator2, cls2, separator2);
+					g_free(cls2);
+				}
+
+				g_free(cls1);
+				g_free(prop_ref_name);
+				break;
+			}
+			case '#':
+			{
+				char **prop_split = g_regex_split_simple("([,.;/|()])(.*?)(\\g{-3}).*", temp, 0, 0);
+				char *prop_ref_name = g_strdup(prop_split[0]);
+				char separator = *prop_split[1];
+				char *cls = g_strdup(prop_split[2]);
+				//separator == *prop_split_name[3]
+				char **prop_ref_value = part_get_property_ref(part, prop_ref_name);
+				for (int i = 0; prop_split[i] != NULL; i++)
+					temp += strlen(prop_split[i]);
+				g_strfreev(prop_split);
+
+				if (prop_ref_value != NULL && *prop_ref_value != NULL) {
+					update_connection_designators(part, &cls, node_ctr);
+					g_string_append_printf(out, "#%s%c%s%c", prop_ref_name, separator, cls, separator);
+				} else {
+					g_string_append_printf(out, "#%s%c%s%c%s", prop_ref_name, separator, cls, separator, temp);
+					breakout = TRUE;
+				}
+
+				g_free(cls);
+				g_free(prop_ref_name);
+				break;
+			}
+			default:
+			{
+				breakout = TRUE;
+				break;
+			}
+		}
+	}
+	g_free(*prop);
+	*prop = out->str;
+	g_string_free (out, FALSE);
+	return;
 }

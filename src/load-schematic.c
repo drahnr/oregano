@@ -45,6 +45,7 @@
 #include "sim-settings.h"
 #include "textbox.h"
 #include "errors.h"
+#include "engines/netlist-helper.h"
 
 #include "debug.h"
 
@@ -53,6 +54,7 @@ typedef enum {
 	PARSE_SCHEMATIC,
 	PARSE_TITLE,
 	PARSE_AUTHOR,
+	PARSE_VERSION,
 	PARSE_COMMENTS,
 
 	PARSE_SIMULATION_SETTINGS,
@@ -131,8 +133,9 @@ typedef struct
 	Schematic *schematic;
 	SimSettings *sim_settings;
 
-	char *title;
 	char *author;
+	char *title;
+	char *oregano_version;
 	char *comments;
 
 	char *textbox_text;
@@ -249,8 +252,9 @@ int schematic_parse_xml_file (Schematic *sm, const char *filename, GError **erro
 
 	state.schematic = sm;
 	state.sim_settings = schematic_get_sim_settings (sm);
-	state.title = NULL;
 	state.author = NULL;
+	state.title = NULL;
+	state.oregano_version = NULL;
 	state.comments = NULL;
 
 	if (!oreganoXmlSAXParseFile (&oreganoSAXParser, &state, filename)) {
@@ -270,9 +274,18 @@ int schematic_parse_xml_file (Schematic *sm, const char *filename, GError **erro
 		retval = -2;
 	}
 
+	schematic_set_filename(sm, filename);
 	schematic_set_author (sm, state.author);
 	schematic_set_title (sm, state.title);
+	schematic_set_version(sm, state.oregano_version);
 	schematic_set_comments (sm, state.comments);
+
+	g_free(state.author);
+	g_free(state.title);
+	g_free(state.oregano_version);
+	g_free(state.comments);
+
+	update_schematic(sm);
 
 	return retval;
 }
@@ -311,6 +324,9 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:title")) {
 			state->state = PARSE_TITLE;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:version")) {
+			state->state = PARSE_VERSION;
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:comments")) {
 			state->state = PARSE_COMMENTS;
@@ -651,6 +667,7 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 	case PARSE_ZOOM:
 	case PARSE_TITLE:
 	case PARSE_AUTHOR:
+	case PARSE_VERSION:
 	case PARSE_COMMENTS:
 		// there should be no tags inside these types of tags
 		g_message ("*** '%s' tag found", name);
@@ -690,6 +707,10 @@ static void end_element (ParseState *state, const xmlChar *name)
 		break;
 	case PARSE_TITLE:
 		state->title = g_strdup (state->content->str);
+		state->state = PARSE_SCHEMATIC;
+		break;
+	case PARSE_VERSION:
+		state->oregano_version = g_strdup (state->content->str);
 		state->state = PARSE_SCHEMATIC;
 		break;
 	case PARSE_COMMENTS:

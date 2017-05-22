@@ -430,6 +430,11 @@ static xmlNodePtr write_xml_schematic (parseXmlContext *ctxt, Schematic *sm, GEr
 	             xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
 	g_free (str);
 
+	str = g_strdup_printf ("%s", schematic_get_version (sm));
+	xmlNewChild (cur, ctxt->ns, BAD_CAST "version",
+	             xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));
+	g_free (str);
+
 	str = g_strdup_printf ("%s", schematic_get_comments (sm));
 	xmlNewChild (cur, ctxt->ns, BAD_CAST "comments",
 	             xmlEncodeEntitiesReentrant (ctxt->doc, BAD_CAST str));

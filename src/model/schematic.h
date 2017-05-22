@@ -89,6 +89,8 @@ char *schematic_get_title (Schematic *schematic);
 void schematic_set_title (Schematic *schematic, const gchar *title);
 char *schematic_get_author (Schematic *schematic);
 void schematic_set_author (Schematic *schematic, const gchar *author);
+char *schematic_get_version (Schematic *schematic);
+void schematic_set_version (Schematic *schematic, const gchar *author);
 char *schematic_get_comments (Schematic *schematic);
 void schematic_set_comments (Schematic *schematic, const gchar *comments);
 char *schematic_get_filename (Schematic *schematic);
@@ -117,7 +119,7 @@ int schematic_count (void);
 gboolean schematic_is_dirty (Schematic *sm);
 void schematic_set_dirty (Schematic *sm, gboolean b);
 gint schematic_save_file (Schematic *sm, GError **error);
-Schematic *schematic_read (char *fname, GError **error);
+Schematic *schematic_read (const char *fname, GError **error);
 void schematic_print (Schematic *sm, GtkPageSetup *p, GtkPrintSettings *s, gboolean preview);
 void schematic_export (Schematic *sm, const gchar *filename, gint img_w, gint img_h, int bg,
                        int color, int format);
