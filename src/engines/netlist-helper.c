@@ -353,8 +353,8 @@ void update_schematic(Schematic *sm) {
 			Part *part = iter->data;
 			update_connection_designators(part, part_get_property_ref(part, "template"), &node_ctr);
 		}
-		schematic_set_version(sm, VERSION);
 	}
+	schematic_set_version(sm, VERSION);
 
 	return;
 }

@@ -149,7 +149,6 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	OreganoNgSpice *ngspice;
 	Netlist output;
 	GList *iter;
-	FILE *file;
 	GError *e = NULL;
 
 	GString *buffer = NULL;
@@ -197,8 +196,8 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	g_string_append (buffer, "*------------- Models -------------------------\n");
 	for (iter = output.models; iter; iter = iter->next) {
 		const gchar *model = iter->data;
-		const gchar *model_with_ext = g_strdup_printf ("%s.model", model);
-		const gchar *model_path = g_build_filename (OREGANO_MODELDIR, model_with_ext, NULL);
+		gchar *model_with_ext = g_strdup_printf ("%s.model", model);
+		gchar *model_path = g_build_filename (OREGANO_MODELDIR, model_with_ext, NULL);
 		g_string_append_printf (buffer, ".include %s\n", model_path);
 		g_free (model_path);
 		g_free (model_with_ext);
@@ -228,7 +227,7 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 			return NULL;
 		}
 
-		g_string_append_printf (buffer, ".tran %lf %lf %lf", st, stop, start);
+		g_string_append_printf (buffer, ".tran %e %e %e", st, stop, start);
 		if (sim_settings_get_trans_init_cond (output.settings)) {
 			g_string_append_printf (buffer, " uic");
 		}
@@ -331,54 +330,120 @@ static void ngspice_stop (OreganoEngine *self)
 }
 
 /**
+ * returns the number of strings in a NULL terminated array of strings
+ */
+static int get_count(gchar** array) {
+	int i = 0;
+	while (array[i] != NULL)
+		i++;
+	return i;
+}
+
+/**
+ * adds the line number followed by a colon and a space at the beginning of each line
+ */
+static void add_line_numbers(gchar **string) {
+	gchar **splitted = g_regex_split_simple("\\n", *string, 0, 0);
+	GString *new_string = g_string_new("");
+	//why -1? Because g_regex_split_simple adds one empty string too much at the end
+	//of the array.
+	int count = get_count(splitted) - 1;
+	int max_length = floor(log10((double) count)) + 1;
+	//splitted[i+1] != NULL (why not only i but i+1?) because g_regex_split_simple
+	//adds one empty string too much at the end of the array
+	for (int i = 0; splitted[i+1] != NULL; i++)
+		g_string_append_printf(new_string, "%0*d: %s\n", max_length, i+1, splitted[i]);
+	//remove the last newline, which was added additionally
+	new_string = g_string_truncate(new_string, new_string->len - 1);
+	g_free(*string);
+	*string = new_string->str;
+	g_string_free(new_string, FALSE);
+}
+
+/**
  * keeps an eye on the process itself
  */
 static void ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
 {
 	ngspice->priv->status = status;
-	// check for exit via return in main, exit() or _exit() of the child, see man
-	// waitpid(2)
-	//       WIFEXITED(wstatus)
-	//              returns true if the child terminated normally, that is, by call‐
-	//              ing exit(3) or _exit(2), or by returning from main().
-	if (WIFEXITED (status)) {
-		gchar *line = NULL;
-		gsize len;
-		GError *e = NULL;
-		g_io_channel_read_to_end (ngspice->priv->child_iochannel, &line, &len, &e);
-		if (e) {
-			schematic_log_append_error (ngspice->priv->schematic,
-			                            "Failed to read from subprocess \"ngpsice\"");
-			g_print ("ngspice pipe pid: %s - %i", e->message, e->code);
-			g_clear_error (&e);
-			ngspice->priv->aborted = TRUE;
-			g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-		} else if (len > 0) {
-			fprintf (ngspice->priv->inputfp, "%s", line);
-		}
-		g_free (line);
+	GError *exit_error = NULL;
+	gboolean exited_normal = g_spawn_check_exit_status(status, &exit_error);
+	if (exit_error != NULL)
+		g_error_free(exit_error);
 
-		// Free stuff
-		g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
-		g_source_remove (ngspice->priv->child_iochannel_watch);
-		g_spawn_close_pid (ngspice->priv->child_pid);
-		g_spawn_close_pid (ngspice->priv->child_stdout);
-		g_io_channel_shutdown (ngspice->priv->child_ioerror, TRUE, NULL);
-		g_source_remove (ngspice->priv->child_ioerror_watch);
-		g_spawn_close_pid (ngspice->priv->child_error);
+	gchar *line = NULL;
+	gsize len;
+	GError *e = NULL;
+	g_io_channel_read_to_end (ngspice->priv->child_iochannel, &line, &len, &e);
+	if (e) {
+		schematic_log_append_error (ngspice->priv->schematic,
+									"Failed to read from subprocess \"ngpsice\"");
+		g_print ("ngspice pipe pid: %s - %i", e->message, e->code);
+		g_clear_error (&e);
+		ngspice->priv->aborted = TRUE;
+		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
+	} else if (len > 0) {
+		fprintf (ngspice->priv->inputfp, "%s", line);
+	}
+	g_free (line);
 
-		ngspice->priv->current = NULL;
-		fclose (ngspice->priv->inputfp);
-		ngspice_parse (ngspice);
+	// Free stuff
+	g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
+	g_source_remove (ngspice->priv->child_iochannel_watch);
+	g_spawn_close_pid (ngspice->priv->child_pid);
+	g_spawn_close_pid (ngspice->priv->child_stdout);
+	g_io_channel_shutdown (ngspice->priv->child_ioerror, TRUE, NULL);
+	g_source_remove (ngspice->priv->child_ioerror_watch);
+	g_spawn_close_pid (ngspice->priv->child_error);
 
-		if (ngspice->priv->num_analysis == 0) {
-			schematic_log_append_error (ngspice->priv->schematic,
-			                            _ ("### Too few or none analysis found ###\n"));
-			ngspice->priv->aborted = TRUE;
-			g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-		} else {
-			g_signal_emit_by_name (G_OBJECT (ngspice), "done");
-		}
+	ngspice->priv->current = NULL;
+	fclose (ngspice->priv->inputfp);
+
+	if (!exited_normal) {
+		// check for exit via return in main, exit() or _exit() of the child, see man
+		// waitpid(2)
+		//       WIFEXITED(wstatus)
+		//              returns true if the child terminated normally, that is, by call‐
+		//              ing exit(3) or _exit(2), or by returning from main().
+		if (!(WIFEXITED (status)))
+			schematic_log_append_error(ngspice->priv->schematic, "### ngspice exited with exception ###\n");
+		else
+			schematic_log_append_error(ngspice->priv->schematic, "### ngspice exited abnormally ###\n");
+		schematic_log_append_error(ngspice->priv->schematic, "### ngspice output: ###\n\n");
+		gchar *ngspice_error_contents = NULL;
+		gsize ngspice_error_length;
+		GError *ngspice_error_read_error = NULL;
+		g_file_get_contents("/tmp/netlist.lst", &ngspice_error_contents, &ngspice_error_length, &ngspice_error_read_error);
+		add_line_numbers(&ngspice_error_contents);
+		schematic_log_append_error(ngspice->priv->schematic, ngspice_error_contents);
+		g_free(ngspice_error_contents);
+		if (ngspice_error_read_error != NULL)
+			g_error_free(ngspice_error_read_error);
+
+		gchar *netlist_contents = NULL;
+		gsize netlist_lentgh;
+		GError *netlist_read_error = NULL;
+		g_file_get_contents("/tmp/netlist.tmp", &netlist_contents, &netlist_lentgh, &netlist_read_error);
+		add_line_numbers(&netlist_contents);
+		schematic_log_append_error(ngspice->priv->schematic, "\n\n### netlist: ###\n\n");
+		schematic_log_append_error(ngspice->priv->schematic, netlist_contents);
+		g_free(netlist_contents);
+		if (netlist_read_error != NULL)
+			g_error_free(netlist_read_error);
+
+		ngspice->priv->aborted = TRUE;
+		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
+		return;
+	}
+	ngspice_parse (ngspice);
+
+	if (ngspice->priv->num_analysis == 0) {
+		schematic_log_append_error (ngspice->priv->schematic,
+									_ ("### Too few or none analysis found ###\n"));
+		ngspice->priv->aborted = TRUE;
+		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
+	} else {
+		g_signal_emit_by_name (G_OBJECT (ngspice), "done");
 	}
 }
 
@@ -387,7 +452,6 @@ static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condit
 {
 	gchar *line = NULL;
 	gsize len, terminator;
-	GIOStatus status;
 	GError *e = NULL;
 
 	g_io_channel_read_line (source, &line, &len, &terminator, &e);
@@ -409,7 +473,6 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condit
 {
 	gchar *line;
 	gsize len, terminator;
-	GIOStatus status;
 	GError *e = NULL;
 
 	g_io_channel_read_line (source, &line, &len, &terminator, &e);
