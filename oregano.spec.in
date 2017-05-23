@@ -80,6 +80,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_datadir}/oregano/*/*
 %{_datadir}/mime/packages/oregano-mimetypes.xml
 %{_datadir}/glib-2.0/schemas/io.ahoi.oregano.gschema.xml
+%{_mandir}/man5/oregano.5.gz
 
 %changelog
 * Mon May 22 2017 Bernhard Schuster <bernhard@ahoi.io> 0.84.0-1
