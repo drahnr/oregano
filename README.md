@@ -48,17 +48,17 @@ If you are running a recent `Fedora` or `Ubuntu`, you can simply use `su -c'./bu
 
 To build the oregano application issue the following for a debug build
 
-    ./waf configure debug -j
+    ./waf configure build --debug
 
 or the following for a release build
 
-    ./waf configure release -j
+    ./waf configure build --release
 
 For additional options like specifying the install directory, consult
 
     ./waf --help
 
-Note that additional options can be passed to the `configure` stage, i.e. `waf configure --prefix="/usr" debug -j6` is commonly used.
+Note that additional options can be passed to the `configure` stage, i.e. `waf configure --prefix="/usr" build -j6` is commonly used.
 
 **Attention!**  
 If you install oregano to a different prefix than `/usr`, `/usr/local` keep in mind that the `GSettings` schema will be installed under `${PREFIX}/shared/glib-2.0/schemas/`, which will not be checked by default. So you need to export the schema location appropriately via `export XDG_DATA_DIRS=/usr/local/share:/usr/share:${HOME}/.local/share:${PREFIX}/share` before launching oregano, see [xdg basedir spec](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) for further details.  
@@ -90,7 +90,7 @@ If you want to discuss an issue or something you would like to implement, don't 
 
 #### Packaging
 
-This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS, `oregano.spec`, use `git archive --format tar --prefix oregano/ HEAD | xz > $HOME/rpmbuild/SOURCE/oregano-0.83.3.tar.xz && cp oregano.spec $HOME/rpmbuild/SPECS/oregano.spec`), Ubuntu (and thus Debian unstable, see the `debian` subdir) and soon to come for Mac (`macports` only contains a draft right now). If you see the need for more platforms we'd be happy to include even more.
+This repo also tracks packaging information for fedora (which should also be used for RedHat and CentOS, `oregano.spec`, use `./waf dist` or `git archive --format tar --prefix oregano/ HEAD | xz > $HOME/rpmbuild/SOURCE/oregano-0.83.3.tar.xz && cp oregano.spec $HOME/rpmbuild/SPECS/oregano.spec`), Ubuntu (and thus Debian unstable, see the `debian` subdir) and soon to come for Mac (`macports` only contains a draft right now). If you see the need for more platforms we'd be happy to include even more.
 
 #### Bugs
 

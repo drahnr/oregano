@@ -70,7 +70,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %files -f oregano.lang
 %defattr(-, root, root)
 
-%doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.txt
+%doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md docs/oregano-inheritance.dia docs/Library-HOWTO.md
 
 %{_bindir}/*
 #%{_datadir}/gnome/help/oregano/*/*
