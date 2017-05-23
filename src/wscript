@@ -12,11 +12,7 @@ def configure(conf):
 	pass
 
 def build(bld):
-	if bld.cmd != 'install' and bld.cmd != 'uninstall':
-		if not bld.variant:
-			bld.variant = 'debug'
-			logs.warn ('Use \'debug\' or \'release\' targets for manual builds!')
-	else:
+	if bld.cmd == 'install' or bld.cmd == 'uninstall':
 		if not os.geteuid()==0:
 			logs.warn ('You most likely need root privileges to install or uninstall properly.')
 

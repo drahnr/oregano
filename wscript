@@ -17,6 +17,8 @@ def options(opt):
 	opt.load('compiler_c gnu_dirs glib2')
 	opt.load('unites', tooldir='waftools')
 
+	opt.add_option('--debug', dest='build_debug', action='store_true', default=False, help='Build with debug flags')
+	opt.add_option('--release', dest='build_release', action='store_true', default=False, help='Build with release flags')
 	opt.add_option('--no-install-gschema', dest='no_install_gschema', action='store_true', default=False, help='Do not install the schema file')
 	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
@@ -81,26 +83,16 @@ def configure(conf):
 	conf.find_program('nemiver', var='NEMIVER', mandatory=False)
 	conf.find_program('valgrind', var='VALGRIND', mandatory=False)
 
-
-	with open(os.path.join(out,"VERSION"),"w+") as f:
-		f.write(str(VERSION)+os.linesep)
-
-
-	conf.define('RELEASE',1)
-
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
-	conf.setenv('debug', env=conf.env.derive())
-	conf.env.CFLAGS = ['-ggdb', '-Wall']
-	conf.define('DEBUG',1)
-	conf.define('DEBUG_DISABLE_GRABBING',1)
-
-	conf.setenv('release', env=conf.env.derive())
-	conf.env.CFLAGS = ['-O2', '-Wall']
-	conf.define('RELEASE',1)
+	if conf.options.build_debug:
+		conf.env.CFLAGS = ['-ggdb', '-Wall']
+		conf.define('DEBUG',1)
+	elif conf.options.build_release:
+		conf.env.CFLAGS = ['-O2', '-Wall']
+		conf.define('RELEASE',1)
 
 from waflib.Context import Context
 from waflib.Build import BuildContext
-
 
 def pre_fun(ctx):
 	if ctx.cmd != 'install':
