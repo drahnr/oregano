@@ -492,7 +492,7 @@ void schematic_log_append_error (Schematic *schematic, const char *message)
 
 	priv = schematic->priv;
 
-	log_append (schematic->priv->logstore, "Schematic Error", message);
+	log_append (schematic->priv->logstore, "ngspice Error", message);
 
 	// LEGACY
 	gtk_text_buffer_get_end_iter (priv->log, &iter);
