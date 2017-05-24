@@ -70,8 +70,8 @@ struct _GPlotPriv
 	gdouble zoom;
 	gdouble offset_x;
 	gdouble offset_y;
-	gdouble last_x;
-	gdouble last_y;
+	gdouble press_x;
+	gdouble press_y;
 
 	// Window->Viewport * Transformation Matrix
 	cairo_matrix_t matrix;
