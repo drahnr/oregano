@@ -1220,6 +1220,9 @@ static void schematic_view_load (SchematicView *sv, Schematic *sm)
 
 	sheet_connect_node_dots_to_signals (sv->priv->sheet);
 
+	//connect logview with logstore
+	log_view_set_store (LOG_VIEW (sv->priv->logview), schematic_get_log_store (sm));
+
 	g_list_free_full (list, g_object_unref);
 }
 
