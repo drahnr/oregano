@@ -384,10 +384,12 @@ static GtkWidget *plot_window_create (Plot *plot)
 
 	// Creation of the menu
 	menu = gtk_menu_new ();
+	//add Add Function menuitem
 	menuitem = gtk_menu_item_new_with_label (_ ("Add Function"));
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
 	g_signal_connect (menuitem, "activate", G_CALLBACK (add_function), plot);
 	gtk_widget_show (menuitem);
+	//add separator
 	menuitem = gtk_separator_menu_item_new ();
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
 	gtk_widget_show (menuitem);
