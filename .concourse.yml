@@ -3,6 +3,10 @@ resource_types:
   type: docker-image
   source:
     repository: jtarchie/pr
+- name: copr
+  type: docker-image
+  source:
+    repository: quay.io/ahoi/concourse-copr-resource
 
 resources:
 - name: git-clone-resource
@@ -16,6 +20,18 @@ resources:
   source:
     repo: drahnr/oregano
     access_token: {{github-token}}
+
+
+- name: copr-resource
+  type: copr
+  source:
+    project_id : 825
+    login: {{copr-login}}
+    username: {{copr-username}}
+    token: {{copr-token}}
+    url: {{copr-url}}
+    regex: ".*/oregano.*\.src\.rpm"
+
 
 - name: oregano-test-fedora
   type: docker-image
@@ -115,12 +131,21 @@ jobs:
       - get: git-clone-resource
         trigger: true
         passed: [compile, build-docker-image-fedora]
+    - put: copr-resource
+	  params:
+	    chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
+        enable_net: false
+        max_n_bytes: 250000
+
     - task: create-rpm
       image: oregano-test-fedora
       config:
         platform: linux
         inputs:
         - name: git-clone-resource
+        outputs:
+        - name: git-clone-resource
+          path: git-clone-resource/rpmbuild/SRPM/
         run:
           path: "../git-clone-resource/.concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
