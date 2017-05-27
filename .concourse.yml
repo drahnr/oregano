@@ -25,13 +25,12 @@ resources:
 - name: copr-resource
   type: copr
   source:
-    project_id : 825
+    project_id: 825
     login: {{copr-login}}
     username: {{copr-username}}
     token: {{copr-token}}
     url: {{copr-url}}
-    regex: ".*/oregano.*\.src\.rpm"
-
+    regex: "(?:.*/)?oregano.*\\.src\\.rpm"
 
 - name: oregano-test-fedora
   type: docker-image
@@ -132,8 +131,8 @@ jobs:
         trigger: true
         passed: [compile, build-docker-image-fedora]
     - put: copr-resource
-	  params:
-	    chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
+      params:
+        chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
         enable_net: false
         max_n_bytes: 250000
 

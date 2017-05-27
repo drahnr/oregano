@@ -15,4 +15,4 @@ rpmbuild \
 --define "_srcrpmdir %{_topdir}/RPMS" \
 --define "_specdir %{_topdir}/SPECS" \
 --define "_sourcedir  %{_topdir}/SOURCES" \
--ba SPECS/oregano.spec
+-ba SPECS/oregano.spec && echo "RPM was built"
