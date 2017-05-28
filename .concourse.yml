@@ -134,7 +134,7 @@ jobs:
       params:
         chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
         enable_net: false
-        max_n_bytes: 250000
+        max_n_bytes: 250000000
 
     - task: create-rpm
       image: oregano-test-fedora
@@ -143,11 +143,10 @@ jobs:
         inputs:
         - name: git-clone-resource
         outputs:
-        - name: copr-resource
+        - name: srpm
           path: rpmbuild/SRPMS
         run:
-          path: "../git-clone-resource/.concourse/fedora/buildrpm.sh"
-          dir: "git-clone-resource"
+          path: git-clone-resource/.concourse/fedora/buildrpm.sh
 
   - name: build-pkg-deb
     public: true
