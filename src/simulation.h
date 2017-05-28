@@ -73,7 +73,6 @@ typedef struct _SimulationFunction
 struct _SimulationData
 {
 	AnalysisType type;
-	gint state;
 	gint n_variables;
 	gchar **var_names;
 	gchar **var_units;

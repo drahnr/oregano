@@ -52,10 +52,17 @@ struct _SimSettingsPriv
 {
 	// Transient analysis.
 	GtkWidget *w_main;
-	GtkWidget *w_trans_enable, *w_trans_start, *w_trans_stop;
-	GtkWidget *w_trans_step, *w_trans_step_enable, *w_trans_init_cond, *w_trans_frame;
+	GtkWidget *w_trans_enable, 
+	          *w_trans_start,
+	          *w_trans_stop;
+	GtkWidget *w_trans_step,
+	          *w_trans_step_enable,
+			  *w_trans_init_cond,
+			  *w_trans_analyze_all,
+			  *w_trans_frame;
 	gboolean trans_enable;
 	gboolean trans_init_cond;
+	gboolean trans_analyze_all;
 	gchar *trans_start;
 	gchar *trans_stop;
 	gchar *trans_step;
@@ -343,7 +350,7 @@ static void add_option (GtkWidget *w, SimSettings *s)
 	GtkEntry *entry;
 	GtkWidget *dialog = gtk_dialog_new_with_buttons (
 	    _ ("Add new option"), NULL, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-	    GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL);
+	    "_Cancel", GTK_RESPONSE_REJECT, "_OK", GTK_RESPONSE_OK, NULL);
 
 	entry = GTK_ENTRY (gtk_entry_new ());
 	gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (dialog))),
@@ -485,6 +492,11 @@ gboolean sim_settings_get_trans_init_cond (SimSettings *sim_settings)
 	return sim_settings->priv->trans_init_cond;
 }
 
+gboolean sim_settings_get_trans_analyze_all (SimSettings *sim_settings)
+{
+	return sim_settings->priv->trans_analyze_all;
+}
+
 gdouble sim_settings_get_trans_start (SimSettings *sim_settings)
 {
 	gchar *text = sim_settings->priv->trans_start;
@@ -523,6 +535,11 @@ void sim_settings_set_trans_start (SimSettings *sim_settings, gchar *str)
 void sim_settings_set_trans_init_cond (SimSettings *sim_settings, gboolean enable)
 {
 	sim_settings->priv->trans_init_cond = enable;
+}
+
+void sim_settings_set_trans_analyze_all (SimSettings *sim_settings, gboolean enable)
+{
+	sim_settings->priv->trans_analyze_all = enable;
 }
 
 void sim_settings_set_trans_stop (SimSettings *sim_settings, gchar *str)
@@ -760,6 +777,9 @@ static void response_callback (GtkButton *button, Schematic *sm)
 	priv->trans_init_cond =
 	    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->w_trans_init_cond));
 
+	priv->trans_analyze_all =
+	    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->w_trans_analyze_all));
+
 	// DC
 	priv->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->w_dc_enable));
 	if (priv->dc_vin)
@@ -987,10 +1007,25 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "toggled", G_CALLBACK (trans_step_enable_cb), s);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), priv->trans_step_enable);
 
-	// FIXME this does do nothing!
+	// get the gui element
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "trans_init_cond"));
+	// save the gui element to struct
 	priv->w_trans_init_cond = w;
+	// Set checkbox enabled, if trans_init_cond equal true.
+	// trans_init_cond could be set to true because
+	// - user opened the settings dialog some seconds ago and has set the checkbox
+	// - user opened old file in which there was set the checkbox state to true
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), priv->trans_init_cond);
+
+	// get the gui element
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "trans_analyze_all"));
+	// save the gui element to struct
+	priv->w_trans_analyze_all = w;
+	// Set checkbox enabled, if trans_analyze_all equal true.
+	// trans_init_cond could be set to true because
+	// - user opened the settings dialog some seconds ago and has set the checkbox
+	// - user opened old file in which there was set the checkbox state to true
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), priv->trans_analyze_all);
 
 	// AC  //
 	// *** //

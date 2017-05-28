@@ -285,18 +285,19 @@ static void analysis_selected (GtkWidget *combo_box, Plot *plot)
 		GtkTreeIter iter;
 		GPlotFunction *f;
 		if (plot->current->type != DC_TRANSFER) {
-			if (strchr (plot->current->var_names[i], '#') == NULL) {
-				gchar *color;
+			//FIXME extra axis scaling for current/voltage
+			//FIXME or extra plot window for current/voltage
+			//FIXME or extra analysis for current/voltage
+			gchar *color;
 
-				f = create_plot_function_from_simulation_data (i, plot->current);
-				g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
-				g_object_get (G_OBJECT (f), "color", &color, NULL);
+			f = create_plot_function_from_simulation_data (i, plot->current);
+			g_object_set (G_OBJECT (f), "visible", FALSE, NULL);
+			g_object_get (G_OBJECT (f), "color", &color, NULL);
 
-				g_plot_add_function (GPLOT (plot->plot), f);
-				gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
-				gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, FALSE, 1,
-				                    plot->current->var_names[i], 2, TRUE, 3, color, 4, f, -1);
-			}
+			g_plot_add_function (GPLOT (plot->plot), f);
+			gtk_tree_store_append (GTK_TREE_STORE (model), &iter, &parent_nodes);
+			gtk_tree_store_set (GTK_TREE_STORE (model), &iter, 0, FALSE, 1,
+			                    plot->current->var_names[i], 2, TRUE, 3, color, 4, f, -1);
 		} else {
 			gchar *color;
 

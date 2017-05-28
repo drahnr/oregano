@@ -65,6 +65,7 @@ typedef enum {
 	PARSE_TRANSIENT_STEP,
 	PARSE_TRANSIENT_STEP_ENABLE,
 	PARSE_TRANSIENT_INIT_COND,
+	PARSE_TRANSIENT_ANALYZE_ALL,
 
 	PARSE_AC_SETTINGS,
 	PARSE_AC_ENABLED,
@@ -386,6 +387,9 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:init-conditions")) {
 			state->state = PARSE_TRANSIENT_INIT_COND;
 			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:analyze-all")) {
+			state->state = PARSE_TRANSIENT_ANALYZE_ALL;
+			g_string_truncate (state->content, 0);
 		} else {
 			state->prev_state = state->state;
 			state->state = PARSE_UNKNOWN;
@@ -669,6 +673,8 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 	case PARSE_AUTHOR:
 	case PARSE_VERSION:
 	case PARSE_COMMENTS:
+	case PARSE_TRANSIENT_INIT_COND:
+	case PARSE_TRANSIENT_ANALYZE_ALL:
 		// there should be no tags inside these types of tags
 		g_message ("*** '%s' tag found", name);
 		state->prev_state = state->state;
@@ -684,8 +690,6 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 	case PARSE_FINISH:
 		// should not start new elements in this state
 		g_assert_not_reached ();
-		break;
-	case PARSE_TRANSIENT_INIT_COND:
 		break;
 	}
 	// g_message("Start element %s (state %s)", name, states[state->state]);
@@ -761,6 +765,11 @@ static void end_element (ParseState *state, const xmlChar *name)
 		                                  !g_ascii_strcasecmp (state->content->str, "true"));
 		state->state = PARSE_TRANSIENT_SETTINGS;
 		break;
+	case PARSE_TRANSIENT_ANALYZE_ALL:
+		sim_settings_set_trans_analyze_all(state->sim_settings,
+		                                !g_ascii_strcasecmp (state->content->str, "true"));
+		state->state = PARSE_TRANSIENT_SETTINGS;
+		break;
 
 	case PARSE_AC_SETTINGS:
 		state->state = PARSE_SIMULATION_SETTINGS;
@@ -769,9 +778,11 @@ static void end_element (ParseState *state, const xmlChar *name)
 		sim_settings_set_ac (state->sim_settings,
 		                     !g_ascii_strcasecmp (state->content->str, "true"));
 		state->state = PARSE_AC_SETTINGS;
+		//FIXME: no break? If really no break, leave a comment here and tell my, why!
 	case PARSE_AC_NPOINTS:
 		sim_settings_set_ac_npoints (state->sim_settings, state->content->str);
 		state->state = PARSE_AC_SETTINGS;
+		//FIXME: no break? If really no break, leave a comment here and tell my, why!
 	case PARSE_AC_START:
 		sim_settings_set_ac_start (state->sim_settings, state->content->str);
 		state->state = PARSE_AC_SETTINGS;
@@ -788,9 +799,11 @@ static void end_element (ParseState *state, const xmlChar *name)
 		sim_settings_set_dc (state->sim_settings,
 		                     !g_ascii_strcasecmp (state->content->str, "true"));
 		state->state = PARSE_DC_SETTINGS;
+		//FIXME: no break? If really no break, leave a comment here and tell my, why!
 	case PARSE_DC_VSRC:
 		sim_settings_set_dc_vsrc (state->sim_settings, state->content->str);
 		state->state = PARSE_DC_SETTINGS;
+		//FIXME: no break? If really no break, leave a comment here and tell my, why!
 	case PARSE_DC_START:
 		sim_settings_set_dc_start (state->sim_settings, state->content->str);
 		state->state = PARSE_DC_SETTINGS;

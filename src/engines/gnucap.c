@@ -42,7 +42,6 @@
 // TODO Move analysis data and result to another file
 #include "simulation.h"
 
-typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
 
 struct analysis_tag
 {
@@ -567,6 +566,9 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 	gdouble val;
 	gchar *s;
 
+	typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
+	ParseDataState state;
+
 	for (j = 0; j < len; j++) {
 		if (raw[j] != '\n') {
 			buf[priv->buf_count++] = raw[j];
@@ -587,7 +589,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			priv->current = sdata = SIM_DATA (data);
 			priv->analysis = g_list_append (priv->analysis, sdata);
 			priv->num_analysis++;
-			sdata->state = STATE_IDLE;
+			state = STATE_IDLE;
 			sdata->type = ANALYSIS_UNKNOWN;
 			sdata->functions = NULL;
 
@@ -598,7 +600,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				if (IS_THIS_ITEM (variables[0].name, analysis_tags[i]))
 					sdata->type = i;
 
-			sdata->state = IN_VALUES;
+			state = IN_VALUES;
 			sdata->n_variables = n;
 			sdata->got_points = 0;
 			sdata->got_var = 0;
@@ -686,7 +688,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				continue;
 			}
 
-			switch (sdata->state) {
+			switch (state) {
 			case IN_VALUES:
 				val = strtofloat (s);
 				switch (sdata->type) {
@@ -698,6 +700,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 					break;
 				case DC_TRANSFER:
 					priv->progress = val / data->ac.sim_length;
+					break;
 				default:
 					break;
 				}
@@ -723,7 +726,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			default:
 				if (priv->buf_count > 1) {
 					if (strstr (s, _ ("abort")))
-						sdata->state = STATE_ABORT;
+						state = STATE_ABORT;
 					schematic_log_append_error (priv->schematic, s);
 				}
 			}

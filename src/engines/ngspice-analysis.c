@@ -39,8 +39,6 @@
 #include "engine-internal.h"
 #include "ngspice-analysis.h"
 
-typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
-
 static gchar *analysis_names[] = {
     "Operating Point",  "Transient Analysis", "DC Transfer Characteristic",
     "AC Analysis",      "Transfer Function",  "Distortion Analysis",
@@ -124,7 +122,6 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	priv->current = sdata = SIM_DATA (data);
 	priv->analysis = g_list_append (priv->analysis, sdata);
 	priv->num_analysis = 1;
-	sdata->state = IN_VALUES;
 	sdata->type = DC_TRANSFER;
 	sdata->functions = NULL;
 
@@ -150,7 +147,6 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	sdata->var_names[1] = g_strdup (variables[2]);
 	sdata->var_units[1] = g_strdup (_ ("voltage"));
 
-	sdata->state = IN_VALUES;
 	sdata->n_variables = 2;
 	sdata->got_points = 0;
 	sdata->got_var = 0;
@@ -195,23 +191,215 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	return;
 }
 
+typedef struct {
+	GString *name;
+	GString *unit;
+	GArray *data;
+	gdouble min;
+	gdouble max;
+} NgspiceColumn;
+
+typedef struct {
+	GPtrArray *ngspice_columns;
+	GPtrArray *current_variables;
+} NgspiceTable;
+
+static NgspiceColumn *ngspice_column_new(const gchar *name, guint predicted_size) {
+	NgspiceColumn *ret_val = malloc(sizeof(NgspiceColumn));
+
+	ret_val->name = g_string_new(name);
+
+	if (g_str_has_prefix(name, "Index"))
+		ret_val->unit = g_string_new("none");
+	else if (g_str_has_prefix(name, "time"))
+		ret_val->unit = g_string_new("time");
+	else if (g_str_has_prefix(name, "V") || g_str_has_prefix(name, "v"))
+		ret_val->unit = g_string_new("voltage");
+	else if (g_str_has_suffix(name, "#branch"))
+		ret_val->unit = g_string_new("current");
+	else
+		ret_val->unit = g_string_new("unknown");
+
+	ret_val->data = g_array_sized_new(TRUE, TRUE, sizeof(gdouble), predicted_size);
+	ret_val->min = G_MAXDOUBLE;
+	ret_val->max = -G_MAXDOUBLE;
+
+	return ret_val;
+}
+
+static void asdf(gpointer data) {
+	g_free(data);
+}
+
+static void jkloe(gpointer ptr) {
+	NgspiceColumn *column = (NgspiceColumn *)ptr;
+	if (column == NULL)
+		return;
+	if (column->name != NULL)
+		g_string_free(column->name, TRUE);
+	if (column->unit != NULL)
+		g_string_free(column->unit, TRUE);
+	g_free(column);
+}
+
+static NgspiceTable *ngspice_table_new() {
+	NgspiceTable *ret_val = malloc(sizeof(NgspiceTable));
+	ret_val->ngspice_columns = g_ptr_array_new_with_free_func(jkloe);
+	ret_val->current_variables = g_ptr_array_new_with_free_func(asdf);
+	return ret_val;
+}
+
+static void ngspice_table_destroy(NgspiceTable *ngspice_table) {
+	if (ngspice_table->current_variables != NULL)
+		g_ptr_array_free(ngspice_table->current_variables, TRUE);
+	if (ngspice_table->ngspice_columns != NULL)
+		g_ptr_array_free(ngspice_table->ngspice_columns, TRUE);
+	g_free(ngspice_table);
+}
+
+static void convert_variable_name(gchar **variable) {
+	gchar **splitted = g_regex_split_simple("\\#branch", *variable, 0, 0);
+	g_free(*variable);
+	*variable = g_strdup_printf("I(%s)", *splitted);
+	g_strfreev(splitted);
+}
+
+static void ngspice_table_new_columns(NgspiceTable *ngspice_table, gchar **variables) {
+	guint predicted_size = 0;
+	if (ngspice_table->ngspice_columns->len > 0) {
+		NgspiceColumn *column = (NgspiceColumn *)ngspice_table->ngspice_columns->pdata[0];
+		predicted_size = column->data->len;
+	}
+
+	g_ptr_array_free(ngspice_table->current_variables, TRUE);
+	ngspice_table->current_variables = g_ptr_array_new_with_free_func(asdf);
+
+	for (gchar **variable = variables; *variable != NULL && **variable != '\n' && **variable != 0; variable++) {
+		if (g_str_has_suffix(*variable, "#branch"))
+			convert_variable_name(variable);
+		int i;
+		for (i = 0; i < ngspice_table->ngspice_columns->len; i++) {
+			if (!strcmp(*variable, ((NgspiceColumn *)ngspice_table->ngspice_columns->pdata[i])->name->str))
+				break;
+		}
+		if (i == ngspice_table->ngspice_columns->len) {
+			NgspiceColumn *new_column = ngspice_column_new(*variable, predicted_size);
+			g_ptr_array_add(ngspice_table->ngspice_columns, new_column);
+		}
+		int *new_int = malloc(sizeof(int));
+		*new_int = i;
+		g_ptr_array_add(ngspice_table->current_variables, new_int);
+	}
+}
+
+static void ngspice_table_add_data(NgspiceTable *ngspice_table, gchar **data) {
+	g_return_if_fail(data != NULL);
+	g_return_if_fail(*data != NULL);
+	if (**data == 0)
+		return;
+	g_return_if_fail(ngspice_table != NULL);
+	guint64 index = g_ascii_strtoull(*data, NULL, 10);
+	for (int i = 0; data[i] != NULL && data[i][0] != 0 && data[i][0] != '\n' && i < ngspice_table->current_variables->len; i++) {
+		int column_index = *((int *)(ngspice_table->current_variables->pdata[i]));
+		NgspiceColumn *column = (NgspiceColumn*)(ngspice_table->ngspice_columns->pdata[column_index]);
+		if (column->data->len > index) {
+			continue;//assert equal
+		}
+		gdouble new_content = g_ascii_strtod(data[i], NULL);
+		g_array_append_val(column->data, new_content);
+		if (new_content < column->min)
+			column->min = new_content;
+		if (new_content > column->max)
+			column->max = new_content;
+	}
+}
+
 void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 {
-	static SimulationData *sdata;
-	static Analysis *data;
+	enum STATE {
+		NGSPICE_ANALYSIS_STATE_READ_DATA,
+		NGSPICE_ANALYSIS_STATE_DATA_SMALL_BLOCK_END,
+		NGSPICE_ANALYSIS_STATE_DATA_LARGE_BLOCK_END,
+		NGSPICE_ANALYSIS_STATE_DATA_END,
+		NGSPICE_ANALYSIS_STATE_READ_VARIABLES_NEW,
+		NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD
+	};
+	static gchar buf[256];
+
+	memcpy(buf, tmp, (strlen(tmp) + 1) * sizeof(char));
+	NgspiceTable *ngspice_table = ngspice_table_new();
+
+	enum STATE state = NGSPICE_ANALYSIS_STATE_DATA_LARGE_BLOCK_END;
+
+	do {
+		switch (state) {
+			case NGSPICE_ANALYSIS_STATE_READ_VARIABLES_NEW:
+			{
+				gchar **splitted_line = g_regex_split_simple(" +", buf, 0, 0);
+
+				ngspice_table_new_columns(ngspice_table, splitted_line);
+
+				g_strfreev(splitted_line);
+
+				state = NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD;
+				break;
+			}
+			case NGSPICE_ANALYSIS_STATE_READ_DATA:
+			{
+				gchar **splitted_line = g_regex_split_simple("\\t+|-{2,}", buf, 0, 0);
+
+				ngspice_table_add_data(ngspice_table, splitted_line);
+
+				g_strfreev(splitted_line);
+				fgets(buf, 255, ngspice->priv->inputfp);
+				switch (buf[0]) {
+				case '\f':
+					state = NGSPICE_ANALYSIS_STATE_DATA_SMALL_BLOCK_END;
+					break;
+				case '\n':
+					state = NGSPICE_ANALYSIS_STATE_DATA_END;
+					break;
+				}
+				break;
+			}
+			case NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD:
+			{
+				fgets(buf, 255, ngspice->priv->inputfp);
+				if (buf[0] != '-')
+					state = NGSPICE_ANALYSIS_STATE_READ_DATA;
+				break;
+			}
+			case NGSPICE_ANALYSIS_STATE_DATA_SMALL_BLOCK_END:
+			{
+				fgets(buf, 255, ngspice->priv->inputfp);
+				switch (buf[0]) {
+				case 'I':
+					state = NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD;
+					break;
+				case ' ':
+					state = NGSPICE_ANALYSIS_STATE_DATA_LARGE_BLOCK_END;
+					break;
+				}
+				break;
+			}
+			case NGSPICE_ANALYSIS_STATE_DATA_LARGE_BLOCK_END:
+			{
+				fgets(buf, 255, ngspice->priv->inputfp);
+				if (buf[0] == 'I')
+					state = NGSPICE_ANALYSIS_STATE_READ_VARIABLES_NEW;
+				break;
+			}
+			case NGSPICE_ANALYSIS_STATE_DATA_END:
+				break;
+		}
+	} while (state != NGSPICE_ANALYSIS_STATE_DATA_END);
+
+
 	OreganoNgSpicePriv *priv = ngspice->priv;
 	SimSettings *sim_settings;
-	static gchar buf[256];
-	gboolean found = FALSE;
-	gchar **variables;
-	gint i, n = 0, m = 0, p = 0;
-	gdouble val[10];
-	GSList *nodes_list = NULL;
-	GError *error = NULL;
-	gint nodes_nb = 0;
-	GArray **val_tmp1;
-	GArray **val_tmp2;
-	GArray **val_tmp3;
+	SimulationData *sdata;
+	Analysis *data;
+	gint nodes_nb = ngspice_table->ngspice_columns->len - 2;
 
 	NG_DEBUG ("TRANSIENT: result str\n>>>\n%s<<<\n", tmp);
 
@@ -220,204 +408,39 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	priv->current = sdata = SIM_DATA (data);
 	priv->analysis = g_list_append (priv->analysis, sdata);
 	priv->num_analysis = 1;
-	sdata->state = IN_VALUES;
 	sdata->type = ANALYSIS_UNKNOWN;
 	sdata->functions = NULL;
 
-	// Identify the number of analysis from the number of clamp
-	// ASCII format of ngspice only returns 3 columns at a time
-	nodes_list = netlist_helper_get_voltmeters_list (priv->schematic, &error);
-	for (; nodes_list; nodes_list = nodes_list->next) {
-		nodes_nb++;
-	}
-
-	if (nodes_nb > 9) {
-		oregano_warning (_ ("Only the 9 first nodes will be considered"));
-		nodes_nb = 9;
-	}
-
-	tmp = g_strchug (tmp);
-	for (i = 0; analysis_names[i]; i++) {
-		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
+	g_strchug (tmp);
+	for (int i = 0; analysis_names[i]; i++)
+		if (g_str_has_prefix (tmp, analysis_names[i]))
 			sdata->type = i;
-		}
-	}
 
 	ANALYSIS (sdata)->transient.sim_length =
 	    sim_settings_get_trans_stop (sim_settings) - sim_settings_get_trans_start (sim_settings);
 	ANALYSIS (sdata)->transient.step_size = sim_settings_get_trans_step (sim_settings);
 
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
+	sdata->var_names = g_new0 (gchar *, nodes_nb + 1);
+	sdata->var_units = g_new0 (gchar *, nodes_nb + 1);
+	sdata->data = g_new0 (GArray *, nodes_nb + 1);
+	sdata->min_data = g_new (gdouble, nodes_nb + 1);
+	sdata->max_data = g_new (gdouble, nodes_nb + 1);
 
-	sdata->var_names = (char **)g_new0 (gpointer, nodes_nb + 1);
-	sdata->var_units = (char **)g_new0 (gpointer, nodes_nb + 1);
-	variables = get_variables (buf, &n);
-	n = n - 1;
-	sdata->var_names[0] = g_strdup (_ ("Time"));
-	sdata->var_units[0] = g_strdup (_ ("time"));
-	for (i = 1; i < n; i++) {
-		sdata->var_names[i] = g_strdup (variables[i + 1]);
-		sdata->var_units[i] = g_strdup (_ ("voltage"));
+	for (int i = 0; i < nodes_nb + 1; i++) {
+		NgspiceColumn *column = ngspice_table->ngspice_columns->pdata[i+1];
+		sdata->var_names[i] = g_strdup(column->name->str);
+		sdata->var_units[i] = g_strdup(column->unit->str);
+		sdata->data[i] = column->data;
+		sdata->min_data[i] = column->min;
+		sdata->max_data[i] = column->max;
 	}
-	sdata->state = IN_VALUES;
 	sdata->n_variables = nodes_nb + 1;
-	sdata->got_points = 0;
-	sdata->got_var = 0;
-	sdata->data = (GArray **)g_new0 (gpointer, nodes_nb + 1);
+	NgspiceColumn *column = ngspice_table->ngspice_columns->pdata[0];
+	sdata->got_points = column->data->len;
+	sdata->got_var = nodes_nb + 1;
 
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
-
-	for (i = 0; i < nodes_nb + 1; i++)
-		sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
-
-	val_tmp1 = (GArray **)g_new0 (gpointer, 4);
-	val_tmp2 = (GArray **)g_new0 (gpointer, 4);
-	val_tmp3 = (GArray **)g_new0 (gpointer, 4);
-	for (i = 0; i < 4; i++) {
-		val_tmp1[i] = g_array_new (TRUE, TRUE, sizeof(double));
-		val_tmp2[i] = g_array_new (TRUE, TRUE, sizeof(double));
-		val_tmp3[i] = g_array_new (TRUE, TRUE, sizeof(double));
-	}
-
-	sdata->min_data = g_new (double, nodes_nb + 1);
-	sdata->max_data = g_new (double, nodes_nb + 1);
-
-	// Read the data
-	for (i = 0; i < nodes_nb + 1; i++) {
-		sdata->min_data[i] = G_MAXDOUBLE;
-		sdata->max_data[i] = -G_MAXDOUBLE;
-	}
-	found = FALSE;
-	while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
-		gint k = 0;
-		if (strlen (buf) <= 2) {
-			if (priv->status != 0 && strcmp(buf, "\n") == 0) {
-				ANALYSIS (sdata)->transient.sim_length = val[0];
-				break;
-			}
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
-		}
-		tmp = &buf[0];
-		variables = get_variables (tmp, &k);
-		for (i = 0; i < n; i++) {
-			val[i] = g_ascii_strtod (variables[i + 1], NULL);
-			val_tmp1[i] = g_array_append_val (val_tmp1[i], val[i]);
-			if (val[i] < sdata->min_data[i])
-				sdata->min_data[i] = val[i];
-			if (val[i] > sdata->max_data[i])
-				sdata->max_data[i] = val[i];
-		}
-		if (val[0] >= ANALYSIS (sdata)->transient.sim_length)
-			found = TRUE;
-	}
-
-	if (n < nodes_nb + 1) {
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
-		variables = get_variables (buf, &m);
-		m = m - 1;
-
-		for (i = 1; i < m; i++) {
-			sdata->var_names[i + n - 1] = g_strdup (variables[i + 1]);
-			sdata->var_units[i + n - 1] = g_strdup (_ ("voltage"));
-		}
-		fgets (buf, 255, priv->inputfp);
-		found = FALSE;
-		while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
-			gint k = 0;
-			if (strlen (buf) <= 2) {
-				fgets (buf, 255, priv->inputfp);
-				fgets (buf, 255, priv->inputfp);
-				fgets (buf, 255, priv->inputfp);
-			}
-			tmp = &buf[0];
-			variables = get_variables (tmp, &k);
-			for (i = 0; i < m; i++) {
-				val[i] = g_ascii_strtod (variables[i + 1], NULL);
-				val_tmp2[i] = g_array_append_val (val_tmp2[i], val[i]);
-				if (val[i] < sdata->min_data[i + n])
-					sdata->min_data[i + n - 1] = val[i];
-				if (val[i] > sdata->max_data[i + n])
-					sdata->max_data[i + n - 1] = val[i];
-			}
-			if (val[0] >= ANALYSIS (sdata)->transient.sim_length)
-				found = TRUE;
-		}
-		if (n + m - 1 < nodes_nb + 1) {
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
-			variables = get_variables (buf, &p);
-			p = p - 1;
-
-			for (i = 1; i < p; i++) {
-				sdata->var_names[i + n + m - 2] = g_strdup (variables[i + 1]);
-				sdata->var_units[i + n + m - 2] = g_strdup (_ ("voltage"));
-			}
-			fgets (buf, 255, priv->inputfp);
-			found = FALSE;
-			while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
-				gint k = 0;
-				if (strlen (buf) <= 2) {
-					fgets (buf, 255, priv->inputfp);
-					fgets (buf, 255, priv->inputfp);
-					fgets (buf, 255, priv->inputfp);
-				}
-				tmp = &buf[0];
-				variables = get_variables (tmp, &k);
-				if (variables) {
-					for (i = 0; i < p; i++) {
-						val[i] = g_ascii_strtod (variables[i + 1], NULL);
-						val_tmp3[i] = g_array_append_val (val_tmp3[i], val[i]);
-						if (val[i] < sdata->min_data[i + n + m - 3])
-							sdata->min_data[i + n + m - 3] = val[i];
-						if (val[i] > sdata->max_data[i + n + m - 3])
-							sdata->max_data[i + n + m - 3] = val[i];
-					}
-					if (val[0] >= ANALYSIS (sdata)->transient.sim_length)
-						found = TRUE;
-				}
-			}
-		}
-	}
-	found = FALSE;
-	while (!found) {
-		gdouble val0 = 0.;
-		for (i = 0; i < nodes_nb + 1; i++) {
-			// 0 = time
-			// From node 1 to node 3
-			if (i < n) {
-				gdouble val = 0;
-				val = g_array_index (val_tmp1[i], gdouble, sdata->got_points);
-				if (i == 0)
-					val0 = val;
-				sdata->data[i] = g_array_append_val (sdata->data[i], val);
-			}
-			// From node 4 to node 6
-			else if (i < n + m - 1) {
-				gdouble val = 0;
-				val = g_array_index (val_tmp2[i - n + 1], gdouble, sdata->got_points);
-				sdata->data[i] = g_array_append_val (sdata->data[i], val);
-			}
-			// From node 7 to node 9
-			else {
-				gdouble val = 0;
-				val = g_array_index (val_tmp3[i - n - m + 2], gdouble, sdata->got_points);
-				sdata->data[i] = g_array_append_val (sdata->data[i], val);
-			}
-		}
-		sdata->got_points++;
-		sdata->got_var = nodes_nb + 1;
-		if (val0 >= ANALYSIS (sdata)->transient.sim_length)
-			found = TRUE;
-	}
+	g_array_free(column->data, TRUE);
+	ngspice_table_destroy(ngspice_table);
 }
 
 void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
@@ -442,7 +465,6 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	sdata = SIM_DATA (data);
 	priv->current = sdata;
 	priv->analysis = g_list_append (priv->analysis, sdata);
-	sdata->state = IN_VALUES;
 	sdata->functions = NULL;
 	priv->num_analysis++;
 	sdata->type = FOURIER;
@@ -469,7 +491,6 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		else
 			sdata->var_units[i] = g_strdup (_ ("voltage"));
 	}
-	sdata->state = IN_VALUES;
 	sdata->got_points = 0;
 	sdata->got_var = 0;
 	sdata->data = (GArray **)g_new0 (gpointer, n);
@@ -562,7 +583,7 @@ void ngspice_parse (OreganoNgSpice *ngspice)
 	fgets (buf, 255, priv->inputfp);
 	fgets (buf, 255, priv->inputfp);
 	while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
-		if (g_str_has_suffix (g_strdup (buf), SP_TITLE)) {
+		if (g_str_has_suffix (buf, SP_TITLE)) {
 			found = TRUE;
 		}
 	}
@@ -570,7 +591,7 @@ void ngspice_parse (OreganoNgSpice *ngspice)
 	tmp = g_strchug (tmp);
 
 	for (i = 0; analysis_names[i]; i++) {
-		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
+		if (g_str_has_prefix (tmp, analysis_names[i])) {
 			analysis_type = i;
 		}
 	}

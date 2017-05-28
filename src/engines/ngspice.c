@@ -106,18 +106,21 @@ static void ngspice_finalize (GObject *object)
 	iter = ngspice->priv->analysis;
 	for (; iter; iter = iter->next) {
 		SimulationData *data = SIM_DATA (iter->data);
+		for (i = 0; i < data->n_variables; i++) {
+			g_free(data->var_names[i]);
+			g_free(data->var_units[i]);
+			g_array_free (data->data[i], TRUE);
+		}
 		g_free (data->var_names);
 		g_free (data->var_units);
-		for (i = 0; i < data->n_variables; i++)
-			g_array_free (data->data[i], TRUE);
-
+		g_free (data->data);
 		g_free (data->min_data);
 		g_free (data->max_data);
 
 		g_free (data);
 	}
 	g_list_free (ngspice->priv->analysis);
-	ngspice->priv->analysis = NULL;
+	g_free(ngspice->priv);
 
 	parent_class->finalize (object);
 }
@@ -232,7 +235,10 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 			g_string_append_printf (buffer, " uic");
 		}
 		g_string_append_printf (buffer, "\n");
-		{
+
+		if (sim_settings_get_trans_analyze_all(output.settings)) {
+			g_string_append_printf (buffer, ".print tran all\n");
+		} else {
 			gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
 			g_string_append_printf (buffer, ".print tran %s\n", tmp_str);
 			g_free (tmp_str);
