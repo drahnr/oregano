@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -x
 
 mkdir -p rpmbuild/{SOURCES,BUILD,RPMS,SRPMS,SPECS}
 ./waf configure rpmspec
@@ -15,6 +16,6 @@ rpmbuild \
 --define "_srcrpmdir %{_topdir}/SRPMS" \
 --define "_specdir %{_topdir}/SPECS" \
 --define "_sourcedir  %{_topdir}/SOURCES" \
--ba SPECS/oregano.spec && echo "RPM was built" && pwd
+-ba SPECS/oregano.spec && echo "RPM was built"
 
-exit 2
+pwd
