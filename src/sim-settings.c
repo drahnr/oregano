@@ -57,9 +57,9 @@ struct _SimSettingsPriv
 	          *w_trans_stop;
 	GtkWidget *w_trans_step,
 	          *w_trans_step_enable,
-			  *w_trans_init_cond,
-			  *w_trans_analyze_all,
-			  *w_trans_frame;
+	          *w_trans_init_cond,
+	          *w_trans_analyze_all,
+	          *w_trans_frame;
 	gboolean trans_enable;
 	gboolean trans_init_cond;
 	gboolean trans_analyze_all;
