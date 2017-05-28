@@ -143,10 +143,10 @@ jobs:
         inputs:
         - name: git-clone-resource
         outputs:
-        - name: git-clone-resource
-          path: git-clone-resource/rpmbuild/SRPM/
+        - name: copr-resource
+          path: git-clone-resource/rpmbuild/SRPMS
         run:
-          path: "../git-clone-resource/.concourse/fedora/buildrpm.sh"
+          path: ".concourse/fedora/buildrpm.sh"
           dir: "git-clone-resource"
 
   - name: build-pkg-deb
