@@ -34,10 +34,9 @@
 #include <glib/gi18n.h>
 #include <glib.h>
 #include <gtk/gtk.h>
-#include <gtksourceview/gtksourcelanguagemanager.h>
-#include <gtksourceview/gtksourcebuffer.h>
-#include <gtksourceview/gtksourcelanguage.h>
+#include <gtksourceview/gtksource.h>
 
+#include "echo.h"
 #include "netlist-editor.h"
 #include "netlist-helper.h"
 #include "simulation.h"

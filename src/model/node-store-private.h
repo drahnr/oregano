@@ -3,6 +3,7 @@
 
 #include <glib.h>
 
+#include "echo.h"
 #include "coords.h"
 #include "node.h"
 #include "wire.h"

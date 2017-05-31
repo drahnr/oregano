@@ -539,8 +539,8 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 
 			GdkCursor *cursor = gdk_cursor_new_for_display (gtk_widget_get_display (w), GDK_FLEUR);
 			gdk_window_set_cursor (gtk_widget_get_window(w), cursor);
-			dx = p->priv->last_x - e->x;
-			dy = p->priv->last_y - e->y;
+			dx = p->priv->press_x - e->x;
+			dy = p->priv->press_y - e->y;
 
 			cairo_matrix_invert (&t);
 			cairo_matrix_transform_distance (&t, &dx, &dy);

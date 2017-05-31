@@ -32,6 +32,7 @@
 
 #include <math.h>
 
+#include "echo.h"
 #include "node.h"
 #include "part.h"
 

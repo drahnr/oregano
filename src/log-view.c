@@ -35,6 +35,8 @@ LogView *log_view_new ()
 	gtk_tree_view_insert_column (GTK_TREE_VIEW (self), col1, 0);
 	gtk_tree_view_insert_column (GTK_TREE_VIEW (self), col2, 1);
 
+	gtk_widget_set_size_request(GTK_WIDGET (self), 50, 50);
+
 	return self;
 }
 
