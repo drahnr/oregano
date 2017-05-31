@@ -3,12 +3,16 @@
 set -e
 set -x
 
-mkdir -p rpmbuild/{SOURCES,BUILD,RPMS,SRPMS,SPECS}
+pwd 2>&1
+RPMBUILD_DIR="$(pwd)/../rpmbuild/"
+mkdir -p ${RPMBUILD_DIR}/{SOURCES,BUILD,RPMS,SRPMS,SPECS}
+
 ./waf configure rpmspec
-cp -v build/rpmspec/oregano.spec rpmbuild/SPECS/
+cp -v build/rpmspec/oregano.spec ${RPMBUILD_DIR}/SPECS/
 ./waf dist
-cp -v oregano*.tar.xz rpmbuild/SOURCES/
-cd rpmbuild
+cp -v oregano*.tar.xz ${RPMBUILD_DIR}/SOURCES/
+
+cd ${RPMBUILD_DIR}
 rpmbuild \
 --define "_topdir %(pwd)" \
 --define "_builddir %{_topdir}/BUILD" \
@@ -17,5 +21,4 @@ rpmbuild \
 --define "_specdir %{_topdir}/SPECS" \
 --define "_sourcedir  %{_topdir}/SOURCES" \
 -ba SPECS/oregano.spec && echo "RPM was built"
-
-pwd
+pwd 2>&1

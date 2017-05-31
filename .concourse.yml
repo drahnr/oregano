@@ -117,7 +117,7 @@ jobs:
           - -exc
           - |
             xvfb-run ./waf configure debug --prefix=/tmp install
-          dir: "git-clone-resource"
+          dir: git-clone-resource
 
   - name: build-pkg-rpm
     public: true
@@ -127,12 +127,6 @@ jobs:
       - get: git-clone-resource
         trigger: true
         passed: [compile, build-docker-image-fedora]
-    - put: copr-resource
-      params:
-        chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
-        enable_net: false
-        max_n_bytes: 250000000
-        project_id: 825
 
     - task: create-rpm
       image: oregano-test-fedora
@@ -142,9 +136,19 @@ jobs:
         - name: git-clone-resource
         outputs:
         - name: srpm
-          path: rpmbuild/SRPMS
+          path: ../rpmbuild/SRPMS
         run:
-          path: git-clone-resource/.concourse/fedora/buildrpm.sh
+          path: ./.concourse/fedora/buildrpm.sh
+          dir: git-clone-resource
+
+    - put: srpm
+      resource: copr-resource
+      params:
+        chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
+        enable_net: false
+        max_n_bytes: 250000000
+        project_id: 825
+        regex: ".*oregano-.*\\.src\\.rpm$"
 
   - name: build-pkg-deb
     public: true
