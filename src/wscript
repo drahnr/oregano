@@ -32,6 +32,7 @@ def build(bld):
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		target = 'shared_objects'
 	)
+	objs.add_marshal_file('./marshaller.list', 'marshaller')
 
 	exe = bld.program(
 		features = ['c', 'glib2'],
@@ -40,17 +41,6 @@ def build(bld):
 		includes = ['.', 'engines/', 'gplot/', 'model/', 'sheet/'],
 		use = 'shared_objects',
 		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
-		settings_schema_files = ['../data/settings/'+bld.env.gschema_name ] if not bld.options.no_install_gschema else [],
+		settings_schema_files = ['./'+bld.env.gschema_name ] if not bld.options.no_install_gschema else [],
 		install_path = "${BINDIR}"
-	)
-
-	for item in exe.includes:
-		logs.debug(item)
-	test = bld.program(
-		features = ['c', 'glib2', 'unites'],
-		target = 'microtests',
-		source = ['../test/test.c'],
-		includes = ['.', 'engines/', 'gplot/', 'model/', 'sheet/'],
-		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)

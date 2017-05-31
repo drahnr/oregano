@@ -20,11 +20,15 @@ def options(opt):
 	opt.add_option('--debug', dest='build_debug', action='store_true', default=False, help='Build with debug flags')
 	opt.add_option('--release', dest='build_release', action='store_true', default=False, help='Build with release flags')
 	opt.add_option('--no-install-gschema', dest='no_install_gschema', action='store_true', default=False, help='Do not install the schema file')
+	opt.add_option('--no-update-icon-cache', dest='no_update_icon_cache', action='store_true', default=False, help='Do not update the icon cache')
+	opt.add_option('--no-update-mime-database', dest='no_update_mime_database', action='store_true', default=False, help='Do not update the mime database')
+	opt.add_option('--no-update-desktop-database', dest='no_update_desktop_database', action='store_true', default=False, help='Do not update the desktop database')
+
 	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
 #	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
 
-	opt.recurse(['po','data'])
+	opt.recurse(rec)
 
 
 def configure(conf):
@@ -87,6 +91,8 @@ def configure(conf):
 		conf.env.CFLAGS = ['-O2', '-Wall']
 		conf.define('RELEASE',1)
 
+	conf.recurse(rec)
+
 from waflib.Context import Context
 from waflib.Build import BuildContext
 
@@ -98,14 +104,11 @@ def post_fun(ctx):
 	if ctx.options.run:
 		ctx.exec_command('')
 
-from waftools.unites import summary as unites_summary
-
 def build(bld):
 	bld(features='subst', source='oregano.spec.in', target='oregano.spec', install_path=None, VERSION=bld.env.version)
 	if bld.variant != 'rpmspec':
 		bld.add_pre_fun(pre_fun)
 		bld.add_post_fun(post_fun)
-		bld.add_post_fun(unites_summary)
 		bld.recurse(rec)
 
 class rpmspec(BuildContext):

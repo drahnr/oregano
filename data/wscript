@@ -17,28 +17,28 @@ def build(bld):
 	bld.load('gtkbuilder', tooldir='waftools')
 
 	if bld.cmd == 'install':
-		#intl does not like the keys in (not an xml and no translation strings)
-		#add to potfiles in for another try
-		bld.install_as ('${DATADIR}/mime-info/oregano.keys', 'mime/oregano.keys.in')
-		bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
-		bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
-		#things we need to be known by the app are already defined and stored in the main wscript
+		if not bld.env.no_update_desktop_database:
+			try:
+				bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg desktop database update.')
 
-		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
-		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
-		bld.install_files (bld.env.path_lang, 'netlist.lang')
-		bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
-		bld.install_files (bld.env.path_icons, bld.path.ant_glob('icons/*'))
+		if not bld.env.no_update_mime_database:
+			try:
+				bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg mime database update.')
 
-		try:
-			bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
-		except:
-			logs.warn('Failed to execute xdg desktop database update.')
 
-		try:
-			bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
-		except:
-			logs.warn('Failed to execute xdg mime database update.')
+	bld.install_as ('${DATADIR}/mime-info/oregano.keys', 'mime/oregano.keys.in')
+	bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
+	bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
+	if bld.cmd == 'install':
+		if not bld.env.no_update_icon_cache:
+			try:
+				bld.exec_command(['gtk-update-icon-cache', utils.subst_vars('${DATADIR}/icons/hicolor', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg mime database update.')
 
 	bld(source=bld.path.ant_glob('xml/*.ui'), install_path = bld.env.path_ui)
 
