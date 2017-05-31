@@ -136,9 +136,10 @@ jobs:
         - name: git-clone-resource
         outputs:
         - name: srpm
-          path: srpm/rpmbuild/SRPMS
+          path: ../srpm
         run:
-          path: git-clone-resource/.concourse/fedora/buildrpm.sh
+          path: .concourse/fedora/buildrpm.sh
+          dir: git-clone-resource
 
     - put: srpm
       resource: copr-resource

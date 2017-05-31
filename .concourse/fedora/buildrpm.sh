@@ -4,7 +4,7 @@ set -e
 set -x
 
 pwd 2>&1
-RPMBUILD_DIR="$(pwd)/srpm/rpmbuild/"
+RPMBUILD_DIR="$(pwd)/../srpm/rpmbuild/"
 mkdir -p ${RPMBUILD_DIR}/{SOURCES,BUILD,RPMS,SRPMS,SPECS}
 
 ./waf configure rpmspec
