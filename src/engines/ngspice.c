@@ -374,7 +374,7 @@ static GList *ngspice_get_results (OreganoEngine *self)
 
 static gchar *ngspice_get_operation_ngspice (OreganoEngine *self)
 {
-	return _ ("ngspice solving");
+	return g_strdup(_("ngspice solving"));
 }
 
 static gchar *ngspice_get_operation_reader (OreganoEngine *self)
