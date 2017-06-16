@@ -35,5 +35,6 @@
 #include "engine.h"
 
 void plot_add_function_show (OreganoEngine *engine, SimulationData *current);
+extern const char const *SimulationFunctionTypeString[];
 
 #endif

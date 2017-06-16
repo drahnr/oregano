@@ -79,12 +79,12 @@ void plot_add_function_show (OreganoEngine *engine, SimulationData *current)
 	gtk_container_add (GTK_CONTAINER (container_temp), GTK_WIDGET (functiontype));
 	gtk_widget_show (GTK_WIDGET (functiontype));
 
-	for (i = 0; i < SIMULATIONFUNCTIONTYPE_LENGTH; i++) {
-		gtk_combo_box_text_append_text(functiontype, SimulationFunctionTypeString[i]);
+	for (const gchar **ptr = SimulationFunctionTypeString; *ptr != NULL; ptr++) {
+		gtk_combo_box_text_append_text(functiontype, *ptr);
 	}
 
 	for (i = 1; i < current->n_variables; i++) {
-		if (current->type != DC_TRANSFER) {
+		if (current->type != ANALYSIS_TYPE_DC_TRANSFER) {
 			if (strchr (current->var_names[i], '#') == NULL) {
 				gtk_combo_box_text_append_text (op1, current->var_names[i]);
 				gtk_combo_box_text_append_text (op2, current->var_names[i]);

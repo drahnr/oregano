@@ -591,7 +591,6 @@ inline static void get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
 	priv = item->priv;
 
 	if (!priv->cache_valid) {
-		Coords start_pos, end_pos;
 		GooCanvasBounds bounds; //, canvas_bounds;
 
 		goo_canvas_item_get_bounds (GOO_CANVAS_ITEM (item), &bounds);

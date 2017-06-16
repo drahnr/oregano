@@ -35,38 +35,65 @@
 #include <sys/wait.h>
 #include <ctype.h>
 #include <glib/gi18n.h>
+#include "../tools/thread-pipe.h"
+#include "../tools/cancel-info.h"
 #include "ngspice.h"
 #include "netlist-helper.h"
 #include "dialogs.h"
 #include "engine-internal.h"
 #include "ngspice.h"
 
+/**
+ * Progress is a shared variable between GUI thread
+ * that displays the progress bar and working thread
+ * which executes the heavy work.
+ */
+typedef struct {
+	gdouble progress;
+	GMutex progress_mutex;
+} ProgressResources;
+
+/**
+ * AnalysisType is a shared variable between progress
+ * bar displaying GUI thread and the working thread.
+ */
+typedef struct {
+	AnalysisType type;
+	GMutex mutex;
+} AnalysisTypeShared;
+
+typedef struct {
+	ThreadPipe *pipe;
+	gchar *buf;
+	const SimSettings* sim_settings;
+	AnalysisTypeShared *current;
+	GList **analysis;
+	guint *num_analysis;
+	ProgressResources *progress_reader;
+	guint64 no_of_data_rows;
+	guint no_of_variables;
+	CancelInfo *cancel_info;
+} NgspiceAnalysisResources;
+
 // Parser STATUS
 struct _OreganoNgSpicePriv
 {
 	GPid child_pid;
-	gint child_stdout;
-	gint child_error;
-	GIOChannel *child_iochannel;
-	GIOChannel *child_ioerror;
-	gint child_iochannel_watch;
-	gint child_ioerror_watch;
+
 	Schematic *schematic;
 
 	gboolean aborted;
+	CancelInfo *cancel_info;
 
 	GList *analysis;
-	gint num_analysis;
-	SimulationData *current;
-	double progress;
-	gboolean char_last_newline;
-	guint status;
-	guint buf_count;
-	// Added to store ngspice output into a file
-	// 		input for oregano...
-	FILE *inputfp;
+	guint num_analysis;
+	AnalysisTypeShared current;
+
+	ProgressResources progress_ngspice;
+	ProgressResources progress_reader;
 };
 
-void ngspice_parse (OreganoNgSpice *ngspice);
+void ngspice_analysis (NgspiceAnalysisResources *resources);
+void ngspice_save (const gchar *path_to_file, ThreadPipe *pipe, CancelInfo *cancel_info);
 
 #endif

@@ -32,6 +32,9 @@
 
 #ifndef _SCHEMATIC_VIEW_MENU_
 #define _SCHEMATIC_VIEW_MENU_
+
+#include "sim-settings-gui.h"
+
 static GtkActionEntry entries[] = {
     // Name, ICON, Text, CTRL, DESC, CALLBACK
     {"MenuFile", NULL, N_ ("_File")},

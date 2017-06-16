@@ -703,21 +703,8 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	// TODO add static vars in order to skip the redraw if nothing changed
 	// TODO may happen once in a while and the check is really cheap
-	GSList *iter;
-	GooCanvasAnchorType anchor;
-	// GooCanvasGroup *group;
-	GooCanvasItem *canvas_item;
-	PartItem *item;
-	PartItemPriv *priv;
-	Part *part;
-	int index = 0;
-	Coords pos;
-
-	item = PART_ITEM (sheet_item);
-	// group = GOO_CANVAS_GROUP (item);
-	part = PART (data);
-
-	priv = item->priv;
+	PartItem *item = PART_ITEM (sheet_item);
+	PartItemPriv *priv = item->priv;
 
 	// init the states
 
@@ -748,17 +735,19 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 	priv->cache_valid = FALSE;
 	return; /* FIXME */
 #if 0
+	GooCanvasGroup *group = GOO_CANVAS_GROUP (item);
+
 	// rotate all items in the canvas group
-	for (index = 0; index < group->items->len; index++) {
-		canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
+	for (int index = 0; index < group->items->len; index++) {
+		GooCanvasItem *canvas_item = GOO_CANVAS_ITEM (group->items->pdata[index]);
 		goo_canvas_item_set_transform (GOO_CANVAS_ITEM (canvas_item), &morph);
 	}
 
 	// revert the rotation of all labels and change their anchor to not overlap too badly
 	// this assures that the text is always horizontal and properly aligned
-	anchor = angle_to_anchor (rotation);
+	GooCanvasAnchorType anchor = angle_to_anchor (rotation);
 
-	for (iter = priv->label_items; iter; iter = iter->next) {
+	for (GSList *iter = priv->label_items; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor,
 		              NULL);
@@ -767,7 +756,7 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 
 	}
 	// same for label nodes
-	for (iter = priv->label_nodes; iter; iter = iter->next) {
+	for (GSList *iter = priv->label_nodes; iter; iter = iter->next) {
 		g_object_set (iter->data,
 		              "anchor", anchor,
 		              NULL);

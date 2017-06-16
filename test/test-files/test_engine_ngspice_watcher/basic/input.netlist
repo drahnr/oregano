@@ -1,0 +1,24 @@
+* /home/michi/tryProgressBar.oregano
+*----------------------------------------------
+*	ngspice - NETLIST
+.options OUT=120 
+*------------- Models -------------------------
+.include /usr/local/share/oregano/models/1N4148.model
+*------------- Circuit Description-------------
+V_V3 5 1 dc 0
+R_R1 3 0 10k
+D_D1 5 3 D1N4148
+S1 1 0 2 0 M_S1 
+.model M_S1 sw(VT=20 VH=0.0 RON=0.1 ROFF=100G)
+V_V2 2 0 dc 0.0 ac 0.0 PULSE -5 25 0.0 0 0 1.0u 10u
+L_L1 4 1 300uH
+V_V1 4 0 dc 20
+C_C1 3 0 100u IC=60
+
+*----------------------------------------------
+.tran 1.000000e-11 2.500000e-09 0.000000e+00 uic
+.print tran all
+
+.op
+
+.END

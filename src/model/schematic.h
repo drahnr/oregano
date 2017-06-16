@@ -33,6 +33,9 @@
 #ifndef __SCHEMATIC_H__
 #define __SCHEMATIC_H__
 
+// typedefing before including makes circular dependencies possible.
+typedef struct _Schematic Schematic;
+
 #include <gtk/gtk.h>
 #include <cairo/cairo.h>
 #include <cairo/cairo-features.h>
@@ -51,6 +54,9 @@
 #include "node-store.h"
 #include "log.h"
 
+#include "../sim-settings.h"
+#include "sim-settings-gui.h"
+
 #define TYPE_SCHEMATIC (schematic_get_type ())
 #define SCHEMATIC(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_SCHEMATIC, Schematic))
 #define SCHEMATIC_CLASS (klass)(G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_SCHEMATIC, SchematicClass))
@@ -58,7 +64,6 @@
 #define IS_SCHEMATIC_CLASS(klass)                                                                  \
 	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC, SchematicClass))
 
-typedef struct _Schematic Schematic;
 typedef struct _SchematicClass SchematicClass;
 typedef struct _SchematicPriv SchematicPriv;
 
@@ -107,7 +112,8 @@ void schematic_items_foreach (Schematic *schematic, ForeachItemDataFunc func, gp
 GList *schematic_get_items (Schematic *sm);
 NodeStore *schematic_get_store (Schematic *schematic);
 gpointer schematic_get_settings (Schematic *schematic);
-gpointer schematic_get_sim_settings (Schematic *schematic);
+SimSettings *schematic_get_sim_settings (Schematic *schematic);
+SimSettingsGui *schematic_get_sim_settings_gui (Schematic *schematic);
 gpointer schematic_get_simulation (Schematic *schematic);
 Log *schematic_get_log_store (Schematic *schematic);
 void schematic_log_clear (Schematic *schematic);

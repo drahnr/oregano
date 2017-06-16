@@ -50,10 +50,12 @@ struct _OreganoEngineClass
 
 	void (*start)(OreganoEngine *engine);
 	void (*stop)(OreganoEngine *engine);
-	void (*progress)(OreganoEngine *engine, double *p);
+	void (*progress_solver)(OreganoEngine *engine, double *p);
+	void (*progress_reader)(OreganoEngine *engine, double *p);
 	gboolean (*get_netlist)(OreganoEngine *engine, const gchar *sm, GError **error);
 	GList *(*get_results)(OreganoEngine *engine);
-	gchar *(*get_operation)(OreganoEngine *engine);
+	gchar *(*get_operation_solver)(OreganoEngine *engine);
+	gchar *(*get_operation_reader)(OreganoEngine *engine);
 	gboolean (*has_warnings)(OreganoEngine *engine);
 	gboolean (*is_available)(OreganoEngine *engine);
 

@@ -1,0 +1,5 @@
+
+Circuit: * /home/michi/tryprogressbar.oregano
+
+Error on line 19 : .tran 0.000000e+00 2.500000e-08 0.000000e+00 uic
+  TSTEP is invalid, must be greater than zero.

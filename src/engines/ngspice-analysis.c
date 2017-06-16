@@ -38,12 +38,8 @@
 #include "dialogs.h"
 #include "engine-internal.h"
 #include "ngspice-analysis.h"
-
-static gchar *analysis_names[] = {
-    "Operating Point",  "Transient Analysis", "DC Transfer Characteristic",
-    "AC Analysis",      "Transfer Function",  "Distortion Analysis",
-    "Noise Analysis",   "Pole-Zero Analysis", "Sensitivity Analysis",
-    "Fourier Analysis", "Unknown Analysis",   NULL};
+#include "../tools/thread-pipe.h"
+#include "../tools/cancel-info.h"
 
 #define SP_TITLE "oregano\n"
 #define CPU_TIME "CPU time since last call:"
@@ -51,10 +47,15 @@ static gchar *analysis_names[] = {
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
 #include "debug.h"
 #define IS_THIS_ITEM(str, item) (!strncmp (str, item, strlen (item)))
+#ifdef DEBUG_THIS
+#undef DEBUG_THIS
+#endif
 #define DEBUG_THIS 1
 
 /**
  * \brief extract the resulting variables from ngspice output
+ *
+ * Tested function.
  *
  * @returns a GArray filled up doubles
  */
@@ -102,27 +103,34 @@ gchar **get_variables (const gchar *str, gint *count)
 	return out;
 }
 
-void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+/**
+ * @resources: caller frees
+ */
+static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 {
+	ThreadPipe *pipe = resources->pipe;
+	gchar **buf = &resources->buf;
+	const SimSettings* const sim_settings = resources->sim_settings;
+	GList **analysis = resources->analysis;
+	guint *num_analysis = resources->num_analysis;
+
+
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
-	SimSettings *sim_settings;
-	static gchar buf[256];
+	gsize size;
 	gboolean found = FALSE;
 	gchar **variables;
 	gint i, n = 0, index = 0;
 	gdouble val[10];
 	gdouble np1;
 
-	NG_DEBUG ("DC: result str\n>>>\n%s<<<\n", tmp);
+	NG_DEBUG ("DC: result str\n>>>\n%s\n<<<", *buf);
 
-	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
 	data = g_new0 (Analysis, 1);
-	priv->current = sdata = SIM_DATA (data);
-	priv->analysis = g_list_append (priv->analysis, sdata);
-	priv->num_analysis = 1;
-	sdata->type = DC_TRANSFER;
+	sdata = SIM_DATA (data);
+	*analysis = g_list_append (*analysis, sdata);
+	(*num_analysis)++;
+	sdata->type = ANALYSIS_TYPE_DC_TRANSFER;
 	sdata->functions = NULL;
 
 	np1 = 1.;
@@ -133,11 +141,11 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	np1 = (ANALYSIS (sdata)->dc.stop - ANALYSIS (sdata)->dc.start) / ANALYSIS (sdata)->dc.step;
 	ANALYSIS (sdata)->dc.sim_length = np1;
 
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 
 	// Calculates the number of variables
-	variables = get_variables (buf, &n);
+	variables = get_variables (*buf, &n);
 
 	n = n - 1;
 	sdata->var_names = (char **)g_new0 (gpointer, n);
@@ -152,7 +160,7 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	sdata->got_var = 0;
 	sdata->data = (GArray **)g_new0 (gpointer, 2);
 
-	fgets (buf, 255, priv->inputfp);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 
 	for (i = 0; i < 2; i++)
 		sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
@@ -166,14 +174,13 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		sdata->max_data[i] = -G_MAXDOUBLE;
 	}
 	found = FALSE;
-	while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
-		if (strlen (buf) <= 2) {
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
-			fgets (buf, 255, priv->inputfp);
+	while (((pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size)) != 0) && !found) {
+		if (strlen (*buf) <= 2) {
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 		}
-		tmp = &buf[0];
-		variables = get_variables (tmp, &i);
+		variables = get_variables (*buf, &i);
 		index = atoi (variables[0]);
 		for (i = 0; i < n; i++) {
 			val[i] = g_ascii_strtod (variables[i + 1], NULL);
@@ -188,9 +195,19 @@ void parse_dc_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		if (index >= ANALYSIS (sdata)->dc.sim_length)
 			found = TRUE;
 	}
-	return;
+	return pipe;
 }
 
+/**
+ * Structure that helps parsing the output of ngspice.
+ *
+ * @name: The name (handled like an ID) of the column.
+ * @unit: The physical unit. it can have one of the following values:
+ * "none", "time", "voltage", "current", "unknown"
+ * @data: The data.
+ * @min: The min value of the data.
+ * @max: The max value of the data.
+ */
 typedef struct {
 	GString *name;
 	GString *unit;
@@ -199,11 +216,29 @@ typedef struct {
 	gdouble max;
 } NgspiceColumn;
 
+/**
+ * Structure that helps parsing the output of ngspice.
+ *
+ * @ngspice_columns: The columns.
+ * @current_variables: New columns are appended to the end
+ * of the columns array. Because the index- and time-column
+ * are displayed repeatedly with every 3 new columns, there
+ * is needed an information how to interpret the incoming
+ * data to append it to the right columns. The current_variables
+ * array maps the position of the input data in the file
+ * to the position of the related column position in the table.
+ */
 typedef struct {
 	GPtrArray *ngspice_columns;
-	GPtrArray *current_variables;
+	GArray *current_variables;
 } NgspiceTable;
 
+/**
+ * Allocates memory.
+ *
+ * @name: The name (ID) of the new column
+ * @predicted_size: The predicted end size of the new column.
+ */
 static NgspiceColumn *ngspice_column_new(const gchar *name, guint predicted_size) {
 	NgspiceColumn *ret_val = malloc(sizeof(NgspiceColumn));
 
@@ -227,11 +262,10 @@ static NgspiceColumn *ngspice_column_new(const gchar *name, guint predicted_size
 	return ret_val;
 }
 
-static void asdf(gpointer data) {
-	g_free(data);
-}
-
-static void jkloe(gpointer ptr) {
+/**
+ * Frees memory.
+ */
+static void ngspice_column_destroy(gpointer ptr) {
 	NgspiceColumn *column = (NgspiceColumn *)ptr;
 	if (column == NULL)
 		return;
@@ -242,21 +276,49 @@ static void jkloe(gpointer ptr) {
 	g_free(column);
 }
 
+/**
+ * Allocates memory.
+ */
 static NgspiceTable *ngspice_table_new() {
 	NgspiceTable *ret_val = malloc(sizeof(NgspiceTable));
-	ret_val->ngspice_columns = g_ptr_array_new_with_free_func(jkloe);
-	ret_val->current_variables = g_ptr_array_new_with_free_func(asdf);
+	ret_val->ngspice_columns = g_ptr_array_new_with_free_func(ngspice_column_destroy);
+	ret_val->current_variables = g_array_new(TRUE, TRUE, sizeof(guint));
 	return ret_val;
 }
 
+/**
+ * Frees the memory.
+ */
 static void ngspice_table_destroy(NgspiceTable *ngspice_table) {
-	if (ngspice_table->current_variables != NULL)
-		g_ptr_array_free(ngspice_table->current_variables, TRUE);
-	if (ngspice_table->ngspice_columns != NULL)
+
+	if (ngspice_table->ngspice_columns != NULL) {
+		guint len = ngspice_table->ngspice_columns->len;
+
+		for (int i = 0; i < len; i++) {
+			NgspiceColumn *column = ngspice_table->ngspice_columns->pdata[i];
+			if (column != NULL)
+				g_array_free(column->data, TRUE);
+		}
+
 		g_ptr_array_free(ngspice_table->ngspice_columns, TRUE);
+	}
+
+	if (ngspice_table->current_variables != NULL)
+		g_array_free(ngspice_table->current_variables, TRUE);
+
 	g_free(ngspice_table);
 }
 
+/**
+ * Converts "x...x#branch" to "I(x...x)".
+ *
+ * Let "x...x" be the name of a part in the ngspice netlist,
+ * then the current variable (current, that flows through
+ * that part) of that part is named
+ * "x...x#branch" in ngspice. To shorten the name and make
+ * it prettier, the name will be displayed as "I(x...x)"
+ * in Oregano (analogous to V(node_nr)).
+ */
 static void convert_variable_name(gchar **variable) {
 	gchar **splitted = g_regex_split_simple("\\#branch", *variable, 0, 0);
 	g_free(*variable);
@@ -264,15 +326,21 @@ static void convert_variable_name(gchar **variable) {
 	g_strfreev(splitted);
 }
 
-static void ngspice_table_new_columns(NgspiceTable *ngspice_table, gchar **variables) {
-	guint predicted_size = 0;
+/**
+ * Creates and appends new columns to the table, if there are new variables.
+ * The referenced columns are now the newly added columns.
+ *
+ * @predicted_size: The predicted end size of the new columns. It is assumed
+ * that the new columns will have the same size.
+ */
+static void ngspice_table_new_columns(NgspiceTable *ngspice_table, gchar **variables, guint predicted_size) {
 	if (ngspice_table->ngspice_columns->len > 0) {
 		NgspiceColumn *column = (NgspiceColumn *)ngspice_table->ngspice_columns->pdata[0];
 		predicted_size = column->data->len;
 	}
 
-	g_ptr_array_free(ngspice_table->current_variables, TRUE);
-	ngspice_table->current_variables = g_ptr_array_new_with_free_func(asdf);
+	g_array_free(ngspice_table->current_variables, TRUE);
+	ngspice_table->current_variables = g_array_new(TRUE, TRUE, sizeof(guint));
 
 	for (gchar **variable = variables; *variable != NULL && **variable != '\n' && **variable != 0; variable++) {
 		if (g_str_has_suffix(*variable, "#branch"))
@@ -286,21 +354,23 @@ static void ngspice_table_new_columns(NgspiceTable *ngspice_table, gchar **varia
 			NgspiceColumn *new_column = ngspice_column_new(*variable, predicted_size);
 			g_ptr_array_add(ngspice_table->ngspice_columns, new_column);
 		}
-		int *new_int = malloc(sizeof(int));
-		*new_int = i;
-		g_ptr_array_add(ngspice_table->current_variables, new_int);
+		g_array_append_val(ngspice_table->current_variables, i);
 	}
 }
 
+/**
+ * Appends a split line to the end of the current referenced columns.
+ */
 static void ngspice_table_add_data(NgspiceTable *ngspice_table, gchar **data) {
 	g_return_if_fail(data != NULL);
 	g_return_if_fail(*data != NULL);
 	if (**data == 0)
 		return;
 	g_return_if_fail(ngspice_table != NULL);
+
 	guint64 index = g_ascii_strtoull(*data, NULL, 10);
 	for (int i = 0; data[i] != NULL && data[i][0] != 0 && data[i][0] != '\n' && i < ngspice_table->current_variables->len; i++) {
-		int column_index = *((int *)(ngspice_table->current_variables->pdata[i]));
+		guint column_index = g_array_index(ngspice_table->current_variables, guint, i);
 		NgspiceColumn *column = (NgspiceColumn*)(ngspice_table->ngspice_columns->pdata[column_index]);
 		if (column->data->len > index) {
 			continue;//assert equal
@@ -314,8 +384,59 @@ static void ngspice_table_add_data(NgspiceTable *ngspice_table, gchar **data) {
 	}
 }
 
-void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+/**
+ * Counts the number of different guints. If a certain
+ * guint occurs more than once, it is counted as one.
+ */
+static guint get_real_len(GArray *array_guint) {
+	guint ret_val = 0;
+	for (guint i = 0; i < array_guint->len; i++) {
+		ret_val++;
+		for (guint j = 0; j < i; j++) {
+			if (g_array_index(array_guint, guint, i) == g_array_index(array_guint, guint, j)) {
+				ret_val--;
+				break;
+			}
+		}
+	}
+
+	return ret_val;
+}
+
+/**
+ * Returns the index that is currently parsed.
+ *
+ * The first referenced column is the string-index column,
+ * the second referenced column is the time. The index and
+ * the time column can already be filled up by earlier
+ * iterations, so the length of the third referenced column
+ * represents the index that is currently parsed.
+ */
+static guint get_current_index(NgspiceTable *ngspice_table) {
+	guint column_nr = g_array_index(ngspice_table->current_variables, guint, 2);
+	NgspiceColumn *column = g_ptr_array_index(ngspice_table->ngspice_columns, column_nr);
+	return column->data->len;
+}
+
+typedef struct {
+	NgspiceTable *table;
+	ThreadPipe *pipe;
+	gboolean is_cancel;
+} ParseTransientAnalysisReturnResources;
+
+/**
+ * @resources: caller frees
+ */
+static ParseTransientAnalysisReturnResources parse_transient_analysis_resources (NgspiceAnalysisResources *resources)
 {
+	gchar **buf = &resources->buf;
+	const SimSettings *sim_settings = resources->sim_settings;
+	guint *num_analysis = resources->num_analysis;
+	ProgressResources *progress_reader = resources->progress_reader;
+	guint64 no_of_data_rows = resources->no_of_data_rows;
+	guint no_of_variables = resources->no_of_variables;
+
+
 	enum STATE {
 		NGSPICE_ANALYSIS_STATE_READ_DATA,
 		NGSPICE_ANALYSIS_STATE_DATA_SMALL_BLOCK_END,
@@ -324,20 +445,34 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		NGSPICE_ANALYSIS_STATE_READ_VARIABLES_NEW,
 		NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD
 	};
-	static gchar buf[256];
 
-	memcpy(buf, tmp, (strlen(tmp) + 1) * sizeof(char));
+	g_mutex_lock(&progress_reader->progress_mutex);
+	progress_reader->progress = 0;
+	g_mutex_unlock(&progress_reader->progress_mutex);
+
+	gsize size;
+
 	NgspiceTable *ngspice_table = ngspice_table_new();
+
+	ParseTransientAnalysisReturnResources ret_val;
+	ret_val.table = ngspice_table;
+	ret_val.pipe = resources->pipe;
+	ret_val.is_cancel = TRUE;
 
 	enum STATE state = NGSPICE_ANALYSIS_STATE_DATA_LARGE_BLOCK_END;
 
+	guint i = 0;
+
 	do {
+		if (i % 50 == 0 && cancel_info_is_cancel(resources->cancel_info))
+			return ret_val;
+
 		switch (state) {
 			case NGSPICE_ANALYSIS_STATE_READ_VARIABLES_NEW:
 			{
-				gchar **splitted_line = g_regex_split_simple(" +", buf, 0, 0);
+				gchar **splitted_line = g_regex_split_simple(" +", *buf, 0, 0);
 
-				ngspice_table_new_columns(ngspice_table, splitted_line);
+				ngspice_table_new_columns(ngspice_table, splitted_line, no_of_data_rows);
 
 				g_strfreev(splitted_line);
 
@@ -346,16 +481,30 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 			}
 			case NGSPICE_ANALYSIS_STATE_READ_DATA:
 			{
-				gchar **splitted_line = g_regex_split_simple("\\t+|-{2,}", buf, 0, 0);
+				gchar **splitted_line = g_regex_split_simple("\\t+|-{2,}", *buf, 0, 0);
 
 				ngspice_table_add_data(ngspice_table, splitted_line);
 
 				g_strfreev(splitted_line);
-				fgets(buf, 255, ngspice->priv->inputfp);
-				switch (buf[0]) {
-				case '\f':
+
+				if ((ret_val.pipe = thread_pipe_pop(ret_val.pipe, (gpointer *)buf, &size)) == NULL)
+					return ret_val;
+
+				switch (*buf[0]) {
+				case '\f':{
+					// estimate progress begin
+					guint len_of_current_variables = get_real_len(ngspice_table->current_variables) - 2;
+					guint len_of_current_columns = ngspice_table->ngspice_columns->len - 2;
+					guint count_of_variables_already_finished = len_of_current_columns - len_of_current_variables;
+					g_mutex_lock(&progress_reader->progress_mutex);
+					progress_reader->progress = (double)count_of_variables_already_finished / (double)no_of_variables +
+							(double)len_of_current_variables / (double)no_of_variables *
+							(double)get_current_index(ngspice_table) / (double)no_of_data_rows;
+					g_mutex_unlock(&progress_reader->progress_mutex);
+					// estimate progress end
+
 					state = NGSPICE_ANALYSIS_STATE_DATA_SMALL_BLOCK_END;
-					break;
+					break;}
 				case '\n':
 					state = NGSPICE_ANALYSIS_STATE_DATA_END;
 					break;
@@ -364,15 +513,19 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 			}
 			case NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD:
 			{
-				fgets(buf, 255, ngspice->priv->inputfp);
-				if (buf[0] != '-')
+				if ((ret_val.pipe = thread_pipe_pop(ret_val.pipe, (gpointer *)buf, &size)) == NULL)
+					return ret_val;
+
+				if (*buf[0] != '-')
 					state = NGSPICE_ANALYSIS_STATE_READ_DATA;
 				break;
 			}
 			case NGSPICE_ANALYSIS_STATE_DATA_SMALL_BLOCK_END:
 			{
-				fgets(buf, 255, ngspice->priv->inputfp);
-				switch (buf[0]) {
+				if ((ret_val.pipe = thread_pipe_pop(ret_val.pipe, (gpointer *)buf, &size)) == NULL)
+					return ret_val;
+
+				switch (*buf[0]) {
 				case 'I':
 					state = NGSPICE_ANALYSIS_STATE_READ_VARIABLES_OLD;
 					break;
@@ -384,8 +537,10 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 			}
 			case NGSPICE_ANALYSIS_STATE_DATA_LARGE_BLOCK_END:
 			{
-				fgets(buf, 255, ngspice->priv->inputfp);
-				if (buf[0] == 'I')
+				if ((ret_val.pipe = thread_pipe_pop(ret_val.pipe, (gpointer *)buf, &size)) == NULL)
+					return ret_val;
+
+				if (*buf[0] == 'I')
 					state = NGSPICE_ANALYSIS_STATE_READ_VARIABLES_NEW;
 				break;
 			}
@@ -394,27 +549,13 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		}
 	} while (state != NGSPICE_ANALYSIS_STATE_DATA_END);
 
+	ret_val.is_cancel = FALSE;
 
-	OreganoNgSpicePriv *priv = ngspice->priv;
-	SimSettings *sim_settings;
-	SimulationData *sdata;
-	Analysis *data;
-	gint nodes_nb = ngspice_table->ngspice_columns->len - 2;
-
-	NG_DEBUG ("TRANSIENT: result str\n>>>\n%s<<<\n", tmp);
-
-	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
-	data = g_new0 (Analysis, 1);
-	priv->current = sdata = SIM_DATA (data);
-	priv->analysis = g_list_append (priv->analysis, sdata);
-	priv->num_analysis = 1;
-	sdata->type = ANALYSIS_UNKNOWN;
+	SimulationData *sdata = SIM_DATA (g_new0 (Analysis, 1));
+	sdata->type = ANALYSIS_TYPE_TRANSIENT;
 	sdata->functions = NULL;
 
-	g_strchug (tmp);
-	for (int i = 0; analysis_names[i]; i++)
-		if (g_str_has_prefix (tmp, analysis_names[i]))
-			sdata->type = i;
+	gint nodes_nb = ngspice_table->ngspice_columns->len - 2;
 
 	ANALYSIS (sdata)->transient.sim_length =
 	    sim_settings_get_trans_stop (sim_settings) - sim_settings_get_trans_start (sim_settings);
@@ -433,43 +574,65 @@ void parse_transient_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		sdata->data[i] = column->data;
 		sdata->min_data[i] = column->min;
 		sdata->max_data[i] = column->max;
+
+		ngspice_table->ngspice_columns->pdata[i+1] = NULL;
 	}
 	sdata->n_variables = nodes_nb + 1;
 	NgspiceColumn *column = ngspice_table->ngspice_columns->pdata[0];
 	sdata->got_points = column->data->len;
 	sdata->got_var = nodes_nb + 1;
 
-	g_array_free(column->data, TRUE);
-	ngspice_table_destroy(ngspice_table);
+	(*num_analysis)++;
+	*resources->analysis = g_list_append (*resources->analysis, sdata);
+
+	return ret_val;
 }
 
-void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
+static ThreadPipe *parse_transient_analysis (NgspiceAnalysisResources *resources) {
+	ParseTransientAnalysisReturnResources ret_res = parse_transient_analysis_resources(resources);
+
+	ngspice_table_destroy(ret_res.table);
+
+	if (ret_res.is_cancel && ret_res.pipe) {
+		thread_pipe_set_read_eof(ret_res.pipe);
+		ret_res.pipe = NULL;
+	}
+
+	return ret_res.pipe;
+}
+
+/**
+ * @resources: caller frees
+ */
+static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 {
+	ThreadPipe *pipe = resources->pipe;
+	gchar **buf = &resources->buf;
+	const SimSettings *sim_settings = resources->sim_settings;
+	GList **analysis = resources->analysis;
+	guint *num_analysis = resources->num_analysis;
+
+
 	static SimulationData *sdata;
 	static Analysis *data;
-	OreganoNgSpicePriv *priv = ngspice->priv;
-	SimSettings *sim_settings;
-	static gchar buf[256];
+	gsize size;
 	gchar **variables;
 	gint i, n = 0, freq, j, k;
 	gdouble val[10], mag[10][10];
 	gchar **node_ids;
 	gchar *vout;
 
-	NG_DEBUG ("F{}: result str\n>>>\n%s<<<\n", tmp);
-
-	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
+	NG_DEBUG ("F{}: result str\n>>>\n%s\n<<<", *buf);
 
 	// New analysis
 	data = g_new0 (Analysis, 1);
 	sdata = SIM_DATA (data);
-	priv->current = sdata;
-	priv->analysis = g_list_append (priv->analysis, sdata);
+	*analysis = g_list_append (*analysis, sdata);
 	sdata->functions = NULL;
-	priv->num_analysis++;
-	sdata->type = FOURIER;
+	(*num_analysis)++;
+	sdata->type = ANALYSIS_TYPE_FOURIER;
 
-	tmp = g_strchug (tmp);
+	g_strchug (*buf);
 	ANALYSIS (sdata)->fourier.freq = sim_settings_get_fourier_frequency (sim_settings);
 	vout = sim_settings_get_fourier_vout (sim_settings);
 	node_ids = g_strsplit (g_strdup (vout), " ", 0);
@@ -482,7 +645,7 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	sdata->n_variables = n;
 	sdata->var_names = (char **)g_new0 (gpointer, n);
 	sdata->var_units = (char **)g_new0 (gpointer, n);
-	variables = get_variables (tmp, &k);
+	variables = get_variables (*buf, &k);
 	sdata->var_names[0] = _ ("Frequency");
 	sdata->var_names[1] = g_strdup (variables[3]);
 	for (i = 0; i < n; i++) {
@@ -495,10 +658,10 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	sdata->got_var = 0;
 	sdata->data = (GArray **)g_new0 (gpointer, n);
 
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 
 	for (i = 0; i < n; i++)
 		sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
@@ -514,26 +677,25 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 	}
 
 	for (j = 0; j < 10; j++) {
-		fgets (buf, 255, priv->inputfp);
-		sscanf (buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		sscanf (*buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
 		mag[j][0] = (gdouble)freq;
 		mag[j][1] = val[0];
 	}
 
 	for (j = 2; j < n; j++) {
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
-		tmp = &buf[0];
-		variables = get_variables (tmp, &k);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		variables = get_variables (*buf, &k);
 		sdata->var_names[j] = g_strdup (variables[3]);
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
-		fgets (buf, 255, priv->inputfp);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 
 		for (k = 0; k < 10; k++) {
-			fgets (buf, 255, priv->inputfp);
-			sscanf (buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			sscanf (*buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
 			mag[k][j] = val[0];
 		}
 	}
@@ -555,95 +717,161 @@ void parse_fourier_analysis (OreganoNgSpice *ngspice, gchar *tmp)
 		}
 		NG_DEBUG ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]);
 	}
-	return;
+
+	return pipe;
 }
 
-void ngspice_parse (OreganoNgSpice *ngspice)
+/**
+ * Stores all the data coming through the given pipe to the given file.
+ * This is needed because in case of failure, ngspice prints additional
+ * error information to stdout.
+ *
+ * Maybe the user wants to analyze the ngspice output by external software.
+ */
+void ngspice_save (const gchar *path_to_file, ThreadPipe *pipe, CancelInfo *cancel_info)
 {
-	OreganoNgSpicePriv *priv = ngspice->priv;
-	SimSettings *sim_settings;
-	static gchar buf[256];
-	gchar *tmp = NULL;
-	gboolean found = FALSE;
-	gint i, analysis_type = 11;
-	gboolean transient_enabled = FALSE;
-	gboolean fourier_enabled = FALSE;
-	gboolean dc_enabled = FALSE;
-	// gboolean ac_enabled = FALSE;
+	FILE *file = fopen(path_to_file, "w");
+	gpointer buf = NULL;
+	gsize size;
 
-	sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
-
-	transient_enabled = sim_settings_get_trans (sim_settings);
-	fourier_enabled = sim_settings_get_fourier (sim_settings);
-	// ac_enabled = sim_settings_get_ac (sim_settings);
-	dc_enabled = sim_settings_get_dc (sim_settings);
-
-	priv->inputfp = fopen ("/tmp/netlist.lst", "r");
-
-	fgets (buf, 255, priv->inputfp);
-	fgets (buf, 255, priv->inputfp);
-	while ((fgets (buf, 255, priv->inputfp) != NULL) && !found) {
-		if (g_str_has_suffix (buf, SP_TITLE)) {
-			found = TRUE;
-		}
+	for (int i = 0; (pipe = thread_pipe_pop(pipe, &buf, &size)) != NULL; i++) {
+		if (size != 0)
+			fwrite(buf, 1, size, file);
+		/**
+		 * cancel_info uses mutex operations, so it shouldn't be
+		 * called to often.
+		 */
+		if (i % 50 == 0 && cancel_info_is_cancel(cancel_info))
+			break;
 	}
-	tmp = &buf[0];
-	tmp = g_strchug (tmp);
+	fclose(file);
+	if (pipe != NULL)
+		thread_pipe_set_read_eof(pipe);
+}
 
-	for (i = 0; analysis_names[i]; i++) {
-		if (g_str_has_prefix (tmp, analysis_names[i])) {
-			analysis_type = i;
+static gboolean get_analysis_type(gchar *buf_in, AnalysisType *type_out) {
+
+	int i = 0;
+	gchar *analysis_name = oregano_engine_get_analysis_name_by_type(i);
+	while (analysis_name) {
+		if (g_str_has_prefix (buf_in, analysis_name)) {
+			*type_out = i;
+			g_free(analysis_name);
+			return TRUE;
 		}
+		g_free(analysis_name);
+
+		i++;
+		analysis_name = oregano_engine_get_analysis_name_by_type(i);
 	}
-	if (!analysis_names[analysis_type]) {
-		oregano_warning (_ ("No analysis found"));
+	return FALSE;
+}
+
+static guint64 parse_no_of_data_rows(gchar *line) {
+	gchar **splitted = g_regex_split_simple("No\\. of Data Rows \\: \\D*(\\d+)\\n", line, 0, 0);
+	guint64 no_of_data_rows = g_ascii_strtoull(splitted[1], NULL, 10);
+	g_strfreev(splitted);
+
+	return no_of_data_rows;
+}
+
+static guint parse_no_of_variables(ThreadPipe *pipe, gchar **buf) {
+	gsize size;
+
+	for (int i = 0; i < 5; i++)
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+
+	guint no_of_variables = 0;
+	while (**buf != '\n') {
+		no_of_variables++;
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	}
+	return no_of_variables;
+}
+
+/**
+ * @resources: caller frees
+ */
+void ngspice_analysis (NgspiceAnalysisResources *resources)
+{
+	ThreadPipe *pipe = resources->pipe;
+	const SimSettings *sim_settings = resources->sim_settings;
+	AnalysisTypeShared *current = resources->current;
+	gchar **buf = &resources->buf;
+
+	gsize size;
+
+	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 		return;
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	while (!g_str_has_suffix (*buf, SP_TITLE)) {
+
+		if (g_str_has_prefix(*buf, "No. of Data Rows : "))
+			resources->no_of_data_rows = parse_no_of_data_rows(*buf);
+
+		if (g_str_has_prefix(*buf, "Initial Transient Solution"))
+			resources->no_of_variables = parse_no_of_variables(pipe, buf);
+
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+
 	}
 
-	if (transient_enabled) {
-		if (g_str_has_prefix (analysis_names[analysis_type], "Transient Analysis")) {
-			parse_transient_analysis (ngspice, buf);
-		} else {
-			oregano_warning (_ ("Transient analysis expected but not found"));
+	gboolean transient_enabled = sim_settings_get_trans (sim_settings);
+	gboolean fourier_enabled = sim_settings_get_fourier (sim_settings);
+	// gboolean ac_enabled = sim_settings_get_ac (sim_settings);
+	gboolean dc_enabled = sim_settings_get_dc (sim_settings);
+
+	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled; i++) {
+
+		AnalysisType analysis_type = ANALYSIS_TYPE_NONE;
+
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		g_strstrip (*buf);
+		NG_DEBUG ("%d buf = %s", i, *buf);
+
+		if (!get_analysis_type(*buf, &analysis_type)) {
+			oregano_warning (_ ("No analysis found"));
+			break;
 		}
+
+		gboolean unexpected_analysis_found = FALSE;
+
+		g_mutex_lock(&current->mutex);
+		current->type = analysis_type;
+		g_mutex_unlock(&current->mutex);
+
+		switch (analysis_type) {
+		case ANALYSIS_TYPE_TRANSIENT:
+			pipe = parse_transient_analysis (resources);
+			transient_enabled = FALSE;
+			break;
+		case ANALYSIS_TYPE_FOURIER:
+			pipe = parse_fourier_analysis (resources);
+			fourier_enabled = FALSE;
+			break;
+		case ANALYSIS_TYPE_DC_TRANSFER:
+			pipe = parse_dc_analysis (resources);
+			dc_enabled = FALSE;
+			break;
+		default:
+			oregano_warning(_("Unexpected analysis found"));
+			unexpected_analysis_found = TRUE;
+			break;
+		}
+
+		g_mutex_lock(&current->mutex);
+		current->type = ANALYSIS_TYPE_NONE;
+		g_mutex_unlock(&current->mutex);
+
+		if (unexpected_analysis_found || pipe == NULL)
+			break;
+
 	}
 
-	fgets (buf, 255, priv->inputfp);
-	NG_DEBUG ("1 buf = %s\n", buf);
-	tmp = &buf[0];
-	tmp = g_strchug (tmp);
+	if (pipe != NULL)
+		thread_pipe_set_read_eof(pipe);
 
-	analysis_type = ANALYSIS_UNKNOWN;
-	for (i = 0; analysis_names[i]; i++) {
-		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
-			analysis_type = i;
-		}
-	}
-	if (fourier_enabled) {
-		if (g_str_has_prefix (analysis_names[analysis_type], "Fourier analysis")) {
-			parse_fourier_analysis (ngspice, buf);
-		} else {
-			oregano_warning (_ ("Fourier analysis expected but not found"));
-		}
-	}
-	fgets (buf, 255, priv->inputfp);
-	NG_DEBUG ("2 buf = %s\n", buf);
-	tmp = &buf[0];
-	tmp = g_strchug (tmp);
-
-	analysis_type = ANALYSIS_UNKNOWN;
-	for (i = 0; analysis_names[i]; i++) {
-		if (g_str_has_prefix (g_strdup (tmp), analysis_names[i])) {
-			analysis_type = i;
-		}
-	}
-	if (dc_enabled) {
-		if (g_str_has_prefix (analysis_names[analysis_type], "DC transfer characteristic")) {
-			parse_dc_analysis (ngspice, buf);
-		} else {
-			oregano_warning (_ ("DC Sweep expected but not found"));
-		}
-	}
-
-	fclose (priv->inputfp);
+	resources->pipe = NULL;
 }

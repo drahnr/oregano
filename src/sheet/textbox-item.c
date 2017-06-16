@@ -468,7 +468,6 @@ static void edit_textbox (SheetItem *sheet_item)
 	const char *value;
 	GtkBuilder *builder;
 	GError *e = NULL;
-	Sheet *sheet = sheet_item_get_sheet (sheet_item);
 
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_TEXTBOX_ITEM (sheet_item));

@@ -42,7 +42,7 @@
 #include "node-store.h"
 #include "file-manager.h"
 #include "settings.h"
-#include "sim-settings.h"
+#include "../sim-settings-gui.h"
 #include "simulation.h"
 #include "errors.h"
 #include "schematic-print-context.h"
@@ -72,7 +72,7 @@ struct _SchematicPriv
 
 	// Data for various dialogs.
 	gpointer settings;
-	gpointer sim_settings;
+	SimSettingsGui *sim_settings;
 	gpointer simulation;
 
 	GList *current_items;
@@ -229,7 +229,7 @@ static void schematic_init (Schematic *schematic)
 	                         G_CALLBACK (node_dot_removed_callback), G_OBJECT (schematic),
 	                         G_CONNECT_AFTER);
 
-	priv->sim_settings = sim_settings_new (schematic);
+	priv->sim_settings = sim_settings_gui_new (schematic);
 	priv->settings = settings_new (schematic);
 	priv->simulation = simulation_new (schematic, priv->logstore);
 
@@ -290,6 +290,7 @@ static void schematic_finalize (GObject *object)
 		g_free (priv->comments);
 		g_free (priv->author);
 		g_free (priv->filename);
+		sim_settings_gui_finalize(priv->sim_settings);
 		g_free (priv);
 	}
 
@@ -447,7 +448,15 @@ gpointer schematic_get_settings (Schematic *schematic)
 	return schematic->priv->settings;
 }
 
-gpointer schematic_get_sim_settings (Schematic *schematic)
+SimSettings *schematic_get_sim_settings (Schematic *schematic)
+{
+	g_return_val_if_fail (schematic != NULL, NULL);
+	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
+
+	return schematic->priv->sim_settings->sim_settings;
+}
+
+SimSettingsGui *schematic_get_sim_settings_gui (Schematic *schematic)
 {
 	g_return_val_if_fail (schematic != NULL, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);

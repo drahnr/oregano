@@ -201,7 +201,7 @@ static GPlotFunction *create_plot_function_from_simulation_data (guint i, Simula
 		Y[j] = g_array_index (current->data[i], double, j);
 		X[j] = g_array_index (current->data[0], double, j);
 	}
-	if (current->type == FOURIER) {
+	if (current->type == ANALYSIS_TYPE_FOURIER) {
 		graphic_type = FREQUENCY_PULSE;
 		next_pulse++;
 		width = 5.0;
@@ -244,10 +244,13 @@ static void analysis_selected (GtkWidget *combo_box, Plot *plot)
 	analysis = oregano_engine_get_results (plot->sim);
 	for (; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
-		if (!strcmp (ca, oregano_engine_get_analysis_name (sdat))) {
+		gchar *analysis_name = oregano_engine_get_analysis_name (sdat);
+		if (!strcmp (ca, analysis_name)) {
 			plot->current = sdat;
+			g_free(analysis_name);
 			break;
 		}
+		g_free(analysis_name);
 	}
 
 	if (plot->current == NULL) {
@@ -262,8 +265,10 @@ static void analysis_selected (GtkWidget *combo_box, Plot *plot)
 	plot->ytitle = get_variable_units (plot->current->var_units[1]);
 
 	g_free (plot->title);
+	gchar *analysis_name = oregano_engine_get_analysis_name (plot->current);
 	plot->title =
-	    g_strdup_printf (_ ("Plot - %s"), oregano_engine_get_analysis_name (plot->current));
+	    g_strdup_printf (_ ("Plot - %s"), analysis_name);
+	g_free(analysis_name);
 
 	//  Set the variable names in the list
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW (list));
@@ -284,7 +289,7 @@ static void analysis_selected (GtkWidget *combo_box, Plot *plot)
 	for (i = 1; i < plot->current->n_variables; i++) {
 		GtkTreeIter iter;
 		GPlotFunction *f;
-		if (plot->current->type != DC_TRANSFER) {
+		if (plot->current->type != ANALYSIS_TYPE_DC_TRANSFER) {
 			//FIXME extra axis scaling for current/voltage
 			//FIXME or extra plot window for current/voltage
 			//FIXME or extra analysis for current/voltage
@@ -492,7 +497,7 @@ int plot_show (OreganoEngine *engine)
 	for (; analysis; analysis = analysis->next) {
 		SimulationData *sdat = SIM_DATA (analysis->data);
 		gchar *str = oregano_engine_get_analysis_name (sdat);
-		if (sdat->type == OP_POINT) {
+		if (sdat->type == ANALYSIS_TYPE_OP_POINT) {
 			continue;
 		}
 		if (s_current == NULL) {
@@ -537,10 +542,10 @@ static GPlotFunction *create_plot_function_from_data (SimulationFunction *func,
 
 		data = g_array_index (current->data[func->second], double, j);
 		switch (func->type) {
-		case FUNCTION_MINUS:
+		case FUNCTION_SUBTRACT:
 			Y[j] -= data;
 			break;
-		case FUNCTION_TRANSFER:
+		case FUNCTION_DIVIDE:
 			if (data < 0.000001f) {
 				if (Y[j] < 0)
 					Y[j] = -G_MAXDOUBLE;
@@ -553,7 +558,7 @@ static GPlotFunction *create_plot_function_from_data (SimulationFunction *func,
 
 		X[j] = g_array_index (current->data[0], double, j);
 	}
-	if (current->type == FOURIER) {
+	if (current->type == ANALYSIS_TYPE_FOURIER) {
 		graphic_type = FREQUENCY_PULSE;
 		next_pulse++;
 		width = 5.0;
@@ -615,10 +620,10 @@ static void add_function (GtkMenuItem *menuitem, Plot *plot)
 			}
 		}
 		switch (func->type) {
-		case FUNCTION_MINUS:
+		case FUNCTION_SUBTRACT:
 			str = g_strdup_printf ("%s - %s", name1, name2);
 			break;
-		case FUNCTION_TRANSFER:
+		case FUNCTION_DIVIDE:
 			str = g_strdup_printf ("%s(%s, %s)", _ ("TRANSFER"), name1, name2);
 		}
 

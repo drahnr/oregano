@@ -33,6 +33,9 @@
 #ifndef __SCHEMATIC_VIEW_H
 #define __SCHEMATIC_VIEW_H
 
+// typedefing before including makes circular dependencies possible
+typedef struct _SchematicView SchematicView;
+
 #include <gtk/gtk.h>
 
 #include "schematic.h"
@@ -48,7 +51,6 @@ typedef enum { DRAG_URI_INFO, DRAG_PART_INFO } DragTypes;
 #define IS_SCHEMATIC_VIEW_CLASS(klass)                                                             \
 	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_SCHEMATIC_VIEW, SchematicViewClass))
 
-typedef struct _SchematicView SchematicView;
 typedef struct _SchematicViewClass SchematicViewClass;
 typedef struct _SchematicViewPriv SchematicViewPriv;
 

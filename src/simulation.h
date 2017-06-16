@@ -41,27 +41,29 @@
 typedef struct _SimulationData SimulationData;
 
 typedef enum {
-	OP_POINT,
-	TRANSIENT,
-	DC_TRANSFER,
-	AC,
-	TRANSFER,
-	DISTORTION,
-	NOISE,
-	POLE_ZERO,
-	SENSITIVITY,
-	FOURIER,
-	ANALYSIS_UNKNOWN
+	ANALYSIS_TYPE_NONE,
+	ANALYSIS_TYPE_OP_POINT,
+	ANALYSIS_TYPE_TRANSIENT,
+	ANALYSIS_TYPE_DC_TRANSFER,
+	ANALYSIS_TYPE_AC,
+	ANALYSIS_TYPE_TRANSFER,
+	ANALYSIS_TYPE_DISTORTION,
+	ANALYSIS_TYPE_NOISE,
+	ANALYSIS_TYPE_POLE_ZERO,
+	ANALYSIS_TYPE_SENSITIVITY,
+	ANALYSIS_TYPE_FOURIER,
+	ANALYSIS_TYPE_UNKNOWN
 } AnalysisType;
 
 #define INFINITE 1e50f
 
-typedef enum { FUNCTION_MINUS = 0, FUNCTION_TRANSFER, SIMULATIONFUNCTIONTYPE_LENGTH } SimulationFunctionType;
-
-static const gchar *SimulationFunctionTypeString[] = {
-		"Subtraction",
-		"Division"
-};
+//keep in mind the relation to global variable
+//const char const *SimulationFunctionTypeString[]
+//in simulation.c (strings representing the functions in GUI)
+typedef enum {
+	FUNCTION_SUBTRACT = 0,
+	FUNCTION_DIVIDE
+} SimulationFunctionType;
 
 typedef struct _SimulationFunction
 {
@@ -132,7 +134,7 @@ typedef union
 	SimDC dc;
 } Analysis;
 
-void simulation_show (GtkWidget *widget, SchematicView *sv);
+void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv);
 gpointer simulation_new (Schematic *sm, Log *logstore);
 gchar *sim_engine_analysis_name (SimulationData *);
 
