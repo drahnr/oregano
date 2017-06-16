@@ -47,14 +47,23 @@
 #include "gnucap.h"
 #include "log.h"
 
+//NULL terminated
+const char const *SimulationFunctionTypeString[] = {
+		"Subtraction",
+		"Division",
+		NULL
+};
+
 typedef struct
 {
 	Schematic *sm;
 	SchematicView *sv;
 	GtkDialog *dialog;
 	OreganoEngine *engine;
-	GtkProgressBar *progress;
-	GtkLabel *progress_label;
+	GtkProgressBar *progress_solver;
+	GtkLabel *progress_label_solver;
+	GtkProgressBar *progress_reader;
+	GtkLabel *progress_label_reader;
 	int progress_timeout_id;
 	Log *logstore;
 } Simulation;
@@ -79,7 +88,7 @@ gpointer simulation_new (Schematic *sm, Log *logstore)
 	return s;
 }
 
-void simulation_show (GtkWidget *widget, SchematicView *sv)
+void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv)
 {
 	GtkWidget *w;
 	GtkBuilder *gui;
@@ -123,37 +132,59 @@ void simulation_show (GtkWidget *widget, SchematicView *sv)
 	s->dialog = GTK_DIALOG (w);
 	g_signal_connect (G_OBJECT (w), "delete_event", G_CALLBACK (delete_event_cb), s);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "progressbar"));
-	s->progress = GTK_PROGRESS_BAR (w);
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 0.0);
+	/**
+	 * progress bars and progress labels
+	 */
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "progressbar_solver"));
+	s->progress_solver = GTK_PROGRESS_BAR (w);
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_solver), 0.0);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "progress_label"));
-	s->progress_label = GTK_LABEL (w);
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "progress_label_solver"));
+	s->progress_label_solver = GTK_LABEL (w);
+
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "progressbar_reader"));
+	s->progress_reader = GTK_PROGRESS_BAR (w);
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_reader), 0.0);
+
+	w = GTK_WIDGET (gtk_builder_get_object (gui, "progress_label_reader"));
+	s->progress_label_reader = GTK_LABEL (w);
+
 
 	g_signal_connect (G_OBJECT (s->dialog), "response", G_CALLBACK (cancel_cb), s);
 
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
 
 	s->sv = sv;
+
 	simulate_cmd (s);
 }
 
 static int progress_bar_timeout_cb (Simulation *s)
 {
-	gchar *str;
 	double p;
 	g_return_val_if_fail (s != NULL, FALSE);
 
-	oregano_engine_get_progress (s->engine, &p);
+	p = 0;
+	oregano_engine_get_progress_solver (s->engine, &p);
 
-	if (p >= 1)
-		p = 0;
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_solver), p);
 
-	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), p);
+	gchar *current_operation = oregano_engine_get_current_operation_solver(s->engine);
+	gchar *str = g_strdup_printf (_ ("Progress: <b>%s</b>"), current_operation);
+	g_free(current_operation);
+
+	gtk_label_set_markup (s->progress_label_solver, str);
+	g_free (str);
+
+
+	p = 0;
+	oregano_engine_get_progress_reader (s->engine, &p);
+
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_reader), p);
 
 	str = g_strdup_printf (_ ("Progress: <b>%s</b>"),
-	                       oregano_engine_get_current_operation (s->engine));
-	gtk_label_set_markup (s->progress_label, str);
+	                       oregano_engine_get_current_operation_reader (s->engine));
+	gtk_label_set_markup (s->progress_label_reader, str);
 	g_free (str);
 
 	return TRUE;
@@ -166,7 +197,8 @@ static void engine_done_cb (OreganoEngine *engine, Simulation *s)
 		s->progress_timeout_id = 0;
 
 		// Make sure that the progress bar is completed, just for good looks.
-		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress), 1.0);
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_solver), 1.0);
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_reader), 1.0);
 	}
 
 	gtk_widget_destroy (GTK_WIDGET (s->dialog));
@@ -197,11 +229,17 @@ static void engine_aborted_cb (OreganoEngine *engine, Simulation *s)
 	}
 
 	//	g_clear_object (&(s->dialog));
-	gtk_widget_destroy (GTK_WIDGET (s->dialog));
-	s->dialog = NULL;
+	if (s->dialog != NULL) {
+		gtk_widget_destroy (GTK_WIDGET (s->dialog));
+		s->dialog = NULL;
+	}
 
 	log_append (s->logstore, _ ("Simulation"), _ ("Aborted. See lines below for details."));
-	schematic_view_log_show (s->sv, TRUE);
+	if (s->sv != NULL)
+		schematic_view_log_show (s->sv, TRUE);
+
+	g_object_unref (s->engine);
+	s->engine = NULL;
 }
 
 static void cancel_cb (GtkWidget *widget, gint arg1, Simulation *s)
@@ -234,7 +272,8 @@ static gboolean simulate_cmd (Simulation *s)
 	engine = oregano_engine_factory_create_engine (oregano.engine, s->sm);
 	s->engine = engine;
 
-	s->progress_timeout_id = g_timeout_add (100, (GSourceFunc)progress_bar_timeout_cb, s);
+	s->progress_timeout_id = g_timeout_add (250, (GSourceFunc)progress_bar_timeout_cb, s);
+
 
 	g_signal_connect (G_OBJECT (engine), "done", G_CALLBACK (engine_done_cb), s);
 	g_signal_connect (G_OBJECT (engine), "aborted", G_CALLBACK (engine_aborted_cb), s);

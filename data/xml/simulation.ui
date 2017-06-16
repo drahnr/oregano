@@ -49,7 +49,7 @@
             <property name="orientation">vertical</property>
             <property name="spacing">4</property>
             <child>
-              <object class="GtkLabel" id="progress_label">
+              <object class="GtkLabel" id="progress_label_solver">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Progress: None</property>
@@ -63,7 +63,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkProgressBar" id="progressbar">
+              <object class="GtkProgressBar" id="progressbar_solver">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="pulse_step">0.10000000149</property>
@@ -72,6 +72,32 @@
                 <property name="expand">False</property>
                 <property name="fill">False</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="progress_label_reader">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Progress: None</property>
+                <property name="use_markup">True</property>
+                <property name="justify">center</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkProgressBar" id="progressbar_reader">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="pulse_step">0.10000000149</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>

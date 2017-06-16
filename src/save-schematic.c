@@ -115,6 +115,12 @@ static void write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schem
 		str = "false";
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "init-conditions", BAD_CAST str);
 
+	if (sim_settings_get_trans_analyze_all(s))
+		str = "true";
+	else
+		str = "false";
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "analyze-all", BAD_CAST str);
+
 	//  AC analysis
 	analysis = xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "ac", NULL);
 	if (!analysis) {

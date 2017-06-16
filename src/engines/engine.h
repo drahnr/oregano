@@ -49,11 +49,14 @@ GType oregano_engine_get_type (void);
 void oregano_engine_start (OreganoEngine *engine);
 void oregano_engine_stop (OreganoEngine *engine);
 gboolean oregano_engine_has_warnings (OreganoEngine *engine);
-void oregano_engine_get_progress (OreganoEngine *engine, double *p);
+void oregano_engine_get_progress_solver (OreganoEngine *engine, double *p);
+void oregano_engine_get_progress_reader (OreganoEngine *engine, double *p);
 gboolean oregano_engine_generate_netlist (OreganoEngine *engine, const gchar *file, GError **error);
 GList *oregano_engine_get_results (OreganoEngine *engine);
-gchar *oregano_engine_get_current_operation (OreganoEngine *);
+gchar *oregano_engine_get_current_operation_solver (OreganoEngine *);
+gchar *oregano_engine_get_current_operation_reader (OreganoEngine *);
 gboolean oregano_engine_is_available (OreganoEngine *);
+gchar *oregano_engine_get_analysis_name_by_type(AnalysisType type);
 gchar *oregano_engine_get_analysis_name (SimulationData *id);
 
 #endif

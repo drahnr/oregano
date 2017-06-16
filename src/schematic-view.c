@@ -114,7 +114,7 @@ struct _SchematicViewPriv
 	gpointer browser;
 
 	GtkWidget *logview;
-	GtkWidget *paned;
+	GtkPaned *paned;
 	guint grid : 1;
 	SchematicTool tool;
 	int cursor;
@@ -235,9 +235,14 @@ static void find_file (GtkButton *button, GtkEntry *text)
 {
 	GtkWidget *dialog;
 
-	dialog = gtk_file_chooser_dialog_new (_ ("Export to..."), NULL, GTK_FILE_CHOOSER_ACTION_SAVE,
-	                                      GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OPEN,
-	                                      GTK_RESPONSE_ACCEPT, NULL);
+	dialog = gtk_file_chooser_dialog_new (_ ("Export to..."),
+	                                      NULL,
+	                                      GTK_FILE_CHOOSER_ACTION_SAVE,
+	                                      _("_Cancel"),
+	                                      GTK_RESPONSE_CANCEL,
+	                                      _("_Open"),
+	                                      GTK_RESPONSE_ACCEPT,
+	                                      NULL);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *filename;
@@ -926,7 +931,7 @@ static void zoom_cmd (GtkAction *action, GtkRadioAction *current, SchematicView 
 
 static void simulate_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	simulation_show (NULL, sv);
+	simulation_show_progress_bar (NULL, sv);
 
 	sheet_update_parts (sv->priv->sheet);
 	return;
@@ -1025,7 +1030,9 @@ static void set_window_size (SchematicView *sv)
 	// Set the window size to something reasonable
 	GdkScreen *screen = gdk_screen_get_default ();
 	if (screen) {
-		gint monitor_count = gdk_screen_get_n_monitors (screen);
+		//FIXME unused
+//		gint monitor_count = gdk_screen_get_n_monitors (screen);
+
 		// usually the bigger one is the primary one
 		// as the window is not realized yet (or for some other reason does not make
 		// a difference)

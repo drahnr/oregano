@@ -15,34 +15,34 @@
 #include "../src/model/part.h"
 #include "../src/model/part-private.h"
 
-void test_basic();
-void test_AT();
-void test_AMPERSAND_TRUE();
-void test_AMPERSAND_FALSE();
-void test_QUESTION_MARK_TRUE();
-void test_QUESTION_MARK_FALSE();
-void test_TILDE_TRUE();
-void test_TILDE_FALSE();
-void test_HASHTAG_TRUE();
-void test_HASHTAG_FALSE();
-void doit(char *names[], char *test_values[], char *expected_values[]);
+void test_update_connection_designators_basic();
+void test_update_connection_designators_AT();
+void test_update_connection_designators_AMPERSAND_TRUE();
+void test_update_connection_designators_AMPERSAND_FALSE();
+void test_update_connection_designators_QUESTION_MARK_TRUE();
+void test_update_connection_designators_QUESTION_MARK_FALSE();
+void test_update_connection_designators_TILDE_TRUE();
+void test_update_connection_designators_TILDE_FALSE();
+void test_update_connection_designators_HASHTAG_TRUE();
+void test_update_connection_designators_HASHTAG_FALSE();
+void doit_update_connection_designators(char *names[], char *test_values[], char *expected_values[]);
 
 void
-test_update_connection_designators()
+add_funcs_test_update_connection_designators()
 {
-	test_basic();
-	test_AT();
-	test_AMPERSAND_TRUE();
-	test_AMPERSAND_FALSE();
-	test_QUESTION_MARK_TRUE();
-	test_QUESTION_MARK_FALSE();
-	test_TILDE_TRUE();
-	test_TILDE_FALSE();
-	test_HASHTAG_TRUE();
-	test_HASHTAG_FALSE();
+	g_test_add_func ("/core/model/part-property/update_connection_designators/basic", test_update_connection_designators_basic);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/AT", test_update_connection_designators_AT);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/AMPERSAND_TRUE", test_update_connection_designators_AMPERSAND_TRUE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/AMPERSAND_FALSE", test_update_connection_designators_AMPERSAND_FALSE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/QUESTION_MARK_TRUE", test_update_connection_designators_QUESTION_MARK_TRUE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/QUESTION_MARK_FALSE", test_update_connection_designators_QUESTION_MARK_FALSE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/TILDE_TRUE", test_update_connection_designators_TILDE_TRUE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/TILDE_FALSE", test_update_connection_designators_TILDE_FALSE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/HASHTAG_TRUE", test_update_connection_designators_HASHTAG_TRUE);
+	g_test_add_func ("/core/model/part-property/update_connection_designators/HASHTAG_FALSE", test_update_connection_designators_HASHTAG_FALSE);
 }
 
-void test_basic() {
+void test_update_connection_designators_basic() {
 	char *names[] = {
 			"Refdes",
 			"Res",
@@ -58,10 +58,10 @@ void test_basic() {
 			"1k",
 			"@refdes %1 %2 @res",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_AT() {
+void test_update_connection_designators_AT() {
 	char *names[] = {
 			"Refdes",
 			"cur",
@@ -77,10 +77,10 @@ void test_AT() {
 			"'0.001*(V( %3 )-V( %4 ))'",
 			"@refdes %1 %2 cur=@cur",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_AMPERSAND_TRUE() {
+void test_update_connection_designators_AMPERSAND_TRUE() {
 	char *names[] = {
 			"Refdes",
 			"mname",
@@ -96,10 +96,10 @@ void test_AMPERSAND_TRUE() {
 			"RMODEL %3 jkloe",
 			"@refdes %1 %2 &mname %4 ",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_AMPERSAND_FALSE() {
+void test_update_connection_designators_AMPERSAND_FALSE() {
 	char *names[] = {
 			"Refdes",
 			"Template",
@@ -112,10 +112,10 @@ void test_AMPERSAND_FALSE() {
 			"RMOD",
 			"@refdes %1 %2 &mname %3 ",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_QUESTION_MARK_TRUE() {
+void test_update_connection_designators_QUESTION_MARK_TRUE() {
 	char *names[] = {
 			"Refdes",
 			"offset",
@@ -140,10 +140,10 @@ void test_QUESTION_MARK_TRUE() {
 			"5555 %3 asdf",
 			"@refdes %1 %2 SIN(@offset 0 0) ?DC|DC @DC %4 |(ampl @ampl %agoi ( ?DC|freq @freq %5 |",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_QUESTION_MARK_FALSE() {
+void test_update_connection_designators_QUESTION_MARK_FALSE() {
 	char *names[] = {
 			"Refdes",
 			"offset",
@@ -165,10 +165,10 @@ void test_QUESTION_MARK_FALSE() {
 			"555",
 			"@refdes %1 %2 SIN(@offset 0 0) ?DC|DC @DC %agoi |(ampl @ampl %4 ( %5 ?DC|freq @freq %agoi | %6 ",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_TILDE_TRUE() {
+void test_update_connection_designators_TILDE_TRUE() {
 	char *names[] = {
 			"Refdes",
 			"offset",
@@ -193,10 +193,10 @@ void test_TILDE_TRUE() {
 			"5555 %4 asdf",
 			"@refdes %1 %2 SIN(@offset 0 0) ~DC|ampl %lkj @ampl|(DC %3 @DC( ~DC|freq %lkj @freq|",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_TILDE_FALSE() {
+void test_update_connection_designators_TILDE_FALSE() {
 	char *names[] = {
 			"Refdes",
 			"offset",
@@ -218,10 +218,10 @@ void test_TILDE_FALSE() {
 			"5555 %4 freq",
 			"@refdes %1 %2 SIN(@offset 0 0) ~DC|freq %3 @freq| ~DC|ampl %5 @ampl|(DC %lkj @DC( %7 ",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_HASHTAG_TRUE() {
+void test_update_connection_designators_HASHTAG_TRUE() {
 	char *names[] = {
 			"Refdes",
 			"offset",
@@ -246,10 +246,10 @@ void test_HASHTAG_TRUE() {
 			"5555 %4 asdf",
 			"@refdes %1 %2 SIN(@offset @ampl @freq 0 0) #DC|DC %3 @DC %5 | aslkhgl %6 ",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
-void test_HASHTAG_FALSE() {
+void test_update_connection_designators_HASHTAG_FALSE() {
 	char *names[] = {
 			"Refdes",
 			"offset",
@@ -271,12 +271,12 @@ void test_HASHTAG_FALSE() {
 			"555",
 			"@refdes %1 %2 SIN(@offset @freq 0 0) #DC|DC %jkl @ampl %wfl | %-gh jkl",
 			NULL };
-	doit(names, test_values, expected_values);
+	doit_update_connection_designators(names, test_values, expected_values);
 }
 
 //this function does not free the allocated memory
 //do not use this function in productive code
-void doit(char *names[], char *test_values[], char *expected_values[]) {
+void doit_update_connection_designators(char *names[], char *test_values[], char *expected_values[]) {
 	Part *test_part = part_new();
 
 	Property *prop;

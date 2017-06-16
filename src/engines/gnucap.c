@@ -42,7 +42,6 @@
 // TODO Move analysis data and result to another file
 #include "simulation.h"
 
-typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
 
 struct analysis_tag
 {
@@ -434,11 +433,11 @@ static void gnucap_interface_init (gpointer g_iface, gpointer iface_data)
 	OreganoEngineClass *klass = (OreganoEngineClass *)g_iface;
 	klass->start = gnucap_start;
 	klass->stop = gnucap_stop;
-	klass->progress = gnucap_progress;
+	klass->progress_solver = gnucap_progress;
 	klass->get_netlist = gnucap_generate_netlist;
 	klass->has_warnings = gnucap_has_warnings;
 	klass->get_results = gnucap_get_results;
-	klass->get_operation = gnucap_get_operation;
+	klass->get_operation_solver = gnucap_get_operation;
 	klass->is_available = gnucap_is_available;
 }
 
@@ -567,6 +566,9 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 	gdouble val;
 	gchar *s;
 
+	typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
+	ParseDataState state;
+
 	for (j = 0; j < len; j++) {
 		if (raw[j] != '\n') {
 			buf[priv->buf_count++] = raw[j];
@@ -581,24 +583,24 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			SimSettings *sim_settings;
 			gdouble np1;
 
-			sim_settings = (SimSettings *)schematic_get_sim_settings (priv->schematic);
+			sim_settings = schematic_get_sim_settings (priv->schematic);
 
 			data = g_new0 (Analysis, 1);
 			priv->current = sdata = SIM_DATA (data);
 			priv->analysis = g_list_append (priv->analysis, sdata);
 			priv->num_analysis++;
-			sdata->state = STATE_IDLE;
-			sdata->type = ANALYSIS_UNKNOWN;
+			state = STATE_IDLE;
+			sdata->type = ANALYSIS_TYPE_UNKNOWN;
 			sdata->functions = NULL;
 
 			// Calculates the quantity of variables
 			variables = _get_variables (s, &n);
 
-			for (i = 0; i < TAGS_COUNT; i++)
+			for (i = 1; i < TAGS_COUNT; i++)
 				if (IS_THIS_ITEM (variables[0].name, analysis_tags[i]))
 					sdata->type = i;
 
-			sdata->state = IN_VALUES;
+			state = IN_VALUES;
 			sdata->n_variables = n;
 			sdata->got_points = 0;
 			sdata->got_var = 0;
@@ -618,7 +620,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			for (i = 0; i < n; i++) {
 				sdata->var_names[i] = g_strdup (variables[i].name);
 				switch (sdata->type) {
-				case TRANSIENT:
+				case ANALYSIS_TYPE_TRANSIENT:
 					if (i == 0)
 						sdata->var_units[i] = g_strdup (_ ("time"));
 					else {
@@ -628,7 +630,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 							sdata->var_units[i] = g_strdup (_ ("voltage"));
 					}
 					break;
-				case AC:
+				case ANALYSIS_TYPE_AC:
 					if (i == 0)
 						sdata->var_units[i] = g_strdup (_ ("frequency"));
 					else {
@@ -645,18 +647,18 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			sdata->n_variables = n;
 
 			switch (sdata->type) {
-			case TRANSIENT:
+			case ANALYSIS_TYPE_TRANSIENT:
 				data->transient.sim_length = sim_settings_get_trans_stop (sim_settings) -
 				                             sim_settings_get_trans_start (sim_settings);
 				data->transient.step_size = sim_settings_get_trans_step (sim_settings);
 				break;
-			case AC:
+			case ANALYSIS_TYPE_AC:
 				data->ac.start = sim_settings_get_ac_start (sim_settings);
 				data->ac.stop = sim_settings_get_ac_stop (sim_settings);
 				data->ac.sim_length = sim_settings_get_ac_npoints (sim_settings);
 				break;
-			case OP_POINT:
-			case DC_TRANSFER:
+			case ANALYSIS_TYPE_OP_POINT:
+			case ANALYSIS_TYPE_DC_TRANSFER:
 				np1 = 1.;
 				data->dc.start = sim_settings_get_dc_start (sim_settings);
 				data->dc.stop = sim_settings_get_dc_stop (sim_settings);
@@ -665,14 +667,17 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 
 				data->dc.sim_length = np1;
 				break;
-			case TRANSFER:
-			case DISTORTION:
-			case NOISE:
-			case POLE_ZERO:
-			case SENSITIVITY:
-			case FOURIER:
+			case ANALYSIS_TYPE_TRANSFER:
+			case ANALYSIS_TYPE_DISTORTION:
+			case ANALYSIS_TYPE_NOISE:
+			case ANALYSIS_TYPE_POLE_ZERO:
+			case ANALYSIS_TYPE_SENSITIVITY:
+			case ANALYSIS_TYPE_FOURIER:
 				break;
-			case ANALYSIS_UNKNOWN:
+			case ANALYSIS_TYPE_NONE:
+				g_error (_ ("No analysis"));
+				break;
+			case ANALYSIS_TYPE_UNKNOWN:
 				g_error (_ ("Unknown analysis"));
 				break;
 			}
@@ -686,18 +691,19 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				continue;
 			}
 
-			switch (sdata->state) {
+			switch (state) {
 			case IN_VALUES:
 				val = strtofloat (s);
 				switch (sdata->type) {
-				case TRANSIENT:
+				case ANALYSIS_TYPE_TRANSIENT:
 					priv->progress = val / data->transient.sim_length;
 					break;
-				case AC:
+				case ANALYSIS_TYPE_AC:
 					priv->progress = (val - data->ac.start) / data->ac.sim_length;
 					break;
-				case DC_TRANSFER:
+				case ANALYSIS_TYPE_DC_TRANSFER:
 					priv->progress = val / data->ac.sim_length;
+					break;
 				default:
 					break;
 				}
@@ -723,7 +729,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			default:
 				if (priv->buf_count > 1) {
 					if (strstr (s, _ ("abort")))
-						sdata->state = STATE_ABORT;
+						state = STATE_ABORT;
 					schematic_log_append_error (priv->schematic, s);
 				}
 			}

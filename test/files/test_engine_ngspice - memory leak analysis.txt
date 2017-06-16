@@ -1,0 +1,105 @@
+momory leak analysis
+====================
+
+using netlist of file tryProgressBar.oregano as input
+
+
+static memory consumption
+-------------------------
+
+1232 bytes	oregano_ngspice_new
+272 bytes	g_main_loop_new
+
+
+
+t_end = 2.5e-9
+consumption after 0 cycles:	190075
+consumption after 1 cycle :	212171
+consumption after 2 cycles:	222007
+consumption after 3 cycles:	233859
+consumption after 4 cycles:	245679
+consumption after 5 cycles:	255515
+consumption after 6 cycles:	265351
+consumption after 7 cycles:	275187
+consumption after 8 cycles:	285023
+consumption after 9 cycles:	295867
+consumption after 10 cycles:	306695
+
+delta:
+0-1	22096
+1-2	9836
+2-3	11852
+3-4	11820
+4-5	9836
+5-6	9836
+6-7	9836
+7-8	9836
+8-9	10844
+9-10	10828
+
+t_end = 2.5e-8
+consumption after 0 cycles:	190075
+consumption after 1 cycle :	212171
+consumption after 2 cycles:	222007
+consumption after 3 cycles:	233859
+consumption after 4 cycles:	245679
+consumption after 5 cycles:	255515
+consumption after 6 cycles:	265351
+consumption after 7 cycles:	275187
+consumption after 8 cycles:	284527
+consumption after 9 cycles:	295371
+consumption after 10 cycles:	305703
+
+delta:
+0-1	22096
+1-2	9836
+2-3	11852
+3-4	11820
+4-5	9836
+5-6	9836
+6-7	9836
+7-8	9340
+8-9	10844
+9-10	10332
+
+
+now we know that there is no memory leak in
+data computation. We know that there are
+leaks in the software architecture configuraion
+
+
+using g_thread_unref
+
+t_end = 2.5e-9
+consumption after 0 cycles:	190075
+consumption after 10 cycles:	296615
+
+using g_main_loop_unref
+
+t_end = 2.5e-9
+consumption after 0 cycles:	190075
+consumption after 10 cycles:	296455
+
+using g_main_context_unref
+
+t_end = 2.5e-9
+consumption after 0 cycles:	190075
+consumption after 10 cycles:	289655
+
+using g_source_unref for channel listener
+using g_io_channel_unref
+using g_io_channel_set_close_on_unref
+
+t_end = 2.5e-9
+consumption after 0 cycles:	190075
+consumption after 1 cycles:	203231
+consumption after 2 cycles:	203231
+consumption after 3 cycles:	204239
+consumption after 4 cycles:	206223
+consumption after 5 cycles:	206223
+consumption after 6 cycles:	206223
+consumption after 7 cycles:	206223
+consumption after 8 cycles:	206223
+consumption after 9 cycles:	205215
+consumption after 10 cycles:	205215
+

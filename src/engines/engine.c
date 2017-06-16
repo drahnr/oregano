@@ -35,10 +35,19 @@
 #include "ngspice.h"
 
 static gchar *analysis_names[] = {
-    N_ ("Operating Point"),  N_ ("Transient Analysis"), N_ ("DC transfer characteristic"),
-    N_ ("AC Analysis"),      N_ ("Transfer Function"),  N_ ("Distortion Analysis"),
-    N_ ("Noise Analysis"),   N_ ("Pole-Zero Analysis"), N_ ("Sensitivity Analysis"),
-    N_ ("Fourier Analysis"), N_ ("Unknown Analysis"),   NULL};
+	[ANALYSIS_TYPE_NONE]             = N_ ("None"),
+	[ANALYSIS_TYPE_OP_POINT]         = N_ ("Operating Point"),
+	[ANALYSIS_TYPE_TRANSIENT]        = N_ ("Transient Analysis"),
+	[ANALYSIS_TYPE_DC_TRANSFER]      = N_ ("DC transfer characteristic"),
+    [ANALYSIS_TYPE_AC]               = N_ ("AC Analysis"),
+	[ANALYSIS_TYPE_TRANSFER]         = N_ ("Transfer Function"),
+	[ANALYSIS_TYPE_DISTORTION]       = N_ ("Distortion Analysis"),
+    [ANALYSIS_TYPE_NOISE]            = N_ ("Noise Analysis"),
+	[ANALYSIS_TYPE_POLE_ZERO]        = N_ ("Pole-Zero Analysis"),
+	[ANALYSIS_TYPE_SENSITIVITY]      = N_ ("Sensitivity Analysis"),
+    [ANALYSIS_TYPE_FOURIER]          = N_ ("Fourier Analysis"),
+	[ANALYSIS_TYPE_UNKNOWN]          = N_ ("Unknown Analysis"),
+	NULL};
 
 // Signals
 enum { DONE, ABORTED, LAST_SIGNAL };
@@ -102,9 +111,16 @@ gboolean oregano_engine_is_available (OreganoEngine *self)
 	return OREGANO_ENGINE_GET_CLASS (self)->is_available (self);
 }
 
-void oregano_engine_get_progress (OreganoEngine *self, double *p)
+void oregano_engine_get_progress_solver (OreganoEngine *self, double *p)
 {
-	OREGANO_ENGINE_GET_CLASS (self)->progress (self, p);
+	g_return_if_fail(OREGANO_ENGINE_GET_CLASS (self)->progress_solver != NULL);
+	OREGANO_ENGINE_GET_CLASS (self)->progress_solver (self, p);
+}
+
+void oregano_engine_get_progress_reader (OreganoEngine *self, double *p)
+{
+	g_return_if_fail(OREGANO_ENGINE_GET_CLASS(self)->progress_reader != NULL);
+	OREGANO_ENGINE_GET_CLASS (self)->progress_reader (self, p);
 }
 
 gboolean oregano_engine_generate_netlist (OreganoEngine *self, const gchar *file, GError **error)
@@ -117,9 +133,16 @@ GList *oregano_engine_get_results (OreganoEngine *self)
 	return OREGANO_ENGINE_GET_CLASS (self)->get_results (self);
 }
 
-gchar *oregano_engine_get_current_operation (OreganoEngine *self)
+gchar *oregano_engine_get_current_operation_solver (OreganoEngine *self)
 {
-	return OREGANO_ENGINE_GET_CLASS (self)->get_operation (self);
+	g_return_val_if_fail(OREGANO_ENGINE_GET_CLASS (self)->get_operation_solver != NULL, NULL);
+	return OREGANO_ENGINE_GET_CLASS (self)->get_operation_solver (self);
+}
+
+gchar *oregano_engine_get_current_operation_reader (OreganoEngine *self)
+{
+	g_return_val_if_fail(OREGANO_ENGINE_GET_CLASS (self)->get_operation_reader != NULL, NULL);
+	return OREGANO_ENGINE_GET_CLASS (self)->get_operation_reader (self);
 }
 
 OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm)
@@ -139,10 +162,17 @@ OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm)
 	return engine;
 }
 
+gchar *oregano_engine_get_analysis_name_by_type(AnalysisType type) {
+	return g_strdup(_(analysis_names[type]));
+}
+
+/**
+ * @sdat: nullable
+ */
 gchar *oregano_engine_get_analysis_name (SimulationData *sdat)
 {
 	if (sdat == NULL) {
-		return g_strdup (_ (analysis_names[ANALYSIS_UNKNOWN]));
+		return g_strdup (_ (analysis_names[ANALYSIS_TYPE_UNKNOWN]));
 	}
 	return g_strdup (_ (analysis_names[sdat->type]));
 }

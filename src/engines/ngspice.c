@@ -43,17 +43,13 @@
 #include "ngspice-analysis.h"
 #include "errors.h"
 
-#include "debug.h"
+#include "ngspice-watcher.h"
 
 static void ngspice_class_init (OreganoNgSpiceClass *klass);
 static void ngspice_finalize (GObject *object);
 static void ngspice_dispose (GObject *object);
 static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class);
 static void ngspice_interface_init (gpointer g_iface, gpointer iface_data);
-static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition,
-                                         OreganoNgSpice *ngspice);
-static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condition,
-                                         OreganoNgSpice *ngspice);
 
 static GObjectClass *parent_class = NULL;
 
@@ -106,18 +102,25 @@ static void ngspice_finalize (GObject *object)
 	iter = ngspice->priv->analysis;
 	for (; iter; iter = iter->next) {
 		SimulationData *data = SIM_DATA (iter->data);
+		for (i = 0; i < data->n_variables; i++) {
+			g_free(data->var_names[i]);
+			g_free(data->var_units[i]);
+			g_array_free (data->data[i], TRUE);
+		}
 		g_free (data->var_names);
 		g_free (data->var_units);
-		for (i = 0; i < data->n_variables; i++)
-			g_array_free (data->data[i], TRUE);
-
+		g_free (data->data);
 		g_free (data->min_data);
 		g_free (data->max_data);
 
 		g_free (data);
 	}
 	g_list_free (ngspice->priv->analysis);
-	ngspice->priv->analysis = NULL;
+	g_mutex_clear(&ngspice->priv->progress_ngspice.progress_mutex);
+	g_mutex_clear(&ngspice->priv->progress_reader.progress_mutex);
+	g_mutex_clear(&ngspice->priv->current.mutex);
+	cancel_info_unsubscribe(ngspice->priv->cancel_info);
+	g_free(ngspice->priv);
 
 	parent_class->finalize (object);
 }
@@ -232,7 +235,10 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 			g_string_append_printf (buffer, " uic");
 		}
 		g_string_append_printf (buffer, "\n");
-		{
+
+		if (sim_settings_get_trans_analyze_all(output.settings)) {
+			g_string_append_printf (buffer, ".print tran all\n");
+		} else {
 			gchar *tmp_str = netlist_helper_create_analysis_string (output.store, FALSE);
 			g_string_append_printf (buffer, ".print tran %s\n", tmp_str);
 			g_free (tmp_str);
@@ -307,238 +313,56 @@ static gboolean ngspice_generate_netlist (OreganoEngine *engine, const gchar *fi
 	return TRUE;
 }
 
-/**
- * this is total bogus
- */
 static void ngspice_progress (OreganoEngine *self, double *d)
 {
 	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
 
-	ngspice->priv->progress += 0.1;
-	if (ngspice->priv->progress > 1.)
-		ngspice->priv->progress = 1.;
-	(*d) = ngspice->priv->progress;
+	g_mutex_lock(&ngspice->priv->progress_ngspice.progress_mutex);
+	*d = ngspice->priv->progress_ngspice.progress;
+	g_mutex_unlock(&ngspice->priv->progress_ngspice.progress_mutex);
+}
+
+static void reader_progress (OreganoEngine *self, double *d)
+{
+	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
+
+	g_mutex_lock(&ngspice->priv->progress_reader.progress_mutex);
+	*d = ngspice->priv->progress_reader.progress;
+	g_mutex_unlock(&ngspice->priv->progress_reader.progress_mutex);
 }
 
 static void ngspice_stop (OreganoEngine *self)
 {
 	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
-	g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
-	g_source_remove (ngspice->priv->child_iochannel_watch);
-	g_spawn_close_pid (ngspice->priv->child_pid);
-	g_spawn_close_pid (ngspice->priv->child_stdout);
-}
-
-/**
- * returns the number of strings in a NULL terminated array of strings
- */
-static int get_count(gchar** array) {
-	int i = 0;
-	while (array[i] != NULL)
-		i++;
-	return i;
-}
-
-/**
- * adds the line number followed by a colon and a space at the beginning of each line
- */
-static void add_line_numbers(gchar **string) {
-	gchar **splitted = g_regex_split_simple("\\n", *string, 0, 0);
-	GString *new_string = g_string_new("");
-	//why -1? Because g_regex_split_simple adds one empty string too much at the end
-	//of the array.
-	int count = get_count(splitted) - 1;
-	int max_length = floor(log10((double) count)) + 1;
-	//splitted[i+1] != NULL (why not only i but i+1?) because g_regex_split_simple
-	//adds one empty string too much at the end of the array
-	for (int i = 0; splitted[i+1] != NULL; i++)
-		g_string_append_printf(new_string, "%0*d: %s\n", max_length, i+1, splitted[i]);
-	//remove the last newline, which was added additionally
-	new_string = g_string_truncate(new_string, new_string->len - 1);
-	g_free(*string);
-	*string = new_string->str;
-	g_string_free(new_string, FALSE);
-}
-
-/**
- * keeps an eye on the process itself
- */
-static void ngspice_watch_cb (GPid pid, gint status, OreganoNgSpice *ngspice)
-{
-	ngspice->priv->status = status;
-	GError *exit_error = NULL;
-	gboolean exited_normal = g_spawn_check_exit_status(status, &exit_error);
-	if (exit_error != NULL)
-		g_error_free(exit_error);
-
-	gchar *line = NULL;
-	gsize len;
-	GError *e = NULL;
-	g_io_channel_read_to_end (ngspice->priv->child_iochannel, &line, &len, &e);
-	if (e) {
-		schematic_log_append_error (ngspice->priv->schematic,
-									"Failed to read from subprocess \"ngpsice\"");
-		g_print ("ngspice pipe pid: %s - %i", e->message, e->code);
-		g_clear_error (&e);
-		ngspice->priv->aborted = TRUE;
-		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-	} else if (len > 0) {
-		fprintf (ngspice->priv->inputfp, "%s", line);
+	cancel_info_set_cancel(ngspice->priv->cancel_info);
+	GPid child_pid = ngspice->priv->child_pid;
+	if (child_pid != 0) {
+		// CTRL+C (Terminal quit signal.)
+		kill(child_pid, SIGINT);
+		ngspice->priv->child_pid = 0;
 	}
-	g_free (line);
-
-	// Free stuff
-	g_io_channel_shutdown (ngspice->priv->child_iochannel, TRUE, NULL);
-	g_source_remove (ngspice->priv->child_iochannel_watch);
-	g_spawn_close_pid (ngspice->priv->child_pid);
-	g_spawn_close_pid (ngspice->priv->child_stdout);
-	g_io_channel_shutdown (ngspice->priv->child_ioerror, TRUE, NULL);
-	g_source_remove (ngspice->priv->child_ioerror_watch);
-	g_spawn_close_pid (ngspice->priv->child_error);
-
-	ngspice->priv->current = NULL;
-	fclose (ngspice->priv->inputfp);
-
-	if (!exited_normal) {
-		// check for exit via return in main, exit() or _exit() of the child, see man
-		// waitpid(2)
-		//       WIFEXITED(wstatus)
-		//              returns true if the child terminated normally, that is, by call‐
-		//              ing exit(3) or _exit(2), or by returning from main().
-		if (!(WIFEXITED (status)))
-			schematic_log_append_error(ngspice->priv->schematic, "### ngspice exited with exception ###\n");
-		else
-			schematic_log_append_error(ngspice->priv->schematic, "### ngspice exited abnormally ###\n");
-		schematic_log_append_error(ngspice->priv->schematic, "### ngspice output: ###\n\n");
-		gchar *ngspice_error_contents = NULL;
-		gsize ngspice_error_length;
-		GError *ngspice_error_read_error = NULL;
-		g_file_get_contents("/tmp/netlist.lst", &ngspice_error_contents, &ngspice_error_length, &ngspice_error_read_error);
-		add_line_numbers(&ngspice_error_contents);
-		schematic_log_append_error(ngspice->priv->schematic, ngspice_error_contents);
-		g_free(ngspice_error_contents);
-		if (ngspice_error_read_error != NULL)
-			g_error_free(ngspice_error_read_error);
-
-		gchar *netlist_contents = NULL;
-		gsize netlist_lentgh;
-		GError *netlist_read_error = NULL;
-		g_file_get_contents("/tmp/netlist.tmp", &netlist_contents, &netlist_lentgh, &netlist_read_error);
-		add_line_numbers(&netlist_contents);
-		schematic_log_append_error(ngspice->priv->schematic, "\n\n### netlist: ###\n\n");
-		schematic_log_append_error(ngspice->priv->schematic, netlist_contents);
-		g_free(netlist_contents);
-		if (netlist_read_error != NULL)
-			g_error_free(netlist_read_error);
-
-		ngspice->priv->aborted = TRUE;
-		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-		return;
-	}
-	ngspice_parse (ngspice);
-
-	if (ngspice->priv->num_analysis == 0) {
-		schematic_log_append_error (ngspice->priv->schematic,
-									_ ("### Too few or none analysis found ###\n"));
-		ngspice->priv->aborted = TRUE;
-		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-	} else {
-		g_signal_emit_by_name (G_OBJECT (ngspice), "done");
-	}
-}
-
-static gboolean ngspice_child_stdout_cb (GIOChannel *source, GIOCondition condition,
-                                         OreganoNgSpice *ngspice)
-{
-	gchar *line = NULL;
-	gsize len, terminator;
-	GError *e = NULL;
-
-	g_io_channel_read_line (source, &line, &len, &terminator, &e);
-	if (e) {
-		g_printf ("ngspice pipe stdout: %s - %i", e->message, e->code);
-		g_clear_error (&e);
-	} else if (len > 0) {
-		fprintf (ngspice->priv->inputfp, "%s", line);
-	}
-	g_free (line);
-
-	// Let UI update
-	g_main_context_iteration (NULL, FALSE);
-	return G_SOURCE_CONTINUE;
-}
-
-static gboolean ngspice_child_stderr_cb (GIOChannel *source, GIOCondition condition,
-                                         OreganoNgSpice *ngspice)
-{
-	gchar *line;
-	gsize len, terminator;
-	GError *e = NULL;
-
-	g_io_channel_read_line (source, &line, &len, &terminator, &e);
-	if (e) {
-		g_printf ("ngspice pipe stderr: %s - %i", e->message, e->code);
-		g_clear_error (&e);
-	} else if (len > 0) {
-		schematic_log_append_error (ngspice->priv->schematic, line);
-	}
-	g_free (line);
-
-	// Let UI update
-	g_main_context_iteration (NULL, FALSE);
-	return G_SOURCE_CONTINUE;
 }
 
 static void ngspice_start (OreganoEngine *self)
 {
-	OreganoNgSpice *ngspice;
-	OreganoNgSpicePriv *priv;
-	GError *e = NULL;
-	char *argv[] = {"ngspice", "-b", "/tmp/netlist.tmp", NULL};
+	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
+	OreganoNgSpicePriv *priv = ngspice->priv;
 
-	ngspice = OREGANO_NGSPICE (self);
-	priv = ngspice->priv;
-	oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &e);
-	if (e) {
+	GError *e = NULL;
+	if (!oregano_engine_generate_netlist (self, "/tmp/netlist.tmp", &e)) {
 		priv->aborted = TRUE;
-		schematic_log_append_error (priv->schematic, e->message);
+		if (e)
+			schematic_log_append_error (priv->schematic, e->message);
+		else
+			schematic_log_append_error(priv->schematic, "Error at netlist generation.");
 		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
 		g_clear_error (&e);
 		return;
 	}
 
-	// Open the file storing the output of ngspice
-	ngspice->priv->inputfp = fopen ("/tmp/netlist.lst", "w");
-
-	if (g_spawn_async_with_pipes (NULL, // Working directory
-	                              argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL,
-	                              NULL, &priv->child_pid,
-	                              NULL,                // STDIN
-	                              &priv->child_stdout, // STDOUT
-	                              &priv->child_error,  // STDERR
-	                              &e)) {
-		// Add a watch for process status
-		g_child_watch_add_full (G_PRIORITY_HIGH_IDLE, priv->child_pid,
-		                        (GChildWatchFunc)ngspice_watch_cb, ngspice, NULL);
-		// Add a GIOChannel to read from process stdout
-		priv->child_iochannel = g_io_channel_unix_new (priv->child_stdout);
-		// Watch the I/O Channel to read child strout
-		priv->child_iochannel_watch = g_io_add_watch_full (
-		    priv->child_iochannel, G_PRIORITY_LOW, G_IO_IN | G_IO_PRI | G_IO_HUP | G_IO_NVAL,
-		    (GIOFunc)ngspice_child_stdout_cb, ngspice, NULL);
-		// Add a GIOChannel to read from process stderr
-		priv->child_ioerror = g_io_channel_unix_new (priv->child_error);
-		// Watch the I/O error channel to read the child sterr
-		priv->child_ioerror_watch = g_io_add_watch_full (
-		    priv->child_ioerror, G_PRIORITY_LOW, G_IO_IN | G_IO_PRI | G_IO_HUP | G_IO_NVAL,
-		    (GIOFunc)ngspice_child_stderr_cb, ngspice, NULL);
-
-	} else {
-		priv->aborted = TRUE;
-		schematic_log_append_error (priv->schematic, _ ("Unable to execute NgSpice."));
-		g_signal_emit_by_name (G_OBJECT (ngspice), "aborted");
-		g_clear_error (&e);
-	}
+	NgspiceWatcherBuildAndLaunchResources *resources = ngspice_watcher_build_and_launch_resources_new(ngspice);
+	ngspice_watcher_build_and_launch(resources);
+	ngspice_watcher_build_and_launch_resources_finalize(resources);
 }
 
 static GList *ngspice_get_results (OreganoEngine *self)
@@ -548,14 +372,20 @@ static GList *ngspice_get_results (OreganoEngine *self)
 	return OREGANO_NGSPICE (self)->priv->analysis;
 }
 
-static gchar *ngspice_get_operation (OreganoEngine *self)
+static gchar *ngspice_get_operation_ngspice (OreganoEngine *self)
+{
+	return _ ("ngspice solving");
+}
+
+static gchar *ngspice_get_operation_reader (OreganoEngine *self)
 {
 	OreganoNgSpicePriv *priv = OREGANO_NGSPICE (self)->priv;
 
-	if (priv->current == NULL)
-		return _ ("None");
+	g_mutex_lock(&priv->current.mutex);
+	AnalysisType type = priv->current.type;
+	g_mutex_unlock(&priv->current.mutex);
 
-	return oregano_engine_get_analysis_name (priv->current);
+	return oregano_engine_get_analysis_name_by_type(type);
 }
 
 static void ngspice_interface_init (gpointer g_iface, gpointer iface_data)
@@ -563,11 +393,13 @@ static void ngspice_interface_init (gpointer g_iface, gpointer iface_data)
 	OreganoEngineClass *klass = (OreganoEngineClass *)g_iface;
 	klass->start = ngspice_start;
 	klass->stop = ngspice_stop;
-	klass->progress = ngspice_progress;
+	klass->progress_solver = ngspice_progress;
+	klass->progress_reader = reader_progress;
 	klass->get_netlist = ngspice_generate_netlist;
 	klass->has_warnings = ngspice_has_warnings;
 	klass->get_results = ngspice_get_results;
-	klass->get_operation = ngspice_get_operation;
+	klass->get_operation_solver = ngspice_get_operation_ngspice;
+	klass->get_operation_reader = ngspice_get_operation_reader;
 	klass->is_available = ngspice_is_available;
 }
 
@@ -576,14 +408,17 @@ static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class)
 	OreganoNgSpice *self = OREGANO_NGSPICE (instance);
 
 	self->priv = g_new0 (OreganoNgSpicePriv, 1);
-	self->priv->progress = 0.0;
-	self->priv->char_last_newline = TRUE;
-	self->priv->status = 0;
-	self->priv->buf_count = 0;
+	self->priv->progress_ngspice.progress = 0.0;
+	g_mutex_init(&self->priv->progress_ngspice.progress_mutex);
+	self->priv->progress_reader.progress = 0.0;
+	g_mutex_init(&self->priv->progress_reader.progress_mutex);
+	self->priv->current.type = ANALYSIS_TYPE_NONE;
+	g_mutex_init(&self->priv->current.mutex);
 	self->priv->num_analysis = 0;
 	self->priv->analysis = NULL;
-	self->priv->current = NULL;
 	self->priv->aborted = FALSE;
+
+	self->priv->cancel_info = cancel_info_new();
 }
 
 OreganoEngine *oregano_ngspice_new (Schematic *sc)

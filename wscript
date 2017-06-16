@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # encoding: utf-8
 
-VERSION = '0.84.3'
+VERSION = '0.84.5'
 APPNAME = 'oregano'
 
 top = '.'
@@ -182,6 +182,7 @@ def codeformat_fun(ctx):
 	if ctx.env.CODEFORMAT:
 		nodes = ctx.path.ant_glob(\
 		    ['src/*.[ch]',
+		     'src/tools/*.[ch]',
 		     'src/gplot/*.[ch]',
 		     'src/engines/*.[ch]',
 		     'src/sheet/*.[ch]',
