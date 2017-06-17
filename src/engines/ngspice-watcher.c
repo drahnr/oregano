@@ -521,7 +521,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 		                              &e)) {
 
 		*aborted = TRUE;
-		log.log_append_error(log.log, _("Unable to execute NgSpice."));
+		log.log_append_error(log.log, _("Unable to execute NgSpice.\n"));
 		g_signal_emit_by_name (G_OBJECT (emit_instance), "aborted");
 		g_clear_error (&e);
 		g_printf("asdf2\n");
