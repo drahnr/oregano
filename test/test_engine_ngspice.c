@@ -104,22 +104,8 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 static gchar* test_engine_ngspice_get_test_dir_base() {
 	gchar *cwd = g_get_current_dir();
 
-	g_printf("cwd = %s\n", cwd);
-
-	gchar **splitted = g_regex_split_simple("\\/build(?:.(?!\\/build))+$", cwd, 0, 0);
-	for (gchar **ptr = splitted; *ptr != NULL; ptr++)
-		g_printf("%s\n", *ptr);
-
 	gchar *test_dir = g_strdup_printf("%s/test", cwd);
-	g_strfreev(splitted);
-	g_printf("test_dir = %s\n", test_dir);
-
-	GDir *gdir = g_dir_open(cwd, 0, NULL);
-	for (const gchar *dir_name = g_dir_read_name(gdir); dir_name != NULL; dir_name = g_dir_read_name(gdir))
-		g_printf("%s\n", dir_name);
-
 	g_free(cwd);
-	g_assert_true(FALSE);
 
 	return test_dir;
 }
