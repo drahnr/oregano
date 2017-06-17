@@ -109,11 +109,12 @@ static gchar* test_engine_ngspice_get_test_dir_base() {
 	gchar **splitted = g_regex_split_simple("\\/build(?:.(?!\\/build))+$", cwd, 0, 0);
 	for (gchar **ptr = splitted; *ptr != NULL; ptr++)
 		g_printf("%s\n", *ptr);
-	g_assert_true(FALSE);
-	g_free(cwd);
 
-	gchar *test_dir = g_strdup_printf("%s/test", *splitted);
+	gchar *test_dir = g_strdup_printf("%s/test", cwd);
+	g_free(cwd);
 	g_strfreev(splitted);
+	g_printf("test_dir = %s\n", test_dir);
+	g_assert_true(FALSE);
 
 	return test_dir;
 }
