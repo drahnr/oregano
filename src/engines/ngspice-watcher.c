@@ -510,6 +510,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 
 	gint ngspice_stdout_fd;
 	gint ngspice_stderr_fd;
+	g_printf("asdf\n");
 	// Launch ngspice
 	if (!g_spawn_async_with_pipes (NULL, // Working directory
 		                              argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL,
@@ -526,6 +527,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 		return;
 
 	}
+	g_printf("jkloe\n");
 
 	// synchronizes stderr listener with is_ngspice_finished listener (needed for error handling)
 	IsNgspiceStderrDestroyed *is_ngspice_stderr_destroyed = g_new0(IsNgspiceStderrDestroyed, 1);
