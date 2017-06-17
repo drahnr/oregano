@@ -111,7 +111,7 @@ static gchar* test_engine_ngspice_get_test_dir_base() {
 }
 
 static void test_engine_ngspice_basic() {
-
+asdf
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 
 	gchar *test_dir = test_engine_ngspice_get_test_dir_base();
