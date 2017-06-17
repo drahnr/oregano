@@ -103,10 +103,10 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 
 static gchar* test_engine_ngspice_get_test_dir_base() {
 	gchar *cwd = g_get_current_dir();
-	gchar **splitted = g_regex_split_simple("/oregano", cwd, 0, 0);
+	gchar **splitted = g_regex_split_simple("\\/build(?:.(?!\\/build))+$", cwd, 0, 0);
 	g_free(cwd);
 
-	gchar *test_dir = g_strdup_printf("%s/oregano/test", *splitted);
+	gchar *test_dir = g_strdup_printf("%s/test", *splitted);
 	g_strfreev(splitted);
 
 	return test_dir;
