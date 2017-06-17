@@ -114,6 +114,11 @@ static gchar* test_engine_ngspice_get_test_dir_base() {
 	g_free(cwd);
 	g_strfreev(splitted);
 	g_printf("test_dir = %s\n", test_dir);
+
+	GDir *gdir = g_dir_open(cwd, 0, NULL);
+	for (const gchar *dir_name = g_dir_read_name(gdir); dir_name != NULL; dir_name = g_dir_read_name(gdir))
+		g_printf("%s\n", dir_name);
+
 	g_assert_true(FALSE);
 
 	return test_dir;
