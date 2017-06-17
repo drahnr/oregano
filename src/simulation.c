@@ -161,10 +161,9 @@ void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv)
 
 static int progress_bar_timeout_cb (Simulation *s)
 {
-	double p;
 	g_return_val_if_fail (s != NULL, FALSE);
 
-	p = 0;
+	double p = 0;
 	oregano_engine_get_progress_solver (s->engine, &p);
 
 	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (s->progress_solver), p);

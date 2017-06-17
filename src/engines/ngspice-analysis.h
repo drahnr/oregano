@@ -50,6 +50,8 @@
  */
 typedef struct {
 	gdouble progress;
+	// time (from g_get_monotonic_time) of the last writing access
+	gint64 time;
 	GMutex progress_mutex;
 } ProgressResources;
 

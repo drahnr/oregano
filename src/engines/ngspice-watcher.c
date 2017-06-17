@@ -403,6 +403,7 @@ static void read_progress_ngspice(ProgressResources *progress_ngspice, gdouble p
 		progress_ngspice->progress = progress_absolute / progress_end;
 		if (g_str_has_suffix(line, "\r\n"))
 			progress_ngspice->progress = 1;
+		progress_ngspice->time = g_get_monotonic_time();
 		g_mutex_unlock(&progress_ngspice->progress_mutex);
 	}
 	g_strfreev(splitted);
@@ -453,8 +454,7 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *channel, GIOCondition condi
 		g_mutex_unlock(&is_ngspice_stderr_destroyed->mutex);
 
 		return G_SOURCE_REMOVE;
-	} else
-		log.log_append_error(log.log, "Internal error detected.\n");
+	}
 	if (line)
 		g_free (line);
 
@@ -630,6 +630,8 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 
 	GIOChannel *ngspice_stderr_channel = g_io_channel_unix_new (ngspice_stderr_fd);
 	g_io_channel_set_close_on_unref(ngspice_stderr_channel, TRUE);
+	// sometimes there is no data and then the GUI will hang up if NONBLOCK not set
+	g_io_channel_set_flags(ngspice_stderr_channel, g_io_channel_get_flags(ngspice_stderr_channel) | G_IO_FLAG_NONBLOCK, NULL);
 	GSource *channel_stderr_watch_source = g_io_create_watch(ngspice_stderr_channel, G_IO_IN | G_IO_PRI | G_IO_HUP | G_IO_NVAL);
 	g_io_channel_unref(ngspice_stderr_channel);
 	g_source_set_priority (channel_stderr_watch_source, G_PRIORITY_LOW);
