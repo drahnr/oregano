@@ -128,10 +128,9 @@ static void test_engine_ngspice_basic() {
 	g_free(test_dir);
 
 	ngspice_watcher_build_and_launch(test_resources->resources);
-	g_assert_true(FALSE);
 	g_main_loop_run(test_resources->loop);
 //	print_log(test_resources->log_list);
-
+	g_assert_true(FALSE);
 	test_engine_ngspice_resources_finalize(test_resources);
 
 	gchar *actual_content;
