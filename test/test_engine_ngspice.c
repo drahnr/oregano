@@ -136,6 +136,7 @@ static void test_engine_ngspice_basic() {
 	g_free(test_dir);
 
 	ngspice_watcher_build_and_launch(test_resources->resources);
+	print_log(test_resources->log_list);
 	g_main_loop_run(test_resources->loop);
 //	print_log(test_resources->log_list);
 	test_engine_ngspice_resources_finalize(test_resources);
