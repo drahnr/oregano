@@ -170,7 +170,6 @@ static void test_engine_ngspice_error_no_such_file_or_directory() {
 
 	g_assert_nonnull(test_resources->log_list);
 	g_assert_true(g_str_has_suffix(test_resources->log_list->data, " No such file or directory\n"));
-	print_log(test_resources->log_list);
 
 	test_engine_ngspice_resources_finalize(test_resources);
 }
