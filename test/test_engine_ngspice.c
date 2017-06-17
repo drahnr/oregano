@@ -33,6 +33,11 @@ static void test_engine_ngspice_aborted(gpointer emit_instance, GMainLoop *loop)
 	g_main_loop_quit(loop);
 }
 
+static gboolean test_engine_ngspice_timeout(GMainLoop *loop) {
+	g_main_loop_quit(loop);
+	return FALSE;
+}
+
 static void print_log(const GList *list) {
 	for (const GList *walker = list; walker; walker = walker->next)
 		g_printf("%s", (char *)walker->data);
@@ -44,6 +49,7 @@ typedef struct {
 	GMainLoop *loop;
 	gulong handler_id_done;
 	gulong handler_id_aborted;
+	guint handler_id_timeout;
 	GList *log_list;
 	SimSettings *sim_settings;
 } TestEngineNgspiceResources;
@@ -60,6 +66,7 @@ static TestEngineNgspiceResources *test_engine_ngspice_resources_new() {
 	GMainLoop *loop = test_resources->loop;
 	test_resources->handler_id_done = g_signal_connect(G_OBJECT(ngspice), "done", G_CALLBACK(test_engine_ngspice_done), loop);
 	test_resources->handler_id_aborted = g_signal_connect(G_OBJECT(ngspice), "aborted", G_CALLBACK(test_engine_ngspice_aborted), loop);
+	test_resources->handler_id_timeout = g_timeout_add(10000, (GSourceFunc)test_engine_ngspice_timeout, loop);
 
 	resources->aborted = &ngspice->priv->aborted;
 	resources->analysis = &ngspice->priv->analysis;
