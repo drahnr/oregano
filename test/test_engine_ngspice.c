@@ -117,7 +117,7 @@ static void test_engine_ngspice_basic() {
 	print_log(test_resources->log_list);
 	g_assert_null(test_resources->log_list);
 	g_main_loop_run(test_resources->loop);
-	test_engine_ngspice_resources_finalize(test_resources);
+//	test_engine_ngspice_resources_finalize(test_resources);
 
 	g_autofree gchar *actual_content = NULL;
 	gsize actual_size;
@@ -127,6 +127,8 @@ static void test_engine_ngspice_basic() {
 	gsize expected_size;
 	g_file_get_contents(expected_file, &expected_content, &expected_size, NULL);
 
+	g_printf("#####log#####\n\n");
+	print_log(test_resources->log_list);
 	g_printf("actual_size = %ld\n", actual_size);
 	g_printf("expected_size = %ld\n", expected_size);
 	g_printf("actual_content = %s\n", actual_content);
