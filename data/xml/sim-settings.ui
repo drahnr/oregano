@@ -551,19 +551,19 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Start</property>
+                                    <property name="label" translatable="yes">Output</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
                                     <property name="top_attach">1</property>
                                   </packing>
-                                </child>
-                                <child>
+				</child>
+				<child>
                                   <object class="GtkLabel" id="label41">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Stop</property>
+                                    <property name="label" translatable="yes">Start</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -571,6 +571,50 @@
                                   </packing>
                                 </child>
                                 <child>
+                                  <object class="GtkLabel" id="label42">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Stop</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label43">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Step</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+				<child>
+                                  <object class="GtkComboBox" id="dc_vin1">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBox" id="dc_vout1">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+				<child>
                                   <object class="GtkEntry" id="dc_start1">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
@@ -579,7 +623,7 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
+                                    <property name="top_attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -590,18 +634,6 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label42">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Step</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
                                     <property name="top_attach">3</property>
                                   </packing>
                                 </child>
@@ -613,17 +645,7 @@
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBox" id="dc_vin1">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="top_attach">4</property>
                                   </packing>
                                 </child>
                               </object>
@@ -705,12 +727,12 @@
                                 <property name="can_focus">False</property>
                                 <property name="row_spacing">5</property>
                                 <property name="column_spacing">10</property>
-                                <child>
+				<child>
                                   <object class="GtkLabel" id="label44">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Type</property>
+                                    <property name="label" translatable="yes">Output</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -722,19 +744,19 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Points</property>
+                                    <property name="label" translatable="yes">Type</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
                                     <property name="top_attach">1</property>
                                   </packing>
                                 </child>
-                                <child>
+				<child>
                                   <object class="GtkLabel" id="label46">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Start</property>
+                                    <property name="label" translatable="yes">Points</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -746,7 +768,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
                                     <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Stop</property>
+                                    <property name="label" translatable="yes">Start</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">0</property>
@@ -754,18 +776,39 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry" id="ac_npoints">
+                                  <object class="GtkLabel" id="label48">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="invisible_char">●</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="xalign">0</property>
+                                    <property name="label" translatable="yes">Stop</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBox" id="ac_vout1">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBox" id="ac_type">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
                                     <property name="top_attach">1</property>
                                   </packing>
                                 </child>
-                                <child>
-                                  <object class="GtkEntry" id="ac_start">
+				<child>
+                                  <object class="GtkEntry" id="ac_npoints">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="invisible_char">●</property>
@@ -776,7 +819,7 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkEntry" id="ac_stop">
+                                  <object class="GtkEntry" id="ac_start">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="invisible_char">●</property>
@@ -787,13 +830,14 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkComboBox" id="ac_type">
+                                  <object class="GtkEntry" id="ac_stop">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="invisible_char">●</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
+                                    <property name="top_attach">4</property>
                                   </packing>
                                 </child>
                               </object>

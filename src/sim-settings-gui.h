@@ -34,7 +34,8 @@ struct _SimSettingsGui {
 
 	// AC
 	GtkWidget *w_ac_enable,
-	          *w_ac_type,
+		  *w_ac_vout,
+		  *w_ac_type,
 	          *w_ac_npoints,
 	          *w_ac_start,
 	          *w_ac_stop,
@@ -43,7 +44,8 @@ struct _SimSettingsGui {
 	// DC
 	GtkWidget *w_dc_enable,
 	          *w_dc_vin,
-	          *w_dc_start,
+		  *w_dc_vout,
+		  *w_dc_start,
 	          *w_dc_stop,
 	          *w_dc_step,
 	          *w_dcsweep_frame;
@@ -65,5 +67,9 @@ struct _SimSettingsGui {
 SimSettingsGui *sim_settings_gui_new();
 void sim_settings_gui_finalize(SimSettingsGui *gui);
 void sim_settings_show (GtkWidget *widget, SchematicView *sm);
+
+gint get_voltmeters_list (GList **voltmeters, Schematic *sm, GError *e, gboolean with_type);
+
+gint get_sources_list (GList **sources, Schematic *sm, GError *e);
 
 #endif /* SIM_SETTINGS_GUI_H_ */

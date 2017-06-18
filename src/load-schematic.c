@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -69,6 +71,8 @@ typedef enum {
 
 	PARSE_AC_SETTINGS,
 	PARSE_AC_ENABLED,
+	PARSE_AC_VOUT,
+	PARSE_AC_TYPE,
 	PARSE_AC_NPOINTS,
 	PARSE_AC_START,
 	PARSE_AC_STOP,
@@ -76,6 +80,7 @@ typedef enum {
 	PARSE_DC_SETTINGS,
 	PARSE_DC_ENABLED,
 	PARSE_DC_VSRC,
+	PARSE_DC_VOUT,
 	PARSE_DC_START,
 	PARSE_DC_STOP,
 	PARSE_DC_STEP,
@@ -401,6 +406,12 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 		if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:enabled")) {
 			state->state = PARSE_AC_ENABLED;
 			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:vout1")) {
+			state->state = PARSE_AC_VOUT;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:type")) {
+			state->state = PARSE_AC_TYPE;
+			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:npoints")) {
 			state->state = PARSE_AC_NPOINTS;
 			g_string_truncate (state->content, 0);
@@ -423,6 +434,9 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:vsrc1")) {
 			state->state = PARSE_DC_VSRC;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:vout1")) {
+			state->state = PARSE_DC_VOUT;
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:start1")) {
 			state->state = PARSE_DC_START;
@@ -635,12 +649,15 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 	case PARSE_TRANSIENT_STEP_ENABLE:
 
 	case PARSE_AC_ENABLED:
+	case PARSE_AC_VOUT:
+	case PARSE_AC_TYPE:
 	case PARSE_AC_NPOINTS:
 	case PARSE_AC_START:
 	case PARSE_AC_STOP:
 
 	case PARSE_DC_ENABLED:
 	case PARSE_DC_VSRC:
+	case PARSE_DC_VOUT:
 	case PARSE_DC_START:
 	case PARSE_DC_STOP:
 	case PARSE_DC_STEP:
@@ -778,11 +795,19 @@ static void end_element (ParseState *state, const xmlChar *name)
 		sim_settings_set_ac (state->sim_settings,
 		                     !g_ascii_strcasecmp (state->content->str, "true"));
 		state->state = PARSE_AC_SETTINGS;
-		//FIXME: no break? If really no break, leave a comment here and tell my, why!
+		break;
+	case PARSE_AC_VOUT:
+		sim_settings_set_ac_vout (state->sim_settings, state->content->str);
+		state->state = PARSE_AC_SETTINGS;
+		break;
+	case PARSE_AC_TYPE:
+		sim_settings_set_ac_type (state->sim_settings, state->content->str);
+		state->state = PARSE_AC_SETTINGS;
+		break;
 	case PARSE_AC_NPOINTS:
 		sim_settings_set_ac_npoints (state->sim_settings, state->content->str);
 		state->state = PARSE_AC_SETTINGS;
-		//FIXME: no break? If really no break, leave a comment here and tell my, why!
+		break;
 	case PARSE_AC_START:
 		sim_settings_set_ac_start (state->sim_settings, state->content->str);
 		state->state = PARSE_AC_SETTINGS;
@@ -799,11 +824,15 @@ static void end_element (ParseState *state, const xmlChar *name)
 		sim_settings_set_dc (state->sim_settings,
 		                     !g_ascii_strcasecmp (state->content->str, "true"));
 		state->state = PARSE_DC_SETTINGS;
-		//FIXME: no break? If really no break, leave a comment here and tell my, why!
+		break;
 	case PARSE_DC_VSRC:
 		sim_settings_set_dc_vsrc (state->sim_settings, state->content->str);
 		state->state = PARSE_DC_SETTINGS;
-		//FIXME: no break? If really no break, leave a comment here and tell my, why!
+		break;
+	case PARSE_DC_VOUT:
+		sim_settings_set_dc_vout (state->sim_settings, state->content->str);
+		state->state = PARSE_DC_SETTINGS;
+		break;
 	case PARSE_DC_START:
 		sim_settings_set_dc_start (state->sim_settings, state->content->str);
 		state->state = PARSE_DC_SETTINGS;
