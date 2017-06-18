@@ -44,35 +44,12 @@ resources:
     password: {{quay-password}}
 
 jobs:
-  - name: build-docker-image-fedora
-    serial_groups: [network]
-    public: true
-    plan:
-      - get: git-clone-resource
-        trigger: true
-      - put: oregano-test-fedora
-        params:
-          cache: true
-          tag_as_latest: true
-          build: git-clone-resource/.concourse/fedora
-
-  - name: build-docker-image-ubuntu
-    serial_groups: [network]
-    public: true
-    plan:
-    - get: git-clone-resource
-      trigger: true
-    - put: oregano-test-ubuntu
-      params:
-        cache: true
-        tag_as_latest: true
-        build: git-clone-resource/.concourse/ubuntu
-
   - name: compile-pr
     public: true
     plan:
     - aggregate:
       - get: oregano-test-fedora
+        trigger: true
       - get: git-pull-request-resource
         trigger: true
         serial_groups: [network]
@@ -106,9 +83,9 @@ jobs:
     plan:
     - aggregate:
       - get: oregano-test-fedora
+        trigger: true
       - get: git-clone-resource
         trigger: true
-        passed: [build-docker-image-fedora]
     - task: compile
       image: oregano-test-fedora
       config:
@@ -129,9 +106,10 @@ jobs:
     plan:
     - aggregate:
       - get: oregano-test-fedora
+        trigger: true
       - get: git-clone-resource
         trigger: true
-        passed: [compile, build-docker-image-fedora]
+        passed: [compile]
 
     - task: create-rpm
       image: oregano-test-fedora
@@ -160,9 +138,9 @@ jobs:
     plan:
     - aggregate:
       - get: oregano-test-ubuntu
+        trigger: true
       - get: git-clone-resource
         trigger: true
-        passed: [build-docker-image-ubuntu]
     - task: create-deb
       image: oregano-test-ubuntu
       config:
