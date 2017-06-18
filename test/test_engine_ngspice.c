@@ -33,6 +33,11 @@ static void test_engine_ngspice_aborted(gpointer emit_instance, GMainLoop *loop)
 	g_main_loop_quit(loop);
 }
 
+static gboolean test_engine_ngspice_timeout(GMainLoop *loop) {
+	g_main_loop_quit(loop);
+	return FALSE;
+}
+
 static void print_log(const GList *list) {
 	for (const GList *walker = list; walker; walker = walker->next)
 		g_printf("%s", (char *)walker->data);
@@ -44,6 +49,7 @@ typedef struct {
 	GMainLoop *loop;
 	gulong handler_id_done;
 	gulong handler_id_aborted;
+	guint handler_id_timeout;
 	GList *log_list;
 	SimSettings *sim_settings;
 } TestEngineNgspiceResources;
@@ -60,6 +66,7 @@ static TestEngineNgspiceResources *test_engine_ngspice_resources_new() {
 	GMainLoop *loop = test_resources->loop;
 	test_resources->handler_id_done = g_signal_connect(G_OBJECT(ngspice), "done", G_CALLBACK(test_engine_ngspice_done), loop);
 	test_resources->handler_id_aborted = g_signal_connect(G_OBJECT(ngspice), "aborted", G_CALLBACK(test_engine_ngspice_aborted), loop);
+	test_resources->handler_id_timeout = g_timeout_add(10000, (GSourceFunc)test_engine_ngspice_timeout, loop);
 
 	resources->aborted = &ngspice->priv->aborted;
 	resources->analysis = &ngspice->priv->analysis;
@@ -103,11 +110,9 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 
 static gchar* test_engine_ngspice_get_test_dir_base() {
 	gchar *cwd = g_get_current_dir();
-	gchar **splitted = g_regex_split_simple("\\/build(?:.(?!\\/build))+$", cwd, 0, 0);
-	g_free(cwd);
 
-	gchar *test_dir = g_strdup_printf("%s/test", *splitted);
-	g_strfreev(splitted);
+	gchar *test_dir = g_strdup_printf("%s/test", cwd);
+	g_free(cwd);
 
 	return test_dir;
 }
@@ -125,14 +130,15 @@ static void test_engine_ngspice_basic() {
 	test_resources->resources->ngspice_result_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/actual.txt", test_dir);
 
 	gchar *actual_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/actual.txt", test_dir);
+	g_remove(actual_file);
 	gchar *expected_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/expected.txt", test_dir);
 
 	g_free(test_dir);
 
 	ngspice_watcher_build_and_launch(test_resources->resources);
+	print_log(test_resources->log_list);
+	g_assert_null(test_resources->log_list);
 	g_main_loop_run(test_resources->loop);
-//	print_log(test_resources->log_list);
-
 	test_engine_ngspice_resources_finalize(test_resources);
 
 	gchar *actual_content;
