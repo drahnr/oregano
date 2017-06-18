@@ -516,7 +516,6 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 
 	gint ngspice_stdout_fd;
 	gint ngspice_stderr_fd;
-	g_printf("asdf\n");
 	// Launch ngspice
 	if (!g_spawn_async_with_pipes (NULL, // Working directory
 		                              argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL,
@@ -530,11 +529,9 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 		log.log_append_error(log.log, _("Unable to execute NgSpice.\n"));
 		g_signal_emit_by_name (G_OBJECT (emit_instance), "aborted");
 		g_clear_error (&e);
-		g_printf("asdf2\n");
 		return;
 
 	}
-	g_printf("asdf3\n");
 
 	// synchronizes stderr listener with is_ngspice_finished listener (needed for error handling)
 	IsNgspiceStderrDestroyed *is_ngspice_stderr_destroyed = g_new0(IsNgspiceStderrDestroyed, 1);
