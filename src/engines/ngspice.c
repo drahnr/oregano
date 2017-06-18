@@ -246,27 +246,31 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 		g_string_append_c (buffer, '\n');
 	}
 
-	//	Print DC Analysis
+	// Print DC Analysis
 	if (sim_settings_get_dc (output.settings)) {
 		g_string_append (buffer, ".dc ");
 		if (sim_settings_get_dc_vsrc (output.settings)) {
-			g_string_append_printf (buffer, "V_V%s %g %g %g\n",
+			g_string_append_printf (buffer, "V_%s %g %g %g\n",
 			                        sim_settings_get_dc_vsrc (output.settings),
 			                        sim_settings_get_dc_start (output.settings),
 			                        sim_settings_get_dc_stop (output.settings),
 			                        sim_settings_get_dc_step (output.settings));
 			g_string_append_printf (buffer, ".print dc V(%s)\n",
-			                        sim_settings_get_dc_vsrc (output.settings));
+			                        sim_settings_get_dc_vout (output.settings));
 		}
 	}
 
 	// Prints AC Analysis
 	if (sim_settings_get_ac (output.settings)) {
-		g_string_append_printf (buffer, ".ac %s %d %g %g\n",
+		if (sim_settings_get_ac_vout (output.settings)) {
+			g_string_append_printf (buffer, ".ac %s %d %g %g\n",
 		                        sim_settings_get_ac_type (output.settings),
 		                        sim_settings_get_ac_npoints (output.settings),
 		                        sim_settings_get_ac_start (output.settings),
 		                        sim_settings_get_ac_stop (output.settings));
+	                g_string_append_printf (buffer, ".print ac %s\n",
+	                                        sim_settings_get_ac_vout (output.settings));
+		}
 	}
 
 	// Prints analysis using a Fourier transform
