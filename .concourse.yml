@@ -54,6 +54,7 @@ jobs:
         trigger: true
         serial_groups: [network]
     - task: compile
+      timeout: 15m
       image: oregano-test-fedora
       config:
         platform: linux
@@ -87,6 +88,7 @@ jobs:
       - get: git-clone-resource
         trigger: true
     - task: compile
+      timeout: 15m
       image: oregano-test-fedora
       config:
         platform: linux
@@ -112,6 +114,7 @@ jobs:
         passed: [compile]
 
     - task: create-rpm
+      timeout: 20m
       image: oregano-test-fedora
       config:
         platform: linux
@@ -142,6 +145,7 @@ jobs:
       - get: git-clone-resource
         trigger: true
     - task: create-deb
+      timeout: 20m
       image: oregano-test-ubuntu
       config:
         platform: linux
