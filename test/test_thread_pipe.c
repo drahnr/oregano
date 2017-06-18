@@ -126,10 +126,11 @@ static GTestAddDataFuncParameters *test_thread_pipe_buffered_create_test_data() 
 static gchar *test_thread_pipe_buffered_get_testpath(guint *parameter_config, gchar ***parameter_names) {
 	GString *ret_val = g_string_new("/tools/thread_pipe_buffered/test");
 
-	for (int i = 0; parameter_names[i] != NULL; i++)
-		if (parameter_names[i][parameter_config[i]] != NULL)
+	for (int i = 0; parameter_names[i] != NULL; i++) {
+		if (parameter_names[i][parameter_config[i]] != NULL) {
 			g_string_append_printf(ret_val, "_%s", parameter_names[i][parameter_config[i]]);
-
+		}
+	}
 	gchar *ret_val_str = ret_val->str;
 	g_string_free(ret_val, FALSE);
 	return ret_val_str;
