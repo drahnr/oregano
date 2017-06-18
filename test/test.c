@@ -5,7 +5,7 @@
 #define DEBUG_FORCE_FAIL 0
 #endif
 
-
+#include "helper.c"
 #include "test_wire.c"
 #include "test_engine.c"
 #include "test_nodestore.c"
@@ -20,7 +20,6 @@ test_false ()
 	g_assert (FALSE==TRUE);
 }
 #endif
-
 
 int
 main (int argc, char *argv[])
