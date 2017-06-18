@@ -98,6 +98,9 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 	ngspice_watcher_build_and_launch_resources_finalize(resources);
 }
 
+/**
+ * Prepares the given netlist file to be executable on any test system.
+ */
 static gchar *test_engine_ngspice_get_netlist_file(const gchar *relative_path) {
 	g_autofree gchar *test_dir = get_test_base_dir();
 	g_autofree gchar *file_raw = g_strdup_printf("%s/%s/input-raw.netlist", test_dir, relative_path);
@@ -116,6 +119,81 @@ static gchar *test_engine_ngspice_get_netlist_file(const gchar *relative_path) {
 	g_file_set_contents(file, content, -1, NULL);
 
 	return file;
+}
+
+static gpointer ngspice_worker (NgspiceAnalysisResources *resources) {
+
+	ngspice_analysis(resources);
+
+	return NULL;
+}
+
+/**
+ * dirty
+ */
+static GList *parse_file(const gchar *path) {
+	NgspiceAnalysisResources resources;
+	GList *analysis = NULL;
+	AnalysisTypeShared current;
+	current.type = ANALYSIS_TYPE_NONE;
+	g_mutex_init(&current.mutex);
+	guint num_analysis = 0;
+	ProgressResources progress_reader;
+	progress_reader.progress = 0.0;
+	progress_reader.time = g_get_monotonic_time();
+	g_mutex_init(&progress_reader.progress_mutex);
+	SimSettings *sim_settings = sim_settings_new(NULL);
+	sim_settings->trans_enable = TRUE;
+	sim_settings->ac_enable = FALSE;
+	sim_settings->dc_enable = FALSE;
+	sim_settings->fourier_enable = FALSE;
+
+	resources.analysis = &analysis;
+	resources.buf = NULL;
+	resources.cancel_info = cancel_info_new();
+	resources.current = &current;
+	resources.no_of_data_rows = 0;
+	resources.no_of_variables = 0;
+	resources.num_analysis = &num_analysis;
+	resources.pipe = thread_pipe_new(0, 0);
+	resources.progress_reader = &progress_reader;
+	resources.sim_settings = sim_settings;
+
+	GThread *thread = g_thread_new("test_engine_ngspice_parse_file", (GThreadFunc)ngspice_worker, &resources);
+
+	FILE *file = fopen(path, "r");
+	gchar buf[256];
+	while (!feof(file)) {
+		fgets(buf, 255, file);
+		thread_pipe_push(resources.pipe, buf, strlen(buf) + 1);
+	}
+	thread_pipe_set_write_eof(resources.pipe);
+
+	g_thread_join(thread);
+
+	return analysis;
+}
+
+static void assert_equal_analysis(const GList *expected, const GList *actual) {
+//	SimulationData *expected_sdat = SIM_DATA (expected->data);
+//	SimulationData *actual_sdat = SIM_DATA (actual->data);
+//
+//	g_assert_cmpint(expected_sdat->n_variables, ==, actual_sdat->n_variables);
+//	gint n_variables = expected_sdat->n_variables;
+//	for (int i = 1; i < n_variables; i++) {
+//		guint len = actual_sdat->data[i]->len;
+//		double *X = g_new0(double, len);
+//		double *Y = g_new0(double, len);
+//
+//		for (guint j = 0; j < len; j++) {
+//			Y[j] = g_array_index(actual_sdat->data[i], double, j);
+//			X[j] = g_array_index(actual_sdat->data[0], double, j);
+//		}
+//	}
+}
+
+static void analysis_finalize(GList *analysis) {
+
 }
 
 static void test_engine_ngspice_basic() {
@@ -139,26 +217,21 @@ static void test_engine_ngspice_basic() {
 	g_assert_null(test_resources->log_list);
 	g_main_loop_run(test_resources->loop);
 
-	g_autofree gchar *actual_content = NULL;
-	gsize actual_size;
+	GList *expected_analysis = parse_file(expected_file);
+	GList *actual_analysis = test_resources->ngspice->priv->analysis;
+	assert_equal_analysis(expected_analysis, actual_analysis);
+
+	analysis_finalize(expected_analysis);
+
 	if (test_resources->ngspice->priv->saver != NULL) {
 		g_thread_join(test_resources->ngspice->priv->saver);
 		test_resources->ngspice->priv->saver = NULL;
 	}
+	expected_analysis = parse_file(actual_file);
+	assert_equal_analysis(expected_analysis, actual_analysis);
+	analysis_finalize(expected_analysis);
+
 	test_engine_ngspice_resources_finalize(test_resources);
-	g_assert_true(g_file_get_contents(actual_file, &actual_content, &actual_size, NULL));
-
-	g_autofree gchar *expected_content = NULL;
-	gsize expected_size;
-	g_assert_true(g_file_get_contents(expected_file, &expected_content, &expected_size, NULL));
-
-	g_assert_true(expected_size > 350);
-	g_assert_true(actual_size > expected_size - 350);
-	double distance = 0;
-	for (gsize i = 0; i < expected_size - 350; i++)
-		distance += ABS(actual_content[i] - expected_content[i]);
-
-	g_assert_true(distance < 3*16*20);
 }
 
 static void test_engine_ngspice_error_no_such_file_or_directory() {
