@@ -10,7 +10,7 @@
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
 
-gchar* get_test_dir();
+gchar* get_test_base_dir();
 
 static void test_engine_ngspice_basic();
 static void test_engine_ngspice_error_no_such_file_or_directory();
@@ -19,20 +19,12 @@ static void test_engine_ngspice_error_step_zero();
 void
 add_funcs_test_engine_ngspice() {
 	g_test_add_func ("/core/engine/ngspice/watcher/basic", test_engine_ngspice_basic);
-	g_test_add_func("/core/engine/ngspice/watcher/error/no_such_file_or_directory", test_engine_ngspice_error_no_such_file_or_directory);
-	g_test_add_func("/core/engine/ngspice/watcher/error/step_zero", test_engine_ngspice_error_step_zero);
+	g_test_add_func ("/core/engine/ngspice/watcher/error/no_such_file_or_directory", test_engine_ngspice_error_no_such_file_or_directory);
+	g_test_add_func ("/core/engine/ngspice/watcher/error/step_zero", test_engine_ngspice_error_step_zero);
 }
 
 static void test_engine_ngspice_log_append_error(GList **list, const gchar *string) {
 	*list = g_list_append(*list, g_strdup(string));
-}
-
-static void test_engine_ngspice_done(gpointer emit_instance, GMainLoop *loop) {
-	g_main_loop_quit(loop);
-}
-
-static void test_engine_ngspice_aborted(gpointer emit_instance, GMainLoop *loop) {
-	g_main_loop_quit(loop);
 }
 
 static gboolean test_engine_ngspice_timeout(GMainLoop *loop) {
@@ -49,8 +41,6 @@ typedef struct {
 	NgspiceWatcherBuildAndLaunchResources *resources;
 	OreganoNgSpice *ngspice;
 	GMainLoop *loop;
-	gulong handler_id_done;
-	gulong handler_id_aborted;
 	guint handler_id_timeout;
 	GList *log_list;
 	SimSettings *sim_settings;
@@ -64,10 +54,10 @@ static TestEngineNgspiceResources *test_engine_ngspice_resources_new() {
 	NgspiceWatcherBuildAndLaunchResources *resources = test_resources->resources;
 	test_resources->ngspice = OREGANO_NGSPICE(oregano_ngspice_new(NULL));
 	OreganoNgSpice *ngspice = test_resources->ngspice;
-	test_resources->loop = g_main_loop_new(NULL, FALSE);
-	GMainLoop *loop = test_resources->loop;
-	test_resources->handler_id_done = g_signal_connect(G_OBJECT(ngspice), "done", G_CALLBACK(test_engine_ngspice_done), loop);
-	test_resources->handler_id_aborted = g_signal_connect(G_OBJECT(ngspice), "aborted", G_CALLBACK(test_engine_ngspice_aborted), loop);
+	GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+	test_resources->loop = loop;
+	g_signal_connect_swapped(G_OBJECT(ngspice), "done", G_CALLBACK(g_main_loop_quit), loop);
+	g_signal_connect_swapped(G_OBJECT(ngspice), "aborted", G_CALLBACK(g_main_loop_quit), loop);
 	test_resources->handler_id_timeout = g_timeout_add(10000, (GSourceFunc)test_engine_ngspice_timeout, loop);
 
 	resources->aborted = &ngspice->priv->aborted;
@@ -99,9 +89,6 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 
 	g_main_loop_unref(test_resources->loop);
 
-	g_signal_handler_disconnect(test_resources->ngspice, test_resources->handler_id_done);
-	g_signal_handler_disconnect(test_resources->ngspice, test_resources->handler_id_aborted);
-
 	sim_settings_finalize(test_resources->sim_settings);
 	g_object_unref(test_resources->ngspice);
 
@@ -112,9 +99,9 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 
 static void test_engine_ngspice_basic() {
 
-	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
-
-	gchar *test_dir = get_test_dir();
+	TestEngineNgspiceResources *test_r
+	
+	g_autofree gchar *test_dir = get_test_base_dir();
 
 	g_free(test_resources->resources->netlist_file);
 	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/input.netlist", test_dir);
@@ -122,11 +109,9 @@ static void test_engine_ngspice_basic() {
 	g_free(test_resources->resources->ngspice_result_file);
 	test_resources->resources->ngspice_result_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/actual.txt", test_dir);
 
-	gchar *actual_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/actual.txt", test_dir);
+	g_autofree gchar *actual_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/actual.txt", test_dir);
 	g_remove(actual_file);
-	gchar *expected_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/expected.txt", test_dir);
-
-	g_free(test_dir);
+	g_autofree gchar *expected_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/expected.txt", test_dir);
 
 	ngspice_watcher_build_and_launch(test_resources->resources);
 	print_log(test_resources->log_list);
@@ -134,15 +119,13 @@ static void test_engine_ngspice_basic() {
 	g_main_loop_run(test_resources->loop);
 	test_engine_ngspice_resources_finalize(test_resources);
 
-	gchar *actual_content;
+	g_autofree gchar *actual_content = NULL;
 	gsize actual_size;
 	g_file_get_contents(actual_file, &actual_content, &actual_size, NULL);
-	g_free(actual_file);
 
-	gchar *expected_content;
+	g_autofree gchar *expected_content = NULL;
 	gsize expected_size;
 	g_file_get_contents(expected_file, &expected_content, &expected_size, NULL);
-	g_free(expected_file);
 
 	g_assert_true(expected_size > 350);
 	g_assert_true(actual_size > expected_size - 350);
@@ -151,8 +134,6 @@ static void test_engine_ngspice_basic() {
 		distance += ABS(actual_content[i] - expected_content[i]);
 
 	g_assert_true(distance < 3*16*20);
-	g_free(actual_content);
-	g_free(expected_content);
 }
 
 static void test_engine_ngspice_error_no_such_file_or_directory() {
@@ -177,7 +158,7 @@ static void test_engine_ngspice_error_step_zero() {
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 
 
-	gchar *test_dir = get_test_dir();
+	g_autofree gchar *test_dir = get_test_base_dir();
 
 	g_free(test_resources->resources->netlist_file);
 	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/input.netlist", test_dir);
@@ -185,28 +166,22 @@ static void test_engine_ngspice_error_step_zero() {
 	g_free(test_resources->resources->ngspice_result_file);
 	test_resources->resources->ngspice_result_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/result/actual.txt", test_dir);
 
-	gchar *actual_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/result/actual.txt", test_dir);
-	gchar *expected_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/result/expected.txt", test_dir);
-
-	g_free(test_dir);
+	g_autofree gchar *actual_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/result/actual.txt", test_dir);
+	g_autofree gchar *expected_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/result/expected.txt", test_dir);
 
 
 	ngspice_watcher_build_and_launch(test_resources->resources);
 	g_main_loop_run(test_resources->loop);
 
-	gchar *actual_content;
+	g_autofree gchar *actual_content = NULL;
 	gsize actual_size;
 	g_file_get_contents(actual_file, &actual_content, &actual_size, NULL);
-	g_free(actual_file);
 
-	gchar *expected_content;
+	g_autofree gchar *expected_content = NULL;
 	gsize expected_size;
 	g_file_get_contents(expected_file, &expected_content, &expected_size, NULL);
-	g_free(expected_file);
 
 	g_assert_cmpstr(actual_content, ==, expected_content);
-	g_free(actual_content);
-	g_free(expected_content);
 
 	const gchar *array[] = {
 			"\n",

@@ -5,7 +5,7 @@
 #define DEBUG_FORCE_FAIL 0
 #endif
 
-
+#include "helper.c"
 #include "test_wire.c"
 #include "test_engine.c"
 #include "test_nodestore.c"
@@ -20,7 +20,6 @@ test_false ()
 	g_assert (FALSE==TRUE);
 }
 #endif
-
 
 int
 main (int argc, char *argv[])
@@ -43,23 +42,4 @@ main (int argc, char *argv[])
 	g_test_add_func ("/false", test_false);
 #endif
 	return g_test_run ();
-}
-
-gchar* get_test_dir() {
-	gchar *cwd = g_get_current_dir();
-
-	gchar *test_file = g_strdup_printf("%s/test/test.c", cwd);
-	while (!g_file_test(test_file, G_FILE_TEST_EXISTS)) {
-		g_free(test_file);
-		gchar **splitted = g_regex_split_simple("\\/*(?:.(?!\\/))+$", cwd, 0, 0);
-		g_free(cwd);
-		cwd = g_strdup(*splitted);
-		g_strfreev(splitted);
-		test_file = g_strdup_printf("%s/test/test.c", cwd);
-	}
-	g_free(test_file);
-	gchar *test_dir = g_strdup_printf("%s/test", cwd);
-	g_free(cwd);
-
-	return test_dir;
 }

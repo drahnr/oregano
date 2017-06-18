@@ -139,24 +139,24 @@ static gchar *test_thread_pipe_buffered_get_testpath(guint *parameter_config, gc
  * Creates generic test data out of a given parameter specification.
  */
 static TestThreadPipeBufferedTestData *test_thread_pipe_buffered_test_data_new(guint *parameter_config) {
-	TestThreadPipeBufferedTestData *asdf = g_new0(TestThreadPipeBufferedTestData, 1);
+	TestThreadPipeBufferedTestData *tpipe = g_new0(TestThreadPipeBufferedTestData, 1);
 	ThreadPipe *pipe = thread_pipe_new(0, 0);
-	asdf->write_data.pipe = pipe;
-	asdf->read_data.pipe = pipe;
+	tpipe->write_data.pipe = pipe;
+	tpipe->read_data.pipe = pipe;
 
 	switch (parameter_config[0]) {
 	case 0:
-		asdf->write_data.sleep = 10000;
+		tpipe->write_data.sleep = 10000;
 		break;
 	case 1:
-		asdf->read_data.sleep = 10000;
+		tpipe->read_data.sleep = 10000;
 		break;
 	}
 
 	switch (parameter_config[4]) {
 	case 0:
-		asdf->read_data.pop = thread_pipe_pop;
-		asdf->write_data.data = test_thread_pipe_buffered_data_new_varargs(
+		tpipe->read_data.pop = thread_pipe_pop;
+		tpipe->write_data.data = test_thread_pipe_buffered_data_new_varargs(
 				"asdf",
 				"jklö",
 				"qwer",
@@ -164,10 +164,10 @@ static TestThreadPipeBufferedTestData *test_thread_pipe_buffered_test_data_new(g
 				"yxcv",
 				"m,.-",
 				NULL);
-		asdf->expected = asdf->write_data.data;
+		tpipe->expected = tpipe->write_data.data;
 		break;
 	case 1:
-		asdf->read_data.pop = (ThreadPipe *(*)(ThreadPipe *pipe, gpointer *data_out, gsize *size))thread_pipe_pop_line;
+		tpipe->read_data.pop = (ThreadPipe *(*)(ThreadPipe *pipe, gpointer *data_out, gsize *size))thread_pipe_pop_line;
 
 		GString *string = g_string_new("asdf");
 		GString *string_all = g_string_new(string->str);
@@ -202,7 +202,7 @@ static TestThreadPipeBufferedTestData *test_thread_pipe_buffered_test_data_new(g
 		for (GList *l = list_write; l != NULL; l = l->next, i++)
 			str_array[i] = l->data;
 
-		asdf->write_data.data = test_thread_pipe_buffered_data_new(str_array);
+		tpipe->write_data.data = test_thread_pipe_buffered_data_new(str_array);
 
 		gchar **splitted = g_regex_split_simple("\\n", string_all->str, 0, 0);
 		gchar **walker;
@@ -211,12 +211,12 @@ static TestThreadPipeBufferedTestData *test_thread_pipe_buffered_test_data_new(g
 		if (**walker == 0)
 			*walker = NULL;
 
-		asdf->expected = test_thread_pipe_buffered_data_new(splitted);
+		tpipe->expected = test_thread_pipe_buffered_data_new(splitted);
 
 		break;
 	}
 
-	return asdf;
+	return tpipe;
 }
 
 /**
