@@ -92,7 +92,7 @@ static void test_engine_ngspice_basic() {
 
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 
-	gchar *test_dir = get_test_base_dir();
+	g_autofree gchar *test_dir = get_test_base_dir();
 
 	g_free(test_resources->resources->netlist_file);
 	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/input.netlist", test_dir);
@@ -105,7 +105,7 @@ static void test_engine_ngspice_basic() {
 
 	ngspice_watcher_build_and_launch(test_resources->resources);
 	g_main_loop_run(test_resources->loop);
-//	print_log(test_resources->log_list);
+	print_log(test_resources->log_list);
 
 	test_engine_ngspice_resources_finalize(test_resources);
 
@@ -198,8 +198,6 @@ static void test_engine_ngspice_error_step_zero() {
 		g_assert_cmpstr(walker->data, ==, array[i]);
 		walker = walker->next;
 	}
-
-//	print_log(test_resources->log_list);
 
 	test_engine_ngspice_resources_finalize(test_resources);
 }
