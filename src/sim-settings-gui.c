@@ -272,19 +272,16 @@ static void response_callback (GtkButton *button, Schematic *sm)
 
 	g_object_get (s_gui->notebook, "page", &page, NULL);
 
-	// Trans
+	// Transient analysis
 	s->trans_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_trans_enable));
 
-	if (s->trans_start)
-		g_free (s->trans_start);
+	g_free (s->trans_start);
 	s->trans_start = gtk_editable_get_chars (GTK_EDITABLE (s_gui->w_trans_start), 0, -1);
 
-	if (s->trans_stop)
-		g_free (s->trans_stop);
+	g_free (s->trans_stop);
 	s->trans_stop = gtk_editable_get_chars (GTK_EDITABLE (s_gui->w_trans_stop), 0, -1);
 
-	if (s->trans_step)
-		g_free (s->trans_step);
+	g_free (s->trans_step);
 	s->trans_step = gtk_editable_get_chars (GTK_EDITABLE (s_gui->w_trans_step), 0, -1);
 
 	s->trans_step_enable =
@@ -298,51 +295,80 @@ static void response_callback (GtkButton *button, Schematic *sm)
 
 	// DC
 	s->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_dc_enable));
-	if (s->dc_vin)
-		g_free (s->dc_vin);
+	g_free (s->dc_vin);
 
 	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vin));
-	node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
-	tmp = node_ids[1];
-	node_ids = g_strsplit (g_strdup (tmp), ")", 0);
-	s->dc_vin = node_ids[0];
+	if (tmp) {
+		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
+		tmp = node_ids[1];
+		if (tmp) {
+			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			if (node_ids[0])
+				s->dc_vin = node_ids[0];
+			else
+				s->dc_vin = g_strdup("");
+		}
+	} else
+		s->dc_vin = g_strdup("");
 
-	if (s->dc_start)
-		g_free (s->dc_start);
+	g_free (s->dc_vout);
+	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vout));
+	if (tmp) {
+		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
+		tmp = node_ids[1];
+		if (tmp) {
+			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			if (node_ids[0])
+				s->dc_vout = node_ids[0];
+			else
+				s->dc_vout = g_strdup("");
+		}
+	} else
+		s->dc_vout = g_strdup("");
+
+	g_free (s->dc_start);
 	s->dc_start = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_dc_start)));
 
-	if (s->dc_stop)
-		g_free (s->dc_stop);
+	g_free (s->dc_stop);
 	s->dc_stop = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_dc_stop)));
 
-	if (s->dc_step)
-		g_free (s->dc_step);
+	g_free (s->dc_step);
 	s->dc_step = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_dc_step)));
 
 	// AC
 	s->ac_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_ac_enable));
+	g_free (s->ac_vout);
 
-	if (s->ac_type)
-		g_free (s->ac_type);
+	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_ac_vout));
+	if (tmp) {
+		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
+		tmp = node_ids[1];
+		if (tmp) {
+			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			if (node_ids[0])
+				s->ac_vout = node_ids[0];
+			else
+				s->ac_vout = g_strdup("");
+		}
+	} else
+		s->ac_vout = g_strdup("");
+
+	g_free (s->ac_type);
 	s->ac_type = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_ac_type));
 
-	if (s->ac_npoints)
-		g_free (s->ac_npoints);
+	g_free (s->ac_npoints);
 	s->ac_npoints = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_ac_npoints)));
 
-	if (s->ac_start)
-		g_free (s->ac_start);
+	g_free (s->ac_start);
 	s->ac_start = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_ac_start)));
 
-	if (s->ac_stop)
-		g_free (s->ac_stop);
+	g_free (s->ac_stop);
 	s->ac_stop = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_ac_stop)));
 
 	// Fourier analysis
 	s->fourier_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_four_enable));
 
-	if (s->fourier_frequency)
-		g_free (s->fourier_frequency);
+	g_free (s->fourier_frequency);
 	s->fourier_frequency = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_four_freq)));
 
 	// Options
@@ -439,12 +465,89 @@ static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
 }
 
 /**
- * FIXME this code is an uggly piece of shit, fix it!
+ * Get the list of voltmeters (test clamps).
+ *
+ * In normal mode, this does not include the
+ * the type of measurement (normal, magnitude,
+ * phase, real, imaginary or dB) and it is used
+ * in DC and Fourier analysis.
+ *
+ * In AC mode, each element includes the type
+ * of measurement (normal, magnitude, phase,
+ * real, imaginary or dB) and it is used in
+ * AC analysis.
+*/ 
+gint get_voltmeters_list(GList **voltmeters, Schematic *sm, GError *e, gboolean with_type)
+{
+	GSList *siter, *node_list = NULL;
+
+	if (with_type)
+		node_list = netlist_helper_get_voltmeters_list (sm, &e, TRUE);
+	else
+		node_list = netlist_helper_get_voltmeters_list (sm, &e, FALSE);
+	if (e) {
+		log_append_error (schematic_get_log_store (sm), _ ("SimulationSettings"),
+		_ ("Failed to create netlist"), e);
+		g_clear_error (&e);
+		return -1;
+	}
+	if (node_list == NULL) {
+		log_append (schematic_get_log_store (sm), _ ("SimulationSettings"),
+			_ ("No node in the schematic!"));
+		return -2;
+	}
+
+	*voltmeters = NULL;
+	for (siter = node_list; siter; siter = siter->next) {
+		gchar *tmp;
+		if (with_type)
+			tmp = g_strdup (siter->data);
+		else
+			tmp = g_strdup_printf ("V(%d)", atoi (siter->data));
+		*voltmeters = g_list_prepend (*voltmeters, tmp);
+	}
+
+	return 0;
+}
+
+/**
+ * Get the list of sources (indipendent voltage)
+ */ 
+gint get_voltage_sources_list(GList **sources, Schematic *sm, GError *e)
+{
+	GSList *siter, *node_list = NULL;
+
+	node_list = netlist_helper_get_voltage_sources_list (sm, &e);
+	if (e) {
+		log_append_error (schematic_get_log_store (sm), _ ("SimulationSettings"),
+		_ ("Failed to create netlist"), e);
+		g_clear_error (&e);
+		return -1;
+	}
+	if (node_list == NULL) {
+		log_append (schematic_get_log_store (sm), _ ("SimulationSettings"),
+			_ ("No node in the schematic!"));
+		return -2;
+	}
+
+	*sources = NULL;
+	for (siter = node_list; siter; siter = siter->next) {
+		gchar *tmp;
+		tmp = g_strdup_printf ("V%d", atoi (siter->data));
+		*sources = g_list_prepend (*sources, tmp);
+	}
+
+	return 0;
+}
+
+/**
+ * FIXME this code is an ugly piece of shit, fix it!
  */
 void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	int i;
-	GtkWidget *toplevel, *w, *pbox, *combo_box;
+	gint rc, active, index;
+	GtkWidget *toplevel, *w, *w1, *pbox, *combo_box;
 	GtkTreeView *opt_list;
 	GtkCellRenderer *cell_option, *cell_value;
 	GtkTreeViewColumn *column_option, *column_value;
@@ -455,11 +558,13 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	SimSettings *s;
 	GList *iter;
 	GSList *siter;
+	GList *voltmeters = NULL;
+	GList *voltmeters_with_type = NULL;
 	GList *sources = NULL;
 	GtkComboBox *node_box;
 	GtkListStore *node_list_store;
 	gchar *text = NULL;
-	GSList *slist = NULL, *node_list = NULL;
+	GSList *slist = NULL;
 
 	g_return_if_fail (sv != NULL);
 
@@ -572,6 +677,25 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "button1"));
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (response_callback), sm);
 
+	// Get the list of voltmeters (normal mode)
+	rc = get_voltmeters_list(&voltmeters, sm, e, FALSE);
+	if (rc) {
+		sim_settings_set_dc(s, FALSE);
+		sim_settings_set_fourier(s, FALSE);
+	}
+
+	// Get the list of voltmeters (AC mode, i.e. with measurement type)
+	rc = get_voltmeters_list(&voltmeters_with_type, sm, e, TRUE);
+	if (rc) {
+		sim_settings_set_ac(s, FALSE);
+	}
+
+	// Get the list of sources
+	rc = get_voltage_sources_list(&sources, sm, e);
+	if (rc) {
+		sim_settings_set_dc(s, FALSE);
+	}
+
 	// Transient //
 	// ********* //
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "trans_start"));
@@ -629,20 +753,44 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "toggled", G_CALLBACK (ac_enable_cb), s_gui);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->ac_enable);
 
+	w1 = GTK_WIDGET (gtk_builder_get_object (builder, "grid14"));
+
+	// FIXME: Should enable more than just one output as in the Fourier analysis
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "ac_vout1"));
+	gtk_widget_destroy (w); // FIXME wtf??
+	combo_box = gtk_combo_box_text_new ();
+
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 0, 1, 1);
+	s_gui->w_ac_vout = combo_box;
+	if (voltmeters_with_type) {
+		index = 0;
+		active = 0;
+		for (iter = voltmeters_with_type; iter; iter = iter->next) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (!g_strcmp0(s->ac_vout, iter->data))
+				active = index;
+			index++;
+		}
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
+	}
+	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
+
 	// Initialilisation of the various AC types
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "ac_type"));
 	gtk_widget_destroy (w); // FIXME wtf??
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "grid14"));
 	combo_box = gtk_combo_box_text_new ();
-	gtk_grid_attach (GTK_GRID (w), combo_box, 1, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 1, 1, 1);
 	s_gui->w_ac_type = combo_box;
 
 	{
-		gint index = 0;
+		index = 0;
+		active = 0;
 		for (; AC_types_list[index] != NULL; index++) {
 			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), AC_types_list[index]);
+			if (!g_strcmp0(s->ac_type, AC_types_list[index]))
+				active = index;
 		}
-		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
 	}
 	g_assert (GTK_IS_COMBO_BOX (combo_box));
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s_gui);
@@ -669,38 +817,45 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (w), "toggled", G_CALLBACK (dc_enable_cb), s_gui);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->dc_enable);
 
-	//  Get list of sources
-	node_list = netlist_helper_get_voltmeters_list (sm, &e);
-	if (e) {
-		log_append_error (schematic_get_log_store (sm), _ ("SimulationSettings"),
-		                  _ ("Failed to create netlist"), e);
-		g_clear_error (&e);
-		return; // FIXME we never get to the fourier because of this
-	}
-	if (node_list == NULL) {
-		log_append (schematic_get_log_store (sm), _ ("SimulationSettings"),
-		            _ ("No node in the schematic!"));
-		return; // FIXME we never get to the fourier because of this
-	}
-
-	sources = NULL;
-	for (siter = node_list; siter; siter = siter->next) {
-		gchar *tmp;
-		tmp = g_strdup_printf ("V(%d)", atoi (siter->data));
-		sources = g_list_prepend (sources, tmp);
-	}
+	w1 = GTK_WIDGET (gtk_builder_get_object (builder, "grid13"));
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_vin1"));
 	gtk_widget_destroy (w); // FIXME wtf??
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "grid13"));
 	combo_box = gtk_combo_box_text_new ();
 
-	gtk_grid_attach (GTK_GRID (w), combo_box, 1, 0, 1, 1);
+	// FIXME: Should also allow to print currents through voltage sources
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 0, 1, 1);
 	s_gui->w_dc_vin = combo_box;
 	if (sources) {
+		index = 0;
+		active = 0;
 		for (iter = sources; iter; iter = iter->next) {
 			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (!g_strcmp0(s->dc_vin, iter->data))
+				active = index;
+			index++;
 		}
-		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), 0);
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
+	}
+	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
+
+	// FIXME: Should enable more than just one output as in the Fourier analysis
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_vout1"));
+	gtk_widget_destroy (w); // FIXME wtf??
+	combo_box = gtk_combo_box_text_new ();
+
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 1, 1, 1);
+	s_gui->w_dc_vout = combo_box;
+	if (voltmeters) {
+		index = 0;
+		active = 0;
+		text = g_strdup_printf("V(%s)", s->dc_vout);
+		for (iter = voltmeters; iter; iter = iter->next) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (!g_strcmp0(text, iter->data))
+				active = index;
+			index++;
+		}
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s_gui);
 
@@ -718,8 +873,6 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s_gui->w_dc_step = w;
 	gtk_entry_set_text (GTK_ENTRY (w), s->dc_step);
 	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
-
-	g_list_free_full (sources, g_free);
 
 	// Fourier //
 	// ******* //
@@ -775,28 +928,14 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	node_list_store = GTK_LIST_STORE (gtk_combo_box_get_model (node_box));
 	gtk_list_store_clear (node_list_store);
 
-	// Get the identification of the schematic nodes
-	node_list = netlist_helper_get_voltmeters_list (sm, &e);
-	if (e) {
-		log_append_error (schematic_get_log_store (sm), _ ("SimulationSettings"),
-		                  _ ("Failed to create netlist"), e);
-		g_clear_error (&e);
-		return;
-	}
-	if (!node_list) {
-		log_append (schematic_get_log_store (sm), _ ("SimulationSettings"),
-		            _ ("No node in the schematic!"));
-		return;
-	}
+	if (voltmeters) {
+		for (iter = voltmeters; iter; iter = iter->next) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (node_box), iter->data);
+		}
+		gtk_combo_box_set_active (GTK_COMBO_BOX (node_box), 0);
+        }
+	g_signal_connect (G_OBJECT (node_box), "changed", G_CALLBACK (entry_changed_cb), s);
 
-	text = NULL;
-	for (siter = node_list; siter; siter = siter->next) {
-		if (siter->data)
-			text = g_strdup_printf ("V(%d)", atoi (siter->data));
-		if (text)
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (node_box), text);
-	}
-	gtk_combo_box_set_active (node_box, 0);
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "fourier_add"));
 	s_gui->w_four_add = w;
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (fourier_add_vout_cb), s_gui);
@@ -811,4 +950,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	dc_enable_cb (s_gui->w_dc_enable, s_gui);
 	trans_enable_cb (s_gui->w_trans_enable, s_gui);
 	trans_step_enable_cb (s_gui->w_trans_step_enable, s_gui);
+
+	g_list_free(sources);
+	g_list_free(voltmeters);
+	g_list_free(voltmeters_with_type);
 }

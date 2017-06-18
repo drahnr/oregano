@@ -30,7 +30,7 @@ def build(bld):
 		['c','glib2'],
 		source = nodes,
 		includes = ['.', 'tools/', 'engines/', 'gplot/', 'model/', 'sheet/'],
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
+		uselib = 'M XML X11 GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		target = 'shared_objects'
 	)
 
@@ -40,7 +40,7 @@ def build(bld):
 		source = ['main.c'],
 		includes = ['.', 'tools/', 'engines/', 'gplot/', 'model/', 'sheet/'],
 		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
+		uselib = 'M XML X11 GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3',
 		settings_schema_files = ['../data/settings/'+bld.env.gschema_name ] if not bld.options.no_install_gschema else [],
 		install_path = "${BINDIR}"
 	)
@@ -53,5 +53,5 @@ def build(bld):
 		source = ['../test/test.c'],
 		includes = ['.', 'tools/', 'engines/', 'gplot/', 'model/', 'sheet/'],
 		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
+		uselib = 'M XML X11 GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
 	)

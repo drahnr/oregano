@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -130,6 +132,12 @@ static void write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schem
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "enabled",
 	                     BAD_CAST (sim_settings_get_ac (s) ? "true" : "false"));
 
+	child =
+	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "vout1", BAD_CAST sim_settings_get_ac_vout (s));
+
+	child =
+	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "type", BAD_CAST sim_settings_get_ac_type (s));
+
 	str = g_strdup_printf ("%d", sim_settings_get_ac_npoints (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "npoints", BAD_CAST str);
 	g_free (str);
@@ -153,6 +161,9 @@ static void write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schem
 
 	child =
 	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "vsrc1", BAD_CAST sim_settings_get_dc_vsrc (s));
+
+	child =
+	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "vout1", BAD_CAST sim_settings_get_dc_vout (s));
 
 	str = g_strdup_printf ("%g", sim_settings_get_dc_start (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "start1", BAD_CAST str);
