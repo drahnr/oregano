@@ -3,7 +3,7 @@
 *	ngspice - NETLIST
 .options OUT=120 
 *------------- Models -------------------------
-.include /usr/local/share/oregano/models/1N4148.model
+.include <VARIABLE>OREGANO_MODELDIR</VARIABLE>1N4148.model
 *------------- Circuit Description-------------
 V_V3 5 1 dc 0
 R_R1 3 0 10k

@@ -120,6 +120,8 @@ static void ngspice_finalize (GObject *object)
 	g_mutex_clear(&ngspice->priv->progress_reader.progress_mutex);
 	g_mutex_clear(&ngspice->priv->current.mutex);
 	cancel_info_unsubscribe(ngspice->priv->cancel_info);
+	if (ngspice->priv->saver != NULL)
+		g_thread_unref(ngspice->priv->saver);
 	g_free(ngspice->priv);
 
 	parent_class->finalize (object);

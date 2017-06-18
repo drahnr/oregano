@@ -58,11 +58,12 @@ static TestEngineNgspiceResources *test_engine_ngspice_resources_new() {
 	test_resources->loop = loop;
 	g_signal_connect_swapped(G_OBJECT(ngspice), "done", G_CALLBACK(g_main_loop_quit), loop);
 	g_signal_connect_swapped(G_OBJECT(ngspice), "aborted", G_CALLBACK(g_main_loop_quit), loop);
-	test_resources->handler_id_timeout = g_timeout_add(10000, (GSourceFunc)test_engine_ngspice_timeout, loop);
+//	test_resources->handler_id_timeout = g_timeout_add(10000, (GSourceFunc)test_engine_ngspice_timeout, loop);
 
 	resources->aborted = &ngspice->priv->aborted;
 	resources->analysis = &ngspice->priv->analysis;
 	resources->child_pid = &ngspice->priv->child_pid;
+	resources->saver = &ngspice->priv->saver;
 	resources->current = &ngspice->priv->current;
 	resources->emit_instance = ngspice;
 
@@ -97,6 +98,26 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 	ngspice_watcher_build_and_launch_resources_finalize(resources);
 }
 
+static gchar *get_netlist_file(const gchar *relative_path) {
+	g_autofree gchar *test_dir = get_test_base_dir();
+	g_autofree gchar *file_raw = g_strdup_printf("%s/%s/input-raw.netlist", test_dir, relative_path);
+	gchar *file = g_strdup_printf("%s/%s/input.netlist", test_dir, relative_path);
+
+	g_autofree gchar *content_raw = NULL;
+	gsize length_raw = 0;
+	gboolean success_raw = g_file_get_contents(file_raw, &content_raw, &length_raw, NULL);
+	g_assert_true(success_raw);
+
+	GRegex *regex = g_regex_new("\\<VARIABLE\\>OREGANO\\_MODELDIR\\<\\/VARIABLE\\>", 0, 0, NULL);
+	g_assert_nonnull(regex);
+	g_autofree gchar *content = g_regex_replace(regex, content_raw, -1, 0, OREGANO_MODELDIR, 0, NULL);
+	g_regex_unref(regex);
+
+	g_file_set_contents(file, content, -1, NULL);
+
+	return file;
+}
+
 static void test_engine_ngspice_basic() {
 
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
@@ -104,7 +125,7 @@ static void test_engine_ngspice_basic() {
 	g_autofree gchar *test_dir = get_test_base_dir();
 
 	g_free(test_resources->resources->netlist_file);
-	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/input.netlist", test_dir);
+	test_resources->resources->netlist_file = get_netlist_file("test-files/test_engine_ngspice_watcher/basic");
 
 	g_free(test_resources->resources->ngspice_result_file);
 	test_resources->resources->ngspice_result_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/result/actual.txt", test_dir);
@@ -121,6 +142,10 @@ static void test_engine_ngspice_basic() {
 
 	g_autofree gchar *actual_content = NULL;
 	gsize actual_size;
+	if (test_resources->ngspice->priv->saver != NULL) {
+		g_thread_join(test_resources->ngspice->priv->saver);
+		test_resources->ngspice->priv->saver = NULL;
+	}
 	g_file_get_contents(actual_file, &actual_content, &actual_size, NULL);
 
 	g_autofree gchar *expected_content = NULL;

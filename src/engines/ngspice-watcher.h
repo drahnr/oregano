@@ -32,6 +32,7 @@ struct _NgspiceWatcherBuildAndLaunchResources {
 	gchar* ngspice_result_file;//in
 	gchar* netlist_file;//in
 	CancelInfo *cancel_info;//in
+	GThread **saver;//out
 };
 
 NgspiceWatcherBuildAndLaunchResources *ngspice_watcher_build_and_launch_resources_new(OreganoNgSpice *ngspice);

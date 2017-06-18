@@ -60,7 +60,7 @@ typedef struct {
 //data wrapper
 typedef struct {
 	GThread *worker;
-	GThread *saver;
+	GThread **saver;
 	LogInterface log;
 	const void* emit_instance;
 	GPid *child_pid;
@@ -283,7 +283,7 @@ enum NGSPICE_WATCHER_RETURN_VALUE {
 static enum NGSPICE_WATCHER_RETURN_VALUE
 ngspice_watcher_watch_ngspice_resources (GPid pid, gint status, NgSpiceWatcherWatchNgSpiceResources *resources) {
 	GThread *worker = resources->worker;
-	GThread *saver = resources->saver;
+	GThread **saver = resources->saver;
 	LogInterface log = resources->log;
 	guint *num_analysis = resources->num_analysis;
 	enum ERROR_STATE *error_state = resources->error_state;
@@ -301,6 +301,7 @@ ngspice_watcher_watch_ngspice_resources (GPid pid, gint status, NgSpiceWatcherWa
 		g_error_free(exit_error);
 
 	g_thread_join(worker);
+	// saver will be unrefed in ngspice finalize
 
 	if (cancel_info_is_cancel(resources->cancel_info))
 		return NGSPICE_WATCHER_RETURN_VALUE_CANCELED;
@@ -317,7 +318,8 @@ ngspice_watcher_watch_ngspice_resources (GPid pid, gint status, NgSpiceWatcherWa
 		else
 			log.log_append_error(log.log, "### ngspice exited abnormally ###\n");
 
-		g_thread_join(saver);
+		g_thread_join(*saver);
+		*saver = NULL;
 
 		switch (*error_state) {
 		case ERROR_STATE_NO_ERROR:
@@ -340,8 +342,6 @@ ngspice_watcher_watch_ngspice_resources (GPid pid, gint status, NgSpiceWatcherWa
 
 		return NGSPICE_WATCHER_RETURN_VALUE_ABORTED;
 	}
-	// saver not needed any more. It could have been needed by error handling.
-	g_thread_unref(saver);
 
 	if (*num_analysis == 0) {
 		log.log_append_error(log.log, _("### Too few or none analysis found ###\n"));
@@ -509,6 +509,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	ProgressResources *progress_reader = resources->progress_reader;
 	GList **analysis = resources->analysis;
 	AnalysisTypeShared *current = resources->current;
+	GThread **saver = resources->saver;
 
 
 	GError *e = NULL;
@@ -577,7 +578,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	ngspice_saver_resources->cancel_info = resources->cancel_info;
 	cancel_info_subscribe(ngspice_saver_resources->cancel_info);
 
-	GThread *saver = g_thread_new("ngspice saver", (GThreadFunc)ngspice_saver, ngspice_saver_resources);
+	*saver = g_thread_new("ngspice saver", (GThreadFunc)ngspice_saver, ngspice_saver_resources);
 
 	/**
 	 * Add an ngspice-is-finished watcher
@@ -656,6 +657,7 @@ NgspiceWatcherBuildAndLaunchResources *ngspice_watcher_build_and_launch_resource
 	resources->aborted = &ngspice->priv->aborted;
 	resources->analysis = &ngspice->priv->analysis;
 	resources->child_pid = &ngspice->priv->child_pid;
+	resources->saver = &ngspice->priv->saver;
 	resources->current = &ngspice->priv->current;
 	resources->emit_instance = ngspice;
 
