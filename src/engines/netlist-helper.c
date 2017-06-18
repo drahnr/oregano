@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <Lorber.Marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2014       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -359,7 +361,7 @@ void update_schematic(Schematic *sm) {
 	return;
 }
 
-// FIXME this one piece of uggly+bad code
+// FIXME this one piece of ugly+bad code
 void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 {
 	NetlistData data;
@@ -459,7 +461,7 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 				pins = part_get_pins (part);
 				node_nr = GPOINTER_TO_INT (g_hash_table_lookup (data.pins, &pins[0]));
 				if (!node_nr) {
-					g_warning ("Couln't find part, pin_nr %d.", 0);
+					g_warning ("Couldn't find part, pin_nr %d.", 0);
 				} else {
 					// need to substrac 1, netlist starts in 0, and node_nr in 1
 					pins[0].node_nr = atoi (node2real[node_nr]);
@@ -627,7 +629,7 @@ char *netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 	return ret;
 }
 
-GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
+GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error, gboolean with_type)
 {
 	Netlist netlist_data;
 	GError *e = NULL;
@@ -636,6 +638,9 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 	GList *iter;
 	gchar *prop;
 	Part *part;
+	Pin *pins;
+	gint i;
+	gchar *ac_type, *ac_db, *tmp;
 
 	netlist_helper_create (sm, &netlist_data, &e);
 	if (e) {
@@ -650,18 +655,33 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 		prop = part_get_property (part, "internal");
 		if (prop) {
 			if (!g_ascii_strcasecmp (prop, "clamp")) {
-				Pin *pins = part_get_pins (part);
 				g_free (prop);
 				prop = part_get_property (part, "type");
 
 				if (!g_ascii_strcasecmp (prop, "v")) {
-					gchar *tmp;
-					tmp = g_strdup_printf ("%d", pins[0].node_nr);
+					pins = part_get_pins (part);
+					if (with_type) {
+						ac_type = part_get_property(part, "ac_type");
+						ac_db = part_get_property(part, "ac_db");
+						i = 0;
+						while (ac_type[i]) {
+							ac_type[i] = g_ascii_toupper(ac_type[i]);
+							i++;
+						}
+						if (!g_strcmp0(ac_db, "true"))
+							tmp = g_strdup_printf ("VDB(%d)", pins[0].node_nr);
+						else
+							tmp = g_strdup_printf ("V%s(%d)", ac_type, pins[0].node_nr);
+						g_free(ac_type);
+						g_free(ac_db);
+					} else
+						tmp = g_strdup_printf ("%d", pins[0].node_nr);
 					clamp_list = g_slist_prepend (clamp_list, tmp);
 					if (0)
 						printf ("clamp_list = %s\n", tmp);
 				}
 			}
+			g_free(prop);
 		}
 	}
 	if (0) {
@@ -685,4 +705,40 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error)
 	}
 
 	return clamp_list;
+}
+
+GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error)
+{
+	Netlist netlist_data;
+	GError *e = NULL;
+	GSList *sources_list = NULL;
+	NodeStore *node_store;
+	GList *iter;
+	gchar *prop;
+	Part *part;
+
+	netlist_helper_create (sm, &netlist_data, &e);
+	if (e) {
+		g_propagate_error (error, e);
+		return NULL;
+	}
+
+	node_store = netlist_data.store;
+
+	for (iter = node_store_get_parts (node_store); iter; iter = iter->next) {
+		part = iter->data;
+		prop = part_get_property (part, "Refdes");
+		if (prop) {
+			if (prop[0] == 'V' && (prop[1] >= '0' && prop[1] <= '9')) {
+				gchar *tmp;
+				tmp = g_strdup (&prop[1]);
+				sources_list = g_slist_append (sources_list, tmp);
+				if (0)
+					printf ("sources_list = %s\n", tmp);
+			}
+			g_free(prop);
+		}
+	}
+
+	return sources_list;
 }

@@ -4,11 +4,13 @@
  * Authors:
  *  Marc Lorber <Lorber.Marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2014       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -128,8 +130,6 @@ static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 
 	data = g_new0 (Analysis, 1);
 	sdata = SIM_DATA (data);
-	*analysis = g_list_append (*analysis, sdata);
-	(*num_analysis)++;
 	sdata->type = ANALYSIS_TYPE_DC_TRANSFER;
 	sdata->functions = NULL;
 
@@ -146,6 +146,8 @@ static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 
 	// Calculates the number of variables
 	variables = get_variables (*buf, &n);
+	if (!variables)
+		return pipe;
 
 	n = n - 1;
 	sdata->var_names = (char **)g_new0 (gpointer, n);
@@ -181,6 +183,8 @@ static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 		}
 		variables = get_variables (*buf, &i);
+		if (!variables)
+			return pipe;
 		index = atoi (variables[0]);
 		for (i = 0; i < n; i++) {
 			val[i] = g_ascii_strtod (variables[i + 1], NULL);
@@ -195,6 +199,108 @@ static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 		if (index >= ANALYSIS (sdata)->dc.sim_length)
 			found = TRUE;
 	}
+
+	*analysis = g_list_append (*analysis, sdata);
+	(*num_analysis)++;
+
+	return pipe;
+}
+
+/**
+ * @resources: caller frees
+ */
+static ThreadPipe *parse_ac_analysis (NgspiceAnalysisResources *resources)
+{
+	ThreadPipe *pipe = resources->pipe;
+	gchar **buf = &resources->buf;
+	const SimSettings* const sim_settings = resources->sim_settings;
+	GList **analysis = resources->analysis;
+	guint *num_analysis = resources->num_analysis;
+
+	static SimulationData *sdata;
+	static Analysis *data;
+	gsize size;
+	gboolean found = FALSE;
+	gchar **variables;
+	gint i, n = 0, index = 0;
+	gdouble val[10];
+
+	NG_DEBUG ("AC: result str\n>>>\n%s\n<<<", *buf);
+
+	data = g_new0 (Analysis, 1);
+	sdata = SIM_DATA (data);
+	sdata->type = ANALYSIS_TYPE_AC;
+	sdata->functions = NULL;
+
+	ANALYSIS (sdata)->ac.sim_length = 1.;
+	ANALYSIS (sdata)->ac.sim_length = (double) sim_settings_get_ac_npoints (sim_settings);
+	ANALYSIS (sdata)->ac.start = sim_settings_get_ac_start (sim_settings);
+	ANALYSIS (sdata)->ac.stop = sim_settings_get_ac_stop (sim_settings);
+
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+
+	// Calculates the number of variables
+	variables = get_variables (*buf, &n);
+	if (!variables)
+		return pipe;
+
+	n = n - 1;
+	sdata->var_names = (char **)g_new0 (gpointer, n);
+	sdata->var_units = (char **)g_new0 (gpointer, n);
+	sdata->var_names[0] = g_strdup ("Frequency");
+	sdata->var_units[0] = g_strdup (_ ("frequency"));
+	sdata->var_names[1] = g_strdup (variables[2]);
+	sdata->var_units[1] = g_strdup (_ ("voltage"));
+
+	sdata->n_variables = 2;
+	sdata->got_points = 0;
+	sdata->got_var = 0;
+	sdata->data = (GArray **)g_new0 (gpointer, 2);
+
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+
+	for (i = 0; i < 2; i++)
+		sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
+
+	sdata->min_data = g_new (double, n);
+	sdata->max_data = g_new (double, n);
+
+	// Read the data
+	for (i = 0; i < 2; i++) {
+		sdata->min_data[i] = G_MAXDOUBLE;
+		sdata->max_data[i] = -G_MAXDOUBLE;
+	}
+	found = FALSE;
+	while (((pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size)) != 0) && !found) {
+		if (strlen (*buf) <= 2) {
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		}
+
+		variables = get_variables (*buf, &i);
+		if (!variables)
+			return pipe;
+
+		index = atoi (variables[0]);
+		for (i = 0; i < n; i++) {
+			val[i] = g_ascii_strtod (variables[i + 1], NULL);
+			sdata->data[i] = g_array_append_val (sdata->data[i], val[i]);
+			if (val[i] < sdata->min_data[i])
+				sdata->min_data[i] = val[i];
+			if (val[i] > sdata->max_data[i])
+				sdata->max_data[i] = val[i];
+		}
+		sdata->got_points++;
+		sdata->got_var = 2;
+		if (index >= ANALYSIS (sdata)->ac.sim_length - 1)
+			found = TRUE;
+	}
+
+	*analysis = g_list_append (*analysis, sdata);
+	(*num_analysis)++;
+
 	return pipe;
 }
 
@@ -629,9 +735,7 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 	// New analysis
 	data = g_new0 (Analysis, 1);
 	sdata = SIM_DATA (data);
-	*analysis = g_list_append (*analysis, sdata);
 	sdata->functions = NULL;
-	(*num_analysis)++;
 	sdata->type = ANALYSIS_TYPE_FOURIER;
 
 	g_strchug (*buf);
@@ -647,7 +751,11 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 	sdata->n_variables = n;
 	sdata->var_names = (char **)g_new0 (gpointer, n);
 	sdata->var_units = (char **)g_new0 (gpointer, n);
+
 	variables = get_variables (*buf, &k);
+	if (!variables)
+		return pipe;
+
 	sdata->var_names[0] = _ ("Frequency");
 	sdata->var_names[1] = g_strdup (variables[3]);
 	for (i = 0; i < n; i++) {
@@ -689,6 +797,8 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 		variables = get_variables (*buf, &k);
+		if (!variables)
+			return pipe;
 		sdata->var_names[j] = g_strdup (variables[3]);
 		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
@@ -719,6 +829,9 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 		}
 		NG_DEBUG ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]);
 	}
+
+	*analysis = g_list_append (*analysis, sdata);
+	(*num_analysis)++;
 
 	return pipe;
 }
@@ -822,10 +935,10 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 
 	gboolean transient_enabled = sim_settings_get_trans (sim_settings);
 	gboolean fourier_enabled = sim_settings_get_fourier (sim_settings);
-	// gboolean ac_enabled = sim_settings_get_ac (sim_settings);
 	gboolean dc_enabled = sim_settings_get_dc (sim_settings);
+	gboolean ac_enabled = sim_settings_get_ac (sim_settings);
 
-	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled; i++) {
+	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled || ac_enabled; i++) {
 
 		AnalysisType analysis_type = ANALYSIS_TYPE_NONE;
 
@@ -833,8 +946,10 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		g_strstrip (*buf);
 		NG_DEBUG ("%d buf = %s", i, *buf);
 
-		if (!get_analysis_type(*buf, &analysis_type)) {
-			oregano_warning (_ ("No analysis found"));
+		if (!get_analysis_type(*buf, &analysis_type) && i == 0) {
+// FIXME: The following function call crashes after changes committed on Jun 16 2017
+//			oregano_warning (_ ("No analysis found"));
+			NG_DEBUG ("No analysis found");
 			break;
 		}
 
@@ -857,8 +972,14 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 			pipe = parse_dc_analysis (resources);
 			dc_enabled = FALSE;
 			break;
+		case ANALYSIS_TYPE_AC:
+			pipe = parse_ac_analysis (resources);
+			ac_enabled = FALSE;
+			break;
 		default:
-			oregano_warning(_("Unexpected analysis found"));
+// FIXME: The following function call crashes after changes committed Jun 16 2017
+//			oregano_warning(_("Unexpected analysis found"));
+			NG_DEBUG ("Unexpected analysis found");
 			unexpected_analysis_found = TRUE;
 			break;
 		}
@@ -867,9 +988,10 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		current->type = ANALYSIS_TYPE_NONE;
 		g_mutex_unlock(&current->mutex);
 
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+
 		if (unexpected_analysis_found || pipe == NULL)
 			break;
-
 	}
 
 	if (pipe != NULL)
