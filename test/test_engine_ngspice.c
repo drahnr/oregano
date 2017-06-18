@@ -99,7 +99,7 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 
 static void test_engine_ngspice_basic() {
 
-	TestEngineNgspiceResources *test_r
+	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 	
 	g_autofree gchar *test_dir = get_test_base_dir();
 
