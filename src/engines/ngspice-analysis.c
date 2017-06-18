@@ -448,6 +448,7 @@ static ParseTransientAnalysisReturnResources parse_transient_analysis_resources 
 
 	g_mutex_lock(&progress_reader->progress_mutex);
 	progress_reader->progress = 0;
+	progress_reader->time = g_get_monotonic_time();
 	g_mutex_unlock(&progress_reader->progress_mutex);
 
 	gsize size;
@@ -500,6 +501,7 @@ static ParseTransientAnalysisReturnResources parse_transient_analysis_resources 
 					progress_reader->progress = (double)count_of_variables_already_finished / (double)no_of_variables +
 							(double)len_of_current_variables / (double)no_of_variables *
 							(double)get_current_index(ngspice_table) / (double)no_of_data_rows;
+					progress_reader->time = g_get_monotonic_time();
 					g_mutex_unlock(&progress_reader->progress_mutex);
 					// estimate progress end
 

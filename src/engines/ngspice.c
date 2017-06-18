@@ -374,6 +374,15 @@ static GList *ngspice_get_results (OreganoEngine *self)
 
 static gchar *ngspice_get_operation_ngspice (OreganoEngine *self)
 {
+	OreganoNgSpicePriv *priv = OREGANO_NGSPICE (self)->priv;
+
+	g_mutex_lock(&priv->progress_ngspice.progress_mutex);
+	gint64 old_time = priv->progress_ngspice.time;
+	g_mutex_unlock(&priv->progress_ngspice.progress_mutex);
+
+	gint64 new_time = g_get_monotonic_time();
+	if (new_time - old_time >= 1000000)
+		return g_strdup("ngspice not responding");
 	return g_strdup(_("ngspice solving"));
 }
 
@@ -409,8 +418,10 @@ static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class)
 
 	self->priv = g_new0 (OreganoNgSpicePriv, 1);
 	self->priv->progress_ngspice.progress = 0.0;
+	self->priv->progress_ngspice.time = g_get_monotonic_time();
 	g_mutex_init(&self->priv->progress_ngspice.progress_mutex);
 	self->priv->progress_reader.progress = 0.0;
+	self->priv->progress_reader.time = g_get_monotonic_time();
 	g_mutex_init(&self->priv->progress_reader.progress_mutex);
 	self->priv->current.type = ANALYSIS_TYPE_NONE;
 	g_mutex_init(&self->priv->current.mutex);
