@@ -10,6 +10,8 @@
 #include <glib/gstdio.h>
 #include <glib/gprintf.h>
 
+gchar* get_test_dir();
+
 static void test_engine_ngspice_basic();
 static void test_engine_ngspice_error_no_such_file_or_directory();
 static void test_engine_ngspice_error_step_zero();
@@ -108,20 +110,11 @@ static void test_engine_ngspice_resources_finalize(TestEngineNgspiceResources *t
 	ngspice_watcher_build_and_launch_resources_finalize(resources);
 }
 
-static gchar* test_engine_ngspice_get_test_dir_base() {
-	gchar *cwd = g_get_current_dir();
-
-	gchar *test_dir = g_strdup_printf("%s/test", cwd);
-	g_free(cwd);
-
-	return test_dir;
-}
-
 static void test_engine_ngspice_basic() {
 
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 
-	gchar *test_dir = test_engine_ngspice_get_test_dir_base();
+	gchar *test_dir = get_test_dir();
 
 	g_free(test_resources->resources->netlist_file);
 	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/input.netlist", test_dir);
@@ -184,7 +177,7 @@ static void test_engine_ngspice_error_step_zero() {
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 
 
-	gchar *test_dir = test_engine_ngspice_get_test_dir_base();
+	gchar *test_dir = get_test_dir();
 
 	g_free(test_resources->resources->netlist_file);
 	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/input.netlist", test_dir);
@@ -235,8 +228,6 @@ static void test_engine_ngspice_error_step_zero() {
 		g_assert_cmpstr(walker->data, ==, array[i]);
 		walker = walker->next;
 	}
-
-//	print_log(test_resources->log_list);
 
 	test_engine_ngspice_resources_finalize(test_resources);
 }

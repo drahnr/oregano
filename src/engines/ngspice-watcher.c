@@ -376,11 +376,17 @@ static void ngspice_watcher_watch_ngspice (GPid pid, gint status, NgSpiceWatcher
 		emitData->signal_name = g_strdup("done");
 		break;
 	}
-	//return to main thread
-	g_main_context_invoke(NULL, (GSourceFunc)g_signal_emit_by_name_main_thread, emitData);
 
 	cancel_info_unsubscribe(resources->cancel_info);
 	ngspice_watch_ngspice_resources_finalize(resources);
+
+	/*
+	 * return to main thread
+	 *
+	 * Don't return too early, because if you do, the ngspice
+	 * object could be finalized but some resources depend on it.
+	 */
+	g_main_context_invoke(NULL, (GSourceFunc)g_signal_emit_by_name_main_thread, emitData);
 }
 
 /**
