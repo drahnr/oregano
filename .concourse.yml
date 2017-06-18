@@ -44,7 +44,7 @@ resources:
     password: {{quay-password}}
 
 jobs:
-  - name: compile-pr
+  - name: pr-compile
     build_logs_to_retain: 50
     public: true
     plan:
@@ -156,8 +156,53 @@ jobs:
       config:
         platform: linux
         inputs:
-        - name: git-clone-resource
+        - name: git-pull-request-resource
         run:
           path: debuild
           args: ["-i", "-us", "-uc", "-b"]
-          dir: "git-clone-resource"
+          dir: git-pull-request-resource
+
+  - name: pr-build-pkg-rpm
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - aggregate:
+      - get: oregano-test-fedora
+        trigger: true
+      - get: git-pull-request-resource
+        trigger: true
+        passed: [pr-compile]
+
+    - task: create-rpm
+      timeout: 10m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: git-pull-request-resource
+        run:
+          path: .concourse/fedora/buildrpm.sh
+          dir: git-pull-request-resource
+
+  - name: pr-build-pkg-deb
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - aggregate:
+      - get: oregano-test-ubuntu
+        trigger: true
+      - get: git-pull-request-resource
+        trigger: true
+        passed: [pr-compile]
+
+    - task: create-deb
+      timeout: 10m
+      image: oregano-test-ubuntu
+      config:
+        platform: linux
+        inputs:
+        - name: git-pull-request-resource
+        run:
+          path: debuild
+          args: ["-i", "-us", "-uc", "-b"]
+          dir: git-pull-request-resource
