@@ -144,6 +144,8 @@ jobs:
         trigger: true
       - get: git-clone-resource
         trigger: true
+        passed: [compile]
+
     - task: create-deb
       timeout: 20m
       image: oregano-test-ubuntu
