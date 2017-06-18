@@ -102,6 +102,7 @@ static void test_engine_ngspice_basic() {
 	TestEngineNgspiceResources *test_resources = test_engine_ngspice_resources_new();
 	
 	g_autofree gchar *test_dir = get_test_base_dir();
+	g_printf("test_dir = %s\n", test_dir);
 
 	g_free(test_resources->resources->netlist_file);
 	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/basic/input.netlist", test_dir);

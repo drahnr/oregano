@@ -1,6 +1,6 @@
 #include <glib.h>
 
-static gchar* get_test_base_dir() {
+gchar* get_test_base_dir() {
 	g_autofree gchar *cwd = g_get_current_dir();
 
 	g_autofree gchar *test_file = g_strdup_printf("%s/test/test.c", cwd);
