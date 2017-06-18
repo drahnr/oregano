@@ -30,6 +30,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <X11/Xlib.h>
+
 #include <glib.h>
 #include <glib/gprintf.h>
 
@@ -71,6 +73,8 @@ int main (int argc, char *argv[])
 			 " Main Developer: Bernhard Schuster\n");
 		return 0;
 	}
+
+	XInitThreads();
 
 	// required?
 	gtk_init (&argc, &argv);

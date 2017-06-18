@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -55,6 +57,7 @@ SimSettings *sim_settings_new ()
 
 	//  AC
 	sim_settings->ac_enable = FALSE;
+	sim_settings->ac_vout = g_strdup ("");
 	sim_settings->ac_type = g_strdup ("DEC");
 	sim_settings->ac_npoints = g_strdup ("50");
 	sim_settings->ac_start = g_strdup ("1");
@@ -63,6 +66,7 @@ SimSettings *sim_settings_new ()
 	// DC
 	sim_settings->dc_enable = FALSE;
 	sim_settings->dc_vin = g_strdup ("");
+	sim_settings->dc_vout = g_strdup ("");
 	sim_settings->dc_start = g_strdup ("");
 	sim_settings->dc_stop = g_strdup ("");
 	sim_settings->dc_step = g_strdup ("");
@@ -92,6 +96,7 @@ void sim_settings_finalize(SimSettings *sim_settings) {
 	g_free(sim_settings->trans_step);
 
 	//  AC
+	g_free(sim_settings->ac_vout);
 	g_free(sim_settings->ac_type);
 	g_free(sim_settings->ac_npoints);
 	g_free(sim_settings->ac_start);
@@ -99,6 +104,7 @@ void sim_settings_finalize(SimSettings *sim_settings) {
 
 	// DC
 	g_free(sim_settings->dc_vin);
+	g_free(sim_settings->dc_vout);
 	g_free(sim_settings->dc_start);
 	g_free(sim_settings->dc_stop);
 	g_free(sim_settings->dc_step);
@@ -236,21 +242,23 @@ void sim_settings_set_trans_step_enable (SimSettings *sim_settings, gboolean ena
 	sim_settings->trans_step_enable = enable;
 }
 
-gboolean sim_settings_get_ac (SimSettings *sim_settings) { return sim_settings->ac_enable; }
+gboolean sim_settings_get_ac (const SimSettings *sim_settings) { return sim_settings->ac_enable; }
 
-gchar *sim_settings_get_ac_type (SimSettings *sim_settings) { return sim_settings->ac_type; }
+gchar *sim_settings_get_ac_vout (const SimSettings *sim_settings) { return sim_settings->ac_vout; }
 
-gint sim_settings_get_ac_npoints (SimSettings *sim_settings)
+gchar *sim_settings_get_ac_type (const SimSettings *sim_settings) { return sim_settings->ac_type; }
+
+gint sim_settings_get_ac_npoints (const SimSettings *sim_settings)
 {
 	return atoi (sim_settings->ac_npoints);
 }
 
-gdouble sim_settings_get_ac_start (SimSettings *sim_settings)
+gdouble sim_settings_get_ac_start (const SimSettings *sim_settings)
 {
 	return oregano_strtod (sim_settings->ac_start, 's');
 }
 
-gdouble sim_settings_get_ac_stop (SimSettings *sim_settings)
+gdouble sim_settings_get_ac_stop (const SimSettings *sim_settings)
 {
 	return oregano_strtod (sim_settings->ac_stop, 's');
 }
@@ -260,37 +268,41 @@ void sim_settings_set_ac (SimSettings *sim_settings, gboolean enable)
 	sim_settings->ac_enable = enable;
 }
 
+void sim_settings_set_ac_vout (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->ac_vout);
+	sim_settings->ac_vout = g_strdup (str);
+}
+
 void sim_settings_set_ac_type (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->ac_type)
-		g_free (sim_settings->ac_type);
+	g_free (sim_settings->ac_type);
 	sim_settings->ac_type = g_strdup (str);
 }
 
 void sim_settings_set_ac_npoints (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->ac_npoints)
-		g_free (sim_settings->ac_npoints);
+	g_free (sim_settings->ac_npoints);
 	sim_settings->ac_npoints = g_strdup (str);
 }
 
 void sim_settings_set_ac_start (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->ac_start)
-		g_free (sim_settings->ac_start);
+	g_free (sim_settings->ac_start);
 	sim_settings->ac_start = g_strdup (str);
 }
 
 void sim_settings_set_ac_stop (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->ac_stop)
-		g_free (sim_settings->ac_stop);
+	g_free (sim_settings->ac_stop);
 	sim_settings->ac_stop = g_strdup (str);
 }
 
 gboolean sim_settings_get_dc (const SimSettings *sim_settings) { return sim_settings->dc_enable; }
 
 gchar *sim_settings_get_dc_vsrc (const SimSettings *sim_settings) { return sim_settings->dc_vin; }
+
+gchar *sim_settings_get_dc_vout (const SimSettings *sim_settings) { return sim_settings->dc_vout; }
 
 gdouble sim_settings_get_dc_start (const SimSettings *sim_settings)
 {
@@ -314,29 +326,31 @@ void sim_settings_set_dc (SimSettings *sim_settings, gboolean enable)
 
 void sim_settings_set_dc_vsrc (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->dc_vin)
-		g_free (sim_settings->dc_vin);
+	g_free (sim_settings->dc_vin);
 	sim_settings->dc_vin = g_strdup (str);
+}
+
+void sim_settings_set_dc_vout (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->dc_vout);
+	sim_settings->dc_vout = g_strdup (str);
 }
 
 void sim_settings_set_dc_start (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->dc_start)
-		g_free (sim_settings->dc_start);
+	g_free (sim_settings->dc_start);
 	sim_settings->dc_start = g_strdup (str);
 }
 
 void sim_settings_set_dc_stop (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->dc_stop)
-		g_free (sim_settings->dc_stop);
+	g_free (sim_settings->dc_stop);
 	sim_settings->dc_stop = g_strdup (str);
 }
 
 void sim_settings_set_dc_step (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->dc_step)
-		g_free (sim_settings->dc_step);
+	g_free (sim_settings->dc_step);
 	sim_settings->dc_step = g_strdup (str);
 }
 
@@ -347,8 +361,7 @@ void sim_settings_set_fourier (SimSettings *sim_settings, gboolean enable)
 
 void sim_settings_set_fourier_frequency (SimSettings *sim_settings, gchar *str)
 {
-	if (sim_settings->fourier_frequency)
-		g_free (sim_settings->fourier_frequency);
+	g_free (sim_settings->fourier_frequency);
 	sim_settings->fourier_frequency = g_strdup (str);
 }
 
@@ -356,8 +369,7 @@ void sim_settings_set_fourier_vout (SimSettings *sim_settings, gchar *str)
 {
 	gchar **node_ids = NULL;
 	gint i;
-	if (sim_settings->fourier_vout)
-		g_free (sim_settings->fourier_vout);
+	g_free (sim_settings->fourier_vout);
 	node_ids = g_strsplit (g_strdup (str), " ", 0);
 	for (i = 0; node_ids[i] != NULL; i++) {
 		if (node_ids[i])
