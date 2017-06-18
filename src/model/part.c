@@ -296,7 +296,7 @@ gint part_get_rotation (Part *part)
 	//     ( a  b )     ( cos(alpha)  -sin(alpha) )
 	//Q = (        ) = (                           )
 	//     ( c  d )     ( sin(alpha)   cos(alpha) )
-	if (G_UNLIKELY (abs (1 - (a * a + c * c)) > 1e-10 || abs (1 - (b * b + d * d)) > 1e-10 || abs (a*b + c*d) > 1e-10 || abs (1 - (a*d - b*c)) > 1e-10)) {
+	if (G_UNLIKELY (fabs (1 - (a * a + c * c)) > 1e-10 || fabs (1 - (b * b + d * d)) > 1e-10 || fabs (a*b + c*d) > 1e-10 || fabs (1 - (a*d - b*c)) > 1e-10)) {
 		g_warning ("Unabled to calculate rotation from matrix. Assuming 0°.");
 		return 0;
 	}
