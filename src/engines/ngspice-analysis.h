@@ -81,6 +81,7 @@ typedef struct {
 struct _OreganoNgSpicePriv
 {
 	GPid child_pid;
+	GThread *saver;
 
 	Schematic *schematic;
 
