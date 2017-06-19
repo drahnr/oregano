@@ -72,11 +72,11 @@ rm -rf "$RPM_BUILD_ROOT"
 
 %doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md
 %doc docs/oregano-inheritance.dia
-%doc docs/dev-docs/Library-HOWTO.md
-%doc docs/dev-docs/LogView.md
-%doc docs/dev-docs/Oregano-Plot-HOWTO.md
-%doc docs/dev-docs/ProgressBar.md
-%doc docs/dev-docs/Simulation-Settings-HOWTO.md
+%doc docs/user-docs/Library-HOWTO.md
+%doc docs/user-docs/LogView.md
+%doc docs/user-docs/Oregano-Plot-HOWTO.md
+%doc docs/user-docs/ProgressBar.md
+%doc docs/user-docs/Simulation-Settings-HOWTO.md
 
 %{_bindir}/*
 #%{_datadir}/gnome/help/oregano/*/*
