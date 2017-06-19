@@ -156,11 +156,11 @@ jobs:
       config:
         platform: linux
         inputs:
-        - name: git-pull-request-resource
+        - name: git-clone-resource
         run:
           path: debuild
           args: ["-i", "-us", "-uc", "-b"]
-          dir: git-pull-request-resource
+          dir: git-clone-resource
 
   - name: pr-build-pkg-rpm
     build_logs_to_retain: 5
