@@ -5,6 +5,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -12,6 +13,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -37,6 +39,15 @@
 
 #include "pixmaps/logo.xpm"
 
+/*
+ * Schedule a call to the oregano_error() function so that it is
+ * called whenever there are no higher priority events pending.
+ *
+ * The caller should schedule this function call using the GLib
+ * function g_idle_add_full().
+ */
+gboolean oregano_schedule_error (gchar *msg) { oregano_error_with_title (msg, NULL); return FALSE; }
+
 void oregano_error (gchar *msg) { oregano_error_with_title (msg, NULL); }
 
 void oregano_error_with_title (gchar *title, gchar *desc)
@@ -53,16 +64,27 @@ void oregano_error_with_title (gchar *title, gchar *desc)
 		span_msg = g_string_append (span_msg, desc);
 	}
 
-	dialog = gtk_message_dialog_new_with_markup (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR,
-	                                             GTK_BUTTONS_OK, "%s", span_msg->str);
+	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR,
+					 GTK_BUTTONS_CLOSE, NULL);
 
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), span_msg->str);
+
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
 	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free (span_msg, TRUE);
 	gtk_widget_destroy (dialog);
 }
+
+/*
+ * Schedule a call to the oregano_warning() function so that it is
+ * called whenever there are no higher priority events pending.
+ *
+ * The caller should schedule this function call using the GLib
+ * function g_idle_add_full().
+ */
+gboolean oregano_schedule_warning (gchar *msg) { oregano_warning_with_title (msg, NULL); return FALSE; }
 
 void oregano_warning (gchar *msg) { oregano_warning_with_title (msg, NULL); }
 
@@ -80,28 +102,42 @@ void oregano_warning_with_title (gchar *title, gchar *desc)
 		span_msg = g_string_append (span_msg, desc);
 	}
 
-	dialog = gtk_message_dialog_new_with_markup (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
-	                                             GTK_BUTTONS_OK, "%s", span_msg->str);
+	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
+					 GTK_BUTTONS_CLOSE, NULL);
 
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), span_msg->str);
 
-	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_set_default_response (GTK_MESSAGE_DIALOG (dialog), GTK_RESPONSE_CLOSE);
+
+	gtk_dialog_run (GTK_MESSAGE_DIALOG (dialog));
 
 	g_string_free (span_msg, TRUE);
+
 	gtk_widget_destroy (dialog);
 }
+
+/*
+ * Schedule a call to the oregano_question() function so that it is
+ * called whenever there are no higher priority events pending.
+ *
+ * The caller should schedule this function call using the GLib
+ * function g_idle_add_full().
+ */
+gboolean oregano_schedule_question (gchar *msg) { oregano_question (msg); return FALSE; }
 
 gint oregano_question (gchar *msg)
 {
 	GtkWidget *dialog;
 	gint ans;
 
-	dialog = gtk_message_dialog_new_with_markup (NULL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK,
-	                                             GTK_BUTTONS_CANCEL, "%s", msg);
+	dialog = gtk_message_dialog_new (NULL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK,
+					 GTK_BUTTONS_CANCEL, NULL);
 
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
+	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), msg);
 
-	ans = gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_dialog_set_default_response (GTK_MESSAGE_DIALOG (dialog), GTK_RESPONSE_CANCEL);
+
+	ans = gtk_dialog_run (GTK_MESSAGE_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 	return (ans == GTK_RESPONSE_ACCEPT);
 }
@@ -113,15 +149,17 @@ void dialog_about (void)
 
 	const gchar *authors[] = {"Richard Hult",       "Margarita Manterola", "Andres de Barbara",
 	                          "Gustavo M. Pereyra", "Maximiliano Curia",   "Ricardo Markiewicz",
-	                          "Marc Lorber",        "Bernhard Schuster",   NULL};
+	                          "Marc Lorber",        "Bernhard Schuster",   "Guido Trentalancia",
+				  NULL};
 
 	const char *docs[] = {"Ricardo Markiewicz <rmarkie@fi.uba.ar> (es)",
 	                      "Jordi Mallach <tradgnome@softcatala.net> (ca)",
 	                      "Marc Lorber <lorber.marc@wanadoo.fr> (en)",
-                             "Bernhard Schuster <bernhard@ahoi.io> (de)",
+	                      "Bernhard Schuster <bernhard@ahoi.io> (de)",
                               NULL};
 
-	const gchar *copy = _ ("(c) 2012-2017 Bernhard Schuster\n"
+	const gchar *copy = _ ("(c) 2017 Guido Trentalancia\n"
+	                       "(c) 2012-2017 Bernhard Schuster\n"
 	                       "(c) 2009-2012 Marc Lorber\n"
 	                       "(c) 2003-2006 LUGFi\n"
 	                       "(c) 1999-2001 Richard Hult");

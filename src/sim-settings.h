@@ -65,6 +65,15 @@ typedef struct {
 	gchar *fourier_nb_vout;
 	GSList *fourier_vout;
 
+	// Noise
+	gboolean noise_enable;
+	gchar *noise_vin;
+	gchar *noise_vout;
+	gchar *noise_type;
+	gchar *noise_npoints;
+	gchar *noise_start;
+	gchar *noise_stop;
+
 	// Options
 	GList *options;
 } SimSettings;
@@ -170,6 +179,34 @@ gint sim_settings_get_fourier_frequency (const SimSettings *);
 gchar *sim_settings_get_fourier_vout (const SimSettings *);
 
 gchar *sim_settings_get_fourier_nodes (const SimSettings *);
+
+gboolean sim_settings_get_noise (const SimSettings *);
+
+gchar *sim_settings_get_noise_vsrc (const SimSettings *);
+
+gchar *sim_settings_get_noise_vout (const SimSettings *);
+
+gchar *sim_settings_get_noise_type (const SimSettings *);
+
+gint sim_settings_get_noise_npoints (const SimSettings *);
+
+gdouble sim_settings_get_noise_start (const SimSettings *);
+
+gdouble sim_settings_get_noise_stop (const SimSettings *);
+
+void sim_settings_set_noise (SimSettings *, gboolean);
+
+void sim_settings_set_noise_vsrc (SimSettings *, gchar *);
+
+void sim_settings_set_noise_vout (SimSettings *, gchar *);
+
+void sim_settings_set_noise_type (SimSettings *, gchar *);
+
+void sim_settings_set_noise_npoints (SimSettings *, gchar *);
+
+void sim_settings_set_noise_start (SimSettings *, gchar *);
+
+void sim_settings_set_noise_stop (SimSettings *, gchar *);
 
 GList *sim_settings_get_options (const SimSettings *sim_settings);
 

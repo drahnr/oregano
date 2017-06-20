@@ -707,7 +707,7 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error, gbool
 	return clamp_list;
 }
 
-GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error)
+GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error, gboolean ac_only)
 {
 	Netlist netlist_data;
 	GError *e = NULL;
@@ -732,7 +732,13 @@ GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error)
 			if (prop[0] == 'V' && (prop[1] >= '0' && prop[1] <= '9')) {
 				gchar *tmp;
 				tmp = g_strdup (&prop[1]);
-				sources_list = g_slist_append (sources_list, tmp);
+				if (ac_only) {
+					g_free(prop);
+					prop = part_get_property (part, "Frequency");
+					if (prop)
+						sources_list = g_slist_append (sources_list, tmp);
+				} else
+					sources_list = g_slist_append (sources_list, tmp);
 				if (0)
 					printf ("sources_list = %s\n", tmp);
 			}

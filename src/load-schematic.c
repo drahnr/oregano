@@ -90,6 +90,15 @@ typedef enum {
 	PARSE_FOURIER_FREQ,
 	PARSE_FOURIER_VOUT,
 
+	PARSE_NOISE_SETTINGS,
+	PARSE_NOISE_ENABLED,
+	PARSE_NOISE_VSRC,
+	PARSE_NOISE_VOUT,
+	PARSE_NOISE_TYPE,
+	PARSE_NOISE_NPOINTS,
+	PARSE_NOISE_START,
+	PARSE_NOISE_STOP,
+
 	PARSE_OPTION_LIST,
 	PARSE_OPTION,
 	PARSE_OPTION_NAME,
@@ -364,6 +373,8 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 			state->state = PARSE_DC_SETTINGS;
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:fourier")) {
 			state->state = PARSE_FOURIER_SETTINGS;
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:noise")) {
+			state->state = PARSE_NOISE_SETTINGS;
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:options")) {
 			state->state = PARSE_OPTION_LIST;
 		} else {
@@ -463,6 +474,35 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 			g_string_truncate (state->content, 0);
 		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:vout")) {
 			state->state = PARSE_FOURIER_VOUT;
+			g_string_truncate (state->content, 0);
+		} else {
+			state->prev_state = state->state;
+			state->state = PARSE_UNKNOWN;
+			state->unknown_depth++;
+		}
+		break;
+
+	case PARSE_NOISE_SETTINGS:
+		if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:enabled")) {
+			state->state = PARSE_NOISE_ENABLED;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:vsrc1")) {
+			state->state = PARSE_NOISE_VSRC;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:vout1")) {
+			state->state = PARSE_NOISE_VOUT;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:type")) {
+			state->state = PARSE_NOISE_TYPE;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:npoints")) {
+			state->state = PARSE_NOISE_NPOINTS;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:start")) {
+			state->state = PARSE_NOISE_START;
+			g_string_truncate (state->content, 0);
+		} else if (!xmlStrcmp (BAD_CAST name, BAD_CAST "ogo:stop")) {
+			state->state = PARSE_NOISE_STOP;
 			g_string_truncate (state->content, 0);
 		} else {
 			state->prev_state = state->state;
@@ -666,6 +706,14 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 	case PARSE_FOURIER_FREQ:
 	case PARSE_FOURIER_VOUT:
 
+	case PARSE_NOISE_ENABLED:
+	case PARSE_NOISE_VSRC:
+	case PARSE_NOISE_VOUT:
+	case PARSE_NOISE_TYPE:
+	case PARSE_NOISE_NPOINTS:
+	case PARSE_NOISE_START:
+	case PARSE_NOISE_STOP:
+
 	case PARSE_WIRE_POINTS:
 	case PARSE_OPTION_NAME:
 	case PARSE_OPTION_VALUE:
@@ -861,6 +909,39 @@ static void end_element (ParseState *state, const xmlChar *name)
 	case PARSE_FOURIER_VOUT:
 		sim_settings_set_fourier_vout (state->sim_settings, state->content->str);
 		state->state = PARSE_FOURIER_SETTINGS;
+		break;
+
+	case PARSE_NOISE_SETTINGS:
+		state->state = PARSE_SIMULATION_SETTINGS;
+		break;
+	case PARSE_NOISE_ENABLED:
+		sim_settings_set_noise (state->sim_settings,
+		                     !g_ascii_strcasecmp (state->content->str, "true"));
+		state->state = PARSE_NOISE_SETTINGS;
+		break;
+	case PARSE_NOISE_VSRC:
+		sim_settings_set_noise_vsrc (state->sim_settings, state->content->str);
+		state->state = PARSE_NOISE_SETTINGS;
+		break;
+	case PARSE_NOISE_VOUT:
+		sim_settings_set_noise_vout (state->sim_settings, state->content->str);
+		state->state = PARSE_NOISE_SETTINGS;
+		break;
+	case PARSE_NOISE_TYPE:
+		sim_settings_set_noise_type (state->sim_settings, state->content->str);
+		state->state = PARSE_NOISE_SETTINGS;
+		break;
+	case PARSE_NOISE_NPOINTS:
+		sim_settings_set_noise_npoints (state->sim_settings, state->content->str);
+		state->state = PARSE_NOISE_SETTINGS;
+		break;
+	case PARSE_NOISE_START:
+		sim_settings_set_noise_start (state->sim_settings, state->content->str);
+		state->state = PARSE_NOISE_SETTINGS;
+		break;
+	case PARSE_NOISE_STOP:
+		sim_settings_set_noise_stop (state->sim_settings, state->content->str);
+		state->state = PARSE_NOISE_SETTINGS;
 		break;
 
 	case PARSE_OPTION_LIST:

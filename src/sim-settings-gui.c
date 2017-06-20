@@ -1,10 +1,38 @@
 /*
  * sim-settings-gui.c
  *
- *  Created on: Jun 14, 2017
- *      Author: michi
+ *
+ * Authors:
+ *  Richard Hult <rhult@hem.passagen.se>
+ *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
+ *
+ * Web page: https://ahoi.io/project/oregano
+ *
+ * Copyright (C) 1999-2001  Richard Hult
+ * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
-
 
 #include "engines/netlist-helper.h"
 #include "schematic-view.h"
@@ -12,7 +40,7 @@
 #include <glib/gi18n.h>
 #include <stdlib.h>
 
-static char *AC_types_list[] = {"DEC", "LIN", "OCT", NULL};
+static char *scale_types_list[] = {"DEC", "LIN", "OCT", NULL};
 
 static SimOption default_options[] = {{"TEMP", NULL},
 
@@ -207,6 +235,17 @@ static void option_remove (GtkWidget *w, SimSettingsGui *s)
 	gtk_list_store_set (GTK_LIST_STORE (model), &iter, 1, "", -1);
 }
 
+static void entry_changed_cb (GtkWidget *widget, SimSettingsGui *s)
+{
+	// FIXME?
+}
+
+static int delete_event_cb (GtkWidget *widget, GdkEvent *event, SimSettingsGui *s)
+{
+	s->pbox = NULL;
+	return FALSE;
+}
+
 static void trans_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 {
 	gboolean enable;
@@ -225,23 +264,11 @@ static void trans_step_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 	gtk_widget_set_sensitive (s->w_trans_step, step_enable & enable);
 }
 
-static void entry_changed_cb (GtkWidget *widget, SimSettingsGui *s)
-{
-	// FIXME?
-}
-
 static void ac_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 {
 	gboolean enable;
 	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
 	gtk_widget_set_sensitive (s->w_ac_frame, enable);
-}
-
-static void fourier_enable_cb (GtkWidget *widget, SimSettingsGui *s)
-{
-	gboolean enable;
-	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
-	gtk_widget_set_sensitive (s->w_fourier_frame, enable);
 }
 
 static void dc_enable_cb (GtkWidget *widget, SimSettingsGui *s)
@@ -251,10 +278,99 @@ static void dc_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 	gtk_widget_set_sensitive (s->w_dcsweep_frame, enable);
 }
 
-static int delete_event_cb (GtkWidget *widget, GdkEvent *event, SimSettingsGui *s)
+static void fourier_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 {
-	s->pbox = NULL;
-	return FALSE;
+	gboolean enable;
+	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
+	gtk_widget_set_sensitive (s->w_fourier_frame, enable);
+}
+
+static void fourier_add_vout_cb (GtkButton *w, SimSettingsGui *sim)
+{
+	GtkComboBoxText *node_box;
+	guint i;
+	gint result = FALSE;
+
+	node_box = GTK_COMBO_BOX_TEXT (sim->w_four_combobox);
+
+	// Get the node identifier
+	for (i = 0; (i < 1000 && result == FALSE); ++i) {
+		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
+		               gtk_combo_box_text_get_active_text (node_box)) == 0)
+			result = TRUE;
+	}
+	result = FALSE;
+
+	gchar *text = fourier_add_vout(sim->sim_settings, result, i);
+
+	gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
+}
+
+static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
+{
+	GtkComboBoxText *node_box;
+	gint result = FALSE;
+	gint i;
+	SimSettings *s = sim->sim_settings;
+
+	node_box = GTK_COMBO_BOX_TEXT (sim->w_four_combobox);
+
+	// Get the node identifier
+	for (i = 0; (i < 1000 && result == FALSE); i++) {
+		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
+		               gtk_combo_box_text_get_active_text (node_box)) == 0)
+			result = TRUE;
+	}
+
+	if (result) {
+		GSList *node_slist;
+		gchar *text = NULL;
+
+		// Remove current data in the g_slist
+		{
+			GSList *tmp, *prev = NULL;
+
+			tmp = s->fourier_vout;
+			while (tmp) {
+				if (atoi (tmp->data) == i - 1) {
+					if (prev)
+						prev->next = tmp->next;
+					else
+						s->fourier_vout = tmp->next;
+
+					g_slist_free_1 (tmp);
+					break;
+				}
+				prev = tmp;
+				tmp = prev->next;
+			}
+		}
+
+		// Update the fourier_vout widget
+		node_slist = g_slist_copy (s->fourier_vout);
+		if (node_slist->data)
+			text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
+		if (node_slist)
+			node_slist = node_slist->next;
+		while (node_slist) {
+			if (node_slist->data)
+				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+			node_slist = node_slist->next;
+		}
+		if (text)
+			gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
+		else
+			gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), "");
+
+		g_slist_free (node_slist);
+	}
+}
+
+static void noise_enable_cb (GtkWidget *widget, SimSettingsGui *s)
+{
+	gboolean enable;
+	enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
+	gtk_widget_set_sensitive (s->w_noise_frame, enable);
 }
 
 static void response_callback (GtkButton *button, Schematic *sm)
@@ -371,6 +487,51 @@ static void response_callback (GtkButton *button, Schematic *sm)
 	g_free (s->fourier_frequency);
 	s->fourier_frequency = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_four_freq)));
 
+	// Noise
+	s->noise_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_noise_enable));
+	g_free (s->noise_vin);
+
+	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_vin));
+	if (tmp) {
+		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
+		tmp = node_ids[1];
+		if (tmp) {
+			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			if (node_ids[0])
+				s->noise_vin = node_ids[0];
+			else
+				s->noise_vin = g_strdup("");
+		}
+	} else
+		s->noise_vin = g_strdup("");
+
+	g_free (s->noise_vout);
+	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_vout));
+	if (tmp) {
+		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
+		tmp = node_ids[1];
+		if (tmp) {
+			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			if (node_ids[0])
+				s->noise_vout = node_ids[0];
+			else
+				s->noise_vout = g_strdup("");
+		}
+	} else
+		s->noise_vout = g_strdup("");
+
+	g_free (s->noise_type);
+	s->noise_type = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_type));
+
+	g_free (s->noise_npoints);
+	s->noise_npoints = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_noise_npoints)));
+
+	g_free (s->noise_start);
+	s->noise_start = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_noise_start)));
+
+	g_free (s->noise_stop);
+	s->noise_stop = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_noise_stop)));
+
 	// Options
 	get_options_from_list (s_gui);
 	gtk_widget_hide (GTK_WIDGET (s_gui->pbox));
@@ -381,87 +542,6 @@ static void response_callback (GtkButton *button, Schematic *sm)
 	schematic_set_dirty (sm, TRUE);
 	g_free (tmp);
 	g_free (node_ids);
-}
-
-static void fourier_add_vout_cb (GtkButton *w, SimSettingsGui *sim)
-{
-	GtkComboBoxText *node_box;
-	guint i;
-	gint result = FALSE;
-
-	node_box = GTK_COMBO_BOX_TEXT (sim->w_four_combobox);
-
-	// Get the node identifier
-	for (i = 0; (i < 1000 && result == FALSE); ++i) {
-		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
-		               gtk_combo_box_text_get_active_text (node_box)) == 0)
-			result = TRUE;
-	}
-	result = FALSE;
-
-	gchar *text = fourier_add_vout(sim->sim_settings, result, i);
-
-	gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
-}
-
-static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
-{
-	GtkComboBoxText *node_box;
-	gint result = FALSE;
-	gint i;
-	SimSettings *s = sim->sim_settings;
-
-	node_box = GTK_COMBO_BOX_TEXT (sim->w_four_combobox);
-
-	// Get the node identifier
-	for (i = 0; (i < 1000 && result == FALSE); i++) {
-		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
-		               gtk_combo_box_text_get_active_text (node_box)) == 0)
-			result = TRUE;
-	}
-
-	if (result) {
-		GSList *node_slist;
-		gchar *text = NULL;
-
-		// Remove current data in the g_slist
-		{
-			GSList *tmp, *prev = NULL;
-
-			tmp = s->fourier_vout;
-			while (tmp) {
-				if (atoi (tmp->data) == i - 1) {
-					if (prev)
-						prev->next = tmp->next;
-					else
-						s->fourier_vout = tmp->next;
-
-					g_slist_free_1 (tmp);
-					break;
-				}
-				prev = tmp;
-				tmp = prev->next;
-			}
-		}
-
-		// Update the fourier_vout widget
-		node_slist = g_slist_copy (s->fourier_vout);
-		if (node_slist->data)
-			text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
-		if (node_slist)
-			node_slist = node_slist->next;
-		while (node_slist) {
-			if (node_slist->data)
-				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
-			node_slist = node_slist->next;
-		}
-		if (text)
-			gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
-		else
-			gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), "");
-
-		g_slist_free (node_slist);
-	}
 }
 
 /**
@@ -513,11 +593,11 @@ gint get_voltmeters_list(GList **voltmeters, Schematic *sm, GError *e, gboolean 
 /**
  * Get the list of sources (indipendent voltage)
  */ 
-gint get_voltage_sources_list(GList **sources, Schematic *sm, GError *e)
+gint get_voltage_sources_list(GList **sources, Schematic *sm, GError *e, gboolean ac_only)
 {
 	GSList *siter, *node_list = NULL;
 
-	node_list = netlist_helper_get_voltage_sources_list (sm, &e);
+	node_list = netlist_helper_get_voltage_sources_list (sm, &e, ac_only);
 	if (e) {
 		log_append_error (schematic_get_log_store (sm), _ ("SimulationSettings"),
 		_ ("Failed to create netlist"), e);
@@ -561,6 +641,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	GList *voltmeters = NULL;
 	GList *voltmeters_with_type = NULL;
 	GList *sources = NULL;
+	GList *sources_ac = NULL;
 	GtkComboBox *node_box;
 	GtkListStore *node_list_store;
 	gchar *text = NULL;
@@ -623,6 +704,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s_gui->w_ac_frame = GTK_WIDGET (gtk_builder_get_object (builder, "ac_frame"));
 	s_gui->w_dcsweep_frame = GTK_WIDGET (gtk_builder_get_object (builder, "dcsweep_frame"));
 	s_gui->w_fourier_frame = GTK_WIDGET (gtk_builder_get_object (builder, "fourier_frame"));
+	s_gui->w_noise_frame = GTK_WIDGET (gtk_builder_get_object (builder, "noise_frame"));
 
 	// Create the Columns
 	cell_option = gtk_cell_renderer_text_new ();
@@ -690,10 +772,16 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		sim_settings_set_ac(s, FALSE);
 	}
 
-	// Get the list of sources
-	rc = get_voltage_sources_list(&sources, sm, e);
+	// Get the list of sources (all types)
+	rc = get_voltage_sources_list(&sources, sm, e, FALSE);
 	if (rc) {
 		sim_settings_set_dc(s, FALSE);
+	}
+
+	// Get the list of AC sources
+	rc = get_voltage_sources_list(&sources_ac, sm, e, TRUE);
+	if (rc) {
+		sim_settings_set_noise(s, FALSE);
 	}
 
 	// Transient //
@@ -756,7 +844,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	w1 = GTK_WIDGET (gtk_builder_get_object (builder, "grid14"));
 
 	// FIXME: Should enable more than just one output as in the Fourier analysis
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "ac_vout1"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "ac_vout"));
 	gtk_widget_destroy (w); // FIXME wtf??
 	combo_box = gtk_combo_box_text_new ();
 
@@ -775,7 +863,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
 
-	// Initialilisation of the various AC types
+	// Initialisation of the various scale types
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "ac_type"));
 	gtk_widget_destroy (w); // FIXME wtf??
 	combo_box = gtk_combo_box_text_new ();
@@ -785,9 +873,9 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	{
 		index = 0;
 		active = 0;
-		for (; AC_types_list[index] != NULL; index++) {
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), AC_types_list[index]);
-			if (!g_strcmp0(s->ac_type, AC_types_list[index]))
+		for (; scale_types_list[index] != NULL; index++) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), scale_types_list[index]);
+			if (!g_strcmp0(s->ac_type, scale_types_list[index]))
 				active = index;
 		}
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
@@ -818,11 +906,10 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->dc_enable);
 
 	w1 = GTK_WIDGET (gtk_builder_get_object (builder, "grid13"));
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_vin1"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_vin"));
 	gtk_widget_destroy (w); // FIXME wtf??
 	combo_box = gtk_combo_box_text_new ();
 
-	// FIXME: Should also allow to print currents through voltage sources
 	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 0, 1, 1);
 	s_gui->w_dc_vin = combo_box;
 	if (sources) {
@@ -839,7 +926,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
 
 	// FIXME: Should enable more than just one output as in the Fourier analysis
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_vout1"));
+	// FIXME: Should also allow to print currents through voltage sources
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_vout"));
 	gtk_widget_destroy (w); // FIXME wtf??
 	combo_box = gtk_combo_box_text_new ();
 
@@ -859,17 +947,17 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s_gui);
 
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_start1"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_start"));
 	s_gui->w_dc_start = w;
 	gtk_entry_set_text (GTK_ENTRY (w), s->dc_start);
 	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
 
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_stop1"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_stop"));
 	s_gui->w_dc_stop = w;
 	gtk_entry_set_text (GTK_ENTRY (w), s->dc_stop);
 	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
 
-	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_step1"));
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "dc_step"));
 	s_gui->w_dc_step = w;
 	gtk_entry_set_text (GTK_ENTRY (w), s->dc_step);
 	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
@@ -943,13 +1031,98 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s_gui->w_four_rem = w;
 	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (fourier_remove_vout_cb), s_gui);
 
+	// Noise  //
+	// *** //
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_enable"));
+	s_gui->w_noise_enable = w;
+	g_signal_connect (G_OBJECT (w), "toggled", G_CALLBACK (noise_enable_cb), s_gui);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), s->noise_enable);
+
+	w1 = GTK_WIDGET (gtk_builder_get_object (builder, "grid1"));
+
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_vin"));
+	gtk_widget_destroy (w); // FIXME wtf??
+	combo_box = gtk_combo_box_text_new ();
+
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 0, 1, 1);
+	s_gui->w_noise_vin = combo_box;
+	if (sources_ac) {
+		index = 0;
+		active = 0;
+		for (iter = sources_ac; iter; iter = iter->next) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (!g_strcmp0(s->noise_vin, iter->data))
+				active = index;
+			index++;
+		}
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
+	}
+	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
+
+	// FIXME: Should enable more than just one output as in the Fourier analysis
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_vout"));
+	gtk_widget_destroy (w); // FIXME wtf??
+	combo_box = gtk_combo_box_text_new ();
+
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 1, 1, 1);
+	s_gui->w_noise_vout = combo_box;
+	if (voltmeters) {
+		index = 0;
+		active = 0;
+		text = g_strdup_printf ("V(%s)", s->noise_vout);
+		for (iter = voltmeters; iter; iter = iter->next) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (!g_strcmp0(text, iter->data))
+				active = index;
+			index++;
+		}
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
+	}
+	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
+
+	// Initialisation of the various scale types
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_type"));
+	gtk_widget_destroy (w); // FIXME wtf??
+	combo_box = gtk_combo_box_text_new ();
+	gtk_grid_attach (GTK_GRID (w1), combo_box, 1, 2, 1, 1);
+	s_gui->w_noise_type = combo_box;
+
+	{
+		index = 0;
+		active = 0;
+		for (; scale_types_list[index] != NULL; index++) {
+			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), scale_types_list[index]);
+			if (!g_strcmp0(s->noise_type, scale_types_list[index]))
+				active = index;
+		}
+		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
+	}
+	g_assert (GTK_IS_COMBO_BOX (combo_box));
+	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s_gui);
+
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_npoints"));
+	s_gui->w_noise_npoints = w;
+	gtk_entry_set_text (GTK_ENTRY (w), s->noise_npoints);
+	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
+
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_start"));
+	s_gui->w_noise_start = w;
+	gtk_entry_set_text (GTK_ENTRY (w), s->noise_start);
+	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
+
+	w = GTK_WIDGET (gtk_builder_get_object (builder, "noise_stop"));
+	s_gui->w_noise_stop = w;
+	gtk_entry_set_text (GTK_ENTRY (w), s->noise_stop);
+	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
+
 	gtk_widget_show_all (toplevel);
 
-	ac_enable_cb (s_gui->w_ac_enable, s_gui);
-	fourier_enable_cb (s_gui->w_four_enable, s_gui);
-	dc_enable_cb (s_gui->w_dc_enable, s_gui);
 	trans_enable_cb (s_gui->w_trans_enable, s_gui);
 	trans_step_enable_cb (s_gui->w_trans_step_enable, s_gui);
+	ac_enable_cb (s_gui->w_ac_enable, s_gui);
+	dc_enable_cb (s_gui->w_dc_enable, s_gui);
+	fourier_enable_cb (s_gui->w_four_enable, s_gui);
+	noise_enable_cb (s_gui->w_noise_enable, s_gui);
 
 	g_list_free(sources);
 	g_list_free(voltmeters);

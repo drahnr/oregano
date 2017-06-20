@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -136,7 +138,6 @@ typedef union
 
 void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv);
 gpointer simulation_new (Schematic *sm, Log *logstore);
-gchar *sim_engine_analysis_name (SimulationData *);
 
 #define SIM_DATA(obj) ((SimulationData *)(obj))
 #define ANALYSIS(obj) ((Analysis *)(obj))
