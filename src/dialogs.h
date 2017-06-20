@@ -37,13 +37,30 @@
 
 #include "schematic.h"
 
+typedef struct _OreganoTitleMsg OreganoTitleMsg;
+typedef struct _OreganoQuestionAnswer OreganoQuestionAnswer;
+
+struct _OreganoTitleMsg
+{
+	gchar *title;
+	gchar *msg;
+};
+
+struct _OreganoQuestionAnswer
+{
+	gchar *msg;
+	gint ans;
+};
+
 gboolean oregano_schedule_error (gchar *msg);
+gboolean oregano_schedule_error_with_title (OreganoTitleMsg *tm);
 void oregano_error (gchar *msg);
-void oregano_error_with_title (gchar *title, gchar *desc);
+void oregano_error_with_title (gchar *title, gchar *msg);
 gboolean oregano_schedule_warning (gchar *msg);
+gboolean oregano_schedule_warning_with_title (OreganoTitleMsg *tm);
 void oregano_warning (gchar *msg);
-void oregano_warning_with_title (gchar *title, gchar *desc);
-gboolean oregano_schedule_question (gchar *msg);
+void oregano_warning_with_title (gchar *title, gchar *msg);
+gboolean oregano_schedule_question (OreganoQuestionAnswer *qa);
 gint oregano_question (gchar *msg);
 void dialog_about (void);
 

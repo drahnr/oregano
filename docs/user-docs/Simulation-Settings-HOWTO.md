@@ -75,3 +75,5 @@ Analysis Parameters
 - Start: the starting frequency.
 - Stop: the final frequency.
 
+At the moment, it works only with the ngspice engine.
+

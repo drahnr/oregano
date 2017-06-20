@@ -849,10 +849,10 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 	ThreadPipe *pipe = resources->pipe;
         gchar **buf = &resources->buf;
 	GList **analysis = resources->analysis;
-	gchar *integrated_noise;
         gsize size;
 	gdouble inoise, onoise;
 	guint *num_analysis = resources->num_analysis;
+	OreganoTitleMsg *tm;
 
         static SimulationData *sdata;
         static Analysis *data;
@@ -869,10 +869,11 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
         pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 	onoise = parse_noise_total(*buf);
 
-	integrated_noise = g_strdup_printf ("<big>Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)</big>\n\n"
-					    "Input: %f\nOutput: %f\n", inoise, onoise);
+	tm = g_malloc (sizeof(OreganoTitleMsg));
+	tm->title = g_strdup ("Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)");
+	tm->msg = g_strdup_printf ("Input: %f\nOutput: %f\n", inoise, onoise);
 
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning, integrated_noise, NULL);
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning_with_title, tm, NULL);
 
 	*analysis = g_list_append (*analysis, sdata);
 	(*num_analysis)++;
