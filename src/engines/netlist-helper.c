@@ -674,8 +674,9 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error, gbool
 							tmp = g_strdup_printf ("V%s(%d)", ac_type, pins[0].node_nr);
 						g_free(ac_type);
 						g_free(ac_db);
-					} else
+					} else {
 						tmp = g_strdup_printf ("%d", pins[0].node_nr);
+					}
 					clamp_list = g_slist_prepend (clamp_list, tmp);
 					if (0)
 						printf ("clamp_list = %s\n", tmp);
@@ -737,8 +738,9 @@ GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error, 
 					prop = part_get_property (part, "Frequency");
 					if (prop)
 						sources_list = g_slist_append (sources_list, tmp);
-				} else
+				} else {
 					sources_list = g_slist_append (sources_list, tmp);
+				}
 				if (0)
 					printf ("sources_list = %s\n", tmp);
 			}

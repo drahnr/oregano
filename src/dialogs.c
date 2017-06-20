@@ -46,11 +46,29 @@
  * The caller should schedule this function call using the GLib
  * function g_idle_add_full().
  */
-gboolean oregano_schedule_error (gchar *msg) { oregano_error_with_title (msg, NULL); return FALSE; }
+gboolean oregano_schedule_error (gchar *msg) { oregano_error_with_title (msg, NULL); return G_SOURCE_REMOVE; }
+
+/*
+ * Schedule a call to the oregano_error_with_title() function
+ * so that it is called whenever there are no higher priority
+ * events pending.
+ *
+ * The caller should schedule this function call using the GLib
+ * function g_idle_add_full().
+ */
+gboolean oregano_schedule_error_with_title (OreganoTitleMsg *tm)
+{
+	oregano_error_with_title (tm->title, tm->msg);
+	g_free (tm->title);
+	g_free (tm->msg);
+	g_free (tm);
+
+	return G_SOURCE_REMOVE;
+}
 
 void oregano_error (gchar *msg) { oregano_error_with_title (msg, NULL); }
 
-void oregano_error_with_title (gchar *title, gchar *desc)
+void oregano_error_with_title (gchar *title, gchar *msg)
 {
 	GtkWidget *dialog;
 	GString *span_msg;
@@ -59,9 +77,9 @@ void oregano_error_with_title (gchar *title, gchar *desc)
 	span_msg = g_string_append (span_msg, title);
 	span_msg = g_string_append (span_msg, "</span>");
 
-	if (desc && desc[0] != '\0') {
+	if (msg && msg[0] != '\0') {
 		span_msg = g_string_append (span_msg, "\n\n");
-		span_msg = g_string_append (span_msg, desc);
+		span_msg = g_string_append (span_msg, msg);
 	}
 
 	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR,
@@ -74,6 +92,7 @@ void oregano_error_with_title (gchar *title, gchar *desc)
 	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free (span_msg, TRUE);
+
 	gtk_widget_destroy (dialog);
 }
 
@@ -84,11 +103,29 @@ void oregano_error_with_title (gchar *title, gchar *desc)
  * The caller should schedule this function call using the GLib
  * function g_idle_add_full().
  */
-gboolean oregano_schedule_warning (gchar *msg) { oregano_warning_with_title (msg, NULL); return FALSE; }
+gboolean oregano_schedule_warning (gchar *msg) { oregano_warning_with_title (msg, NULL); return G_SOURCE_REMOVE; }
+
+/*
+ * Schedule a call to the oregano_warning_with_title() function
+ * so that it is called whenever there are no higher priority
+ * events pending.
+ *
+ * The caller should schedule this function call using the GLib
+ * function g_idle_add_full().
+ */
+gboolean oregano_schedule_warning_with_title (OreganoTitleMsg *tm)
+{
+	oregano_warning_with_title (tm->title, tm->msg);
+	g_free (tm->title);
+	g_free (tm->msg);
+	g_free (tm);
+
+	return G_SOURCE_REMOVE;
+}
 
 void oregano_warning (gchar *msg) { oregano_warning_with_title (msg, NULL); }
 
-void oregano_warning_with_title (gchar *title, gchar *desc)
+void oregano_warning_with_title (gchar *title, gchar *msg)
 {
 	GtkWidget *dialog;
 	GString *span_msg;
@@ -97,9 +134,9 @@ void oregano_warning_with_title (gchar *title, gchar *desc)
 	span_msg = g_string_append (span_msg, title);
 	span_msg = g_string_append (span_msg, "</span>");
 
-	if (desc && desc[0] != '\0') {
+	if (msg && msg[0] != '\0') {
 		span_msg = g_string_append (span_msg, "\n\n");
-		span_msg = g_string_append (span_msg, desc);
+		span_msg = g_string_append (span_msg, msg);
 	}
 
 	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
@@ -107,9 +144,9 @@ void oregano_warning_with_title (gchar *title, gchar *desc)
 
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), span_msg->str);
 
-	gtk_dialog_set_default_response (GTK_MESSAGE_DIALOG (dialog), GTK_RESPONSE_CLOSE);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
-	gtk_dialog_run (GTK_MESSAGE_DIALOG (dialog));
+	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	g_string_free (span_msg, TRUE);
 
@@ -123,23 +160,30 @@ void oregano_warning_with_title (gchar *title, gchar *desc)
  * The caller should schedule this function call using the GLib
  * function g_idle_add_full().
  */
-gboolean oregano_schedule_question (gchar *msg) { oregano_question (msg); return FALSE; }
+gboolean oregano_schedule_question (OreganoQuestionAnswer *qa) {
+	qa->ans = oregano_question (qa->msg);
+	g_free (qa->msg);
+
+	return G_SOURCE_REMOVE;
+}
 
 gint oregano_question (gchar *msg)
 {
 	GtkWidget *dialog;
 	gint ans;
 
-	dialog = gtk_message_dialog_new (NULL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK,
-					 GTK_BUTTONS_CANCEL, NULL);
+	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION,
+					 GTK_BUTTONS_YES_NO, NULL);
 
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), msg);
 
-	gtk_dialog_set_default_response (GTK_MESSAGE_DIALOG (dialog), GTK_RESPONSE_CANCEL);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
 
-	ans = gtk_dialog_run (GTK_MESSAGE_DIALOG (dialog));
+	ans = gtk_dialog_run (GTK_DIALOG (dialog));
+
 	gtk_widget_destroy (dialog);
-	return (ans == GTK_RESPONSE_ACCEPT);
+
+	return (ans == GTK_RESPONSE_YES);
 }
 
 void dialog_about (void)
