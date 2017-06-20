@@ -47,11 +47,3 @@ def build(bld):
 
 	for item in exe.includes:
 		logs.debug(item)
-	test = bld.program(
-		features = ['c', 'glib2', 'unites'],
-		target = 'microtests',
-		source = ['../test/test.c'],
-		includes = ['.', 'tools/', 'engines/', 'gplot/', 'model/', 'sheet/'],
-		use = 'shared_objects',
-		uselib = 'M XML GOBJECT GLIB GTK3 XML GOOCANVAS GTKSOURCEVIEW3'
-	)
