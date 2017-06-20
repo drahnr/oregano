@@ -11,11 +11,10 @@ import os
 from waflib import Logs as logs
 from waflib import Utils as utils
 
-rec = ['src', 'po', 'data']
+rec = ['src', 'po', 'data', 'test']
 
 def options(opt):
 	opt.load('compiler_c gnu_dirs glib2')
-	opt.load('unites', tooldir='waftools')
 
 	opt.add_option('--debug', dest='build_debug', action='store_true', default=False, help='Build with debug flags')
 	opt.add_option('--release', dest='build_release', action='store_true', default=False, help='Build with release flags')
@@ -27,7 +26,6 @@ def options(opt):
 
 def configure(conf):
 	conf.load('compiler_c gnu_dirs glib2 intltool')
-	conf.load('unites', tooldir='waftools')
 
 	conf.env.appname = APPNAME
 	conf.env.version = VERSION
@@ -102,14 +100,11 @@ def post_fun(ctx):
 	if ctx.options.run:
 		ctx.exec_command('')
 
-from waftools.unites import summary as unites_summary
-
 def build(bld):
 	bld(features='subst', source='oregano.spec.in', target='oregano.spec', install_path=None, VERSION=bld.env.version)
 	if bld.variant != 'rpmspec':
 		bld.add_pre_fun(pre_fun)
 		bld.add_post_fun(post_fun)
-		bld.add_post_fun(unites_summary)
 		bld.recurse(rec)
 
 
@@ -129,8 +124,6 @@ class debug(BuildContext):
 	"""compile debug binary"""
 	cmd = 'debug'
 	variant = 'debug'
-
-
 
 
 def docs(ctx):
