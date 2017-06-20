@@ -5,6 +5,7 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -12,6 +13,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2014       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -246,7 +248,7 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 		g_string_append_c (buffer, '\n');
 	}
 
-	// Print DC Analysis
+	// Prints DC Analysis
 	if (sim_settings_get_dc (output.settings)) {
 		g_string_append (buffer, ".dc ");
 		if (sim_settings_get_dc_vsrc (output.settings)) {
@@ -278,6 +280,25 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 		g_string_append_printf (buffer, ".four %d %s\n",
 		                        sim_settings_get_fourier_frequency (output.settings),
 		                        sim_settings_get_fourier_nodes (output.settings));
+	}
+
+	// Prints Noise Analysis
+	if (sim_settings_get_noise (output.settings)) {
+		if (sim_settings_get_noise_vout (output.settings)) {
+			g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
+					sim_settings_get_noise_vout (output.settings),
+					sim_settings_get_noise_vsrc (output.settings),
+		                        sim_settings_get_noise_type (output.settings),
+		                        sim_settings_get_noise_npoints (output.settings),
+		                        sim_settings_get_noise_start (output.settings),
+		                        sim_settings_get_noise_stop (output.settings));
+	                g_string_append_printf (buffer, "\n.control\n");
+			g_string_append_printf (buffer, "  listing e\n");
+			g_string_append_printf (buffer, "  run\n");
+			g_string_append_printf (buffer, "  print v(inoise_total) v(onoise_total)\n");
+			g_string_append_printf (buffer, "  quit\n");
+			g_string_append_printf (buffer, ".endc\n");
+		}
 	}
 
 	g_string_append (buffer, ".op\n\n.END\n");

@@ -1,8 +1,37 @@
 /*
  * sim-settings-gui.h
  *
- *  Created on: Jun 14, 2017
- *      Author: michi
+ *
+ * Authors:
+ *  Richard Hult <rhult@hem.passagen.se>
+ *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
+ *  Andres de Barbara <adebarbara@fi.uba.ar>
+ *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
+ *
+ * Web page: https://ahoi.io/project/oregano
+ *
+ * Copyright (C) 1999-2001  Richard Hult
+ * Copyright (C) 2003,2006  Ricardo Markiewicz
+ * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 #ifndef SIM_SETTINGS_GUI_H_
@@ -59,9 +88,18 @@ struct _SimSettingsGui {
 	          *w_four_rem,
 	          *w_fourier_frame;
 
+	// Noise
+	GtkWidget *w_noise_enable,
+		  *w_noise_vin,
+		  *w_noise_vout,
+		  *w_noise_type,
+	          *w_noise_npoints,
+	          *w_noise_start,
+	          *w_noise_stop,
+	          *w_noise_frame;
+
 	GtkEntry *w_opt_value;
 	GtkTreeView *w_opt_list;
-
 };
 
 SimSettingsGui *sim_settings_gui_new();
@@ -70,6 +108,6 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sm);
 
 gint get_voltmeters_list (GList **voltmeters, Schematic *sm, GError *e, gboolean with_type);
 
-gint get_sources_list (GList **sources, Schematic *sm, GError *e);
+gint get_voltage_sources_list (GList **sources, Schematic *sm, GError *e, gboolean ac_only);
 
 #endif /* SIM_SETTINGS_GUI_H_ */

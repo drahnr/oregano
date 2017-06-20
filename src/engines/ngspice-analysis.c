@@ -116,7 +116,6 @@ static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 	GList **analysis = resources->analysis;
 	guint *num_analysis = resources->num_analysis;
 
-
 	static SimulationData *sdata;
 	static Analysis *data;
 	gsize size;
@@ -730,7 +729,7 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 	gchar **node_ids;
 	gchar *vout;
 
-	NG_DEBUG ("F{}: result str\n>>>\n%s\n<<<", *buf);
+	NG_DEBUG ("FOURIER: result str\n>>>\n%s\n<<<", *buf);
 
 	// New analysis
 	data = g_new0 (Analysis, 1);
@@ -836,6 +835,51 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 	return pipe;
 }
 
+static gdouble parse_noise_total(gchar *line) {
+	gchar **splitted = g_regex_split_simple("v\\([io]noise_total\\) = ([\\+\\-]{0,1}[0-9]\\.[0-9]*[Ee][\\+\\-][0-9]*)\\n",
+						line, 0, 0);
+	gdouble noise_total = g_ascii_strtod(splitted[1], NULL);
+	g_strfreev(splitted);
+
+	return noise_total;
+}
+
+static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
+{
+	ThreadPipe *pipe = resources->pipe;
+        gchar **buf = &resources->buf;
+	GList **analysis = resources->analysis;
+	gchar *integrated_noise;
+        gsize size;
+	gdouble inoise, onoise;
+	guint *num_analysis = resources->num_analysis;
+
+        static SimulationData *sdata;
+        static Analysis *data;
+
+        NG_DEBUG ("Noise: result str\n>>>\n%s\n<<<", *buf);
+
+        data = g_new0 (Analysis, 1);
+        sdata = SIM_DATA (data);
+        sdata->type = ANALYSIS_TYPE_NOISE;
+        sdata->functions = NULL;
+
+	// Parse integrated noise (V^2 or A^2)
+	inoise = parse_noise_total(*buf);
+        pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	onoise = parse_noise_total(*buf);
+
+	integrated_noise = g_strdup_printf ("<big>Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)</big>\n\n"
+					    "Input: %f\nOutput: %f\n", inoise, onoise);
+
+	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning, integrated_noise, NULL);
+
+	*analysis = g_list_append (*analysis, sdata);
+	(*num_analysis)++;
+
+	return pipe;
+}
+
 /**
  * Stores all the data coming through the given pipe to the given file.
  * This is needed because in case of failure, ngspice prints additional
@@ -913,15 +957,18 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 	const SimSettings *sim_settings = resources->sim_settings;
 	AnalysisTypeShared *current = resources->current;
 	gchar **buf = &resources->buf;
-
 	gsize size;
+
+        gboolean transient_enabled = sim_settings_get_trans (sim_settings);
+        gboolean fourier_enabled = sim_settings_get_fourier (sim_settings);
+        gboolean dc_enabled = sim_settings_get_dc (sim_settings);
+        gboolean ac_enabled = sim_settings_get_ac (sim_settings);
+        gboolean noise_enabled = sim_settings_get_noise (sim_settings);
 
 	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 		return;
-	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-	while (!g_str_has_suffix (*buf, SP_TITLE)) {
 
+	while (!g_str_has_prefix (*buf, "Doing analysis at TEMP = ")) {
 		if (g_str_has_prefix(*buf, "No. of Data Rows : "))
 			resources->no_of_data_rows = parse_no_of_data_rows(*buf);
 
@@ -930,13 +977,32 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 
 		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-
 	}
 
-	gboolean transient_enabled = sim_settings_get_trans (sim_settings);
-	gboolean fourier_enabled = sim_settings_get_fourier (sim_settings);
-	gboolean dc_enabled = sim_settings_get_dc (sim_settings);
-	gboolean ac_enabled = sim_settings_get_ac (sim_settings);
+	while (!g_str_has_suffix (*buf, SP_TITLE)) {
+		if (noise_enabled && g_str_has_prefix(*buf, "v(inoise_total) = ")) {
+			g_mutex_lock(&current->mutex);
+			current->type = ANALYSIS_TYPE_NOISE;
+			g_mutex_unlock(&current->mutex);
+
+			pipe = parse_noise_analysis (resources);
+
+			g_mutex_lock(&current->mutex);
+			current->type = ANALYSIS_TYPE_NONE;
+			g_mutex_unlock(&current->mutex);
+
+			if (pipe != NULL)
+				thread_pipe_set_read_eof(pipe);
+
+			resources->pipe = NULL;
+
+			// Noise analysis disables all other types of analysis
+			return;
+		}
+
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+	}
 
 	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled || ac_enabled; i++) {
 
@@ -946,10 +1012,8 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		g_strstrip (*buf);
 		NG_DEBUG ("%d buf = %s", i, *buf);
 
-		if (!get_analysis_type(*buf, &analysis_type) && i == 0) {
-// FIXME: The following function call crashes after changes committed on Jun 16 2017
-//			oregano_warning (_ ("No analysis found"));
-			NG_DEBUG ("No analysis found");
+		if (!get_analysis_type(*buf, &analysis_type) && !noise_enabled && i == 0) {
+			g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning, "No analysis found", NULL);
 			break;
 		}
 
@@ -977,9 +1041,7 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 			ac_enabled = FALSE;
 			break;
 		default:
-// FIXME: The following function call crashes after changes committed Jun 16 2017
-//			oregano_warning(_("Unexpected analysis found"));
-			NG_DEBUG ("Unexpected analysis found");
+			g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning, "Unexpected analysis found", NULL);
 			unexpected_analysis_found = TRUE;
 			break;
 		}

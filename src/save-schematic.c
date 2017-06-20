@@ -194,6 +194,36 @@ static void write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schem
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "vout", BAD_CAST str);
 	g_free (str);
 
+	//  Noise analysis
+	analysis = xmlNewChild (sim_settings_node, ctxt->ns, BAD_CAST "noise", NULL);
+	if (!analysis) {
+		g_warning ("Failed during save of Noise analysis settings.\n");
+		return;
+	}
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "enabled",
+	                     BAD_CAST (sim_settings_get_noise (s) ? "true" : "false"));
+
+	child =
+	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "vsrc1", BAD_CAST sim_settings_get_noise_vsrc (s));
+
+	child =
+	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "vout1", BAD_CAST sim_settings_get_noise_vout (s));
+
+	child =
+	    xmlNewChild (analysis, ctxt->ns, BAD_CAST "type", BAD_CAST sim_settings_get_noise_type (s));
+
+	str = g_strdup_printf ("%d", sim_settings_get_noise_npoints (s));
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "npoints", BAD_CAST str);
+	g_free (str);
+
+	str = g_strdup_printf ("%g", sim_settings_get_noise_start (s));
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "start", BAD_CAST str);
+	g_free (str);
+
+	str = g_strdup_printf ("%g", sim_settings_get_noise_stop (s));
+	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "stop", BAD_CAST str);
+	g_free (str);
+
 	// Save the options
 	list = sim_settings_get_options (s);
 	if (list) {
@@ -528,5 +558,6 @@ gboolean schematic_write_xml (Schematic *sm, GError **error)
 
 	if (ret < 0)
 		return FALSE;
+
 	return TRUE;
 }

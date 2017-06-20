@@ -1,6 +1,31 @@
 /**
  * thread-pipe.c
  *
+ *
+ * Authors:
+ *  Michi <st101564@stud.uni-stuttgart.de>
+ *
+ * Web page: https://ahoi.io/project/oregano
+ *
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
+ */
+
+/*
+ *
  * BASICS
  * ------
  * ThreadPipe can be used to efficiently communicate large
@@ -18,8 +43,6 @@
  * will wait until new data is available by locking a mutex
  * and waiting for a conditional signal of the writer.
  *
- *   Date: Jun 3, 2017
- * Author: michi
  *
  * Locking, unlocking and signaling can slow down the
  * communication process very hard, if the data blocks are
@@ -86,8 +109,6 @@
  * in low workload times and would be optimal for time, space
  * and money saving in times of high workload.
  *
- *   Date: Jun 7, 2017
- * Author: michi
  */
 
 #include <glib.h>
