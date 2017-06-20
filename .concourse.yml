@@ -53,7 +53,6 @@ jobs:
         trigger: true
       - get: git-pull-request-resource
         trigger: true
-        serial_groups: [network]
     - task: compile
       timeout: 5m
       image: oregano-test-fedora
@@ -66,7 +65,7 @@ jobs:
           args:
           - -exc
           - |
-            ./waf configure debug --prefix=/tmp install
+            ./waf configure build --debug --prefix=/tmp install
             ./build/src/microtests
           dir: "git-pull-request-resource"
       on_success:
@@ -101,7 +100,7 @@ jobs:
           args:
           - -exc
           - |
-            ./waf configure debug --prefix=/tmp install
+            ./waf configure build --debug --prefix=/tmp install
             ./build/src/microtests
           dir: git-clone-resource
 
