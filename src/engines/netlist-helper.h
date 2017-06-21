@@ -78,6 +78,6 @@ void netlist_helper_init_data (NetlistData *data);
 void netlist_helper_create (Schematic *sm, Netlist *out, GError **error);
 char *netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac);
 GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error, gboolean with_type);
-GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error);
+GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error, gboolean ac_only);
 
 #endif

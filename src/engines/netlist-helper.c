@@ -674,8 +674,9 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error, gbool
 							tmp = g_strdup_printf ("V%s(%d)", ac_type, pins[0].node_nr);
 						g_free(ac_type);
 						g_free(ac_db);
-					} else
+					} else {
 						tmp = g_strdup_printf ("%d", pins[0].node_nr);
+					}
 					clamp_list = g_slist_prepend (clamp_list, tmp);
 					if (0)
 						printf ("clamp_list = %s\n", tmp);
@@ -707,7 +708,7 @@ GSList *netlist_helper_get_voltmeters_list (Schematic *sm, GError **error, gbool
 	return clamp_list;
 }
 
-GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error)
+GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error, gboolean ac_only)
 {
 	Netlist netlist_data;
 	GError *e = NULL;
@@ -732,7 +733,14 @@ GSList *netlist_helper_get_voltage_sources_list (Schematic *sm, GError **error)
 			if (prop[0] == 'V' && (prop[1] >= '0' && prop[1] <= '9')) {
 				gchar *tmp;
 				tmp = g_strdup (&prop[1]);
-				sources_list = g_slist_append (sources_list, tmp);
+				if (ac_only) {
+					g_free(prop);
+					prop = part_get_property (part, "Frequency");
+					if (prop)
+						sources_list = g_slist_append (sources_list, tmp);
+				} else {
+					sources_list = g_slist_append (sources_list, tmp);
+				}
 				if (0)
 					printf ("sources_list = %s\n", tmp);
 			}

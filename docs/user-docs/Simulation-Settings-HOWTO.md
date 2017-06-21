@@ -8,7 +8,7 @@ Why simulation settings?
 Before you can start a simulation, you have to tell the simulation engine
 (ngspice or gnucap) things like
 
-- type of simulation (time domain, frequency domain, DC sweep, ...)
+- type of simulation (time domain, frequency domain, DC sweep, AC, Noise, ...)
 - simulation dependant parameters (for time domain: start, stop, step, ...)
 - ...
 
@@ -43,11 +43,37 @@ Analysis Parameters
 	engine and the simulation will run fluently and without errors.
 
 
+**DC Sweep**
+
+- Source: the indipendent voltage source.
+- Output: the voltage output variable.
+- Start: the starting voltage (sweep from).
+- Stop: the ending voltage (sweep to).
+- Step: voltage increment.
+
+
+**AC**
+
+- Output: the voltage output variable.
+- Type: the scale type (decade, linear or octave variation).
+- Points: the number of points in the simulation (from start to stop).
+- Start: the starting frequency.
+- Stop: the final frequency.
+
+
 **Fourier**
 
 //TODO
 
 
-**DC Sweep**
+**Noise**
 
-//TODO
+- Source: the indipendent voltage source.
+- Output: the voltage output variable.
+- Type: the scale type (decade, linear or octave variation).
+- Points: the number of points in the simulation (from start to stop).
+- Start: the starting frequency.
+- Stop: the final frequency.
+
+At the moment, it works only with the ngspice engine.
+

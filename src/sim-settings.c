@@ -60,8 +60,8 @@ SimSettings *sim_settings_new ()
 	sim_settings->ac_vout = g_strdup ("");
 	sim_settings->ac_type = g_strdup ("DEC");
 	sim_settings->ac_npoints = g_strdup ("50");
-	sim_settings->ac_start = g_strdup ("1");
-	sim_settings->ac_stop = g_strdup ("1 Meg");
+	sim_settings->ac_start = g_strdup ("1 Hz");
+	sim_settings->ac_stop = g_strdup ("1 MHz");
 
 	// DC
 	sim_settings->dc_enable = FALSE;
@@ -75,6 +75,15 @@ SimSettings *sim_settings_new ()
 	sim_settings->fourier_enable = FALSE;
 	sim_settings->fourier_frequency = g_strdup ("");
 	sim_settings->fourier_vout = NULL;
+
+	//  Noise
+	sim_settings->noise_enable = FALSE;
+	sim_settings->noise_vin = g_strdup ("");
+	sim_settings->noise_vout = g_strdup ("");
+	sim_settings->noise_type = g_strdup ("DEC");
+	sim_settings->noise_npoints = g_strdup ("50");
+	sim_settings->noise_start = g_strdup ("1 Hz");
+	sim_settings->noise_stop = g_strdup ("1 MHz");
 
 	sim_settings->options = NULL;
 
@@ -114,6 +123,14 @@ void sim_settings_finalize(SimSettings *sim_settings) {
 	g_free(sim_settings->fourier_frequency);
 	if (sim_settings->fourier_vout != NULL)
 		g_slist_free_full(sim_settings->fourier_vout, g_free);
+
+	// Noise
+	g_free(sim_settings->noise_vin);
+	g_free(sim_settings->noise_vout);
+	g_free(sim_settings->noise_type);
+	g_free(sim_settings->noise_npoints);
+	g_free(sim_settings->noise_start);
+	g_free(sim_settings->noise_stop);
 
 	if (sim_settings->options != NULL)
 		g_list_free_full(sim_settings->options, (GDestroyNotify)sim_option_finalize);
@@ -255,12 +272,12 @@ gint sim_settings_get_ac_npoints (const SimSettings *sim_settings)
 
 gdouble sim_settings_get_ac_start (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->ac_start, 's');
+	return oregano_strtod (sim_settings->ac_start, 'Hz');
 }
 
 gdouble sim_settings_get_ac_stop (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->ac_stop, 's');
+	return oregano_strtod (sim_settings->ac_stop, 'Hz');
 }
 
 void sim_settings_set_ac (SimSettings *sim_settings, gboolean enable)
@@ -306,17 +323,17 @@ gchar *sim_settings_get_dc_vout (const SimSettings *sim_settings) { return sim_s
 
 gdouble sim_settings_get_dc_start (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->dc_start, 's');
+	return oregano_strtod (sim_settings->dc_start, 'V');
 }
 
 gdouble sim_settings_get_dc_stop (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->dc_stop, 's');
+	return oregano_strtod (sim_settings->dc_stop, 'V');
 }
 
 gdouble sim_settings_get_dc_step (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->dc_step, 's');
+	return oregano_strtod (sim_settings->dc_step, 'V');
 }
 
 void sim_settings_set_dc (SimSettings *sim_settings, gboolean enable)
@@ -424,6 +441,70 @@ gchar *sim_settings_get_fourier_nodes (const SimSettings *sim_settings)
 	}
 	g_slist_free (node_slist);
 	return text;
+}
+
+gboolean sim_settings_get_noise (const SimSettings *sim_settings) { return sim_settings->noise_enable; }
+
+gchar *sim_settings_get_noise_vsrc (const SimSettings *sim_settings) { return sim_settings->noise_vin; }
+
+gchar *sim_settings_get_noise_vout (const SimSettings *sim_settings) { return sim_settings->noise_vout; }
+
+gchar *sim_settings_get_noise_type (const SimSettings *sim_settings) { return sim_settings->noise_type; }
+
+gint sim_settings_get_noise_npoints (const SimSettings *sim_settings)
+{
+	return atoi (sim_settings->noise_npoints);
+}
+
+gdouble sim_settings_get_noise_start (const SimSettings *sim_settings)
+{
+	return oregano_strtod (sim_settings->noise_start, 'Hz');
+}
+
+gdouble sim_settings_get_noise_stop (const SimSettings *sim_settings)
+{
+	return oregano_strtod (sim_settings->noise_stop, 'Hz');
+}
+
+void sim_settings_set_noise (SimSettings *sim_settings, gboolean enable)
+{
+	sim_settings->noise_enable = enable;
+}
+
+void sim_settings_set_noise_vsrc (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->noise_vin);
+	sim_settings->noise_vin = g_strdup (str);
+}
+
+void sim_settings_set_noise_vout (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->noise_vout);
+	sim_settings->noise_vout = g_strdup (str);
+}
+
+void sim_settings_set_noise_type (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->noise_type);
+	sim_settings->noise_type = g_strdup (str);
+}
+
+void sim_settings_set_noise_npoints (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->noise_npoints);
+	sim_settings->noise_npoints = g_strdup (str);
+}
+
+void sim_settings_set_noise_start (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->noise_start);
+	sim_settings->noise_start = g_strdup (str);
+}
+
+void sim_settings_set_noise_stop (SimSettings *sim_settings, gchar *str)
+{
+	g_free (sim_settings->noise_stop);
+	sim_settings->noise_stop = g_strdup (str);
 }
 
 GList *sim_settings_get_options (const SimSettings *sim_settings)
