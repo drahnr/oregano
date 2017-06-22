@@ -525,10 +525,11 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	g_return_if_fail (IS_PART (data));
 
 	cairo_matrix_t morph, morph_rot, local_rot;
+	gint i;
+	gdouble x, y;
 	Part *part;
 	PartPriv *priv;
 	gboolean handler_connected;
-	// Coords b1, b2;
 
 	part = PART (data);
 
@@ -558,23 +559,14 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	Coords delta_to_center, delta_to_center_transformed;
 	Coords delta_to_apply;
-	Coords bbox_center;
 	Coords item_pos;
 
-// get bbox
-#if 0 // this causes #115 to reappear
-	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-	bbox_center = coords_average (&b1, &b2);
-#else
-	bbox_center.x = 0;
-	bbox_center.y = 0;
-#endif
 	item_data_get_pos (ITEM_DATA (part), &item_pos);
 
 	Coords rotation_center;
 
 	if (center_pos == NULL) {
-		rotation_center = coords_sum (&bbox_center, &item_pos);
+		rotation_center = item_pos;
 	} else {
 		rotation_center = *center_pos;
 	}
@@ -592,8 +584,6 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	// HINT: we need to modify the actual pins to make the
 	// pin tests work being used to detect connections
 
-	gint i;
-	gdouble x, y;
 	// Rotate the pins.
 	for (i = 0; i < priv->num_pins; i++) {
 		x = priv->pins_orig[i].offset.x;
