@@ -9,6 +9,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://beerbach.me/oregano
  *
@@ -16,6 +17,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -563,6 +565,9 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 #if 0 // this causes #115 to reappear
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 	bbox_center = coords_average (&b1, &b2);
+#else
+	bbox_center.x = 0;
+	bbox_center.y = 0;
 #endif
 	item_data_get_pos (ITEM_DATA (part), &item_pos);
 
