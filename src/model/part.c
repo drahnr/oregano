@@ -540,6 +540,12 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	angle /= 90;
 	angle *= 90;
 
+	// normalize it
+	angle = angle % 360;
+
+	if (angle == 0)
+		return;
+
 	cairo_matrix_init_rotate (&local_rot, (double)angle * M_PI / 180.);
 
 	cairo_matrix_multiply (item_data_get_rotate (data), item_data_get_rotate (data), &local_rot);
