@@ -96,7 +96,8 @@ static void netlist_helper_nl_wire_traverse (Wire *wire, GSList **lst)
 
 			template_split = g_strsplit (template, " ", 0);
 
-			(*lst) = g_slist_prepend (*lst, g_strdup (template_split[0]));
+			if (template_split[0] != NULL)
+				(*lst) = g_slist_prepend (*lst, g_strdup (template_split[0]));
 
 			g_strfreev (template_split);
 			g_free (tmp);
