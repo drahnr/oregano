@@ -331,7 +331,7 @@ static void test_engine_ngspice_error_step_zero() {
 	g_autofree gchar *test_dir = get_test_base_dir();
 
 	g_free(test_resources->resources->netlist_file);
-	test_resources->resources->netlist_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/input.netlist", test_dir);
+	test_resources->resources->netlist_file = test_engine_ngspice_get_netlist_file("test-files/test_engine_ngspice_watcher/error/step_zero");
 
 	g_free(test_resources->resources->ngspice_result_file);
 	test_resources->resources->ngspice_result_file = g_strdup_printf("%s/test-files/test_engine_ngspice_watcher/error/step_zero/result/actual.txt", test_dir);
