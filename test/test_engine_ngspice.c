@@ -128,10 +128,7 @@ static gpointer ngspice_worker (NgspiceAnalysisResources *resources) {
 	return NULL;
 }
 
-/**
- * dirty
- */
-static GList *parse_file(const gchar *path) {
+static GList *test_engine_ngspice_parse_file(const gchar *path) {
 	NgspiceAnalysisResources resources;
 	GList *analysis = NULL;
 	AnalysisTypeShared current;
@@ -175,25 +172,69 @@ static GList *parse_file(const gchar *path) {
 }
 
 static void assert_equal_analysis(const GList *expected, const GList *actual) {
-//	SimulationData *expected_sdat = SIM_DATA (expected->data);
-//	SimulationData *actual_sdat = SIM_DATA (actual->data);
-//
-//	g_assert_cmpint(expected_sdat->n_variables, ==, actual_sdat->n_variables);
-//	gint n_variables = expected_sdat->n_variables;
-//	for (int i = 1; i < n_variables; i++) {
-//		guint len = actual_sdat->data[i]->len;
-//		double *X = g_new0(double, len);
-//		double *Y = g_new0(double, len);
-//
-//		for (guint j = 0; j < len; j++) {
-//			Y[j] = g_array_index(actual_sdat->data[i], double, j);
-//			X[j] = g_array_index(actual_sdat->data[0], double, j);
-//		}
-//	}
-}
+	const SimulationData *expected_sdat = SIM_DATA (expected->data);
+	const SimulationData *actual_sdat = SIM_DATA (actual->data);
 
-static void analysis_finalize(GList *analysis) {
+	g_assert_cmpint(expected_sdat->n_variables, ==, actual_sdat->n_variables);
+	gint n_variables = expected_sdat->n_variables;
+	for (int i = 1; i < n_variables; i++) {
+		XYData actual_xy_data;
+		actual_xy_data.x = actual_sdat->data[0];
+		actual_xy_data.y = actual_sdat->data[i];
+		actual_xy_data.count_stuetzstellen = actual_sdat->data[i]->len;
 
+		XYData expected_xy_data;
+		expected_xy_data.x = expected_sdat->data[0];
+		expected_xy_data.y = expected_sdat->data[i];
+		expected_xy_data.count_stuetzstellen = expected_sdat->data[i]->len;
+
+		/**
+		 * assert interval length equal
+		 * tolerance: 1 percent of expected interval length
+		 */
+		double x_min_expected = g_array_index(expected_xy_data.x, double, 0);
+		double x_min_actual = g_array_index(actual_xy_data.x, double, 0);
+		double x_max_expected = g_array_index(expected_xy_data.x, double, expected_xy_data.count_stuetzstellen - 1);
+		double x_max_actual = g_array_index(actual_xy_data.x, double, actual_xy_data.count_stuetzstellen - 1);
+		double interval_length_expected = x_max_expected - x_min_expected;
+		double interval_length_actual = x_max_actual - x_min_actual;
+		g_assert_cmpfloat(ABS(interval_length_actual - interval_length_expected), <, 0.01 * interval_length_expected);
+
+		/**
+		 * assert x_min equal
+		 * tolerance: 1 percent of expected interval length
+		 */
+		g_assert_cmpfloat(ABS(x_min_actual - x_min_expected), <, 0.01 * interval_length_expected);
+
+		/**
+		 * assert equal count of stuetzstellen
+		 * absolute tolerance: sqrt(expected count of stuetzstellen)
+		 */
+		guint expected_count_stuetzstellen = expected_xy_data.count_stuetzstellen;
+		guint actual_count_stuetzstellen = actual_xy_data.count_stuetzstellen;
+		g_assert_cmpfloat(ABS(expected_count_stuetzstellen - actual_count_stuetzstellen), <=, sqrt(expected_count_stuetzstellen));
+
+		/**
+		 * assert function (y-values) equal
+		 * ||f - g|| / ( ||f|| + ||g|| ) < 0.01
+		 */
+		XYData *actual_xy_resampled = xy_data_resample(&actual_xy_data, 101);
+		XYData *expected_xy_resampled = xy_data_resample(&expected_xy_data, 101);
+
+		double actual_norm = xy_data_norm(actual_xy_resampled);
+		double expected_norm = xy_data_norm(expected_xy_resampled);
+
+		if (actual_norm == 0) {
+			g_assert_cmpfloat(actual_norm, ==, expected_norm);
+		} else {
+			double distance = xy_data_metric(actual_xy_resampled, expected_xy_resampled);
+			double normed_distance = distance / (actual_norm + expected_norm);
+			g_assert_cmpfloat(normed_distance, <, 0.01);
+		}
+
+		xy_data_finalize(actual_xy_resampled);
+		xy_data_finalize(expected_xy_resampled);
+	}
 }
 
 static void test_engine_ngspice_basic() {
@@ -217,19 +258,31 @@ static void test_engine_ngspice_basic() {
 	g_assert_null(test_resources->log_list);
 	g_main_loop_run(test_resources->loop);
 
-	GList *expected_analysis = parse_file(expected_file);
 	GList *actual_analysis = test_resources->ngspice->priv->analysis;
+	/**
+	 * ## Test Parser Thread
+	 * Compare expected ngspice output with
+	 * parsed output (parsed directly from RAM).
+	 */
+	GList *expected_analysis = test_engine_ngspice_parse_file(expected_file);
 	assert_equal_analysis(expected_analysis, actual_analysis);
+	ngspice_analysis_finalize(expected_analysis);
 
-	analysis_finalize(expected_analysis);
-
+	/**
+	 * Wait for saver thread to finish saving.
+	 */
 	if (test_resources->ngspice->priv->saver != NULL) {
 		g_thread_join(test_resources->ngspice->priv->saver);
 		test_resources->ngspice->priv->saver = NULL;
 	}
-	expected_analysis = parse_file(actual_file);
+	/**
+	 * ## Test Saver Thread
+	 * Compare ngspice output (data on HDD/SSD) with
+	 * parsed output (data on RAM).
+	 */
+	expected_analysis = test_engine_ngspice_parse_file(actual_file);
 	assert_equal_analysis(expected_analysis, actual_analysis);
-	analysis_finalize(expected_analysis);
+	ngspice_analysis_finalize(expected_analysis);
 
 	test_engine_ngspice_resources_finalize(test_resources);
 }

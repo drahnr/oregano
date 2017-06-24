@@ -256,7 +256,7 @@ capacitance                0.0001
           p            0.00329986                    -0                     0
 
                       * /home/michi/tryprogressbar.oregano
-                      Transient Analysis  Fri Jun 16 19:34:31  2017
+                      Transient Analysis  Thu Jun 22 07:38:58  2017
 --------------------------------------------------------------------------------
 Index   time            V(1)            V(2)            V(3)            
 --------------------------------------------------------------------------------
@@ -558,7 +558,7 @@ Index   time            V(1)            V(2)            V(3)
 283	2.500000e-09	1.649911e-05	2.500000e+01	6.000000e+01	
 
                       * /home/michi/tryprogressbar.oregano
-                      Transient Analysis  Fri Jun 16 19:34:31  2017
+                      Transient Analysis  Thu Jun 22 07:38:58  2017
 --------------------------------------------------------------------------------
 Index   time            V(4)            V(5)            l_l1#branch     
 --------------------------------------------------------------------------------
@@ -860,7 +860,7 @@ Index   time            V(4)            V(5)            l_l1#branch
 283	2.500000e-09	2.000000e+01	1.649911e-05	1.649928e-04	
 
                       * /home/michi/tryprogressbar.oregano
-                      Transient Analysis  Fri Jun 16 19:34:31  2017
+                      Transient Analysis  Thu Jun 22 07:38:58  2017
 --------------------------------------------------------------------------------
 Index   time            v_v1#branch     v_v2#branch     v_v3#branch     
 --------------------------------------------------------------------------------
@@ -1161,15 +1161,15 @@ Index   time            v_v1#branch     v_v2#branch     v_v3#branch
 282	2.495057e-09	-1.64663e-04	0.000000e+00	-1.66241e-09	
 283	2.500000e-09	-1.64993e-04	0.000000e+00	-1.66255e-09	
 
-CPU time since last call: 0.020 seconds.
+CPU time since last call: 0.032 seconds.
 
-Total CPU time: 0.020 seconds.
+Total CPU time: 0.032 seconds.
 
-Total DRAM available = 7774.261719 MB.
-DRAM currently available = 2132.699219 MB.
+Total DRAM available = 7774.257812 MB.
+DRAM currently available = 4548.222656 MB.
 Total ngspice program size = 15.929688 MB.
-Resident set size = 2.003906 MB.
-Shared ngspice pages = 1.691406 MB.
+Resident set size = 2.071289 MB.
+Shared ngspice pages = 1.757812 MB.
 Text (code) pages = 1.453125 MB.
 Stack = 0 bytes.
 Library pages = 413.000 kB.

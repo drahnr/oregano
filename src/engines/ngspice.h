@@ -62,5 +62,6 @@ struct _OreganoNgSpiceClass
 
 GType oregano_ngspice_get_type (void);
 OreganoEngine *oregano_ngspice_new (Schematic *sm);
+void ngspice_analysis_finalize(GList *analysis);
 
 #endif

@@ -92,17 +92,10 @@ static void ngspice_class_init (OreganoNgSpiceClass *klass)
 	object_class->finalize = ngspice_finalize;
 }
 
-static void ngspice_finalize (GObject *object)
-{
-	OreganoNgSpice *ngspice;
-	GList *iter;
-	int i;
-
-	ngspice = OREGANO_NGSPICE (object);
-	iter = ngspice->priv->analysis;
-	for (; iter; iter = iter->next) {
+void ngspice_analysis_finalize(GList *analysis) {
+	for (GList *iter = analysis; iter; iter = iter->next) {
 		SimulationData *data = SIM_DATA (iter->data);
-		for (i = 0; i < data->n_variables; i++) {
+		for (int i = 0; i < data->n_variables; i++) {
 			g_free(data->var_names[i]);
 			g_free(data->var_units[i]);
 			g_array_free (data->data[i], TRUE);
@@ -115,7 +108,13 @@ static void ngspice_finalize (GObject *object)
 
 		g_free (data);
 	}
-	g_list_free (ngspice->priv->analysis);
+	g_list_free (analysis);
+}
+
+static void ngspice_finalize (GObject *object)
+{
+	OreganoNgSpice *ngspice = OREGANO_NGSPICE (object);
+	ngspice_analysis_finalize(ngspice->priv->analysis);
 	g_mutex_clear(&ngspice->priv->progress_ngspice.progress_mutex);
 	g_mutex_clear(&ngspice->priv->progress_reader.progress_mutex);
 	g_mutex_clear(&ngspice->priv->current.mutex);

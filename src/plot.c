@@ -186,18 +186,15 @@ static void on_plot_selected (GtkCellRendererToggle *cell_renderer, gchar *path,
 static GPlotFunction *create_plot_function_from_simulation_data (guint i, SimulationData *current)
 {
 	GPlotFunction *f;
-	double *X;
-	double *Y;
-	guint len, j;
 	gdouble width = 1;
 	GraphicType graphic_type = FUNCTIONAL_CURVE;
 	gdouble shift_step = 0;
 
-	len = current->data[i]->len;
-	X = g_new0 (double, len);
-	Y = g_new0 (double, len);
+	guint len = current->data[i]->len;
+	double *X = g_new0 (double, len);
+	double *Y = g_new0 (double, len);
 
-	for (j = 0; j < len; j++) {
+	for (guint j = 0; j < len; j++) {
 		Y[j] = g_array_index (current->data[i], double, j);
 		X[j] = g_array_index (current->data[0], double, j);
 	}
