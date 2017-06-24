@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,6 +37,8 @@
 
 #include "sim-settings-gui.h"
 
+// TODO: Create only two entries instead of four for stretching the schematic horizontally
+//       or vertically (needs proper icons not provided by Gtk).
 static GtkActionEntry entries[] = {
     // Name, ICON, Text, CTRL, DESC, CALLBACK
     {"MenuFile", NULL, N_ ("_File")},
@@ -100,6 +104,14 @@ static GtkActionEntry entries[] = {
     {"ZoomIn", GTK_STOCK_ZOOM_IN, N_ ("Zoom _In"), NULL, N_ ("Zoom in"), G_CALLBACK (zoom_in_cmd)},
     {"ZoomOut", GTK_STOCK_ZOOM_OUT, N_ ("Zoom _Out"), NULL, N_ ("Zoom out"),
      G_CALLBACK (zoom_out_cmd)},
+    {"StretchLeft", GTK_STOCK_GO_BACK, N_ ("Stretch to the left"), NULL, N_ ("Stretch to the left"),
+     G_CALLBACK (stretch_horizontal_cmd)},
+    {"StretchRight", GTK_STOCK_GO_FORWARD, N_ ("Stretch to the right"), NULL, N_ ("Stretch to the right"),
+     G_CALLBACK (stretch_horizontal_cmd)},
+    {"StretchTop", GTK_STOCK_GO_UP, N_ ("Stretch the top"), NULL, N_ ("Stretch the top"),
+     G_CALLBACK (stretch_vertical_cmd)},
+    {"StretchBottom", GTK_STOCK_GO_DOWN, N_ ("Stretch the bottom"), NULL, N_ ("Stretch the bottom"),
+     G_CALLBACK (stretch_vertical_cmd)},
 };
 
 static GtkToggleActionEntry toggle_entries[] = {
@@ -210,6 +222,11 @@ static const char *ui_description = "<ui>"
                                     "    <toolitem action='ZoomIn'/>"
                                     "    <toolitem action='ZoomOut'/>"
                                     "    <separator/>"
+                                    "    <toolitem action='StretchLeft'/>"
+                                    "    <toolitem action='StretchRight'/>"
+                                    "    <toolitem action='StretchTop'/>"
+                                    "    <toolitem action='StretchBottom'/>"
+				    "    <separator/>"
                                     "    <toolitem action='Grid'/>"
                                     "    <toolitem action='Parts'/>"
                                     "    <toolitem action='LogView'/>"

@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -80,6 +82,9 @@ struct _SchematicPriv
 	NodeStore *store;
 	GHashTable *symbols;
 	GHashTable *refdes_values;
+
+	guint width;
+	guint height;
 
 	double zoom;
 
@@ -216,6 +221,8 @@ static void schematic_init (Schematic *schematic)
 	priv->symbols = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->refdes_values = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->store = node_store_new ();
+	priv->width = 0;
+	priv->height = 0;
 	priv->dirty = FALSE;
 	priv->logstore = log_new ();
 	priv->log = gtk_text_buffer_new (NULL); // LEGACY
@@ -414,6 +421,38 @@ void schematic_set_netlist_filename (Schematic *schematic, char *filename)
 		g_free (schematic->priv->netlist_filename);
 
 	schematic->priv->netlist_filename = g_strdup (filename);
+}
+
+guint schematic_get_width (const Schematic *schematic)
+{
+	g_return_val_if_fail (schematic != NULL, 0.);
+	g_return_val_if_fail (IS_SCHEMATIC (schematic), 0.);
+
+	return schematic->priv->width;
+}
+
+void schematic_set_width (Schematic *schematic, const guint width)
+{
+	g_return_if_fail (schematic != NULL);
+	g_return_if_fail (IS_SCHEMATIC (schematic));
+
+	schematic->priv->width = width;
+}
+
+guint schematic_get_height (const Schematic *schematic)
+{
+	g_return_val_if_fail (schematic != NULL, 0.);
+	g_return_val_if_fail (IS_SCHEMATIC (schematic), 0.);
+
+	return schematic->priv->height;
+}
+
+void schematic_set_height (Schematic *schematic, const guint height)
+{
+	g_return_if_fail (schematic != NULL);
+	g_return_if_fail (IS_SCHEMATIC (schematic));
+
+	schematic->priv->height = height;
 }
 
 double schematic_get_zoom (Schematic *schematic)
