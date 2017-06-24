@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <math.h>
 
 gchar* get_test_base_dir() {
 	g_autofree gchar *cwd = g_get_current_dir();
