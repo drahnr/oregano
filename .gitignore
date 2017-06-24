@@ -11,3 +11,4 @@ waftools/__pycache__*
 .waf*
 credentials.yml
 .credentials.yml
+/.project
