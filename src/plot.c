@@ -465,12 +465,28 @@ static GtkWidget *plot_window_create (Plot *plot)
 int plot_show (OreganoEngine *engine)
 {
 	GList *analysis = NULL;
-	GList *combo_items = NULL;
+	GList *analysis_backup = NULL;
 	Plot *plot;
+	gchar *str = NULL;
 	gchar *s_current = NULL;
 	SimulationData *first = NULL;
+	SimulationData *sdat = NULL;
+	gboolean abort = TRUE;
 
 	g_return_val_if_fail (engine != NULL, FALSE);
+
+	// Get the analysis we have
+	analysis = analysis_backup = oregano_engine_get_results (engine);
+
+	for (; analysis; analysis = analysis->next) {
+		sdat = SIM_DATA (analysis->data);
+		str = oregano_engine_get_analysis_name (sdat);
+		if (sdat->type != ANALYSIS_TYPE_OP_POINT && sdat->type != ANALYSIS_TYPE_NOISE)
+			abort = FALSE;
+	}
+
+	if (abort)
+		return FALSE;
 
 	plot = g_new0 (Plot, 1);
 
@@ -488,20 +504,18 @@ int plot_show (OreganoEngine *engine)
 
 	next_color = 0;
 
-	//  Get the analysis we have
-	analysis = oregano_engine_get_results (engine);
-
-	for (; analysis; analysis = analysis->next) {
-		SimulationData *sdat = SIM_DATA (analysis->data);
-		gchar *str = oregano_engine_get_analysis_name (sdat);
-		if (sdat->type == ANALYSIS_TYPE_OP_POINT) {
+	for (; analysis_backup; analysis_backup = analysis_backup->next) {
+		sdat = SIM_DATA (analysis_backup->data);
+		str = oregano_engine_get_analysis_name (sdat);
+		if (sdat->type == ANALYSIS_TYPE_OP_POINT || sdat->type == ANALYSIS_TYPE_NOISE) {
 			continue;
 		}
+
 		if (s_current == NULL) {
 			s_current = str;
 			first = sdat;
 		}
-		combo_items = g_list_append (combo_items, str);
+
 		gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (plot->combo_box), str);
 		gtk_combo_box_set_active (GTK_COMBO_BOX (plot->combo_box), 0);
 	}

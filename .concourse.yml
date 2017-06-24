@@ -44,7 +44,7 @@ resources:
     password: {{quay-password}}
 
 jobs:
-  - name: compile-pr
+  - name: pr-compile
     build_logs_to_retain: 50
     public: true
     plan:
@@ -53,7 +53,6 @@ jobs:
         trigger: true
       - get: git-pull-request-resource
         trigger: true
-        serial_groups: [network]
     - task: compile
       timeout: 5m
       image: oregano-test-fedora
@@ -66,8 +65,8 @@ jobs:
           args:
           - -exc
           - |
-            ./waf configure debug --notests --prefix=/tmp install
-            ./build/src/microtests
+            ./waf configure build --debug --prefix=/tmp install
+            ./build/test/microtests
           dir: "git-pull-request-resource"
       on_success:
         put: git-pull-request-resource
@@ -101,8 +100,8 @@ jobs:
           args:
           - -exc
           - |
-            ./waf configure debug --notests --prefix=/tmp install
-            ./build/src/microtests
+            ./waf configure build --debug --prefix=/tmp install
+            ./build/test/microtests
           dir: git-clone-resource
 
   - name: build-pkg-rpm
@@ -133,7 +132,7 @@ jobs:
       resource: copr-resource
       params:
         rpmbuild_dir: "srpm/rpmbuild/SRPMS"
-        chroots: ["mageia-6-x86_64", "mageia-couldron-x86_64", "fedora-rawhide-x86_64", "fedora-25-x86_64"]
+        chroots: ["fedora-rawhide-x86_64", "fedora-26-x86_64", "fedora-25-x86_64"]
         enable_net: false
         max_n_bytes: 250000000
         project_id: 825
@@ -160,4 +159,49 @@ jobs:
         run:
           path: debuild
           args: ["-i", "-us", "-uc", "-b"]
-          dir: "git-clone-resource"
+          dir: git-clone-resource
+
+  - name: pr-build-pkg-rpm
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - aggregate:
+      - get: oregano-test-fedora
+        trigger: true
+      - get: git-pull-request-resource
+        trigger: true
+        passed: [pr-compile]
+
+    - task: create-rpm
+      timeout: 10m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: git-pull-request-resource
+        run:
+          path: .concourse/fedora/buildrpm.sh
+          dir: git-pull-request-resource
+
+  - name: pr-build-pkg-deb
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - aggregate:
+      - get: oregano-test-ubuntu
+        trigger: true
+      - get: git-pull-request-resource
+        trigger: true
+        passed: [pr-compile]
+
+    - task: create-deb
+      timeout: 10m
+      image: oregano-test-ubuntu
+      config:
+        platform: linux
+        inputs:
+        - name: git-pull-request-resource
+        run:
+          path: debuild
+          args: ["-i", "-us", "-uc", "-b"]
+          dir: git-pull-request-resource

@@ -1230,6 +1230,8 @@ static void schematic_view_load (SchematicView *sv, Schematic *sm)
 	//connect logview with logstore
 	log_view_set_store (LOG_VIEW (sv->priv->logview), schematic_get_log_store (sm));
 
+	schematic_set_dirty (sm, FALSE);
+
 	g_list_free_full (list, g_object_unref);
 }
 

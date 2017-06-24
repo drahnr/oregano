@@ -1,8 +1,27 @@
 /*
  * test_thread_pipe.c
  *
- *  Created on: Jun 3, 2017
- *      Author: michi
+ *
+ * Authors:
+ *  Michi <st101564@stud.uni-stuttgart.de>
+ *
+ * Web page: https://ahoi.io/project/oregano
+ *
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ * Boston, MA 02110-1301, USA.
  */
 
 #ifndef TEST_THREAD_PIPE_H_
@@ -126,10 +145,11 @@ static GTestAddDataFuncParameters *test_thread_pipe_buffered_create_test_data() 
 static gchar *test_thread_pipe_buffered_get_testpath(guint *parameter_config, gchar ***parameter_names) {
 	GString *ret_val = g_string_new("/tools/thread_pipe_buffered/test");
 
-	for (int i = 0; parameter_names[i] != NULL; i++)
-		if (parameter_names[i][parameter_config[i]] != NULL)
+	for (int i = 0; parameter_names[i] != NULL; i++) {
+		if (parameter_names[i][parameter_config[i]] != NULL) {
 			g_string_append_printf(ret_val, "_%s", parameter_names[i][parameter_config[i]]);
-
+		}
+	}
 	gchar *ret_val_str = ret_val->str;
 	g_string_free(ret_val, FALSE);
 	return ret_val_str;

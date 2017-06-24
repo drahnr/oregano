@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,6 +47,7 @@ typedef struct {
 
 	// AC
 	gboolean ac_enable;
+	gchar *ac_vout;
 	gchar *ac_type;
 	gchar *ac_npoints;
 	gchar *ac_start;
@@ -53,6 +56,7 @@ typedef struct {
 	// DC
 	gboolean dc_enable;
 	gchar *dc_vin;
+	gchar *dc_vout;
 	gchar *dc_start, *dc_stop, *dc_step;
 
 	// Fourier analysis. Replace with something sane later.
@@ -60,6 +64,15 @@ typedef struct {
 	gchar *fourier_frequency;
 	gchar *fourier_nb_vout;
 	GSList *fourier_vout;
+
+	// Noise
+	gboolean noise_enable;
+	gchar *noise_vin;
+	gchar *noise_vout;
+	gchar *noise_type;
+	gchar *noise_npoints;
+	gchar *noise_start;
+	gchar *noise_stop;
 
 	// Options
 	GList *options;
@@ -107,6 +120,10 @@ gboolean sim_settings_get_dc (const SimSettings *);
 
 gchar *sim_settings_get_dc_vsrc (const SimSettings *);
 
+gchar *sim_settings_get_dc_vout (const SimSettings *);
+
+gdouble sim_settings_get_dc_start (const SimSettings *);
+
 gdouble sim_settings_get_dc_start (const SimSettings *);
 
 gdouble sim_settings_get_dc_stop (const SimSettings *);
@@ -117,23 +134,29 @@ void sim_settings_set_dc (SimSettings *, gboolean);
 
 void sim_settings_set_dc_vsrc (SimSettings *, gchar *);
 
+void sim_settings_set_dc_vout (SimSettings *, gchar *);
+
 void sim_settings_set_dc_start (SimSettings *, gchar *);
 
 void sim_settings_set_dc_stop (SimSettings *, gchar *);
 
 void sim_settings_set_dc_step (SimSettings *, gchar *);
 
-gboolean sim_settings_get_ac (SimSettings *);
+gboolean sim_settings_get_ac (const SimSettings *);
 
-gchar *sim_settings_get_ac_type (SimSettings *);
+gchar *sim_settings_get_ac_vout (const SimSettings *);
 
-gint sim_settings_get_ac_npoints (SimSettings *);
+gchar *sim_settings_get_ac_type (const SimSettings *);
 
-gdouble sim_settings_get_ac_start (SimSettings *);
+gint sim_settings_get_ac_npoints (const SimSettings *);
 
-gdouble sim_settings_get_ac_stop (SimSettings *);
+gdouble sim_settings_get_ac_start (const SimSettings *);
+
+gdouble sim_settings_get_ac_stop (const SimSettings *);
 
 void sim_settings_set_ac (SimSettings *, gboolean);
+
+void sim_settings_set_ac_vout (SimSettings *, gchar *);
 
 void sim_settings_set_ac_type (SimSettings *, gchar *);
 
@@ -156,6 +179,34 @@ gint sim_settings_get_fourier_frequency (const SimSettings *);
 gchar *sim_settings_get_fourier_vout (const SimSettings *);
 
 gchar *sim_settings_get_fourier_nodes (const SimSettings *);
+
+gboolean sim_settings_get_noise (const SimSettings *);
+
+gchar *sim_settings_get_noise_vsrc (const SimSettings *);
+
+gchar *sim_settings_get_noise_vout (const SimSettings *);
+
+gchar *sim_settings_get_noise_type (const SimSettings *);
+
+gint sim_settings_get_noise_npoints (const SimSettings *);
+
+gdouble sim_settings_get_noise_start (const SimSettings *);
+
+gdouble sim_settings_get_noise_stop (const SimSettings *);
+
+void sim_settings_set_noise (SimSettings *, gboolean);
+
+void sim_settings_set_noise_vsrc (SimSettings *, gchar *);
+
+void sim_settings_set_noise_vout (SimSettings *, gchar *);
+
+void sim_settings_set_noise_type (SimSettings *, gchar *);
+
+void sim_settings_set_noise_npoints (SimSettings *, gchar *);
+
+void sim_settings_set_noise_start (SimSettings *, gchar *);
+
+void sim_settings_set_noise_stop (SimSettings *, gchar *);
 
 GList *sim_settings_get_options (const SimSettings *sim_settings);
 

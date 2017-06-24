@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
+set -x
 set -e
 set -x
+
+pwd 2>&1
+RPMBUILD_DIR="$(pwd)/../srpm/rpmbuild/"
+mkdir -p ${RPMBUILD_DIR}/{SOURCES,BUILD,RPMS,SRPMS,SPECS}
 
 pwd 2>&1
 RPMBUILD_DIR="$(pwd)/../srpm/rpmbuild/"
@@ -20,5 +25,4 @@ rpmbuild \
 --define "_srcrpmdir %{_topdir}/SRPMS" \
 --define "_specdir %{_topdir}/SPECS" \
 --define "_sourcedir  %{_topdir}/SOURCES" \
--ba SPECS/oregano.spec && echo "RPM was built"
-pwd 2>&1
+-ba SPECS/oregano.spec || exit 1
