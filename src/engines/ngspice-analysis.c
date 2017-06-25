@@ -873,7 +873,7 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 	tm->title = g_strdup ("Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)");
 	tm->msg = g_strdup_printf ("Input: %f\nOutput: %f\n", inoise, onoise);
 
-	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning_with_title, tm, NULL);
+	oregano_warning_with_title (tm->title, tm->msg);
 
 	*analysis = g_list_append (*analysis, sdata);
 	(*num_analysis)++;
@@ -1014,7 +1014,7 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		NG_DEBUG ("%d buf = %s", i, *buf);
 
 		if (!get_analysis_type(*buf, &analysis_type) && !noise_enabled && i == 0) {
-			g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning, "No analysis found", NULL);
+			oregano_warning ("No analysis found");
 			break;
 		}
 
@@ -1042,7 +1042,7 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 			ac_enabled = FALSE;
 			break;
 		default:
-			g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning, "Unexpected analysis found", NULL);
+			oregano_warning ("Unexpected analysis found");
 			unexpected_analysis_found = TRUE;
 			break;
 		}
