@@ -943,6 +943,7 @@ static void stretch_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
 	guint width;
 
 	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
 	sm = sv->priv->schematic;
 
@@ -952,10 +953,11 @@ static void stretch_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
 	width = schematic_get_width (sm);
 	schematic_set_width (sm, width * (1.0 + SCHEMATIC_STRETCH_FACTOR));
 
-	sheet_replace (sv);
-	schematic_view_reload (sv, sm);
+	if (sheet_replace (sv)) {
+		schematic_view_reload (sv, sm);
 
-	gtk_widget_show_all (schematic_view_get_toplevel (sv));
+		gtk_widget_show_all (schematic_view_get_toplevel (sv));
+	}
 }
 
 /*
@@ -967,6 +969,7 @@ static void stretch_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 	guint height;
 
 	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
 	sm = sv->priv->schematic;
 
@@ -976,10 +979,11 @@ static void stretch_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 	height = schematic_get_height (sm);
 	schematic_set_height (sm, height * (1.0 + SCHEMATIC_STRETCH_FACTOR));
 
-	sheet_replace (sv);
-	schematic_view_reload (sv, sm);
+	if (sheet_replace (sv)) {
+		schematic_view_reload (sv, sm);
 
-	gtk_widget_show_all (schematic_view_get_toplevel (sv));
+		gtk_widget_show_all (schematic_view_get_toplevel (sv));
+	}
 }
 
 static void simulate_cmd (GtkWidget *widget, SchematicView *sv)
@@ -1753,7 +1757,7 @@ SchematicView *schematic_view_get_schematicview_from_sheet (Sheet *sheet)
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
 	GList *iter, *copy;
-	SchematicView *sv;
+	SchematicView *sv = NULL;
 
 	copy = g_list_copy (schematic_view_list); // really needed? probably not
 

@@ -92,7 +92,7 @@ struct _SheetClass
 
 GType sheet_get_type (void);
 GtkWidget *sheet_new (const gdouble width, const gdouble height);
-void sheet_replace (SchematicView *sv);
+gboolean sheet_replace (SchematicView *sv);
 void sheet_scroll_pixel (const Sheet *sheet, int dx, int dy);
 void sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
 gpointer sheet_get_first_selected_item (const Sheet *sheet);

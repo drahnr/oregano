@@ -143,11 +143,16 @@ static void sheet_init (Sheet *sheet)
 
 static void sheet_dispose (GObject *object)
 {
+	g_return_if_fail (object != NULL);
+
 	Sheet *sheet = SHEET (object);
 
-	g_object_unref (G_OBJECT (sheet->grid));
-	g_object_unref (G_OBJECT (sheet->object_group));
-	g_object_unref (G_OBJECT (sheet));
+	if (sheet->grid)
+		g_object_unref (G_OBJECT (sheet->grid));
+	if (sheet->object_group)
+		g_object_unref (G_OBJECT (sheet->object_group));
+	if (object)
+		g_object_unref (object);
 }
 
 static void sheet_finalize (GObject *object)
@@ -519,14 +524,23 @@ GtkWidget *sheet_new (const gdouble width, const gdouble height)
  * with a different size, i.e. with a different width
  * and/or height).
  */
-void sheet_replace (SchematicView *sv)
+gboolean sheet_replace (SchematicView *sv)
 {
+	g_return_val_if_fail (sv != NULL, FALSE);
+	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), FALSE);
+
 	Schematic *sm = schematic_view_get_schematic (sv);
 	Sheet *old_sheet = schematic_view_get_sheet (sv);
 	Sheet *sheet;
-	GtkWidget *parent = gtk_widget_get_parent (old_sheet);
+	GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (old_sheet));
+
+	g_return_val_if_fail (old_sheet != NULL, FALSE);
+	g_return_val_if_fail (IS_SHEET (old_sheet), FALSE);
 
 	sheet = SHEET (sheet_new ((double) schematic_get_width (sm) + SHEET_BORDER, (double) schematic_get_height (sm) + SHEET_BORDER));
+	if (!sheet)
+		return FALSE;
+
 	g_signal_connect (G_OBJECT (sheet), "event", G_CALLBACK (sheet_event_callback),
 			  sheet);
 
@@ -535,15 +549,19 @@ void sheet_replace (SchematicView *sv)
 	gtk_container_remove (GTK_CONTAINER (parent), GTK_WIDGET (old_sheet));
 	gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (sheet));
 
-	gtk_widget_destroy (GTK_WIDGET (old_sheet));
+	if (old_sheet && GTK_IS_WIDGET (old_sheet)) {
+		gtk_widget_destroy (GTK_WIDGET (old_sheet));
 
-        // Disconnect sheet's events
-	g_signal_handlers_disconnect_by_func (G_OBJECT (old_sheet),
-					      G_CALLBACK (sheet_event_callback), old_sheet);
+		// Disconnect sheet's events
+		g_signal_handlers_disconnect_by_func (G_OBJECT (old_sheet),
+						      G_CALLBACK (sheet_event_callback), old_sheet);
+	}
 
-	sheet_dispose (old_sheet);
+	//sheet_dispose (G_OBJECT (old_sheet));
 
-        gtk_widget_grab_focus (GTK_WIDGET (sheet));
+	gtk_widget_grab_focus (GTK_WIDGET (sheet));
+
+	return TRUE;
 }
 
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
