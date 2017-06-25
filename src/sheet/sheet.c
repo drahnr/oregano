@@ -58,7 +58,7 @@ static void sheet_init (Sheet *sheet);
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
                                 GParamSpec *spec);
 static void sheet_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
-static void sheet_set_zoom (const Sheet *sheet, double zoom);
+static void sheet_set_zoom (Sheet *sheet, const double zoom);
 static GList *sheet_preserve_selection (Sheet *sheet);
 static void rotate_items (Sheet *sheet, GList *items, gint angle);
 static void move_items (Sheet *sheet, GList *items, const Coords *delta);
@@ -269,9 +269,8 @@ gboolean sheet_get_pointer_snapped (Sheet *sheet, gdouble *x, gdouble *y)
 
 void sheet_get_zoom (const Sheet *sheet, gdouble *zoom) { *zoom = sheet->priv->zoom; }
 
-static void sheet_set_zoom (const Sheet *sheet, double zoom)
+static void sheet_set_zoom (Sheet *sheet, const double zoom)
 {
-	goo_canvas_set_scale (GOO_CANVAS (sheet), zoom);
 	sheet->priv->zoom = zoom;
 }
 
@@ -317,6 +316,10 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
  */
 void sheet_change_zoom (Sheet *sheet, gdouble factor)
 {
+	double zoom;
+	sheet_get_zoom (sheet, &zoom);
+	sheet_set_zoom (sheet, zoom * factor);
+
 	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
 
@@ -533,13 +536,18 @@ gboolean sheet_replace (SchematicView *sv)
 	Sheet *old_sheet = schematic_view_get_sheet (sv);
 	Sheet *sheet;
 	GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (old_sheet));
+	gdouble zoom;
 
 	g_return_val_if_fail (old_sheet != NULL, FALSE);
 	g_return_val_if_fail (IS_SHEET (old_sheet), FALSE);
 
+	sheet_get_zoom (old_sheet, &zoom);
 	sheet = SHEET (sheet_new ((double) schematic_get_width (sm) + SHEET_BORDER, (double) schematic_get_height (sm) + SHEET_BORDER));
 	if (!sheet)
 		return FALSE;
+
+	sheet_set_zoom (sheet, zoom);
+	goo_canvas_set_scale (GOO_CANVAS (sheet), zoom);
 
 	g_signal_connect (G_OBJECT (sheet), "event", G_CALLBACK (sheet_event_callback),
 			  sheet);
