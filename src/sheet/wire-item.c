@@ -741,14 +741,6 @@ static void wire_changed_callback (Wire *wire, WireItem *item)
 
 	wire_get_pos_and_length (wire, &start_pos, &length);
 
-	Sheet *sheet = SHEET (goo_canvas_item_get_canvas (GOO_CANVAS_ITEM (item)));
-	if (G_UNLIKELY (!sheet)) {
-		g_warning ("Failed to determine the Sheet the item is glued to. This should "
-		           "never happen. Ever!");
-	} else {
-		item_data_snap (ITEM_DATA (wire), sheet->grid);
-	}
-
 	// Move the canvas item and invalidate the bbox cache.
 	goo_canvas_item_set_simple_transform (GOO_CANVAS_ITEM (item), start_pos.x, start_pos.y, 1.0,
 	                                      0.0);

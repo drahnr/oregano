@@ -138,9 +138,6 @@ void item_data_flip (ItemData *data, IDFlip direction, Coords *center);
 //  Store is a class that hold all items in a schematic
 gpointer item_data_get_store (ItemData *item_data);
 
-// Snap to the grid
-void item_data_snap (ItemData *item_data, Grid *grid);
-
 //  Unregister item in its Store
 void item_data_unregister (ItemData *data);
 
