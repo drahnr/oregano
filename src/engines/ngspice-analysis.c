@@ -923,8 +923,11 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 	// Read the noise power spectral density
 	while (!g_str_has_prefix (fbuffer, "Values:")) {
 		if (fgets(fbuffer, BSIZE_SP, fp) == NULL)
-			break;
+			return pipe;
 	}
+
+	sdata->type = ANALYSIS_TYPE_NOISE;
+	sdata->got_var = 3;
 
 	seq = -1;
 	input = FALSE;
@@ -938,9 +941,12 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 			if (*splitted[1]) {
 				prev_seq = seq;
 				seq = g_ascii_strtod(splitted[1], NULL);
+
 				// simple sequence sanity check
-				if (seq == prev_seq + 1)
-					sdata->got_points++;
+				if (seq != prev_seq + 1)
+					return pipe;
+
+				sdata->got_points++;
 				if (splitted[2]) {
 					frequency = g_ascii_strtod(splitted[2], NULL);
 					val[0] = frequency;
@@ -969,9 +975,10 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 		input = !input;
 	}
 
-	sdata->got_var = 3;
-	if (sdata->got_points)
+	if (sdata->got_points) {
 		sdata->type = ANALYSIS_TYPE_NOISE;
+		sdata->got_var = 3;
+	}
 
 	if (fp) {
 		fclose (fp);
