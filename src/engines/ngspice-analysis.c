@@ -861,7 +861,7 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
         static SimulationData *sdata;
         static Analysis *data;
 	FILE *fp;
-	char fbuffer[BSIZE_SP];
+	gchar *fbuffer;
 
         NG_DEBUG ("Noise: result str\n>>>\n%s\n<<<", *buf);
 
@@ -894,6 +894,8 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 		return pipe;
 	}
 
+	fbuffer = g_malloc (BSIZE_SP * sizeof(char));
+
 	// Prepare to read the noise power spectral density
 	sdata->var_names = (char **)g_new0 (gpointer, 3);
 	sdata->var_units = (char **)g_new0 (gpointer, 3);
@@ -922,8 +924,10 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 
 	// Read the noise power spectral density
 	while (!g_str_has_prefix (fbuffer, "Values:")) {
-		if (fgets(fbuffer, BSIZE_SP, fp) == NULL)
+		if (fgets(fbuffer, BSIZE_SP, fp) == NULL) {
+			g_free (fbuffer);
 			return pipe;
+		}
 	}
 
 	seq = -1;
@@ -933,7 +937,7 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 		inoise_psd = 0.;
 		onoise_psd = 0.;
 		splitted = g_regex_split_simple("[\t]*([0-9]*)[\t]*([\\+\\-]{0,1}[0-9]\\.[0-9]*[Ee][\\+\\-][0-9]*)\n",
-							&fbuffer, 0, 0);
+							fbuffer, 0, 0);
 		if (splitted[1]) {
 			if (*splitted[1]) {
 				prev_seq = seq;
@@ -941,7 +945,7 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 
 				// simple sequence sanity check
 				if (seq != prev_seq + 1)
-					return pipe;
+					break;
 
 				sdata->got_points++;
 				if (splitted[2]) {
@@ -981,6 +985,8 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 		fclose (fp);
 		unlink (NOISE_ANALYSIS_FILENAME);
 	}
+
+	g_free (fbuffer);
 
 	return pipe;
 }
