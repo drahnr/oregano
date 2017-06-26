@@ -926,9 +926,6 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 			return pipe;
 	}
 
-	sdata->type = ANALYSIS_TYPE_NOISE;
-	sdata->got_var = 3;
-
 	seq = -1;
 	input = FALSE;
 	while (fgets(fbuffer, BSIZE_SP, fp)) {
