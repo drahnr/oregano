@@ -899,7 +899,7 @@ static void zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
-	sheet_change_zoom (sv->priv->sheet, 1.1);
+	sheet_zoom_step (sv->priv->sheet, 1.1);
 	zoom_check (sv);
 }
 
@@ -908,7 +908,7 @@ static void zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
-	sheet_change_zoom (sv->priv->sheet, 0.9);
+	sheet_zoom_step (sv->priv->sheet, 0.9);
 	zoom_check (sv);
 }
 

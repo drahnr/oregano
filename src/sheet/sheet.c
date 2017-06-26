@@ -306,7 +306,7 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
 }
 
 /**
- * \brief change the zoom by factor
+ * \brief change the zoom by factor (zoom step)
  *
  * zoom origin when zooming in is the cursor
  * zoom origin when zooming out is the center of the current viewport
@@ -314,7 +314,7 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
  * @param sheet
  * @param factor values should be in the range of [0.5 .. 2]
  */
-void sheet_change_zoom (Sheet *sheet, gdouble factor)
+void sheet_zoom_step (Sheet *sheet, const gdouble factor)
 {
 	double zoom;
 	sheet_get_zoom (sheet, &zoom);
@@ -803,12 +803,12 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
 				if (zoom < ZOOM_MAX)
-					sheet_change_zoom (sheet, 1.1);
+					sheet_zoom_step (sheet, 1.1);
 			} else if (scr_event->direction == GDK_SCROLL_DOWN) {
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
 				if (zoom > ZOOM_MIN)
-					sheet_change_zoom (sheet, 0.9);
+					sheet_zoom_step (sheet, 0.9);
 			}
 		}
 	} break;

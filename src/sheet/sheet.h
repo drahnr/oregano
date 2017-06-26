@@ -96,7 +96,7 @@ gboolean sheet_replace (SchematicView *sv);
 void sheet_scroll_pixel (const Sheet *sheet, int dx, int dy);
 void sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
 gpointer sheet_get_first_selected_item (const Sheet *sheet);
-void sheet_change_zoom (Sheet *sheet, double rate);
+void sheet_zoom_step (Sheet *sheet, const double rate);
 void sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
 void sheet_delete_selected_items (const Sheet *sheet);
 void sheet_rotate_selected_items (const Sheet *sheet);
