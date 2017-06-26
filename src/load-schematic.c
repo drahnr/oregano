@@ -44,6 +44,7 @@
 #include "load-schematic.h"
 #include "coords.h"
 #include "part-label.h"
+#include "schematic.h"
 #include "sim-settings.h"
 #include "textbox.h"
 #include "errors.h"
@@ -763,6 +764,7 @@ static void start_element (ParseState *state, const xmlChar *name, const xmlChar
 static void end_element (ParseState *state, const xmlChar *name)
 {
 	GList *libs;
+	Schematic *schematic = state->schematic;
 
 	switch (state->state) {
 	case PARSE_UNKNOWN:
@@ -988,6 +990,16 @@ static void end_element (ParseState *state, const xmlChar *name)
 		break;
 	case PARSE_PART_POSITION:
 		sscanf (state->content->str, "(%lf %lf)", &state->pos.x, &state->pos.y);
+		// Try to fix invalid positions
+		if (state->pos.x < 0)
+			state->pos.x = -state->pos.x;
+		if (state->pos.y < 0)
+			state->pos.y = -state->pos.y;
+		// Determine the maximum parts' coordinates to be used during sheet creation
+		if (state->pos.x > schematic_get_width(schematic))
+			schematic_set_width(schematic, (guint) state->pos.x);
+		if (state->pos.y > schematic_get_height(schematic))
+			schematic_set_height(schematic, (guint) state->pos.y);
 		state->state = PARSE_PART;
 		break;
 	case PARSE_PART_ROTATION:

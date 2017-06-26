@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -128,6 +130,8 @@ static gchar *get_variable_units (gchar *str)
 		tmp = g_strdup ("Hz");
 	} else if (!strcmp (str, _ ("current"))) {
 		tmp = g_strdup ("A");
+	} else if (!strcmp (str, _ ("psd"))) {
+		tmp = g_strdup ("V^2 / Hz");
 	} else {
 		tmp = g_strdup ("##");
 	}
@@ -484,7 +488,7 @@ int plot_show (OreganoEngine *engine)
 	for (; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
 		str = oregano_engine_get_analysis_name (sdat);
-		if (sdat->type != ANALYSIS_TYPE_OP_POINT && sdat->type != ANALYSIS_TYPE_NOISE)
+		if (sdat->type != ANALYSIS_TYPE_OP_POINT && sdat->type != ANALYSIS_TYPE_INTEGRATED_NOISE)
 			abort = FALSE;
 	}
 
@@ -510,7 +514,7 @@ int plot_show (OreganoEngine *engine)
 	for (; analysis_backup; analysis_backup = analysis_backup->next) {
 		sdat = SIM_DATA (analysis_backup->data);
 		str = oregano_engine_get_analysis_name (sdat);
-		if (sdat->type == ANALYSIS_TYPE_OP_POINT || sdat->type == ANALYSIS_TYPE_NOISE) {
+		if (sdat->type == ANALYSIS_TYPE_OP_POINT || sdat->type == ANALYSIS_TYPE_INTEGRATED_NOISE) {
 			continue;
 		}
 

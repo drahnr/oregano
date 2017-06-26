@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -103,7 +105,11 @@ void schematic_set_filename (Schematic *schematic, const gchar *filename);
 char *schematic_get_netlist_filename (Schematic *schematic);
 void schematic_set_netlist_filename (Schematic *schematic, char *filename);
 int schematic_count (void);
+guint schematic_get_width (const Schematic *schematic);
+guint schematic_get_height (const Schematic *schematic);
 double schematic_get_zoom (Schematic *schematic);
+void schematic_set_width (Schematic *schematic, const guint width);
+void schematic_set_height (Schematic *schematic, const guint height);
 void schematic_set_zoom (Schematic *schematic, double zoom);
 void schematic_add_item (Schematic *sm, ItemData *data);
 void schematic_parts_foreach (Schematic *schematic, ForeachItemDataFunc func, gpointer user_data);

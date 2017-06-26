@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,6 +43,7 @@
 #include <sys/time.h>
 #include <cairo/cairo-features.h>
 
+#include "schematic.h"
 #include "schematic-view.h"
 #include "part-browser.h"
 #include "stock.h"
@@ -130,6 +133,8 @@ static void schematic_view_class_init (SchematicViewClass *klass);
 static void schematic_view_dispose (GObject *object);
 static void schematic_view_finalize (GObject *object);
 static void schematic_view_load (SchematicView *sv, Schematic *sm);
+static void schematic_view_do_load (SchematicView *sv, Schematic *sm, const gboolean reload);
+static void schematic_view_reload (SchematicView *sv, Schematic *sm);
 
 // Signal callbacks.
 static void title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv);
@@ -894,7 +899,7 @@ static void zoom_in_cmd (GtkWidget *widget, SchematicView *sv)
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
-	sheet_change_zoom (sv->priv->sheet, 1.1);
+	sheet_zoom_step (sv->priv->sheet, 1.1);
 	zoom_check (sv);
 }
 
@@ -903,7 +908,7 @@ static void zoom_out_cmd (GtkWidget *widget, SchematicView *sv)
 	g_return_if_fail (sv != NULL);
 	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 
-	sheet_change_zoom (sv->priv->sheet, 0.9);
+	sheet_zoom_step (sv->priv->sheet, 0.9);
 	zoom_check (sv);
 }
 
@@ -927,6 +932,58 @@ static void zoom_cmd (GtkAction *action, GtkRadioAction *current, SchematicView 
 		break;
 	}
 	zoom_check (sv);
+}
+
+/*
+ * Stretch the sheet horizontally.
+ */
+static void stretch_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	Schematic *sm;
+	guint width;
+
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	sm = sv->priv->schematic;
+
+	g_return_if_fail (sm != NULL);
+	g_return_if_fail (IS_SCHEMATIC (sm));
+
+	width = schematic_get_width (sm);
+	schematic_set_width (sm, width * (1.0 + SCHEMATIC_STRETCH_FACTOR));
+
+	if (sheet_replace (sv)) {
+		schematic_view_reload (sv, sm);
+
+		gtk_widget_show_all (schematic_view_get_toplevel (sv));
+	}
+}
+
+/*
+ * Stretch the sheet vertically.
+ */
+static void stretch_vertical_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	Schematic *sm;
+	guint height;
+
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	sm = sv->priv->schematic;
+
+	g_return_if_fail (sm != NULL);
+	g_return_if_fail (IS_SCHEMATIC (sm));
+
+	height = schematic_get_height (sm);
+	schematic_set_height (sm, height * (1.0 + SCHEMATIC_STRETCH_FACTOR));
+
+	if (sheet_replace (sv)) {
+		schematic_view_reload (sv, sm);
+
+		gtk_widget_show_all (schematic_view_get_toplevel (sv));
+	}
 }
 
 static void simulate_cmd (GtkWidget *widget, SchematicView *sv)
@@ -1025,9 +1082,9 @@ static void show_help (GtkWidget *widget, SchematicView *sv)
  * make the window occupy 3/4 of the screen with a padding of 50px in each
  * direction
  */
-static void set_window_size (SchematicView *sv)
+static void get_window_size (GdkRectangle *rect)
 {
-	// Set the window size to something reasonable
+	// Get a suitable value for the window size
 	GdkScreen *screen = gdk_screen_get_default ();
 	if (screen) {
 		//FIXME unused
@@ -1037,19 +1094,30 @@ static void set_window_size (SchematicView *sv)
 		// as the window is not realized yet (or for some other reason does not make
 		// a difference)
 		gint monitor = gdk_screen_get_primary_monitor (screen);
-		GdkRectangle rect;
-		gdk_screen_get_monitor_geometry (screen, monitor, &rect);
+		GdkRectangle monitor_rect;
+		gdk_screen_get_monitor_geometry (screen, monitor, &monitor_rect);
 
-		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, rect.width, rect.height, rect.x,
-		          rect.y);
+		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, monitor_rect.width, monitor_rect.height,
+		          monitor_rect.x, monitor_rect.y);
 
-		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 3 * (rect.width - 50) / 4,
-		                             3 * (rect.height - 50) / 4);
+		rect->width = 3 * (monitor_rect.width - 50) / 4;
+		rect->height = 3 * (monitor_rect.height - 50) / 4;
 	} else {
 		g_warning ("No default screen found. Falling back to 1024x768 window size.");
-		gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), 1024, 768);
+		rect->width = 1024;
+		rect->height = 768;
 	}
 }
+
+static void set_window_size (SchematicView *sv)
+{
+	GdkRectangle rect;
+
+	get_window_size (&rect);
+
+	gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), rect.width, rect.height);
+}
+
 #include "schematic-view-menu.h"
 
 SchematicView *schematic_view_new (Schematic *schematic)
@@ -1069,6 +1137,7 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	GtkPaned *paned;
 	GError *e = NULL;
 	GtkBuilder *builder;
+	GdkRectangle window_size;
 
 	g_return_val_if_fail (schematic, NULL);
 	g_return_val_if_fail (IS_SCHEMATIC (schematic), NULL);
@@ -1098,8 +1167,13 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	paned = GTK_PANED (gtk_builder_get_object (builder, "paned"));
 	sv->priv->paned = paned;
 
-	// TODO make the size allocation dynamic - bug #45
-	sv->priv->sheet = SHEET (sheet_new (10000., 10000.));
+	get_window_size (&window_size);
+	if (schematic_get_width (schematic) < window_size.width)
+		schematic_set_width (schematic, window_size.width);
+	if (schematic_get_height (schematic) < window_size.height)
+		schematic_set_height (schematic, window_size.height);
+
+	sv->priv->sheet = SHEET (sheet_new ((double) schematic_get_width (schematic) + SHEET_BORDER, (double) schematic_get_height (schematic) + SHEET_BORDER));
 
 	g_signal_connect (G_OBJECT (sv->priv->sheet), "event", G_CALLBACK (sheet_event_callback),
 	                  sv->priv->sheet);
@@ -1161,7 +1235,6 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
 
 	gtk_paned_pack1 (paned, vbox, FALSE, TRUE);
-	gtk_window_set_focus (GTK_WINDOW (sv->toplevel), GTK_WIDGET (sv->priv->sheet));
 	gtk_widget_grab_focus (GTK_WIDGET (sv->priv->sheet));
 
 	g_signal_connect_after (G_OBJECT (sv->toplevel), "set_focus", G_CALLBACK (set_focus), sv);
@@ -1205,19 +1278,30 @@ SchematicView *schematic_view_new (Schematic *schematic)
 
 static void schematic_view_load (SchematicView *sv, Schematic *sm)
 {
-	GList *list;
-	g_return_if_fail (sv->priv->empty != FALSE);
-	g_return_if_fail (sm != NULL);
+	schematic_view_do_load (sv, sm, FALSE);
+}
 
-	if (sv->priv->schematic)
+static void schematic_view_do_load (SchematicView *sv, Schematic *sm, const gboolean reload)
+{
+	GList *list;
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (sm != NULL);
+	g_return_if_fail (IS_SCHEMATIC (sm));
+
+	if (!reload)
+		g_return_if_fail (sv->priv->empty != FALSE);
+
+	if (!reload && sv->priv->schematic)
 		g_object_unref (G_OBJECT (sv->priv->schematic));
 
 	sv->priv->schematic = sm;
 
-	g_signal_connect_object (G_OBJECT (sm), "title_changed", G_CALLBACK (title_changed_callback),
-	                         G_OBJECT (sv), 0);
-	g_signal_connect_object (G_OBJECT (sm), "item_data_added",
-	                         G_CALLBACK (item_data_added_callback), G_OBJECT (sv), 0);
+	if (!reload) {
+		g_signal_connect_object (G_OBJECT (sm), "title_changed", G_CALLBACK (title_changed_callback),
+					 G_OBJECT (sv), 0);
+		g_signal_connect_object (G_OBJECT (sm), "item_data_added",
+					 G_CALLBACK (item_data_added_callback), G_OBJECT (sv), 0);
+	}
 
 	list = schematic_get_items (sm);
 
@@ -1227,12 +1311,18 @@ static void schematic_view_load (SchematicView *sv, Schematic *sm)
 
 	sheet_connect_node_dots_to_signals (sv->priv->sheet);
 
-	//connect logview with logstore
-	log_view_set_store (LOG_VIEW (sv->priv->logview), schematic_get_log_store (sm));
+	// connect logview with logstore
+	if (!reload)
+		log_view_set_store (LOG_VIEW (sv->priv->logview), schematic_get_log_store (sm));
 
 	schematic_set_dirty (sm, FALSE);
 
 	g_list_free_full (list, g_object_unref);
+}
+
+static void schematic_view_reload (SchematicView *sv, Schematic *sm)
+{
+	schematic_view_do_load (sv, sm, TRUE);
 }
 
 static void item_selection_changed_callback (SheetItem *item, gboolean selected, SchematicView *sv)
@@ -1366,6 +1456,14 @@ Sheet *schematic_view_get_sheet (SchematicView *sv)
 	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), NULL);
 
 	return sv->priv->sheet;
+}
+
+void schematic_view_set_sheet (SchematicView *sv, Sheet *sheet)
+{
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	sv->priv->sheet = sheet;
 }
 
 Schematic *schematic_view_get_schematic (SchematicView *sv)
@@ -1659,7 +1757,7 @@ SchematicView *schematic_view_get_schematicview_from_sheet (Sheet *sheet)
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
 	GList *iter, *copy;
-	SchematicView *sv;
+	SchematicView *sv = NULL;
 
 	copy = g_list_copy (schematic_view_list); // really needed? probably not
 

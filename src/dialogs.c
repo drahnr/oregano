@@ -31,6 +31,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <sys/syscall.h>
+
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
@@ -72,6 +74,18 @@ void oregano_error_with_title (gchar *title, gchar *msg)
 {
 	GtkWidget *dialog;
 	GString *span_msg;
+	pid_t tid = 0;
+
+#ifdef SYS_gettid
+	tid = syscall(SYS_gettid);
+#endif
+	// make sure that this is running in the main thread
+	if (tid && (getpid() != tid)) {
+		OreganoTitleMsg *tm = g_malloc (sizeof (OreganoTitleMsg));
+		tm->title = title;
+		tm->msg = msg;
+		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_error_with_title, tm, NULL);
+	}
 
 	span_msg = g_string_new ("<span weight=\"bold\" size=\"large\">");
 	span_msg = g_string_append (span_msg, title);
@@ -129,6 +143,19 @@ void oregano_warning_with_title (gchar *title, gchar *msg)
 {
 	GtkWidget *dialog;
 	GString *span_msg;
+	pid_t tid = 0;
+
+#ifdef SYS_gettid
+	tid = syscall(SYS_gettid);
+#endif
+	// make sure that this is running in the main thread
+	if (tid && (getpid() != tid)) {
+		OreganoTitleMsg *tm = g_malloc (sizeof (OreganoTitleMsg));
+		tm->title = title;
+		tm->msg = msg;
+		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning_with_title, tm, NULL);
+		return;
+	}
 
 	span_msg = g_string_new ("<span weight=\"bold\" size=\"large\">");
 	span_msg = g_string_append (span_msg, title);

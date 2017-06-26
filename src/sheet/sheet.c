@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -56,13 +58,14 @@ static void sheet_init (Sheet *sheet);
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
                                 GParamSpec *spec);
 static void sheet_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec);
-static void sheet_set_zoom (const Sheet *sheet, double zoom);
+static void sheet_set_zoom (Sheet *sheet, const double zoom);
 static GList *sheet_preserve_selection (Sheet *sheet);
 static void rotate_items (Sheet *sheet, GList *items, gint angle);
 static void move_items (Sheet *sheet, GList *items, const Coords *delta);
 static void flip_items (Sheet *sheet, GList *items, IDFlip direction);
 static void node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
+static void sheet_dispose (GObject *object);
 static void sheet_finalize (GObject *object);
 static int dot_equal (gconstpointer a, gconstpointer b);
 static guint dot_hash (gconstpointer key);
@@ -138,6 +141,20 @@ static void sheet_init (Sheet *sheet)
 	sheet->state = SHEET_STATE_NONE;
 }
 
+static void sheet_dispose (GObject *object)
+{
+	g_return_if_fail (object != NULL);
+
+	Sheet *sheet = SHEET (object);
+
+	if (sheet->grid)
+		g_object_unref (G_OBJECT (sheet->grid));
+	if (sheet->object_group)
+		g_object_unref (G_OBJECT (sheet->object_group));
+	if (object)
+		g_object_unref (object);
+}
+
 static void sheet_finalize (GObject *object)
 {
 	Sheet *sheet = SHEET (object);
@@ -147,6 +164,7 @@ static void sheet_finalize (GObject *object)
 			g_hash_table_destroy (sheet->priv->node_dots);
 		g_free (sheet->priv);
 	}
+
 	if (G_OBJECT_CLASS (sheet_parent_class)->finalize)
 		(*G_OBJECT_CLASS (sheet_parent_class)->finalize)(object);
 }
@@ -251,9 +269,8 @@ gboolean sheet_get_pointer_snapped (Sheet *sheet, gdouble *x, gdouble *y)
 
 void sheet_get_zoom (const Sheet *sheet, gdouble *zoom) { *zoom = sheet->priv->zoom; }
 
-static void sheet_set_zoom (const Sheet *sheet, double zoom)
+static void sheet_set_zoom (Sheet *sheet, const double zoom)
 {
-	goo_canvas_set_scale (GOO_CANVAS (sheet), zoom);
 	sheet->priv->zoom = zoom;
 }
 
@@ -289,7 +306,7 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
 }
 
 /**
- * \brief change the zoom by factor
+ * \brief change the zoom by factor (zoom step)
  *
  * zoom origin when zooming in is the cursor
  * zoom origin when zooming out is the center of the current viewport
@@ -297,8 +314,12 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
  * @param sheet
  * @param factor values should be in the range of [0.5 .. 2]
  */
-void sheet_change_zoom (Sheet *sheet, gdouble factor)
+void sheet_zoom_step (Sheet *sheet, const gdouble factor)
 {
+	double zoom;
+	sheet_get_zoom (sheet, &zoom);
+	sheet_set_zoom (sheet, zoom * factor);
+
 	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
 
@@ -401,10 +422,10 @@ void sheet_change_zoom (Sheet *sheet, gdouble factor)
 /**
  * \brief defines the drawing widget on which the actual schematic will be drawn
  *
- * @param height height of the content area
  * @param width width of the content area
+ * @param height height of the content area
  */
-GtkWidget *sheet_new (gdouble height, gdouble width)
+GtkWidget *sheet_new (const gdouble width, const gdouble height)
 {
 	GooCanvas *sheet_canvas;
 	GooCanvasGroup *sheet_group;
@@ -427,14 +448,11 @@ GtkWidget *sheet_new (gdouble height, gdouble width)
 
 	goo_canvas_set_bounds (GOO_CANVAS (sheet_canvas), 0., 0., width + 20., height + 20.);
 
-	// Define vicinity around GooCanvasItem
-	// sheet_canvas->close_enough = 6.0;
-
 	sheet->priv->width = width;
 	sheet->priv->height = height;
 
 	// Create the dot grid.
-	sheet->grid = grid_new (GOO_CANVAS_ITEM (sheet_group), height, width);
+	sheet->grid = grid_new (GOO_CANVAS_ITEM (sheet_group), width, height);
 
 	// Everything outside the sheet should be gray.
 	// top //
@@ -492,7 +510,6 @@ GtkWidget *sheet_new (gdouble height, gdouble width)
 
 	sheet->priv->floating_group = GOO_CANVAS_GROUP (
 	    goo_canvas_group_new (GOO_CANVAS_ITEM (sheet->object_group), "x", 0.0, "y", 0.0, NULL));
-
 	NG_DEBUG ("floating group %p", sheet->priv->floating_group);
 
 	// Hash table that maps coordinates to a specific dot.
@@ -503,6 +520,56 @@ GtkWidget *sheet_new (gdouble height, gdouble width)
 	sheet->priv->create_wire_info = create_wire_info_new (sheet);
 
 	return sheet_widget;
+}
+
+/*
+ * Replace the current sheet with a new one (eventually
+ * with a different size, i.e. with a different width
+ * and/or height).
+ */
+gboolean sheet_replace (SchematicView *sv)
+{
+	g_return_val_if_fail (sv != NULL, FALSE);
+	g_return_val_if_fail (IS_SCHEMATIC_VIEW (sv), FALSE);
+
+	Schematic *sm = schematic_view_get_schematic (sv);
+	Sheet *old_sheet = schematic_view_get_sheet (sv);
+	Sheet *sheet;
+	GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (old_sheet));
+	gdouble zoom;
+
+	g_return_val_if_fail (old_sheet != NULL, FALSE);
+	g_return_val_if_fail (IS_SHEET (old_sheet), FALSE);
+
+	sheet_get_zoom (old_sheet, &zoom);
+	sheet = SHEET (sheet_new ((double) schematic_get_width (sm) + SHEET_BORDER, (double) schematic_get_height (sm) + SHEET_BORDER));
+	if (!sheet)
+		return FALSE;
+
+	sheet_set_zoom (sheet, zoom);
+	goo_canvas_set_scale (GOO_CANVAS (sheet), zoom);
+
+	g_signal_connect (G_OBJECT (sheet), "event", G_CALLBACK (sheet_event_callback),
+			  sheet);
+
+	schematic_view_set_sheet (sv, sheet);
+
+	gtk_container_remove (GTK_CONTAINER (parent), GTK_WIDGET (old_sheet));
+	gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (sheet));
+
+	if (old_sheet && GTK_IS_WIDGET (old_sheet)) {
+		gtk_widget_destroy (GTK_WIDGET (old_sheet));
+
+		// Disconnect sheet's events
+		g_signal_handlers_disconnect_by_func (G_OBJECT (old_sheet),
+						      G_CALLBACK (sheet_event_callback), old_sheet);
+	}
+
+	//sheet_dispose (G_OBJECT (old_sheet));
+
+	gtk_widget_grab_focus (GTK_WIDGET (sheet));
+
+	return TRUE;
 }
 
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
@@ -736,12 +803,12 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
 				if (zoom < ZOOM_MAX)
-					sheet_change_zoom (sheet, 1.1);
+					sheet_zoom_step (sheet, 1.1);
 			} else if (scr_event->direction == GDK_SCROLL_DOWN) {
 				double zoom;
 				sheet_get_zoom (sheet, &zoom);
 				if (zoom > ZOOM_MIN)
-					sheet_change_zoom (sheet, 0.9);
+					sheet_zoom_step (sheet, 0.9);
 			}
 		}
 	} break;

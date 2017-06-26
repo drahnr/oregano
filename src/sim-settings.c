@@ -198,19 +198,19 @@ gboolean sim_settings_get_trans_analyze_all (const SimSettings *sim_settings)
 gdouble sim_settings_get_trans_start (const SimSettings *sim_settings)
 {
 	gchar *text = sim_settings->trans_start;
-	return oregano_strtod (text, 's');
+	return oregano_strtod (text, "s");
 }
 
 gdouble sim_settings_get_trans_stop (const SimSettings *sim_settings)
 {
 	gchar *text = sim_settings->trans_stop;
-	return oregano_strtod (text, 's');
+	return oregano_strtod (text, "s");
 }
 
 gdouble sim_settings_get_trans_step (const SimSettings *sim_settings)
 {
 	gchar *text = sim_settings->trans_step;
-	return oregano_strtod (text, 's');
+	return oregano_strtod (text, "s");
 }
 
 gdouble sim_settings_get_trans_step_enable (const SimSettings *sim_settings)
@@ -272,12 +272,12 @@ gint sim_settings_get_ac_npoints (const SimSettings *sim_settings)
 
 gdouble sim_settings_get_ac_start (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->ac_start, 'Hz');
+	return oregano_strtod (sim_settings->ac_start, "Hz");
 }
 
 gdouble sim_settings_get_ac_stop (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->ac_stop, 'Hz');
+	return oregano_strtod (sim_settings->ac_stop, "Hz");
 }
 
 void sim_settings_set_ac (SimSettings *sim_settings, gboolean enable)
@@ -323,17 +323,17 @@ gchar *sim_settings_get_dc_vout (const SimSettings *sim_settings) { return sim_s
 
 gdouble sim_settings_get_dc_start (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->dc_start, 'V');
+	return oregano_strtod (sim_settings->dc_start, "V");
 }
 
 gdouble sim_settings_get_dc_stop (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->dc_stop, 'V');
+	return oregano_strtod (sim_settings->dc_stop, "V");
 }
 
 gdouble sim_settings_get_dc_step (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->dc_step, 'V');
+	return oregano_strtod (sim_settings->dc_step, "V");
 }
 
 void sim_settings_set_dc (SimSettings *sim_settings, gboolean enable)
@@ -458,12 +458,12 @@ gint sim_settings_get_noise_npoints (const SimSettings *sim_settings)
 
 gdouble sim_settings_get_noise_start (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->noise_start, 'Hz');
+	return oregano_strtod (sim_settings->noise_start, "Hz");
 }
 
 gdouble sim_settings_get_noise_stop (const SimSettings *sim_settings)
 {
-	return oregano_strtod (sim_settings->noise_stop, 'Hz');
+	return oregano_strtod (sim_settings->noise_stop, "Hz");
 }
 
 void sim_settings_set_noise (SimSettings *sim_settings, gboolean enable)

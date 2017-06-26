@@ -695,7 +695,6 @@ static void part_flip (ItemData *data, IDFlip direction, Coords *center)
 		priv->pins[i].offset.x = x;
 		priv->pins[i].offset.y = y;
 	}
-	item_data_snap (data);
 
 	// tell the view
 	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),

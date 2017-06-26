@@ -35,7 +35,7 @@
 #ifndef __OREGANO_UTILS_H
 #define __OREGANO_UTILS_H
 
-gdouble oregano_strtod (const gchar *str, const gchar unit);
+gdouble oregano_strtod (const gchar *str, const gchar *unit);
 
 #define DEGSANITY(x)                                                                               \
 	do {                                                                                           \

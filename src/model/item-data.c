@@ -260,42 +260,6 @@ void item_data_move (ItemData *item_data, const Coords *delta)
 	cairo_matrix_translate (&(priv->translate), delta->x, delta->y);
 }
 
-/**
- * \brief snaps to the grid, updates the model if snapping was necessary
- *
- * \attention this will cause a loop cycle of "changed" signals
- *            until no more snapping is necessary
- *
- * @param item_data
- * @param grid
- */
-void item_data_snap (ItemData *item_data, Grid *grid)
-{
-	gboolean handler_connected;
-
-	g_return_if_fail (item_data);
-	g_return_if_fail (IS_ITEM_DATA (item_data));
-	g_return_if_fail (grid);
-	g_return_if_fail (IS_GRID (grid));
-
-	if (snap_to_grid (grid, &(item_data->priv->translate.x0), &(item_data->priv->translate.y0))) {
-
-#if 1 // TODO FIXME XXX rename this to "snapped" instead of moved
-		handler_connected =
-		    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
-		if (handler_connected) {
-			g_signal_emit_by_name (G_OBJECT (item_data),
-			                       "moved"); // FIXME replace this by a "snapped" signal
-		}
-#endif
-		handler_connected =
-		    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
-		if (handler_connected) {
-			g_signal_emit_by_name (G_OBJECT (item_data), "changed");
-		}
-	}
-}
-
 // NodeStore *
 gpointer item_data_get_store (ItemData *item_data)
 {

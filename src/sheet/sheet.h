@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,6 +41,12 @@
 #include "grid.h"
 
 #include "item-data.h"
+
+// typedef to avoid circular dependency
+typedef struct _SchematicView SchematicView;
+
+// Allow about 200 pixels for the border of the sheet
+#define SHEET_BORDER    200
 
 typedef struct _Sheet Sheet;
 typedef struct _SheetPriv SheetPriv;
@@ -83,11 +91,12 @@ struct _SheetClass
 };
 
 GType sheet_get_type (void);
-GtkWidget *sheet_new (gdouble height, gdouble width);
+GtkWidget *sheet_new (const gdouble width, const gdouble height);
+gboolean sheet_replace (SchematicView *sv);
 void sheet_scroll_pixel (const Sheet *sheet, int dx, int dy);
 void sheet_get_size_pixels (const Sheet *sheet, guint *width, guint *height);
 gpointer sheet_get_first_selected_item (const Sheet *sheet);
-void sheet_change_zoom (Sheet *sheet, double rate);
+void sheet_zoom_step (Sheet *sheet, const double rate);
 void sheet_get_zoom (const Sheet *sheet, gdouble *zoom);
 void sheet_delete_selected_items (const Sheet *sheet);
 void sheet_rotate_selected_items (const Sheet *sheet);
