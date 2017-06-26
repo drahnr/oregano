@@ -50,6 +50,7 @@ typedef enum {
 	ANALYSIS_TYPE_AC,
 	ANALYSIS_TYPE_TRANSFER,
 	ANALYSIS_TYPE_DISTORTION,
+	ANALYSIS_TYPE_INTEGRATED_NOISE,
 	ANALYSIS_TYPE_NOISE,
 	ANALYSIS_TYPE_POLE_ZERO,
 	ANALYSIS_TYPE_SENSITIVITY,
@@ -127,6 +128,14 @@ typedef struct
 	double start, stop, step;
 } SimDC;
 
+typedef struct
+{
+	SimulationData sim_data;
+	int state;
+	double sim_length;
+	double start, stop;
+} SimNoise;
+
 typedef union
 {
 	SimOp op;
@@ -134,6 +143,7 @@ typedef union
 	SimFourier fourier;
 	SimAC ac;
 	SimDC dc;
+	SimNoise noise;
 } Analysis;
 
 void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv);

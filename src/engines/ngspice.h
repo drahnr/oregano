@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +31,12 @@
 
 #ifndef __NGSPICE_H
 #define __NGSPICE_H
+
+/*
+ * The filename used for the temporary noise
+ * analysis file.
+ */
+#define	NOISE_ANALYSIS_FILENAME	"oregano-noise.txt"
 
 #include <gtk/gtk.h>
 
