@@ -894,7 +894,7 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 		return pipe;
 	}
 
-	fbuffer = g_malloc (BSIZE_SP * sizeof(char));
+	fbuffer = g_malloc (BSIZE_SP * sizeof(gchar));
 
 	// Prepare to read the noise power spectral density
 	sdata->var_names = (char **)g_new0 (gpointer, 3);
