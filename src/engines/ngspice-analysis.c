@@ -538,7 +538,7 @@ static ParseTransientAnalysisReturnResources parse_transient_analysis_resources 
 	const SimSettings *sim_settings = resources->sim_settings;
 	guint *num_analysis = resources->num_analysis;
 	ProgressResources *progress_reader = resources->progress_reader;
-	guint64 no_of_data_rows = resources->no_of_data_rows;
+	guint64 no_of_data_rows = resources->no_of_data_rows_transient;
 	guint no_of_variables = resources->no_of_variables;
 
 
@@ -1056,6 +1056,7 @@ static guint parse_no_of_variables(ThreadPipe *pipe, gchar **buf) {
 		no_of_variables++;
 		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 	}
+
 	return no_of_variables;
 }
 
@@ -1079,16 +1080,68 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 		return;
 
-	while (!g_str_has_prefix (*buf, "Doing analysis at TEMP = ")) {
-		if (g_str_has_prefix(*buf, "No. of Data Rows : "))
-			resources->no_of_data_rows = parse_no_of_data_rows(*buf);
-
-		if (g_str_has_prefix(*buf, "Initial Transient Solution"))
-			resources->no_of_variables = parse_no_of_variables(pipe, buf);
-
+	// Get the number of AC Analysis data rows
+	while (ac_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
 		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
 	}
+	if (ac_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+			resources->no_of_data_rows_ac = parse_no_of_data_rows(*buf);
+
+	if (ac_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		return;
+
+	// Get the number of DC Analysis data rows
+	while (dc_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+	}
+	if (dc_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+			resources->no_of_data_rows_dc = parse_no_of_data_rows(*buf);
+
+	if (dc_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		return;
+
+	// Get the number of Operating Point Analysis data rows
+	while (!g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+	}
+	if (g_str_has_prefix(*buf, "No. of Data Rows : "))
+			resources->no_of_data_rows_op = parse_no_of_data_rows(*buf);
+
+	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		return;
+
+	// Get the number of Transient Analysis variables
+	while (transient_enabled && !g_str_has_prefix (*buf, "Initial Transient Solution")) {
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+	}
+	if (transient_enabled && g_str_has_prefix(*buf, "Initial Transient Solution"))
+		resources->no_of_variables = parse_no_of_variables(pipe, buf);
+
+	if (transient_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		return;
+
+	// Get the number of Transient Analysis data rows
+	while (transient_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+	}
+	if (transient_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+			resources->no_of_data_rows_transient = parse_no_of_data_rows(*buf);
+
+	if (transient_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		return;
+
+	// Get the number of Noise Analysis data rows
+	while (noise_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+	}
+	if (noise_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+			resources->no_of_data_rows_noise = parse_no_of_data_rows(*buf);
 
 	while (!g_str_has_suffix (*buf, SP_TITLE)) {
 		if (noise_enabled && g_str_has_prefix(*buf, "v(inoise_total) = ")) {

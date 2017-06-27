@@ -80,7 +80,12 @@ typedef struct {
 	GList **analysis;
 	guint *num_analysis;
 	ProgressResources *progress_reader;
-	guint64 no_of_data_rows;
+	guint64 no_of_data_rows_total;
+	guint64 no_of_data_rows_ac;
+	guint64 no_of_data_rows_dc;
+	guint64 no_of_data_rows_op;
+	guint64 no_of_data_rows_transient;
+	guint64 no_of_data_rows_noise;
 	guint no_of_variables;
 	CancelInfo *cancel_info;
 } NgspiceAnalysisResources;
