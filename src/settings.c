@@ -120,7 +120,7 @@ gpointer settings_new (Schematic *sm)
 void settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	gint i;
-	gboolean engine_available = TRUE;
+	gboolean engine_available = FALSE;
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
 	GtkBuilder *gui;
@@ -131,17 +131,17 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 
 	g_return_if_fail (sv != NULL);
 
-	// If no engine available, do not show the preferences
-	if ((g_find_program_in_path (engine[0]) == NULL) &&
-	    (g_find_program_in_path (engine[1]) == NULL) &&
-	     g_find_program_in_path (engine[2]) == NULL) {
+	for (i = 0; i < OREGANO_ENGINE_COUNT; i++)
+		if (g_find_program_in_path(engine[i]) != NULL)
+			engine_available = TRUE;
+
+	if (!engine_available) {
 		gchar *msg;
 		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
 					  "You need to install at least one engine ! \n"
 					  "spice3, ngspice or gnucap."));
-		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
+		oregano_error_with_title (_ ("Could not create engine settings dialog"), msg);
 		g_free (msg);
-		engine_available = FALSE;
 	}
 
 	if ((gui = gtk_builder_new ()) == NULL) {
@@ -186,9 +186,15 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "compress-enable"));
 	s->w_compress_files = w;
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.compress_files);
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "log-enable"));
-	s->w_show_log = w;
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_log);
+	if (engine_available) {
+		w = GTK_WIDGET (gtk_builder_get_object (gui, "log-enable"));
+		s->w_show_log = w;
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (w), oregano.show_log);
+	} else {
+		w = GTK_WIDGET (gtk_builder_get_object (gui, "log-enable"));
+		s->w_show_log = NULL;
+		gtk_widget_destroy (w);
+	}
 
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid-size"));
 	gtk_widget_set_sensitive (w, FALSE);
