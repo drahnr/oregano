@@ -297,7 +297,7 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 			g_string_append (buffer, "  run\n");
 			g_string_append (buffer, "  set filetype=ascii\n");
 			g_string_append (buffer, "  print v(inoise_total) v(onoise_total)\n");
-			g_string_append_printf (buffer, "  write oregano-noise.txt noise1.all\n", NOISE_ANALYSIS_FILENAME);
+			g_string_append_printf (buffer, "  write %s noise1.all\n", NOISE_ANALYSIS_FILENAME);
 			g_string_append (buffer, "  quit\n");
 			g_string_append (buffer, ".endc\n");
 		}
