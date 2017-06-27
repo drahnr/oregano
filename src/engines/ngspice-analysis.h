@@ -75,6 +75,7 @@ typedef struct {
 typedef struct {
 	ThreadPipe *pipe;
 	gchar *buf;
+	gboolean is_vanilla;
 	const SimSettings* sim_settings;
 	AnalysisTypeShared *current;
 	GList **analysis;
@@ -93,6 +94,8 @@ typedef struct {
 // Parser STATUS
 struct _OreganoNgSpicePriv
 {
+	gboolean is_vanilla;
+
 	GPid child_pid;
 
 	Schematic *schematic;

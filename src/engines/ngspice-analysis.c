@@ -57,6 +57,10 @@
 /**
  * \brief extract the resulting variables from ngspice output
  *
+ * In ngspice a number can terminate only with a space,
+ * while in spice3 a number can also terminate with a
+ * comma.
+ *
  * Tested function.
  *
  * @returns a GArray filled up doubles
@@ -75,12 +79,12 @@ gchar **get_variables (const gchar *str, gint *count)
 		start++;
 	end = start;
 	while (*end != '\0') {
-		if (isspace (*end)) {
+		if (isspace (*end) || *end == ',') {
 			// number ended, designate as such and replace the string
 			tmp[i] = g_strndup (start, (gsize)(end - start));
 			i++;
 			start = end;
-			while (isspace (*start))
+			while (isspace (*start) || *start == ',')
 				start++;
 			end = start;
 		} else {
@@ -211,6 +215,7 @@ static ThreadPipe *parse_dc_analysis (NgspiceAnalysisResources *resources)
 static ThreadPipe *parse_ac_analysis (NgspiceAnalysisResources *resources)
 {
 	ThreadPipe *pipe = resources->pipe;
+	gboolean is_vanilla = resources->is_vanilla;
 	gchar **buf = &resources->buf;
 	const SimSettings* const sim_settings = resources->sim_settings;
 	GList **analysis = resources->analysis;
@@ -284,7 +289,12 @@ static ThreadPipe *parse_ac_analysis (NgspiceAnalysisResources *resources)
 
 		index = atoi (variables[0]);
 		for (i = 0; i < n; i++) {
-			val[i] = g_ascii_strtod (variables[i + 1], NULL);
+			if (i == 0)
+				val[i] = g_ascii_strtod (variables[i + 1], NULL);
+			if (is_vanilla && i > 0)
+				val[i] = g_ascii_strtod (variables[i + 2], NULL);
+			else
+				val[i] = g_ascii_strtod (variables[i + 1], NULL);
 			sdata->data[i] = g_array_append_val (sdata->data[i], val[i]);
 			if (val[i] < sdata->min_data[i])
 				sdata->min_data[i] = val[i];
@@ -847,6 +857,7 @@ static gdouble parse_noise_total(gchar *line) {
 static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 {
 	ThreadPipe *pipe = resources->pipe;
+	gboolean is_vanilla = resources->is_vanilla;
 	gboolean input;
 	guint i;
         gchar **buf = &resources->buf;
@@ -867,7 +878,10 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 
         data = g_new0 (Analysis, 1);
         sdata = SIM_DATA (data);
-        sdata->type = ANALYSIS_TYPE_INTEGRATED_NOISE;
+	if (is_vanilla)
+		sdata->type = ANALYSIS_TYPE_NOISE;
+	else
+		sdata->type = ANALYSIS_TYPE_INTEGRATED_NOISE;
         sdata->functions = NULL;
 
 	ANALYSIS (sdata)->noise.sim_length = 1.;
@@ -875,16 +889,18 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 	ANALYSIS (sdata)->noise.start = sim_settings_get_noise_start (sim_settings);
 	ANALYSIS (sdata)->noise.stop = sim_settings_get_noise_stop (sim_settings);
 
-	// Parse integrated noise (V^2 or A^2)
-	inoise = parse_noise_total(*buf);
-        pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-	onoise = parse_noise_total(*buf);
+	if (!is_vanilla) {
+		// Parse integrated noise (V^2 or A^2)
+		inoise = parse_noise_total(*buf);
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		onoise = parse_noise_total(*buf);
 
-	tm = g_malloc (sizeof(OreganoTitleMsg));
-	tm->title = g_strdup ("Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)");
-	tm->msg = g_strdup_printf ("Input: %f\nOutput: %f\n", inoise, onoise);
+		tm = g_malloc (sizeof(OreganoTitleMsg));
+		tm->title = g_strdup ("Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)");
+		tm->msg = g_strdup_printf ("Input: %f\nOutput: %f\n", inoise, onoise);
 
-	oregano_warning_with_title (tm->title, tm->msg);
+		oregano_warning_with_title (tm->title, tm->msg);
+	}
 
 	*analysis = g_list_append (*analysis, sdata);
 	(*num_analysis)++;
@@ -901,9 +917,9 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 	sdata->var_units = (char **)g_new0 (gpointer, 3);
 	sdata->var_names[0] = g_strdup ("Frequency");
 	sdata->var_units[0] = g_strdup (_ ("frequency"));
-	sdata->var_names[1] = g_strdup ("Input Noise PSD");
+	sdata->var_names[1] = g_strdup ("Input Noise Spectrum");
 	sdata->var_units[1] = g_strdup (_ ("psd"));
-	sdata->var_names[2] = g_strdup ("Output Noise PSD");
+	sdata->var_names[2] = g_strdup ("Output Noise Spectrum");
 	sdata->var_units[2] = g_strdup (_ ("psd"));
 
         sdata->n_variables = 3;
@@ -992,6 +1008,106 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 }
 
 /**
+ * @resources: caller frees
+ */
+static ThreadPipe *parse_noise_analysis_vanilla (NgspiceAnalysisResources *resources)
+{
+	ThreadPipe *pipe = resources->pipe;
+	gchar **buf = &resources->buf;
+	const SimSettings* const sim_settings = resources->sim_settings;
+	GList **analysis = resources->analysis;
+	guint *num_analysis = resources->num_analysis;
+
+	static SimulationData *sdata;
+	static Analysis *data;
+	gsize size;
+	gboolean found = FALSE;
+	gchar **variables;
+	gint i, n = 0, index = 0;
+	gdouble val[10];
+
+	NG_DEBUG ("AC: result str\n>>>\n%s\n<<<", *buf);
+
+	data = g_new0 (Analysis, 1);
+	sdata = SIM_DATA (data);
+	sdata->type = ANALYSIS_TYPE_NOISE;
+	sdata->functions = NULL;
+
+	ANALYSIS (sdata)->noise.sim_length = 1.;
+	ANALYSIS (sdata)->noise.sim_length = (double) sim_settings_get_noise_npoints (sim_settings);
+	ANALYSIS (sdata)->noise.start = sim_settings_get_noise_start (sim_settings);
+	ANALYSIS (sdata)->noise.stop = sim_settings_get_noise_stop (sim_settings);
+
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+
+	// Calculates the number of variables
+	variables = get_variables (*buf, &n);
+	if (!variables)
+		return pipe;
+
+	n = n - 1;
+	sdata->var_names = (char **)g_new0 (gpointer, 3);
+	sdata->var_units = (char **)g_new0 (gpointer, 3);
+	sdata->var_names[0] = g_strdup ("Frequency");
+	sdata->var_units[0] = g_strdup (_ ("frequency"));
+	sdata->var_names[1] = g_strdup ("Input Noise Spectrum");
+	sdata->var_units[1] = g_strdup (_ ("psd"));
+	sdata->var_names[2] = g_strdup ("Output Noise Spectrum");
+	sdata->var_units[2] = g_strdup (_ ("psd"));
+
+	sdata->n_variables = 3;
+	sdata->got_points = 0;
+	sdata->got_var = 0;
+	sdata->data = (GArray **)g_new0 (gpointer, 3);
+
+	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+
+	for (i = 0; i < 3; i++)
+		sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
+
+	sdata->min_data = g_new (double, 3);
+	sdata->max_data = g_new (double, 3);
+
+	// Read the data
+	for (i = 0; i < 3; i++) {
+		sdata->min_data[i] = G_MAXDOUBLE;
+		sdata->max_data[i] = -G_MAXDOUBLE;
+	}
+	found = FALSE;
+	while (((pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size)) != 0) && !found) {
+		if (strlen (*buf) <= 2) {
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		}
+
+		variables = get_variables (*buf, &i);
+		if (!variables)
+			return pipe;
+
+		index = atoi (variables[0]);
+		for (i = 0; i < 3; i++) {
+			val[i] = g_ascii_strtod (variables[i + 1], NULL);
+			sdata->data[i] = g_array_append_val (sdata->data[i], val[i]);
+			if (val[i] < sdata->min_data[i])
+				sdata->min_data[i] = val[i];
+			if (val[i] > sdata->max_data[i])
+				sdata->max_data[i] = val[i];
+		}
+		sdata->got_points++;
+		sdata->got_var = 3;
+		if (index >= ANALYSIS (sdata)->noise.sim_length - 1)
+			found = TRUE;
+	}
+
+	*analysis = g_list_append (*analysis, sdata);
+	(*num_analysis)++;
+
+	return pipe;
+}
+
+/**
  * Stores all the data coming through the given pipe to the given file.
  * This is needed because in case of failure, ngspice prints additional
  * error information to stdout.
@@ -1068,6 +1184,7 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 	ThreadPipe *pipe = resources->pipe;
 	const SimSettings *sim_settings = resources->sim_settings;
 	AnalysisTypeShared *current = resources->current;
+	gboolean is_vanilla = resources->is_vanilla;
 	gchar **buf = &resources->buf;
 	gsize size;
 
@@ -1080,76 +1197,87 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 		return;
 
-	// Get the number of AC Analysis data rows
-	while (ac_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
-		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-			return;
-	}
-	if (ac_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+	if (!is_vanilla) {
+		// Get the number of AC Analysis data rows
+		while (ac_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+		if (ac_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
 			resources->no_of_data_rows_ac = parse_no_of_data_rows(*buf);
 
-	if (ac_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-		return;
-
-	// Get the number of DC Analysis data rows
-	while (dc_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
-		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		if (ac_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-	}
-	if (dc_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+
+		// Get the number of DC Analysis data rows
+		while (dc_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+		if (dc_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
 			resources->no_of_data_rows_dc = parse_no_of_data_rows(*buf);
 
-	if (dc_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-		return;
-
-	// Get the number of Operating Point Analysis data rows
-	while (!g_str_has_prefix (*buf, "No. of Data Rows : ")) {
-		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		if (dc_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-	}
-	if (g_str_has_prefix(*buf, "No. of Data Rows : "))
+
+		// Get the number of Operating Point Analysis data rows
+		while (!g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+		if (g_str_has_prefix(*buf, "No. of Data Rows : "))
 			resources->no_of_data_rows_op = parse_no_of_data_rows(*buf);
 
-	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-		return;
-
-	// Get the number of Transient Analysis variables
-	while (transient_enabled && !g_str_has_prefix (*buf, "Initial Transient Solution")) {
 		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-	}
-	if (transient_enabled && g_str_has_prefix(*buf, "Initial Transient Solution"))
-		resources->no_of_variables = parse_no_of_variables(pipe, buf);
 
-	if (transient_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-		return;
+		// Get the number of Transient Analysis variables
+		while (transient_enabled && !g_str_has_prefix (*buf, "Initial Transient Solution")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+		if (transient_enabled && g_str_has_prefix(*buf, "Initial Transient Solution"))
+			resources->no_of_variables = parse_no_of_variables(pipe, buf);
 
-	// Get the number of Transient Analysis data rows
-	while (transient_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
-		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		if (transient_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-	}
-	if (transient_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+
+		// Get the number of Transient Analysis data rows
+		while (transient_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+		if (transient_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
 			resources->no_of_data_rows_transient = parse_no_of_data_rows(*buf);
 
-	if (transient_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-		return;
-
-	// Get the number of Noise Analysis data rows
-	while (noise_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
-		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+		if (transient_enabled && thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-	}
-	if (noise_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
+
+		// Get the number of Noise Analysis data rows
+		while (noise_enabled && !g_str_has_prefix (*buf, "No. of Data Rows : ")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+		if (noise_enabled && g_str_has_prefix(*buf, "No. of Data Rows : "))
 			resources->no_of_data_rows_noise = parse_no_of_data_rows(*buf);
+	} else {
+		while (!g_str_has_prefix (*buf, "Operating point information:")) {
+			if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+				return;
+		}
+	}
 
 	while (!g_str_has_suffix (*buf, SP_TITLE)) {
-		if (noise_enabled && g_str_has_prefix(*buf, "v(inoise_total) = ")) {
+		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
+			return;
+
+		if (noise_enabled && !is_vanilla && g_str_has_prefix(*buf, "v(inoise_total) = ")) {
 			g_mutex_lock(&current->mutex);
 			current->type = ANALYSIS_TYPE_NOISE;
 			g_mutex_unlock(&current->mutex);
 
 			pipe = parse_noise_analysis (resources);
+			noise_enabled = FALSE;
 
 			g_mutex_lock(&current->mutex);
 			current->type = ANALYSIS_TYPE_NONE;
@@ -1160,21 +1288,20 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 
 			resources->pipe = NULL;
 
-			// Noise analysis disables all other types of analysis
+			// Noise analysis in ngspice disables all other types of analysis
 			return;
 		}
-
-		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
-			return;
 	}
 
-	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled || ac_enabled; i++) {
+	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled || ac_enabled || noise_enabled; i++) {
 
 		AnalysisType analysis_type = ANALYSIS_TYPE_NONE;
 
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		g_strstrip (*buf);
-		NG_DEBUG ("%d buf = %s", i, *buf);
+		do {
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			g_strstrip (*buf);
+			NG_DEBUG ("%d buf = %s", i, *buf);
+		} while (*buf[0] == '\n' && *buf != NULL);
 
 		if (!get_analysis_type(*buf, &analysis_type) && !noise_enabled && i == 0) {
 			oregano_warning ("No analysis found");
@@ -1203,6 +1330,10 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		case ANALYSIS_TYPE_AC:
 			pipe = parse_ac_analysis (resources);
 			ac_enabled = FALSE;
+			break;
+		case ANALYSIS_TYPE_NOISE:
+			pipe = parse_noise_analysis_vanilla (resources);
+			noise_enabled = FALSE;
 			break;
 		default:
 			oregano_warning ("Unexpected analysis found");

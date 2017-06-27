@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,13 +41,14 @@ static gchar *analysis_names[] = {
 	[ANALYSIS_TYPE_OP_POINT]         = N_ ("Operating Point"),
 	[ANALYSIS_TYPE_TRANSIENT]        = N_ ("Transient Analysis"),
 	[ANALYSIS_TYPE_DC_TRANSFER]      = N_ ("DC transfer characteristic"),
-    [ANALYSIS_TYPE_AC]               = N_ ("AC Analysis"),
+	[ANALYSIS_TYPE_AC]               = N_ ("AC Analysis"),
 	[ANALYSIS_TYPE_TRANSFER]         = N_ ("Transfer Function"),
 	[ANALYSIS_TYPE_DISTORTION]       = N_ ("Distortion Analysis"),
-    [ANALYSIS_TYPE_NOISE]            = N_ ("Noise Analysis"),
+	[ANALYSIS_TYPE_INTEGRATED_NOISE] = N_ ("placeholder"),
+	[ANALYSIS_TYPE_NOISE]            = N_ ("Noise Spectral Density Curves"),
 	[ANALYSIS_TYPE_POLE_ZERO]        = N_ ("Pole-Zero Analysis"),
 	[ANALYSIS_TYPE_SENSITIVITY]      = N_ ("Sensitivity Analysis"),
-    [ANALYSIS_TYPE_FOURIER]          = N_ ("Fourier Analysis"),
+	[ANALYSIS_TYPE_FOURIER]          = N_ ("Fourier Analysis"),
 	[ANALYSIS_TYPE_UNKNOWN]          = N_ ("Unknown Analysis"),
 	NULL};
 
@@ -153,8 +156,11 @@ OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm)
 	case OREGANO_ENGINE_GNUCAP:
 		engine = oregano_gnucap_new (sm);
 		break;
+	case OREGANO_ENGINE_SPICE3:
+		engine = oregano_spice_new (sm, TRUE);
+		break;
 	case OREGANO_ENGINE_NGSPICE:
-		engine = oregano_ngspice_new (sm);
+		engine = oregano_spice_new (sm, FALSE);
 		break;
 	default:
 		engine = NULL;

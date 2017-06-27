@@ -33,6 +33,16 @@
 #define __NGSPICE_H
 
 /*
+ * The name of the vanilla spice3 executable.
+ */
+#define	SPICE_EXE	"spice3"
+
+/*
+ * The name of the ngspice executable.
+ */
+#define	NGSPICE_EXE	"ngspice"
+
+/*
  * The filename used for the temporary noise
  * analysis file.
  */
@@ -69,6 +79,6 @@ struct _OreganoNgSpiceClass
 };
 
 GType oregano_ngspice_get_type (void);
-OreganoEngine *oregano_ngspice_new (Schematic *sm);
+OreganoEngine *oregano_spice_new (Schematic *sm, gboolean is_vanilla);
 
 #endif

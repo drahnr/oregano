@@ -39,6 +39,7 @@ typedef struct _NgspiceWatcherBuildAndLaunchResources NgspiceWatcherBuildAndLaun
 struct _NgspiceWatcherBuildAndLaunchResources {
 	LogInterface log;//in
 	const SimSettings* sim_settings;//in
+	gboolean is_vanilla;//in
 	GPid* child_pid;//out
 	gboolean* aborted;//out
 	//OreganoNgSpice object

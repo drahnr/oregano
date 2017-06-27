@@ -7,7 +7,7 @@ using netlist of file tryProgressBar.oregano as input
 static memory consumption
 -------------------------
 
-1232 bytes	oregano_ngspice_new
+1232 bytes	oregano_spice_new
 272 bytes	g_main_loop_new
 
 

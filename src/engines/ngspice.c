@@ -133,8 +133,16 @@ static gboolean ngspice_has_warnings (OreganoEngine *self) { return FALSE; }
 
 static gboolean ngspice_is_available (OreganoEngine *self)
 {
+	gboolean is_vanilla;
 	gchar *exe;
-	exe = g_find_program_in_path ("ngspice");
+	OreganoNgSpice *ngspice = OREGANO_NGSPICE (self);
+
+	is_vanilla = ngspice->priv->is_vanilla;
+
+	if (is_vanilla)
+		exe = g_find_program_in_path (SPICE_EXE);
+	else
+		exe = g_find_program_in_path (NGSPICE_EXE);
 
 	if (!exe)
 		return FALSE; // ngspice not found
@@ -152,6 +160,7 @@ static gboolean ngspice_is_available (OreganoEngine *self)
 static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError **error)
 {
 	OreganoNgSpice *ngspice;
+	gboolean is_vanilla;
 	Netlist output;
 	GList *iter;
 	GError *e = NULL;
@@ -159,6 +168,8 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	GString *buffer = NULL;
 
 	ngspice = OREGANO_NGSPICE (engine);
+
+	is_vanilla = ngspice->priv->is_vanilla;
 
 	netlist_helper_create (ngspice->priv->schematic, &output, &e);
 	if (e) {
@@ -285,21 +296,32 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	// Prints Noise Analysis
 	if (sim_settings_get_noise (output.settings)) {
 		if (sim_settings_get_noise_vout (output.settings)) {
-			g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
-					sim_settings_get_noise_vout (output.settings),
-					sim_settings_get_noise_vsrc (output.settings),
-		                        sim_settings_get_noise_type (output.settings),
-		                        sim_settings_get_noise_npoints (output.settings),
-		                        sim_settings_get_noise_start (output.settings),
-		                        sim_settings_get_noise_stop (output.settings));
-	                g_string_append (buffer, "\n.control\n");
-			g_string_append (buffer, "  listing e\n");
-			g_string_append (buffer, "  run\n");
-			g_string_append (buffer, "  set filetype=ascii\n");
-			g_string_append (buffer, "  print v(inoise_total) v(onoise_total)\n");
-			g_string_append_printf (buffer, "  write %s noise1.all\n", NOISE_ANALYSIS_FILENAME);
-			g_string_append (buffer, "  quit\n");
-			g_string_append (buffer, ".endc\n");
+			if (is_vanilla) {
+				g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
+							sim_settings_get_noise_vout (output.settings),
+							sim_settings_get_noise_vsrc (output.settings),
+							sim_settings_get_noise_type (output.settings),
+							sim_settings_get_noise_npoints (output.settings),
+							sim_settings_get_noise_start (output.settings),
+							sim_settings_get_noise_stop (output.settings));
+				g_string_append (buffer, ".print noise inoise_spectrum onoise_spectrum\n");
+			} else {
+				g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
+							sim_settings_get_noise_vout (output.settings),
+							sim_settings_get_noise_vsrc (output.settings),
+							sim_settings_get_noise_type (output.settings),
+							sim_settings_get_noise_npoints (output.settings),
+							sim_settings_get_noise_start (output.settings),
+							sim_settings_get_noise_stop (output.settings));
+	        	        g_string_append (buffer, "\n.control\n");
+				g_string_append (buffer, "  listing e\n");
+				g_string_append (buffer, "  run\n");
+				g_string_append (buffer, "  set filetype=ascii\n");
+				g_string_append (buffer, "  print v(inoise_total) v(onoise_total)\n");
+				g_string_append_printf (buffer, "  write %s noise1.all\n", NOISE_ANALYSIS_FILENAME);
+				g_string_append (buffer, "  quit\n");
+				g_string_append (buffer, ".endc\n");
+			}
 		}
 	}
 
@@ -459,12 +481,17 @@ static void ngspice_instance_init (GTypeInstance *instance, gpointer g_class)
 	self->priv->cancel_info = cancel_info_new();
 }
 
-OreganoEngine *oregano_ngspice_new (Schematic *sc)
+/*
+ * Set "is_vanilla" to TRUE if using the original spice3 from
+ * UC Berkeley.
+ */
+OreganoEngine *oregano_spice_new (Schematic *sc, gboolean is_vanilla)
 {
 	OreganoNgSpice *ngspice;
 
 	ngspice = OREGANO_NGSPICE (g_object_new (OREGANO_TYPE_NGSPICE, NULL));
 	ngspice->priv->schematic = sc;
+	ngspice->priv->is_vanilla = is_vanilla;
 
 	return OREGANO_ENGINE (ngspice);
 }

@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2008-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,7 +49,7 @@
 #include "oregano-config.h"
 
 // Engines Types
-static const gchar *engine[] = {"gnucap", "ngspice"};
+static const gchar *engine[] = {"gnucap", "spice3", "ngspice"};
 
 typedef struct
 {
@@ -218,11 +220,12 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// If no engine available, stop oregano
 	if ((g_find_program_in_path (engine[0]) == NULL) &&
-	    (g_find_program_in_path (engine[1]) == NULL)) {
+	    (g_find_program_in_path (engine[1]) == NULL) &&
+	     g_find_program_in_path (engine[2]) == NULL) {
 		gchar *msg;
 		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
 		                          "You might install one, at least! \n"
-		                          "Either ngspice or gnucap."));
+		                          "spice3, ngspice or gnucap."));
 		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_free (msg);
 	}

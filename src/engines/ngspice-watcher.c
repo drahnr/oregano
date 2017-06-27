@@ -218,7 +218,7 @@ static gboolean ngspice_watcher_watch_stdout_resources(GIOChannel *channel, GIOC
 
 	GIOStatus status = g_io_channel_read_line(channel, &str_return, &length, &terminator_pos, &error);
 	if (error) {
-		gchar *message = g_strdup_printf ("ngspice pipe stdout: %s - %i", error->message, error->code);
+		gchar *message = g_strdup_printf ("spice pipe stdout: %s - %i", error->message, error->code);
 		g_printf("%s", message);
 		g_free(message);
 		g_clear_error (&error);
@@ -266,7 +266,7 @@ static void ngspice_watch_ngspice_resources_finalize(NgSpiceWatcherWatchNgSpiceR
 }
 
 static void print_additional_info(LogInterface log, const gchar *ngspice_result_file, const gchar *netlist_file) {
-	log.log_append_error(log.log, "\n### ngspice output: ###\n\n");
+	log.log_append_error(log.log, "\n### spice output: ###\n\n");
 	gchar *ngspice_error_contents = NULL;
 	gsize ngspice_error_length;
 	GError *ngspice_error_read_error = NULL;
@@ -332,9 +332,9 @@ ngspice_watcher_watch_ngspice_resources (GPid pid, gint status, NgSpiceWatcherWa
 		//              returns true if the child terminated normally, that is, by call‐
 		//              ing exit(3) or _exit(2), or by returning from main().
 		if (!(WIFEXITED (status)))
-			log.log_append_error(log.log, "### ngspice exited with exception ###\n");
+			log.log_append_error(log.log, "### spice exited with exception ###\n");
 		else
-			log.log_append_error(log.log, "### ngspice exited abnormally ###\n");
+			log.log_append_error(log.log, "### spice exited abnormally ###\n");
 
 		g_thread_join(saver);
 
@@ -346,7 +346,7 @@ ngspice_watcher_watch_ngspice_resources (GPid pid, gint status, NgSpiceWatcherWa
 			print_additional_info(log, resources->ngspice_result_file, resources->netlist_file);
 			break;
 		case ERROR_STATE_NO_SUCH_FILE_OR_DIRECTORY:
-			log.log_append_error(log.log, "ngspice could not simulate because netlist generation failed.\n");
+			log.log_append_error(log.log, "spice could not simulate because netlist generation failed.\n");
 			break;
 		case ERROR_STATE_ERROR_IN_NETLIST:
 			log.log_append_error(log.log, "### netlist error detected ###\n");
@@ -454,7 +454,7 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *channel, GIOCondition condi
 
 	GIOStatus status = g_io_channel_read_line (channel, &line, &len, &terminator, &e);
 	if (e) {
-		gchar *message = g_strdup_printf("ngspice pipe stderr: %s - %i", e->message, e->code);
+		gchar *message = g_strdup_printf("spice pipe stderr: %s - %i", e->message, e->code);
 		log.log_append_error(log.log, message);
 		g_free(message);
 		g_clear_error (&e);
@@ -463,7 +463,7 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *channel, GIOCondition condi
 
 		if (g_str_has_suffix(line, ": No such file or directory\n"))
 			*error_state = ERROR_STATE_NO_SUCH_FILE_OR_DIRECTORY;
-		if (g_str_equal(line, "ngspice stopped due to error, no simulation run!\n"))
+		if (g_str_equal(line, "spice stopped due to error, no simulation run!\n"))
 			*error_state = ERROR_STATE_ERROR_IN_NETLIST;
 
 		gdouble progress_end = sim_settings_get_trans_stop(sim_settings);
@@ -520,6 +520,7 @@ static gboolean ngspice_child_stderr_cb (GIOChannel *channel, GIOCondition condi
 void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResources *resources) {
 	LogInterface log = resources->log;
 	const SimSettings* const sim_settings = resources->sim_settings;
+	gboolean is_vanilla = resources->is_vanilla;
 	GPid *child_pid = resources->child_pid;
 	gboolean *aborted = resources->aborted;
 	const void* emit_instance = resources->emit_instance;
@@ -528,10 +529,14 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	ProgressResources *progress_reader = resources->progress_reader;
 	GList **analysis = resources->analysis;
 	AnalysisTypeShared *current = resources->current;
-
-
 	GError *e = NULL;
-	char *argv[] = {"ngspice", "-b", resources->netlist_file, NULL};
+
+	char *argv[] = {NULL, "-b", resources->netlist_file, NULL};
+
+	if (is_vanilla)
+		argv[0] = SPICE_EXE;
+	else
+		argv[0] = NGSPICE_EXE;
 
 	gint ngspice_stdout_fd;
 	gint ngspice_stderr_fd;
@@ -575,6 +580,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	NgspiceAnalysisResources *ngspice_worker_resources = g_new0(NgspiceAnalysisResources, 1);
 	ngspice_worker_resources->analysis = analysis;
 	ngspice_worker_resources->buf = NULL;
+	ngspice_worker_resources->is_vanilla = is_vanilla;
 	ngspice_worker_resources->current = current;
 	ngspice_worker_resources->no_of_data_rows_total = 0;
 	ngspice_worker_resources->no_of_data_rows_ac = 0;
@@ -590,7 +596,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	ngspice_worker_resources->cancel_info = resources->cancel_info;
 	cancel_info_subscribe(ngspice_worker_resources->cancel_info);
 
-	GThread *worker = g_thread_new("ngspice worker", (GThreadFunc)ngspice_worker, ngspice_worker_resources);
+	GThread *worker = g_thread_new("spice worker", (GThreadFunc)ngspice_worker, ngspice_worker_resources);
 
 	/**
 	 * Launch output saver
@@ -601,7 +607,7 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	ngspice_saver_resources->cancel_info = resources->cancel_info;
 	cancel_info_subscribe(ngspice_saver_resources->cancel_info);
 
-	GThread *saver = g_thread_new("ngspice saver", (GThreadFunc)ngspice_saver, ngspice_saver_resources);
+	GThread *saver = g_thread_new("spice saver", (GThreadFunc)ngspice_saver, ngspice_saver_resources);
 
 	/**
 	 * Add an ngspice-is-finished watcher
@@ -670,13 +676,14 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	g_source_unref (channel_stderr_watch_source);
 
 	// Launch watcher
-	g_thread_unref(g_thread_new("ngspice forker", (GThreadFunc)ngspice_watcher_main, forker_main_loop));
+	g_thread_unref(g_thread_new("spice forker", (GThreadFunc)ngspice_watcher_main, forker_main_loop));
 }
 
 NgspiceWatcherBuildAndLaunchResources *ngspice_watcher_build_and_launch_resources_new(OreganoNgSpice *ngspice) {
 
 	NgspiceWatcherBuildAndLaunchResources *resources = g_new0(NgspiceWatcherBuildAndLaunchResources, 1);
 
+	resources->is_vanilla = ngspice->priv->is_vanilla;
 	resources->aborted = &ngspice->priv->aborted;
 	resources->analysis = &ngspice->priv->analysis;
 	resources->child_pid = &ngspice->priv->child_pid;
