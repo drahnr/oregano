@@ -120,6 +120,7 @@ gpointer settings_new (Schematic *sm)
 void settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	gint i;
+	gboolean engine_available = TRUE;
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
 	GtkBuilder *gui;
@@ -130,19 +131,18 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 
 	g_return_if_fail (sv != NULL);
 
-	// If no engine available, stop oregano
+	// If no engine available, do not show the preferences
 	if ((g_find_program_in_path (engine[0]) == NULL) &&
-	    (g_find_program_in_path (engine[1]) == NULL)) {
+	    (g_find_program_in_path (engine[1]) == NULL) &&
+	     g_find_program_in_path (engine[2]) == NULL) {
 		gchar *msg;
 		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
-		                          "You might install one, at least! \n"
-		                          "Either ngspice or gnucap."));
+					  "You need to install at least one engine ! \n"
+					  "spice3, ngspice or gnucap."));
 		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
 		g_free (msg);
-		return;
+		engine_available = FALSE;
 	}
-
-	g_return_if_fail (sv != NULL);
 
 	if ((gui = gtk_builder_new ()) == NULL) {
 		oregano_error (_ ("Could not create settings dialog"));
@@ -195,19 +195,25 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "realtime-enable"));
 	gtk_widget_set_sensitive (w, FALSE);
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "engine_table"));
-	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
-		if (engine_group)
-			button[i] = gtk_radio_button_new_with_label_from_widget (
-			    GTK_RADIO_BUTTON (engine_group), engine[i]);
-		else
-			button[i] = engine_group =
-			    gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
+	if (engine_available) {
+		w = GTK_WIDGET (gtk_builder_get_object (gui, "engine_table"));
+		for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+			if (engine_group)
+				button[i] = gtk_radio_button_new_with_label_from_widget (
+				    GTK_RADIO_BUTTON (engine_group), engine[i]);
+			else
+				button[i] = engine_group =
+				    gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
 
-		g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
+			g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
 
-		gtk_grid_attach (GTK_GRID (w), button[i], 0, i, 1, 1);
-		g_signal_connect (G_OBJECT (button[i]), "clicked", G_CALLBACK (set_engine_name), s);
+			gtk_grid_attach (GTK_GRID (w), button[i], 0, i, 1, 1);
+			g_signal_connect (G_OBJECT (button[i]), "clicked", G_CALLBACK (set_engine_name), s);
+		}
+
+	} else {
+		w = GTK_WIDGET (gtk_builder_get_object (gui, "label50"));
+		gtk_widget_destroy (w);
 	}
 
 	// Is the engine available?
@@ -217,18 +223,6 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	// Otherwise the button is inactive
 	else
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), FALSE);
-
-	// If no engine available, stop oregano
-	if ((g_find_program_in_path (engine[0]) == NULL) &&
-	    (g_find_program_in_path (engine[1]) == NULL) &&
-	     g_find_program_in_path (engine[2]) == NULL) {
-		gchar *msg;
-		msg = g_strdup_printf (_ ("No engine allowing analysis is available.\n"
-		                          "You might install one, at least! \n"
-		                          "spice3, ngspice or gnucap."));
-		oregano_error_with_title (_ ("Could not create settings dialog"), msg);
-		g_free (msg);
-	}
 
 	gtk_widget_show_all (toplevel);
 }
