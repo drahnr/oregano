@@ -296,32 +296,14 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	// Prints Noise Analysis
 	if (sim_settings_get_noise (output.settings)) {
 		if (sim_settings_get_noise_vout (output.settings)) {
-			if (is_vanilla) {
-				g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
-							sim_settings_get_noise_vout (output.settings),
-							sim_settings_get_noise_vsrc (output.settings),
-							sim_settings_get_noise_type (output.settings),
-							sim_settings_get_noise_npoints (output.settings),
-							sim_settings_get_noise_start (output.settings),
-							sim_settings_get_noise_stop (output.settings));
-				g_string_append (buffer, ".print noise inoise_spectrum onoise_spectrum\n");
-			} else {
-				g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
-							sim_settings_get_noise_vout (output.settings),
-							sim_settings_get_noise_vsrc (output.settings),
-							sim_settings_get_noise_type (output.settings),
-							sim_settings_get_noise_npoints (output.settings),
-							sim_settings_get_noise_start (output.settings),
-							sim_settings_get_noise_stop (output.settings));
-	        	        g_string_append (buffer, "\n.control\n");
-				g_string_append (buffer, "  listing e\n");
-				g_string_append (buffer, "  run\n");
-				g_string_append (buffer, "  set filetype=ascii\n");
-				g_string_append (buffer, "  print v(inoise_total) v(onoise_total)\n");
-				g_string_append_printf (buffer, "  write %s noise1.all\n", NOISE_ANALYSIS_FILENAME);
-				g_string_append (buffer, "  quit\n");
-				g_string_append (buffer, ".endc\n");
-			}
+			g_string_append_printf (buffer, ".noise V(%s) V_%s %s %d %g %g\n",
+						sim_settings_get_noise_vout (output.settings),
+						sim_settings_get_noise_vsrc (output.settings),
+						sim_settings_get_noise_type (output.settings),
+						sim_settings_get_noise_npoints (output.settings),
+						sim_settings_get_noise_start (output.settings),
+						sim_settings_get_noise_stop (output.settings));
+			g_string_append (buffer, ".print noise inoise_spectrum onoise_spectrum\n");
 		}
 	}
 

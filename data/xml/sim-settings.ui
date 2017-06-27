@@ -878,7 +878,7 @@
                               <object class="GtkLabel" id="label3">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-				<property name="label" translatable="yes">&lt;b&gt;Noise&lt;/b&gt; (disables other analysis)</property>
+				<property name="label" translatable="yes">&lt;b&gt;Noise&lt;/b&gt;</property>
                                 <property name="use_markup">True</property>
                               </object>
                               <packing>
