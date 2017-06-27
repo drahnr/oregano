@@ -100,7 +100,7 @@ static void set_engine_name (GtkWidget *w, Settings *s)
 			                               "the external program."));
 			oregano_warning_with_title (_ ("Warning"), msg->str);
 			g_string_free (msg, TRUE);
-			engine_id = (engine_id + 1) % 2;
+			engine_id = (engine_id + 1) % OREGANO_ENGINE_COUNT;
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), TRUE);
 		} else
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), FALSE);
