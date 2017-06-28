@@ -579,7 +579,7 @@ static void sheet_set_property (GObject *object, guint prop_id, const GValue *va
 
 	switch (prop_id) {
 	case ARG_ZOOM:
-		sheet_set_zoom (sheet, g_value_get_double (value));
+		sheet_set_zoom (sheet, (const double) g_value_get_double (value));
 		break;
 	}
 }
