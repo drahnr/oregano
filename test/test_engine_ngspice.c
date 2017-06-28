@@ -63,7 +63,7 @@ static TestEngineNgspiceResources *test_engine_ngspice_resources_new() {
 
 	test_resources->resources = g_new0(NgspiceWatcherBuildAndLaunchResources, 1);
 	NgspiceWatcherBuildAndLaunchResources *resources = test_resources->resources;
-	test_resources->ngspice = OREGANO_NGSPICE(oregano_ngspice_new(NULL));
+	test_resources->ngspice = OREGANO_NGSPICE(oregano_spice_new(NULL, FALSE));
 	OreganoNgSpice *ngspice = test_resources->ngspice;
 	GMainLoop *loop = g_main_loop_new(NULL, FALSE);
 	test_resources->loop = loop;

@@ -488,7 +488,7 @@ int plot_show (OreganoEngine *engine)
 	for (; analysis; analysis = analysis->next) {
 		sdat = SIM_DATA (analysis->data);
 		str = oregano_engine_get_analysis_name (sdat);
-		if (sdat->type != ANALYSIS_TYPE_OP_POINT && sdat->type != ANALYSIS_TYPE_INTEGRATED_NOISE)
+		if (sdat->type != ANALYSIS_TYPE_OP_POINT)
 			abort = FALSE;
 	}
 
@@ -514,7 +514,7 @@ int plot_show (OreganoEngine *engine)
 	for (; analysis_backup; analysis_backup = analysis_backup->next) {
 		sdat = SIM_DATA (analysis_backup->data);
 		str = oregano_engine_get_analysis_name (sdat);
-		if (sdat->type == ANALYSIS_TYPE_OP_POINT || sdat->type == ANALYSIS_TYPE_INTEGRATED_NOISE) {
+		if (sdat->type == ANALYSIS_TYPE_OP_POINT) {
 			continue;
 		}
 

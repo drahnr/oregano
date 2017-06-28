@@ -75,12 +75,18 @@ typedef struct {
 typedef struct {
 	ThreadPipe *pipe;
 	gchar *buf;
+	gboolean is_vanilla;
 	const SimSettings* sim_settings;
 	AnalysisTypeShared *current;
 	GList **analysis;
 	guint *num_analysis;
 	ProgressResources *progress_reader;
-	guint64 no_of_data_rows;
+	guint64 no_of_data_rows_total;
+	guint64 no_of_data_rows_ac;
+	guint64 no_of_data_rows_dc;
+	guint64 no_of_data_rows_op;
+	guint64 no_of_data_rows_transient;
+	guint64 no_of_data_rows_noise;
 	guint no_of_variables;
 	CancelInfo *cancel_info;
 } NgspiceAnalysisResources;
@@ -88,6 +94,8 @@ typedef struct {
 // Parser STATUS
 struct _OreganoNgSpicePriv
 {
+	gboolean is_vanilla;
+
 	GPid child_pid;
 
 	Schematic *schematic;
