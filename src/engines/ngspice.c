@@ -160,7 +160,6 @@ static gboolean ngspice_is_available (OreganoEngine *self)
 static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError **error)
 {
 	OreganoNgSpice *ngspice;
-	gboolean is_vanilla;
 	Netlist output;
 	GList *iter;
 	GError *e = NULL;
@@ -168,8 +167,6 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	GString *buffer = NULL;
 
 	ngspice = OREGANO_NGSPICE (engine);
-
-	is_vanilla = ngspice->priv->is_vanilla;
 
 	netlist_helper_create (ngspice->priv->schematic, &output, &e);
 	if (e) {
