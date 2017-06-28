@@ -48,7 +48,7 @@
 #include "log.h"
 
 //NULL terminated
-const char const *SimulationFunctionTypeString[] = {
+const char *SimulationFunctionTypeString[] = {
 		"Subtraction",
 		"Division",
 		NULL
