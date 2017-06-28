@@ -582,7 +582,6 @@ void ngspice_watcher_build_and_launch(const NgspiceWatcherBuildAndLaunchResource
 	ngspice_worker_resources->buf = NULL;
 	ngspice_worker_resources->is_vanilla = is_vanilla;
 	ngspice_worker_resources->current = current;
-	ngspice_worker_resources->no_of_data_rows_total = 0;
 	ngspice_worker_resources->no_of_data_rows_ac = 0;
 	ngspice_worker_resources->no_of_data_rows_dc = 0;
 	ngspice_worker_resources->no_of_data_rows_op = 0;
