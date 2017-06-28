@@ -220,7 +220,6 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 			else
 				button[i] = engine_group =
 				    gtk_radio_button_new_with_label_from_widget (NULL, engine_name);
-
 			g_free (engine_name);
 			g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
 
