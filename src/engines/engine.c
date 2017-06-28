@@ -44,7 +44,6 @@ static gchar *analysis_names[] = {
 	[ANALYSIS_TYPE_AC]               = N_ ("AC Analysis"),
 	[ANALYSIS_TYPE_TRANSFER]         = N_ ("Transfer Function"),
 	[ANALYSIS_TYPE_DISTORTION]       = N_ ("Distortion Analysis"),
-	[ANALYSIS_TYPE_INTEGRATED_NOISE] = N_ ("placeholder"),
 	[ANALYSIS_TYPE_NOISE]            = N_ ("Noise Spectral Density Curves"),
 	[ANALYSIS_TYPE_POLE_ZERO]        = N_ ("Pole-Zero Analysis"),
 	[ANALYSIS_TYPE_SENSITIVITY]      = N_ ("Sensitivity Analysis"),

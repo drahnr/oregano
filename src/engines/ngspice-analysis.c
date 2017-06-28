@@ -854,163 +854,10 @@ static gdouble parse_noise_total(gchar *line) {
 	return noise_total;
 }
 
-static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
-{
-	ThreadPipe *pipe = resources->pipe;
-	gboolean is_vanilla = resources->is_vanilla;
-	gboolean input;
-	guint i;
-        gchar **buf = &resources->buf;
-	gchar **splitted;
-	const SimSettings* const sim_settings = resources->sim_settings;
-	GList **analysis = resources->analysis;
-        gsize size;
-	gdouble inoise, onoise, prev_seq, seq, frequency, inoise_psd, onoise_psd;
-	gdouble val[3];
-	guint *num_analysis = resources->num_analysis;
-	OreganoTitleMsg *tm;
-        static SimulationData *sdata;
-        static Analysis *data;
-	FILE *fp;
-	gchar *fbuffer;
-
-        NG_DEBUG ("Noise: result str\n>>>\n%s\n<<<", *buf);
-
-        data = g_new0 (Analysis, 1);
-        sdata = SIM_DATA (data);
-	if (is_vanilla)
-		sdata->type = ANALYSIS_TYPE_NOISE;
-	else
-		sdata->type = ANALYSIS_TYPE_INTEGRATED_NOISE;
-        sdata->functions = NULL;
-
-	ANALYSIS (sdata)->noise.sim_length = 1.;
-	ANALYSIS (sdata)->noise.sim_length = (double) sim_settings_get_noise_npoints (sim_settings);
-	ANALYSIS (sdata)->noise.start = sim_settings_get_noise_start (sim_settings);
-	ANALYSIS (sdata)->noise.stop = sim_settings_get_noise_stop (sim_settings);
-
-	if (!is_vanilla) {
-		// Parse integrated noise (V^2 or A^2)
-		inoise = parse_noise_total(*buf);
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		onoise = parse_noise_total(*buf);
-
-		tm = g_malloc (sizeof(OreganoTitleMsg));
-		tm->title = g_strdup ("Integrated Noise (V<sup>2</sup> or A<sup>2</sup>)");
-		tm->msg = g_strdup_printf ("Input: %f\nOutput: %f\n", inoise, onoise);
-
-		oregano_warning_with_title (tm->title, tm->msg);
-	}
-
-	*analysis = g_list_append (*analysis, sdata);
-	(*num_analysis)++;
-
-	if ((fp = fopen (NOISE_ANALYSIS_FILENAME, "r")) == NULL) {
-		printf ("Cannot open noise analysis output file %s: noise spectrum will not be available !\n", NOISE_ANALYSIS_FILENAME);
-		return pipe;
-	}
-
-	fbuffer = g_malloc (BSIZE_SP * sizeof(gchar));
-
-	// Prepare to read the noise power spectral density
-	sdata->var_names = (char **)g_new0 (gpointer, 3);
-	sdata->var_units = (char **)g_new0 (gpointer, 3);
-	sdata->var_names[0] = g_strdup ("Frequency");
-	sdata->var_units[0] = g_strdup (_ ("frequency"));
-	sdata->var_names[1] = g_strdup ("Input Noise Spectrum");
-	sdata->var_units[1] = g_strdup (_ ("psd"));
-	sdata->var_names[2] = g_strdup ("Output Noise Spectrum");
-	sdata->var_units[2] = g_strdup (_ ("psd"));
-
-        sdata->n_variables = 3;
-        sdata->got_points = 0;
-        sdata->got_var = 0;
-        sdata->data = (GArray **)g_new0 (gpointer, 3);
-
-        for (i = 0; i < 3; i++)
-                sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
-
-        sdata->min_data = g_new (double, 3);
-        sdata->max_data = g_new (double, 3);
-
-        for (i = 0; i < 3; i++) {
-                sdata->min_data[i] = G_MAXDOUBLE;
-                sdata->max_data[i] = -G_MAXDOUBLE;
-        }
-
-	// Read the noise power spectral density
-	while (!g_str_has_prefix (fbuffer, "Values:")) {
-		if (fgets(fbuffer, BSIZE_SP, fp) == NULL) {
-			g_free (fbuffer);
-			return pipe;
-		}
-	}
-
-	seq = -1;
-	input = FALSE;
-	while (fgets(fbuffer, BSIZE_SP, fp)) {
-		frequency = 0.;
-		inoise_psd = 0.;
-		onoise_psd = 0.;
-		splitted = g_regex_split_simple("[\t]*([0-9]*)[\t]*([\\+\\-]{0,1}[0-9]\\.[0-9]*[Ee][\\+\\-][0-9]*)\n",
-							fbuffer, 0, 0);
-		if (splitted[1]) {
-			if (*splitted[1]) {
-				prev_seq = seq;
-				seq = g_ascii_strtod(splitted[1], NULL);
-
-				// simple sequence sanity check
-				if (seq != prev_seq + 1)
-					break;
-
-				sdata->got_points++;
-				if (splitted[2]) {
-					frequency = g_ascii_strtod(splitted[2], NULL);
-					val[0] = frequency;
-				}
-			} else {
-				if (splitted[2]) {
-					if (input) {
-						inoise_psd = g_ascii_strtod(splitted[2], NULL);
-						val[1] = inoise_psd;
-					} else {
-						onoise_psd = g_ascii_strtod(splitted[2], NULL);
-						val[2] = onoise_psd;
-						for (i = 0; i < 3; i++) {
-							sdata->data[i] = g_array_append_val (sdata->data[i], val[i]);
-							if (val[i] < sdata->min_data[i])
-								sdata->min_data[i] = val[i];
-							if (val[i] > sdata->max_data[i])
-								sdata->max_data[i] = val[i];
-						}
-					}
-				}
-			}
-		}
-
-		g_strfreev(splitted);
-		input = !input;
-	}
-
-	if (sdata->got_points) {
-		sdata->type = ANALYSIS_TYPE_NOISE;
-		sdata->got_var = 3;
-	}
-
-	if (fp) {
-		fclose (fp);
-		unlink (NOISE_ANALYSIS_FILENAME);
-	}
-
-	g_free (fbuffer);
-
-	return pipe;
-}
-
 /**
  * @resources: caller frees
  */
-static ThreadPipe *parse_noise_analysis_vanilla (NgspiceAnalysisResources *resources)
+static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 {
 	ThreadPipe *pipe = resources->pipe;
 	gchar **buf = &resources->buf;
@@ -1270,27 +1117,6 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 	while (!g_str_has_suffix (*buf, SP_TITLE)) {
 		if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 			return;
-
-		if (noise_enabled && !is_vanilla && g_str_has_prefix(*buf, "v(inoise_total) = ")) {
-			g_mutex_lock(&current->mutex);
-			current->type = ANALYSIS_TYPE_NOISE;
-			g_mutex_unlock(&current->mutex);
-
-			pipe = parse_noise_analysis (resources);
-			noise_enabled = FALSE;
-
-			g_mutex_lock(&current->mutex);
-			current->type = ANALYSIS_TYPE_NONE;
-			g_mutex_unlock(&current->mutex);
-
-			if (pipe != NULL)
-				thread_pipe_set_read_eof(pipe);
-
-			resources->pipe = NULL;
-
-			// Noise analysis in ngspice disables all other types of analysis
-			return;
-		}
 	}
 
 	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled || ac_enabled || noise_enabled; i++) {
@@ -1332,7 +1158,7 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 			ac_enabled = FALSE;
 			break;
 		case ANALYSIS_TYPE_NOISE:
-			pipe = parse_noise_analysis_vanilla (resources);
+			pipe = parse_noise_analysis (resources);
 			noise_enabled = FALSE;
 			break;
 		default:
