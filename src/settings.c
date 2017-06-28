@@ -131,9 +131,11 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 
 	g_return_if_fail (sv != NULL);
 
-	for (i = 0; i < OREGANO_ENGINE_COUNT; i++)
-		if (g_find_program_in_path(engine[i]) != NULL)
+	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+		if (g_find_program_in_path(engine[i]) != NULL) {
 			engine_available = TRUE;
+		}
+	}
 
 	if (!engine_available) {
 		gchar *msg;
