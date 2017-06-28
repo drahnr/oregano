@@ -845,15 +845,6 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 	return pipe;
 }
 
-static gdouble parse_noise_total(gchar *line) {
-	gchar **splitted = g_regex_split_simple("v\\([io]noise_total\\) = ([\\+\\-]{0,1}[0-9]\\.[0-9]*[Ee][\\+\\-][0-9]*)\\n",
-						line, 0, 0);
-	gdouble noise_total = g_ascii_strtod(splitted[1], NULL);
-	g_strfreev(splitted);
-
-	return noise_total;
-}
-
 /**
  * @resources: caller frees
  */
