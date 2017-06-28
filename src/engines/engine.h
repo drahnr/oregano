@@ -57,6 +57,7 @@ gchar *oregano_engine_get_current_operation_solver (OreganoEngine *);
 gchar *oregano_engine_get_current_operation_reader (OreganoEngine *);
 gboolean oregano_engine_is_available (OreganoEngine *);
 gchar *oregano_engine_get_analysis_name_by_type(AnalysisType type);
+gchar *oregano_engine_get_engine_name_by_index (const guint index);
 gchar *oregano_engine_get_analysis_name (SimulationData *id);
 
 #endif

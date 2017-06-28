@@ -98,6 +98,9 @@ void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv)
 
 	g_return_if_fail (sv != NULL);
 
+	if (oregano.engine < 0 || oregano.engine >= OREGANO_ENGINE_COUNT)
+		return;
+
 	sm = schematic_view_get_schematic (sv);
 	s = schematic_get_simulation (sm);
 
@@ -149,7 +152,6 @@ void simulation_show_progress_bar (GtkWidget *widget, SchematicView *sv)
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "progress_label_reader"));
 	s->progress_label_reader = GTK_LABEL (w);
 
-
 	g_signal_connect (G_OBJECT (s->dialog), "response", G_CALLBACK (cancel_cb), s);
 
 	gtk_widget_show_all (GTK_WIDGET (s->dialog));
@@ -174,7 +176,6 @@ static int progress_bar_timeout_cb (Simulation *s)
 
 	gtk_label_set_markup (s->progress_label_solver, str);
 	g_free (str);
-
 
 	p = 0;
 	oregano_engine_get_progress_reader (s->engine, &p);
@@ -269,10 +270,12 @@ static gboolean simulate_cmd (Simulation *s)
 	}
 
 	engine = oregano_engine_factory_create_engine (oregano.engine, s->sm);
+	if (!engine)
+		return FALSE;
+
 	s->engine = engine;
 
 	s->progress_timeout_id = g_timeout_add (250, (GSourceFunc)progress_bar_timeout_cb, s);
-
 
 	g_signal_connect (G_OBJECT (engine), "done", G_CALLBACK (engine_done_cb), s);
 	g_signal_connect (G_OBJECT (engine), "aborted", G_CALLBACK (engine_aborted_cb), s);

@@ -51,6 +51,13 @@ static gchar *analysis_names[] = {
 	[ANALYSIS_TYPE_UNKNOWN]          = N_ ("Unknown Analysis"),
 	NULL};
 
+// Engines Types
+static gchar *engine_names[] = {
+	[OREGANO_ENGINE_GNUCAP]          = N_ ("gnucap"),
+	[OREGANO_ENGINE_SPICE3]          = N_ ("spice3"),
+	[OREGANO_ENGINE_NGSPICE]         = N_ ("ngspice"),
+	NULL};
+
 // Signals
 enum { DONE, ABORTED, LAST_SIGNAL };
 
@@ -169,6 +176,10 @@ OreganoEngine *oregano_engine_factory_create_engine (gint type, Schematic *sm)
 
 gchar *oregano_engine_get_analysis_name_by_type(AnalysisType type) {
 	return g_strdup(_(analysis_names[type]));
+}
+
+gchar *oregano_engine_get_engine_name_by_index (const guint index) {
+	return g_strdup (_(engine_names[index]));
 }
 
 /**

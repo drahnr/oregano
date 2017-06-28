@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -18,6 +19,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -47,6 +49,7 @@
 #include <gio/gdesktopappinfo.h>
 
 #include "dialogs.h"
+#include "engine.h"
 #include "schematic.h"
 #include "schematic-view.h"
 #include "cursors.h"
@@ -86,10 +89,32 @@ static void oregano_class_init (OreganoClass *klass)
 
 static void oregano_init (Oregano *object)
 {
+	guint i;
+	gchar *engine_name;
+
 	cursors_init ();
 	stock_init ();
 
 	oregano_config_load ();
+
+	// check if the engine loaded from the configuration exists...
+	// otherwise pick up the next one !
+	engine_name = oregano_engine_get_engine_name_by_index (oregano.engine);
+	if (g_find_program_in_path (engine_name) == NULL) {
+		g_free (engine_name);
+		oregano.engine = OREGANO_ENGINE_COUNT;
+		for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+			engine_name = oregano_engine_get_engine_name_by_index (i);
+			if (g_find_program_in_path (engine_name) != NULL) {
+				oregano.engine = i;
+			}
+			g_free (engine_name);
+		}
+	}
+
+	// simulation cannot run, disable log
+	if (oregano.engine < 0 || oregano.engine >= OREGANO_ENGINE_COUNT)
+		oregano.show_log = FALSE;
 }
 
 Oregano *oregano_new (void)
