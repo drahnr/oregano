@@ -59,7 +59,6 @@ struct _NetlistEditorPriv
 {
 	SchematicView *sv;
 	gchar *font;
-	GdkColor bgcolor, selectcolor, textcolor;
 	GtkTextView *view;
 	GtkSourceBuffer *buffer;
 	GtkWindow *toplevel;
