@@ -63,7 +63,7 @@ typedef struct
 #define SETTINGS(x) ((Settings *)(x))
 
 GtkWidget *engine_path;
-GtkWidget *button[2];
+GtkWidget *button[OREGANO_ENGINE_COUNT];
 
 static void apply_callback (GtkWidget *w, Settings *s)
 {
