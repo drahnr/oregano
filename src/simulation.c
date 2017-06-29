@@ -207,12 +207,15 @@ static void engine_done_cb (OreganoEngine *engine, Simulation *s)
 	plot_show (s->engine);
 
 	if (oregano_engine_has_warnings (s->engine)) {
-		schematic_view_log_show (s->sv, FALSE);
 		log_append (s->logstore, _ ("Simulation"),
 		            _ ("Finished with warnings:")); // FIXME add actual warnings
 	} else {
 		log_append (s->logstore, _ ("Simulation"), _ ("Finished."));
 	}
+
+	// show log window if this is enabled in preferences
+	schematic_view_log_show (s->sv, FALSE);
+
 	sheet_clear_op_values (schematic_view_get_sheet (s->sv));
 
 	// I don't need the engine anymore. The plot window owns its reference to
