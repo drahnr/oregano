@@ -83,11 +83,11 @@ gdouble oregano_strtod (const gchar *str, const gchar *unit)
 		case 'f':
 			ret *= 1e-15;
 			break;
+		case ' ':
+			break;
 		default:
-			if (c)
-				splitted = g_strsplit (c, " ", 2);
-			if (splitted[1]) {
-				if (!g_ascii_strncasecmp (splitted[1], unit, unit_length)) {
+			if (c) {
+				if (!g_ascii_strncasecmp (c, unit, unit_length)) {
 					return ret;
 				} else {
 					unit_does_not_match = TRUE;
