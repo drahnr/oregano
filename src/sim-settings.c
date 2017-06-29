@@ -407,28 +407,40 @@ gboolean sim_settings_get_fourier (const SimSettings *sim_settings)
 	return sim_settings->fourier_enable;
 }
 
-gint sim_settings_get_fourier_frequency (const SimSettings *sim_settings)
+gdouble sim_settings_get_fourier_frequency (const SimSettings *sim_settings)
 {
-	return atoi (sim_settings->fourier_frequency);
+	return oregano_strtod (sim_settings->fourier_frequency, "Hz");
 }
 
 gchar *sim_settings_get_fourier_vout (const SimSettings *sim_settings)
 {
 	GSList *node_slist;
 	gchar *text = NULL;
+	gchar *ret_val = NULL;
 
 	node_slist = g_slist_copy (sim_settings->fourier_vout);
-	if (node_slist)
-		text = g_strdup_printf ("%d", atoi (node_slist->data));
-	if (node_slist)
+	if (node_slist) {
+		if (node_slist->data && atoi (node_slist->data) > 0)
+			text = g_strdup_printf ("%d", atoi (node_slist->data));
 		node_slist = node_slist->next;
+	}
 	while (node_slist) {
-		if (node_slist->data)
-			text = g_strdup_printf ("%s %d", text, atoi (node_slist->data));
+		if (node_slist->data && atoi (node_slist->data) > 0) {
+			if (text)
+				text = g_strdup_printf ("%s %d", text, atoi (node_slist->data));
+			else
+				text = g_strdup_printf ("%d", atoi (node_slist->data));
+		}
 		node_slist = node_slist->next;
 	}
 	g_slist_free (node_slist);
-	return text;
+
+	if (text)
+		ret_val = text;
+	else
+		ret_val = g_strdup ("");
+
+	return ret_val;
 }
 
 gchar *sim_settings_get_fourier_nodes (const SimSettings *sim_settings)

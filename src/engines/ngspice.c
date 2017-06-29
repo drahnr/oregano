@@ -286,7 +286,7 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	if (sim_settings_get_fourier (output.settings)) {
 		if (sim_settings_get_fourier_frequency (output.settings) &&
 		    sim_settings_get_fourier_nodes (output.settings)) {
-			g_string_append_printf (buffer, ".four %d %s\n",
+			g_string_append_printf (buffer, ".four %f %s\n",
 			                        sim_settings_get_fourier_frequency (output.settings),
 			                        sim_settings_get_fourier_nodes (output.settings));
 		}

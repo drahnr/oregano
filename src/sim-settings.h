@@ -174,7 +174,7 @@ void sim_settings_set_fourier_vout (SimSettings *, gchar *);
 
 gboolean sim_settings_get_fourier (const SimSettings *);
 
-gint sim_settings_get_fourier_frequency (const SimSettings *);
+gdouble sim_settings_get_fourier_frequency (const SimSettings *);
 
 gchar *sim_settings_get_fourier_vout (const SimSettings *);
 
