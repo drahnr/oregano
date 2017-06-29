@@ -73,7 +73,7 @@ SimSettings *sim_settings_new ()
 
 	// Fourier
 	sim_settings->fourier_enable = FALSE;
-	sim_settings->fourier_frequency = g_strdup ("");
+	sim_settings->fourier_frequency = g_strdup ("1 MHz");
 	sim_settings->fourier_vout = NULL;
 
 	//  Noise
