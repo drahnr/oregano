@@ -163,7 +163,6 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 	Netlist output;
 	GList *iter;
 	GError *e = NULL;
-
 	GString *buffer = NULL;
 
 	ngspice = OREGANO_NGSPICE (engine);
@@ -285,9 +284,12 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 
 	// Prints analysis using a Fourier transform
 	if (sim_settings_get_fourier (output.settings)) {
-		g_string_append_printf (buffer, ".four %d %s\n",
-		                        sim_settings_get_fourier_frequency (output.settings),
-		                        sim_settings_get_fourier_nodes (output.settings));
+		if (sim_settings_get_fourier_frequency (output.settings) &&
+		    sim_settings_get_fourier_nodes (output.settings)) {
+			g_string_append_printf (buffer, ".four %d %s\n",
+			                        sim_settings_get_fourier_frequency (output.settings),
+			                        sim_settings_get_fourier_nodes (output.settings));
+		}
 	}
 
 	// Prints Noise Analysis

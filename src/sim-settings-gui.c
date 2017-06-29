@@ -289,21 +289,24 @@ static void fourier_add_vout_cb (GtkButton *w, SimSettingsGui *sim)
 {
 	GtkComboBoxText *node_box;
 	guint i;
-	gint result = FALSE;
+	gboolean result = FALSE;
+	gchar *text;
 
 	node_box = GTK_COMBO_BOX_TEXT (sim->w_four_combobox);
 
 	// Get the node identifier
 	for (i = 0; (i < 1000 && result == FALSE); ++i) {
 		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
-		               gtk_combo_box_text_get_active_text (node_box)) == 0)
+ 				gtk_combo_box_text_get_active_text (node_box)) == 0)
 			result = TRUE;
 	}
-	result = FALSE;
+	if (result == TRUE)
+		text = fourier_add_vout(sim->sim_settings, FALSE, i);
 
-	gchar *text = fourier_add_vout(sim->sim_settings, result, i);
-
-	gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
+	if (text)
+		gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
+	else
+		gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), "");
 }
 
 static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
@@ -348,13 +351,18 @@ static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
 
 		// Update the fourier_vout widget
 		node_slist = g_slist_copy (s->fourier_vout);
-		if (node_slist->data)
-			text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
-		if (node_slist)
+		if (node_slist) {
+			if (node_slist->data && atoi (node_slist->data) > 0)
+				text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
 			node_slist = node_slist->next;
+		}
 		while (node_slist) {
-			if (node_slist->data)
-				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+			if (node_slist->data && atoi (node_slist->data) > 0) {
+				if (text)
+					text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+				else
+					text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
+			}
 			node_slist = node_slist->next;
 		}
 		if (text)
@@ -943,6 +951,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 				active = index;
 			index++;
 		}
+		g_free (text);
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s_gui);
@@ -983,18 +992,17 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	text = NULL;
 	slist = g_slist_copy (s->fourier_vout); // TODO why copy here?
 	if (slist) {
-		if (atoi (slist->data) != 0)
+		if (atoi (slist->data) > 0)
 			text = g_strdup_printf ("V(%d)", atoi (slist->data));
 
 		for (siter = slist; siter; siter = siter->next) {
-			if (atoi (siter->data) != 0)
-				text = g_strdup_printf ("%s V(%d)", text, atoi (siter->data));
+			if (atoi (siter->data) > 0) {
+				if (text)
+					text = g_strdup_printf ("%s V(%d)", text, atoi (siter->data));
+				else
+					text = g_strdup_printf ("V(%d)", atoi (siter->data));
+			}
 		}
-
-		if (text)
-			gtk_entry_set_text (GTK_ENTRY (w), text);
-		else
-			gtk_entry_set_text (GTK_ENTRY (w), "");
 	}
 	if (text)
 		gtk_entry_set_text (GTK_ENTRY (w), text);
