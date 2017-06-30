@@ -61,6 +61,9 @@
  * while in spice3 a number can also terminate with a
  * comma.
  *
+ * In the Fourier analysis the name of the output ends
+ * with a colon.
+ *
  * Tested function.
  *
  * @returns a GArray filled up doubles
@@ -79,12 +82,12 @@ gchar **get_variables (const gchar *str, gint *count)
 		start++;
 	end = start;
 	while (*end != '\0') {
-		if (isspace (*end) || *end == ',') {
+		if (isspace (*end) || *end == ',' || *end == ':') {
 			// number ended, designate as such and replace the string
 			tmp[i] = g_strndup (start, (gsize)(end - start));
 			i++;
 			start = end;
-			while (isspace (*start) || *start == ',')
+			while (isspace (*start) || *start == ',' || *start == ':')
 				start++;
 			end = start;
 		} else {
@@ -729,115 +732,108 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 	GList **analysis = resources->analysis;
 	guint *num_analysis = resources->num_analysis;
 
-
 	static SimulationData *sdata;
 	static Analysis *data;
 	gsize size;
 	gchar **variables;
-	gint i, n = 0, freq, j, k;
-	gdouble val[10], mag[10][10];
+	gint i, n = 0, j, k;
+	gdouble val[3];
 	gchar **node_ids;
 	gchar *vout;
 
 	NG_DEBUG ("FOURIER: result str\n>>>\n%s\n<<<", *buf);
 
-	// New analysis
 	data = g_new0 (Analysis, 1);
 	sdata = SIM_DATA (data);
-	sdata->functions = NULL;
 	sdata->type = ANALYSIS_TYPE_FOURIER;
+	sdata->functions = NULL;
 
 	g_strchug (*buf);
 	ANALYSIS (sdata)->fourier.freq = sim_settings_get_fourier_frequency (sim_settings);
+
 	vout = sim_settings_get_fourier_vout (sim_settings);
-	node_ids = g_strsplit (g_strdup (vout), " ", 0);
+	node_ids = g_strsplit (vout, " ", 0);
 	for (i = 0; node_ids[i] != NULL; i++) {
 	}
-	ANALYSIS (sdata)->fourier.nb_var = i + 1;
+	g_strfreev (node_ids);
 	g_free (vout);
-
+	ANALYSIS (sdata)->fourier.nb_var = i + 1;
 	n = ANALYSIS (sdata)->fourier.nb_var;
 	sdata->n_variables = n;
+
 	sdata->var_names = (char **)g_new0 (gpointer, n);
 	sdata->var_units = (char **)g_new0 (gpointer, n);
+	sdata->var_names[0] = g_strdup ("Frequency");
+	sdata->var_units[0] = g_strdup (_ ("frequency"));
 
-	variables = get_variables (*buf, &k);
-	if (!variables)
-		return pipe;
-
-	sdata->var_names[0] = _ ("Frequency");
-	sdata->var_names[1] = g_strdup (variables[3]);
-	for (i = 0; i < n; i++) {
-		if (i == 0)
-			sdata->var_units[i] = g_strdup (_ ("frequency"));
-		else
-			sdata->var_units[i] = g_strdup (_ ("voltage"));
-	}
 	sdata->got_points = 0;
 	sdata->got_var = 0;
+
 	sdata->data = (GArray **)g_new0 (gpointer, n);
-
-	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-
 	for (i = 0; i < n; i++)
 		sdata->data[i] = g_array_new (TRUE, TRUE, sizeof(double));
 
 	sdata->min_data = g_new (double, n);
 	sdata->max_data = g_new (double, n);
 
-	// Read the data
 	for (i = 0; i < n; i++) {
 		sdata->min_data[i] = G_MAXDOUBLE;
-		;
 		sdata->max_data[i] = -G_MAXDOUBLE;
 	}
 
-	for (j = 0; j < 10; j++) {
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		sscanf (*buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
-		mag[j][0] = (gdouble)freq;
-		mag[j][1] = val[0];
-	}
-
-	for (j = 2; j < n; j++) {
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		variables = get_variables (*buf, &k);
+	// For each output voltage (plus the frequency for the x-axis),
+	// scan its data set
+	for (k = 1; k < n; k++) {
+		variables = get_variables (*buf, &i);
 		if (!variables)
 			return pipe;
-		sdata->var_names[j] = g_strdup (variables[3]);
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 
-		for (k = 0; k < 10; k++) {
+		// Skip data set header (4 lines)
+		for (i = 0; i < 4; i++)
 			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
-			sscanf (*buf, "\t%d\t%d\t%lf\t%lf", &i, &freq, &val[0], &val[1]);
-			mag[k][j] = val[0];
+
+		sdata->var_names[k] = g_strdup_printf ("mag(%s)", variables[3]);
+		sdata->var_units[k] = g_strdup (_ ("voltage"));
+
+		// Scan data set for 10 harmonics
+		for (j = 0; j < 10; j++) {
+			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+			if (!pipe)
+				return pipe;
+
+			sscanf (*buf, "\t%d\t%lf\t%lf\t%lf", &i, &val[0], &val[1], &val[2]);
+			if (k == 1) {
+				sdata->data[0] = g_array_append_val (sdata->data[0], val[0]);
+				if (val[0] < sdata->min_data[0])
+					sdata->min_data[0] = val[0];
+				if (val[0] > sdata->max_data[0])
+					sdata->max_data[0] = val[0];
+				sdata->data[1] = g_array_append_val (sdata->data[1], val[1]);
+				if (val[1] < sdata->min_data[1])
+					sdata->min_data[1] = val[1];
+				if (val[1] > sdata->max_data[1])
+					sdata->max_data[1] = val[1];
+				sdata->got_points = sdata->got_points + 2;
+			} else {
+				sdata->data[k] = g_array_append_val (sdata->data[k], val[1]);
+				if (val[1] < sdata->min_data[k])
+					sdata->min_data[k] = val[1];
+				if (val[1] > sdata->max_data[k])
+					sdata->max_data[k] = val[1];
+				sdata->got_points++;
+			}
 		}
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		if (!pipe)
+			return pipe;
+
+		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
+		if (!pipe)
+			return pipe;
+
 	}
 
-	for (i = 0; i < n; i++) {
-		sdata->min_data[i] = G_MAXDOUBLE;
-		sdata->max_data[i] = -G_MAXDOUBLE;
-	}
-
-	for (j = 0; j < 10; j++) {
-		for (i = 0; i < n; i++) {
-			sdata->data[i] = g_array_append_val (sdata->data[i], mag[j][i]);
-			if (mag[j][i] < sdata->min_data[i])
-				sdata->min_data[i] = mag[j][i];
-			if (mag[j][i] > sdata->max_data[i])
-				sdata->max_data[i] = mag[j][i];
-			sdata->got_points++;
-			sdata->got_var = n;
-		}
-		NG_DEBUG ("ngspice-analysis: mag[%d][0]=%lf\tmag[%d][1]=%lf\n", j, mag[j][0], j, mag[j][1]);
-	}
+	sdata->got_var = n;
 
 	*analysis = g_list_append (*analysis, sdata);
 	(*num_analysis)++;
@@ -851,6 +847,7 @@ static ThreadPipe *parse_fourier_analysis (NgspiceAnalysisResources *resources)
 static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 {
 	ThreadPipe *pipe = resources->pipe;
+	gboolean is_vanilla = resources->is_vanilla;
 	gchar **buf = &resources->buf;
 	const SimSettings* const sim_settings = resources->sim_settings;
 	GList **analysis = resources->analysis;
@@ -913,7 +910,7 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 		sdata->max_data[i] = -G_MAXDOUBLE;
 	}
 	found = FALSE;
-	while (((pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size)) != 0) && !found) {
+	while (!found && ((pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size)) != 0)) {
 		if (strlen (*buf) <= 2) {
 			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
@@ -934,10 +931,20 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 				sdata->max_data[i] = val[i];
 		}
 		sdata->got_points++;
-		sdata->got_var = 3;
+
 		if (index >= ANALYSIS (sdata)->noise.sim_length - 1)
 			found = TRUE;
 	}
+
+	// Spice 3f5 is affected by a sort of bug and prints extra data
+	if (is_vanilla) {
+		while (((pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size)) != 0)) {
+			if (strlen (*buf) < 2)
+				break;
+		}
+	}
+
+	sdata->got_var = 3;
 
 	*analysis = g_list_append (*analysis, sdata);
 	(*num_analysis)++;
@@ -1025,12 +1032,12 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 	gboolean is_vanilla = resources->is_vanilla;
 	gchar **buf = &resources->buf;
 	gsize size;
-
-        gboolean transient_enabled = sim_settings_get_trans (sim_settings);
-        gboolean fourier_enabled = sim_settings_get_fourier (sim_settings);
-        gboolean dc_enabled = sim_settings_get_dc (sim_settings);
-        gboolean ac_enabled = sim_settings_get_ac (sim_settings);
-        gboolean noise_enabled = sim_settings_get_noise (sim_settings);
+	gboolean end_of_output;
+	gboolean transient_enabled = sim_settings_get_trans (sim_settings);
+	gboolean fourier_enabled = sim_settings_get_fourier (sim_settings);
+	gboolean dc_enabled = sim_settings_get_dc (sim_settings);
+	gboolean ac_enabled = sim_settings_get_ac (sim_settings);
+	gboolean noise_enabled = sim_settings_get_noise (sim_settings);
 
 	if (thread_pipe_pop(pipe, (gpointer *)buf, &size) == NULL)
 		return;
@@ -1110,6 +1117,7 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 			return;
 	}
 
+	end_of_output = FALSE;
 	for (int i = 0; transient_enabled || fourier_enabled || dc_enabled || ac_enabled || noise_enabled; i++) {
 
 		AnalysisType analysis_type = ANALYSIS_TYPE_NONE;
@@ -1117,10 +1125,16 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		do {
 			pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 			g_strstrip (*buf);
+			if (!g_ascii_strncasecmp (*buf, "CPU time", 8))
+				end_of_output = TRUE;
 			NG_DEBUG ("%d buf = %s", i, *buf);
-		} while (*buf[0] == '\n' && *buf != NULL);
+		} while (pipe != NULL && !end_of_output && (*buf[0] == '*' || *buf[0] == '\0'));
 
-		if (!get_analysis_type(*buf, &analysis_type) && !noise_enabled && i == 0) {
+		// The simulation has finished: no more analysis to parse
+		if (end_of_output)
+			break;
+
+		if (!get_analysis_type(*buf, &analysis_type) && i == 0) {
 			oregano_warning ("No analysis found");
 			break;
 		}
@@ -1161,8 +1175,6 @@ void ngspice_analysis (NgspiceAnalysisResources *resources)
 		g_mutex_lock(&current->mutex);
 		current->type = ANALYSIS_TYPE_NONE;
 		g_mutex_unlock(&current->mutex);
-
-		pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 
 		if (unexpected_analysis_found || pipe == NULL)
 			break;

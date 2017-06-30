@@ -47,7 +47,7 @@ static gchar *analysis_names[] = {
 	[ANALYSIS_TYPE_NOISE]            = N_ ("Noise Spectral Density Curves"),
 	[ANALYSIS_TYPE_POLE_ZERO]        = N_ ("Pole-Zero Analysis"),
 	[ANALYSIS_TYPE_SENSITIVITY]      = N_ ("Sensitivity Analysis"),
-	[ANALYSIS_TYPE_FOURIER]          = N_ ("Fourier Analysis"),
+	[ANALYSIS_TYPE_FOURIER]          = N_ ("Fourier analysis"),
 	[ANALYSIS_TYPE_UNKNOWN]          = N_ ("Unknown Analysis"),
 	NULL};
 

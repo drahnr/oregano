@@ -296,12 +296,15 @@ static void fourier_add_vout_cb (GtkButton *w, SimSettingsGui *sim)
 
 	// Get the node identifier
 	for (i = 0; (i < 1000 && result == FALSE); ++i) {
-		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
- 				gtk_combo_box_text_get_active_text (node_box)) == 0)
+		text = g_strdup_printf ("V(%d)", i);
+		if (!g_strcmp0 (text, gtk_combo_box_text_get_active_text (node_box)))
 			result = TRUE;
+		g_free (text);
 	}
+
+	text = NULL;
 	if (result == TRUE)
-		text = fourier_add_vout(sim->sim_settings, FALSE, i);
+		text = fourier_add_vout(sim->sim_settings, i);
 
 	if (text)
 		gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
@@ -634,6 +637,7 @@ gint get_voltage_sources_list(GList **sources, Schematic *sm, GError *e, gboolea
 void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	int i;
+	gboolean found;
 	gint rc, active, index;
 	GtkWidget *toplevel, *w, *w1, *pbox, *combo_box;
 	GtkTreeView *opt_list;
@@ -652,7 +656,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	GList *sources_ac = NULL;
 	GtkComboBox *node_box;
 	GtkListStore *node_list_store;
-	gchar *text = NULL;
+	gchar *text, *text2;
+	gchar **node_ids;
 	GSList *slist = NULL;
 
 	g_return_if_fail (sv != NULL);
@@ -989,21 +994,54 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s_gui->w_four_vout = w;
 	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
 
-	text = NULL;
-	slist = g_slist_copy (s->fourier_vout); // TODO why copy here?
-	if (slist) {
-		if (atoi (slist->data) > 0)
-			text = g_strdup_printf ("V(%d)", atoi (slist->data));
-
-		for (siter = slist; siter; siter = siter->next) {
-			if (atoi (siter->data) > 0) {
-				if (text)
-					text = g_strdup_printf ("%s V(%d)", text, atoi (siter->data));
-				else
-					text = g_strdup_printf ("V(%d)", atoi (siter->data));
+	// Get rid of inexistent output vectors
+	text2 = NULL;
+	if (voltmeters) {
+		text = sim_settings_get_fourier_vout (s);
+		node_ids = g_strsplit (text, " ", 0);
+		g_free (text);
+		for (i = 0; node_ids[i] != NULL; i++) {
+			text = g_strdup_printf ("V(%s)", node_ids[i]);
+			found = FALSE;
+			for (iter = voltmeters; iter; iter = iter->next) {
+				if (!g_strcmp0 (text, iter->data))
+					found = TRUE;
+			}	
+			g_free (text);
+			if (found) {
+				if (text2) {
+					text = text2;
+					text2 = g_strdup_printf ("%s %s", text2, node_ids[i]);
+					g_free (text);
+				} else {
+					text2 = g_strdup_printf ("%s", node_ids[i]);
+				}
 			}
 		}
+		sim_settings_set_fourier_vout (s, text2);
+		g_free (text2);
+		g_strfreev (node_ids);
 	}
+
+	slist = g_slist_copy (s->fourier_vout);
+	if (slist) {
+		if (slist->data && atoi (slist->data) > 0)
+			text = g_strdup_printf ("V(%d)", atoi (slist->data));
+		slist = slist->next;
+	}
+	while (slist) {
+		if (slist->data && atoi (slist->data) > 0) {
+			if (text) {
+				text2 = text;
+				text = g_strdup_printf ("%s V(%d)", text, atoi (slist->data));
+				g_free (text2);
+			} else {
+				text = g_strdup_printf ("V(%d)", atoi (slist->data));
+			}
+		}
+		slist = slist->next;
+	}
+
 	if (text)
 		gtk_entry_set_text (GTK_ENTRY (w), text);
 	else

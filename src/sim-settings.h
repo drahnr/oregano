@@ -212,6 +212,6 @@ GList *sim_settings_get_options (const SimSettings *sim_settings);
 
 void sim_settings_add_option (SimSettings *, SimOption *);
 
-gchar *fourier_add_vout(SimSettings *sim_settings, gboolean result, guint i);
+gchar *fourier_add_vout(SimSettings *sim_settings, guint i);
 
 #endif

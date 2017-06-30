@@ -138,24 +138,49 @@ void sim_settings_finalize(SimSettings *sim_settings) {
 	g_free(sim_settings);
 }
 
-gchar *fourier_add_vout(SimSettings *sim_settings, gboolean result, guint i) {
-	gchar *ret_val = NULL;
+gchar *fourier_add_vout(SimSettings *sim_settings, guint node_index) {
+	gboolean result;
+	guint i;
+	gchar *ret_val;
+	gchar *text, *text2;
+	gchar **node_ids;
+	GSList *node_slist;
+
+	text = sim_settings_get_fourier_vout (sim_settings);
+	node_ids = g_strsplit (g_strdup (text), " ", 0);
+	g_free (text);
+
+	ret_val = NULL;
+	for (i = 0; node_ids[i] != NULL; i++) {
+		if (node_ids[i] && atoi (node_ids[i]) > 0) {
+			if (ret_val) {
+				text = ret_val;
+				ret_val = g_strdup_printf ("%s V(%d)", ret_val, atoi (node_ids[i]));
+				g_free (text);
+			} else {
+				ret_val = g_strdup_printf ("V(%d)", atoi (node_ids[i]));
+			}
+		}
+	}
+	g_strfreev (node_ids);
 
 	// Is the node identifier already available?
-	GSList *node_slist = g_slist_copy (sim_settings->fourier_vout);
+	node_slist = g_slist_copy (sim_settings->fourier_vout);
+	result = FALSE;
 	while (node_slist) {
-		if ((i - 1) == atoi (node_slist->data)) {
+		if ((node_index - 1) == atoi (node_slist->data)) {
 			result = TRUE;
 		}
 		node_slist = node_slist->next;
 	}
-	g_slist_free (node_slist);
-	if (!result) {
-		GSList *node_slist;
-		gchar *text = NULL;
+	g_slist_free_full (node_slist, g_free);
 
-		// Add Node (i-1) at the end of fourier_vout
-		text = g_strdup_printf ("%d", i - 1);
+	if (!result) {
+		if (ret_val)
+			g_free (ret_val);
+
+		// Add Node (node_index-1) at the end of fourier_vout
+		text = g_strdup_printf ("%d", node_index - 1);
 		sim_settings->fourier_vout =
 			g_slist_append (sim_settings->fourier_vout, text);
 
@@ -170,10 +195,13 @@ gchar *fourier_add_vout(SimSettings *sim_settings, gboolean result, guint i) {
 		}
 		while (node_slist) {
 			if (node_slist->data && atoi (node_slist->data) > 0) {
-				if (text)
+				if (text) {
+					text2 = text;
 					text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
-				else
+					g_free (text2);
+				} else {
 					text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
+				}
 			}
 			node_slist = node_slist->next;
 		}
@@ -393,7 +421,13 @@ void sim_settings_set_fourier_vout (SimSettings *sim_settings, gchar *str)
 {
 	gchar **node_ids = NULL;
 	gint i;
-	g_free (sim_settings->fourier_vout);
+
+	if (!str)
+		return;
+
+	g_slist_free_full (sim_settings->fourier_vout, g_free);
+	sim_settings->fourier_vout = NULL;
+
 	node_ids = g_strsplit (g_strdup (str), " ", 0);
 	for (i = 0; node_ids[i] != NULL; i++) {
 		if (node_ids[i])
@@ -415,9 +449,10 @@ gdouble sim_settings_get_fourier_frequency (const SimSettings *sim_settings)
 gchar *sim_settings_get_fourier_vout (const SimSettings *sim_settings)
 {
 	GSList *node_slist;
-	gchar *text = NULL;
+	gchar *text, *text2;
 	gchar *ret_val = NULL;
 
+	text = NULL;
 	node_slist = g_slist_copy (sim_settings->fourier_vout);
 	if (node_slist) {
 		if (node_slist->data && atoi (node_slist->data) > 0)
@@ -426,14 +461,17 @@ gchar *sim_settings_get_fourier_vout (const SimSettings *sim_settings)
 	}
 	while (node_slist) {
 		if (node_slist->data && atoi (node_slist->data) > 0) {
-			if (text)
+			if (text) {
+				text2 = text;
 				text = g_strdup_printf ("%s %d", text, atoi (node_slist->data));
-			else
+				g_free (text2);
+			} else {
 				text = g_strdup_printf ("%d", atoi (node_slist->data));
+			}
 		}
 		node_slist = node_slist->next;
 	}
-	g_slist_free (node_slist);
+	g_slist_free_full (node_slist, g_free);
 
 	if (text)
 		ret_val = text;
@@ -447,8 +485,9 @@ gchar *sim_settings_get_fourier_nodes (const SimSettings *sim_settings)
 {
 	GSList *node_slist;
 	gchar *ret_val = NULL;
-	gchar *text = NULL;
+	gchar *text, *text2;
 
+	text = NULL;
 	node_slist = g_slist_copy (sim_settings->fourier_vout);
 	if (node_slist) {
 		if (node_slist->data && atoi (node_slist->data) > 0)
@@ -457,10 +496,13 @@ gchar *sim_settings_get_fourier_nodes (const SimSettings *sim_settings)
 	}
 	while (node_slist) {
 		if (node_slist->data && atoi (node_slist->data) > 0) {
-			if (text)
+			if (text) {
+				text2 = text;
 				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
-			else
+				g_free (text2);
+			} else {
 				text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
+			}
 		}
 		node_slist = node_slist->next;
 	}
