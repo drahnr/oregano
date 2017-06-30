@@ -649,7 +649,6 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	GError *e = NULL;
 	SimSettings *s;
 	GList *iter;
-	GSList *siter;
 	GList *voltmeters = NULL;
 	GList *voltmeters_with_type = NULL;
 	GList *sources = NULL;
