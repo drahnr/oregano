@@ -192,15 +192,19 @@ static void schematic_init (Schematic *schematic)
 	priv->colors.components.red = 1.0;
 	priv->colors.components.green = 0;
 	priv->colors.components.blue = 0;
+	priv->colors.components.alpha = 1.0;
 	priv->colors.labels.red = 0;
 	priv->colors.labels.green = 0.5451;
 	priv->colors.labels.blue = 0.5451;
+	priv->colors.labels.alpha = 1.0;
 	priv->colors.wires.red = 0;
 	priv->colors.wires.green = 0;
 	priv->colors.wires.blue = 1.0;
-	priv->colors.text.red = 0;
-	priv->colors.text.green = 0;
-	priv->colors.text.blue = 0;
+	priv->colors.wires.alpha = 1.0;
+	priv->colors.text.red = 1.0;
+	priv->colors.text.green = 1.0;
+	priv->colors.text.blue = 1.0;
+	priv->colors.text.alpha = 1.0;
 
 	priv->symbols = g_hash_table_new (g_str_hash, g_str_equal);
 	priv->refdes_values = g_hash_table_new (g_str_hash, g_str_equal);
@@ -1034,7 +1038,8 @@ void schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *setti
 
 	op = gtk_print_operation_new ();
 
-	gtk_print_operation_set_print_settings (op, settings);
+	if (settings != NULL)
+		gtk_print_operation_set_print_settings (op, settings);
 	gtk_print_operation_set_default_page_setup (op, page);
 	gtk_print_operation_set_n_pages (op, 1);
 	gtk_print_operation_set_unit (op, GTK_UNIT_MM);
@@ -1052,5 +1057,11 @@ void schematic_print (Schematic *sm, GtkPageSetup *page, GtkPrintSettings *setti
 		res = gtk_print_operation_run (op, GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG, NULL, NULL);
 
 	if (res == GTK_PRINT_OPERATION_RESULT_CANCEL) {
+	} else if (res == GTK_PRINT_OPERATION_RESULT_APPLY) {
+		if (settings != NULL)
+			g_object_unref (settings);
+		settings = g_object_ref (gtk_print_operation_get_print_settings (op));
 	}
+
+	g_object_unref (op);
 }
