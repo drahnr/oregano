@@ -96,22 +96,6 @@ struct _SchematicPriv
 	GtkTextTag *tag_error;
 };
 
-typedef enum { REFDATA_SINGLE, REFDATA_RANGE, REFDATA_MIN, REFDATA_MAX } RefDataType;
-
-typedef struct
-{
-	RefDataType type;
-	union
-	{
-		int nr;
-		struct
-		{
-			int min;
-			int max;
-		} range;
-	} u;
-} RefData;
-
 enum {
 	TITLE_CHANGED,
 	ITEM_DATA_ADDED,
