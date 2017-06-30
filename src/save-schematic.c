@@ -186,7 +186,7 @@ static void write_xml_sim_settings (xmlNodePtr cur, parseXmlContext *ctxt, Schem
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "enabled",
 	                     BAD_CAST (sim_settings_get_fourier (s) ? "true" : "false"));
 
-	str = g_strdup_printf ("%f", sim_settings_get_fourier_frequency (s));
+	str = g_strdup_printf ("%.3f", sim_settings_get_fourier_frequency (s));
 	child = xmlNewChild (analysis, ctxt->ns, BAD_CAST "freq", BAD_CAST str);
 	g_free (str);
 
