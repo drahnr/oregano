@@ -986,8 +986,27 @@ static void stretch_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 	}
 }
 
-static void simulate_cmd (GtkWidget *widget, SchematicView *sv)
+void simulate_cmd (GtkWidget *widget, SchematicView *sv)
 {
+	Schematic *sm;
+	SimSettings *sim_settings;
+
+	sm = schematic_view_get_schematic (sv);
+	sim_settings = schematic_get_sim_settings (sm);
+
+	// Before running the simulation for the first time, make
+	// sure that the simulation settings are configured (this
+	// includes the removal of missing output vectors from
+	// previous application runs).
+	if (!sim_settings->configured) {
+		// The response_callback() function will take care
+		// of launching the simulation again when the
+		// simulation settings have been accepted.
+		sim_settings->simulation_requested = TRUE;
+		sim_settings_show (NULL, sv);
+		return;
+	}
+
 	simulation_show_progress_bar (NULL, sv);
 
 	sheet_update_parts (sv->priv->sheet);

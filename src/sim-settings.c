@@ -47,6 +47,9 @@ SimSettings *sim_settings_new ()
 
 	sim_settings = g_new0 (SimSettings, 1);
 
+	sim_settings->configured = FALSE;
+	sim_settings->simulation_requested = FALSE;
+
 	// Set some default settings.
 	// transient
 	sim_settings->trans_enable = TRUE;

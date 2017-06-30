@@ -384,15 +384,17 @@ static void noise_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 	gtk_widget_set_sensitive (s->w_noise_frame, enable);
 }
 
-static void response_callback (GtkButton *button, Schematic *sm)
+static void response_callback (GtkButton *button, SchematicView *sv)
 {
-	g_return_if_fail (sm != NULL);
-	g_return_if_fail (IS_SCHEMATIC (sm));
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 	g_return_if_fail (button != NULL);
 	g_return_if_fail (GTK_IS_BUTTON (button));
 	gint page;
 	gchar *tmp = NULL;
 	gchar **node_ids = NULL;
+
+	Schematic *sm = schematic_view_get_schematic (sv);
 
 	SimSettingsGui *s_gui = schematic_get_sim_settings_gui(sm);
 	SimSettings *s = s_gui->sim_settings;
@@ -553,6 +555,17 @@ static void response_callback (GtkButton *button, Schematic *sm)
 	schematic_set_dirty (sm, TRUE);
 	g_free (tmp);
 	g_free (node_ids);
+
+	s->configured = TRUE;
+
+	// The simulation settings configuration has
+	// been triggered by an attempt to lauch the
+	// simulation for the first time without
+	// configuring it first.
+	if (s->simulation_requested) {
+		s->simulation_requested = FALSE;
+		simulate_cmd (NULL, sv);
+	}
 }
 
 /**
@@ -769,7 +782,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// Creation of Close Button
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "button1"));
-	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (response_callback), sm);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (response_callback), sv);
 
 	// Get the list of voltmeters (normal mode)
 	rc = get_voltmeters_list(&voltmeters, sm, e, FALSE);

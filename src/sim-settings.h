@@ -36,6 +36,9 @@
 #define __SIM_SETTINGS_H
 
 typedef struct {
+	gboolean configured;
+	gboolean simulation_requested;
+
 	// Transient analysis.
 	gboolean trans_enable;
 	gboolean trans_init_cond;
