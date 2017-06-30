@@ -373,7 +373,7 @@ static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
 		else
 			gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), "");
 
-		g_slist_free (node_slist);
+		g_slist_free_full (node_slist, g_free);
 	}
 }
 
@@ -1046,7 +1046,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		gtk_entry_set_text (GTK_ENTRY (w), text);
 	else
 		gtk_entry_set_text (GTK_ENTRY (w), "");
-	g_slist_free (slist);
+
+	g_slist_free_full (slist, g_free);
 
 	// Present in the combo box the nodes of the schematic
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "fourier_select_out"));

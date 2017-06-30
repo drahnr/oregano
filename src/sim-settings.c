@@ -173,6 +173,7 @@ gchar *fourier_add_vout(SimSettings *sim_settings, guint node_index) {
 		}
 		node_slist = node_slist->next;
 	}
+
 	g_slist_free_full (node_slist, g_free);
 
 	if (!result) {
@@ -205,11 +206,13 @@ gchar *fourier_add_vout(SimSettings *sim_settings, guint node_index) {
 			}
 			node_slist = node_slist->next;
 		}
+
 		if (text)
 			ret_val = text;
 		else
 			ret_val = g_strdup("");
-		g_slist_free (node_slist);
+
+		g_slist_free_full (node_slist, g_free);
 	}
 
 	return ret_val;
@@ -471,6 +474,7 @@ gchar *sim_settings_get_fourier_vout (const SimSettings *sim_settings)
 		}
 		node_slist = node_slist->next;
 	}
+
 	g_slist_free_full (node_slist, g_free);
 
 	if (text)
@@ -506,11 +510,14 @@ gchar *sim_settings_get_fourier_nodes (const SimSettings *sim_settings)
 		}
 		node_slist = node_slist->next;
 	}
+
 	if (text)
 		ret_val = text;
 	else
 		ret_val = g_strdup ("");
-	g_slist_free (node_slist);
+
+	g_slist_free_full (node_slist, g_free);
+
 	return ret_val;
 }
 
