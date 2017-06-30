@@ -1023,6 +1023,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		g_strfreev (node_ids);
 	}
 
+	text = NULL;
 	slist = g_slist_copy (s->fourier_vout);
 	if (slist) {
 		if (slist->data && atoi (slist->data) > 0)
