@@ -1007,6 +1007,7 @@ static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	cairo_save (cr);
 
 	gdk_cairo_set_source_rgba (cr, &ctx->colors.components);
+
 	rotation = part_get_rotation (part);
 	flip = part_get_flip (part);
 
@@ -1017,8 +1018,12 @@ static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	else if (flip == ID_FLIP_VERT)
 		cairo_scale (cr, 1, -1);
 
-	if (rotation %= 360)
+	// Rotate around the item position
+	if (rotation %= 360) {
+		cairo_translate(cr, x0, y0);
 		cairo_rotate (cr, rotation * M_PI / 180);
+		cairo_translate(cr, -x0, -y0);
+	}
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
 		object = (SymbolObject *)(objects->data);
