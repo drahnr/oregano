@@ -13,6 +13,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -20,6 +21,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2012-2013  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -304,11 +306,92 @@ gboolean node_store_remove_textbox (NodeStore *self, Textbox *text)
 	return TRUE;
 }
 
-gboolean delayed_wire_delete (gpointer user_data)
+/**
+ * Remove all wires in the nodestore that overlap with a given
+ * wire (preserve the longest of the two overlapping wires).
+ * This is basically an optimization of the nodestore.
+ */
+void node_store_remove_overlapping_wires (NodeStore *store, Wire *wire)
 {
-	wire_delete (WIRE (user_data));
-	g_object_unref (G_OBJECT (WIRE (user_data)));
-	return G_SOURCE_REMOVE;
+	gdouble a, b;
+	Coords start_pos, end_pos, start_pos_other, end_pos_other;
+	Coords length, length_other;
+	Coords so, eo;
+	GList *list, *to_be_removed = NULL;
+	Node *sn, *en;
+	Wire *other;
+	gboolean overlap;
+
+	g_return_if_fail (store != NULL);
+	g_return_if_fail (IS_NODE_STORE (store));
+	g_return_if_fail (wire != NULL);
+	g_return_if_fail (IS_WIRE (wire));
+
+	// Check for overlapping with other wires.
+	for (list = store->wires; list && list->data != wire; list = list->next) {
+		g_assert (list->data != NULL);
+		g_assert (IS_WIRE (list->data));
+		other = list->data;
+		overlap = do_wires_overlap (wire, other, &so, &eo);
+		NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other,
+		          overlap == TRUE ? "YES" : "NO");
+		if (overlap) {
+			sn = node_store_get_node (store, eo);
+			en = node_store_get_node (store, so);
+			if (!sn && !en)
+				wire = vulcanize_wire (store, wire, other, &so, &eo);
+			wire_get_pos_and_length (wire, &start_pos, &length);
+			wire_get_pos_and_length (other, &start_pos_other, &length_other);
+			wire_get_start_and_end_pos (wire, &start_pos, &end_pos);
+			wire_get_start_and_end_pos (other, &start_pos_other, &end_pos_other);
+			if (length.x < 0) {
+				a = start_pos.x;
+				b = end_pos.x;
+				start_pos.x = b;
+				end_pos.x = a;
+				length.x = -length.x;
+			}
+			if (length.y < 0) {
+				a = start_pos.y;
+				b = end_pos.y;
+				start_pos.y = b;
+				end_pos.y = a;
+				length.y = -length.y;
+			}
+			if (length_other.x < 0) {
+				a = start_pos_other.x;
+				b = end_pos_other.x;
+				start_pos_other.x = b;
+				end_pos_other.x = a;
+				length_other.x = -length_other.x;
+			}
+			if (length_other.y < 0) {
+				a = start_pos_other.y;
+				b = end_pos_other.y;
+				start_pos_other.y = b;
+				end_pos_other.y = a;
+				length_other.y = -length_other.y;
+			}
+			if (length.x > 0 && length_other.x > 0 && length.y == 0 && length_other.y == 0) {
+				if (start_pos.x >= start_pos_other.x && end_pos.x <= end_pos_other.x)
+					to_be_removed = g_list_append (to_be_removed, wire);
+				if (start_pos_other.x >= start_pos.x && end_pos_other.x <= end_pos.x)
+					to_be_removed = g_list_append (to_be_removed, other);
+			} else if (length.y > 0 && length_other.y > 0 && length.x == 0 && length_other.x == 0) {
+				if (start_pos.y >= start_pos_other.y && end_pos.y <= end_pos_other.y)
+					to_be_removed = g_list_append (to_be_removed, wire);
+				if (start_pos_other.y >= start_pos.y && end_pos_other.y <= end_pos.y)
+					to_be_removed = g_list_append (to_be_removed, other);
+			}
+		}
+	}
+
+	// Remove all the wires that overlap with a given wire
+	for (list = to_be_removed; list; list = list->next) {
+		node_store_remove_wire (store, list->data);
+		wire_delete (list->data);
+	}
+	g_list_free (to_be_removed);
 }
 
 /**
@@ -369,49 +452,7 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 		}
 	}
 
-	// Check for overlapping with other wires.
-	do {
-		for (list = store->wires; list; list = list->next) {
-			g_assert (list->data != NULL);
-			g_assert (IS_WIRE (list->data));
-			Wire *other = list->data;
-			Coords so, eo;
-			const gboolean overlap = do_wires_overlap (wire, other, &so, &eo);
-			NG_DEBUG ("overlap [ %p] and [ %p ] -- %s", wire, other,
-			          overlap == TRUE ? "YES" : "NO");
-			if (overlap) {
-				Node *sn = node_store_get_node (store, eo);
-				Node *en = node_store_get_node (store, so);
-#if 0	// causes #210 (wire objects corruption)
-				wire = vulcanize_wire (store, wire, other, &so, &eo);
-				node_store_remove_wire (store, g_object_ref (other)); // equiv
-				                                                      // wire_unregister
-				                                                      // XXX FIXME this
-				                                                      // modifies the list
-				                                                      // we iterate over!
-				// delay this until idle, so all handlers like adding view
-				// representation are completed so existing wire-items can be deleted
-				// properly
-				// this is not fancy nor nice but seems to work fairly nicly
-				g_idle_add (delayed_wire_delete, other);
-				break;
-				NG_DEBUG ("overlapping of %p with %p ", wire, other);
-#else
-				if (!sn && !en) {
-					wire = vulcanize_wire (store, wire, other, &so, &eo);
-				} else if (!sn) {
-					NG_DEBUG ("do_something(TM) : %p sn==NULL ", other);
-				} else if (!en) {
-					NG_DEBUG ("do_something(TM) : %p en==NULL ", other);
-				} else {
-					NG_DEBUG ("do_something(TM) : %p else ", other);
-				}
-#endif
-			} else {
-				NG_DEBUG ("not of %p with %p ", wire, other);
-			}
-		}
-	} while (list);
+	node_store_remove_overlapping_wires (store, wire);
 
 	// Check for intersection with parts (pins).
 	for (list = store->parts; list; list = list->next) {
