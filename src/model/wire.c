@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -238,6 +240,15 @@ void wire_get_pos_and_length (Wire *wire, Coords *pos, Coords *length)
 	*length = priv->length;
 }
 
+void wire_set_pos (Wire *wire, Coords *pos)
+{
+	g_return_if_fail (wire != NULL);
+	g_return_if_fail (IS_WIRE (wire));
+	g_return_if_fail (pos != NULL);
+
+	item_data_set_pos (ITEM_DATA (wire), pos);
+}
+
 void wire_set_length (Wire *wire, Coords *length)
 {
 	WirePriv *priv;
@@ -324,12 +335,9 @@ static void wire_copy (ItemData *dest, ItemData *src)
 static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
 {
 	cairo_matrix_t affine;
-	double x, y;
+	Coords start_pos;
 	Wire *wire;
 	WirePriv *priv;
-	Coords b1, b2;
-	Coords wire_center_before, wire_center_after, delta;
-	Coords delta_cp_before, delta_cp_after;
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
@@ -339,8 +347,7 @@ static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	wire = WIRE (data);
 
-	item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
-	wire_center_before = coords_average (&b1, &b2);
+	wire_get_start_pos (wire, &start_pos);
 
 	priv = wire->priv;
 
@@ -350,40 +357,19 @@ static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
 		priv->direction = WIRE_DIR_VERT;
 	}
 
-	cairo_matrix_init_rotate (&affine, (double)angle * M_PI / 180.0);
+	cairo_matrix_init_identity(&affine);
+	cairo_matrix_translate(&affine, center_pos->x, center_pos->y);
+	cairo_matrix_rotate(&affine, (double)angle * M_PI / 180.0);
+	cairo_matrix_translate(&affine, -center_pos->x, -center_pos->y);
 
-	// Rotate the wire's end point.
-	x = priv->length.x;
-	y = priv->length.y;
+	cairo_matrix_transform_distance (&affine, &priv->length.x, &priv->length.y);
 
-	cairo_matrix_transform_point (&affine, &x, &y);
+	cairo_matrix_transform_point (&affine, &start_pos.x, &start_pos.y);
 
-	if (fabs (x) < 1e-2)
-		x = 0.0;
-	if (fabs (y) < 1e-2)
-		y = 0.0;
-
-	priv->length.x = x;
-	priv->length.y = y;
-
-	if (center_pos) {
-		delta_cp_before = coords_sub (&wire_center_before, center_pos);
-		delta_cp_after = delta_cp_before;
-		cairo_matrix_transform_point (&affine, &delta_cp_after.x, &delta_cp_after.y);
-	}
+	wire_set_pos (wire, &start_pos);
 
 	// Update bounding box.
 	wire_update_bbox (wire);
-
-	item_data_get_absolute_bbox (ITEM_DATA (wire), &b1, &b2);
-	wire_center_after = coords_average (&b1, &b2);
-
-	delta = coords_sub (&wire_center_before, &wire_center_after);
-	if (center_pos) {
-		Coords diff = coords_sub (&delta_cp_after, &delta_cp_before);
-		coords_add (&delta, &diff);
-	}
-	item_data_move (ITEM_DATA (wire), &delta);
 
 	// Let the views (canvas items) know about the rotation.
 	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle); // legacy
