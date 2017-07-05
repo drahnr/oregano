@@ -405,6 +405,7 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 {
 	GList *list;
 	Node *node;
+	Coords where;
 	int i = 0;
 
 	g_return_val_if_fail (store, FALSE);
@@ -417,7 +418,6 @@ gboolean node_store_add_wire (NodeStore *store, Wire *wire)
 		g_assert (list->data != NULL);
 		g_assert (IS_WIRE (list->data));
 
-		Coords where = {-77.77, -77.77};
 		Wire *other = list->data;
 		if (do_wires_intersect (wire, other, &where)) {
 			if (is_t_crossing (wire, other, &where) || is_t_crossing (other, wire, &where)) {
