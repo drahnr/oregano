@@ -339,7 +339,7 @@ void node_store_remove_overlapping_wires (NodeStore *store, Wire *wire)
 			sn = node_store_get_node (store, eo);
 			en = node_store_get_node (store, so);
 			if (!sn && !en)
-				wire = vulcanize_wire (store, wire, other, &so, &eo);
+				wire = vulcanize_wire (store, wire, other);
 			wire_get_pos_and_length (wire, &start_pos, &length);
 			wire_get_pos_and_length (other, &start_pos_other, &length_other);
 			wire_get_start_and_end_pos (wire, &start_pos, &end_pos);
@@ -388,8 +388,8 @@ void node_store_remove_overlapping_wires (NodeStore *store, Wire *wire)
 
 	// Remove all the wires that overlap with a given wire
 	for (list = to_be_removed; list; list = list->next) {
-		node_store_remove_wire (store, list->data);
-		wire_delete (list->data);
+		if (node_store_remove_wire (store, list->data))
+			wire_delete (list->data);
 	}
 	g_list_free (to_be_removed);
 }
