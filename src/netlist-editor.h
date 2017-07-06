@@ -32,7 +32,7 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
-#include <gtksourceview/gtksourceview.h>
+#include <gtksourceview/gtksource.h>
 
 #include "schematic-view.h"
 #include "errors.h"
