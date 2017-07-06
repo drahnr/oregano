@@ -575,7 +575,7 @@ gboolean sheet_replace (SchematicView *sv)
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
                                 GParamSpec *spec)
 {
-	const Sheet *sheet = SHEET (object);
+	Sheet *sheet = SHEET (object);
 
 	switch (prop_id) {
 	case ARG_ZOOM:
