@@ -43,7 +43,7 @@ gdouble oregano_strtod (const gchar *str, const gchar *unit)
 {
 	gboolean unit_does_not_match = FALSE;
 	gdouble ret;
-	gchar *endptr, *c, **splitted;
+	gchar *endptr, *c;
 	size_t unit_length = 0;
 
 	if (unit)
