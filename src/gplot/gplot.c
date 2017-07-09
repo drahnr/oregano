@@ -558,12 +558,21 @@ int g_plot_add_function (GPlot *plot, GPlotFunction *func)
 
 static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 {
+#if GTK_CHECK_VERSION (3,16,0)
+	GdkDisplay *display;
+	display = gdk_display_get_default ();
+#endif
+
 	switch (p->priv->zoom_mode) {
 	case GPLOT_ZOOM_INOUT:
 		if ((p->priv->action == ACTION_STARTING_PAN) || (p->priv->action == ACTION_PAN)) {
 			gdouble dx, dy;
 			cairo_matrix_t t = p->priv->matrix;
+#if GTK_CHECK_VERSION (3,16,0)
+			GdkCursor *cursor = gdk_cursor_new_for_display (display, GDK_FLEUR);
+#else
 			GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
+#endif
 			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
 			gdk_flush ();
 
@@ -586,7 +595,11 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		break;
 	case GPLOT_ZOOM_REGION:
 		if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
+#if GTK_CHECK_VERSION (3,16,0)
+			GdkCursor *cursor = gdk_cursor_new_for_display (display, GDK_CROSS);
+#else
 			GdkCursor *cursor = gdk_cursor_new (GDK_CROSS);
+#endif
 			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
 			gdk_flush ();
 
