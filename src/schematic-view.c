@@ -1105,7 +1105,7 @@ static void get_window_size (GtkWindow *window, GdkRectangle *rect)
 	GdkRectangle monitor_rect;
 #if GTK_CHECK_VERSION (3,22,0)
 	GdkMonitor *monitor;
-	GdkDisplay *display = gtk_widget_get_display (window);
+	GdkDisplay *display = gtk_widget_get_display (GTK_WIDGET (window));
 #else
 	gint monitor;
 	GdkScreen *screen = gdk_screen_get_default ();
