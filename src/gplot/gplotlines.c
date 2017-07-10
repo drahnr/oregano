@@ -170,7 +170,7 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 	g_object_class_install_property (object_class, ARG_SHIFT,
 	                                 g_param_spec_double ("shift", "GPlotLines::shift",
 	                                                      "the shift for multiple pulses", 0.0,
-	                                                      500.0, 50.0, G_PARAM_READWRITE));
+	                                                      15e+10, 50.0, G_PARAM_READWRITE));
 }
 
 static void g_plot_lines_init (GPlotLines *plot)
