@@ -578,6 +578,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 		// Got a complete line
 		s = buf;
 		NG_DEBUG ("%s", s);
+		state = STATE_IDLE;
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
 			gdouble np1;
@@ -588,7 +589,6 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			priv->current = sdata = SIM_DATA (data);
 			priv->analysis = g_list_append (priv->analysis, sdata);
 			priv->num_analysis++;
-			state = STATE_IDLE;
 			sdata->type = ANALYSIS_TYPE_UNKNOWN;
 			sdata->functions = NULL;
 
