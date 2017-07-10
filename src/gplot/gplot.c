@@ -560,7 +560,7 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 {
 #if GTK_CHECK_VERSION (3,16,0)
 	GdkDisplay *display;
-	display = gdk_display_get_default ();
+	display = gtk_widget_get_display (w);
 #endif
 
 	switch (p->priv->zoom_mode) {
