@@ -986,7 +986,7 @@ static void stretch_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 	}
 }
 
-void simulate_cmd (GtkWidget *widget, SchematicView *sv)
+void schematic_view_simulate_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	Schematic *sm;
 	SimSettings *sim_settings;

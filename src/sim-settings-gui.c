@@ -564,7 +564,7 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 	// configuring it first.
 	if (s->simulation_requested) {
 		s->simulation_requested = FALSE;
-		simulate_cmd (NULL, sv);
+		schematic_view_simulate_cmd (NULL, sv);
 	}
 }
 

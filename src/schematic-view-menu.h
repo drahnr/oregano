@@ -90,7 +90,7 @@ static GtkActionEntry entries[] = {
     {"Settings", NULL, N_ ("_Preferences"), NULL, N_ ("Edit Oregano settings"),
      G_CALLBACK (settings_show)},
     {"Simulate", GTK_STOCK_EXECUTE, N_ ("_Simulate"), "F5", N_ ("Run a simulation"),
-     G_CALLBACK (simulate_cmd)},
+     G_CALLBACK (schematic_view_simulate_cmd)},
     {"Netlist", NULL, N_ ("_Generate netlist"), NULL, N_ ("Generate a netlist"),
      G_CALLBACK (netlist_cmd)},
     {"SmartSearch", NULL, N_ ("Smart Search"), NULL, N_ ("Search a part within all the librarys"),
