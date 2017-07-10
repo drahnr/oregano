@@ -1087,10 +1087,7 @@ static void show_help (GtkWidget *widget, SchematicView *sv)
 {
 	GError *e = NULL;
 
-	GtkWidget *temp;
-	temp = sv->toplevel;
-
-	if (!gtk_show_uri (gtk_widget_get_screen (temp), "ghelp:oregano", gtk_get_current_event_time (),
+	if (!gtk_show_uri_on_window (GTK_WINDOW (sv->toplevel), "ghelp:oregano", gtk_get_current_event_time (),
 	                   &e)) {
 		NG_DEBUG ("Error %s\n", e->message);
 		g_clear_error (&e);
