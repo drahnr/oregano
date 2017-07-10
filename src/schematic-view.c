@@ -1095,26 +1095,31 @@ static void show_help (GtkWidget *widget, SchematicView *sv)
 }
 
 /**
- * make the window occupy 3/4 of the screen with a padding of 50px in each
+ * Get a suitable value for the window size.
+ *
+ * Make the window occupy 3/4 of the screen with a padding of 50px in each
  * direction
  */
-static void get_window_size (GdkRectangle *rect)
+static void get_window_size (GtkWindow *window, GdkRectangle *rect)
 {
-	// Get a suitable value for the window size
+	GdkRectangle monitor_rect;
+#if GTK_CHECK_VERSION (3,22,0)
+	GdkMonitor *monitor;
+	GdkDisplay *display = gtk_widget_get_display (window);
+#else
+	gint monitor;
 	GdkScreen *screen = gdk_screen_get_default ();
+#endif
+
+#if GTK_CHECK_VERSION (3,22,0)
+	if (display) {
+		monitor = gdk_display_get_primary_monitor (display);
+		gdk_monitor_get_geometry (monitor, &monitor_rect);
+#else
 	if (screen) {
-		//FIXME unused
-//		gint monitor_count = gdk_screen_get_n_monitors (screen);
-
-		// usually the bigger one is the primary one
-		// as the window is not realized yet (or for some other reason does not make
-		// a difference)
-		gint monitor = gdk_screen_get_primary_monitor (screen);
-		GdkRectangle monitor_rect;
+		monitor = gdk_screen_get_primary_monitor (screen);
 		gdk_screen_get_monitor_geometry (screen, monitor, &monitor_rect);
-
-		NG_DEBUG ("mon #%i %ix%i offset by %i,%i\n", monitor, monitor_rect.width, monitor_rect.height,
-		          monitor_rect.x, monitor_rect.y);
+#endif
 
 		rect->width = 3 * (monitor_rect.width - 50) / 4;
 		rect->height = 3 * (monitor_rect.height - 50) / 4;
@@ -1129,7 +1134,7 @@ static void set_window_size (SchematicView *sv)
 {
 	GdkRectangle rect;
 
-	get_window_size (&rect);
+	get_window_size (GTK_WINDOW (sv->toplevel), &rect);
 
 	gtk_window_set_default_size (GTK_WINDOW (sv->toplevel), rect.width, rect.height);
 }
@@ -1183,7 +1188,7 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	paned = GTK_PANED (gtk_builder_get_object (builder, "paned"));
 	sv->priv->paned = paned;
 
-	get_window_size (&window_size);
+	get_window_size (GTK_WINDOW (sv->toplevel), &window_size);
 	if (schematic_get_width (schematic) < window_size.width)
 		schematic_set_width (schematic, window_size.width);
 	if (schematic_get_height (schematic) < window_size.height)
