@@ -623,12 +623,3 @@ static void wrap_string (char *str, int width)
 }
 
 static void preview_realized (GtkWidget *widget, Browser *br) { update_preview (br); }
-
-void part_browser_reparent (gpointer *br, GtkWidget *new_parent)
-{
-	Browser *b;
-	g_return_if_fail (br != NULL);
-
-	b = (Browser *)br;
-	gtk_widget_reparent (GTK_WIDGET (b->viewport), new_parent);
-}
