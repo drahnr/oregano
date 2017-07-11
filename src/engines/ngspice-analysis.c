@@ -219,18 +219,16 @@ static ThreadPipe *parse_ac_analysis (NgspiceAnalysisResources *resources)
 {
 	ThreadPipe *pipe = resources->pipe;
 	gboolean is_vanilla = resources->is_vanilla;
-	gchar **buf = &resources->buf;
+	gchar *scale, **variables, **buf = &resources->buf;
 	const SimSettings* const sim_settings = resources->sim_settings;
 	GList **analysis = resources->analysis;
 	guint *num_analysis = resources->num_analysis;
-
 	static SimulationData *sdata;
 	static Analysis *data;
 	gsize size;
 	gboolean found = FALSE;
-	gchar **variables;
 	gint i, n = 0, index = 0;
-	gdouble val[10];
+	gdouble fstart, fstop, val[10];
 
 	NG_DEBUG ("AC: result str\n>>>\n%s\n<<<", *buf);
 
@@ -240,9 +238,18 @@ static ThreadPipe *parse_ac_analysis (NgspiceAnalysisResources *resources)
 	sdata->functions = NULL;
 
 	ANALYSIS (sdata)->ac.sim_length = 1.;
-	ANALYSIS (sdata)->ac.sim_length = (double) sim_settings_get_ac_npoints (sim_settings);
-	ANALYSIS (sdata)->ac.start = sim_settings_get_ac_start (sim_settings);
-	ANALYSIS (sdata)->ac.stop = sim_settings_get_ac_stop (sim_settings);
+
+	ANALYSIS (sdata)->ac.start = fstart = sim_settings_get_ac_start (sim_settings);
+	ANALYSIS (sdata)->ac.stop = fstop = sim_settings_get_ac_stop (sim_settings);
+
+        scale = sim_settings_get_ac_type (sim_settings);
+        if (!g_ascii_strcasecmp (scale, "LIN")) {
+                ANALYSIS (sdata)->ac.sim_length = (double) sim_settings_get_ac_npoints (sim_settings);
+        } else if (!g_ascii_strcasecmp (scale, "DEC")) {
+                ANALYSIS (sdata)->ac.sim_length = (double) sim_settings_get_ac_npoints (sim_settings) * log10 (fstop / fstart);
+        } else if (!g_ascii_strcasecmp (scale, "OCT")) {
+                ANALYSIS (sdata)->ac.sim_length = (double) sim_settings_get_ac_npoints (sim_settings) * log10 (fstop / fstart) / log10 (2);
+        }
 
 	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
@@ -848,20 +855,18 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 {
 	ThreadPipe *pipe = resources->pipe;
 	gboolean is_vanilla = resources->is_vanilla;
-	gchar **buf = &resources->buf;
+	gchar *scale, **variables, **buf = &resources->buf;
 	const SimSettings* const sim_settings = resources->sim_settings;
 	GList **analysis = resources->analysis;
 	guint *num_analysis = resources->num_analysis;
-
 	static SimulationData *sdata;
 	static Analysis *data;
 	gsize size;
 	gboolean found = FALSE;
-	gchar **variables;
 	gint i, n = 0, index = 0;
-	gdouble val[10];
+	gdouble fstart, fstop, val[10];
 
-	NG_DEBUG ("AC: result str\n>>>\n%s\n<<<", *buf);
+	NG_DEBUG ("NOISE: result str\n>>>\n%s\n<<<", *buf);
 
 	data = g_new0 (Analysis, 1);
 	sdata = SIM_DATA (data);
@@ -869,9 +874,18 @@ static ThreadPipe *parse_noise_analysis (NgspiceAnalysisResources *resources)
 	sdata->functions = NULL;
 
 	ANALYSIS (sdata)->noise.sim_length = 1.;
-	ANALYSIS (sdata)->noise.sim_length = (double) sim_settings_get_noise_npoints (sim_settings);
-	ANALYSIS (sdata)->noise.start = sim_settings_get_noise_start (sim_settings);
-	ANALYSIS (sdata)->noise.stop = sim_settings_get_noise_stop (sim_settings);
+
+	ANALYSIS (sdata)->noise.start = fstart = sim_settings_get_noise_start (sim_settings);
+	ANALYSIS (sdata)->noise.stop = fstop = sim_settings_get_noise_stop (sim_settings);
+
+	scale = sim_settings_get_noise_type (sim_settings);
+	if (!g_ascii_strcasecmp (scale, "LIN")) {
+		ANALYSIS (sdata)->noise.sim_length = (double) sim_settings_get_noise_npoints (sim_settings);
+	} else if (!g_ascii_strcasecmp (scale, "DEC")) {
+		ANALYSIS (sdata)->noise.sim_length = (double) sim_settings_get_noise_npoints (sim_settings) * log10 (fstop / fstart);
+	} else if (!g_ascii_strcasecmp (scale, "OCT")) {
+		ANALYSIS (sdata)->noise.sim_length = (double) sim_settings_get_noise_npoints (sim_settings) * log10 (fstop / fstart) / log10 (2);
+	}
 
 	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
 	pipe = thread_pipe_pop(pipe, (gpointer *)buf, &size);
