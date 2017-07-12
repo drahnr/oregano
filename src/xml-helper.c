@@ -42,7 +42,7 @@ gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax, gpointer user_data, const
 {
 	g_return_val_if_fail (filename != NULL, FALSE);
 
-	gboolean ret = TRUE;
+	gboolean parser_failed, ret = TRUE;
 	xmlParserCtxtPtr ctxt;
 
 	ctxt = xmlCreateFileParserCtxt (filename);
@@ -55,16 +55,20 @@ gboolean oreganoXmlSAXParseFile (xmlSAXHandlerPtr sax, gpointer user_data, const
 #if defined(LIBXML_VERSION) && LIBXML_VERSION >= 20000
 	xmlKeepBlanksDefault (0);
 #endif
+	parser_failed = FALSE;
 	if (xmlParseDocument (ctxt) < 0) {
 		// FIXME post a message to the log buffer with as much details as possible
 		g_message ("Failed to parse \"%s\"", filename);
 		ret = FALSE;
+		parser_failed = TRUE;
 	} else {
 		ret = ctxt->wellFormed ? TRUE : FALSE;
 		if (sax != NULL)
 			ctxt->sax = NULL;
 	}
-	xmlFreeParserCtxt (ctxt);
+
+	if (!parser_failed)
+		xmlFreeParserCtxt (ctxt);
 
 	return ret;
 }
