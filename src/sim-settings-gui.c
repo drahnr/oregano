@@ -1030,6 +1030,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 				}
 			}
 		}
+		if (!text2)
+			text2 = g_strdup ("");
 		sim_settings_set_fourier_vout (s, text2);
 		g_free (text2);
 		g_strfreev (node_ids);
