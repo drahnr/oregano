@@ -62,7 +62,7 @@ static void g_plot_lines_get_property (GObject *object, guint prop_id, GValue *v
 
 static GObjectClass *parent_class = NULL;
 
-enum { ARG_0, ARG_WIDTH, ARG_COLOR, ARG_COLOR_GDKCOLOR, ARG_VISIBLE, ARG_GRAPH_TYPE, ARG_SHIFT };
+enum { ARG_0, ARG_WIDTH, ARG_COLOR, ARG_COLOR_GDKRGBA, ARG_VISIBLE, ARG_GRAPH_TYPE, ARG_SHIFT };
 
 struct _GPlotLinesPriv
 {
@@ -78,7 +78,7 @@ struct _GPlotLinesPriv
 
 	// Line Color
 	gchar *color_string;
-	GdkColor color;
+	GdkRGBA color;
 
 	// Graphic type
 	GraphicType graphic_type;
@@ -157,9 +157,9 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 	                                                      "the string color line", "white",
 	                                                      G_PARAM_READWRITE));
 
-	g_object_class_install_property (object_class, ARG_COLOR_GDKCOLOR,
+	g_object_class_install_property (object_class, ARG_COLOR_GDKRGBA,
 	                                 g_param_spec_pointer ("color-rgb", "GPlotLines::color-rgb",
-	                                                       "the GdkColor of the line",
+	                                                       "the GdkRGBA of the line",
 	                                                       G_PARAM_READWRITE));
 
 	g_object_class_install_property (
@@ -170,7 +170,7 @@ static void g_plot_lines_class_init (GPlotLinesClass *class)
 	g_object_class_install_property (object_class, ARG_SHIFT,
 	                                 g_param_spec_double ("shift", "GPlotLines::shift",
 	                                                      "the shift for multiple pulses", 0.0,
-	                                                      500.0, 50.0, G_PARAM_READWRITE));
+	                                                      15e+10, 50.0, G_PARAM_READWRITE));
 }
 
 static void g_plot_lines_init (GPlotLines *plot)
@@ -184,7 +184,7 @@ static void g_plot_lines_init (GPlotLines *plot)
 	priv->width = 1.0;
 	priv->visible = TRUE;
 	priv->color_string = g_strdup ("white");
-	memset (&priv->color, 0xFF, sizeof(GdkColor));
+	memset (&priv->color, 0xFF, sizeof(GdkRGBA));
 }
 
 static void g_plot_lines_set_property (GObject *object, guint prop_id, const GValue *value,
@@ -202,7 +202,7 @@ static void g_plot_lines_set_property (GObject *object, guint prop_id, const GVa
 	case ARG_COLOR:
 		g_free (plot->priv->color_string);
 		plot->priv->color_string = g_strdup (g_value_get_string (value));
-		gdk_color_parse (plot->priv->color_string, &plot->priv->color);
+		gdk_rgba_parse (&plot->priv->color, plot->priv->color_string);
 		break;
 	case ARG_GRAPH_TYPE:
 		plot->priv->graphic_type = g_value_get_enum (value);
@@ -340,8 +340,8 @@ static void g_plot_lines_draw (GPlotFunction *f, cairo_t *cr, GPlotFunctionBBox 
 	}
 
 	cairo_save (cr);
-	cairo_set_source_rgb (cr, plot->priv->color.red / 65535.0, plot->priv->color.green / 65535.0,
-	                      plot->priv->color.blue / 65535.0);
+	cairo_set_source_rgb (cr, plot->priv->color.red, plot->priv->color.green,
+	                      plot->priv->color.blue);
 	cairo_identity_matrix (cr);
 	cairo_set_line_width (cr, plot->priv->width);
 	cairo_stroke (cr);

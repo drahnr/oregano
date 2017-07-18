@@ -4,12 +4,14 @@
  * Authors:
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -81,6 +83,12 @@ struct _GPlotPriv
 	GPlotFunctionBBox viewport_bbox;
 
 	GPlotFunctionBBox rubberband;
+
+#if GTK_CHECK_VERSION(3,22,0)
+	GdkDrawingContext *gdk_ctx;
+
+	cairo_region_t *region;
+#endif
 };
 
 GType g_plot_get_type ()
@@ -113,9 +121,18 @@ static void g_plot_class_init (GPlotClass *class)
 
 static cairo_t *g_plot_create_cairo (GPlot *p)
 {
+	GdkWindow *window;
 	cairo_t *cr;
 
-	cr = gdk_cairo_create (gtk_layout_get_bin_window (GTK_LAYOUT (p)));
+	window = gtk_layout_get_bin_window (GTK_LAYOUT (p));
+
+#if GTK_CHECK_VERSION(3,22,0)
+	p->priv->region = gdk_window_get_clip_region (window);
+	p->priv->gdk_ctx = gdk_window_begin_draw_frame (window, p->priv->region);
+	cr = gdk_drawing_context_get_cairo_context (p->priv->gdk_ctx);
+#else
+	cr = gdk_cairo_create (window);
+#endif
 
 	return cr;
 }
@@ -541,12 +558,21 @@ int g_plot_add_function (GPlot *plot, GPlotFunction *func)
 
 static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 {
+#if GTK_CHECK_VERSION (3,16,0)
+	GdkDisplay *display;
+	display = gtk_widget_get_display (w);
+#endif
+
 	switch (p->priv->zoom_mode) {
 	case GPLOT_ZOOM_INOUT:
 		if ((p->priv->action == ACTION_STARTING_PAN) || (p->priv->action == ACTION_PAN)) {
 			gdouble dx, dy;
 			cairo_matrix_t t = p->priv->matrix;
+#if GTK_CHECK_VERSION (3,16,0)
+			GdkCursor *cursor = gdk_cursor_new_for_display (display, GDK_FLEUR);
+#else
 			GdkCursor *cursor = gdk_cursor_new (GDK_FLEUR);
+#endif
 			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
 			gdk_flush ();
 
@@ -569,7 +595,11 @@ static gboolean g_plot_motion_cb (GtkWidget *w, GdkEventMotion *e, GPlot *p)
 		break;
 	case GPLOT_ZOOM_REGION:
 		if ((p->priv->action == ACTION_STARTING_REGION) || (p->priv->action == ACTION_REGION)) {
+#if GTK_CHECK_VERSION (3,16,0)
+			GdkCursor *cursor = gdk_cursor_new_for_display (display, GDK_CROSS);
+#else
 			GdkCursor *cursor = gdk_cursor_new (GDK_CROSS);
+#endif
 			gdk_window_set_cursor (gtk_widget_get_window (w), cursor);
 			gdk_flush ();
 
@@ -754,7 +784,12 @@ void g_plot_set_axis_labels (GPlot *p, gchar *x, gchar *y)
 		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 		cairo_set_font_size (cr, 14);
 		cairo_text_extents (cr, x, &extents);
+#if GTK_CHECK_VERSION(3,22,0)
+		gdk_window_end_draw_frame (gtk_layout_get_bin_window (GTK_LAYOUT (p)) , p->priv->gdk_ctx);
+		cairo_region_destroy (p->priv->region);
+#else
 		cairo_destroy (cr);
+#endif
 
 		p->priv->xlabel = g_strdup (x);
 		p->priv->bottom_border = BORDER_SIZE + extents.height;
@@ -771,7 +806,12 @@ void g_plot_set_axis_labels (GPlot *p, gchar *x, gchar *y)
 		cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 		cairo_set_font_size (cr, 14);
 		cairo_text_extents (cr, y, &extents);
+#if GTK_CHECK_VERSION(3,22,0)
+		gdk_window_end_draw_frame (gtk_layout_get_bin_window (GTK_LAYOUT (p)) , p->priv->gdk_ctx);
+		cairo_region_destroy (p->priv->region);
+#else
 		cairo_destroy (cr);
+#endif
 
 		p->priv->xlabel = g_strdup (x);
 		p->priv->left_border = BORDER_SIZE + extents.height;
@@ -815,7 +855,13 @@ void g_plot_window_to_device (GPlot *plot, double *x, double *y)
 	cr = g_plot_create_cairo (plot);
 	cairo_set_matrix (cr, &plot->priv->matrix);
 	cairo_device_to_user (cr, x, y);
+
+#if GTK_CHECK_VERSION(3,22,0)
+	gdk_window_end_draw_frame (gtk_layout_get_bin_window (GTK_LAYOUT (plot)) , plot->priv->gdk_ctx);
+	cairo_region_destroy (plot->priv->region);
+#else
 	cairo_destroy (cr);
+#endif
 }
 
 static void get_order_of_magnitude (gdouble val, gdouble *man, gdouble *pw)

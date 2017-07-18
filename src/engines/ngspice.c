@@ -160,16 +160,12 @@ static gboolean ngspice_is_available (OreganoEngine *self)
 static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError **error)
 {
 	OreganoNgSpice *ngspice;
-	gboolean is_vanilla;
 	Netlist output;
 	GList *iter;
 	GError *e = NULL;
-
 	GString *buffer = NULL;
 
 	ngspice = OREGANO_NGSPICE (engine);
-
-	is_vanilla = ngspice->priv->is_vanilla;
 
 	netlist_helper_create (ngspice->priv->schematic, &output, &e);
 	if (e) {
@@ -288,9 +284,12 @@ static GString *ngspice_generate_netlist_buffer (OreganoEngine *engine, GError *
 
 	// Prints analysis using a Fourier transform
 	if (sim_settings_get_fourier (output.settings)) {
-		g_string_append_printf (buffer, ".four %d %s\n",
-		                        sim_settings_get_fourier_frequency (output.settings),
-		                        sim_settings_get_fourier_nodes (output.settings));
+		if (sim_settings_get_fourier_frequency (output.settings) &&
+		    sim_settings_get_fourier_nodes (output.settings)) {
+			g_string_append_printf (buffer, ".four %.3f %s\n",
+			                        sim_settings_get_fourier_frequency (output.settings),
+			                        sim_settings_get_fourier_nodes (output.settings));
+		}
 	}
 
 	// Prints Noise Analysis

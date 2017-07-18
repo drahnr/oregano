@@ -42,7 +42,6 @@
 // TODO Move analysis data and result to another file
 #include "simulation.h"
 
-
 struct analysis_tag
 {
 	gchar *name;
@@ -50,10 +49,10 @@ struct analysis_tag
 };
 
 static struct analysis_tag analysis_tags[] = {
-    {"#", 1},     /* OP */
-    {"#Time", 5}, /* Transient */
-    {"#DC", 3},   /* DC */
-    {"#Freq", 5}, /* AC */
+	{"#", 1},     /* OP */
+	{"#Time", 5}, /* Transient */
+	{"#DC", 3},   /* DC */
+	{"#Freq", 5}, /* AC */
 };
 
 #define IS_THIS_ITEM(str, item) (!strncmp (str, item.name, item.len))
@@ -200,7 +199,7 @@ static gboolean gnucap_generate_netlist (OreganoEngine *engine, const gchar *fil
 
 	file = fopen (filename, "w");
 	if (!file) {
-		oregano_error (g_strdup_printf ("Creation of %s not possible\n", filename));
+		oregano_error (g_strdup_printf ("Creation of file %s not possible\n", filename));
 		return FALSE;
 	}
 
@@ -262,7 +261,7 @@ static gboolean gnucap_generate_netlist (OreganoEngine *engine, const gchar *fil
 		}
 	}
 
-	//	Print DC Analysis
+	// Print DC Analysis
 	if (sim_settings_get_dc (output.settings)) {
 		g_fprintf (file, ".print dc %s\n",
 		           netlist_helper_create_analysis_string (output.store, FALSE));
@@ -579,6 +578,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 		// Got a complete line
 		s = buf;
 		NG_DEBUG ("%s", s);
+		state = STATE_IDLE;
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
 			gdouble np1;
@@ -589,16 +589,15 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 			priv->current = sdata = SIM_DATA (data);
 			priv->analysis = g_list_append (priv->analysis, sdata);
 			priv->num_analysis++;
-			state = STATE_IDLE;
 			sdata->type = ANALYSIS_TYPE_UNKNOWN;
 			sdata->functions = NULL;
 
 			// Calculates the quantity of variables
 			variables = _get_variables (s, &n);
 
-			for (i = 1; i < TAGS_COUNT; i++)
+			for (i = 0; i < TAGS_COUNT; i++)
 				if (IS_THIS_ITEM (variables[0].name, analysis_tags[i]))
-					sdata->type = i;
+					sdata->type = i + 1;
 
 			state = IN_VALUES;
 			sdata->n_variables = n;
@@ -658,6 +657,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				data->ac.sim_length = sim_settings_get_ac_npoints (sim_settings);
 				break;
 			case ANALYSIS_TYPE_OP_POINT:
+				break;
 			case ANALYSIS_TYPE_DC_TRANSFER:
 				np1 = 1.;
 				data->dc.start = sim_settings_get_dc_start (sim_settings);
@@ -715,7 +715,7 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 					val = strtofloat (variables[i].name);
 					sdata->data[i] = g_array_append_val (sdata->data[i], val);
 
-					// Update the minimal and maximal values so far.
+					// Update the minimum and maximum values so far.
 					if (val < sdata->min_data[i])
 						sdata->min_data[i] = val;
 					if (val > sdata->max_data[i])

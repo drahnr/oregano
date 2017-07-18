@@ -187,11 +187,15 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	GtkAdjustment *hadj = NULL, *vadj = NULL;
 	gdouble x1, y1;
 	gint _x, _y;
-	GdkDeviceManager *device_manager;
 	GdkDevice *device_pointer;
 	GdkRectangle allocation;
 	GdkDisplay *display;
 	GdkWindow *window;
+#if GTK_CHECK_VERSION (3,20,0)
+	GdkSeat *seat;
+#else
+	GdkDeviceManager *device_manager;
+#endif
 
 	// deprecated gtk_widget_get_pointer (GTK_WIDGET (sheet), &_x, &_y);
 	// replaced by a code copied from evince
@@ -202,10 +206,18 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	}
 
 	display = gtk_widget_get_display (GTK_WIDGET (sheet));
+
+#if GTK_CHECK_VERSION (3,20,0)
+	seat = gdk_display_get_default_seat (display);
+	device_pointer = gdk_seat_get_pointer (seat);
+#else
 	device_manager = gdk_display_get_device_manager (display);
+
 	// gdk_device_manager_get_client_pointer
 	// shall not be used within events
 	device_pointer = gdk_device_manager_get_client_pointer (device_manager);
+#endif
+
 	window = gtk_widget_get_window (GTK_WIDGET (sheet));
 
 	if (!window) {
@@ -221,7 +233,11 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 		return FALSE;
 	}
 #else
+  #if GTK_CHECK_VERSION (3,20,0)
+	NG_DEBUG ("\n%p %p %p %p %i %i\n\n", display, seat, device_pointer, window, _x, _y);
+  #else
 	NG_DEBUG ("\n%p %p %p %p %i %i\n\n", display, device_manager, device_pointer, window, _x, _y);
+  #endif
 #endif
 
 	gtk_widget_get_allocation (GTK_WIDGET (sheet), &allocation);
@@ -575,11 +591,11 @@ gboolean sheet_replace (SchematicView *sv)
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
                                 GParamSpec *spec)
 {
-	const Sheet *sheet = SHEET (object);
+	Sheet *sheet = SHEET (object);
 
 	switch (prop_id) {
 	case ARG_ZOOM:
-		sheet_set_zoom (sheet, g_value_get_double (value));
+		sheet_set_zoom (sheet, (const double) g_value_get_double (value));
 		break;
 	}
 }

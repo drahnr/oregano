@@ -55,8 +55,6 @@ static void node_item_dispose (GObject *object)
 
 static void node_item_finalize (GObject *object)
 {
-	NodeItemPriv *priv;
-
 	G_OBJECT_CLASS (node_item_parent_class)->finalize (object);
 }
 

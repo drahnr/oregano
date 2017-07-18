@@ -617,7 +617,7 @@ char *netlist_helper_create_analysis_string (NodeStore *store, gboolean do_ac)
 						for (; iter; iter = iter->next) {
 							g_string_append_printf (out, " i(%s)", (char *)iter->data);
 						}
-						g_slist_free (lst); // need to free this, we are owning it!
+						g_slist_free_full (lst, g_free); // need to free this, we are owning it!
 					}
 				}
 			}

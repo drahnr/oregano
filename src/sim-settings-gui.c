@@ -289,21 +289,27 @@ static void fourier_add_vout_cb (GtkButton *w, SimSettingsGui *sim)
 {
 	GtkComboBoxText *node_box;
 	guint i;
-	gint result = FALSE;
+	gboolean result = FALSE;
+	gchar *text;
 
 	node_box = GTK_COMBO_BOX_TEXT (sim->w_four_combobox);
 
 	// Get the node identifier
 	for (i = 0; (i < 1000 && result == FALSE); ++i) {
-		if (g_strcmp0 (g_strdup_printf ("V(%d)", i),
-		               gtk_combo_box_text_get_active_text (node_box)) == 0)
+		text = g_strdup_printf ("V(%d)", i);
+		if (!g_strcmp0 (text, gtk_combo_box_text_get_active_text (node_box)))
 			result = TRUE;
+		g_free (text);
 	}
-	result = FALSE;
 
-	gchar *text = fourier_add_vout(sim->sim_settings, result, i);
+	text = NULL;
+	if (result == TRUE)
+		text = fourier_add_vout(sim->sim_settings, i);
 
-	gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
+	if (text)
+		gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), text);
+	else
+		gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), "");
 }
 
 static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
@@ -348,13 +354,18 @@ static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
 
 		// Update the fourier_vout widget
 		node_slist = g_slist_copy (s->fourier_vout);
-		if (node_slist->data)
-			text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
-		if (node_slist)
+		if (node_slist) {
+			if (node_slist->data && atoi (node_slist->data) > 0)
+				text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
 			node_slist = node_slist->next;
+		}
 		while (node_slist) {
-			if (node_slist->data)
-				text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+			if (node_slist->data && atoi (node_slist->data) > 0) {
+				if (text)
+					text = g_strdup_printf ("%s V(%d)", text, atoi (node_slist->data));
+				else
+					text = g_strdup_printf ("V(%d)", atoi (node_slist->data));
+			}
 			node_slist = node_slist->next;
 		}
 		if (text)
@@ -362,7 +373,7 @@ static void fourier_remove_vout_cb (GtkButton *w, SimSettingsGui *sim)
 		else
 			gtk_entry_set_text (GTK_ENTRY (sim->w_four_vout), "");
 
-		g_slist_free (node_slist);
+		g_slist_free_full (node_slist, g_free);
 	}
 }
 
@@ -373,15 +384,17 @@ static void noise_enable_cb (GtkWidget *widget, SimSettingsGui *s)
 	gtk_widget_set_sensitive (s->w_noise_frame, enable);
 }
 
-static void response_callback (GtkButton *button, Schematic *sm)
+static void response_callback (GtkButton *button, SchematicView *sv)
 {
-	g_return_if_fail (sm != NULL);
-	g_return_if_fail (IS_SCHEMATIC (sm));
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
 	g_return_if_fail (button != NULL);
 	g_return_if_fail (GTK_IS_BUTTON (button));
 	gint page;
 	gchar *tmp = NULL;
 	gchar **node_ids = NULL;
+
+	Schematic *sm = schematic_view_get_schematic (sv);
 
 	SimSettingsGui *s_gui = schematic_get_sim_settings_gui(sm);
 	SimSettings *s = s_gui->sim_settings;
@@ -542,6 +555,17 @@ static void response_callback (GtkButton *button, Schematic *sm)
 	schematic_set_dirty (sm, TRUE);
 	g_free (tmp);
 	g_free (node_ids);
+
+	s->configured = TRUE;
+
+	// The simulation settings configuration has
+	// been triggered by an attempt to lauch the
+	// simulation for the first time without
+	// configuring it first.
+	if (s->simulation_requested) {
+		s->simulation_requested = FALSE;
+		schematic_view_simulate_cmd (NULL, sv);
+	}
 }
 
 /**
@@ -626,6 +650,7 @@ gint get_voltage_sources_list(GList **sources, Schematic *sm, GError *e, gboolea
 void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	int i;
+	gboolean found;
 	gint rc, active, index;
 	GtkWidget *toplevel, *w, *w1, *pbox, *combo_box;
 	GtkTreeView *opt_list;
@@ -637,14 +662,14 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	GError *e = NULL;
 	SimSettings *s;
 	GList *iter;
-	GSList *siter;
 	GList *voltmeters = NULL;
 	GList *voltmeters_with_type = NULL;
 	GList *sources = NULL;
 	GList *sources_ac = NULL;
 	GtkComboBox *node_box;
 	GtkListStore *node_list_store;
-	gchar *text = NULL;
+	gchar *text, *text2;
+	gchar **node_ids;
 	GSList *slist = NULL;
 
 	g_return_if_fail (sv != NULL);
@@ -757,7 +782,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// Creation of Close Button
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "button1"));
-	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (response_callback), sm);
+	g_signal_connect (G_OBJECT (w), "clicked", G_CALLBACK (response_callback), sv);
 
 	// Get the list of voltmeters (normal mode)
 	rc = get_voltmeters_list(&voltmeters, sm, e, FALSE);
@@ -943,6 +968,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 				active = index;
 			index++;
 		}
+		g_free (text);
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s_gui);
@@ -980,27 +1006,63 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 	s_gui->w_four_vout = w;
 	g_signal_connect (G_OBJECT (w), "changed", G_CALLBACK (entry_changed_cb), s_gui);
 
-	text = NULL;
-	slist = g_slist_copy (s->fourier_vout); // TODO why copy here?
-	if (slist) {
-		if (atoi (slist->data) != 0)
-			text = g_strdup_printf ("V(%d)", atoi (slist->data));
-
-		for (siter = slist; siter; siter = siter->next) {
-			if (atoi (siter->data) != 0)
-				text = g_strdup_printf ("%s V(%d)", text, atoi (siter->data));
+	// Get rid of inexistent output vectors
+	text2 = NULL;
+	if (voltmeters) {
+		text = sim_settings_get_fourier_vout (s);
+		node_ids = g_strsplit (text, " ", 0);
+		g_free (text);
+		for (i = 0; node_ids[i] != NULL; i++) {
+			text = g_strdup_printf ("V(%s)", node_ids[i]);
+			found = FALSE;
+			for (iter = voltmeters; iter; iter = iter->next) {
+				if (!g_strcmp0 (text, iter->data))
+					found = TRUE;
+			}	
+			g_free (text);
+			if (found) {
+				if (text2) {
+					text = text2;
+					text2 = g_strdup_printf ("%s %s", text2, node_ids[i]);
+					g_free (text);
+				} else {
+					text2 = g_strdup_printf ("%s", node_ids[i]);
+				}
+			}
 		}
-
-		if (text)
-			gtk_entry_set_text (GTK_ENTRY (w), text);
-		else
-			gtk_entry_set_text (GTK_ENTRY (w), "");
+		if (!text2)
+			text2 = g_strdup ("");
+		sim_settings_set_fourier_vout (s, text2);
+		g_free (text2);
+		g_strfreev (node_ids);
 	}
+
+	text = NULL;
+	slist = g_slist_copy (s->fourier_vout);
+	if (slist) {
+		if (slist->data && atoi (slist->data) > 0)
+			text = g_strdup_printf ("V(%d)", atoi (slist->data));
+		slist = slist->next;
+	}
+	while (slist) {
+		if (slist->data && atoi (slist->data) > 0) {
+			if (text) {
+				text2 = text;
+				text = g_strdup_printf ("%s V(%d)", text, atoi (slist->data));
+				g_free (text2);
+			} else {
+				text = g_strdup_printf ("V(%d)", atoi (slist->data));
+			}
+		}
+		slist = slist->next;
+	}
+
 	if (text)
 		gtk_entry_set_text (GTK_ENTRY (w), text);
 	else
 		gtk_entry_set_text (GTK_ENTRY (w), "");
-	g_slist_free (slist);
+
+	g_slist_free_full (slist, g_free);
 
 	// Present in the combo box the nodes of the schematic
 	w = GTK_WIDGET (gtk_builder_get_object (builder, "fourier_select_out"));

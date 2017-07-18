@@ -87,6 +87,7 @@ NodeStore *node_store_new (void);
 Node *node_store_get_node (NodeStore *store, Coords pos);
 gboolean node_store_add_part (NodeStore *store, Part *part);
 gboolean node_store_remove_part (NodeStore *store, Part *part);
+void node_store_remove_overlapping_wires (NodeStore *store, Wire *wire);
 gboolean node_store_add_wire (NodeStore *store, Wire *wire);
 gboolean node_store_remove_wire (NodeStore *store, Wire *wire);
 gboolean node_store_add_textbox (NodeStore *self, Textbox *text);

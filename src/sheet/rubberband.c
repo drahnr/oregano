@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Description: Handles the user interaction when doing area/rubberband
  *selections.
@@ -18,6 +19,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -48,12 +50,12 @@ inline static cairo_pattern_t *create_stipple (const char *color_name, guchar st
 {
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;
-	GdkColor color;
+	GdkRGBA color;
 	int stride;
 	const int width = 8;
 	const int height = 8;
 
-	gdk_color_parse (color_name, &color);
+	gdk_rgba_parse (&color, color_name);
 	/*	stipple_data[2] = stipple_data[14] = color.red >> 8;
 	        stipple_data[1] = stipple_data[13] = color.green >> 8;
 	        stipple_data[0] = stipple_data[12] = color.blue >> 8;

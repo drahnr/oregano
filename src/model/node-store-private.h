@@ -297,7 +297,7 @@ gboolean is_t_crossing (Wire *a, Wire *b, Coords *t)
  * @returns the pointer to a, or NUL if something went wrong
  * @attention onlycall this for two parallel and overlapping wires, ever!
  */
-static Wire *vulcanize_wire (NodeStore *store, Wire *a, Wire *b, Coords *so, Coords *eo)
+static Wire *vulcanize_wire (NodeStore *store, Wire *a, Wire *b)
 {
 	g_assert (store);
 	g_assert (IS_NODE_STORE (store));

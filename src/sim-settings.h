@@ -36,6 +36,9 @@
 #define __SIM_SETTINGS_H
 
 typedef struct {
+	gboolean configured;
+	gboolean simulation_requested;
+
 	// Transient analysis.
 	gboolean trans_enable;
 	gboolean trans_init_cond;
@@ -174,7 +177,7 @@ void sim_settings_set_fourier_vout (SimSettings *, gchar *);
 
 gboolean sim_settings_get_fourier (const SimSettings *);
 
-gint sim_settings_get_fourier_frequency (const SimSettings *);
+gdouble sim_settings_get_fourier_frequency (const SimSettings *);
 
 gchar *sim_settings_get_fourier_vout (const SimSettings *);
 
@@ -212,6 +215,6 @@ GList *sim_settings_get_options (const SimSettings *sim_settings);
 
 void sim_settings_add_option (SimSettings *, SimOption *);
 
-gchar *fourier_add_vout(SimSettings *sim_settings, gboolean result, guint i);
+gchar *fourier_add_vout(SimSettings *sim_settings, guint i);
 
 #endif

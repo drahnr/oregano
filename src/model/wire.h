@@ -87,6 +87,7 @@ void wire_get_start_pos (Wire *wire, Coords *pos);
 void wire_get_end_pos (Wire *wire, Coords *pos);
 void wire_get_start_and_end_pos (Wire *wire, Coords *start, Coords *end);
 void wire_get_pos_and_length (Wire *wire, Coords *pos, Coords *length);
+void wire_set_pos (Wire *wire, Coords *pos);
 void wire_set_length (Wire *wire, Coords *length);
 gint wire_is_visited (Wire *wire);
 void wire_set_visited (Wire *wire, gboolean is_visited);

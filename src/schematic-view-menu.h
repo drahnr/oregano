@@ -90,7 +90,7 @@ static GtkActionEntry entries[] = {
     {"Settings", NULL, N_ ("_Preferences"), NULL, N_ ("Edit Oregano settings"),
      G_CALLBACK (settings_show)},
     {"Simulate", GTK_STOCK_EXECUTE, N_ ("_Simulate"), "F5", N_ ("Run a simulation"),
-     G_CALLBACK (simulate_cmd)},
+     G_CALLBACK (schematic_view_simulate_cmd)},
     {"Netlist", NULL, N_ ("_Generate netlist"), NULL, N_ ("Generate a netlist"),
      G_CALLBACK (netlist_cmd)},
     {"SmartSearch", NULL, N_ ("Smart Search"), NULL, N_ ("Search a part within all the librarys"),
@@ -136,7 +136,7 @@ static GtkRadioActionEntry zoom_entries[] = {
 static GtkRadioActionEntry tools_entries[] = {
     {"Arrow", STOCK_PIXMAP_ARROW, N_ ("Arrow"), NULL, N_ ("Select, move and modify objects"), 0},
     {"Text", GTK_STOCK_BOLD, N_ ("Text"), NULL, N_ ("Put text on the schematic"), 1},
-    {"Wire", STOCK_PIXMAP_WIRE, N_ ("Wire"), "1", N_ ("Draw wires %"), 2},
+    {"Wire", STOCK_PIXMAP_WIRE, N_ ("Wire"), "1", N_ ("Draw wires"), 2},
     {"VClamp", STOCK_PIXMAP_V_CLAMP, N_ ("Clamp"), NULL, N_ ("Add voltage clamp"), 3},
 };
 

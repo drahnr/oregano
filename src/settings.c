@@ -48,9 +48,6 @@
 #include "oregano-utils.h"
 #include "oregano-config.h"
 
-// Engines Types
-static const gchar *engine[] = {"gnucap", "spice3", "ngspice"};
-
 typedef struct
 {
 	Schematic *sm;
@@ -66,13 +63,16 @@ typedef struct
 #define SETTINGS(x) ((Settings *)(x))
 
 GtkWidget *engine_path;
-GtkWidget *button[2];
+GtkWidget *button[OREGANO_ENGINE_COUNT];
 
 static void apply_callback (GtkWidget *w, Settings *s)
 {
 	oregano.engine = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
 	oregano.compress_files = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_compress_files));
-	oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log));
+	if (s->w_show_log)
+		oregano.show_log = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_log));
+	else
+		oregano.show_log = FALSE;
 	oregano.show_splash = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s->w_show_splash));
 
 	oregano_config_save ();
@@ -89,13 +89,16 @@ static void delete_event_callback (GtkWidget *w, GdkEvent *event, Settings *s)
 static void set_engine_name (GtkWidget *w, Settings *s)
 {
 	int engine_id;
+	gchar *engine_name;
 
 	s->w_engine = w;
 	engine_id = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (s->w_engine), "id"));
-	if (g_find_program_in_path (engine[engine_id]) == NULL) {
+
+	engine_name = oregano_engine_get_engine_name_by_index (engine_id);
+	if (g_find_program_in_path (engine_name) == NULL) {
 		if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button[engine_id]))) {
 			GString *msg = g_string_new (_ ("Engine <span weight=\"bold\" size=\"large\">"));
-			msg = g_string_append (msg, engine[engine_id]);
+			msg = g_string_append (msg, engine_name);
 			msg = g_string_append (msg, _ ("</span> not found\nThe engine is unable to locate "
 			                               "the external program."));
 			oregano_warning_with_title (_ ("Warning"), msg->str);
@@ -105,6 +108,7 @@ static void set_engine_name (GtkWidget *w, Settings *s)
 		} else
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[engine_id]), FALSE);
 	}
+	g_free (engine_name);
 }
 
 gpointer settings_new (Schematic *sm)
@@ -121,6 +125,7 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 {
 	gint i;
 	gboolean engine_available = FALSE;
+	gchar *engine_name;
 	GtkWidget *engine_group = NULL;
 	GtkWidget *w, *pbox, *toplevel;
 	GtkBuilder *gui;
@@ -132,9 +137,11 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	g_return_if_fail (sv != NULL);
 
 	for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
-		if (g_find_program_in_path(engine[i]) != NULL) {
+		engine_name = oregano_engine_get_engine_name_by_index (i);
+		if (g_find_program_in_path(engine_name) != NULL) {
 			engine_available = TRUE;
 		}
+		g_free (engine_name);
 	}
 
 	if (!engine_available) {
@@ -206,13 +213,14 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 	if (engine_available) {
 		w = GTK_WIDGET (gtk_builder_get_object (gui, "engine_table"));
 		for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+			engine_name = oregano_engine_get_engine_name_by_index (i);
 			if (engine_group)
 				button[i] = gtk_radio_button_new_with_label_from_widget (
-				    GTK_RADIO_BUTTON (engine_group), engine[i]);
+				    GTK_RADIO_BUTTON (engine_group), engine_name);
 			else
 				button[i] = engine_group =
-				    gtk_radio_button_new_with_label_from_widget (NULL, engine[i]);
-
+				    gtk_radio_button_new_with_label_from_widget (NULL, engine_name);
+			g_free (engine_name);
 			g_object_set_data (G_OBJECT (button[i]), "id", GUINT_TO_POINTER (i));
 
 			gtk_grid_attach (GTK_GRID (w), button[i], 0, i, 1, 1);
@@ -226,11 +234,13 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 
 	// Is the engine available?
 	// In that case the button is active
-	if (g_find_program_in_path (engine[oregano.engine]) != NULL)
+	engine_name = oregano_engine_get_engine_name_by_index (oregano.engine);
+	if (g_find_program_in_path (engine_name) != NULL)
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), TRUE);
 	// Otherwise the button is inactive
 	else
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button[oregano.engine]), FALSE);
+	g_free (engine_name);
 
 	gtk_widget_show_all (toplevel);
 }

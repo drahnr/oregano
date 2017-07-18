@@ -7,6 +7,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://github.com/marc-lorber/oregano
  *
@@ -14,6 +15,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -44,7 +46,7 @@ struct _GridPriv
 {
 	GooCanvasItem *canvas_grid;
 	guint snap;
-	GdkColor color;
+	GdkRGBA color;
 	gdouble spacing;
 	gdouble cached_zoom;
 	cairo_t *cairo;

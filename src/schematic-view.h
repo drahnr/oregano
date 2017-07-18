@@ -65,6 +65,9 @@ typedef struct _SchematicViewClass SchematicViewClass;
 typedef struct _SchematicViewPriv SchematicViewPriv;
 
 GType schematic_view_get_type (void);
+
+void schematic_view_simulate_cmd (GtkWidget *widget, SchematicView *sv);
+
 SchematicView *schematic_view_new (Schematic *schematic);
 Sheet *schematic_view_get_sheet (SchematicView *sv);
 void schematic_view_set_sheet (SchematicView *sv, Sheet *sheet);
