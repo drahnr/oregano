@@ -341,6 +341,7 @@ static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
+	g_return_if_fail (center_pos != NULL);
 
 	if (angle == 0)
 		return;
