@@ -15,6 +15,13 @@ resources:
     branch: master
     uri: https://github.com/drahnr/oregano.git
 
+- name: git-tag-resource
+  type: git
+  source:
+    tag_filter: "v[0-9]*.[0-9]*{,.[0-9]*}"
+    branch: master
+    uri: https://github.com/drahnr/oregano.git
+
 - name: git-pull-request-resource
   type: pull-request
   source:
@@ -42,6 +49,36 @@ resources:
     repository: quay.io/ratpoison/oregano-test-ubuntu
     username: {{quay-username}}
     password: {{quay-password}}
+
+- name: deb-release
+  type: s3
+  source:
+    bucket: releases
+    regexp: (.*).deb
+    access_key_id: {{minio-key-id}}
+    secret_access_key: {{secret-access-key}}
+
+- name: rpm-release
+  type: s3
+  source:
+    bucket: releases
+    regexp: (.*).rpm
+    access_key_id: {{minio-key-id}}
+    secret_access_key: {{secret-access-key}}
+
+- name: source-release
+  type: s3
+  source:
+    bucket: releases
+    regexp: (.*).tar.xz
+    access_key_id: {{minio-key-id}}
+    secret_access_key: {{secret-access-key}}
+
+- name: gh-release
+  type: github-release
+  source:
+    owner: drahnr
+    repository: oregano
 
 jobs:
   - name: pr-compile
@@ -88,6 +125,7 @@ jobs:
         trigger: true
       - get: git-clone-resource
         trigger: true
+
     - task: compile
       timeout: 15m
       image: oregano-test-fedora
@@ -95,14 +133,21 @@ jobs:
         platform: linux
         inputs:
         - name: git-clone-resource
+        outputs:
+        - name: dist
         run:
           path: sh
           args:
           - -exc
           - |
             ./waf configure build --debug --prefix=/tmp install
-            ./build/test/microtests
+            ./build/test/microtests && echo "tests passed" || cat ./build/test/test.log
           dir: git-clone-resource
+
+    - put: source-release
+      params:
+        file: oregano-*.tar.xz
+        acl: public-read
 
   - name: build-pkg-rpm
     build_logs_to_retain: 5
@@ -124,9 +169,15 @@ jobs:
         - name: git-clone-resource
         outputs:
         - name: srpm
+        - name: rpm
         run:
           path: .concourse/fedora/buildrpm.sh
           dir: git-clone-resource
+
+    - put: rpm-release
+      params:
+        file: oregano-*.rpm
+        acl: public-read
 
     - put: copr
       resource: copr-resource
@@ -148,6 +199,11 @@ jobs:
       - get: git-clone-resource
         trigger: true
         passed: [compile]
+
+    - put: deb-release
+      params:
+        file: oregano-*.deb
+        acl: public-read
 
     - task: create-deb
       timeout: 10m
@@ -205,3 +261,47 @@ jobs:
           path: debuild
           args: ["-i", "-us", "-uc", "-b"]
           dir: git-pull-request-resource
+
+  - name: make-release
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - aggregate:
+      - get: source-release
+        trigger: true
+      - get: rpm-release
+        trigger: true
+      - get: deb-release
+        trigger: true
+        passed: [compile, build-pkg-deb, build-pkg-rpm]
+    - task: tag2file
+      timeout: 5m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: git-tag-resource
+        - name: source-release
+        - name: deb-release
+        - name: rpm-release
+        outputs:
+        - name: release-info
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            git tag -l --points-at HEAD > ../release-info/TAG
+            echo "oregano" > ../release-info/NAME
+            echo "Yet another release" > ../release-info/BODY
+          dir: git-tag-resource
+    - put: gh-release
+      params:
+        name: release-info/NAME
+        tag: release-info/TAG
+        body: release-info/BODY
+        globs:
+        - source-release/oregano-*.tar.xz
+        - rpm-release/oregano-*.rpm
+        - deb-release/oregano-*.deb
+      
