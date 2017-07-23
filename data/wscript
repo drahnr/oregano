@@ -23,6 +23,7 @@ def build(bld):
 		bld.install_as ('${DATADIR}/mime-info/oregano.keys', 'mime/oregano.keys.in')
 		bld.install_files ('${DATADIR}/icons/hicolor/48x48/apps/', 'mime/oregano.png')
 		bld.install_files ('${DATADIR}/icons/hicolor/scalable/apps/', 'mime/oregano.svg')
+		bld.install_files ('${DATADIR}/oregano/ui/', 'xml/splash.xpm')
 		#things we need to be known by the app are already defined and stored in the main wscript
 		bld.install_files (bld.env.path_lang, 'netlist.lang')
 		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))

@@ -3,7 +3,7 @@
 	<schema path="/io/ahoi/oregano/" id="io.ahoi.oregano" gettext-domain="oregano">
 		<key type="i" name="engine">
 			<default>1</default>
-			<summary>The spice engine ngspice or gnucap.</summary>
+			<summary>The spice engine: gnucap, spice3 or ngspice.</summary>
 		</key>
 		<key type="b" name="compress-files">
 			<default>false</default>
@@ -14,7 +14,7 @@
 			<summary>oregano provides a log window by default.</summary>
 		</key>
 		<key type="b" name="show-splash">
-			<default>false</default>
+			<default>true</default>
 			<summary>oregano starts providing a splash window at startup.</summary>
 		</key>
 	</schema>
