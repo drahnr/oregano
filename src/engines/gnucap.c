@@ -60,6 +60,9 @@ static struct analysis_tag analysis_tags[] = {
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
 
 // Parser STATUS
+typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
+static ParseDataState state;
+
 struct _OreganoGnuCapPriv
 {
 	GPid child_pid;
@@ -453,6 +456,8 @@ static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 	self->priv->analysis = NULL;
 	self->priv->current = NULL;
 	self->priv->aborted = FALSE;
+
+	state = STATE_IDLE;
 }
 
 OreganoEngine *oregano_gnucap_new (Schematic *sc)
@@ -564,9 +569,6 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 	gint i, j, n;
 	gdouble val;
 	gchar *s;
-
-	typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
-	ParseDataState state;
 
 	for (j = 0; j < len; j++) {
 		if (raw[j] != '\n') {
