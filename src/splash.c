@@ -66,6 +66,7 @@ Splash *oregano_splash_new (GError **error)
 	sp->can_destroy = FALSE;
 
 	sp->win = GTK_WINDOW (gtk_builder_get_object (gui, "splash"));
+	gtk_window_set_keep_above (sp->win, TRUE);
 	sp->lbl = GTK_LABEL (gtk_builder_get_object (gui, "label"));
 	sp->progress = GTK_WIDGET (gtk_builder_get_object (gui, "pbar"));
 
