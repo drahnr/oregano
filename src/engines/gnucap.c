@@ -578,7 +578,6 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 		// Got a complete line
 		s = buf;
 		NG_DEBUG ("%s", s);
-		state = STATE_IDLE;
 		if (s[0] == GNUCAP_TITLE) {
 			SimSettings *sim_settings;
 			gdouble np1;
