@@ -14,7 +14,7 @@
 			<summary>oregano provides a log window by default.</summary>
 		</key>
 		<key type="b" name="show-splash">
-			<default>false</default>
+			<default>true</default>
 			<summary>oregano starts providing a splash window at startup.</summary>
 		</key>
 	</schema>
