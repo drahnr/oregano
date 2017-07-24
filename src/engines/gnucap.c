@@ -60,9 +60,6 @@ static struct analysis_tag analysis_tags[] = {
 #define TAGS_COUNT (sizeof(analysis_tags) / sizeof(struct analysis_tag))
 
 // Parser STATUS
-typedef enum { STATE_IDLE, IN_VARIABLES, IN_VALUES, STATE_ABORT } ParseDataState;
-static ParseDataState state;
-
 struct _OreganoGnuCapPriv
 {
 	GPid child_pid;
@@ -456,8 +453,6 @@ static void gnucap_instance_init (GTypeInstance *instance, gpointer g_class)
 	self->priv->analysis = NULL;
 	self->priv->current = NULL;
 	self->priv->aborted = FALSE;
-
-	state = STATE_IDLE;
 }
 
 OreganoEngine *oregano_gnucap_new (Schematic *sc)
@@ -600,7 +595,6 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				if (IS_THIS_ITEM (variables[0].name, analysis_tags[i]))
 					sdata->type = i + 1;
 
-			state = IN_VALUES;
 			sdata->n_variables = n;
 			sdata->got_points = 0;
 			sdata->got_var = 0;
@@ -692,48 +686,38 @@ static void gnucap_parse (gchar *raw, gint len, OreganoGnuCap *gnucap)
 				continue;
 			}
 
-			switch (state) {
-			case IN_VALUES:
-				val = strtofloat (s);
-				switch (sdata->type) {
-				case ANALYSIS_TYPE_TRANSIENT:
-					priv->progress = val / data->transient.sim_length;
-					break;
-				case ANALYSIS_TYPE_AC:
-					priv->progress = (val - data->ac.start) / data->ac.sim_length;
-					break;
-				case ANALYSIS_TYPE_DC_TRANSFER:
-					priv->progress = val / data->ac.sim_length;
-					break;
-				default:
-					break;
-				}
-				if (priv->progress > 1.0)
-					priv->progress = 1.0;
-
-				variables = _get_variables (s, &n);
-				for (i = 0; i < n; i++) {
-					val = strtofloat (variables[i].name);
-					sdata->data[i] = g_array_append_val (sdata->data[i], val);
-
-					// Update the minimum and maximum values so far.
-					if (val < sdata->min_data[i])
-						sdata->min_data[i] = val;
-					if (val > sdata->max_data[i])
-						sdata->max_data[i] = val;
-				}
-
-				_free_variables (variables, n);
-				sdata->got_points++;
-				sdata->got_var = n;
+			val = strtofloat (s);
+			switch (sdata->type) {
+			case ANALYSIS_TYPE_TRANSIENT:
+				priv->progress = val / data->transient.sim_length;
+				break;
+			case ANALYSIS_TYPE_AC:
+				priv->progress = (val - data->ac.start) / data->ac.sim_length;
+				break;
+			case ANALYSIS_TYPE_DC_TRANSFER:
+				priv->progress = val / data->ac.sim_length;
 				break;
 			default:
-				if (priv->buf_count > 1) {
-					if (strstr (s, _ ("abort")))
-						state = STATE_ABORT;
-					schematic_log_append_error (priv->schematic, s);
-				}
+				break;
 			}
+			if (priv->progress > 1.0)
+				priv->progress = 1.0;
+
+			variables = _get_variables (s, &n);
+			for (i = 0; i < n; i++) {
+				val = strtofloat (variables[i].name);
+				sdata->data[i] = g_array_append_val (sdata->data[i], val);
+
+				// Update the minimum and maximum values so far.
+				if (val < sdata->min_data[i])
+					sdata->min_data[i] = val;
+				if (val > sdata->max_data[i])
+					sdata->max_data[i] = val;
+			}
+
+			_free_variables (variables, n);
+			sdata->got_points++;
+			sdata->got_var = n;
 		}
 		priv->buf_count = 0;
 	}
