@@ -422,7 +422,7 @@ static gchar *gnucap_get_operation (OreganoEngine *self)
 	OreganoGnuCapPriv *priv = OREGANO_GNUCAP (self)->priv;
 
 	if (priv->current == NULL)
-		return _ ("None");
+		return g_strdup(_("None"));
 
 	return oregano_engine_get_analysis_name (priv->current);
 }
