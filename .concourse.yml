@@ -54,7 +54,7 @@ resources:
   type: s3
   source:
     endpoint: https://minio.spearow.io
-    bucket: oregano/rc
+    bucket: oregano-rc
     regexp: (.*).deb
     access_key_id: {{minio-access-key}}
     secret_access_key: {{minio-secret-key}}
@@ -63,7 +63,7 @@ resources:
   type: s3
   source:
     endpoint: https://minio.spearow.io
-    bucket: oregano/rc
+    bucket: oregano-rc
     regexp: (.*).rpm
     access_key_id: {{minio-access-key}}
     secret_access_key: {{minio-secret-key}}
@@ -72,7 +72,7 @@ resources:
   type: s3
   source:
     endpoint: https://minio.spearow.io
-    bucket: oregano/rc
+    bucket: oregano-rc
     regexp: (.*).tar.xz
     access_key_id: {{minio-access-key}}
     secret_access_key: {{minio-secret-key}}
@@ -81,7 +81,7 @@ resources:
   type: s3
   source:
     endpoint: https://minio.spearow.io
-    bucket: oregano/drop
+    bucket: oregano-drop
     regexp: (.*).deb
     access_key_id: {{minio-access-key}}
     secret_access_key: {{minio-secret-key}}
@@ -90,7 +90,7 @@ resources:
   type: s3
   source:
     endpoint: https://minio.spearow.io
-    bucket: oregano/drop
+    bucket: oregano-drop
     regexp: (.*).rpm
     access_key_id: {{minio-access-key}}
     secret_access_key: {{minio-secret-key}}
@@ -99,7 +99,7 @@ resources:
   type: s3
   source:
     endpoint: https://minio.spearow.io
-    bucket: oregano/drop
+    bucket: oregano-drop
     regexp: (.*).tar.xz
     access_key_id: {{minio-access-key}}
     secret_access_key: {{minio-secret-key}}
@@ -209,7 +209,7 @@ jobs:
 
     - put: rpm-drop
       params:
-        file: rpm/oregano-*.rpm
+        file: rpm/oregano*.rpm
         acl: public-read
 
     - put: copr
