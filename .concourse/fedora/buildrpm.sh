@@ -24,5 +24,6 @@ rpmbuild \
 -ba SPECS/oregano.spec || exit 1
 
 mkdir -p $(pwd)/${1}/{,s}rpm/
-cp -vf ${RPMBUILD_DIR}/RPMS/x86_64/*.rpm $(pwd)/${1}/rpm/
-cp -vf ${RPMBUILD_DIR}/SRPMS/*.src.rpm $(pwd)/${1}/srpm/
+rm -vf ${RPMBUILD_DIR}/RPMS/x86_64/oregano-*debug*.rpm
+cp -vf ${RPMBUILD_DIR}/RPMS/x86_64/oregano-*.rpm $(pwd)/${1}/rpm/
+cp -vf ${RPMBUILD_DIR}/SRPMS/oregano-*.src.rpm $(pwd)/${1}/srpm/
