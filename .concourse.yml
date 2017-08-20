@@ -423,6 +423,8 @@ jobs:
     plan:
     - aggregate:
       - get: git-tag-resource
+        passed: [source-release,build-pkg-rpm-release, build-pkg-deb-release]
+        trigger: true
       - get: oregano-test-fedora
       - get: source-release
         passed: [source-release]
