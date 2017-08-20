@@ -15,12 +15,12 @@ resources:
     branch: master
     uri: https://github.com/drahnr/oregano.git
 
-- name: git-tag-resource
-  type: git
-  source:
-    tag_filter: "v[0-9]*.[0-9]*{,.[0-9]*}"
-    branch: master
-    uri: https://github.com/drahnr/oregano.git
+# - name: git-tag-resource
+#   type: git
+#   source:
+#     tag_filter: "v[0-9]*.[0-9]*{,.[0-9]*}"
+#     branch: master
+#     uri: https://github.com/drahnr/oregano.git
 
 - name: git-pull-request-resource
   type: pull-request
@@ -50,29 +50,59 @@ resources:
     username: {{quay-username}}
     password: {{quay-password}}
 
-- name: deb-release
+- name: deb-rc
   type: s3
   source:
-    bucket: releases
+    endpoint: https://minio.spearow.io
+    bucket: oregano/rc
     regexp: (.*).deb
-    access_key_id: {{minio-key-id}}
-    secret_access_key: {{secret-access-key}}
+    access_key_id: {{minio-access-key}}
+    secret_access_key: {{minio-secret-key}}
 
-- name: rpm-release
+- name: rpm-rc
   type: s3
   source:
-    bucket: releases
+    endpoint: https://minio.spearow.io
+    bucket: oregano/rc
     regexp: (.*).rpm
-    access_key_id: {{minio-key-id}}
-    secret_access_key: {{secret-access-key}}
+    access_key_id: {{minio-access-key}}
+    secret_access_key: {{minio-secret-key}}
 
-- name: source-release
+- name: source-rc
   type: s3
   source:
-    bucket: releases
+    endpoint: https://minio.spearow.io
+    bucket: oregano/rc
     regexp: (.*).tar.xz
-    access_key_id: {{minio-key-id}}
-    secret_access_key: {{secret-access-key}}
+    access_key_id: {{minio-access-key}}
+    secret_access_key: {{minio-secret-key}}
+
+- name: deb-drop
+  type: s3
+  source:
+    endpoint: https://minio.spearow.io
+    bucket: oregano/drop
+    regexp: (.*).deb
+    access_key_id: {{minio-access-key}}
+    secret_access_key: {{minio-secret-key}}
+
+- name: rpm-drop
+  type: s3
+  source:
+    endpoint: https://minio.spearow.io
+    bucket: oregano/drop
+    regexp: (.*).rpm
+    access_key_id: {{minio-access-key}}
+    secret_access_key: {{minio-secret-key}}
+
+- name: source-drop
+  type: s3
+  source:
+    endpoint: https://minio.spearow.io
+    bucket: oregano/drop
+    regexp: (.*).tar.xz
+    access_key_id: {{minio-access-key}}
+    secret_access_key: {{minio-secret-key}}
 
 - name: gh-release
   type: github-release
@@ -142,11 +172,13 @@ jobs:
           - |
             ./waf configure build --debug --prefix=/tmp install
             ./build/test/microtests && echo "tests passed" || cat ./build/test/test.log
+            ./waf dist
+            cp oregano-*.tar.xz ../dist/
           dir: git-clone-resource
 
-    - put: source-release
+    - put: source-drop
       params:
-        file: oregano-*.tar.xz
+        file: dist/oregano-*.tar.xz
         acl: public-read
 
   - name: build-pkg-rpm
@@ -171,18 +203,19 @@ jobs:
         - name: srpm
         - name: rpm
         run:
-          path: .concourse/fedora/buildrpm.sh
+          path: ./.concourse/fedora/buildrpm.sh
+          args: [ .. ]
           dir: git-clone-resource
 
-    - put: rpm-release
+    - put: rpm-drop
       params:
-        file: oregano-*.rpm
+        file: rpm/oregano-*.rpm
         acl: public-read
 
     - put: copr
       resource: copr-resource
       params:
-        rpmbuild_dir: "srpm/rpmbuild/SRPMS"
+        rpmbuild_dir: "srpm"
         chroots: ["fedora-rawhide-x86_64", "fedora-26-x86_64", "fedora-25-x86_64"]
         enable_net: false
         max_n_bytes: 250000000
@@ -200,11 +233,6 @@ jobs:
         trigger: true
         passed: [compile]
 
-    - put: deb-release
-      params:
-        file: oregano-*.deb
-        acl: public-read
-
     - task: create-deb
       timeout: 10m
       image: oregano-test-ubuntu
@@ -212,10 +240,22 @@ jobs:
         platform: linux
         inputs:
         - name: git-clone-resource
+        outputs:
+        - name: deb
         run:
-          path: debuild
-          args: ["-i", "-us", "-uc", "-b"]
+          path: sh
+          args:
+          - -exc
+          - |
+            debuild -i -us -uc -b
+            ls -al ..
+            cp ../oregano*.deb ../deb/
           dir: git-clone-resource
+
+    - put: deb-drop
+      params:
+        file: deb/oregano*.deb
+        acl: public-read
 
   - name: pr-build-pkg-rpm
     build_logs_to_retain: 5
@@ -262,18 +302,60 @@ jobs:
           args: ["-i", "-us", "-uc", "-b"]
           dir: git-pull-request-resource
 
+  - name: make-rc
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - aggregate:
+      - get: source-drop
+        trigger: true
+      - get: rpm-drop
+        trigger: true
+      - get: deb-drop
+        trigger: true
+    - task: tag2file
+      timeout: 5m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: source-drop
+        - name: deb-drop
+        - name: rpm-drop
+        outputs:
+        - name: source-rc
+        - name: deb-rc
+        - name: rpm-rc
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            cp source-drop/* source-release/
+            cp deb-drop/* deb-release/
+            cp rpm-drop/* rpm-release/
+    - put: source-rc
+      params:
+        file: oregano-*.tar.xz
+        acl: public-read
+    - put: deb-rc
+      params:
+        file: oregano-*.deb
+        acl: public-read
+    - put: rpm-rc
+      params:
+        file: oregano-*.rpm
+        acl: public-read
+
   - name: make-release
     build_logs_to_retain: 5
     public: true
     plan:
     - aggregate:
-      - get: source-release
-        trigger: true
-      - get: rpm-release
-        trigger: true
-      - get: deb-release
-        trigger: true
-        passed: [compile, build-pkg-deb, build-pkg-rpm]
+      - get: source-rc
+      - get: rpm-rc
+      - get: deb-rc
+      passed: [compile, build-pkg-deb, build-pkg-rpm]
     - task: tag2file
       timeout: 5m
       image: oregano-test-fedora
@@ -281,9 +363,9 @@ jobs:
         platform: linux
         inputs:
         - name: git-tag-resource
-        - name: source-release
-        - name: deb-release
-        - name: rpm-release
+        - name: source-rc
+        - name: deb-rc
+        - name: rpm-rc
         outputs:
         - name: release-info
         run:
@@ -301,7 +383,7 @@ jobs:
         tag: release-info/TAG
         body: release-info/BODY
         globs:
-        - source-release/oregano-*.tar.xz
-        - rpm-release/oregano-*.rpm
-        - deb-release/oregano-*.deb
+        - source-rc/oregano-*.tar.xz
+        - rpm-rc/oregano-*.rpm
+        - deb-rc/oregano-*.deb
       

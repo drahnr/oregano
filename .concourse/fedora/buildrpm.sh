@@ -4,7 +4,8 @@ set -x
 set -e
 
 pwd 2>&1
-RPMBUILD_DIR="$(pwd)/../srpm/rpmbuild/"
+RPMBUILD_DIR="$(pwd)/${1}/rpmbuild"
+
 mkdir -p ${RPMBUILD_DIR}/{SOURCES,BUILD,RPMS,SRPMS,SPECS}
 
 ./waf configure rpmspec
@@ -21,3 +22,7 @@ rpmbuild \
 --define "_specdir %{_topdir}/SPECS" \
 --define "_sourcedir  %{_topdir}/SOURCES" \
 -ba SPECS/oregano.spec || exit 1
+
+mkdir -p $(pwd)/${1}/{,s}rpm/
+cp -vf ./${RPMBUILD_DIR}/RPMS/x86_64/*.rpm $(pwd)/${1}/rpm/
+cp -vf ./${RPMBUILD_DIR}/SRPMS/*.srpm $(pwd)/${1}/srpm/
