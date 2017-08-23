@@ -449,15 +449,19 @@ jobs:
           args:
           - -exc
           - |
-            git tag -l --points-at HEAD > ../release-info/TAG
+            git log -n 1 --format="%h" HEAD > ../release-info/COMMITISH
+            ./waf version
+            cat VERSION > ../release-info/TAG
             echo "oregano" > ../release-info/NAME
             echo "Yet another release" > ../release-info/BODY
           dir: git-tag-resource
     - put: gh-release
       params:
+        tag_prefix: v
         name: release-info/NAME
         tag: release-info/TAG
         body: release-info/BODY
+        commitish: release-info/COMMITISH
         globs:
         - source-release/oregano-*.tar.xz
         - rpm-release/oregano-*.rpm

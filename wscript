@@ -244,3 +244,12 @@ class builddeps(Context):
 	"""Install build dependencies"""
 	cmd = 'builddeps'
 	fun = 'builddeps_fun'
+
+def version_fun(ctx):
+	with open("VERSION", "w") as f:
+		f.write(VERSION + "\n")
+
+class version(Context):
+	"""Oregano Version to file VERSION"""
+	cmd = 'version'
+	fun = 'version_fun'
