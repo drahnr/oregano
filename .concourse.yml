@@ -109,6 +109,7 @@ resources:
   source:
     owner: drahnr
     repository: oregano
+    access_token: {{github-token}}
 
 jobs:
   - name: pr-compile
