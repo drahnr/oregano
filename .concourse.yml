@@ -466,5 +466,5 @@ jobs:
         globs:
         - source-release/oregano-*.tar.xz
         - rpm-release/oregano-*.rpm
-        - deb-release/oregano-*.deb
+        - deb-release/oregano_*.deb
       
