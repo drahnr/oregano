@@ -2,6 +2,7 @@
 <ogo:schematic xmlns:ogo="https://beerbach.me/project/oregano/ns/v1">
   <ogo:author/>
   <ogo:title>Fourier-test.oregano</ogo:title>
+  <ogo:version>0.84.13</ogo:version>
   <ogo:comments/>
   <ogo:grid>
     <ogo:visible>true</ogo:visible>
@@ -15,25 +16,38 @@
       <ogo:step>1e-05</ogo:step>
       <ogo:step-enabled>true</ogo:step-enabled>
       <ogo:init-conditions>false</ogo:init-conditions>
+      <ogo:analyze-all>false</ogo:analyze-all>
     </ogo:transient>
     <ogo:ac>
       <ogo:enabled>false</ogo:enabled>
+      <ogo:vout1>2)</ogo:vout1>
+      <ogo:type>LIN</ogo:type>
       <ogo:npoints>50</ogo:npoints>
       <ogo:start>1</ogo:start>
       <ogo:stop>1e+06</ogo:stop>
     </ogo:ac>
     <ogo:dc-sweep>
       <ogo:enabled>false</ogo:enabled>
-      <ogo:vsrc1/>
+      <ogo:vsrc1>V1</ogo:vsrc1>
+      <ogo:vout1>2</ogo:vout1>
       <ogo:start1>0</ogo:start1>
       <ogo:stop1>0</ogo:stop1>
       <ogo:step1>0</ogo:step1>
     </ogo:dc-sweep>
     <ogo:fourier>
       <ogo:enabled>true</ogo:enabled>
-      <ogo:freq>1000</ogo:freq>
-      <ogo:vout>1 2</ogo:vout>
+      <ogo:freq>1000.000</ogo:freq>
+      <ogo:vout>2</ogo:vout>
     </ogo:fourier>
+    <ogo:noise>
+      <ogo:enabled>false</ogo:enabled>
+      <ogo:vsrc1/>
+      <ogo:vout1>2</ogo:vout1>
+      <ogo:type>DEC</ogo:type>
+      <ogo:npoints>50</ogo:npoints>
+      <ogo:start>1</ogo:start>
+      <ogo:stop>1e+06</ogo:stop>
+    </ogo:noise>
     <ogo:options>
       <ogo:option>
         <ogo:name>TEMP</ogo:name>
@@ -239,7 +253,7 @@
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>V_@refdes %+ %- dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
+          <ogo:value>V_@refdes %1 %2 dc @dc ac @ac PULSE @v1 @v2 @td @tr @tf @pw @per</ogo:value>
         </ogo:property>
       </ogo:properties>
       <ogo:labels>
@@ -250,10 +264,38 @@
         </ogo:label>
       </ogo:labels>
     </ogo:part>
+    <ogo:part>
+      <ogo:rotation>0</ogo:rotation>
+      <ogo:name>Test Clamp</ogo:name>
+      <ogo:library>Default</ogo:library>
+      <ogo:symbol>Clamp</ogo:symbol>
+      <ogo:position>(330 290)</ogo:position>
+      <ogo:properties>
+        <ogo:property>
+          <ogo:name>internal</ogo:name>
+          <ogo:value>clamp</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>type</ogo:name>
+          <ogo:value>v</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>ac_type</ogo:name>
+          <ogo:value>m</ogo:value>
+        </ogo:property>
+        <ogo:property>
+          <ogo:name>ac_db</ogo:name>
+          <ogo:value>false</ogo:value>
+        </ogo:property>
+      </ogo:properties>
+      <ogo:labels/>
+    </ogo:part>
   </ogo:parts>
   <ogo:wires>
     <ogo:wire>
       <ogo:points>(150 350)(230 350)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
       <ogo:points>(230 350)(330 350)</ogo:points>
     </ogo:wire>
     <ogo:wire>
@@ -270,6 +312,8 @@
     </ogo:wire>
     <ogo:wire>
       <ogo:points>(150 250)(150 290)</ogo:points>
+    </ogo:wire>
+    <ogo:wire>
       <ogo:points>(150 290)(150 300)</ogo:points>
     </ogo:wire>
     <ogo:wire>
