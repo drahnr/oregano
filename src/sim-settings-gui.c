@@ -879,7 +879,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		index = 0;
 		active = 0;
 		for (iter = voltmeters_with_type; iter; iter = iter->next) {
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (g_strcmp0 (iter->data, "VM(0)"))
+				gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
 			if (!g_strcmp0(s->ac_vout, iter->data))
 				active = index;
 			index++;
@@ -963,7 +964,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		active = 0;
 		text = g_strdup_printf("V(%s)", s->dc_vout);
 		for (iter = voltmeters; iter; iter = iter->next) {
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (g_strcmp0 (iter->data, "V(0)"))
+				gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
 			if (!g_strcmp0(text, iter->data))
 				active = index;
 			index++;
@@ -1080,7 +1082,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 
 	if (voltmeters) {
 		for (iter = voltmeters; iter; iter = iter->next) {
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (node_box), iter->data);
+			if (g_strcmp0 (iter->data, "V(0)"))
+				gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (node_box), iter->data);
 		}
 		gtk_combo_box_set_active (GTK_COMBO_BOX (node_box), 0);
         }
@@ -1133,7 +1136,8 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 		active = 0;
 		text = g_strdup_printf ("V(%s)", s->noise_vout);
 		for (iter = voltmeters; iter; iter = iter->next) {
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
+			if (g_strcmp0 (iter->data, "V(0)"))
+				gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo_box), iter->data);
 			if (!g_strcmp0(text, iter->data))
 				active = index;
 			index++;
