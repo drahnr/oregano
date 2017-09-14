@@ -179,9 +179,8 @@ static void wire_item_finalize (GObject *object)
 
 	priv = WIRE_ITEM (object)->priv;
 
-	if (priv != NULL) {
-		g_free (priv);
-	}
+	g_free (priv);
+	priv = NULL;
 
 	G_OBJECT_CLASS (wire_item_parent_class)->finalize (object);
 }
