@@ -274,7 +274,6 @@ PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 	    oregano_options_debug_boxes () ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
 
 	priv->label_group = goo_canvas_group_new (goo_item, "width", -1.0, "height", -1.0, NULL);
-	g_object_unref (goo_item); // FIXME wtf? why?
 
 	priv->node_group = goo_canvas_group_new (goo_item, NULL);
 

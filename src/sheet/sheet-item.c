@@ -799,7 +799,7 @@ void sheet_item_reparent (SheetItem *item, GooCanvasGroup *group)
 	g_object_ref (item);
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
 	goo_canvas_item_add_child (GOO_CANVAS_ITEM (group), GOO_CANVAS_ITEM (item), -1);
-	// FIXME are we leaking a ref here?
+	g_object_unref (item);
 }
 
 void sheet_item_edit_properties (SheetItem *item)
