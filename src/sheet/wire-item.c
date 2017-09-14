@@ -58,7 +58,6 @@ static void wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_i
 static void wire_flipped_callback (ItemData *data, IDFlip horizontal, SheetItem *sheet_item);
 static void wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void wire_changed_callback (Wire *, WireItem *item);
-static void wire_delete_callback (Wire *, WireItem *item);
 static void wire_item_paste (Sheet *sheet, ItemData *data);
 static void selection_changed (WireItem *item, gboolean select, gpointer user_data);
 static int select_idle_callback (WireItem *item);
@@ -261,8 +260,6 @@ WireItem *wire_item_new (Sheet *sheet, Wire *wire)
 	    G_OBJECT (wire), "moved", G_CALLBACK (wire_moved_callback), G_OBJECT (wire_item), 0);
 	item_data->changed_handler_id = g_signal_connect_object (
 	    G_OBJECT (wire), "changed", G_CALLBACK (wire_changed_callback), G_OBJECT (wire_item), 0);
-
-	g_signal_connect (wire, "delete", G_CALLBACK (wire_delete_callback), wire_item);
 
 	wire_update_bbox (wire);
 
@@ -762,13 +759,4 @@ static void wire_changed_callback (Wire *wire, WireItem *item)
 	              "width", 2 * RESIZER_SIZE, "height", 2 * RESIZER_SIZE, NULL);
 
 	goo_canvas_item_request_update (GOO_CANVAS_ITEM (item->priv->line));
-}
-
-static void wire_delete_callback (Wire *wire, WireItem *item)
-{
-	// no clue why does work but canvas item does not disappear
-	//	g_clear_object (&item);
-	//	g_assert (item==NULL);
-	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
-	//	g_object_unref (wire); //FIXME this causes a segfault
 }
