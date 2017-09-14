@@ -120,7 +120,7 @@ static void part_finalize (GObject *object)
 			g_free (property->value);
 			g_free (property);
 		}
-		g_slist_free_full (priv->properties, g_free);
+		g_slist_free (priv->properties);
 
 		for (list = priv->labels; list; list = list->next) {
 			PartLabel *label = list->data;
@@ -129,7 +129,7 @@ static void part_finalize (GObject *object)
 			g_free (label->text);
 			g_free (label);
 		}
-		g_slist_free_full (priv->labels, g_free);
+		g_slist_free (priv->labels);
 
 		g_free (priv->pins);
 		g_free (priv->symbol_name);
