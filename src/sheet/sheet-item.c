@@ -295,8 +295,6 @@ static void sheet_item_finalize (GObject *object)
 		sheet_item->priv = NULL;
 	}
 
-	// FIXME check if we need
-	// goo_canvas_sheet_item_unregister (sheet, item);
 	G_OBJECT_CLASS (sheet_item_parent_class)->finalize (object);
 }
 
