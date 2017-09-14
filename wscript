@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # encoding: utf-8
 
-VERSION = '0.84.10'
+VERSION = '0.84.13'
 APPNAME = 'oregano'
 
 top = '.'
@@ -67,7 +67,7 @@ def configure(conf):
 	conf.check_cfg(atleast_pkgconfig_version='0.26')
 	conf.check_cfg(package='glib-2.0', uselib_store='GLIB', args=['glib-2.0 >= 2.44', '--cflags', '--libs'], mandatory=True)
 	conf.check_cfg(package='gobject-2.0', uselib_store='GOBJECT', args=['--cflags', '--libs'], mandatory=True)
-	conf.check_cfg(package='gtk+-3.0', uselib_store='GTK3', args=['--cflags', '--libs'], mandatory=True)
+	conf.check_cfg(package='gtk+-3.0', uselib_store='GTK3', args=['gtk+-3.0 >= 3.12', '--cflags', '--libs'], mandatory=True)
 	conf.check_cfg(package='libxml-2.0', uselib_store='XML', args=['--cflags', '--libs'], mandatory=True)
 	conf.check_cfg(package='goocanvas-2.0', uselib_store='GOOCANVAS', args=['--cflags', '--libs'], mandatory=True)
 	conf.check_cfg(package='gtksourceview-3.0', uselib_store='GTKSOURCEVIEW3', args=['--cflags', '--libs'], mandatory=True)
@@ -244,3 +244,12 @@ class builddeps(Context):
 	"""Install build dependencies"""
 	cmd = 'builddeps'
 	fun = 'builddeps_fun'
+
+def version_fun(ctx):
+	with open("VERSION", "w") as f:
+		f.write(VERSION + "\n")
+
+class version(Context):
+	"""Oregano Version to file VERSION"""
+	cmd = 'version'
+	fun = 'version_fun'
