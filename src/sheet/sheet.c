@@ -1026,6 +1026,7 @@ void sheet_delete_selection (Sheet *sheet)
 	for (iter = copy; iter; iter = iter->next) {
 		sheet_remove_item_in_sheet (SHEET_ITEM (iter->data), sheet);
 		goo_canvas_item_remove (GOO_CANVAS_ITEM (iter->data));
+		g_object_unref (iter->data);
 	}
 	g_list_free (copy);
 

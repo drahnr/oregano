@@ -166,9 +166,6 @@ static void wire_item_dispose (GObject *object)
 
 	priv = WIRE_ITEM (object)->priv;
 
-	g_clear_object (&(priv->line));
-	g_clear_object (&(priv->resize1));
-	g_clear_object (&(priv->resize2));
 	G_OBJECT_CLASS (wire_item_parent_class)->dispose (object);
 }
 
