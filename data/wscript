@@ -67,5 +67,5 @@ def build(bld):
 	)
 
 
-	bld(rule = "groff ${SRC} > ${TGT}", source="oregano.MAN.in", target="oregano.5")
-	bld.install_files ('${MANDIR}/man5', 'oregano.5')
+	bld(rule = "nroff -man -c ${SRC} > ${TGT}", source="oregano.MAN.in", target="oregano.1")
+	bld.install_files ('${MANDIR}/man1', 'oregano.1')
