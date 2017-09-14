@@ -396,7 +396,6 @@ static void prop_dialog_response (GtkWidget *dialog, gint response, PartPropDial
 		}
 		g_free (prop_name);
 	}
-	g_slist_free_full (props, g_object_unref);
 
 	update_canvas_labels (item);
 }
@@ -512,7 +511,6 @@ static void edit_properties_point (PartItem *item)
 			}
 		}
 	}
-	g_slist_free_full (properties, g_object_unref);
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
@@ -658,7 +656,6 @@ static void edit_properties (SheetItem *object)
 
 	prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
 
-	g_slist_free_full (properties, g_object_unref);
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
@@ -1002,8 +999,6 @@ static void create_canvas_items (GooCanvasGroup *group, LibraryPart *library_par
 	height = group_bounds.y2 - group_bounds.y1;
 
 	g_object_set (group, "width", width, "height", height, NULL);
-
-	g_slist_free_full (objects, g_object_unref);
 }
 
 static void create_canvas_labels (PartItem *item, Part *part)
@@ -1033,7 +1028,6 @@ static void create_canvas_labels (PartItem *item, Part *part)
 		item_list = g_slist_prepend (item_list, canvas_item);
 		g_free (text);
 	}
-	g_slist_free_full (list, g_object_unref);
 
 	item_list = g_slist_reverse (item_list);
 	part_item_set_label_items (item, item_list);
