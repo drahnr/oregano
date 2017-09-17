@@ -1088,9 +1088,9 @@ static void show_help (GtkWidget *widget, SchematicView *sv)
 	GError *e = NULL;
 
 #if GTK_CHECK_VERSION (3,22,0)
-	if (!gtk_show_uri_on_window (GTK_WINDOW (sv->toplevel), "ghelp:oregano", gtk_get_current_event_time (),
+	if (!gtk_show_uri_on_window (GTK_WINDOW (sv->toplevel), "help:oregano", gtk_get_current_event_time (),
 #else
-	if (!gtk_show_uri (gtk_widget_get_screen (sv->toplevel), "ghelp:oregano", gtk_get_current_event_time (),
+	if (!gtk_show_uri (gtk_widget_get_screen (sv->toplevel), "help:oregano", gtk_get_current_event_time (),
 #endif
      				&e)) {
 		NG_DEBUG ("Error %s\n", e->message);
