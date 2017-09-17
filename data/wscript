@@ -27,6 +27,7 @@ def build(bld):
 		#things we need to be known by the app are already defined and stored in the main wscript
 		bld.install_files (bld.env.path_lang, 'netlist.lang')
 		bld.install_files (bld.env.path_model, bld.path.ant_glob('models/*.model'))
+		bld.install_files (bld.env.path_datadir, bld.path.ant_glob('help/**/*'), cwd=bld.path, relative_trick=True)
 		bld.install_files (bld.env.path_examples, bld.path.ant_glob('examples/*.oregano'))
 		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
 		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
