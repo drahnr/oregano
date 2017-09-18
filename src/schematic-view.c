@@ -1569,6 +1569,7 @@ static void data_received (GtkWidget *widget, GdkDragContext *context, gint x, g
 				}
 				i++;
 			}
+			g_strfreev (files);
 		}
 	}
 	gtk_drag_finish (context, TRUE, TRUE, time);

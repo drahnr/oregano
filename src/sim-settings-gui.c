@@ -113,11 +113,8 @@ static void get_options_from_list (SimSettingsGui *s_gui)
 	while (s->options) {
 		so = s->options->data;
 		if (so) {
-			// Prevent sigfault on NULL
-			if (so->name)
-				g_free (so->name);
-			if (so->value)
-				g_free (so->value);
+			g_free (so->name);
+			g_free (so->value);
 			s->options = g_list_remove (s->options, so);
 			g_free (so);
 		}
@@ -424,35 +421,45 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 
 	// DC
 	s->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_dc_enable));
-	g_free (s->dc_vin);
 
+	g_free (s->dc_vin);
+	s->dc_vin = NULL;
 	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vin));
 	if (tmp) {
-		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
-		tmp = node_ids[1];
+		node_ids = g_strsplit (tmp, "V(", 0);
+		tmp = g_strdup (node_ids[1]);
+		g_strfreev (node_ids);
 		if (tmp) {
-			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			node_ids = g_strsplit (tmp, ")", 0);
+			g_free (tmp);
 			if (node_ids[0])
-				s->dc_vin = node_ids[0];
+				s->dc_vin = g_strdup (node_ids[0]);
 			else
 				s->dc_vin = g_strdup("");
+			g_strfreev (node_ids);
 		}
-	} else
-		s->dc_vin = g_strdup("");
+	}
+	if (s->dc_vin == NULL)
+		s->dc_vin = g_strdup ("");
 
 	g_free (s->dc_vout);
+	s->dc_vout = NULL;
 	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vout));
 	if (tmp) {
-		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
-		tmp = node_ids[1];
+		node_ids = g_strsplit (tmp, "V(", 0);
+		tmp = g_strdup (node_ids[1]);
+		g_strfreev (node_ids);
 		if (tmp) {
-			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			node_ids = g_strsplit (tmp, ")", 0);
+			g_free (tmp);
 			if (node_ids[0])
-				s->dc_vout = node_ids[0];
+				s->dc_vout = g_strdup (node_ids[0]);
 			else
 				s->dc_vout = g_strdup("");
+			g_strfreev (node_ids);
 		}
-	} else
+	}
+	if (s->dc_vout == NULL)
 		s->dc_vout = g_strdup("");
 
 	g_free (s->dc_start);
@@ -466,20 +473,25 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 
 	// AC
 	s->ac_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_ac_enable));
-	g_free (s->ac_vout);
 
+	g_free (s->ac_vout);
+	s->ac_vout = NULL;
 	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_ac_vout));
 	if (tmp) {
-		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
-		tmp = node_ids[1];
+		node_ids = g_strsplit (tmp, "V(", 0);
+		tmp = g_strdup (node_ids[1]);
+		g_strfreev (node_ids);
 		if (tmp) {
-			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			node_ids = g_strsplit (tmp, ")", 0);
+			g_free (tmp);
 			if (node_ids[0])
-				s->ac_vout = node_ids[0];
+				s->ac_vout = g_strdup (node_ids[0]);
 			else
 				s->ac_vout = g_strdup("");
+			g_strfreev (node_ids);
 		}
-	} else
+	}
+	if (s->ac_vout == NULL)
 		s->ac_vout = g_strdup("");
 
 	g_free (s->ac_type);
@@ -502,39 +514,49 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 
 	// Noise
 	s->noise_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_noise_enable));
-	g_free (s->noise_vin);
 
+	g_free (s->noise_vin);
+	s->noise_vin = NULL;
 	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_vin));
 	if (tmp) {
-		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
-		tmp = node_ids[1];
+		node_ids = g_strsplit (tmp, "V(", 0);
+		tmp = g_strdup (node_ids[1]);
+		g_strfreev (node_ids);
 		if (tmp) {
-			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			node_ids = g_strsplit (tmp, ")", 0);
+			g_free (tmp);
 			if (node_ids[0])
-				s->noise_vin = node_ids[0];
+				s->noise_vin = g_strdup (node_ids[0]);
 			else
 				s->noise_vin = g_strdup("");
+			g_strfreev (node_ids);
 		}
-	} else
+	}
+	if (s->noise_vin == NULL)
 		s->noise_vin = g_strdup("");
 
 	g_free (s->noise_vout);
+	s->noise_vout = NULL;
 	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_vout));
 	if (tmp) {
-		node_ids = g_strsplit (g_strdup (tmp), "V(", 0);
-		tmp = node_ids[1];
+		node_ids = g_strsplit (tmp, "V(", 0);
+		tmp = g_strdup (node_ids[1]);
+		g_strfreev (node_ids);
 		if (tmp) {
-			node_ids = g_strsplit (g_strdup (tmp), ")", 0);
+			node_ids = g_strsplit (tmp, ")", 0);
+			g_free (tmp);
 			if (node_ids[0])
-				s->noise_vout = node_ids[0];
+				s->noise_vout = g_strdup (node_ids[0]);
 			else
 				s->noise_vout = g_strdup("");
+			g_strfreev (node_ids);
 		}
-	} else
+	}
+	if (s->noise_vout == NULL)
 		s->noise_vout = g_strdup("");
 
 	g_free (s->noise_type);
-	s->noise_type = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_type));
+	s->noise_type = g_strdup (gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_type)));
 
 	g_free (s->noise_npoints);
 	s->noise_npoints = g_strdup (gtk_entry_get_text (GTK_ENTRY (s_gui->w_noise_npoints)));
@@ -553,8 +575,6 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 
 	// Schematic is dirty now ;-)
 	schematic_set_dirty (sm, TRUE);
-	g_free (tmp);
-	g_free (node_ids);
 
 	s->configured = TRUE;
 
@@ -1142,6 +1162,7 @@ void sim_settings_show (GtkWidget *widget, SchematicView *sv)
 				active = index;
 			index++;
 		}
+		g_free (text);
 		gtk_combo_box_set_active (GTK_COMBO_BOX (combo_box), active);
 	}
 	g_signal_connect (G_OBJECT (combo_box), "changed", G_CALLBACK (entry_changed_cb), s);
