@@ -48,8 +48,7 @@ inline Coords *coords_new_copy (const Coords *src) { return coords_new (src->x, 
 
 inline void coords_destroy (Coords *c)
 {
-	if (G_LIKELY (c))
-		g_free (c);
+	g_free (c);
 }
 
 inline Coords *coords_add (Coords *a, const Coords *b)

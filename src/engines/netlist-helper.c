@@ -435,10 +435,10 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		// Fill in the netlist node names for all the used nodes.
 		for (iter = data.node_and_number_list; iter; iter = iter->next) {
 			NodeAndNumber *nan = iter->data;
-			if (nan->node->netlist_node_name != NULL)
+			if (nan->node_nr > 0) {
 				g_free (nan->node->netlist_node_name);
-			if (nan->node_nr != 0)
 				nan->node->netlist_node_name = g_strdup (node2real[nan->node_nr]);
+			}
 		}
 
 		// Initialize out->template

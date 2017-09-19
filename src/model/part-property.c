@@ -210,12 +210,9 @@ char *part_property_expand_macros (Part *part, char *string)
 			}
 			temp += 1;
 			temp += sln;
-			if (qn)
-				g_free (qn);
-			if (cls1)
-				g_free (cls1);
-			if (cls2)
-				g_free (cls2);
+			g_free (qn);
+			g_free (cls1);
+			g_free (cls2);
 		} else {
 			if (*temp == '\\') {
 				temp++;
@@ -240,8 +237,7 @@ char *part_property_expand_macros (Part *part, char *string)
 		}
 	}
 
-	if (tmp0)
-		g_free (tmp0);
+	g_free (tmp0);
 
 	out = g_string_append_c (out, '\0');
 	ret = g_strdup (out->str);

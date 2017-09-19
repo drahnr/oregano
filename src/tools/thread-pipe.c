@@ -467,8 +467,7 @@ ThreadPipe *thread_pipe_pop_line(ThreadPipe *pipe_in, gchar **string_out, gsize 
 	gchar **old_data = (gchar **)&pipe_in->read_data->malloc_address;
 	gsize *old_size = &pipe_in->read_data->size;
 
-	if (*old_data != NULL)
-		g_free(*old_data);
+	g_free(*old_data);
 	*old_data = line;
 	*old_size = line_size;
 
@@ -577,8 +576,7 @@ static ThreadPipeData *thread_pipe_data_new(gpointer data, gsize size) {
 static ThreadPipeData *thread_pipe_data_destroy(ThreadPipe *pipe) {
 	ThreadPipeData *pipe_data = pipe->read_data;
 	ThreadPipeData *next = pipe_data->next;
-	if (pipe_data->malloc_address != NULL)
-		g_free(pipe_data->malloc_address);
+	g_free(pipe_data->malloc_address);
 	g_free(pipe_data);
 	if (next != NULL) {
 		pipe->read_buffer_data.block_counter--;
