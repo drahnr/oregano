@@ -204,6 +204,7 @@ void netlist_helper_node_traverse (Node *node, NetlistData *data)
 
 	g_return_if_fail (node != NULL);
 	g_return_if_fail (IS_NODE (node));
+	g_return_if_fail (data != NULL);
 
 	if (node_is_visited (node))
 		return;
@@ -276,6 +277,8 @@ void netlist_helper_node_traverse (Node *node, NetlistData *data)
 void netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData *data)
 {
 	Node *node = value;
+
+	g_return_if_fail (data != NULL);
 
 	// Only visit nodes that are not already visited.
 	if (node_is_visited (node))
