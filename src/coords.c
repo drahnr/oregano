@@ -37,10 +37,9 @@
 inline Coords *coords_new (gdouble x, gdouble y)
 {
 	Coords *c = g_malloc (sizeof(Coords));
-	if (G_LIKELY (c)) {
-		c->x = x;
-		c->y = y;
-	}
+	g_assert (c != NULL);
+	c->x = x;
+	c->y = y;
 	return c;
 }
 
