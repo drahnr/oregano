@@ -235,12 +235,6 @@ void dialog_about (void)
 	                       "(c) 2003-2006 LUGFi\n"
 	                       "(c) 1999-2001 Richard Hult");
 
-	// Allow only one about box at a time.
-	if (about) {
-		gdk_window_raise (gtk_widget_get_window (about));
-		return;
-	}
-
 	logo = gdk_pixbuf_new_from_xpm_data ((const char **)logo_xpm);
 	about = gtk_about_dialog_new ();
 	gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (about), "Oregano");
