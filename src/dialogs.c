@@ -82,9 +82,11 @@ void oregano_error_with_title (gchar *title, gchar *msg)
 	// make sure that this is running in the main thread
 	if (tid && (getpid() != tid)) {
 		OreganoTitleMsg *tm = g_malloc (sizeof (OreganoTitleMsg));
+		g_assert (tm != NULL);
 		tm->title = g_strdup (title);
 		tm->msg = g_strdup (msg);
 		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_error_with_title, tm, NULL);
+		return;
 	}
 
 	span_msg = g_string_new ("<span weight=\"bold\" size=\"large\">");
@@ -151,6 +153,7 @@ void oregano_warning_with_title (gchar *title, gchar *msg)
 	// make sure that this is running in the main thread
 	if (tid && (getpid() != tid)) {
 		OreganoTitleMsg *tm = g_malloc (sizeof (OreganoTitleMsg));
+		g_assert (tm != NULL);
 		tm->title = g_strdup (title);
 		tm->msg = g_strdup (msg);
 		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning_with_title, tm, NULL);
