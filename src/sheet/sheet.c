@@ -283,10 +283,19 @@ gboolean sheet_get_pointer_snapped (Sheet *sheet, gdouble *x, gdouble *y)
 	return TRUE;
 }
 
-void sheet_get_zoom (const Sheet *sheet, gdouble *zoom) { *zoom = sheet->priv->zoom; }
+void sheet_get_zoom (const Sheet *sheet, gdouble *zoom)
+{
+	g_return_if_fail (sheet);
+	g_return_if_fail (IS_SHEET (sheet));
+
+	*zoom = sheet->priv->zoom;
+}
 
 static void sheet_set_zoom (Sheet *sheet, const double zoom)
 {
+	g_return_if_fail (sheet);
+	g_return_if_fail (IS_SHEET (sheet));
+
 	sheet->priv->zoom = zoom;
 }
 
@@ -333,11 +342,12 @@ gboolean sheet_get_adjustments (const Sheet *sheet, GtkAdjustment **hadj, GtkAdj
 void sheet_zoom_step (Sheet *sheet, const gdouble factor)
 {
 	double zoom;
-	sheet_get_zoom (sheet, &zoom);
-	sheet_set_zoom (sheet, zoom * factor);
 
 	g_return_if_fail (sheet);
 	g_return_if_fail (IS_SHEET (sheet));
+
+	sheet_get_zoom (sheet, &zoom);
+	sheet_set_zoom (sheet, zoom * factor);
 
 	Coords adju, r, pointer, delta, center, pagesize;
 	GtkAdjustment *hadj = NULL, *vadj = NULL;
