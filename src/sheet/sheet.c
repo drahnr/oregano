@@ -65,7 +65,6 @@ static void move_items (Sheet *sheet, GList *items, const Coords *delta);
 static void flip_items (Sheet *sheet, GList *items, IDFlip direction);
 static void node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
-static void sheet_dispose (GObject *object);
 static void sheet_finalize (GObject *object);
 static int dot_equal (gconstpointer a, gconstpointer b);
 static guint dot_hash (gconstpointer key);
@@ -141,29 +140,30 @@ static void sheet_init (Sheet *sheet)
 	sheet->state = SHEET_STATE_NONE;
 }
 
-static void sheet_dispose (GObject *object)
-{
-	g_return_if_fail (object != NULL);
-
-	Sheet *sheet = SHEET (object);
-
-	if (sheet->grid)
-		g_object_unref (G_OBJECT (sheet->grid));
-	if (sheet->object_group)
-		g_object_unref (G_OBJECT (sheet->object_group));
-	if (object)
-		g_object_unref (object);
-}
-
 static void sheet_finalize (GObject *object)
 {
 	Sheet *sheet = SHEET (object);
 
 	if (sheet->priv) {
+		g_list_free (sheet->priv->selected_objects);
+		g_list_free (sheet->priv->floating_objects);
+		g_list_free (sheet->priv->items);
+		g_list_free (sheet->priv->preserve_selection_items);
+
+		if (sheet->priv->voltmeter_nodes)
+			g_hash_table_destroy (sheet->priv->voltmeter_nodes);
+
 		if (sheet->priv->node_dots)
 			g_hash_table_destroy (sheet->priv->node_dots);
+
+		g_free (sheet->priv->rubberband_info);
+		g_free (sheet->priv->create_wire_info);
+
 		g_free (sheet->priv);
 	}
+
+	if (sheet->grid)
+		g_object_unref (G_OBJECT (sheet->grid));
 
 	if (G_OBJECT_CLASS (sheet_parent_class)->finalize)
 		(*G_OBJECT_CLASS (sheet_parent_class)->finalize)(object);
@@ -580,18 +580,15 @@ gboolean sheet_replace (SchematicView *sv)
 
 	schematic_view_set_sheet (sv, sheet);
 
-	gtk_container_remove (GTK_CONTAINER (parent), GTK_WIDGET (old_sheet));
+	rubberband_info_destroy (old_sheet->priv->rubberband_info);
+	old_sheet->priv->rubberband_info = NULL;
+
+	create_wire_info_destroy (old_sheet->priv->create_wire_info);
+	old_sheet->priv->create_wire_info = NULL;
+
+	gtk_widget_destroy (GTK_WIDGET (old_sheet));
+
 	gtk_container_add (GTK_CONTAINER (parent), GTK_WIDGET (sheet));
-
-	if (old_sheet && GTK_IS_WIDGET (old_sheet)) {
-		gtk_widget_destroy (GTK_WIDGET (old_sheet));
-
-		// Disconnect sheet's events
-		g_signal_handlers_disconnect_by_func (G_OBJECT (old_sheet),
-						      G_CALLBACK (sheet_event_callback), old_sheet);
-	}
-
-	//sheet_dispose (G_OBJECT (old_sheet));
 
 	gtk_widget_grab_focus (GTK_WIDGET (sheet));
 
@@ -941,7 +938,7 @@ void sheet_rotate_selection (Sheet *sheet, gint angle)
 }
 
 /**
- * rotate the currently selected on the sheet
+ * move the currently selected on the sheet
  */
 void sheet_move_selection (Sheet *sheet, gdouble x, gdouble y)
 {
@@ -1388,7 +1385,7 @@ void sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 
 	sheet->priv->items = g_list_remove (sheet->priv->items, item);
 
-	//  Remove the object from the selected-list before destroying.
+	// Remove the object from the selected-list before destroying.
 	sheet_remove_selected_object (sheet, item);
 	sheet_remove_floating_object (sheet, item);
 
