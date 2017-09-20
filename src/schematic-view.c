@@ -1049,6 +1049,7 @@ static void schematic_view_finalize (GObject *object)
 	SchematicView *sv = SCHEMATIC_VIEW (object);
 
 	if (sv->priv) {
+		g_free (sv->priv->log_info);		
 		g_free (sv->priv);
 		sv->priv = NULL;
 	}
