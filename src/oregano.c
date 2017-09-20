@@ -203,3 +203,18 @@ static void oregano_application (GApplication *app, GFile *file)
 	if (oregano.show_splash && splash)
 		oregano_splash_done (splash, _ ("Welcome to Oregano"));
 }
+
+void oregano_deallocate_memory (void)
+{
+	GList *iter;
+	Library *l;
+
+        // Free the memory used by the parts libraries
+        for (iter = oregano.libraries; iter; iter = iter->next) {
+                l = (Library *) iter->data;
+                g_free (l->name);
+                g_free (l->author);
+                g_free (l->version);
+        }
+        g_list_free_full (oregano.libraries, g_free);
+}
