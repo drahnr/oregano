@@ -55,8 +55,6 @@ typedef struct
 	gchar *author;
 	gchar *version;
 
-	GSList *parts_list;
-
 	GHashTable *part_hash;
 	GHashTable *symbol_hash;
 } Library;
