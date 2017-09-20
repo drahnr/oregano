@@ -79,7 +79,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %doc docs/user-docs/Simulation-Settings-HOWTO.md
 
 %{_bindir}/*
-#%{_datadir}/gnome/help/oregano/*/*
+%{_datadir}/help/*/oregano/*
 %{_datadir}/applications/oregano.desktop
 %{_datadir}/mime-info/*
 %{_datadir}/icons/hicolor/*/*
