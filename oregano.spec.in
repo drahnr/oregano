@@ -31,7 +31,7 @@ as front-end and ng-spice/gnu-cap as back-end
 %build
 ./waf distclean || true
 
-# the bare "build" target does not mangle any additional cflags into the build 
+# the bare "build" target does not mangle any additional cflags into the build
 CFLAGS="%{optflags}" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" build
 
 %install
@@ -71,12 +71,7 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-, root, root)
 
 %doc HACKING.md README.md AUTHORS COPYING ARCHITECTURE.md
-%doc docs/oregano-inheritance.dia
-%doc docs/user-docs/Library-HOWTO.md
-%doc docs/user-docs/LogView.md
-%doc docs/user-docs/Oregano-Plot-HOWTO.md
-%doc docs/user-docs/ProgressBar.md
-%doc docs/user-docs/Simulation-Settings-HOWTO.md
+%doc docs/user-docs/*
 
 %{_bindir}/*
 #%{_datadir}/gnome/help/oregano/*/*
