@@ -285,6 +285,7 @@ static void schematic_finalize (GObject *object)
 		g_free (priv->comments);
 		g_free (priv->author);
 		g_free (priv->filename);
+		g_free (priv->settings);
 		sim_settings_gui_finalize(priv->sim_settings);
 		g_free (priv);
 	}
