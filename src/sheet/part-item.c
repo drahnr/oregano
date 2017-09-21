@@ -511,6 +511,8 @@ static void edit_properties_point (PartItem *item)
 		}
 	}
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
+
+	g_free (prop_dialog);
 }
 
 static void edit_properties (SheetItem *object)
@@ -656,6 +658,8 @@ static void edit_properties (SheetItem *object)
 	prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
 
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
+
+	g_free (prop_dialog);
 }
 
 inline static GooCanvasAnchorType angle_to_anchor (int angle)
