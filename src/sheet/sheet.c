@@ -1165,8 +1165,6 @@ static void flip_items (Sheet *sheet, GList *items, IDFlip direction)
 
 void sheet_clear_op_values (Sheet *sheet)
 {
-	GList *iter;
-
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
