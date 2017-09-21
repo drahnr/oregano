@@ -280,6 +280,8 @@ static void schematic_finalize (GObject *object)
 		g_free (priv->simulation);
 		g_hash_table_destroy (priv->symbols);
 		g_hash_table_destroy (priv->refdes_values);
+		g_clear_object (&priv->store);
+		g_clear_object (&priv->logstore);
 		g_free (priv->netlist_filename);
 		g_free (priv->comments);
 		g_free (priv->author);
