@@ -629,7 +629,6 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					// FIXME the bounding box of the clone is wrong
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 				}
-				g_object_ref (G_OBJECT (floating_data));
 
 				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
 
