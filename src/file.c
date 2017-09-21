@@ -67,10 +67,10 @@ char *dialog_open_file (SchematicView *sv)
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT) {
 		name = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
-		if (name[strlen (name) - 1] == '/')
+		if (name[strlen (name) - 1] == '/') {
+			g_free (name);
 			name = NULL;
-		else
-			name = g_strdup (name);
+		}
 	} else
 		name = NULL;
 
