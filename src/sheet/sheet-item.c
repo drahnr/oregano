@@ -286,14 +286,10 @@ static void sheet_item_get_property (GObject *object, guint prop_id, GValue *val
 
 static void sheet_item_finalize (GObject *object)
 {
-	GooCanvasItemSimple *simple = (GooCanvasItemSimple *)object;
-	SheetItem *sheet_item;
+	SheetItem *sheet_item = SHEET_ITEM (object);
 
-	sheet_item = SHEET_ITEM (object);
-	if (simple->simple_data) {
-		g_free (sheet_item->priv);
-		sheet_item->priv = NULL;
-	}
+	g_free (sheet_item->priv);
+	sheet_item->priv = NULL;
 
 	G_OBJECT_CLASS (sheet_item_parent_class)->finalize (object);
 }

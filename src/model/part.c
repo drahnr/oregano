@@ -472,11 +472,8 @@ gboolean part_set_pins (Part *part, GSList *pins)
 
 	num_pins = g_slist_length (pins);
 
-	if (priv->pins)
-		g_free (priv->pins);
-
-	if (priv->pins_orig)
-		g_free (priv->pins_orig);
+	g_free (priv->pins);
+	g_free (priv->pins_orig);
 
 	priv->pins = g_new0 (Pin, num_pins);
 	priv->pins_orig = g_new0 (Pin, num_pins);

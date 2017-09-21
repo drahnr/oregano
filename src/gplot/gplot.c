@@ -141,11 +141,8 @@ static void g_plot_finalize (GObject *object)
 {
 	GPlot *p = GPLOT (object);
 
-	if (p->priv->xlabel)
-		g_free (p->priv->xlabel);
-
-	if (p->priv->ylabel)
-		g_free (p->priv->ylabel);
+	g_free (p->priv->xlabel);
+	g_free (p->priv->ylabel);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }

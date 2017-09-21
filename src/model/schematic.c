@@ -280,8 +280,7 @@ static void schematic_finalize (GObject *object)
 		g_free (priv->simulation);
 		g_hash_table_destroy (priv->symbols);
 		g_hash_table_destroy (priv->refdes_values);
-		if (priv->netlist_filename)
-			g_free (priv->netlist_filename);
+		g_free (priv->netlist_filename);
 		g_free (priv->comments);
 		g_free (priv->author);
 		g_free (priv->filename);
@@ -333,8 +332,7 @@ void schematic_set_title (Schematic *schematic, const gchar *title)
 	if (!title)
 		return;
 
-	if (schematic->priv->title)
-		g_free (schematic->priv->title);
+	g_free (schematic->priv->title);
 	schematic->priv->title = g_strdup (title);
 
 	g_signal_emit_by_name (schematic, "title_changed", schematic->priv->title);
@@ -348,8 +346,7 @@ void schematic_set_author (Schematic *schematic, const gchar *author)
 	if (!author)
 		return;
 
-	if (schematic->priv->author)
-		g_free (schematic->priv->author);
+	g_free (schematic->priv->author);
 	schematic->priv->author = g_strdup (author);
 }
 
@@ -361,8 +358,7 @@ void schematic_set_version (Schematic *schematic, const gchar *oregano_version)
 	if (!oregano_version)
 		return;
 
-	if (schematic->priv->oregano_version)
-		g_free (schematic->priv->oregano_version);
+	g_free (schematic->priv->oregano_version);
 	schematic->priv->oregano_version = g_strdup (oregano_version);
 }
 
@@ -371,8 +367,7 @@ void schematic_set_comments (Schematic *schematic, const gchar *comments)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	if (schematic->priv->comments)
-		g_free (schematic->priv->comments);
+	g_free (schematic->priv->comments);
 	schematic->priv->comments = g_strdup (comments);
 }
 
@@ -406,8 +401,7 @@ void schematic_set_netlist_filename (Schematic *schematic, char *filename)
 	g_return_if_fail (schematic != NULL);
 	g_return_if_fail (IS_SCHEMATIC (schematic));
 
-	if (schematic->priv->netlist_filename)
-		g_free (schematic->priv->netlist_filename);
+	g_free (schematic->priv->netlist_filename);
 
 	schematic->priv->netlist_filename = g_strdup (filename);
 }
@@ -985,8 +979,7 @@ static GObject *print_options (GtkPrintOperation *operation, Schematic *sm)
 		return G_OBJECT (gtk_label_new (_ ("Error loading print-options.ui")));
 	}
 
-	if (sm->priv->printoptions)
-		g_free (sm->priv->printoptions);
+	g_free (sm->priv->printoptions);
 	sm->priv->printoptions = g_new0 (SchematicPrintOptions, 1);
 
 	sm->priv->printoptions->components =

@@ -388,8 +388,7 @@ static void prop_dialog_response (GtkWidget *dialog, gint response, PartPropDial
 		for (props = part_get_properties (part); props; props = props->next) {
 			prop = props->data;
 			if (g_ascii_strcasecmp (prop->name, prop_name) == 0) {
-				if (prop->value)
-					g_free (prop->value);
+				g_free (prop->value);
 				prop->value = g_strdup (prop_value);
 			}
 		}
