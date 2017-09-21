@@ -64,15 +64,6 @@ typedef struct
 	GList *libraries;
 	GSList *clipboard;
 
-	// list for library paths
-	GList *lib_path;
-
-	// list for model paths
-	GList *model_path;
-
-	// hash table with model names as keys and paths as data
-	GHashTable *models;
-
 	GSettings *settings;
 	gint engine;
 	gboolean compress_files;
