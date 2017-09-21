@@ -134,7 +134,6 @@ static void sheet_init (Sheet *sheet)
 	sheet->priv->create_wire_info = NULL;
 	sheet->priv->preserve_selection_items = NULL;
 	sheet->priv->sheet_parent_class = g_type_class_ref (GOO_TYPE_CANVAS);
-	sheet->priv->voltmeter_items = NULL;
 	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
 	sheet->state = SHEET_STATE_NONE;
@@ -1170,13 +1169,6 @@ void sheet_clear_op_values (Sheet *sheet)
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
-
-	for (iter = sheet->priv->voltmeter_items; iter; iter = iter->next) {
-		g_object_unref (G_OBJECT (iter->data));
-	}
-
-	g_list_free (sheet->priv->voltmeter_items);
-	sheet->priv->voltmeter_items = NULL;
 
 	g_hash_table_destroy (sheet->priv->voltmeter_nodes);
 	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);

@@ -61,7 +61,6 @@ struct _SheetPriv
 	GList *preserve_selection_items;
 	GooCanvasClass *sheet_parent_class;
 
-	GList *voltmeter_items; // List of GooCanvasItem
 	GHashTable *voltmeter_nodes;
 
 	CreateWireInfo *create_wire_info; // Wire context for each schematic
