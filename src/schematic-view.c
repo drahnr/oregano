@@ -368,6 +368,10 @@ static void export_cmd (GtkWidget *widget, SchematicView *sv)
 
 static void page_properties_cmd (GtkWidget *widget, SchematicView *sv)
 {
+	if (sv->priv->page_setup) {
+		g_object_unref (sv->priv->page_setup);
+	}
+
 	sv->priv->page_setup =
 	    gtk_print_run_page_setup_dialog (NULL, sv->priv->page_setup, sv->priv->print_settings);
 }
@@ -572,7 +576,11 @@ static void close_cmd (GtkWidget *widget, SchematicView *sv)
 		NG_DEBUG (" --- not dirty (anymore), do close schematic_view: %p -- vs -- "
 		          "toplevel: %p",
 		          sv, schematic_view_get_toplevel (sv));
+
 		gtk_widget_destroy (GTK_WIDGET (schematic_view_get_toplevel (sv)));
+		sv->toplevel = NULL;
+
+		g_object_unref (G_OBJECT (sv));
 	}
 }
 
@@ -739,8 +747,7 @@ static void quit_cmd (GtkWidget *widget, SchematicView *sv)
 	copy = g_list_copy (schematic_view_list);
 
 	for (iter = copy; iter; iter = iter->next) {
-		if (can_close (iter->data))
-			g_object_unref (iter->data);
+		close_cmd (NULL, iter->data);
 	}
 
 	g_list_free (copy);
@@ -1049,6 +1056,15 @@ static void schematic_view_finalize (GObject *object)
 	SchematicView *sv = SCHEMATIC_VIEW (object);
 
 	if (sv->priv) {
+		if (sv->priv->page_setup) {
+			g_object_unref (sv->priv->page_setup);
+		}
+
+		g_object_unref (sv->priv->print_settings);
+		g_object_unref (sv->priv->action_group);
+		g_object_unref (sv->priv->ui_manager);
+		g_object_unref (sv->priv->paned);
+
 		g_free (sv->priv->log_info);		
 		g_free (sv->priv);
 		sv->priv = NULL;
@@ -1068,19 +1084,24 @@ static void schematic_view_dispose (GObject *object)
 
 	schematic_view_list = g_list_remove (schematic_view_list, sv);
 
-	// Disconnect sheet's events
-	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->priv->sheet),
-	                                      G_CALLBACK (sheet_event_callback), sv->priv->sheet);
+	if (sv->toplevel) {
+		// Disconnect focus signal
+		g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel), G_CALLBACK (set_focus), sv);
 
-	// Disconnect focus signal
-	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel), G_CALLBACK (set_focus), sv);
-
-	// Disconnect destroy event from toplevel
-	g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel), G_CALLBACK (delete_event), sv);
+		// Disconnect destroy event from toplevel
+		g_signal_handlers_disconnect_by_func (G_OBJECT (sv->toplevel), G_CALLBACK (delete_event), sv);
+	}
 
 	if (sv->priv) {
+		if (IS_SHEET (sv->priv->sheet)) {
+			// Disconnect sheet's events
+			g_signal_handlers_disconnect_by_func (G_OBJECT (sv->priv->sheet),
+							      G_CALLBACK (sheet_event_callback), sv->priv->sheet);
+		}
+
 		g_object_unref (G_OBJECT (sv->priv->schematic));
 	}
+
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
