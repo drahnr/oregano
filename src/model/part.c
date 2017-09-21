@@ -586,17 +586,19 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	// Rotate the pins.
 	for (i = 0; i < priv->num_pins; i++) {
-		x = priv->pins_orig[i].offset.x;
-		y = priv->pins_orig[i].offset.y;
-		cairo_matrix_transform_point (&morph_rot, &x, &y);
+		if (priv->pins_orig && priv->pins) {
+			x = priv->pins_orig[i].offset.x;
+			y = priv->pins_orig[i].offset.y;
+			cairo_matrix_transform_point (&morph_rot, &x, &y);
 
-		if (fabs (x) < 1e-2)
-			x = 0.0;
-		if (fabs (y) < 1e-2)
-			y = 0.0;
+			if (fabs (x) < 1e-2)
+				x = 0.0;
+			if (fabs (y) < 1e-2)
+				y = 0.0;
 
-		priv->pins[i].offset.x = x;
-		priv->pins[i].offset.y = y;
+			priv->pins[i].offset.x = x;
+			priv->pins[i].offset.y = y;
+		}
 	}
 
 	item_data_move (data, &delta_to_apply);
@@ -738,6 +740,7 @@ static ItemData *part_clone (ItemData *src)
 	src_part = PART (src);
 	new_part = g_object_new (TYPE_PART, NULL);
 	new_part->priv->pins = g_new0 (Pin, src_part->priv->num_pins);
+	new_part->priv->pins_orig = g_new0 (Pin, src_part->priv->num_pins);
 	id_class->copy (ITEM_DATA (new_part), src);
 
 	return ITEM_DATA (new_part);
@@ -767,9 +770,16 @@ static void part_copy (ItemData *dest, ItemData *src)
 	dest_part->priv->name = g_strdup (src_part->priv->name);
 	dest_part->priv->symbol_name = g_strdup (src_part->priv->symbol_name);
 
-	memcpy (dest_part->priv->pins, src_part->priv->pins, src_part->priv->num_pins * sizeof(Pin));
-	for (i = 0; i < dest_part->priv->num_pins; i++)
-		dest_part->priv->pins[i].part = dest_part;
+	if (src_part->priv->pins) {
+		memcpy (dest_part->priv->pins, src_part->priv->pins, src_part->priv->num_pins * sizeof(Pin));
+		for (i = 0; i < dest_part->priv->num_pins; i++)
+			dest_part->priv->pins[i].part = dest_part;
+	}
+	if (src_part->priv->pins_orig) {
+		memcpy (dest_part->priv->pins_orig, src_part->priv->pins_orig, src_part->priv->num_pins * sizeof(Pin));
+		for (i = 0; i < dest_part->priv->num_pins; i++)
+			dest_part->priv->pins_orig[i].part = dest_part;
+	}
 
 	// Copy properties and labels.
 	dest_part->priv->properties = g_slist_copy (src_part->priv->properties);
