@@ -112,35 +112,64 @@ resources:
     access_token: {{github-token}}
 
 jobs:
-  - name: pr-compile
+  - name: pr-validate
     build_logs_to_retain: 50
     public: true
     plan:
     - aggregate:
       - get: oregano-test-fedora
         trigger: true
+      - get: oregano-test-ubuntu
+        trigger: true
       - get: git-pull-request-resource
         trigger: true
-    - task: compile
-      timeout: 5m
-      image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-pull-request-resource
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            ./waf configure build --debug --prefix=/tmp install
-            ./build/test/microtests
-          dir: "git-pull-request-resource"
+    - aggregate:
+      - task: compile
+        timeout: 3m
+        image: oregano-test-fedora
+        config:
+          platform: linux
+          inputs:
+          - name: git-pull-request-resource
+          run:
+            path: sh
+            args:
+            - -exc
+            - |
+              ./waf configure build --debug --prefix=/tmp install
+              ./build/test/microtests
+            dir: "git-pull-request-resource"
+
+      - task: create-rpm
+        timeout: 5m
+        image: oregano-test-fedora
+        config:
+          platform: linux
+          inputs:
+          - name: git-pull-request-resource
+          run:
+            path: .concourse/fedora/buildrpm.sh
+            dir: git-pull-request-resource
+
+      - task: create-deb
+        timeout: 5m
+        image: oregano-test-ubuntu
+        config:
+          platform: linux
+          inputs:
+          - name: git-pull-request-resource
+          run:
+            path: debuild
+            args: ["-i", "-us", "-uc", "-b"]
+            dir: git-pull-request-resource
+
+
       on_success:
         put: git-pull-request-resource
         params:
           path: git-pull-request-resource
           status: success
+
       on_failure:
         put: git-pull-request-resource
         params:
@@ -247,54 +276,6 @@ jobs:
       params:
         file: deb/oregano*.deb
         acl: public-read
-
-  - name: pr-build-pkg-rpm
-    build_logs_to_retain: 5
-    public: true
-    plan:
-    - aggregate:
-      - get: oregano-test-fedora
-        trigger: true
-      - get: git-pull-request-resource
-        trigger: true
-        passed: [pr-compile]
-
-    - task: create-rpm
-      timeout: 10m
-      image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-pull-request-resource
-        run:
-          path: .concourse/fedora/buildrpm.sh
-          dir: git-pull-request-resource
-
-  - name: pr-build-pkg-deb
-    build_logs_to_retain: 5
-    public: true
-    plan:
-    - aggregate:
-      - get: oregano-test-ubuntu
-        trigger: true
-      - get: git-pull-request-resource
-        trigger: true
-        passed: [pr-compile]
-
-    - task: create-deb
-      timeout: 10m
-      image: oregano-test-ubuntu
-      config:
-        platform: linux
-        inputs:
-        - name: git-pull-request-resource
-        run:
-          path: debuild
-          args: ["-i", "-us", "-uc", "-b"]
-          dir: git-pull-request-resource
-
-
-
 
 ###############################################################################
 
