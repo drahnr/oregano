@@ -209,6 +209,8 @@ void oregano_deallocate_memory (void)
 	GList *iter;
 	Library *l;
 
+	g_object_unref (oregano.settings);
+
         // Free the memory used by the parts libraries
         for (iter = oregano.libraries; iter; iter = iter->next) {
                 l = (Library *) iter->data;
@@ -217,4 +219,6 @@ void oregano_deallocate_memory (void)
                 g_free (l->version);
         }
         g_list_free_full (oregano.libraries, g_free);
+
+	clipboard_empty ();
 }
