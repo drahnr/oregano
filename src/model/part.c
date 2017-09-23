@@ -132,6 +132,7 @@ static void part_finalize (GObject *object)
 		g_slist_free (priv->labels);
 
 		g_free (priv->pins);
+		g_free (priv->pins_orig);
 		g_free (priv->symbol_name);
 
 		g_slice_free (PartPriv, priv);
