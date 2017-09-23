@@ -113,7 +113,6 @@ struct _SchematicViewPriv
 	GtkActionGroup *action_group;
 	GtkUIManager *ui_manager;
 
-	GtkWidget *floating_part_browser;
 	gpointer browser;
 
 	GtkWidget *logview;
