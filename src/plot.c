@@ -142,8 +142,7 @@ static gint delete_event_cb (GtkWidget *widget, GdkEvent *event, Plot *plot)
 {
 	plot->window = NULL;
 	g_object_unref (plot->sim);
-	if (plot->ytitle)
-		g_free (plot->ytitle);
+	g_free (plot->ytitle);
 	g_free (plot);
 	plot = NULL;
 	return FALSE;
@@ -158,8 +157,7 @@ static void destroy_window (GtkWidget *widget, Plot *plot)
 	gtk_widget_destroy (plot->window);
 	g_object_unref (plot->sim);
 	plot->window = NULL;
-	if (plot->title)
-		g_free (plot->title);
+	g_free (plot->title);
 	g_free (plot);
 	plot = NULL;
 }

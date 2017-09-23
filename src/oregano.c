@@ -101,16 +101,16 @@ static void oregano_init (Oregano *object)
 	// otherwise pick up the next one !
 	engine_name = oregano_engine_get_engine_name_by_index (oregano.engine);
 	if (g_find_program_in_path (engine_name) == NULL) {
-		g_free (engine_name);
 		oregano.engine = OREGANO_ENGINE_COUNT;
 		for (i = 0; i < OREGANO_ENGINE_COUNT; i++) {
+			g_free (engine_name);
 			engine_name = oregano_engine_get_engine_name_by_index (i);
 			if (g_find_program_in_path (engine_name) != NULL) {
 				oregano.engine = i;
 			}
-			g_free (engine_name);
 		}
 	}
+	g_free (engine_name);
 
 	// simulation cannot run, disable log
 	if (oregano.engine < 0 || oregano.engine >= OREGANO_ENGINE_COUNT)
@@ -202,4 +202,23 @@ static void oregano_application (GApplication *app, GFile *file)
 
 	if (oregano.show_splash && splash)
 		oregano_splash_done (splash, _ ("Welcome to Oregano"));
+}
+
+void oregano_deallocate_memory (void)
+{
+	GList *iter;
+	Library *l;
+
+	g_object_unref (oregano.settings);
+
+        // Free the memory used by the parts libraries
+        for (iter = oregano.libraries; iter; iter = iter->next) {
+                l = (Library *) iter->data;
+                g_free (l->name);
+                g_free (l->author);
+                g_free (l->version);
+        }
+        g_list_free_full (oregano.libraries, g_free);
+
+	clipboard_empty ();
 }

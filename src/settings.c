@@ -205,8 +205,6 @@ void settings_show (GtkWidget *widget, SchematicView *sv)
 		gtk_widget_destroy (w);
 	}
 
-	w = GTK_WIDGET (gtk_builder_get_object (gui, "grid-size"));
-	gtk_widget_set_sensitive (w, FALSE);
 	w = GTK_WIDGET (gtk_builder_get_object (gui, "realtime-enable"));
 	gtk_widget_set_sensitive (w, FALSE);
 

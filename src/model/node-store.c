@@ -105,6 +105,10 @@ static void node_store_finalize (GObject *object)
 		g_list_free (self->items);
 		self->items = NULL;
 	}
+	if (self->textbox) {
+		g_list_free (self->textbox);
+		self->textbox = NULL;
+	}
 
 	G_OBJECT_CLASS (node_store_parent_class)->finalize (object);
 }

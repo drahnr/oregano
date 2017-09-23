@@ -286,17 +286,11 @@ static void sheet_item_get_property (GObject *object, guint prop_id, GValue *val
 
 static void sheet_item_finalize (GObject *object)
 {
-	GooCanvasItemSimple *simple = (GooCanvasItemSimple *)object;
-	SheetItem *sheet_item;
+	SheetItem *sheet_item = SHEET_ITEM (object);
 
-	sheet_item = SHEET_ITEM (object);
-	if (simple->simple_data) {
-		g_free (sheet_item->priv);
-		sheet_item->priv = NULL;
-	}
+	g_free (sheet_item->priv);
+	sheet_item->priv = NULL;
 
-	// FIXME check if we need
-	// goo_canvas_sheet_item_unregister (sheet, item);
 	G_OBJECT_CLASS (sheet_item_parent_class)->finalize (object);
 }
 
@@ -635,7 +629,6 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 					// FIXME the bounding box of the clone is wrong
 					floating_data = item_data_clone (sheet_item_get_data (floating_item));
 				}
-				g_object_ref (G_OBJECT (floating_data));
 
 				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
 
@@ -801,7 +794,7 @@ void sheet_item_reparent (SheetItem *item, GooCanvasGroup *group)
 	g_object_ref (item);
 	goo_canvas_item_remove (GOO_CANVAS_ITEM (item));
 	goo_canvas_item_add_child (GOO_CANVAS_ITEM (group), GOO_CANVAS_ITEM (item), -1);
-	// FIXME are we leaking a ref here?
+	g_object_unref (item);
 }
 
 void sheet_item_edit_properties (SheetItem *item)

@@ -82,9 +82,11 @@ void oregano_error_with_title (gchar *title, gchar *msg)
 	// make sure that this is running in the main thread
 	if (tid && (getpid() != tid)) {
 		OreganoTitleMsg *tm = g_malloc (sizeof (OreganoTitleMsg));
+		g_assert (tm != NULL);
 		tm->title = g_strdup (title);
 		tm->msg = g_strdup (msg);
 		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_error_with_title, tm, NULL);
+		return;
 	}
 
 	span_msg = g_string_new ("<span weight=\"bold\" size=\"large\">");
@@ -151,6 +153,7 @@ void oregano_warning_with_title (gchar *title, gchar *msg)
 	// make sure that this is running in the main thread
 	if (tid && (getpid() != tid)) {
 		OreganoTitleMsg *tm = g_malloc (sizeof (OreganoTitleMsg));
+		g_assert (tm != NULL);
 		tm->title = g_strdup (title);
 		tm->msg = g_strdup (msg);
 		g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, (GSourceFunc) oregano_schedule_warning_with_title, tm, NULL);
@@ -234,12 +237,6 @@ void dialog_about (void)
 	                       "(c) 2009-2012 Marc Lorber\n"
 	                       "(c) 2003-2006 LUGFi\n"
 	                       "(c) 1999-2001 Richard Hult");
-
-	// Allow only one about box at a time.
-	if (about) {
-		gdk_window_raise (gtk_widget_get_window (about));
-		return;
-	}
 
 	logo = gdk_pixbuf_new_from_xpm_data ((const char **)logo_xpm);
 	about = gtk_about_dialog_new ();

@@ -1,12 +1,26 @@
-.SH NAME oregano \- an electrical engineering tool
+.TH OREGANO 1 "13 September 2017" "OREGANO"
 
-.B oregano [[--debug-wires] [--debug-dots] [--debug-boundingboxes] [--debug-directions] |  [--debug-all]] [--display=DISPLAY]
+.SH NAME
+oregano \- an electrical engineering tool
+
+.SH SYNOPSIS
+oregano [[\-\-debug-wires] [\-\-debug-dots] [\-\-debug-boundingboxes] [\-\-debug-directions] | [\-\-debug-all]] [\-\-display=DISPLAY]
 
 .SH DESCRIPTION
-A simulation frontend for ngspice and gnucap written in 21st century Gtk+.
+A simulation frontend for UC Berkeley spice3, ngspice and gnucap written in 21st century Gtk+.
 
 .SH BUGS
 File bugs at https://github.com/drahnr/oregano
 
-.SH AUTHOR
-Bernhard Schuster <bernhard at ahoi dot io>
+.SH AUTHORS
+Richard Hult <d4hult@dtek.chalmers.se>
+.PP
+Ricardo Markiewicz <rmarkie@fi.uba.ar>
+.PP
+Andr\('es de Barbar\('a <adebarbara@fi.uba.ar>
+.PP
+Marc Lorber <lorber.marc@wanadoo.fr>
+.PP
+Bernhard Schuster <bernhard@ahoi.io>
+.PP
+Guido Trentalancia <guido@trentalancia.com>

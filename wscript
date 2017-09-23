@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # encoding: utf-8
 
-VERSION = '0.84.13'
+VERSION = '0.84.15'
 APPNAME = 'oregano'
 
 top = '.'
@@ -35,6 +35,7 @@ def configure(conf):
 
 
 	#things the applications needs to know about, for easier re-use in subdir wscript(s)
+	conf.env.path_datadir =  utils.subst_vars('${DATADIR}/', conf.env)
 	conf.env.path_ui = utils.subst_vars('${DATADIR}/oregano/ui/', conf.env)
 	conf.env.path_model = utils.subst_vars('${DATADIR}/oregano/models/', conf.env)
 	conf.env.path_partslib = utils.subst_vars('${DATADIR}/oregano/library/', conf.env)

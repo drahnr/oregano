@@ -204,6 +204,7 @@ void netlist_helper_node_traverse (Node *node, NetlistData *data)
 
 	g_return_if_fail (node != NULL);
 	g_return_if_fail (IS_NODE (node));
+	g_return_if_fail (data != NULL);
 
 	if (node_is_visited (node))
 		return;
@@ -276,6 +277,8 @@ void netlist_helper_node_traverse (Node *node, NetlistData *data)
 void netlist_helper_node_foreach_traverse (gpointer key, gpointer value, NetlistData *data)
 {
 	Node *node = value;
+
+	g_return_if_fail (data != NULL);
 
 	// Only visit nodes that are not already visited.
 	if (node_is_visited (node))
@@ -435,10 +438,10 @@ void netlist_helper_create (Schematic *sm, Netlist *out, GError **error)
 		// Fill in the netlist node names for all the used nodes.
 		for (iter = data.node_and_number_list; iter; iter = iter->next) {
 			NodeAndNumber *nan = iter->data;
-			if (nan->node->netlist_node_name != NULL)
+			if (nan->node_nr > 0) {
 				g_free (nan->node->netlist_node_name);
-			if (nan->node_nr != 0)
 				nan->node->netlist_node_name = g_strdup (node2real[nan->node_nr]);
+			}
 		}
 
 		// Initialize out->template

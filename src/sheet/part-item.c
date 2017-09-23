@@ -274,7 +274,6 @@ PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 	    oregano_options_debug_boxes () ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
 
 	priv->label_group = goo_canvas_group_new (goo_item, "width", -1.0, "height", -1.0, NULL);
-	g_object_unref (goo_item); // FIXME wtf? why?
 
 	priv->node_group = goo_canvas_group_new (goo_item, NULL);
 
@@ -389,14 +388,12 @@ static void prop_dialog_response (GtkWidget *dialog, gint response, PartPropDial
 		for (props = part_get_properties (part); props; props = props->next) {
 			prop = props->data;
 			if (g_ascii_strcasecmp (prop->name, prop_name) == 0) {
-				if (prop->value)
-					g_free (prop->value);
+				g_free (prop->value);
 				prop->value = g_strdup (prop_value);
 			}
 		}
 		g_free (prop_name);
 	}
-	g_slist_free_full (props, g_object_unref);
 
 	update_canvas_labels (item);
 }
@@ -512,8 +509,9 @@ static void edit_properties_point (PartItem *item)
 			}
 		}
 	}
-	g_slist_free_full (properties, g_object_unref);
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
+
+	g_free (prop_dialog);
 }
 
 static void edit_properties (SheetItem *object)
@@ -658,8 +656,9 @@ static void edit_properties (SheetItem *object)
 
 	prop_dialog_response (GTK_WIDGET (prop_dialog->dialog), response, prop_dialog);
 
-	g_slist_free_full (properties, g_object_unref);
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
+
+	g_free (prop_dialog);
 }
 
 inline static GooCanvasAnchorType angle_to_anchor (int angle)
@@ -1002,8 +1001,6 @@ static void create_canvas_items (GooCanvasGroup *group, LibraryPart *library_par
 	height = group_bounds.y2 - group_bounds.y1;
 
 	g_object_set (group, "width", width, "height", height, NULL);
-
-	g_slist_free_full (objects, g_object_unref);
 }
 
 static void create_canvas_labels (PartItem *item, Part *part)
@@ -1033,7 +1030,6 @@ static void create_canvas_labels (PartItem *item, Part *part)
 		item_list = g_slist_prepend (item_list, canvas_item);
 		g_free (text);
 	}
-	g_slist_free_full (list, g_object_unref);
 
 	item_list = g_slist_reverse (item_list);
 	part_item_set_label_items (item, item_list);

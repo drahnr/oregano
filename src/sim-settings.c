@@ -194,8 +194,7 @@ gchar *fourier_add_vout(SimSettings *sim_settings, guint node_index) {
 		g_slist_free_full (node_slist, g_free);
 	} else {
 		text = sim_settings_get_fourier_vout (sim_settings);
-		node_ids = g_strsplit (g_strdup (text), " ", 0);
-		g_free (text);
+		node_ids = g_strsplit (text, " ", 0);
 
 		for (i = 0; node_ids[i] != NULL; i++) {
 			if (node_ids[i] && atoi (node_ids[i]) > 0) {
@@ -431,12 +430,14 @@ void sim_settings_set_fourier_vout (SimSettings *sim_settings, gchar *str)
 	g_slist_free_full (sim_settings->fourier_vout, g_free);
 	sim_settings->fourier_vout = NULL;
 
-	node_ids = g_strsplit (g_strdup (str), " ", 0);
+	node_ids = g_strsplit (str, " ", 0);
 	for (i = 0; node_ids[i] != NULL; i++) {
 		if (node_ids[i])
 			sim_settings->fourier_vout =
 			    g_slist_append (sim_settings->fourier_vout, g_strdup (node_ids[i]));
 	}
+
+	g_strfreev (node_ids);
 }
 
 gboolean sim_settings_get_fourier (const SimSettings *sim_settings)

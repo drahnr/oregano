@@ -46,6 +46,7 @@ typedef enum {
 	PARSE_LIBRARY,
 	PARSE_NAME,
 	PARSE_AUTHOR,
+	PARSE_VERSION,
 	PARSE_SYMBOLS,
 	PARSE_SYMBOL,
 	PARSE_SYMBOL_NAME,
@@ -235,6 +236,9 @@ static void start_element (ParseState *state, const xmlChar *xml_name, const xml
 		} else if (!strcmp (name, "ogo:name")) {
 			state->state = PARSE_NAME;
 			g_string_truncate (state->content, 0);
+		} else if (!strcmp (name, "ogo:version")) {
+			state->state = PARSE_VERSION;
+			g_string_truncate (state->content, 0);
 		} else if (!strcmp (name, "ogo:symbols")) {
 			state->state = PARSE_SYMBOLS;
 		} else if (!strcmp (name, "ogo:parts")) {
@@ -403,6 +407,7 @@ static void start_element (ParseState *state, const xmlChar *xml_name, const xml
 	case PARSE_PART_PROPERTY_VALUE:
 	case PARSE_NAME:
 	case PARSE_AUTHOR:
+	case PARSE_VERSION:
 		// there should be no tags inside these types of tags
 		g_message ("*** '%s' tag found", name);
 		state->prev_state = state->state;
@@ -437,6 +442,10 @@ static void end_element (ParseState *state, const xmlChar *name)
 		break;
 	case PARSE_NAME:
 		state->library->name = g_strdup (state->content->str);
+		state->state = PARSE_LIBRARY;
+		break;
+	case PARSE_VERSION:
+		state->library->version = g_strdup (state->content->str);
 		state->state = PARSE_LIBRARY;
 		break;
 	case PARSE_SYMBOLS:

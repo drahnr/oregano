@@ -139,8 +139,8 @@ static void textbox_item_finalize (GObject *object)
 
 	item = TEXTBOX_ITEM (object);
 
-	if (item->priv)
-		g_free (item->priv);
+	g_free (item->priv);
+	item->priv = NULL;
 
 	G_OBJECT_CLASS (textbox_item_parent_class)->finalize (object);
 }
