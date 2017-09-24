@@ -256,8 +256,13 @@ void item_data_move (ItemData *item_data, const Coords *delta)
 	if (delta == NULL)
 		return;
 
+	if (fabs (delta->x) < 1e-2 && fabs (delta->y) < 1e-2)
+		return;
+
 	priv = item_data->priv;
 	cairo_matrix_translate (&(priv->translate), delta->x, delta->y);
+
+	g_signal_emit_by_name (G_OBJECT (item_data), "changed");
 }
 
 // NodeStore *
@@ -292,6 +297,7 @@ static void item_data_copy (ItemData *dest, ItemData *src)
 
 	dest->priv->translate = src->priv->translate;
 	dest->priv->rotate = src->priv->rotate;
+	dest->priv->flip = src->priv->flip;
 	dest->priv->store = NULL;
 }
 
