@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Guido Trentalancia <guido@trentalancia.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -315,7 +317,7 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 	// snapped : Mouse cursor position in window coordinates, snapped to the grid
 	// spacing.
 	// delta   : Move the selected item(s) by this movement.
-	Coords delta;
+	Coords delta, after;
 
 	g_return_val_if_fail (sheet_item != NULL, FALSE);
 	g_return_val_if_fail (sheet != NULL, FALSE);
@@ -414,6 +416,9 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 
 				item_data = SHEET_ITEM (list->data)->priv->data;
 				item_data_move (item_data, &delta);
+				item_data_get_pos (item_data, &after);
+				snap_to_grid (sheet->grid, &after.x, &after.y);
+				item_data_set_pos (item_data, &after);
 				item_data_register (item_data);
 			}
 			break;
