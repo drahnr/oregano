@@ -1,7 +1,7 @@
 # oregano - an electrical engineering tool
 
 [![Join the chat at https://gitter.im/drahnr/oregano](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drahnr/oregano?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Stories in Ready](https://badge.waffle.io/drahnr/oregano.svg?label=ready&title=Ready)](http://waffle.io/drahnr/oregano) 
+[![Build Status](http://ci.spearow.io/api/v1/teams/main/pipelines/oregano/jobs/compile/badge)](http://ci.spearow.io/teams/main/pipelines/oregano)
 
 ### About
 oregano is an application for schematic capture and simulation of electronic circuits. The actual simulation is performed by Berkeley Spice, GNUcap or the new generation ngspice.
@@ -10,11 +10,7 @@ file COPYING.
 
 ### Status
 
-[![Build Status](http://ci.ratpoison.io/api/v1/teams/main/pipelines/oregano/jobs/compile/badge)](http://ci.ratpoison.io/teams/main/pipelines/oregano)
-
-The buildmatrix contains <kbd>Fedora 25</kbd>, <kbd>Ubuntu 17.04</kbd>.
-
-The overall status should still be considered `unstable` since the process of re-working core components has yet to be completed.
+The overall status should still be considered `meta-stable`, some deprecations are still to be taken core of, there is plenty to do :)
 
 ### Donations
 
