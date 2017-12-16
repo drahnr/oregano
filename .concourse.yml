@@ -109,7 +109,7 @@ resources:
   source:
     owner: drahnr
     repository: oregano
-    access_token: {{sirmergealot-github-token}}
+    access_token: {{drahnr-github-token}}
 
 jobs:
   - name: pr-validate
