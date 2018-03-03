@@ -421,7 +421,7 @@ jobs:
           args:
           - -exc
           - |
-            git log -n 1 --format="%h" HEAD > ../release-info/COMMITISH
+            git rev-parse HEAD > ../release-info/COMMITISH
             ./waf version
             cat VERSION > ../release-info/TAG
             echo "oregano" > ../release-info/NAME
