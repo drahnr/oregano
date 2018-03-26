@@ -423,24 +423,7 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 	s->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_dc_enable));
 
 	g_free (s->dc_vin);
-	s->dc_vin = NULL;
-	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vin));
-	if (tmp) {
-		node_ids = g_strsplit (tmp, "V(", 0);
-		tmp = g_strdup (node_ids[1]);
-		g_strfreev (node_ids);
-		if (tmp) {
-			node_ids = g_strsplit (tmp, ")", 0);
-			g_free (tmp);
-			if (node_ids[0])
-				s->dc_vin = g_strdup (node_ids[0]);
-			else
-				s->dc_vin = g_strdup("");
-			g_strfreev (node_ids);
-		}
-	}
-	if (s->dc_vin == NULL)
-		s->dc_vin = g_strdup ("");
+	s->dc_vin = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vin));
 
 	g_free (s->dc_vout);
 	s->dc_vout = NULL;
