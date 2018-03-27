@@ -1,7 +1,7 @@
 # oregano - an electrical engineering tool
 
 [![Join the chat at https://gitter.im/drahnr/oregano](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/drahnr/oregano?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](http://ci.spearow.io/api/v1/teams/main/pipelines/oregano/jobs/compile/badge)](http://ci.spearow.io/teams/main/pipelines/oregano)
+[![Build Status](http://ci.spearow.io/api/v1/teams/main/pipelines/oregano/jobs/compile/badge)](http://ci.spearow.io/teams/main/pipelines/oregano) ![Maintainance Status: Passive](https://img.shields.io/badge/maintenance-passively--maintained-yellowgreen.svg)
 
 ### About
 oregano is an application for schematic capture and simulation of electronic circuits. The actual simulation is performed by Berkeley Spice, GNUcap or the new generation ngspice.
