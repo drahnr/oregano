@@ -232,7 +232,7 @@ void dialog_about (void)
 	                      "Bernhard Schuster <bernhard@ahoi.io> (de)",
                               NULL};
 
-	const gchar *copy = _ ("(c) 2017 Guido Trentalancia\n"
+	const gchar *copy = _ ("(c) 2017-2018 Guido Trentalancia\n"
 	                       "(c) 2012-2017 Bernhard Schuster\n"
 	                       "(c) 2009-2012 Marc Lorber\n"
 	                       "(c) 2003-2006 LUGFi\n"
