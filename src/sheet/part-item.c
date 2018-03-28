@@ -15,6 +15,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2018       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -373,6 +374,8 @@ static void prop_dialog_response (GtkWidget *dialog, gint response, PartPropDial
 	Part *part;
 	gchar *prop_name;
 	const gchar *prop_value;
+	guint prop_value_length;
+	gboolean valid_entry;
 	GtkWidget *w;
 
 	item = prop_dialog->part_item;
@@ -388,8 +391,25 @@ static void prop_dialog_response (GtkWidget *dialog, gint response, PartPropDial
 		for (props = part_get_properties (part); props; props = props->next) {
 			prop = props->data;
 			if (g_ascii_strcasecmp (prop->name, prop_name) == 0) {
-				g_free (prop->value);
-				prop->value = g_strdup (prop_value);
+				valid_entry = TRUE;
+
+				// Prevent invalid properties name entries
+				if (g_ascii_strcasecmp (prop->name, "Refdes") == 0) {
+					// Prevent invalid voltage source name entries
+					if (prop->value[0] == 'V') {
+						if (prop_value[0] != 'V')
+							valid_entry = FALSE;
+						prop_value_length = strlen (prop_value);
+						for (int i = 1; i < prop_value_length; i++)
+							if (prop_value[i] < '0' || prop_value[i] > '9')
+								valid_entry = FALSE;
+					}
+				}
+
+				if (valid_entry) {
+					g_free (prop->value);
+					prop->value = g_strdup (prop_value);
+				}
 			}
 		}
 		g_free (prop_name);

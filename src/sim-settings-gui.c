@@ -16,7 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
- * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2017-2017  Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -423,24 +423,7 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 	s->dc_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_dc_enable));
 
 	g_free (s->dc_vin);
-	s->dc_vin = NULL;
-	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vin));
-	if (tmp) {
-		node_ids = g_strsplit (tmp, "V(", 0);
-		tmp = g_strdup (node_ids[1]);
-		g_strfreev (node_ids);
-		if (tmp) {
-			node_ids = g_strsplit (tmp, ")", 0);
-			g_free (tmp);
-			if (node_ids[0])
-				s->dc_vin = g_strdup (node_ids[0]);
-			else
-				s->dc_vin = g_strdup("");
-			g_strfreev (node_ids);
-		}
-	}
-	if (s->dc_vin == NULL)
-		s->dc_vin = g_strdup ("");
+	s->dc_vin = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_dc_vin));
 
 	g_free (s->dc_vout);
 	s->dc_vout = NULL;
@@ -516,24 +499,7 @@ static void response_callback (GtkButton *button, SchematicView *sv)
 	s->noise_enable = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (s_gui->w_noise_enable));
 
 	g_free (s->noise_vin);
-	s->noise_vin = NULL;
-	tmp = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_vin));
-	if (tmp) {
-		node_ids = g_strsplit (tmp, "V(", 0);
-		tmp = g_strdup (node_ids[1]);
-		g_strfreev (node_ids);
-		if (tmp) {
-			node_ids = g_strsplit (tmp, ")", 0);
-			g_free (tmp);
-			if (node_ids[0])
-				s->noise_vin = g_strdup (node_ids[0]);
-			else
-				s->noise_vin = g_strdup("");
-			g_strfreev (node_ids);
-		}
-	}
-	if (s->noise_vin == NULL)
-		s->noise_vin = g_strdup("");
+	s->noise_vin = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT (s_gui->w_noise_vin));
 
 	g_free (s->noise_vout);
 	s->noise_vout = NULL;
