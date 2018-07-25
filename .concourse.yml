@@ -26,29 +26,33 @@ resources:
   type: pull-request
   source:
     repo: drahnr/oregano
-    access_token: {{sirmergealot-github-token}}
+    access_token: ((sirmergealot-github-token))
 
 
 - name: copr-resource
   type: copr
   source:
-    login: {{copr-login}}
-    token: {{copr-token}}
-    url: {{copr-url}}
+    login: ((copr-login))
+    token: ((copr-token))
+    url: ((copr-url))
 
 - name: oregano-test-fedora
   type: docker-image
   source:
     repository: quay.io/ratpoison/oregano-test-fedora
-    username: {{quay-username}}
-    password: {{quay-password}}
+    username: ((quay-username))
+    password: ((quay-password))
+    max_concurrent_downloads: 2
+    max_concurrent_uploads: 2
 
 - name: oregano-test-ubuntu
   type: docker-image
   source:
     repository: quay.io/ratpoison/oregano-test-ubuntu
-    username: {{quay-username}}
-    password: {{quay-password}}
+    username: ((quay-username))
+    password: ((quay-password))
+    max_concurrent_downloads: 2
+    max_concurrent_uploads: 2
 
 - name: deb-release
   type: s3
@@ -56,8 +60,8 @@ resources:
     endpoint: https://minio.spearow.io
     bucket: oregano-rc
     regexp: (.*).deb
-    access_key_id: {{minio-access-key}}
-    secret_access_key: {{minio-secret-key}}
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
 
 - name: rpm-release
   type: s3
@@ -65,8 +69,8 @@ resources:
     endpoint: https://minio.spearow.io
     bucket: oregano-rc
     regexp: (.*).rpm
-    access_key_id: {{minio-access-key}}
-    secret_access_key: {{minio-secret-key}}
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
 
 - name: source-release
   type: s3
@@ -74,8 +78,8 @@ resources:
     endpoint: https://minio.spearow.io
     bucket: oregano-rc
     regexp: (.*).tar.xz
-    access_key_id: {{minio-access-key}}
-    secret_access_key: {{minio-secret-key}}
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
 
 - name: deb-drop
   type: s3
@@ -83,8 +87,8 @@ resources:
     endpoint: https://minio.spearow.io
     bucket: oregano-drop
     regexp: (.*).deb
-    access_key_id: {{minio-access-key}}
-    secret_access_key: {{minio-secret-key}}
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
 
 - name: rpm-drop
   type: s3
@@ -92,8 +96,8 @@ resources:
     endpoint: https://minio.spearow.io
     bucket: oregano-drop
     regexp: (.*).rpm
-    access_key_id: {{minio-access-key}}
-    secret_access_key: {{minio-secret-key}}
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
 
 - name: source-drop
   type: s3
@@ -101,19 +105,101 @@ resources:
     endpoint: https://minio.spearow.io
     bucket: oregano-drop
     regexp: (.*).tar.xz
-    access_key_id: {{minio-access-key}}
-    secret_access_key: {{minio-secret-key}}
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
 
 - name: gh-release
   type: github-release
   source:
     owner: drahnr
     repository: oregano
-    access_token: {{drahnr-github-token}}
+    access_token: ((drahnr-github-token))
+
+groups:
+- name: release
+  jobs:
+  - source-release
+  - build-pkg-deb-release
+  - build-pkg-rpm-release
+  - make-release
+- name: master
+  jobs:
+  - build-pkg-deb
+  - build-pkg-rpm
+  - compile
+- name: pr
+  jobs:
+  - pr-validate
+- name: env
+  jobs:
+  - oci-fedora
+  - oci-ubuntu
 
 jobs:
+  - name: oci-fedora
+    serial_groups: [constructors]
+    build_logs_to_retain: 2
+    plan:
+    - get: oregano-test-fedora
+    - get: git-clone-resource
+      trigger: true
+
+    - task: gen-container
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: git-clone-resource
+        outputs:
+        - name: copycat
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            cp -rfv .concourse/fedora/Dockerfile ../copycat/
+            cp -rfv .concourse/fedora/pkg.lst ../copycat/
+          dir: git-clone-resource
+
+    - put: oregano-test-fedora
+      params:
+        build: copycat
+        tag_as_latest: true
+
+
+  - name: oci-ubuntu
+    serial_groups: [constructors]
+    build_logs_to_retain: 2
+    plan:
+    - get: oregano-test-ubuntu
+    - get: git-clone-resource
+      trigger: true
+
+    - task: gen-container
+      image: oregano-test-ubuntu
+      config:
+        platform: linux
+        inputs:
+        - name: git-clone-resource
+        outputs:
+        - name: copycat
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            cp -rfv .concourse/ubuntu/Dockerfile ../copycat/
+            cp -rfv .concourse/ubuntu/pkg.lst ../copycat/
+          dir: git-clone-resource
+
+    - put: oregano-test-ubuntu
+      params:
+        build: copycat
+        tag_as_latest: true
+
+
   - name: pr-validate
-    build_logs_to_retain: 50
+    build_logs_to_retain: 20
     public: true
     plan:
     - aggregate:
