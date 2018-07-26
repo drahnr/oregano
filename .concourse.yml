@@ -40,8 +40,8 @@ resources:
   type: docker-image
   source:
     repository: quay.io/ratpoison/oregano-test-fedora
-    username: ((quay-username))
-    password: ((quay-password))
+    username: ((quay-ratpoison-username))
+    password: ((quay-ratpoison-password))
     max_concurrent_downloads: 2
     max_concurrent_uploads: 2
 
@@ -49,8 +49,8 @@ resources:
   type: docker-image
   source:
     repository: quay.io/ratpoison/oregano-test-ubuntu
-    username: ((quay-username))
-    password: ((quay-password))
+    username: ((quay-ratpoison-username))
+    password: ((quay-ratpoison-password))
     max_concurrent_downloads: 2
     max_concurrent_uploads: 2
 
@@ -211,7 +211,7 @@ jobs:
         trigger: true
     - aggregate:
       - task: compile
-        timeout: 3m
+        timeout: 5m
         image: oregano-test-fedora
         config:
           platform: linux
@@ -227,7 +227,7 @@ jobs:
             dir: "git-pull-request-resource"
 
       - task: create-rpm
-        timeout: 5m
+        timeout: 15m
         image: oregano-test-fedora
         config:
           platform: linux
@@ -238,7 +238,7 @@ jobs:
             dir: git-pull-request-resource
 
       - task: create-deb
-        timeout: 5m
+        timeout: 15m
         image: oregano-test-ubuntu
         config:
           platform: linux
@@ -309,7 +309,7 @@ jobs:
         passed: [compile]
 
     - task: create-rpm
-      timeout: 10m
+      timeout: 15m
       image: oregano-test-fedora
       config:
         platform: linux
@@ -340,7 +340,7 @@ jobs:
         passed: [compile]
 
     - task: create-deb
-      timeout: 10m
+      timeout: 15m
       image: oregano-test-ubuntu
       config:
         platform: linux
@@ -412,7 +412,7 @@ jobs:
         trigger: true
 
     - task: create-rpm
-      timeout: 10m
+      timeout: 15m
       image: oregano-test-fedora
       config:
         platform: linux
@@ -452,7 +452,7 @@ jobs:
         trigger: true
 
     - task: create-deb
-      timeout: 10m
+      timeout: 15m
       image: oregano-test-ubuntu
       config:
         platform: linux
