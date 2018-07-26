@@ -15,6 +15,17 @@ resources:
     branch: master
     uri: https://github.com/drahnr/oregano.git
 
+- name: git-ci
+  type: git
+  source:
+    branch: master
+    uri: https://github.com/drahnr/oregano.git
+    paths:
+    - .concourse/*
+    - .concourse/**/*
+    - .concourse/fedora/*
+    - .concourse/ubuntu/*
+
 - name: git-tag-resource
   type: git
   source:
@@ -141,7 +152,7 @@ jobs:
     build_logs_to_retain: 2
     plan:
     - get: oregano-test-fedora
-    - get: git-clone-resource
+    - get: git-ci
       trigger: true
 
     - task: gen-container
@@ -149,7 +160,7 @@ jobs:
       config:
         platform: linux
         inputs:
-        - name: git-clone-resource
+        - name: git-ci
         outputs:
         - name: copycat
         run:
@@ -159,7 +170,7 @@ jobs:
           - |
             cp -rfv .concourse/fedora/Dockerfile ../copycat/
             cp -rfv .concourse/fedora/pkg.lst ../copycat/
-          dir: git-clone-resource
+          dir: git-ci
 
     - put: oregano-test-fedora
       params:
@@ -172,7 +183,7 @@ jobs:
     build_logs_to_retain: 2
     plan:
     - get: oregano-test-ubuntu
-    - get: git-clone-resource
+    - get: git-ci
       trigger: true
 
     - task: gen-container
@@ -180,7 +191,7 @@ jobs:
       config:
         platform: linux
         inputs:
-        - name: git-clone-resource
+        - name: git-ci
         outputs:
         - name: copycat
         run:
@@ -190,7 +201,7 @@ jobs:
           - |
             cp -rfv .concourse/ubuntu/Dockerfile ../copycat/
             cp -rfv .concourse/ubuntu/pkg.lst ../copycat/
-          dir: git-clone-resource
+          dir: git-ci
 
     - put: oregano-test-ubuntu
       params:
