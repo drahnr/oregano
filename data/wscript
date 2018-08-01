@@ -32,15 +32,16 @@ def build(bld):
 		bld.install_files (bld.env.path_partslib, bld.path.ant_glob('libraries/*.oreglib'))
 		bld.install_files (bld.env.path_ui, bld.path.ant_glob('xml/*.ui'))
 
-		try:
-			bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
-		except:
-			logs.warn('Failed to execute xdg desktop database update.')
+		if not bld.options.no_xdg:
+			try:
+				bld.exec_command(['update-desktop-database', utils.subst_vars('${DATADIR}/applications', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg desktop database update.')
 
-		try:
-			bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
-		except:
-			logs.warn('Failed to execute xdg mime database update.')
+			try:
+				bld.exec_command(['update-mime-database', utils.subst_vars('${DATADIR}/mime', bld.env)])
+			except:
+				logs.warn('Failed to execute xdg mime database update.')
 
 	bld(
 		features  = 'intltool_in',

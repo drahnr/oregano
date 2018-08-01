@@ -19,6 +19,7 @@ def options(opt):
 	opt.add_option('--debug', dest='build_debug', action='store_true', default=False, help='Build with debug flags')
 	opt.add_option('--release', dest='build_release', action='store_true', default=False, help='Build with release flags')
 	opt.add_option('--no-install-gschema', dest='no_install_gschema', action='store_true', default=False, help='Do not install the schema file')
+	opt.add_option('--no-xdg', dest='no_xdg', action='store_true', default=False, help='Do not install the xdg desktop or xdg mime files')
 	opt.add_option('--run', action='store_true', default=False, help='Run imediatly if the build succeeds.')
 	opt.add_option('--gnomelike', action='store_true', default=False, help='Determines if gnome shemas and gnome iconcache should be installed.')
 #	opt.add_option('--intl', action='store_true', default=False, help='Use intltool-merge to extract messages.')
