@@ -56,7 +56,7 @@ struct _CreateWireInfo
 };
 
 CreateWireInfo *create_wire_info_new (Sheet *sheet);
-void create_wire_destroy (CreateWireInfo *wire_info);
+void create_wire_info_destroy (CreateWireInfo *wire_info);
 gboolean create_wire_setup (Sheet *sheet);
 gboolean create_wire_orientationtoggle (Sheet *sheet);
 gboolean create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data);

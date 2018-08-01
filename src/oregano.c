@@ -76,7 +76,24 @@ static void oregano_open (GApplication *application, GFile **files, gint n_files
 
 static void oregano_finalize (GObject *object)
 {
+	GList *iter;
+	Library *l;
+
 	cursors_shutdown ();
+
+	g_object_unref (oregano.settings);
+
+	// Free the memory used by the parts libraries
+	for (iter = oregano.libraries; iter; iter = iter->next) {
+			l = (Library *) iter->data;
+			g_free (l->name);
+			g_free (l->author);
+			g_free (l->version);
+	}
+	g_list_free_full (oregano.libraries, g_free);
+
+	clipboard_empty ();
+
 	G_OBJECT_CLASS (oregano_parent_class)->finalize (object);
 }
 
@@ -202,23 +219,4 @@ static void oregano_application (GApplication *app, GFile *file)
 
 	if (oregano.show_splash && splash)
 		oregano_splash_done (splash, _ ("Welcome to Oregano"));
-}
-
-void oregano_deallocate_memory (void)
-{
-	GList *iter;
-	Library *l;
-
-	g_object_unref (oregano.settings);
-
-        // Free the memory used by the parts libraries
-        for (iter = oregano.libraries; iter; iter = iter->next) {
-                l = (Library *) iter->data;
-                g_free (l->name);
-                g_free (l->author);
-                g_free (l->version);
-        }
-        g_list_free_full (oregano.libraries, g_free);
-
-	clipboard_empty ();
 }

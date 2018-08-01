@@ -83,8 +83,6 @@ int main (int argc, char *argv[])
 
 	status = g_application_run (G_APPLICATION (app), argc, argv);
 
-	oregano_deallocate_memory ();
-
 	g_object_unref (app);
 	g_type_class_unref (class);
 
