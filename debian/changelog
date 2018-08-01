@@ -1,8 +1,14 @@
+oregano (0.84.39-0) unstable; urgency=high
+
+  * Update upstream
+
+ -- Bernhard Schuster <bernhard@ahoi.io>  Thu, 1 Aug 2018 19:36:57 +0200
+
 oregano (0.84.38-0) unstable; urgency=high
 
   * Update upstream
 
- -- Bernhard Schuster <bernhard@ahoi.io>  Thu, 26 Dec 2018 09:10:44 +0200
+ -- Bernhard Schuster <bernhard@ahoi.io>  Thu, 1 Aug 2018 09:10:44 +0200
 
 oregano (0.84.21-0) unstable; urgency=high
 
