@@ -364,10 +364,13 @@ jobs:
           args:
           - -exc
           - |
+            mkdir quirk
+            cp -rf git-clone-resource ./quirk/source
+            cd quirk/source
+
             debuild -i -us -uc -b
-            ls -al ..
-            cp ../oregano*.deb ../deb/
-          dir: git-clone-resource
+            cd -
+            cp quirk/oregano*.deb deb
 
     - put: deb-drop
       params:
@@ -476,10 +479,13 @@ jobs:
           args:
           - -exc
           - |
+            mkdir quirk
+            cp -rf git-tag-resource ./quirk/source
+            cd quirk/source
+
             debuild -i -us -uc -b
-            ls -al ..
-            cp ../oregano*.deb ../deb/
-          dir: git-tag-resource
+            cd -
+            cp quirk/oregano*.deb deb
 
     - put: deb-release
       params:

@@ -19,7 +19,7 @@ override_dh_auto_build:
 	./waf debug
 
 override_dh_auto_install:
-	./waf --prefix="/usr" --destdir=$(PWD)/debian/oregano install
+	./waf --prefix="/usr" --destdir=$(PWD)/debian/oregano install --no-install-gschema --no-xdg
 
 override_dh_usrlocal:
 	@echo "skippy skip <dh_usrlocal>"
