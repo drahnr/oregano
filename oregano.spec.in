@@ -84,6 +84,9 @@ rm -rf "$RPM_BUILD_ROOT"
 %{_mandir}/man1/oregano.1.gz
 
 %changelog
+* Fri Jan 4 2019 Bernhard Schuster <bernhard@ahoi.io> 0.84.41-1
+ - Dist fix
+
 * Mon Sep 21 2018 Bernhard Schuster <bernhard@ahoi.io> 0.84.40-1
 - Fix crash causing bugs
 
