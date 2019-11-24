@@ -112,7 +112,7 @@ static void sheet_class_init (SheetClass *sheet_class)
 	    G_STRUCT_OFFSET (SheetClass, context_click), NULL, NULL, g_cclosure_marshal_VOID__POINTER,
 	    G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_POINTER);
 
-	signals[CONTEXT_CLICK] =
+	signals[CANCEL] =
 	    g_signal_new ("cancel", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
 	                  G_STRUCT_OFFSET (SheetClass, cancel), NULL, NULL,
 	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
