@@ -10,7 +10,9 @@ struct _LogPrivate
 
 G_DEFINE_TYPE (Log, log, GTK_TYPE_LIST_STORE);
 
-static void log_finalize (GObject *object) { G_OBJECT_CLASS (log_parent_class)->finalize (object); }
+static void log_finalize (GObject *object) {
+	G_OBJECT_CLASS (log_parent_class)->finalize (object);
+}
 
 static void log_class_init (LogClass *klass)
 {
@@ -30,20 +32,48 @@ static void log_init (Log *self)
 
 Log *log_new () { return g_object_new (LOG_TYPE, NULL); }
 
+
+
+static GRegex* splitter() {
+	GError* error = NULL;
+	GRegex* regex = g_regex_new("[\\r\\n]*(.*?)[\\n$]+", 0,0, &error);
+	g_assert(error == NULL);
+	g_assert(regex != NULL);
+	return regex;
+}
+
+
 /**
  * trim only newlines
  */
-gchar *log_append_trim_message(const gchar *string) {
-	if (string == NULL)
+gchar *log_append_trim_message(const gchar *str) {
+	// skip empty or null strings right away
+	if (str == NULL || str[0] == '\0') {
 		return NULL;
-	gchar **array = g_regex_split_simple("[\\r\\n]*(.*?)[\\n$]+", string, 0, 0);
-	gchar *ret_val = g_strdup(array[0]);
-	g_strfreev(array);
-	if (*ret_val == 0) {
-		g_free(ret_val);
-		ret_val = NULL;
 	}
-	return ret_val;
+
+
+	static GOnce once = G_ONCE_INIT;
+
+	g_once (&once, (GThreadFunc)splitter, NULL);
+
+
+	gchar **array = g_regex_split(once.retval, str, G_REGEX_MATCH_NOTEMPTY);
+	gchar *cloned = NULL;
+	if (array != NULL && array[0] != NULL) {
+		cloned = g_strdup(array[0]);
+		if (array[0] == str) {
+			// avoid duplicate free in case not matching anything
+			array[0] = NULL;
+		}
+		g_strfreev(array);
+	}
+	// after split might be length zer0 too, skip those
+	if ((cloned != NULL) && (cloned[0] == '\0')) {
+		g_free(cloned);
+		cloned = NULL;
+	}
+	return cloned;
 }
 
 /**
