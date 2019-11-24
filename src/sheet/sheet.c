@@ -851,6 +851,10 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 	case GDK_ENTER_NOTIFY:
 		return wklass->enter_notify_event (widget, (GdkEventCrossing *)event);
 
+	case GDK_LEAVE_NOTIFY:
+		g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
+		return TRUE;
+
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
 		case GDK_KEY_R:
