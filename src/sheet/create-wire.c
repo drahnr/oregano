@@ -310,8 +310,9 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	// if we are back at the starting point of our wire,
 	// and the user tries to fixate, just ignore it
 	// and mark the event as handled
-	if (coords_equal (&p1, &p2))
+	if (coords_equal (&p1, &p2)) {
 		return TRUE;
+	}
 
 	schematic = schematic_view_get_schematic_from_sheet (sheet);
 	g_assert (schematic);
@@ -386,10 +387,11 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	g_object_set (G_OBJECT (create_wire_info->line), "points", create_wire_info->points, NULL);
 
 	// toggle wire direction
-	if (create_wire_info->direction == WIRE_DIR_VERT)
+	if (create_wire_info->direction == WIRE_DIR_VERT) {
 		create_wire_info->direction = WIRE_DIR_HORIZ;
-	else
+	} else {
 		create_wire_info->direction = WIRE_DIR_VERT;
+	}
 
 	goo_canvas_item_raise (GOO_CANVAS_ITEM (create_wire_info->line), NULL);
 

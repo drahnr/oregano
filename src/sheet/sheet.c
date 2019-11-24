@@ -247,8 +247,9 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
 	x1 = (gdouble)_x;
 	y1 = (gdouble)_y;
 
-	if (!sheet_get_adjustments (sheet, &hadj, &vadj))
+	if (!sheet_get_adjustments (sheet, &hadj, &vadj)) {	
 		return FALSE;
+	}
 
 	x1 += gtk_adjustment_get_value (hadj);
 	y1 += gtk_adjustment_get_value (vadj);
@@ -267,16 +268,18 @@ gboolean sheet_get_pointer_pixel (Sheet *sheet, gdouble *x, gdouble *y)
  */
 gboolean sheet_get_pointer (Sheet *sheet, gdouble *x, gdouble *y)
 {
-	if (!sheet_get_pointer_pixel (sheet, x, y))
+	if (!sheet_get_pointer_pixel (sheet, x, y)) {
 		return FALSE;
+	}
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), x, y);
 	return TRUE;
 }
 
 gboolean sheet_get_pointer_snapped (Sheet *sheet, gdouble *x, gdouble *y)
 {
-	if (!sheet_get_pointer_pixel (sheet, x, y))
+	if (!sheet_get_pointer_pixel (sheet, x, y)) {
 		return FALSE;
+	}
 	goo_canvas_convert_from_pixels (GOO_CANVAS (sheet), x, y);
 	snap_to_grid (sheet->grid, x, y);
 	return TRUE;
