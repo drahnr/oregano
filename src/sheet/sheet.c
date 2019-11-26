@@ -15,7 +15,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2013-2019  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
@@ -137,6 +137,9 @@ static void sheet_init (Sheet *sheet)
 	sheet->priv->voltmeter_nodes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 
 	sheet->state = SHEET_STATE_NONE;
+
+	// track these to cancel wires if the cursor leaves the window
+	gtk_widget_add_events(GTK_WIDGET(sheet), GDK_LEAVE_NOTIFY | GDK_ENTER_NOTIFY);
 }
 
 static void sheet_finalize (GObject *object)
@@ -719,9 +722,11 @@ void sheet_show_node_labels (Sheet *sheet, gboolean show)
 	GList *item = NULL;
 
 	for (item = sheet->priv->items; item; item = item->next) {
-		if (IS_PART_ITEM (item->data))
-			if (part_get_num_pins (PART (sheet_item_get_data (SHEET_ITEM (item->data)))) == 1)
+		if (IS_PART_ITEM (item->data)) {
+			if (part_get_num_pins (PART (sheet_item_get_data (SHEET_ITEM (item->data)))) == 1) {
 				part_item_show_node_labels (PART_ITEM (item->data), show);
+			}
+		}
 	}
 }
 
@@ -785,8 +790,9 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 		}
 
 		if (event->button.button == 1) {
-			if (!(event->button.state & GDK_SHIFT_MASK))
+			if (!(event->button.state & GDK_SHIFT_MASK)) {
 				sheet_select_all (sheet, FALSE);
+			}
 
 			rubberband_start (sheet, event);
 			return TRUE;
@@ -794,8 +800,9 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 		break;
 
 	case GDK_BUTTON_RELEASE:
-		if (event->button.button == 4 || event->button.button == 5)
+		if (event->button.button == 4 || event->button.button == 5) {
 			return TRUE;
+		}
 
 		if (event->button.button == 1 && sheet->priv->rubberband_info->state == RUBBERBAND_ACTIVE) {
 			rubberband_finish (sheet, event);
@@ -810,17 +817,21 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 		GdkEventScroll *scr_event = (GdkEventScroll *)event;
 		if (scr_event->state & GDK_SHIFT_MASK) {
 			// Scroll horizontally
-			if (scr_event->direction == GDK_SCROLL_UP)
+			if (scr_event->direction == GDK_SCROLL_UP) {
 				sheet_scroll_pixel (sheet, -30, 0);
-			else if (scr_event->direction == GDK_SCROLL_DOWN)
+			}
+			else if (scr_event->direction == GDK_SCROLL_DOWN) {
 				sheet_scroll_pixel (sheet, 30, 0);
+			}
 
 		} else if (scr_event->state & GDK_CONTROL_MASK) {
 			// Scroll vertically
-			if (scr_event->direction == GDK_SCROLL_UP)
+			if (scr_event->direction == GDK_SCROLL_UP) {
 				sheet_scroll_pixel (sheet, 0, -30);
-			else if (scr_event->direction == GDK_SCROLL_DOWN)
+			}
+			else if (scr_event->direction == GDK_SCROLL_DOWN) {
 				sheet_scroll_pixel (sheet, 0, 30);
+			}
 
 		} else {
 			// Zoom
@@ -852,8 +863,7 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 		return wklass->enter_notify_event (widget, (GdkEventCrossing *)event);
 
 	case GDK_LEAVE_NOTIFY:
-		g_signal_emit_by_name (G_OBJECT (sheet), "cancel");
-		return TRUE;
+		return wklass->leave_notify_event (widget, (GdkEventCrossing *)event);
 
 	case GDK_KEY_PRESS:
 		switch (event->key.keyval) {
