@@ -489,6 +489,9 @@ gboolean create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
 			break;
 		}
 		break;
+	case GDK_LEAVE_NOTIFY:
+		return create_wire_discard (sheet, event);
+
 	case GDK_MOTION_NOTIFY:
 		if (create_wire_info->state == WIRE_ACTIVE)
 			return create_wire_update (sheet, event);

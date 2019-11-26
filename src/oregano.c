@@ -18,7 +18,7 @@
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
- * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2013,2019  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
  *
  * This program is free software; you can redistribute it and/or
@@ -217,6 +217,7 @@ static void oregano_application (GApplication *app, GFile *file)
 	g_signal_add_emission_hook (g_signal_lookup ("last_schematic_destroyed", TYPE_SCHEMATIC), 0,
 	                            quit_hook, NULL, NULL);
 
-	if (oregano.show_splash && splash)
+	if (oregano.show_splash && splash) {
 		oregano_splash_done (splash, _ ("Welcome to Oregano"));
+	}
 }
