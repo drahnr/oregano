@@ -213,14 +213,14 @@ jobs:
     build_logs_to_retain: 20
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-fedora
         trigger: true
       - get: oregano-test-ubuntu
         trigger: true
       - get: git-pull-request-resource
         trigger: true
-    - aggregate:
+    - in_parallel:
       - task: compile
         timeout: 5m
         image: oregano-test-fedora
@@ -277,7 +277,7 @@ jobs:
     build_logs_to_retain: 10
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-fedora
         trigger: true
       - get: git-clone-resource
@@ -312,7 +312,7 @@ jobs:
     build_logs_to_retain: 5
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-fedora
         trigger: true
       - get: git-clone-resource
@@ -343,7 +343,7 @@ jobs:
     build_logs_to_retain: 5
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-ubuntu
         trigger: true
       - get: git-clone-resource
@@ -385,7 +385,7 @@ jobs:
     build_logs_to_retain: 10
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-fedora
         trigger: true
       - get: git-tag-resource
@@ -419,7 +419,7 @@ jobs:
     build_logs_to_retain: 5
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-fedora
         trigger: true
       - get: git-tag-resource
@@ -459,7 +459,7 @@ jobs:
     build_logs_to_retain: 5
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: oregano-test-ubuntu
         trigger: true
       - get: git-tag-resource
@@ -496,7 +496,7 @@ jobs:
     build_logs_to_retain: 5
     public: true
     plan:
-    - aggregate:
+    - in_parallel:
       - get: git-tag-resource
         passed: [source-release,build-pkg-rpm-release, build-pkg-deb-release]
         trigger: true
