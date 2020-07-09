@@ -1,0 +1,121 @@
+app-id: com.github.drahnr.Oregano
+runtime: org.gnome.Platform
+runtime-version: '3.38'
+sdk: org.gnome.Sdk
+command: oregano
+separate-locales: false
+rename-desktop-file: oregano.desktop
+rename-icon: oregano
+finish-args:
+  - --device=dri
+  - --filesystem=home
+  - --own-name=org.gnome.oregano
+  - --share=ipc
+  # disable wayland as startup not consistently successful
+  #- --socket=wayland
+  - --socket=x11
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/man
+  - '*.a'
+  - '*.la'
+modules:
+  - name: oregano
+    buildsystem: simple
+    build-commands:
+      - ./waf configure build --release --prefix=/app
+      - ./waf install
+    post-install:
+      - mv /app/share/mime/packages/oregano-mimetypes.xml /app/share/mime/packages/${FLATPAK_ID}-mimetypes.xml
+    sources:
+      - type: git
+        url: https://github.com/drahnr/oregano.git
+        #branch: master
+        tag: v0.84.43
+        #commit: 5411dffdf965a8259963d6719711781fbdb062b2
+    cleanup:
+      - /share/man
+    modules:
+      - intltool.json
+      - name: goocanvas
+        make-install-args:
+          - pyoverridesdir=/app/lib/python3.8/site-packages/gi/overrides
+        sources:
+          - type: archive
+            url: https://download.gnome.org/sources/goocanvas/2.0/goocanvas-2.0.4.tar.xz
+            sha256: c728e2b7d4425ae81b54e1e07a3d3c8a4bd6377a63cffa43006045bceaa92e90
+        cleanup:
+          - /share/gtk-doc
+      - name: gtksourceview3
+        config-opts:
+          - --disable-Werror
+          - --disable-glade-catalog
+          - --disable-static
+          - --enable-gtk-doc=no
+          - --enable-vala=no
+          - --enable-valgrind=no
+        sources:
+          - type: archive
+            url: https://gitlab.gnome.org/GNOME/gtksourceview/-/archive/73e57b5787ac60776c57032e05a4cc32207f9cf6/gtksourceview-73e57b5787ac60776c57032e05a4cc32207f9cf6.tar.gz
+            sha256: 209f97e206f0d328ed8885325a804843fbaa1c3699ea2ccfcce23b28eee76c1c
+          - type: shell
+            commands:
+              - find . -name Makefile.am -exec sed -i "/@CODE_COVERAGE_RULES@/d" {} +
+      # gnucap, spice3, and ngspice were put as dependencies of oregano to build faster when only oregano was update
+      - name: gnucap
+        sources:
+          - type: archive
+            url: http://git.savannah.gnu.org/cgit/gnucap.git/snapshot/gnucap-20210107.tar.gz
+            sha256: d2c24a66c7e60b379727c9e9487ed1b4a3532646b3f4cc03c6a4305749e3348b
+      - name: ngspice
+        build-options:
+          strip: true
+        config-opts:
+          - --enable-xspice
+          - --enable-cider
+          - --enable-oldapps
+          - --enable-openmp
+        sources:
+          - type: git
+            url: git://git.code.sf.net/p/ngspice/ngspice.git
+            tag: ngspice-32.2
+            commit: 5c3e2b6526b22015ddec692450f5c5077efa1d80
+        cleanup:
+          - /share/man
+        modules:
+          - name: libxaw
+            config-opts:
+              - --sysconfdir=/app/etc
+            sources:
+              - type: archive
+                url: https://xorg.freedesktop.org/releases/individual/lib/libXaw-1.0.13.tar.bz2
+                sha256: 8ef8067312571292ccc2bbe94c41109dcf022ea5a4ec71656a83d8cce9edb0cd
+            cleanup:
+              - /share/doc
+            modules:
+              - name: libxmu
+                config-opts:
+                  - --sysconfdir=/app/etc
+                sources:
+                  - type: archive
+                    url: https://xorg.freedesktop.org/releases/individual/lib/libXmu-1.1.3.tar.bz2
+                    sha256: 9c343225e7c3dc0904f2122b562278da5fed639b1b5e880d25111561bac5b731
+                cleanup:
+                  - /share/doc
+          - name: libedit
+            sources:
+              - type: archive
+                url: https://thrysoee.dk/editline/libedit-20191231-3.1.tar.gz
+                sha256: dbb82cb7e116a5f8025d35ef5b4f7d4a3cdd0a3909a146a39112095a2d229071
+      - name: spice3
+        buildsystem: cmake
+        sources:
+          - type: archive
+            url: https://ptolemy.berkeley.edu/projects/embedded/pubs/downloads/spice/spice3f5.tar.gz
+            sha256: cac11fe2a761241e6b6c9eaa31b938c7ffa76aeaecac09809609d3a4125cd269
+          - type: patch
+            path: spice3-0001-cmake-changes-from-github.com-hedhyw-spice3f5.patch
+          - type: shell
+            commands:
+              - find ./ -name "CMakeLists.txt" -exec sed -i "s#usr/local#app#g" {} \;
