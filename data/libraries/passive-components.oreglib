@@ -660,7 +660,7 @@
           <ogo:modify>yes</ogo:modify>
         </ogo:label>
         <ogo:label>
-          <ogo:name>impedance</ogo:name>
+          <ogo:name>Impedance</ogo:name>
           <ogo:text>@ohm</ogo:text>
           <ogo:position>(30 15)</ogo:position>
           <ogo:modify>yes</ogo:modify>
@@ -669,15 +669,15 @@
       <ogo:properties>
         <ogo:property>
           <ogo:name>Refdes</ogo:name>
-          <ogo:value>L</ogo:value>
+          <ogo:value>R</ogo:value>
         </ogo:property>
         <ogo:property>
-          <ogo:name>ohm</ogo:name>
-          <ogo:value>8 ohm</ogo:value>
+          <ogo:name>Ohm</ogo:name>
+          <ogo:value>8</ogo:value>
         </ogo:property>
         <ogo:property>
           <ogo:name>Template</ogo:name>
-          <ogo:value>R_@refdes %1 %2 @res</ogo:value>
+          <ogo:value>R_@refdes %1 %2 @ohm</ogo:value>
         </ogo:property>
       </ogo:properties>
     </ogo:part>
