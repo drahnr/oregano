@@ -11,12 +11,14 @@ resource_types:
 resources:
 - name: git-clone-resource
   type: git
+  icon: git
   source:
     branch: master
     uri: https://github.com/drahnr/oregano.git
 
 - name: git-ci
   type: git
+  icon: git
   source:
     branch: master
     uri: https://github.com/drahnr/oregano.git
@@ -28,6 +30,7 @@ resources:
 
 - name: git-tag-resource
   type: git
+  icon: git
   source:
     tag_filter: "v[0-9]*"
     branch: master
@@ -35,6 +38,7 @@ resources:
 
 - name: git-pull-request-resource
   type: pull-request
+  icon: github
   source:
     repo: drahnr/oregano
     access_token: ((sirmergealot-github-token))
@@ -42,6 +46,7 @@ resources:
 
 - name: copr-resource
   type: copr
+  icon: fedora
   source:
     login: ((copr-login))
     token: ((copr-token))
@@ -49,6 +54,7 @@ resources:
 
 - name: oregano-test-fedora
   type: docker-image
+  icon: oci
   source:
     repository: quay.io/ratpoison/oregano-test-fedora
     username: ((quay-ratpoison-username))
@@ -58,6 +64,7 @@ resources:
 
 - name: oregano-test-ubuntu
   type: docker-image
+  icon: oci
   source:
     repository: quay.io/ratpoison/oregano-test-ubuntu
     username: ((quay-ratpoison-username))
@@ -67,19 +74,30 @@ resources:
 
 - name: deb-release
   type: s3
+  icon: debian
   source:
     endpoint: https://minio.spearow.io
     bucket: oregano-rc
-    regexp: (.*).deb
+    regexp: "^(.*).deb$"
     access_key_id: ((minio-access-key))
     secret_access_key: ((minio-secret-key))
 
 - name: rpm-release
   type: s3
+  icon: fedora
   source:
     endpoint: https://minio.spearow.io
     bucket: oregano-rc
-    regexp: (.*).rpm
+    regexp: "^(.*).rpm$"
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
+
+- name: flatpak-release
+  type: s3
+  source:
+    endpoint: https://minio.spearow.io
+    bucket: oregano-rc
+    regexp: "^(.*).flatpak$"
     access_key_id: ((minio-access-key))
     secret_access_key: ((minio-secret-key))
 
@@ -94,6 +112,7 @@ resources:
 
 - name: deb-drop
   type: s3
+  icon: debian
   source:
     endpoint: https://minio.spearow.io
     bucket: oregano-drop
@@ -101,8 +120,18 @@ resources:
     access_key_id: ((minio-access-key))
     secret_access_key: ((minio-secret-key))
 
+- name: flatpak-drop
+  type: s3
+  source:
+    endpoint: https://minio.spearow.io
+    bucket: oregano-drop
+    regexp: (.*).flatpak
+    access_key_id: ((minio-access-key))
+    secret_access_key: ((minio-secret-key))
+
 - name: rpm-drop
   type: s3
+  icon: fedora
   source:
     endpoint: https://minio.spearow.io
     bucket: oregano-drop
@@ -121,6 +150,7 @@ resources:
 
 - name: gh-release
   type: github-release
+  icon: github
   source:
     owner: drahnr
     repository: oregano
@@ -130,13 +160,13 @@ groups:
 - name: release
   jobs:
   - source-release
-  - build-pkg-deb-release
-  - build-pkg-rpm-release
+  - build-pkg-*-release
   - make-release
 - name: master
   jobs:
   - build-pkg-deb
   - build-pkg-rpm
+  - build-pkg-flatpak
   - compile
 - name: pr
   jobs:
@@ -256,10 +286,49 @@ jobs:
           inputs:
           - name: git-pull-request-resource
           run:
-            path: debuild
-            args: ["-i", "-us", "-uc", "-b"]
-            dir: git-pull-request-resource
+            path: sh
+            args:
+            - -exc
+            - |
+              # avoid cross device link errors by moving everything one layer inwards
+              mkdir quirk
+              cp -rf git-pull-request-resource ./quirk/source
+              cd quirk/source
 
+              debuild -i -us -uc -b
+              cd -
+              cp quirk/oregano*.deb deb
+
+      - task: create-flatpak
+        timeout: 35m
+        image: oregano-test-fedora
+        config:
+          platform: linux
+          inputs:
+          - name: git-pull-request-resource
+          outputs:
+          - name: flatpak
+          caches:
+          - path: workdir
+          run:
+            path: sh
+            args:
+            - -exc
+            - |
+              export FPB_WRKDIR=$(pwd)/workdir
+              export FP_BRANCH=drahnr
+              flatpak-builder \
+                --install \
+                --no-cache \
+                --user \
+                --force-clean \
+                --default-branch=$FP_BRANCH \
+                --state-dir=$FPB_WRKDIR/flatpak-builder \
+                --repo=$FPB_WRKDIR/flatpak-repo \
+                $FPB_WRKDIR/flatpak-target \
+                ./flatpak/com.github.drahnr.Oregano.yaml
+              cp *.flatpak ../flatpak
+            dir: git-pull-request-resource
 
       on_success:
         put: git-pull-request-resource
@@ -273,6 +342,12 @@ jobs:
           path: git-pull-request-resource
           status: failure
 
+
+
+
+
+
+############### master
   - name: compile
     build_logs_to_retain: 10
     public: true
@@ -351,7 +426,7 @@ jobs:
         passed: [compile]
 
     - task: create-deb
-      timeout: 15m
+      timeout: 20m
       image: oregano-test-ubuntu
       config:
         platform: linux
@@ -364,6 +439,7 @@ jobs:
           args:
           - -exc
           - |
+            # avoid cross device link errors by moving everything one layer inwards
             mkdir quirk
             cp -rf git-clone-resource ./quirk/source
             cd quirk/source
@@ -375,6 +451,53 @@ jobs:
     - put: deb-drop
       params:
         file: deb/oregano*.deb
+        acl: public-read
+
+  - name: build-pkg-flatpak
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - in_parallel:
+      - get: oregano-test-fedora
+        trigger: true
+      - get: git-clone-resource
+        trigger: true
+        passed: [compile]
+
+    - task: create-flatpak
+      timeout: 15m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: git-clone-resource
+        outputs:
+        - name: flatpak
+        caches:
+        - path: workdir
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            export FPB_WRKDIR=$(pwd)/workdir
+            export FP_BRANCH=drahnr
+            flatpak-builder \
+              --install \
+              --no-cache \
+              --user \
+              --force-clean \
+              --default-branch=$FP_BRANCH \
+              --state-dir=$FPB_WRKDIR/flatpak-builder \
+              --repo=$FPB_WRKDIR/flatpak-repo \
+              $FPB_WRKDIR/flatpak-target \
+              ./flatpak/com.github.drahnr.Oregano.yaml
+            cp *.flatpak ../flatpak
+          dir: git-clone-resource
+
+    - put: flatpak-drop
+      params:
+        file: flatpak/Oregano*.flatpak
         acl: public-read
 
 ###############################################################################
@@ -479,6 +602,7 @@ jobs:
           args:
           - -exc
           - |
+            # avoid cross device link errors by moving everything one layer inwards
             mkdir quirk
             cp -rf git-tag-resource ./quirk/source
             cd quirk/source
@@ -490,6 +614,52 @@ jobs:
     - put: deb-release
       params:
         file: deb/oregano*.deb
+        acl: public-read
+
+  - name: build-pkg-flatpak-release
+    build_logs_to_retain: 5
+    public: true
+    plan:
+    - in_parallel:
+      - get: oregano-test-fedora
+        trigger: true
+      - get: git-tag-resource
+        trigger: true
+
+    - task: create-flatpak
+      timeout: 30m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: git-tag-resource
+        outputs:
+        - name: flatpak
+        caches:
+        - path: workdir
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            export FPB_WRKDIR=$(pwd)/workdir
+            export FP_BRANCH=drahnr
+            flatpak-builder \
+              --install \
+              --no-cache \
+              --user \
+              --force-clean \
+              --default-branch=$FP_BRANCH \
+              --state-dir=$FPB_WRKDIR/flatpak-builder \
+              --repo=$FPB_WRKDIR/flatpak-repo \
+              $FPB_WRKDIR/flatpak-target \
+              ./flatpak/com.github.drahnr.Oregano.yaml
+            cp *.flatpak ../flatpak
+          dir: git-tag-resource
+
+    - put: flatpak-release
+      params:
+        file: flatpak/Oregano*.flatpak
         acl: public-read
 
   - name: make-release
@@ -507,6 +677,8 @@ jobs:
         passed: [build-pkg-rpm-release]
       - get: deb-release
         passed: [build-pkg-deb-release]
+      - get: flatpak-release
+        passed: [build-pkg-flatpak-release]
     - task: tag2file
       timeout: 5m
       image: oregano-test-fedora
@@ -517,6 +689,7 @@ jobs:
         - name: source-release
         - name: deb-release
         - name: rpm-release
+        - name: flatpak-release
         outputs:
         - name: release-info
         run:
@@ -525,11 +698,13 @@ jobs:
           - -exc
           - |
             git rev-parse HEAD > ../release-info/COMMITISH
+            ./waf --version
             ./waf version
             cat VERSION > ../release-info/TAG
             echo "oregano" > ../release-info/NAME
             echo "Yet another release" > ../release-info/BODY
           dir: git-tag-resource
+
     - put: gh-release
       params:
         tag_prefix: v
@@ -541,4 +716,4 @@ jobs:
         - source-release/oregano-*.tar.xz
         - rpm-release/oregano-*.rpm
         - deb-release/oregano_*.deb
-      
+        - flatpak-release/Oregano*.flatpak
