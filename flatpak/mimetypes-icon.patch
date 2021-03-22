@@ -1,0 +1,12 @@
+diff --git a/data/mime/oregano-mimetypes.xml.in b/data/mime/oregano-mimetypes.xml.in
+index 21504fe..9c0c713 100644
+--- a/data/mime/oregano-mimetypes.xml.in
++++ b/data/mime/oregano-mimetypes.xml.in
+@@ -2,6 +2,7 @@
+ <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+    <mime-type type="application/x-oregano">
+      <sub-class-of type="application/xml"/>
++     <icon name="com.github.drahnr.Oregano-application-x-oregano"/>
+      <_comment>Schematic file</_comment>
+      <magic priority="90">
+        <match type="string" value="oregano" offset="20:140"/>
