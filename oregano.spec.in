@@ -32,7 +32,7 @@ as front-end and ng-spice/gnu-cap as back-end
 ./waf distclean || true
 
 # the bare "build" target does not mangle any additional cflags into the build
-CFLAGS="%{optflags}" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" build
+CFLAGS="%{optflags} -ggdb" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" build
 
 %install
 ./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
