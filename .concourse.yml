@@ -1,10 +1,11 @@
 resource_types:
 - name: pull-request
-  type: docker-image
+  type: registry-image
   source:
     repository: jtarchie/pr
+
 - name: copr
-  type: docker-image
+  type: registry-image
   source:
     repository: quay.io/ahoi/concourse-copr-resource
 
@@ -24,8 +25,25 @@ resources:
     uri: https://github.com/drahnr/oregano.git
     paths:
     - .concourse/*
-    - .concourse/**/*
     - .concourse/fedora/*
+    - .concourse/ubuntu/*
+
+- name: git-ci-oci-fedora
+  type: git
+  icon: git
+  source:
+    branch: master
+    uri: https://github.com/drahnr/oregano.git
+    paths:
+    - .concourse/fedora/*
+
+- name: git-ci-oci-ubuntu
+  type: git
+  icon: git
+  source:
+    branch: master
+    uri: https://github.com/drahnr/oregano.git
+    paths:
     - .concourse/ubuntu/*
 
 - name: git-tag-resource
@@ -53,24 +71,22 @@ resources:
     url: ((copr-url))
 
 - name: oregano-test-fedora
-  type: docker-image
+  type: registry-image
   icon: oci
   source:
+    tag: latest
     repository: quay.io/ratpoison/oregano-test-fedora
     username: ((quay-ratpoison-username))
     password: ((quay-ratpoison-password))
-    max_concurrent_downloads: 2
-    max_concurrent_uploads: 2
 
 - name: oregano-test-ubuntu
-  type: docker-image
+  type: registry-image
   icon: oci
   source:
+    tag: latest
     repository: quay.io/ratpoison/oregano-test-ubuntu
     username: ((quay-ratpoison-username))
     password: ((quay-ratpoison-password))
-    max_concurrent_downloads: 2
-    max_concurrent_uploads: 2
 
 - name: deb-release
   type: s3
@@ -178,66 +194,65 @@ groups:
 
 jobs:
   - name: oci-fedora
-    serial_groups: [constructors]
     build_logs_to_retain: 2
     plan:
-    - get: oregano-test-fedora
-    - get: git-ci
+
+    - get: git-ci-oci-fedora
       trigger: true
+    - get: git-ci
 
     - task: gen-container
-      image: oregano-test-fedora
+      privileged: true
       config:
         platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: vito/oci-build-task
+        params:
+          CONTEXT: git-ci/.concourse/fedora
         inputs:
         - name: git-ci
         outputs:
-        - name: copycat
+        - name: image
+        caches:
+        - path: cache
         run:
-          path: sh
-          args:
-          - -exc
-          - |
-            cp -rfv .concourse/fedora/Dockerfile ../copycat/
-            cp -rfv .concourse/fedora/pkg.lst ../copycat/
-          dir: git-ci
+          path: build
 
     - put: oregano-test-fedora
       params:
-        build: copycat
-        tag_as_latest: true
-
+        image: image/image.tar
 
   - name: oci-ubuntu
-    serial_groups: [constructors]
     build_logs_to_retain: 2
     plan:
-    - get: oregano-test-ubuntu
-    - get: git-ci
+    - get: git-ci-oci-ubuntu
       trigger: true
+    - get: git-ci
 
     - task: gen-container
-      image: oregano-test-ubuntu
+      privileged: true
       config:
         platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: vito/oci-build-task
+        params:
+          CONTEXT: git-ci/.concourse/ubuntu
         inputs:
         - name: git-ci
         outputs:
-        - name: copycat
+        - name: image
+        caches:
+        - path: cache
         run:
-          path: sh
-          args:
-          - -exc
-          - |
-            cp -rfv .concourse/ubuntu/Dockerfile ../copycat/
-            cp -rfv .concourse/ubuntu/pkg.lst ../copycat/
-          dir: git-ci
+          path: build
 
     - put: oregano-test-ubuntu
       params:
-        build: copycat
-        tag_as_latest: true
-
+        image: image/image.tar
 
   - name: pr-validate
     build_logs_to_retain: 20
@@ -246,9 +261,9 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: oregano-test-ubuntu
-        trigger: true
       - get: git-pull-request-resource
+        trigger: true
+      - get: oregano-test-ubuntu
         trigger: true
     - in_parallel:
       - task: compile
@@ -319,7 +334,6 @@ jobs:
               export FP_BRANCH=drahnr
               flatpak-builder \
                 --install \
-                --no-cache \
                 --user \
                 --force-clean \
                 --default-branch=$FP_BRANCH \
@@ -484,9 +498,7 @@ jobs:
             export FP_BRANCH=drahnr
             flatpak-builder \
               --install \
-              --no-cache \
               --user \
-              --force-clean \
               --default-branch=$FP_BRANCH \
               --state-dir=$FPB_WRKDIR/flatpak-builder \
               --repo=$FPB_WRKDIR/flatpak-repo \
