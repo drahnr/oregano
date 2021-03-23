@@ -7,6 +7,7 @@ Group:			Applications/Engineering
 Source0:		https://github.com/drahnr/oregano/archive/oregano-%{version}.tar.xz
 Url:			https://ahoi.io/project/oregano
 
+BuildRequires: xdg-utils
 BuildRequires: gtk3-devel
 BuildRequires: libxml2-devel
 BuildRequires: gtksourceview3-devel
