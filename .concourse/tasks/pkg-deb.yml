@@ -1,0 +1,18 @@
+platform: linux
+inputs:
+- name: tree
+outputs:
+- name: deb
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    # avoid cross device link errors by moving everything one layer inwards
+    mkdir quirk
+    cp -rf tree ./quirk/source
+    cd quirk/source
+
+    debuild -i -us -uc -b
+    cd -
+    cp quirk/oregano*.deb deb

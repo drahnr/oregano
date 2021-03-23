@@ -261,7 +261,8 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: git-pull-request-resource
+      - get: tree
+        resource: git-pull-request-resource
         trigger: true
       - get: oregano-test-ubuntu
         trigger: true
@@ -272,7 +273,7 @@ jobs:
         config:
           platform: linux
           inputs:
-          - name: git-pull-request-resource
+          - name: tree
           run:
             path: sh
             args:
@@ -280,76 +281,22 @@ jobs:
             - |
               ./waf configure build --debug --prefix=/tmp install
               ./build/test/microtests
-            dir: "git-pull-request-resource"
+            dir: tree
 
       - task: create-rpm
         timeout: 15m
         image: oregano-test-fedora
-        config:
-          platform: linux
-          inputs:
-          - name: git-pull-request-resource
-          run:
-            path: .concourse/fedora/buildrpm.sh
-            dir: git-pull-request-resource
+        file: tasks/pkg-rpm.yml
 
       - task: create-deb
         timeout: 15m
         image: oregano-test-ubuntu
-        config:
-          platform: linux
-          inputs:
-          - name: git-pull-request-resource
-          run:
-            path: sh
-            args:
-            - -exc
-            - |
-              # dirty hack for missing pkg
-              apt install -y debhelper
-              # avoid cross device link errors by moving everything one layer inwards
-              mkdir quirk
-              cp -rf git-pull-request-resource ./quirk/source
-              cd quirk/source
-
-              debuild -i -us -uc -b
-              cd -
-              cp quirk/oregano*.deb deb
+        file: tasks/pkg-deb.yml
 
       - task: create-flatpak
         timeout: 35m
         image: oregano-test-fedora
-        config:
-          platform: linux
-          inputs:
-          - name: git-pull-request-resource
-          outputs:
-          - name: flatpak
-          caches:
-          - path: workdir
-          run:
-            path: sh
-            args:
-            - -exc
-            - |
-              export FPB_WRKDIR=$(pwd)/../workdir
-              export FP_BRANCH=drahnr
-
-              flatpak --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
-
-              flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
-
-              flatpak-builder \
-                --install \
-                --user \
-                --force-clean \
-                --default-branch=$FP_BRANCH \
-                --state-dir=$FPB_WRKDIR/flatpak-builder \
-                --repo=$FPB_WRKDIR/flatpak-repo \
-                $FPB_WRKDIR/flatpak-target \
-                ./flatpak/com.github.drahnr.Oregano.yaml
-              cp *.flatpak ../flatpak
-            dir: git-pull-request-resource
+        file: tasks/flatpak.yml
 
       on_success:
         put: git-pull-request-resource
@@ -376,28 +323,14 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: git-clone-resource
+      - get: tree
+        resource: git-clone-resource
         trigger: true
 
     - task: compile
       timeout: 15m
       image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-clone-resource
-        outputs:
-        - name: dist
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            ./waf configure build --debug --prefix=/tmp install
-            ./build/test/microtests && echo "tests passed" || cat ./build/test/test.log
-            ./waf dist
-            cp oregano-*.tar.xz ../dist/
-          dir: git-clone-resource
+      file: tasks/dist.yml
 
     - put: source-drop
       params:
@@ -411,24 +344,15 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: git-clone-resource
+      - get: tree
+        resource: git-clone-resource
         trigger: true
         passed: [compile]
 
     - task: create-rpm
       timeout: 15m
       image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-clone-resource
-        outputs:
-        - name: srpm
-        - name: rpm
-        run:
-          path: ./.concourse/fedora/buildrpm.sh
-          args: [ .. ]
-          dir: git-clone-resource
+      file: tasks/pkg-rpm.yml
 
     - put: rpm-drop
       params:
@@ -442,35 +366,15 @@ jobs:
     - in_parallel:
       - get: oregano-test-ubuntu
         trigger: true
-      - get: git-clone-resource
+      - get: tree
+        resource: git-clone-resource
         trigger: true
         passed: [compile]
 
     - task: create-deb
       timeout: 20m
       image: oregano-test-ubuntu
-      config:
-        platform: linux
-        inputs:
-        - name: git-clone-resource
-        outputs:
-        - name: deb
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            # dirty hack for missing pkg
-            apt install -y debhelper
-
-            # avoid cross device link errors by moving everything one layer inwards
-            mkdir quirk
-            cp -rf git-clone-resource ./quirk/source
-            cd quirk/source
-
-            debuild -i -us -uc -b
-            cd -
-            cp quirk/oregano*.deb deb
+      file: tasks/pkg-deb.yml
 
     - put: deb-drop
       params:
@@ -484,43 +388,15 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: git-clone-resource
+      - get: tree
+        resource: git-clone-resource
         trigger: true
         passed: [compile]
 
     - task: create-flatpak
       timeout: 15m
       image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-clone-resource
-        outputs:
-        - name: flatpak
-        caches:
-        - path: workdir
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            export FPB_WRKDIR=$(pwd)/../workdir
-            export FP_BRANCH=drahnr
-
-            flatpak --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
-
-            flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
-
-            flatpak-builder \
-              --install \
-              --user \
-              --default-branch=$FP_BRANCH \
-              --state-dir=$FPB_WRKDIR/flatpak-builder \
-              --repo=$FPB_WRKDIR/flatpak-repo \
-              $FPB_WRKDIR/flatpak-target \
-              ./flatpak/com.github.drahnr.Oregano.yaml
-            cp *.flatpak ../flatpak
-          dir: git-clone-resource
+      file: tasks/flatpak.yml
 
     - put: flatpak-drop
       params:
@@ -538,27 +414,14 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: git-tag-resource
+      - get: tree
+        resource: git-tag-resource
         trigger: true
 
     - task: source
       timeout: 15m
       image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-tag-resource
-        outputs:
-        - name: dist
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            ./waf configure --debug --prefix=/tmp install
-            ./waf dist
-            cp oregano-*.tar.xz ../dist/
-          dir: git-tag-resource
+      file: tasks/dist.yml
 
     - put: source-release
       params:
@@ -578,17 +441,7 @@ jobs:
     - task: create-rpm
       timeout: 15m
       image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-tag-resource
-        outputs:
-        - name: srpm
-        - name: rpm
-        run:
-          path: ./.concourse/fedora/buildrpm.sh
-          args: [ .. ]
-          dir: git-tag-resource
+      file: tasks/pkg-rpm.yml
 
     - put: rpm-release
       params:
@@ -612,33 +465,14 @@ jobs:
     - in_parallel:
       - get: oregano-test-ubuntu
         trigger: true
-      - get: git-tag-resource
+      - get: tree
+        resource: git-tag-resource
         trigger: true
 
     - task: create-deb
       timeout: 15m
       image: oregano-test-ubuntu
-      config:
-        platform: linux
-        inputs:
-        - name: git-tag-resource
-        outputs:
-        - name: deb
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            # dirty hack for missing pkg
-            apt install -y debhelper
-            # avoid cross device link errors by moving everything one layer inwards
-            mkdir quirk
-            cp -rf git-tag-resource ./quirk/source
-            cd quirk/source
-
-            debuild -i -us -uc -b
-            cd -
-            cp quirk/oregano*.deb deb
+      file: tasks/pkg-deb.yml
 
     - put: deb-release
       params:
@@ -652,44 +486,14 @@ jobs:
     - in_parallel:
       - get: oregano-test-fedora
         trigger: true
-      - get: git-tag-resource
+      - get: tree
+        resource: git-tag-resource
         trigger: true
 
     - task: create-flatpak
       timeout: 30m
       image: oregano-test-fedora
-      config:
-        platform: linux
-        inputs:
-        - name: git-tag-resource
-        outputs:
-        - name: flatpak
-        caches:
-        - path: workdir
-        run:
-          path: sh
-          args:
-          - -exc
-          - |
-            export FPB_WRKDIR=$(pwd)/../workdir
-            export FP_BRANCH=drahnr
-
-            flatpak --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
-
-            flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
-
-            flatpak-builder \
-              --install \
-              --no-cache \
-              --user \
-              --force-clean \
-              --default-branch=$FP_BRANCH \
-              --state-dir=$FPB_WRKDIR/flatpak-builder \
-              --repo=$FPB_WRKDIR/flatpak-repo \
-              $FPB_WRKDIR/flatpak-target \
-              ./flatpak/com.github.drahnr.Oregano.yaml
-            cp *.flatpak ../flatpak
-          dir: git-tag-resource
+      file: tasks/flatpak.yml
 
     - put: flatpak-release
       params:
@@ -713,6 +517,7 @@ jobs:
         passed: [build-pkg-deb-release]
       - get: flatpak-release
         passed: [build-pkg-flatpak-release]
+
     - task: tag2file
       timeout: 5m
       image: oregano-test-fedora

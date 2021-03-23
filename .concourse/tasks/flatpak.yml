@@ -1,0 +1,31 @@
+platform: linux
+inputs:
+- name: tree
+outputs:
+- name: flatpak
+caches:
+- path: workdir
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    export FPB_WRKDIR=$(pwd)/../workdir
+    export FP_BRANCH=drahnr
+
+    flatpak --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
+
+    flatpak-builder \
+      --install \
+      --no-cache \
+      --user \
+      --force-clean \
+      --default-branch=$FP_BRANCH \
+      --state-dir=$FPB_WRKDIR/flatpak-builder \
+      --repo=$FPB_WRKDIR/flatpak-repo \
+      $FPB_WRKDIR/flatpak-target \
+      ./flatpak/com.github.drahnr.Oregano.yaml
+    cp *.flatpak ../flatpak
+  dir: tree

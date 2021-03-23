@@ -1,0 +1,10 @@
+platform: linux
+inputs:
+- name: tree
+outputs:
+- name: srpm
+- name: rpm
+run:
+  path: ./.concourse/fedora/buildrpm.sh
+  args: [ .. ]
+  dir: tree
