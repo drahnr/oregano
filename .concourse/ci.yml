@@ -286,17 +286,17 @@ jobs:
       - task: create-rpm
         timeout: 15m
         image: oregano-test-fedora
-        file: tasks/pkg-rpm.yml
+        file: tree/.concourse/tasks/pkg-rpm.yml
 
       - task: create-deb
         timeout: 15m
         image: oregano-test-ubuntu
-        file: tasks/pkg-deb.yml
+        file: tree/.concourse/tasks/pkg-deb.yml
 
       - task: create-flatpak
         timeout: 35m
         image: oregano-test-fedora
-        file: tasks/flatpak.yml
+        file: tree/.concourse/tasks/flatpak.yml
 
       on_success:
         put: git-pull-request-resource
@@ -330,7 +330,7 @@ jobs:
     - task: compile
       timeout: 15m
       image: oregano-test-fedora
-      file: tasks/dist.yml
+      file: tree/.concourse/tasks/dist.yml
 
     - put: source-drop
       params:
@@ -352,7 +352,7 @@ jobs:
     - task: create-rpm
       timeout: 15m
       image: oregano-test-fedora
-      file: tasks/pkg-rpm.yml
+      file: tree/.concourse/tasks/pkg-rpm.yml
 
     - put: rpm-drop
       params:
@@ -374,7 +374,7 @@ jobs:
     - task: create-deb
       timeout: 20m
       image: oregano-test-ubuntu
-      file: tasks/pkg-deb.yml
+      file: tree/.concourse/tasks/pkg-deb.yml
 
     - put: deb-drop
       params:
@@ -396,7 +396,7 @@ jobs:
     - task: create-flatpak
       timeout: 15m
       image: oregano-test-fedora
-      file: tasks/flatpak.yml
+      file: tree/.concourse/tasks/flatpak.yml
 
     - put: flatpak-drop
       params:
@@ -421,7 +421,7 @@ jobs:
     - task: source
       timeout: 15m
       image: oregano-test-fedora
-      file: tasks/dist.yml
+      file: tree/.concourse/tasks/dist.yml
 
     - put: source-release
       params:
@@ -441,7 +441,7 @@ jobs:
     - task: create-rpm
       timeout: 15m
       image: oregano-test-fedora
-      file: tasks/pkg-rpm.yml
+      file: tree/.concourse/tasks/pkg-rpm.yml
 
     - put: rpm-release
       params:
@@ -472,7 +472,7 @@ jobs:
     - task: create-deb
       timeout: 15m
       image: oregano-test-ubuntu
-      file: tasks/pkg-deb.yml
+      file: tree/.concourse/tasks/pkg-deb.yml
 
     - put: deb-release
       params:
@@ -493,7 +493,7 @@ jobs:
     - task: create-flatpak
       timeout: 30m
       image: oregano-test-fedora
-      file: tasks/flatpak.yml
+      file: tree/.concourse/tasks/flatpak.yml
 
     - put: flatpak-release
       params:
