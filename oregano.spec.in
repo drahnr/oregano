@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
 Version:		@VERSION@
