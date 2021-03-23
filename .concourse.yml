@@ -305,6 +305,8 @@ jobs:
             args:
             - -exc
             - |
+              # dirty hack for missing pkg
+              apt install -y debhelper
               # avoid cross device link errors by moving everything one layer inwards
               mkdir quirk
               cp -rf git-pull-request-resource ./quirk/source
@@ -332,6 +334,11 @@ jobs:
             - |
               export FPB_WRKDIR=$(pwd)/workdir
               export FP_BRANCH=drahnr
+
+              flatpak -y --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
+
+              flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
+
               flatpak-builder \
                 --install \
                 --user \
@@ -453,6 +460,9 @@ jobs:
           args:
           - -exc
           - |
+            # dirty hack for missing pkg
+            apt install -y debhelper
+
             # avoid cross device link errors by moving everything one layer inwards
             mkdir quirk
             cp -rf git-clone-resource ./quirk/source
@@ -496,6 +506,11 @@ jobs:
           - |
             export FPB_WRKDIR=$(pwd)/workdir
             export FP_BRANCH=drahnr
+
+            flatpak -y --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
+
+            flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
+
             flatpak-builder \
               --install \
               --user \
@@ -614,6 +629,8 @@ jobs:
           args:
           - -exc
           - |
+            # dirty hack for missing pkg
+            apt install -y debhelper
             # avoid cross device link errors by moving everything one layer inwards
             mkdir quirk
             cp -rf git-tag-resource ./quirk/source
@@ -656,6 +673,11 @@ jobs:
           - |
             export FPB_WRKDIR=$(pwd)/workdir
             export FP_BRANCH=drahnr
+
+            flatpak -y --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
+
+            flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
+
             flatpak-builder \
               --install \
               --no-cache \
