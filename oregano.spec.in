@@ -85,9 +85,9 @@ rm -rf "$RPM_BUILD_ROOT"
 
 %changelog
 * Fri Jan 4 2019 Bernhard Schuster <bernhard@ahoi.io> 0.84.41-1
- - Dist fix
+- Dist fix
 
-* Mon Sep 21 2018 Bernhard Schuster <bernhard@ahoi.io> 0.84.40-1
+* Fri Sep 21 2018 Bernhard Schuster <bernhard@ahoi.io> 0.84.40-1
 - Fix crash causing bugs
 
 * Mon May 22 2017 Bernhard Schuster <bernhard@ahoi.io> 0.84.0-1
