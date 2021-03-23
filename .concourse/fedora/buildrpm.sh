@@ -14,7 +14,8 @@ cp -v build/rpmspec/oregano.spec ${RPMBUILD_DIR}/SPECS/
 ./waf dist
 cp -v oregano*.tar.xz ${RPMBUILD_DIR}/SOURCES/
 
-dnf builddep -y build/rpmspec/oregano.spec
+dnf -y install 'dnf-command(builddep)'
+dnf -y builddep build/rpmspec/oregano.spec
 
 cd ${RPMBUILD_DIR}
 rpmbuild \
