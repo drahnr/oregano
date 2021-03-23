@@ -1,4 +1,3 @@
-%global debug_package %{nil}
 
 Name:			oregano
 Summary:		Schematic capture and simulation of electrical circuits
@@ -35,7 +34,10 @@ as front-end and ng-spice/gnu-cap as back-end
 ./waf distclean || true
 
 # the bare "build" target does not mangle any additional cflags into the build
-CFLAGS="%{optflags} -ggdb" ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" --no-xdg build
+# and optflags includes `-g`
+# Avoid xdg installation, since it will try to modify the _host_ env!
+CFLAGS="%{optflags} -Wno-deprecated-declarations -Wno-deprecated -DGDK_DISABLE_DEPRECATION_WARNINGS" \
+    ./waf configure --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}" --no-xdg build
 
 %install
 ./waf install --destdir="$RPM_BUILD_ROOT" --prefix="%{_prefix}" --sysconfdir="%{_sysconfdir}"
@@ -68,7 +70,6 @@ fi
 
 %clean
 rm -rf "$RPM_BUILD_ROOT"
-
 
 %files -f oregano.lang
 %defattr(-, root, root)
