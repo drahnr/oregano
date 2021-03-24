@@ -32,7 +32,7 @@ modules:
     cleanup:
       - /share/man
     modules:
-      - shared-modules/intltool/intltool-0.51.json
+      - intltool.json
       - name: goocanvas
         make-install-args:
           - pyoverridesdir=/app/lib/python3.7/site-packages/gi/overrides
@@ -67,8 +67,8 @@ modules:
       - --enable-openmp
     sources:
       - type: archive
-        url: https://downloads.sourceforge.net/project/ngspice/ng-spice-rework/32/ngspice-32.tar.gz
-        sha256: 3cd90c4e94516d87c5b4d02a3a6405b1136b25d05c871d4fee1fd7c4c0d03ef2
+        url: https://sourceforge.net/projects/ngspice/files/ng-spice-rework/34/ngspice-34.tar.gz
+        sha256: 2263fffc6694754972af7072ef01cfe62ac790800dad651bc290bfcae79bd7b5
     cleanup:
       - /share/man
     modules:
