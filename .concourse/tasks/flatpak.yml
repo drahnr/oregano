@@ -13,9 +13,9 @@ run:
     export FPB_WRKDIR=$(pwd)/../workdir
     export FP_BRANCH=drahnr
 
-    flatpak --user remote-add --from flathub https://flathub.org/repo/flathub.flatpakrepo
+    flatpak remote-add --user --from flathub https://flathub.org/repo/flathub.flatpakrepo
 
-    flatpak -y --user install flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
+    flatpak install --or-update -y --user flathub org.gnome.Platform//3.38 org.gnome.Sdk//3.38
 
     flatpak-builder \
       --install \
@@ -24,6 +24,6 @@ run:
       --state-dir=$FPB_WRKDIR/flatpak-builder \
       --repo=$FPB_WRKDIR/flatpak-repo \
       $FPB_WRKDIR/flatpak-target \
-      ./flatpak/com.github.drahnr.Oregano.yaml
+      ./flatpak/com.github.drahnr.oregano.yaml
     cp *.flatpak ../flatpak
   dir: tree
