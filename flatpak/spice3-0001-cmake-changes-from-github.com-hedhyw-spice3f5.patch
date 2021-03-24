@@ -1,0 +1,847 @@
+From 7f5fb469a9875e6184088ca979e45158ddeeffdd Mon Sep 17 00:00:00 2001
+From: tinywrkb <tinywrkb@gmail.com>
+Date: Thu, 9 Jul 2020 16:34:55 +0300
+Subject: [PATCH] cmake changes from github.com/hedhyw/spice3f5
+
+---
+ CMakeLists.txt                   |  7 +++++++
+ lib/CMakeLists.txt               |  2 ++
+ src/CMakeLists.txt               |  3 +++
+ src/bin/CMakeLists.txt           | 19 +++++++++++++++++++
+ src/include/cpstd.h              |  2 +-
+ src/include/os_linux.h           | 21 +++++++++++++++++++++
+ src/include/port.h               |  5 +++++
+ src/lib/CMakeLists.txt           | 10 ++++++++++
+ src/lib/ckt/CMakeLists.txt       | 20 ++++++++++++++++++++
+ src/lib/cp/CMakeLists.txt        |  3 +++
+ src/lib/dev/CMakeLists.txt       | 31 +++++++++++++++++++++++++++++++
+ src/lib/dev/asrc/CMakeLists.txt  |  2 ++
+ src/lib/dev/bjt/CMakeLists.txt   |  6 ++++++
+ src/lib/dev/bsim1/CMakeLists.txt |  3 +++
+ src/lib/dev/bsim2/CMakeLists.txt |  3 +++
+ src/lib/dev/cap/CMakeLists.txt   |  3 +++
+ src/lib/dev/cccs/CMakeLists.txt  |  2 ++
+ src/lib/dev/ccvs/CMakeLists.txt  |  3 +++
+ src/lib/dev/csw/CMakeLists.txt   |  2 ++
+ src/lib/dev/dio/CMakeLists.txt   |  4 ++++
+ src/lib/dev/disto/CMakeLists.txt |  3 +++
+ src/lib/dev/ind/CMakeLists.txt   |  4 ++++
+ src/lib/dev/isrc/CMakeLists.txt  |  2 ++
+ src/lib/dev/jfet/CMakeLists.txt  |  4 ++++
+ src/lib/dev/ltra/CMakeLists.txt  |  3 +++
+ src/lib/dev/mes/CMakeLists.txt   |  4 ++++
+ src/lib/dev/mos1/CMakeLists.txt  |  4 ++++
+ src/lib/dev/mos2/CMakeLists.txt  |  5 +++++
+ src/lib/dev/mos3/CMakeLists.txt  |  4 ++++
+ src/lib/dev/mos6/CMakeLists.txt  |  2 ++
+ src/lib/dev/res/CMakeLists.txt   |  3 +++
+ src/lib/dev/sw/CMakeLists.txt    |  2 ++
+ src/lib/dev/tra/CMakeLists.txt   |  2 ++
+ src/lib/dev/urc/CMakeLists.txt   |  3 +++
+ src/lib/dev/vccs/CMakeLists.txt  |  2 ++
+ src/lib/dev/vcvs/CMakeLists.txt  |  3 +++
+ src/lib/dev/vsrc/CMakeLists.txt  |  3 +++
+ src/lib/fte/CMakeLists.txt       | 11 +++++++++++
+ src/lib/fte/graf.c               |  6 ++++--
+ src/lib/fte/grid.c               |  6 ++++--
+ src/lib/fte/x11.c                | 28 ++++++++++++++++------------
+ src/lib/hlp/CMakeLists.txt       |  1 +
+ src/lib/hlp/readhelp.c           |  4 ++--
+ src/lib/hlp/x11disp.c            | 16 ++++++++--------
+ src/lib/inp/CMakeLists.txt       | 10 ++++++++++
+ src/lib/mfb/CMakeLists.txt       |  2 ++
+ src/lib/mfb/mfbcaps.c            |  4 ++--
+ src/lib/misc/CMakeLists.txt      |  2 ++
+ src/lib/ni/CMakeLists.txt        |  2 ++
+ src/lib/sparse/CMakeLists.txt    |  2 ++
+ src/lib/sparse/spextra.c         |  2 +-
+ 51 files changed, 270 insertions(+), 30 deletions(-)
+ create mode 100755 CMakeLists.txt
+ create mode 100644 lib/CMakeLists.txt
+ create mode 100755 src/CMakeLists.txt
+ create mode 100755 src/bin/CMakeLists.txt
+ create mode 100755 src/include/os_linux.h
+ create mode 100755 src/lib/CMakeLists.txt
+ create mode 100755 src/lib/ckt/CMakeLists.txt
+ create mode 100755 src/lib/cp/CMakeLists.txt
+ create mode 100755 src/lib/dev/CMakeLists.txt
+ create mode 100755 src/lib/dev/asrc/CMakeLists.txt
+ create mode 100755 src/lib/dev/bjt/CMakeLists.txt
+ create mode 100755 src/lib/dev/bsim1/CMakeLists.txt
+ create mode 100755 src/lib/dev/bsim2/CMakeLists.txt
+ create mode 100755 src/lib/dev/cap/CMakeLists.txt
+ create mode 100755 src/lib/dev/cccs/CMakeLists.txt
+ create mode 100755 src/lib/dev/ccvs/CMakeLists.txt
+ create mode 100755 src/lib/dev/csw/CMakeLists.txt
+ create mode 100755 src/lib/dev/dio/CMakeLists.txt
+ create mode 100755 src/lib/dev/disto/CMakeLists.txt
+ create mode 100755 src/lib/dev/ind/CMakeLists.txt
+ create mode 100755 src/lib/dev/isrc/CMakeLists.txt
+ create mode 100755 src/lib/dev/jfet/CMakeLists.txt
+ create mode 100755 src/lib/dev/ltra/CMakeLists.txt
+ create mode 100755 src/lib/dev/mes/CMakeLists.txt
+ create mode 100755 src/lib/dev/mos1/CMakeLists.txt
+ create mode 100755 src/lib/dev/mos2/CMakeLists.txt
+ create mode 100755 src/lib/dev/mos3/CMakeLists.txt
+ create mode 100755 src/lib/dev/mos6/CMakeLists.txt
+ create mode 100755 src/lib/dev/res/CMakeLists.txt
+ create mode 100755 src/lib/dev/sw/CMakeLists.txt
+ create mode 100755 src/lib/dev/tra/CMakeLists.txt
+ create mode 100755 src/lib/dev/urc/CMakeLists.txt
+ create mode 100755 src/lib/dev/vccs/CMakeLists.txt
+ create mode 100755 src/lib/dev/vcvs/CMakeLists.txt
+ create mode 100755 src/lib/dev/vsrc/CMakeLists.txt
+ create mode 100755 src/lib/fte/CMakeLists.txt
+ create mode 100755 src/lib/hlp/CMakeLists.txt
+ create mode 100755 src/lib/inp/CMakeLists.txt
+ create mode 100755 src/lib/mfb/CMakeLists.txt
+ create mode 100755 src/lib/misc/CMakeLists.txt
+ create mode 100755 src/lib/ni/CMakeLists.txt
+ create mode 100755 src/lib/sparse/CMakeLists.txt
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+new file mode 100755
+index 0000000..dd725e4
+--- /dev/null
++++ b/CMakeLists.txt
+@@ -0,0 +1,7 @@
++cmake_minimum_required(VERSION 2.6)
++project(Spice3f5)
++if (UNIX AND NOT APPLE)
++  add_definitions(-Dlinux)
++  add_subdirectory(src)
++  add_subdirectory(lib)
++endif (UNIX)
+diff --git a/lib/CMakeLists.txt b/lib/CMakeLists.txt
+new file mode 100644
+index 0000000..db6e983
+--- /dev/null
++++ b/lib/CMakeLists.txt
+@@ -0,0 +1,2 @@
++install(FILES mfbcap news DESTINATION /usr/local/lib/spice3f5)
++install(DIRECTORY helpdir scripts DESTINATION /usr/local/lib/spice3f5)
+\ No newline at end of file
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+new file mode 100755
+index 0000000..bdfe215
+--- /dev/null
++++ b/src/CMakeLists.txt
+@@ -0,0 +1,3 @@
++include_directories(include lib/dev)
++add_subdirectory(lib)
++add_subdirectory(bin)
+\ No newline at end of file
+diff --git a/src/bin/CMakeLists.txt b/src/bin/CMakeLists.txt
+new file mode 100755
+index 0000000..9c319ea
+--- /dev/null
++++ b/src/bin/CMakeLists.txt
+@@ -0,0 +1,19 @@
++set(confc "${CMAKE_CURRENT_SOURCE_DIR}/cconf.c")
++set(tunec "${CMAKE_CURRENT_SOURCE_DIR}/tunepc.c")
++set(devices "asrc bjt bsim1 bsim2 cap cccs csw dio disto ind isrc jfet ltra mes mos1 mos2 mos3 mos6 res sw tra urc vccs vcvs vsrc")
++set(analyses "op dc tf ac tran pz disto noise sense")
++set(version "3f5")
++
++add_definitions(-DSIMULATOR)
++add_executable(spice3 main.c ${tunec} ${confc})
++target_link_libraries(spice3 fte dev ckt cp hlp inp mfb ni misc sparse)
++link_directories("${CMAKE_CURRENT_SOURCE_DIR}/../lib")
++install(TARGETS spice3 RUNTIME DESTINATION /usr/local/bin)
++
++add_custom_command(
++  OUTPUT ${confc}
++  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/../../util/mkvers.sh" "${devices}" "${analyses}" "${version}" > ${confc}
++  COMMAND cat ${CMAKE_CURRENT_SOURCE_DIR}/config.c >> ${confc}
++)
++add_executable(maxkeidx makeidx.c)
++target_link_libraries (maxkeidx misc hlp)
+\ No newline at end of file
+diff --git a/src/include/cpstd.h b/src/include/cpstd.h
+index 2c3f6cd..d3c9664 100644
+--- a/src/include/cpstd.h
++++ b/src/include/cpstd.h
+@@ -50,7 +50,7 @@ extern char *tildexpand();
+ extern char *printnum();
+ extern int cp_numdgt;
+ extern void fatal();
+-extern void setenv();
++//extern void setenv();
+ extern void cp_printword();
+ 
+ /* Externs from wlist.c */
+diff --git a/src/include/os_linux.h b/src/include/os_linux.h
+new file mode 100755
+index 0000000..5404029
+--- /dev/null
++++ b/src/include/os_linux.h
+@@ -0,0 +1,21 @@
++/*
++ *  Linux
++ */
++#include "os_unix.h"
++
++#define WANT_X11		/* If the X11 Window System can work	*/
++#define HAS_LIMITS_H			/* limits.h */
++#define HAS_FLOAT_H				/* float.h */
++#define HAS_STRCHR		/* strchr( ) instead of index( )	*/
++#define HAS_STDLIB		/* #include <stdlib.h> for libc defs	*/
++#define HAS_VPERROR		/* perror( ) defined by standard '.h's	*/
++#define HAS_ATRIGH		/* acosh( ), asinh( ), atanh( )         */
++#define HAS_BCOPY		/* bcopy( ), bzero( )			*/
++#define HAS_BSDRANDOM		/* srandom( ) and random( )		*/
++#define HAS_BSDRUSAGE		/* getrusage( )				*/
++#define HAS_DUP2		/* dup2(a, b) for shifting file descrs. */
++#define HAS_ENVIRON		/* getenv( )				*/
++#define HAS_GETWD		/* getwd(buf)				*/
++#define HAS_STRINGS		/* use <strings.h> instead of <string.h> */
++#define HAS_SYSVTTY
++#define HAS_SYSVDIRS
+diff --git a/src/include/port.h b/src/include/port.h
+index 7bacb89..be4eff8 100644
+--- a/src/include/port.h
++++ b/src/include/port.h
+@@ -16,6 +16,11 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
+ #  define CONFIGURED
+ #endif
+ 
++#ifdef linux
++#  include "os_linux.h"
++#  define CONFIGURED
++#endif
++
+ #ifdef ultrix
+ #  include "os_ultrx.h"
+ #  define CONFIGURED
+diff --git a/src/lib/CMakeLists.txt b/src/lib/CMakeLists.txt
+new file mode 100755
+index 0000000..b30b1aa
+--- /dev/null
++++ b/src/lib/CMakeLists.txt
+@@ -0,0 +1,10 @@
++add_subdirectory(ckt)
++add_subdirectory(cp)
++add_subdirectory(dev)
++add_subdirectory(fte)
++add_subdirectory(hlp)
++add_subdirectory(inp)
++add_subdirectory(mfb)
++add_subdirectory(misc)
++add_subdirectory(ni)
++add_subdirectory(sparse)
+\ No newline at end of file
+diff --git a/src/lib/ckt/CMakeLists.txt b/src/lib/ckt/CMakeLists.txt
+new file mode 100755
+index 0000000..bcdf2de
+--- /dev/null
++++ b/src/lib/ckt/CMakeLists.txt
+@@ -0,0 +1,20 @@
++add_library(ckt acan.c acaskq.c acsetp.c cktaccpt.c cktacct.c cktacdum.c
++  cktask.c cktaskaq.c cktasknq.c cktbindn.c cktbkdum.c
++  cktclrbk.c cktcrte.c cktdelt.c cktdest.c cktdisto.c
++  cktdlti.c cktdltm.c cktdltn.c cktdojob.c cktdump.c
++  cktfbran.c cktfdev.c cktfnda.c cktfndm.c cktfnode.c
++  cktftask.c cktgrnd.c ckti2nod.c cktic.c cktinit.c
++  cktlnkeq.c cktload.c cktmapn.c cktmask.c cktmcrt.c
++  cktmkcur.c cktmknod.c cktmkvol.c cktmpar.c cktnames.c
++  cktnewan.c cktneweq.c cktnewn.c cktnodn.c cktnoise.c
++  cktntask.c cktnum2n.c cktop.c cktparam.c cktpmnam.c
++  cktpname.c cktpzld.c cktpzset.c cktpzstr.c cktsetap.c
++  cktsetbk.c cktsetnp.c cktsetup.c cktsgen.c cktsopt.c
++  ckttemp.c cktterr.c ckttroub.c ckttrunc.c ckttyplk.c
++  daskq.c dcoaskq.c dcop.c dcosetp.c dctaskq.c dctran.c
++  dctrcurv.c dctsetp.c distoan.c dkerproc.c dloadfns.c
++  dsetparm.c naskq.c nevalsrc.c ninteg.c noisean.c nsetparm.c
++  pzan.c pzaskq.c pzsetp.c sensaskq.c senssetp.c
++  tfanal.c tfaskq.c tfsetp.c tranaskq.c traninit.c transetp.c
++  cktsens.c)
++target_link_libraries(ckt fte)
+\ No newline at end of file
+diff --git a/src/lib/cp/CMakeLists.txt b/src/lib/cp/CMakeLists.txt
+new file mode 100755
+index 0000000..acd19fb
+--- /dev/null
++++ b/src/lib/cp/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(cp alias.c backq.c complete.c cshpar.c front.c glob.c
++  history.c input.c lexical.c modify.c output.c quote.c
++  spawn.c std.c unixcom.c variable.c var2.c wlist.c numparse.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/CMakeLists.txt b/src/lib/dev/CMakeLists.txt
+new file mode 100755
+index 0000000..5a61d52
+--- /dev/null
++++ b/src/lib/dev/CMakeLists.txt
+@@ -0,0 +1,31 @@
++add_subdirectory(disto)
++add_subdirectory(asrc)
++add_subdirectory(bjt)
++add_subdirectory(bsim1)
++add_subdirectory(bsim2)
++add_subdirectory(cap)
++add_subdirectory(cccs)
++add_subdirectory(ccvs)
++add_subdirectory(csw)
++add_subdirectory(dio)
++add_subdirectory(ind)
++add_subdirectory(isrc)
++add_subdirectory(jfet)
++add_subdirectory(ltra)
++add_subdirectory(mes)
++add_subdirectory(mos1)
++add_subdirectory(mos2)
++add_subdirectory(mos3)
++add_subdirectory(mos6)
++add_subdirectory(res)
++add_subdirectory(sw)
++add_subdirectory(tra)
++add_subdirectory(urc)
++add_subdirectory(vccs)
++add_subdirectory(vcvs)
++add_subdirectory(vsrc)
++
++add_library(dev devsup.c)
++
++target_link_libraries(dev asrc bjt bsim1 bsim2 cap cccs ccvs csw dio
++  ind isrc jfet ltra mes mos1 mos2 mos3 mos6 res sw tra urc vccs vcvs vsrc)
+diff --git a/src/lib/dev/asrc/CMakeLists.txt b/src/lib/dev/asrc/CMakeLists.txt
+new file mode 100755
+index 0000000..18368b3
+--- /dev/null
++++ b/src/lib/dev/asrc/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(asrc asrc.c asrcacld.c asrcask.c asrcconv.c asrcdel.c asrcdest.c
++  asrcfbr.c asrcload.c asrcmdel.c asrcpar.c asrcpzld.c asrcset.c)
+diff --git a/src/lib/dev/bjt/CMakeLists.txt b/src/lib/dev/bjt/CMakeLists.txt
+new file mode 100755
+index 0000000..0ea6772
+--- /dev/null
++++ b/src/lib/dev/bjt/CMakeLists.txt
+@@ -0,0 +1,6 @@
++add_library(bjt bjt.c bjtacld.c bjtask.c bjtconv.c bjtdel.c bjtdest.c
++  bjtdisto.c bjtdset.c bjtgetic.c bjtload.c bjtmask.c
++  bjtmdel.c bjtmpar.c bjtnoise.c bjtparam.c bjtpzld.c
++  bjtsacl.c bjtsetup.c bjtsload.c bjtsprt.c bjtsset.c
++  bjtsupd.c bjttemp.c bjttrunc.c)
++target_link_libraries(bjt disto)
+\ No newline at end of file
+diff --git a/src/lib/dev/bsim1/CMakeLists.txt b/src/lib/dev/bsim1/CMakeLists.txt
+new file mode 100755
+index 0000000..4b9bb18
+--- /dev/null
++++ b/src/lib/dev/bsim1/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(bsim1 b1.c b1acld.c b1ask.c b1cvtest.c b1del.c b1dest.c b1disto.c
++  b1dset.c b1eval.c b1getic.c b1ld.c b1mask.c b1mdel.c b1moscap.c b1mpar.c
++  b1par.c b1pzld.c b1set.c b1temp.c b1trunc.c)
+diff --git a/src/lib/dev/bsim2/CMakeLists.txt b/src/lib/dev/bsim2/CMakeLists.txt
+new file mode 100755
+index 0000000..ccf809c
+--- /dev/null
++++ b/src/lib/dev/bsim2/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(bsim2 b2.c b2acld.c b2ask.c b2cvtest.c b2del.c b2dest.c b2eval.c
++  b2getic.c b2ld.c b2mask.c b2mdel.c b2moscap.c b2mpar.c b2par.c b2pzld.c
++  b2set.c b2temp.c b2trunc.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/cap/CMakeLists.txt b/src/lib/dev/cap/CMakeLists.txt
+new file mode 100755
+index 0000000..9b70070
+--- /dev/null
++++ b/src/lib/dev/cap/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(cap cap.c capacld.c capask.c capdel.c capdest.c capgetic.c
++  capload.c capmask.c capmdel.c capmpar.c capparam.c cappzld.c capsacl.c
++  capsetup.c capsload.c capsprt.c capsset.c capsupd.c captemp.c captrunc.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/cccs/CMakeLists.txt b/src/lib/dev/cccs/CMakeLists.txt
+new file mode 100755
+index 0000000..27aced7
+--- /dev/null
++++ b/src/lib/dev/cccs/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(cccs cccs.c cccsask.c cccsdel.c cccsdest.c cccsload.c cccsmdel.c
++  cccspar.c cccspzld.c cccssacl.c cccsset.c cccssld.c cccssprt.c cccssset.c )
+\ No newline at end of file
+diff --git a/src/lib/dev/ccvs/CMakeLists.txt b/src/lib/dev/ccvs/CMakeLists.txt
+new file mode 100755
+index 0000000..d895f15
+--- /dev/null
++++ b/src/lib/dev/ccvs/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(ccvs ccvs.c ccvsask.c ccvsdel.c ccvsdest.c ccvsfbr.c ccvsload.c
++  ccvsmdel.c ccvspar.c ccvspzld.c ccvssacl.c ccvsset.c ccvssld.c ccvssprt.c
++  ccvssset.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/csw/CMakeLists.txt b/src/lib/dev/csw/CMakeLists.txt
+new file mode 100755
+index 0000000..3d556c1
+--- /dev/null
++++ b/src/lib/dev/csw/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(csw csw.c cswacld.c cswask.c cswdel.c cswdest.c cswload.c cswmask.c
++  cswmdel.c cswmpar.c cswnoise.c cswparam.c cswpzld.c cswsetup.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/dio/CMakeLists.txt b/src/lib/dev/dio/CMakeLists.txt
+new file mode 100755
+index 0000000..76ba651
+--- /dev/null
++++ b/src/lib/dev/dio/CMakeLists.txt
+@@ -0,0 +1,4 @@
++add_library(dio dio.c dioacld.c dioask.c dioconv.c diodel.c diodest.c diodisto.c
++  diodset.c diogetic.c dioload.c diomask.c diomdel.c diompar.c dionoise.c
++  dioparam.c diopzld.c diosacl.c diosetup.c diosload.c diosprt.c diosset.c
++  diosupd.c diotemp.c diotrunc.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/disto/CMakeLists.txt b/src/lib/dev/disto/CMakeLists.txt
+new file mode 100755
+index 0000000..a27987f
+--- /dev/null
++++ b/src/lib/dev/disto/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(disto atander.c cosderiv.c cubeder.c divderiv.c equalder.c
++  expderiv.c invderiv.c multder.c plusder.c powderiv.c sqrtder.c tanderiv.c
++  timesder.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/ind/CMakeLists.txt b/src/lib/dev/ind/CMakeLists.txt
+new file mode 100755
+index 0000000..528d2d8
+--- /dev/null
++++ b/src/lib/dev/ind/CMakeLists.txt
+@@ -0,0 +1,4 @@
++add_library(ind ind.c indacld.c indask.c inddel.c inddest.c indload.c indmdel.c
++  indparam.c indpzld.c indsacl.c indsetup.c indsload.c indsprt.c indsset.c
++  indsupd.c indtrunc.c mutacld.c mutask.c mutdel.c mutdest.c mutmdel.c
++  mutparam.c mutpzld.c mutsetup.c mutsprt.c mutsset.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/isrc/CMakeLists.txt b/src/lib/dev/isrc/CMakeLists.txt
+new file mode 100755
+index 0000000..854e7e7
+--- /dev/null
++++ b/src/lib/dev/isrc/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(isrc isrc.c isrcacct.c isrcacld.c isrcask.c isrcdel.c isrcdest.c
++  isrcload.c isrcmdel.c isrcpar.c isrctemp.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/jfet/CMakeLists.txt b/src/lib/dev/jfet/CMakeLists.txt
+new file mode 100755
+index 0000000..64042e3
+--- /dev/null
++++ b/src/lib/dev/jfet/CMakeLists.txt
+@@ -0,0 +1,4 @@
++add_library(jfet jfet.c jfetacld.c jfetask.c jfetdel.c jfetdest.c jfetdist.c
++  jfetdset.c jfetic.c jfetload.c jfetmask.c jfetmdel.c jfetmpar.c jfetnoi.c
++  jfetpar.c jfetpzld.c jfetset.c jfettemp.c jfettrun.c ../devsup.c)
++target_link_libraries(jfet ckt ni)
+\ No newline at end of file
+diff --git a/src/lib/dev/ltra/CMakeLists.txt b/src/lib/dev/ltra/CMakeLists.txt
+new file mode 100755
+index 0000000..eac4892
+--- /dev/null
++++ b/src/lib/dev/ltra/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(ltra ltra.c ltraacct.c ltraacld.c ltraask.c ltradel.c ltradest.c
++  ltraload.c ltramdel.c ltramisc.c ltrampar.c ltrapar.c ltraset.c ltratemp.c
++  ltratrun.c ltramask.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/mes/CMakeLists.txt b/src/lib/dev/mes/CMakeLists.txt
+new file mode 100755
+index 0000000..bd9c5a7
+--- /dev/null
++++ b/src/lib/dev/mes/CMakeLists.txt
+@@ -0,0 +1,4 @@
++add_library(mes mes.c mesacl.c mesask.c mesdel.c mesdest.c mesdisto.c mesdset.c
++  mesgetic.c mesload.c mesmask.c mesmdel.c mesmpar.c mesnoise.c mesparam.c
++  mespzld.c messetup.c mestemp.c mestrunc.c)
++target_link_libraries(mes disto)
+\ No newline at end of file
+diff --git a/src/lib/dev/mos1/CMakeLists.txt b/src/lib/dev/mos1/CMakeLists.txt
+new file mode 100755
+index 0000000..8297e65
+--- /dev/null
++++ b/src/lib/dev/mos1/CMakeLists.txt
+@@ -0,0 +1,4 @@
++add_library(mos1 mos1.c mos1acld.c mos1ask.c mos1conv.c mos1del.c mos1dest.c
++	mos1dist.c mos1dset.c mos1ic.c mos1load.c mos1mask.c mos1mdel.c mos1mpar.c
++	mos1noi.c mos1par.c mos1pzld.c mos1sacl.c mos1set.c mos1sld.c mos1sprt.c
++	mos1sset.c mos1supd.c mos1temp.c mos1trun.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/mos2/CMakeLists.txt b/src/lib/dev/mos2/CMakeLists.txt
+new file mode 100755
+index 0000000..902682e
+--- /dev/null
++++ b/src/lib/dev/mos2/CMakeLists.txt
+@@ -0,0 +1,5 @@
++add_library(mos2 mos2.c mos2acld.c mos2ask.c mos2conv.c mos2del.c mos2dest.c
++	mos2dist.c mos2dset.c mos2ic.c mos2load.c mos2mdel.c mos2mpar.c mos2noi.c
++	mos2par.c mos2pzld.c mos2sacl.c mos2set.c mos2sld.c mos2sprt.c mos2sset.c
++	mos2supd.c mos2temp.c mos2trun.c mos2mask.c)
++target_link_libraries(mos2 disto)
+\ No newline at end of file
+diff --git a/src/lib/dev/mos3/CMakeLists.txt b/src/lib/dev/mos3/CMakeLists.txt
+new file mode 100755
+index 0000000..2460cae
+--- /dev/null
++++ b/src/lib/dev/mos3/CMakeLists.txt
+@@ -0,0 +1,4 @@
++add_library(mos3 mos3.c mos3acld.c mos3ask.c mos3conv.c mos3del.c mos3dest.c
++	mos3dist.c mos3dset.c mos3ic.c mos3load.c mos3mask.c mos3mdel.c mos3mpar.c
++	mos3noi.c mos3par.c mos3pzld.c mos3sacl.c mos3set.c mos3sld.c mos3sprt.c
++	mos3sset.c mos3supd.c mos3temp.c mos3trun.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/mos6/CMakeLists.txt b/src/lib/dev/mos6/CMakeLists.txt
+new file mode 100755
+index 0000000..f0706db
+--- /dev/null
++++ b/src/lib/dev/mos6/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(mos6 mos6.c mos6ask.c mos6conv.c mos6dest.c mos6ic.c mos6load.c
++	mos6mpar.c mos6par.c mos6set.c mos6temp.c mos6trun.c mos6mask.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/res/CMakeLists.txt b/src/lib/dev/res/CMakeLists.txt
+new file mode 100755
+index 0000000..3c4383b
+--- /dev/null
++++ b/src/lib/dev/res/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(res res.c resask.c resdel.c resdest.c resload.c resmask.c resmdel.c
++	resmpar.c resnoise.c resparam.c respzld.c ressacl.c ressetup.c ressload.c
++	ressprt.c ressset.c restemp.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/sw/CMakeLists.txt b/src/lib/dev/sw/CMakeLists.txt
+new file mode 100755
+index 0000000..15ab1bf
+--- /dev/null
++++ b/src/lib/dev/sw/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(sw sw.c swacload.c swask.c swdelete.c swdest.c swload.c swmask.c
++	swmdel.c swmparam.c swnoise.c swparam.c swpzload.c swsetup.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/tra/CMakeLists.txt b/src/lib/dev/tra/CMakeLists.txt
+new file mode 100755
+index 0000000..fbecc56
+--- /dev/null
++++ b/src/lib/dev/tra/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(tra tra.c traacct.c traacld.c traask.c tradel.c tradest.c traload.c
++	tramdel.c traparam.c trasetup.c tratemp.c tratrunc.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/urc/CMakeLists.txt b/src/lib/dev/urc/CMakeLists.txt
+new file mode 100755
+index 0000000..7c820f7
+--- /dev/null
++++ b/src/lib/dev/urc/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(urc urc.c urcask.c urcdel.c urcdest.c urcmask.c urcmdel.c urcmpar.c
++	urcparam.c urcsetup.c)
++target_link_libraries(urc ckt)
+\ No newline at end of file
+diff --git a/src/lib/dev/vccs/CMakeLists.txt b/src/lib/dev/vccs/CMakeLists.txt
+new file mode 100755
+index 0000000..339a741
+--- /dev/null
++++ b/src/lib/dev/vccs/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(vccs vccs.c vccsask.c vccsdel.c vccsdest.c vccsload.c vccsmdel.c
++	vccspar.c vccspzld.c vccssacl.c vccsset.c vccssld.c vccssprt.c vccssset.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/vcvs/CMakeLists.txt b/src/lib/dev/vcvs/CMakeLists.txt
+new file mode 100755
+index 0000000..e399fe0
+--- /dev/null
++++ b/src/lib/dev/vcvs/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(vcvs vcvs.c vcvsask.c vcvsdel.c vcvsdest.c vcvsfbr.c vcvsload.c
++	vcvsmdel.c vcvspar.c vcvspzld.c vcvssacl.c vcvsset.c vcvssld.c vcvssprt.c
++	vcvssset.c)
+\ No newline at end of file
+diff --git a/src/lib/dev/vsrc/CMakeLists.txt b/src/lib/dev/vsrc/CMakeLists.txt
+new file mode 100755
+index 0000000..50fb5b9
+--- /dev/null
++++ b/src/lib/dev/vsrc/CMakeLists.txt
+@@ -0,0 +1,3 @@
++add_library(vsrc vsrc.c vsrcacct.c vsrcacld.c vsrcask.c vsrcdel.c vsrcdest.c
++	vsrcfbr.c vsrcload.c vsrcmdel.c vsrcpar.c vsrcpzld.c vsrcpzs.c vsrcset.c
++	vsrctemp.c)
+\ No newline at end of file
+diff --git a/src/lib/fte/CMakeLists.txt b/src/lib/fte/CMakeLists.txt
+new file mode 100755
+index 0000000..22e72c5
+--- /dev/null
++++ b/src/lib/fte/CMakeLists.txt
+@@ -0,0 +1,11 @@
++add_library(fte agraf.c arg.c aspice.c breakp.c circuits.c clip.c cmath1.c
++  cmath2.c cmath3.c cmath4.c compose.c cpitf.c debugcom.c
++  define.c device.c diff.c display.c doplot.c dotcards.c
++  error.c evaluate.c fourier.c graf.c graphdb.c grid.c inp.c
++  inpcom.c interp.c linear.c mfb.c misccoms.c miscvars.c
++  nutctab.c nutinp.c nutmegif.c options.c outitf.c
++  parse.c plot5.c plotcurv.c points.c postcoms.c postsc.c
++  rawfile.c resource.c runcoms.c shyu.c signal.c spcmdtab.c
++  spiceif.c subckt.c types.c vectors.c where.c x10.c x11.c
++  gens.c newcoms.c dimens.c xgraph.c runcoms2.c breakp2.c)
++target_link_libraries(fte inp m X11 Xt Xaw)
+\ No newline at end of file
+diff --git a/src/lib/fte/graf.c b/src/lib/fte/graf.c
+index c223f15..f7d4597 100644
+--- a/src/lib/fte/graf.c
++++ b/src/lib/fte/graf.c
+@@ -26,6 +26,8 @@ Author: 1988 Jeffrey M. Hsu
+ #include "suffix.h"
+ 
+ extern struct dbcomm *dbs;  /* for iplot */
++static void gr_resize_internal();
++static void drawlegend();
+ 
+ /* note: let's try to get rid of these */
+ /* global variables */
+@@ -427,7 +429,7 @@ GRAPH *graph;
+ 
+ }
+ 
+-static
++static void
+ drawlegend(graph, plotno, dv)
+ GRAPH *graph;
+ int plotno;
+@@ -546,7 +548,7 @@ GRAPH *graph;
+ 
+ }
+ 
+-static gr_resize_internal(graph)
++static void gr_resize_internal(graph)
+ GRAPH *graph;
+ {
+ 
+diff --git a/src/lib/fte/grid.c b/src/lib/fte/grid.c
+index ac86945..7bcee05 100644
+--- a/src/lib/fte/grid.c
++++ b/src/lib/fte/grid.c
+@@ -26,6 +26,8 @@ static void drawsmithgrid( );
+ static void arcset();
+ static double cliparc();
+ static void adddeglabel(), addradlabel();
++static void drawloggrid();
++static void drawlingrid();
+ 
+ typedef enum { x_axis, y_axis } Axis;
+ 
+@@ -473,7 +475,7 @@ lingrid(graph, lo, hi, delta, type, axis)
+     return (dd);
+ }
+ 
+-static
++static void
+ drawlingrid(graph, units, spacing, nsp, dst, lmt, hmt, onedec, mult, mag,
+     digits, axis)
+     GRAPH *graph;
+@@ -661,7 +663,7 @@ loggrid(graph, lo, hi, type, axis)
+ 
+ }
+ 
+-static
++static void
+ drawloggrid(graph, units, hmt, lmt, decsp, subs, pp, axis)
+     GRAPH *graph;
+     char *units;
+diff --git a/src/lib/fte/x11.c b/src/lib/fte/x11.c
+index 3faadb8..6c440c4 100644
+--- a/src/lib/fte/x11.c
++++ b/src/lib/fte/x11.c
+@@ -22,20 +22,24 @@ Author: 1988 Jeffrey M. Hsu
+ #  include "cpdefs.h"
+ #  include "ftedefs.h"
+ 
+-#  include <IntrinsicP.h>
+-#  include <Xatom.h>
+-#  include <StringDefs.h>
+-#  include <Xutil.h>
+-#  include <cursorfont.h>
+-#  include <Box.h>
+-#  include <Command.h>
+-#  include <Form.h>
+-#  include <Shell.h>
++#  include <X11/IntrinsicP.h>
++#  include <X11/Xatom.h>
++#  include <X11/StringDefs.h>
++#  include <X11/Xutil.h>
++#  include <X11/cursorfont.h>
++#  include <X11/Xaw/Box.h>
++#  include <X11/Xaw/Command.h>
++#  include <X11/Xaw/Form.h>
++#  include <X11/Shell.h>
+ 
+ #  ifdef DEBUG
+ extern int _Xdebug;
+ #  endif
+ 
++static void X_ScreentoData();
++static void initcolors();
++static void initlinestyles();
++
+ /* forward declarations */
+ extern void handlebuttonev(), handlekeypressed(), killwin(), hardcopy(),
+ 	    redraw(), resize();
+@@ -302,7 +306,7 @@ GRAPH *graph;
+ 	return (0);
+ }
+ 
+-static
++static void
+ initlinestyles()
+ {
+ 
+@@ -318,7 +322,7 @@ initlinestyles()
+ 	return;
+ }
+ 
+-static
++static void
+ initcolors(graph)
+     GRAPH *graph;
+ {
+@@ -995,7 +999,7 @@ out:
+ 
+ }
+ 
+-static X_ScreentoData(graph, x, y, fx, fy)
++static void X_ScreentoData(graph, x, y, fx, fy)
+ GRAPH *graph;
+ int x,y;
+ double *fx, *fy;
+diff --git a/src/lib/hlp/CMakeLists.txt b/src/lib/hlp/CMakeLists.txt
+new file mode 100755
+index 0000000..b9ad23c
+--- /dev/null
++++ b/src/lib/hlp/CMakeLists.txt
+@@ -0,0 +1 @@
++add_library(hlp help.c provide.c readhelp.c textdisp.c x11disp.c xdisplay.c)
+\ No newline at end of file
+diff --git a/src/lib/hlp/readhelp.c b/src/lib/hlp/readhelp.c
+index ded6417..e946e66 100644
+--- a/src/lib/hlp/readhelp.c
++++ b/src/lib/hlp/readhelp.c
+@@ -41,8 +41,8 @@ Author: 1986 Wayne A. Christopher, U. C. Berkeley CAD Group
+ 
+ static char *getsubject();
+ static toplink *getsubtoplink();
+-extern void sortlist(), tlfree();
+-extern int sortcmp();
++static void sortlist(), tlfree();
++static int sortcmp();
+ 
+ static topic *alltopics = NULL;
+ 
+diff --git a/src/lib/hlp/x11disp.c b/src/lib/hlp/x11disp.c
+index 9302ac7..2a8e57b 100644
+--- a/src/lib/hlp/x11disp.c
++++ b/src/lib/hlp/x11disp.c
+@@ -7,14 +7,14 @@ Author: Jeffrey M. Hsu
+ #ifdef HAS_X11
+ #include "cpstd.h"
+ #include "hlpdefs.h"
+-#include <AsciiText.h>
+-#include <StringDefs.h>
+-#include <Paned.h>
+-#include <Label.h>
+-#include <Viewport.h>
+-#include <Command.h>
+-#include <Box.h>
+-#include <Shell.h>
++#include <X11/Xaw/AsciiText.h>
++#include <X11/StringDefs.h>
++#include <X11/Xaw/Paned.h>
++#include <X11/Xaw/Label.h>
++#include <X11/Xaw/Viewport.h>
++#include <X11/Xaw/Command.h>
++#include <X11/Xaw/Box.h>
++#include <X11/Shell.h>
+ #include "suffix.h"
+ 
+ static bool started = false;
+diff --git a/src/lib/inp/CMakeLists.txt b/src/lib/inp/CMakeLists.txt
+new file mode 100755
+index 0000000..5d771b5
+--- /dev/null
++++ b/src/lib/inp/CMakeLists.txt
+@@ -0,0 +1,10 @@
++add_library(inp ifeval.c ifnewuid.c inp2b.c inp2c.c inp2d.c inp2dot.c
++  inp2e.c inp2f.c inp2g.c inp2h.c inp2i.c inp2j.c inp2k.c
++  inp2l.c inp2m.c inp2o.c inp2q.c inp2r.c inp2s.c inp2t.c
++  inp2u.c inp2v.c inp2w.c inp2z.c inpaname.c inpapnam.c
++  inpcfix.c inpdomod.c inpdoopt.c inpdpar.c inperrc.c
++  inperror.c inpeval.c inpfindl.c inpgmod.c inpgtitl.c
++  inpgtok.c inpgval.c inpkmods.c inplist.c inplkmod.c
++  inpmkmod.c inpmktmp.c inppas1.c inppas2.c inppname.c
++  inpptree.c inpsymt.c inptyplk.c ptfuncs.c sperror.c
++  inpgstr.c)
+\ No newline at end of file
+diff --git a/src/lib/mfb/CMakeLists.txt b/src/lib/mfb/CMakeLists.txt
+new file mode 100755
+index 0000000..aa57b24
+--- /dev/null
++++ b/src/lib/mfb/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(mfb mfb3d.c mfbbasic.c mfbcaps.c mfbclip.c mfbdec.c mfbgnc.c
++  mfbio.c mfbtext.c paths.c vmsio.c)
+\ No newline at end of file
+diff --git a/src/lib/mfb/mfbcaps.c b/src/lib/mfb/mfbcaps.c
+index ec305df..0c4cf50 100644
+--- a/src/lib/mfb/mfbcaps.c
++++ b/src/lib/mfb/mfbcaps.c
+@@ -43,9 +43,9 @@ static int hopcount;       /* detect infinite loops in mfbcap, init 0 */
+ 
+ FILE   *POpen();
+ char   *strcpy();
+-char   *MFBSkip();
++static char   *MFBSkip();
+ char   *MFBGetStr();
+-char   *MFBCapDecod();
++static char   *MFBCapDecod();
+ int    MFBGetNum();
+ int    MFBGetFlag();
+ int    MFBGetEnt();
+diff --git a/src/lib/misc/CMakeLists.txt b/src/lib/misc/CMakeLists.txt
+new file mode 100755
+index 0000000..1a4d799
+--- /dev/null
++++ b/src/lib/misc/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(misc alloc.c dos_dirs.c dup2.c ivars.c math.c mktemp.c
++  printnum.c string.c tilde.c time.c)
+\ No newline at end of file
+diff --git a/src/lib/ni/CMakeLists.txt b/src/lib/ni/CMakeLists.txt
+new file mode 100755
+index 0000000..d098cf7
+--- /dev/null
++++ b/src/lib/ni/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(ni niaciter.c nicomcof.c niconv.c nidest.c niditer.c niinit.c
++  niinteg.c niiter.c niniter.c nipred.c nipzmeth.c nireinit.c nisenre.c)
+\ No newline at end of file
+diff --git a/src/lib/sparse/CMakeLists.txt b/src/lib/sparse/CMakeLists.txt
+new file mode 100755
+index 0000000..e37a0a6
+--- /dev/null
++++ b/src/lib/sparse/CMakeLists.txt
+@@ -0,0 +1,2 @@
++add_library(sparse spalloc.c spbuild.c spfactor.c
++  spoutput.c spsmp.c spsolve.c sputils.c spextra.c)
+\ No newline at end of file
+diff --git a/src/lib/sparse/spextra.c b/src/lib/sparse/spextra.c
+index 7abbbca..bb0305e 100644
+--- a/src/lib/sparse/spextra.c
++++ b/src/lib/sparse/spextra.c
+@@ -42,7 +42,7 @@
+ #else /* __STDC__ */
+ #endif /* __STDC__ */
+ 
+-spConstMult(matrix, constant)
++void spConstMult(matrix, constant)
+ 	MatrixPtr	matrix;
+ 	double		constant;
+ {
+-- 
+2.27.0
+
