@@ -21,6 +21,7 @@ run:
       --install \
       --user \
       --force-clean \
+      --disable-rofiles-fuse \
       --default-branch=$FP_BRANCH \
       --state-dir=$FPB_WRKDIR/flatpak-builder \
       --repo=$FPB_WRKDIR/flatpak-repo \

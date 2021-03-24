@@ -66,9 +66,10 @@ modules:
       - --enable-oldapps
       - --enable-openmp
     sources:
-      - type: archive
-        url: https://sourceforge.net/projects/ngspice/files/ng-spice-rework/33/ngspice-33.tar.gz
-        sha256: b99db66cc1c57c44e9af1ef6ccb1dcbc8ae1df3e35acf570af578f606f8541f1
+      - type: git
+        url: git://git.code.sf.net/p/ngspice/ngspice.git
+        tag: ngspice-32.2
+        commit: 5c3e2b6526b22015ddec692450f5c5077efa1d80
     cleanup:
       - /share/man
     modules:
