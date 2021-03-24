@@ -2,7 +2,7 @@ resource_types:
 - name: pull-request
   type: registry-image
   source:
-    repository: jtarchie/pr
+    repository: docker.io/teliaoss/github-pr-resource
 
 - name: copr
   type: registry-image
@@ -58,7 +58,7 @@ resources:
   type: pull-request
   icon: github
   source:
-    repo: drahnr/oregano
+    repository: drahnr/oregano
     access_token: ((sirmergealot-github-token))
 
 
@@ -258,60 +258,128 @@ jobs:
     build_logs_to_retain: 20
     public: true
     plan:
+    - get: tree
+      resource: git-pull-request-resource
+      trigger: true
+
+    - put: git-pull-request-resource
+      params:
+        path: tree
+        context: compile
+        status: pending
+
     - in_parallel:
-      - get: tree
-        resource: git-pull-request-resource
-        trigger: true
       - get: oregano-test-ubuntu
         trigger: true
       - get: oregano-test-fedora
         trigger: true
 
-    - in_parallel:
-      - task: compile
-        timeout: 5m
-        image: oregano-test-fedora
-        config:
-          platform: linux
-          inputs:
-          - name: tree
-          run:
-            path: sh
-            args:
-            - -exc
-            - |
-              ./waf configure build --debug --prefix=/tmp install
-              ./build/test/microtests
-            dir: tree
+    - task: compile
+      timeout: 5m
+      image: oregano-test-fedora
+      config:
+        platform: linux
+        inputs:
+        - name: tree
+        run:
+          path: sh
+          args:
+          - -exc
+          - |
+            ./waf configure build --debug --prefix=/tmp install
+            ./build/test/microtests
+          dir: tree
 
+      on_success:
+        put: git-pull-request-resource
+        params:
+          path: tree
+          context: compile
+          status: success
+
+      on_failure:
+        put: git-pull-request-resource
+        params:
+          path: tree
+          context: compile
+          status: failure
+
+    - in_parallel:
+      - put: git-pull-request-resource
+        params:
+          path: tree
+          context: pkg-rpm
+          status: pending
+
+      - put: git-pull-request-resource
+        params:
+          path: tree
+          context: pkg-deb
+          status: pending
+
+      - put: git-pull-request-resource
+        params:
+          path: tree
+          context: pkg-flatpak
+          status: pending
+
+    - in_parallel:
       - task: create-rpm
         timeout: 15m
         image: oregano-test-fedora
         file: tree/.concourse/tasks/pkg-rpm.yml
+
+        on_success:
+          put: git-pull-request-resource
+          params:
+            path: tree
+            context: pkg-rpm
+            status: success
+
+        on_failure:
+          put: git-pull-request-resource
+          params:
+            path: tree
+            context: pkg-rpm
+            status: failure
 
       - task: create-deb
         timeout: 15m
         image: oregano-test-ubuntu
         file: tree/.concourse/tasks/pkg-deb.yml
 
+        on_success:
+          put: git-pull-request-resource
+          params:
+            path: tree
+            context: pkg-deb
+            status: success
+
+        on_failure:
+          put: git-pull-request-resource
+          params:
+            path: tree
+            context: pkg-deb
+            status: failure
+
       - task: create-flatpak
         timeout: 35m
         image: oregano-test-fedora
         file: tree/.concourse/tasks/flatpak.yml
 
-      on_success:
-        put: git-pull-request-resource
-        params:
-          path: git-pull-request-resource
-          status: success
+        on_success:
+          put: git-pull-request-resource
+          params:
+            path: tree
+            context: pkg-flatpak
+            status: success
 
-      on_failure:
-        put: git-pull-request-resource
-        params:
-          path: git-pull-request-resource
-          status: failure
-
-
+        on_failure:
+          put: git-pull-request-resource
+          params:
+            path: tree
+            context: pkg-flatpak
+            status: failure
 
 
 
