@@ -401,7 +401,7 @@ jobs:
 
     - put: flatpak-drop
       params:
-        file: flatpak/Oregano*.flatpak
+        file: flatpak/oregano*.flatpak
         acl: public-read
 
 ###############################################################################
@@ -499,7 +499,7 @@ jobs:
 
     - put: flatpak-release
       params:
-        file: flatpak/Oregano*.flatpak
+        file: flatpak/oregano*.flatpak
         acl: public-read
 
   - name: make-release
@@ -557,4 +557,4 @@ jobs:
         - source-release/oregano-*.tar.xz
         - rpm-release/oregano-*.rpm
         - deb-release/oregano_*.deb
-        - flatpak-release/Oregano*.flatpak
+        - flatpak-release/oregano*.flatpak
