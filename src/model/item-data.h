@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,23 +33,16 @@
  * Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  */
-#ifndef __ITEM_DATA_H
-#define __ITEM_DATA_H
 
 // Base class for schematic model.
+#ifndef __ITEM_DATA_H
+#define __ITEM_DATA_H
 
 #include <cairo/cairo.h>
 
 #include "coords.h"
 #include "grid.h"
 #include "schematic-print-context.h"
-
-#define TYPE_ITEM_DATA (item_data_get_type ())
-#define ITEM_DATA(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_ITEM_DATA, ItemData))
-#define ITEM_DATA_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_ITEM_DATA, ItemDataClass))
-#define IS_ITEM_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_ITEM_DATA))
-#define IS_ITEM_DATA_CLASS(klass)                                                                  \
-	(G_TYPE_CHECK_INSTANCE_GET_CLASS ((klass), TYPE_ITEM_DATA, ItemDataClass))
 
 typedef struct _ItemData ItemData;
 typedef struct _ItemDataClass ItemDataClass;
@@ -63,10 +58,12 @@ typedef enum {
 struct _ItemData
 {
 	GObject parent;
+	gulong created_handler_id;
 	gulong moved_handler_id;
 	gulong rotated_handler_id;
 	gulong flipped_handler_id;
 	gulong changed_handler_id;
+	gulong deleted_handler_id;
 	ItemDataPriv *priv;
 };
 
@@ -75,12 +72,15 @@ struct _ItemDataClass
 	GObjectClass parent_class;
 
 	// Signals.
+	void (*created)(ItemData *data, Coords *abs_pos);
 	void (*moved)(ItemData *data, Coords *delta);
+	void (*deleted)(ItemData *data, Coords *abs_pos);
 
 	// Methods.
 	ItemData *(*clone)(ItemData *src);
 	void (*copy)(ItemData *dest, ItemData *src);
-	void (*rotate)(ItemData *data, int angle, Coords *center);
+	void (*create)(ItemData *data);
+	void (*rotate)(ItemData *data, gint angle, Coords *center, Coords *bbox1, Coords *bbox2, const char *caller_fn);
 	void (*flip)(ItemData *data, IDFlip direction, Coords *center);
 	void (*unreg)(ItemData *data);
 	int (*reg)(ItemData *data);
@@ -92,6 +92,25 @@ struct _ItemDataClass
 
 	void (*print)(ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 };
+
+#include "sheet.h"
+
+#include "stack.h"
+
+#define TYPE_ITEM_DATA (item_data_get_type ())
+#define ITEM_DATA(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_ITEM_DATA, ItemData))
+#define ITEM_DATA_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_ITEM_DATA, ItemDataClass))
+#define IS_ITEM_DATA(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_ITEM_DATA))
+#define IS_ITEM_DATA_CLASS(klass)                                                                  \
+	(G_TYPE_CHECK_INSTANCE_GET_CLASS ((klass), TYPE_ITEM_DATA, ItemDataClass))
+
+#define EMIT_SIGNAL_NONE		(1 << 0)
+#define EMIT_SIGNAL_CREATED		(1 << 1)
+#define EMIT_SIGNAL_MOVED		(1 << 2)
+#define EMIT_SIGNAL_ROTATED		(1 << 3)
+#define EMIT_SIGNAL_FLIPPED		(1 << 4)
+#define EMIT_SIGNAL_CHANGED		(1 << 5)
+#define EMIT_SIGNAL_DELETED		(1 << 6)
 
 GType item_data_get_type (void);
 // Create a new ItemData object
@@ -105,7 +124,7 @@ ItemData *item_data_clone (ItemData *src);
 void item_data_get_pos (ItemData *item_data, Coords *pos);
 
 // Set Item position
-void item_data_set_pos (ItemData *item_data, Coords *pos);
+void item_data_set_pos (ItemData *item_data, Coords *pos, guint signals);
 
 //  Move an ItemData
 //  \param delta offset to move the item
@@ -129,10 +148,10 @@ void item_data_get_absolute_bbox (ItemData *data, Coords *p1, Coords *p2);
 void item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1, Coords *p2);
 
 // Rotate an item
-void item_data_rotate (ItemData *data, int angle, Coords *center);
+void item_data_rotate (ItemData *data, int angle, Coords *center, Coords *b1, Coords *b2, const char *caller_fn);
 
 // Flip an item
-void item_data_flip (ItemData *data, IDFlip direction, Coords *center);
+void item_data_flip (ItemData *data, SheetItem *item, Coords *coords, IDFlip direction);
 
 // Get the Store associated for this item
 //  Store is a class that hold all items in a schematic

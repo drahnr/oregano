@@ -53,7 +53,6 @@ typedef enum { SYMBOL_OBJECT_LINE, SYMBOL_OBJECT_ARC, SYMBOL_OBJECT_TEXT } Symbo
 struct _SymbolObject
 {
 	SymbolObjectType type;
-
 	union
 	{
 		struct
@@ -79,5 +78,4 @@ struct _SymbolObject
 Library *library_parse_xml_file (const gchar *filename);
 LibrarySymbol *library_get_symbol (const gchar *symbol_name);
 LibraryPart *library_get_part (Library *library, const gchar *part_name);
-
 #endif

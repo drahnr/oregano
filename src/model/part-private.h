@@ -40,8 +40,9 @@
 struct _PartPriv
 {
 	guint16 num_pins : 16;
-	//	guint16	 rotation : 16;
+	guint16	 rotation : 16;
 	IDFlip flip : 8;
+	gboolean create : 8;
 
 	gchar *name;
 	GSList *properties;

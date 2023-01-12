@@ -336,7 +336,7 @@ static Wire *vulcanize_wire (NodeStore *store, Wire *a, Wire *b)
 #else
 	Wire *w = a;
 #endif
-	item_data_set_pos (ITEM_DATA (w), &start);
+	item_data_set_pos (ITEM_DATA (w), &start, EMIT_SIGNAL_CHANGED);
 	wire_set_length (w, &len);
 
 	for (list = wire_get_nodes (b); list;) {

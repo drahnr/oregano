@@ -85,7 +85,12 @@ def configure(conf):
 
 	# -ggdb vs -g -- http://stackoverflow.com/questions/668962
 	if conf.options.build_debug:
-		conf.env.CFLAGS = ['-ggdb', '-Wall']
+		# We do not want to see so many warnings about deprecated declarations,
+		# especially those ones which do not have recommended functions to replace them.
+		# That's the reason why we include "-Wno-deprecated-declarations" switch below, however,
+		# as software evolutionates, linkage with dependant libraries could be impossible to
+		# achieve without any prior notice from such object files.
+		conf.env.CFLAGS = ['-ggdb', '-Wall', '-Wno-deprecated-declarations']
 		conf.define('DEBUG',1)
 	elif conf.options.build_release:
 		conf.env.CFLAGS = ['-O2', '-Wall']

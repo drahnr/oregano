@@ -46,7 +46,7 @@
 
 #include "debug.h"
 
-inline static cairo_pattern_t *create_stipple (const char *color_name, guchar stipple_data[])
+static cairo_pattern_t *create_stipple (const char *color_name, guchar stipple_data[])
 {
 	cairo_surface_t *surface;
 	cairo_pattern_t *pattern;

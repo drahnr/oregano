@@ -45,15 +45,15 @@ gboolean oregano_options_parse (int *argc, char **argv[], GError **e)
 }
 
 
-inline gboolean oregano_options_version () { return opts.version; }
+gboolean oregano_options_version () { return opts.version; }
 
-inline gboolean oregano_options_debug_wires () { return opts.debug.wires || opts.debug.all; }
+gboolean oregano_options_debug_wires () { return opts.debug.wires || opts.debug.all; }
 
-inline gboolean oregano_options_debug_boxes () { return opts.debug.boxes || opts.debug.all; }
+gboolean oregano_options_debug_boxes () { return opts.debug.boxes || opts.debug.all; }
 
-inline gboolean oregano_options_debug_dots () { return opts.debug.dots || opts.debug.all; }
+gboolean oregano_options_debug_dots () { return opts.debug.dots || opts.debug.all; }
 
-inline gboolean oregano_options_debug_directions ()
+gboolean oregano_options_debug_directions ()
 {
 	return opts.debug.directions || opts.debug.all;
 }

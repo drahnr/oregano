@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -30,9 +32,11 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include "sheet.h"
+#include "sheet-item.h"
 #include "sheet-item-factory.h"
-#include "wire-item.h"
 #include "part-item.h"
+#include "wire-item.h"
 #include "textbox-item.h"
 
 #include "debug.h"
@@ -40,23 +44,21 @@
 // Create a SheetItem from an ItemData object. This is a bit ugly.
 // It could be beautified by having a method that creates the item.
 // E.g. sheet_item->new_from_data (data);
-SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data)
+SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data, gdouble *ret_points)
 {
-	SheetItem *item;
+	SheetItem *item = NULL;
 
 	g_return_val_if_fail (data != NULL, NULL);
 	g_return_val_if_fail (IS_ITEM_DATA (data), NULL);
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
 
-	item = NULL;
-
 	// Pick the right model.
 	if (IS_PART (data)) {
 		item = SHEET_ITEM (part_item_new (sheet, PART (data)));
 		NG_DEBUG ("part %p", item);
 	} else if (IS_WIRE (data)) {
-		item = SHEET_ITEM (wire_item_new (sheet, WIRE (data)));
+		item = SHEET_ITEM (wire_item_new (sheet, WIRE (data), ret_points));
 		NG_DEBUG ("wire %p", item);
 	} else if (IS_TEXTBOX (data)) {
 		item = SHEET_ITEM (textbox_item_new (sheet, TEXTBOX (data)));

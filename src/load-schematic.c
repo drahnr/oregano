@@ -9,6 +9,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -17,6 +18,7 @@
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -50,6 +52,7 @@
 #include "errors.h"
 #include "engines/netlist-helper.h"
 
+#include "part-private.h"
 #include "debug.h"
 
 typedef enum {
@@ -219,7 +222,7 @@ static void create_textbox (ParseState *state)
 
 	textbox = textbox_new (NULL);
 	textbox_set_text (textbox, state->textbox_text);
-	item_data_set_pos (ITEM_DATA (textbox), &state->pos);
+	item_data_set_pos (ITEM_DATA (textbox), &state->pos, EMIT_SIGNAL_CHANGED);
 	schematic_add_item (state->schematic, ITEM_DATA (textbox));
 }
 
@@ -236,7 +239,7 @@ static void create_wire (ParseState *state)
 	wire = wire_new ();
 	wire_set_length (wire, &length);
 
-	item_data_set_pos (ITEM_DATA (wire), &state->wire_start);
+	item_data_set_pos (ITEM_DATA (wire), &state->wire_start, EMIT_SIGNAL_CHANGED);
 	schematic_add_item (state->schematic, ITEM_DATA (wire));
 }
 
@@ -251,13 +254,7 @@ static void create_part (ParseState *state)
 		return;
 	}
 
-	item_data_set_pos (ITEM_DATA (part), &state->pos);
-	item_data_rotate (ITEM_DATA (part), state->rotation, NULL);
-	if (state->flip & ID_FLIP_HORIZ)
-		item_data_flip (ITEM_DATA (part), ID_FLIP_HORIZ, NULL);
-	if (state->flip & ID_FLIP_VERT)
-		item_data_flip (ITEM_DATA (part), ID_FLIP_VERT, NULL);
-
+	item_data_set_pos (ITEM_DATA (part), &state->pos, EMIT_SIGNAL_MOVED | EMIT_SIGNAL_CHANGED);
 	schematic_add_item (state->schematic, ITEM_DATA (part));
 }
 

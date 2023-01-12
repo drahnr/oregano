@@ -10,6 +10,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://beerbach.me/oregano
  *
@@ -18,6 +19,7 @@
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -42,7 +44,10 @@
 #include <glib/gi18n.h>
 #include <stdlib.h>
 
+#include <cairo/cairo.h>
+
 #include "part.h"
+#include "part-item.h"
 #include "part-property.h"
 #include "part-label.h"
 #include "node-store.h"
@@ -53,6 +58,8 @@
 #include "dialogs.h"
 
 #include "debug.h"
+
+#include "stack.h"
 
 static void part_class_init (PartClass *klass);
 
@@ -72,7 +79,8 @@ static void part_copy (ItemData *dest, ItemData *src);
 
 static ItemData *part_clone (ItemData *src);
 
-static void part_rotate (ItemData *data, int angle, Coords *center);
+static void part_rotate (ItemData *data, int angle, Coords *center,
+				Coords *bbox1, Coords *bbox2, const char *caller_fn);
 
 static void part_flip (ItemData *data, IDFlip direction, Coords *center);
 
@@ -517,9 +525,12 @@ GSList *part_get_labels (Part *part)
  * @center_pos if rotated as part of a group, this is the center to rotate
  *around
  */
-static void part_rotate (ItemData *data, int angle, Coords *center_pos)
+static void part_rotate (ItemData *data, int angle, Coords *center_pos,
+				Coords *b1, Coords *b2, const char *caller_fn)
 {
-	g_return_if_fail (data);
+	callback_params_t params = { 0 };
+
+	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_PART (data));
 
 	cairo_matrix_t morph, morph_rot, local_rot;
@@ -527,7 +538,6 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	gdouble x, y;
 	Part *part;
 	PartPriv *priv;
-	gboolean handler_connected;
 
 	part = PART (data);
 
@@ -558,10 +568,11 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 	Coords delta_to_center, delta_to_center_transformed;
 	Coords delta_to_apply;
 	Coords item_pos;
+	Coords rotation_center;
+
+	morph_rot = *(item_data_get_rotate (data));
 
 	item_data_get_pos (ITEM_DATA (part), &item_pos);
-
-	Coords rotation_center;
 
 	if (center_pos == NULL) {
 		rotation_center = item_pos;
@@ -571,11 +582,14 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	delta_to_center_transformed = delta_to_center = coords_sub (&rotation_center, &item_pos);
 	cairo_matrix_transform_point (&local_rot, &(delta_to_center_transformed.x),
-	                              &(delta_to_center_transformed.y));
+				      &(delta_to_center_transformed.y));
 
 	delta_to_apply = coords_sub (&delta_to_center, &delta_to_center_transformed);
 
-#define DEBUG_THIS 0
+
+	cairo_matrix_multiply (&morph, &morph_rot, item_data_get_translate (data));
+
+// #define DEBUG_THIS 0
 	// use the cairo matrix funcs to transform the pin
 	// positions relative to the item center
 	// this is only indirectly related to displayin
@@ -601,13 +615,22 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 
 	item_data_move (data, &delta_to_apply);
 
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (data), data->changed_handler_id);
-	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (data), "changed");
-	} else {
-		NG_DEBUG ("handler not yet registerd.");
+	params.s_item = SHEET_ITEM (stack_get_sheetitem_by_itemdata (data));
+	params.center.x = rotation_center.x;
+	params.center.y = rotation_center.y;
+	params.angle = angle;
+	params.bbox1 = b1;
+	params.bbox2 = b2;
+	if (!strcmp (caller_fn, "undo_cmd") || !strcmp (caller_fn, "redo_cmd"))
+		return;
+
+	if (!strcmp (caller_fn, "rotate_items")) {
+		params.group = stack_get_group_for_rotation (params.s_item, &params.center, angle, b1, b2);
+		if (g_signal_handler_is_connected (G_OBJECT (data), data->rotated_handler_id))
+			g_signal_emit_by_name (G_OBJECT (data), "rotated", &params);
+		if (g_signal_handler_is_connected (G_OBJECT (data), data->changed_handler_id))
+			g_signal_emit_by_name (G_OBJECT (data), "changed");
 	}
-	NG_DEBUG ("\n\n");
 }
 
 /**
@@ -618,34 +641,31 @@ static void part_rotate (ItemData *data, int angle, Coords *center_pos)
 static void part_flip (ItemData *data, IDFlip direction, Coords *center)
 {
 #if 0
+	gint i;
 	Part *part;
 	PartPriv *priv;
-	int i;
 	cairo_matrix_t affine;
-	double x, y;
-	double scale_v, scale_h;
-	gboolean handler_connected;
-	Coords delta;
-	Coords pos, trans;
-	Coords b1, b2;
-	Coords pos_new, pos_old;
-	//FIXME properly recenter after flipping
-	//Coords part_center_before, part_center_after, delta;
+	gdouble x, y, scale_v, scale_h;
+	GSList *objs = NULL;
+	LibrarySymbol *symbol = NULL;
 
-	g_return_if_fail (data);
-	g_return_if_fail (IS_PART (data));
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_SHEET_ITEM (item));
+	g_return_if_fail (center != NULL);
+
+	if (stack_is_item_registered (undo_stack, center))
+		return;
 
 	part = PART (data);
 	priv = part->priv;
-
-	item_data_get_pos (data, &trans);
 
 	// mask, just for the sake of cleanness
 	direction &= ID_FLIP_MASK;
 
 	// TODO evaluate if we really want to be able to do double flips (180* rots via flipping)
 	g_assert (direction != ID_FLIP_MASK);
-
 
 	// create a transformation _relativ_ to the current _state_
 	// reverse axis and fix the created offset by adding 2*pos.x or .y
@@ -658,31 +678,32 @@ static void part_flip (ItemData *data, IDFlip direction, Coords *center)
 
 	// magic, if we are in either 270 or 90 state, we need to rotate the flip state by 90° to draw it properly
 	// TODO maybe better put this into the rotation function
-	if ((priv->rotation / 90) % 2 == 1) {
+	if ((priv->rotation / 90) % 2 == 1)
 		priv->flip ^= ID_FLIP_MASK;
-	}
+
 	// toggle the direction
 	priv->flip ^= direction;
-	if ((priv->flip & ID_FLIP_MASK)== ID_FLIP_MASK) {
+	if ((priv->flip & ID_FLIP_MASK) == ID_FLIP_MASK) {
 		priv->flip = ID_FLIP_NONE;
 		priv->rotation += 180;
 		priv->rotation %= 360;
 	}
 
+	symbol = library_get_symbol (part->priv->symbol_name);
+	if (!symbol)
+		return;
+
+	cairo_matrix_init_identity (&affine);
+	cairo_matrix_translate (&affine, center->x, center->y);
 	cairo_matrix_init_scale (&affine, scale_h, scale_v);
 
-	item_data_get_pos (data, &pos_old);
-	pos_new = pos_old;
-	cairo_matrix_transform_point (&affine, &pos_new.x, &pos_new.y);
-
-	g_printf ("\ncenter %p [old] x=%lf,y=%lf -->", data, pos_old.x, pos_old.y);
-	g_printf ("  x=%lf, y=%lf\n", pos_new.x, pos_new.y);
-	delta.x = - pos_new.x + pos_old.x;
-	delta.y = - pos_new.y + pos_old.y;
+	for (objs = symbol->symbol_objects; objs; objs = objs->next) {
+		part_item_canvas_draw (&item->canvas_group, objs->data, OBJECT_ERASE);
+		show_labels (item, FALSE);
+	}
 
 	// flip the pins
 	for (i = 0; i < priv->num_pins; i++) {
-
 		x = priv->pins[i].offset.x;
 		y = priv->pins[i].offset.y;
 		cairo_matrix_transform_point (&affine, &x, &y);
@@ -697,29 +718,10 @@ static void part_flip (ItemData *data, IDFlip direction, Coords *center)
 	}
 
 	// tell the view
-	handler_connected = g_signal_handler_is_connected (G_OBJECT (part),
-	                                                   ITEM_DATA(part)->flipped_handler_id);
-	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (part), "flipped", priv->flip);
-
-		// TODO - proper boundingbox center calculation
-
-		item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
-
-		// flip the bounding box.
-		cairo_matrix_transform_point (&affine, &b1.x, &b1.y);
-		cairo_matrix_transform_point (&affine, &b2.x, &b2.y);
-
-		item_data_set_relative_bbox (ITEM_DATA (part), &b1, &b2);
-		item_data_set_pos (ITEM_DATA (part), &pos);
-
-		// FIXME - proper recenter to boundingbox center
-	}
-	if (g_signal_handler_is_connected (G_OBJECT (part),
-	                                   ITEM_DATA (part)->changed_handler_id)) {
-		g_signal_emit_by_name (G_OBJECT (part),
-		                       "changed");
-	}
+	if (g_signal_handler_is_connected (G_OBJECT (part), ITEM_DATA (part)->flipped_handler_id))
+		g_signal_emit_by_name (G_OBJECT (part), "flipped", priv);
+	if (g_signal_handler_is_connected (G_OBJECT (part), ITEM_DATA (part)->changed_handler_id))
+		g_signal_emit_by_name (G_OBJECT (part), "changed");
 #endif
 }
 
@@ -1112,3 +1114,4 @@ static void part_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 	}
 	cairo_restore (cr);
 }
+

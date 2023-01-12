@@ -12,6 +12,7 @@
 #include "test_update_connection_designators.c"
 #include "test_thread_pipe.c"
 #include "test_engine_ngspice.c"
+#include "test_stack.c"
 
 #if DEBUG_FORCE_FAIL
 void
@@ -30,6 +31,7 @@ main (int argc, char *argv[])
 
 	g_test_init (&argc, &argv, NULL);
 
+	g_test_add_func ("/core/stack", test_stack);
 	g_test_add_func ("/core/coords", test_coords);
 	g_test_add_func ("/core/model/wire/intersection", test_wire_intersection);
 	g_test_add_func ("/core/model/wire/tcrossing", test_wire_tcrossing);

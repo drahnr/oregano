@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -38,10 +40,6 @@
 #include <goocanvas.h>
 #include <gtk/gtk.h>
 
-#include "grid.h"
-
-#include "item-data.h"
-
 // typedef to avoid circular dependency
 typedef struct _SchematicView SchematicView;
 
@@ -57,6 +55,9 @@ typedef struct _SheetItem SheetItem;
 #define SHEET(obj) (G_TYPE_CHECK_INSTANCE_CAST (obj, TYPE_SHEET, Sheet))
 #define SHEET_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST (klass, TYPE_SHEET, SheetClass))
 #define IS_SHEET(obj) (G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_SHEET))
+
+#include "grid.h"
+#include "stack.h"
 
 typedef enum {
 	SHEET_STATE_NONE,

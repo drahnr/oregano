@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,9 +37,9 @@
 
 #include <gtk/gtk.h>
 
+#include "wire.h"
 #include "sheet.h"
 #include "sheet-item.h"
-#include "wire.h"
 
 #define TYPE_WIRE_ITEM (wire_item_get_type ())
 #define WIRE_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST (obj, wire_item_get_type (), WireItem))
@@ -59,7 +61,7 @@ typedef struct
 } WireItemClass;
 
 GType wire_item_get_type (void);
-WireItem *wire_item_new (Sheet *sheet, Wire *wire);
+WireItem *wire_item_new (Sheet *sheet, Wire *wire, gdouble *ret_points);
 void wire_item_initiate (Sheet *sheet);
 void wire_item_get_start_pos (WireItem *item, Coords *pos);
 void wire_item_get_length (WireItem *item, Coords *pos);

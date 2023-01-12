@@ -175,7 +175,7 @@ Grid *grid_new (GooCanvasItem *root, gdouble width, gdouble height)
 	return grid;
 }
 
-inline gboolean snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
+gboolean snap_to_grid (Grid *grid, gdouble *x, gdouble *y)
 {
 	GridPriv *priv;
 	gdouble spacing;

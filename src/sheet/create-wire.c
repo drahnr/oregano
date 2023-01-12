@@ -8,6 +8,7 @@
  * Andres de Barbara <adebarbara@fi.uba.ar>
  * Marc Lorber <lorber.marc@wanadoo.fr>
  * Bernhard Schuster <bernhard@ahoi.io>
+ * Daniel Dwek <todovirtual15@gmail.com>
  *
  * Description: Handles the user interaction when creating wires.
  * The name is not really right. This part handles creation of wires and
@@ -19,6 +20,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2012-2013  Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -48,6 +50,7 @@
 #include "sheet-private.h"
 
 #include "debug.h"
+#include "stack.h"
 
 CreateWireInfo *create_wire_info_new (Sheet *sheet)
 {
@@ -95,7 +98,7 @@ void create_wire_info_destroy (CreateWireInfo *create_wire_info)
 	g_free (create_wire_info);
 }
 
-inline static gboolean create_wire_start (Sheet *sheet, GdkEvent *event)
+static gboolean create_wire_start (Sheet *sheet, GdkEvent *event)
 {
 	double x, y;
 	GooCanvasPoints *points;
@@ -148,7 +151,7 @@ inline static gboolean create_wire_start (Sheet *sheet, GdkEvent *event)
 	return TRUE;
 }
 
-inline static gboolean create_wire_update (Sheet *sheet, GdkEvent *event)
+static gboolean create_wire_update (Sheet *sheet, GdkEvent *event)
 {
 	CreateWireInfo *create_wire_info;
 	double new_x, new_y, x1, y1;
@@ -230,7 +233,7 @@ inline static gboolean create_wire_update (Sheet *sheet, GdkEvent *event)
 	return TRUE;
 }
 
-inline static gboolean create_wire_discard (Sheet *sheet, GdkEvent *event)
+static gboolean create_wire_discard (Sheet *sheet, GdkEvent *event)
 {
 	CreateWireInfo *create_wire_info;
 
@@ -249,7 +252,7 @@ inline static gboolean create_wire_discard (Sheet *sheet, GdkEvent *event)
 	return TRUE;
 }
 
-inline static Wire *create_wire_spawn (Sheet *sheet, Coords start_pos, Coords end_pos)
+static Wire *create_wire_spawn (Sheet *sheet, Coords *start_pos, Coords *end_pos)
 {
 	Wire *wire = NULL;
 	Coords length;
@@ -258,13 +261,13 @@ inline static Wire *create_wire_spawn (Sheet *sheet, Coords start_pos, Coords en
 	g_assert (sheet);
 	g_assert (IS_SHEET (sheet));
 
-	wire = wire_new (sheet->grid);
+	wire = wire_new (/* sheet->grid */);
 
-	length.x = end_pos.x - start_pos.x;
-	length.y = end_pos.y - start_pos.y;
+	length.x = end_pos->x - start_pos->x;
+	length.y = end_pos->y - start_pos->y;
 	wire_set_length (wire, &length);
 
-	item_data_set_pos (ITEM_DATA (wire), &start_pos);
+	item_data_set_pos (ITEM_DATA (wire), start_pos, EMIT_SIGNAL_CHANGED);
 	schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), ITEM_DATA (wire));
 
 	NG_DEBUG ("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- spawning wire %p", wire);
@@ -273,7 +276,7 @@ inline static Wire *create_wire_spawn (Sheet *sheet, Coords start_pos, Coords en
 }
 
 #define FINISH_ON_WIRE_CLICK 0
-inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
+static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 {
 	NodeStore *store;
 	Schematic *schematic;
@@ -346,7 +349,7 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	}
 
 	if (!b_start_eq_mid) {
-		wire = create_wire_spawn (sheet, start_pos, mid_pos);
+		wire = create_wire_spawn (sheet, &start_pos, &mid_pos);
 		g_assert (wire);
 		g_assert (IS_WIRE (wire));
 	} else {
@@ -354,7 +357,7 @@ inline static gboolean create_wire_fixate (Sheet *sheet, GdkEvent *event)
 	}
 
 	if (!b_mid_eq_end) {
-		wire = create_wire_spawn (sheet, mid_pos, end_pos);
+		wire = create_wire_spawn (sheet, &mid_pos, &end_pos);
 		g_assert (wire);
 		g_assert (IS_WIRE (wire));
 	} else {
@@ -462,6 +465,7 @@ gboolean create_wire_orientationtoggle (Sheet *sheet)
 gboolean create_wire_event (Sheet *sheet, GdkEvent *event, gpointer data)
 {
 	CreateWireInfo *create_wire_info;
+
 	g_return_val_if_fail (sheet, FALSE);
 	g_return_val_if_fail (IS_SHEET (sheet), FALSE);
 

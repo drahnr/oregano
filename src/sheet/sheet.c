@@ -9,6 +9,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -17,6 +18,7 @@
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2019  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,6 +36,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <math.h>
@@ -53,6 +56,8 @@
 #include "rubberband.h"
 #include "create-wire.h"
 
+#include "stack.h"
+
 static void sheet_class_init (SheetClass *klass);
 static void sheet_init (Sheet *sheet);
 static void sheet_set_property (GObject *object, guint prop_id, const GValue *value,
@@ -62,7 +67,7 @@ static void sheet_set_zoom (Sheet *sheet, const double zoom);
 static GList *sheet_preserve_selection (Sheet *sheet);
 static void rotate_items (Sheet *sheet, GList *items, gint angle);
 static void move_items (Sheet *sheet, GList *items, const Coords *delta);
-static void flip_items (Sheet *sheet, GList *items, IDFlip direction);
+void flip_items (Sheet *sheet, GList *items, IDFlip direction);
 static void node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet *sheet);
 static void sheet_finalize (GObject *object);
@@ -73,6 +78,15 @@ static guint dot_hash (gconstpointer key);
 #define ZOOM_MAX 3
 
 #include "debug.h"
+
+typedef struct _SheetItemPriv
+{
+        guint selected : 1;
+        guint preserve_selection : 1;
+        ItemData *data;
+        GtkActionGroup *action_group;
+        GtkUIManager *ui_manager;
+} SheetItemPriv;
 
 enum { SELECTION_CHANGED, BUTTON_PRESS, CONTEXT_CLICK, CANCEL, LAST_SIGNAL };
 static guint signals[LAST_SIGNAL] = {0};
@@ -790,9 +804,8 @@ int sheet_event_callback (GtkWidget *widget, GdkEvent *event, Sheet *sheet)
 		}
 
 		if (event->button.button == 1) {
-			if (!(event->button.state & GDK_SHIFT_MASK)) {
+			if (!(event->button.state & GDK_SHIFT_MASK))
 				sheet_select_all (sheet, FALSE);
-			}
 
 			rubberband_start (sheet, event);
 			return TRUE;
@@ -949,7 +962,7 @@ void sheet_rotate_selection (Sheet *sheet, gint angle)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	if (sheet->priv->selected_objects != NULL)
+	if (sheet->priv->selected_objects)
 		rotate_items (sheet, sheet->priv->selected_objects, angle);
 }
 
@@ -958,10 +971,11 @@ void sheet_rotate_selection (Sheet *sheet, gint angle)
  */
 void sheet_move_selection (Sheet *sheet, gdouble x, gdouble y)
 {
+	const Coords delta = { x, y };
+
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	const Coords delta = {x, y};
 	if (sheet->priv->selected_objects != NULL)
 		move_items (sheet, sheet->priv->selected_objects, &delta);
 }
@@ -980,13 +994,14 @@ void sheet_rotate_ghosts (Sheet *sheet)
 
 static void rotate_items (Sheet *sheet, GList *items, gint angle)
 {
-	GList *list, *item_data_list;
-	Coords center, b1, b2;
+	GList *list = NULL, *item_data_list = NULL;
+	Coords center = { .0 }, b1 = { .0 }, b2 = { .0 };
 
-	item_data_list = NULL;
-	for (list = items; list; list = list->next) {
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (items != NULL);
+
+	for (list = items; list; list = list->next)
 		item_data_list = g_list_prepend (item_data_list, sheet_item_get_data (list->data));
-	}
 
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
@@ -996,16 +1011,14 @@ static void rotate_items (Sheet *sheet, GList *items, gint angle)
 
 	for (list = item_data_list; list; list = list->next) {
 		ItemData *item_data = list->data;
-		if (item_data == NULL)
-			continue;
 
 		if (sheet->state == SHEET_STATE_NONE)
-			item_data_unregister (item_data);
+			item_data_unregister (list->data);
 
-		item_data_rotate (item_data, angle, &center);
+		item_data_rotate (item_data, angle, &center, &b1, &b2, "rotate_items");
 
 		if (sheet->state == SHEET_STATE_NONE)
-			item_data_register (item_data);
+			item_data_register (list->data);
 	}
 
 	g_list_free (item_data_list);
@@ -1036,7 +1049,13 @@ static void move_items (Sheet *sheet, GList *items, const Coords *trans)
  */
 void sheet_delete_selection (Sheet *sheet)
 {
-	GList *copy, *iter;
+	GList *copy = NULL, *iter = NULL;
+	gint i = 0, index;
+	SchematicView *sv = NULL;
+	Coords pos = { 0 };
+	stack_data_t sdata = { 0 };
+	PartItem *part_item = NULL;
+	WireItem *wire_item = NULL;
 
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
@@ -1044,12 +1063,39 @@ void sheet_delete_selection (Sheet *sheet)
 	if (sheet->state != SHEET_STATE_NONE)
 		return;
 
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
 	copy = g_list_copy (sheet->priv->selected_objects);
 
 	for (iter = copy; iter; iter = iter->next) {
-		sheet_remove_item_in_sheet (SHEET_ITEM (iter->data), sheet);
-		goo_canvas_item_remove (GOO_CANVAS_ITEM (iter->data));
-		g_object_unref (iter->data);
+		if (IS_PART (sheet_item_get_data (SHEET_ITEM (iter->data))))
+			sdata.type = PART_DELETED;
+		else
+			sdata.type = WIRE_DELETED;
+
+		sdata.s_item = SHEET_ITEM (iter->data);
+		item_data_get_pos (sheet_item_get_data (SHEET_ITEM (iter->data)), &pos);
+		sdata.u.deleted.coords.x = - pos.x - 100.0;
+		sdata.u.deleted.coords.y = - pos.y - 100.0;
+		if (stack_is_item_registered (&sdata))
+			return;
+
+		sdata.group = stack_get_group (SHEET_ITEM (iter->data), i ? SAME_GROUP : NEW_GROUP);
+		if (IS_PART_ITEM (SHEET_ITEM (iter->data))) {
+			part_item = PART_ITEM (SHEET_ITEM (iter->data));
+			sdata.u.deleted.canvas_group = GOO_CANVAS_GROUP (part_item);
+		} else if (IS_WIRE_ITEM (SHEET_ITEM (iter->data))) {
+			wire_item = WIRE_ITEM (SHEET_ITEM (iter->data));
+			sdata.u.deleted.canvas_group = GOO_CANVAS_GROUP (wire_item);
+		}
+
+		for (index = 0; index < sdata.u.deleted.canvas_group->items->len; index++)
+			goo_canvas_item_translate (sdata.u.deleted.canvas_group->items->pdata[index],
+							sdata.u.deleted.coords.x - 100.0,
+							sdata.u.deleted.coords.y - 100.0);
+
+		node_item_show_dots (sheet, &pos, FALSE);
+		stack_push (undo_stack, &sdata, sv);
+		i++;
 	}
 	g_list_free (copy);
 
@@ -1139,39 +1185,40 @@ void sheet_flip_ghosts (Sheet *sheet, IDFlip direction)
 		flip_items (sheet, sheet->priv->floating_objects, direction);
 }
 
-static void flip_items (Sheet *sheet, GList *items, IDFlip direction)
+void flip_items (Sheet *sheet, GList *objs, IDFlip direction)
 {
-	GList *iter, *item_data_list;
+	GList *iter, *list, *item_data_list = NULL, *items = NULL;
 	Coords center, b1, b2;
 	Coords after;
 
-	item_data_list = NULL;
-	for (iter = items; iter; iter = iter->next) {
+	g_return_if_fail (objs != NULL);
+
+	for (iter = objs; iter; iter = iter->next) {
 		item_data_list = g_list_prepend (item_data_list, sheet_item_get_data (iter->data));
+		items = g_list_prepend (items, SHEET_ITEM (iter->data));
 	}
 
 	item_data_list_get_absolute_bbox (item_data_list, &b1, &b2);
 
 	// FIXME center is currently not used by item_data_flip (part.c implentation)
-	center.x = b2.x / 2 + b1.x / 2;
-	center.y = b2.y / 2 + b1.y / 2;
+	center = coords_average (&b1, &b2);
 
 	// FIXME - registering an item after flipping it still creates an offset as
 	// the position is still 0
-	for (iter = item_data_list; iter; iter = iter->next) {
+	for (iter = item_data_list, list = items; iter; iter = iter->next, items = items->next) {
 		ItemData *item_data = iter->data;
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_unregister (item_data);
 
-		item_data_flip (item_data, direction, &center);
+		item_data_flip (item_data, list->data, &center, direction);
 
 		// Make sure we snap to grid.
 		item_data_get_pos (item_data, &after);
 
 		snap_to_grid (sheet->grid, &after.x, &after.y);
 
-		item_data_set_pos (item_data, &after);
+		item_data_set_pos (item_data, &after, EMIT_SIGNAL_FLIPPED);
 
 		if (sheet->state == SHEET_STATE_NONE)
 			item_data_register (item_data);
@@ -1258,7 +1305,7 @@ void sheet_add_ghost_item (Sheet *sheet, ItemData *data)
 	g_return_if_fail (sheet != NULL);
 	g_return_if_fail (IS_SHEET (sheet));
 
-	item = sheet_item_factory_create_sheet_item (sheet, data);
+	item = sheet_item_factory_create_sheet_item (sheet, data, NULL);
 
 	g_object_set (G_OBJECT (item), "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
 
@@ -1296,7 +1343,7 @@ static void node_dot_added_callback (Schematic *schematic, Coords *pos, Sheet *s
 		              pos->x, "y", pos->y, NULL);
 	}
 
-	node_item_show_dot (node_item, TRUE);
+	node_item_show_dots (sheet, pos, TRUE);
 	key = g_new0 (Coords, 1);
 	key->x = pos->x;
 	key->y = pos->y;
@@ -1317,6 +1364,7 @@ static void node_dot_removed_callback (Schematic *schematic, Coords *pos, Sheet 
 	                                      (gpointer)&node_item);
 
 	if (found) {
+		g_object_set (node_item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
 		goo_canvas_item_remove (GOO_CANVAS_ITEM (node_item));
 		g_hash_table_remove (sheet->priv->node_dots, pos);
 	} else {
@@ -1406,7 +1454,7 @@ void sheet_remove_item_in_sheet (SheetItem *item, Sheet *sheet)
 	g_object_unref (data);
 }
 
-inline static guint32 extract_time (GdkEvent *event)
+static guint32 extract_time (GdkEvent *event)
 {
 	if (event) {
 		switch (event->type) {

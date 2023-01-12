@@ -9,6 +9,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -17,6 +18,7 @@
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -62,7 +64,14 @@
 #include "textbox-item.h"
 #include "log-view.h"
 #include "log.h"
+#include "sheet-private.h"
 #include "debug.h"
+
+#include "part-item.h"
+#include "part-private.h"
+#include "sheet-private.h"
+#include "wire-item.h"
+#include "stack.h"
 
 #define ZOOM_MIN 0.35
 #define ZOOM_MAX 3
@@ -124,6 +133,42 @@ struct _SchematicViewPriv
 	LogInfo *log_info;
 };
 
+struct _SchematicPriv
+{
+        char *oregano_version;
+        char *title;
+        char *filename;
+        char *author;
+        char *comments;
+        char *netlist_filename;
+
+//        SchematicColors colors;
+//        SchematicPrintOptions *printoptions;
+
+        // Data for various dialogs.
+        gpointer settings;
+        SimSettingsGui *sim_settings;
+        gpointer simulation;
+
+        GList *current_items;
+
+        NodeStore *store;
+        GHashTable *symbols;
+        GHashTable *refdes_values;
+
+        guint width;
+        guint height;
+
+        double zoom;
+
+        gboolean dirty;
+
+        Log *logstore;
+
+        GtkTextBuffer *log;
+        GtkTextTag *tag_error;
+};
+
 G_DEFINE_TYPE (SchematicView, schematic_view, G_TYPE_OBJECT)
 
 // Class functions and members.
@@ -134,6 +179,7 @@ static void schematic_view_finalize (GObject *object);
 static void schematic_view_load (SchematicView *sv, Schematic *sm);
 static void schematic_view_do_load (SchematicView *sv, Schematic *sm, const gboolean reload);
 static void schematic_view_reload (SchematicView *sv, Schematic *sm);
+GtkUIManager *schematic_view_get_ui_manager (SchematicView *sv);
 
 // Signal callbacks.
 static void title_changed_callback (Schematic *schematic, char *new_title, SchematicView *sv);
@@ -583,6 +629,140 @@ static void close_cmd (GtkWidget *widget, SchematicView *sv)
 	}
 }
 
+static void undo_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	stack_data_t **sdata = NULL;
+	ItemData *item_data = NULL;
+	Coords abs_coords = { .0 };
+	gint n_items = 0, i, j;
+	GooCanvasGroup *canvas_group_wire = NULL;
+
+	if (stack_get_size (undo_stack)) {
+		sdata = stack_pop (undo_stack, &n_items);
+		if (!sdata)
+			return;
+
+		for (i = 0; i < n_items; i++) {
+			switch (sdata[i]->type) {
+			case PART_CREATED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				abs_coords.x = - sdata[i]->u.moved.coords.x - 100.0;
+				abs_coords.y = - sdata[i]->u.moved.coords.y - 100.0;
+				item_data_set_pos (item_data, &abs_coords, EMIT_SIGNAL_CHANGED);
+				break;
+			case PART_MOVED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				abs_coords.x = sdata[i]->u.moved.coords.x - sdata[i]->u.moved.delta.x;
+				abs_coords.y = sdata[i]->u.moved.coords.y - sdata[i]->u.moved.delta.y;
+				item_data_set_pos (item_data, &abs_coords, EMIT_SIGNAL_MOVED | EMIT_SIGNAL_CHANGED);
+				break;
+			case PART_ROTATED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				item_data_rotate (item_data, - sdata[i]->u.rotated.angle, &sdata[i]->u.rotated.center,
+							&sdata[i]->u.rotated.bbox1, &sdata[i]->u.rotated.bbox2, "undo_cmd");
+				break;
+			case PART_DELETED:
+				for (j = 0; j < sdata[i]->u.deleted.canvas_group->items->len; j++) {
+					goo_canvas_item_translate (GOO_CANVAS_ITEM (sdata[i]->u.deleted.canvas_group->items->pdata[j]),
+									- sdata[i]->u.deleted.coords.x + 100.0,
+									- sdata[i]->u.deleted.coords.y + 100.0);
+				}
+				break;
+			case WIRE_CREATED:
+				g_object_set (G_OBJECT (sdata[i]->s_item), "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+				break;
+			case WIRE_MOVED:
+				canvas_group_wire = GOO_CANVAS_GROUP (WIRE_ITEM (SHEET_ITEM (sdata[i]->s_item)));
+				abs_coords.x = - sdata[i]->u.moved.delta.x;
+				abs_coords.y = - sdata[i]->u.moved.delta.y;
+				for (j = 0; j < canvas_group_wire->items->len; j++)
+					goo_canvas_item_translate (GOO_CANVAS_ITEM (canvas_group_wire->items->pdata[j]),
+								   abs_coords.x, abs_coords.y);
+				break;
+			case WIRE_ROTATED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				item_data_rotate (item_data, - sdata[i]->u.rotated.angle, &sdata[i]->u.rotated.center,
+							&sdata[i]->u.rotated.bbox1, &sdata[i]->u.rotated.bbox2, "undo_cmd");
+				break;
+			case WIRE_DELETED:
+				for (j = 0; j < sdata[i]->u.deleted.canvas_group->items->len; j++) {
+					goo_canvas_item_translate (GOO_CANVAS_ITEM (sdata[i]->u.deleted.canvas_group->items->pdata[j]),
+									- sdata[i]->u.deleted.coords.x + 100.0,
+									- sdata[i]->u.deleted.coords.y + 100.0);
+				}
+				break;
+			};
+
+			stack_push (redo_stack, sdata[i], sv);
+			g_free (sdata[i]);
+			sdata[i] = NULL;
+		}
+	}
+}
+
+static void redo_cmd (GtkWidget *widget, SchematicView *sv)
+{
+	stack_data_t **sdata = NULL;
+	ItemData *item_data = NULL;
+	gint i, j, n_items = 0;
+	GooCanvasGroup *canvas_group_wire = NULL;
+
+	if (stack_get_size (redo_stack)) {
+		sdata = stack_pop (redo_stack, &n_items);
+		if (!sdata)
+			return;
+
+		for (i = 0; i < n_items; i++) {
+			switch (sdata[i]->type) {
+			case PART_CREATED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				item_data_set_pos (item_data, &sdata[i]->u.moved.coords, EMIT_SIGNAL_CHANGED);
+				break;
+			case PART_MOVED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				item_data_set_pos (item_data, &sdata[i]->u.moved.coords, EMIT_SIGNAL_CHANGED);
+				break;
+			case PART_ROTATED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				item_data_rotate (item_data, - sdata[i]->u.rotated.angle, &sdata[i]->u.rotated.center,
+							&sdata[i]->u.rotated.bbox1, &sdata[i]->u.rotated.bbox2, "redo_cmd");
+				break;
+			case PART_DELETED:
+				for (j = 0; j < sdata[i]->u.deleted.canvas_group->items->len; j++)
+					goo_canvas_item_translate (GOO_CANVAS_ITEM (sdata[i]->u.deleted.canvas_group->items->pdata[j]),
+									sdata[i]->u.deleted.coords.x - 100.0,
+									sdata[i]->u.deleted.coords.y - 100.0);
+				break;
+			case WIRE_CREATED:
+				g_object_set (G_OBJECT (sdata[i]->s_item), "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
+				break;
+			case WIRE_MOVED:
+				canvas_group_wire = GOO_CANVAS_GROUP (WIRE_ITEM (SHEET_ITEM (sdata[i]->s_item)));
+				for (j = 0; j < canvas_group_wire->items->len; j++)
+					goo_canvas_item_translate (GOO_CANVAS_ITEM (canvas_group_wire->items->pdata[j]),
+								   sdata[i]->u.moved.delta.x, sdata[i]->u.moved.delta.y);
+				g_object_set (G_OBJECT (sdata[i]->s_item), "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
+				break;
+			case WIRE_ROTATED:
+				item_data = sheet_item_get_data (sdata[i]->s_item);
+				item_data_rotate (item_data, - sdata[i]->u.rotated.angle, &sdata[i]->u.rotated.center,
+							&sdata[i]->u.rotated.bbox1, &sdata[i]->u.rotated.bbox2, "redo_cmd");
+				break;
+			case WIRE_DELETED:
+				for (j = 0; j < sdata[i]->u.deleted.canvas_group->items->len; j++)
+					goo_canvas_item_translate (GOO_CANVAS_ITEM (sdata[i]->u.deleted.canvas_group->items->pdata[j]),
+									sdata[i]->u.deleted.coords.x - 100.0,
+									sdata[i]->u.deleted.coords.y - 100.0);
+				break;
+			};
+
+			stack_push (undo_stack, sdata[i], sv);
+			g_free (sdata[i]);
+			sdata[i] = NULL;
+		}
+	}
+}
+
 static void select_all_cmd (GtkWidget *widget, SchematicView *sv)
 {
 	sheet_select_all (sv->priv->sheet, TRUE);
@@ -609,20 +789,44 @@ static void rotate_cmd (GtkWidget *widget, SchematicView *sv)
 
 static void flip_horizontal_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	if (sv->priv->sheet->state == SHEET_STATE_NONE)
-		sheet_flip_selection (sv->priv->sheet, TRUE);
-	else if (sv->priv->sheet->state == SHEET_STATE_FLOAT ||
-	         sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
-		sheet_flip_ghosts (sv->priv->sheet, TRUE);
+	GList *iter = NULL;
+
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	for (iter = sheet_get_floating_objects (sv->priv->sheet); iter; iter = iter->next)
+		sv->priv->sheet->priv->selected_objects = g_list_prepend (sv->priv->sheet->priv->selected_objects, iter);
+
+	for (iter = sv->priv->sheet->priv->selected_objects; iter; iter = iter->next) {
+		if (sv->priv->sheet->state == SHEET_STATE_NONE)
+			flip_items (sheet_get_selection (sv->priv->sheet), sv->priv->sheet, ID_FLIP_HORIZ);
+		else if (sv->priv->sheet->state == SHEET_STATE_FLOAT || sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
+			flip_items (sheet_get_floating_objects (sv->priv->sheet), sv->priv->sheet, ID_FLIP_HORIZ);
+	}
 }
 
 static void flip_vertical_cmd (GtkWidget *widget, SchematicView *sv)
 {
-	if (sv->priv->sheet->state == SHEET_STATE_NONE)
-		sheet_flip_selection (sv->priv->sheet, FALSE);
-	else if (sv->priv->sheet->state == SHEET_STATE_FLOAT ||
-	         sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
-		sheet_flip_ghosts (sv->priv->sheet, FALSE);
+#if 0
+	Part *part;
+	LibrarySymbol *symbol;
+	GSList *objects;
+	SymbolObject *object;
+
+	g_return_if_fail (sv != NULL);
+	g_return_if_fail (IS_SCHEMATIC_VIEW (sv));
+
+	part = PART (sv->priv->sheet->priv->data);
+	symbol = library_get_symbol (part->priv->symbol_name);
+
+	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
+		object = (SymbolObject *)(objects->data);
+		if (sv->priv->sheet->state == SHEET_STATE_NONE)
+			sheet_flip_selection (sv, FALSE);
+		else if (sv->priv->sheet->state == SHEET_STATE_FLOAT || sv->priv->sheet->state == SHEET_STATE_FLOAT_START)
+			sheet_flip_ghosts (sv, FALSE);
+	}
+#endif
 }
 
 static void object_properties_cmd (GtkWidget *widget, SchematicView *sv)
@@ -780,7 +984,7 @@ static void v_clamp_cmd (SchematicView *sv)
 		return;
 	}
 	pos.x = pos.y = 0;
-	item_data_set_pos (ITEM_DATA (part), &pos);
+	item_data_set_pos (ITEM_DATA (part), &pos, EMIT_SIGNAL_CHANGED);
 	item_data_set_property (ITEM_DATA (part), "type", "v");
 
 	sheet_select_all (sv->priv->sheet, FALSE);
@@ -1296,10 +1500,10 @@ SchematicView *schematic_view_new (Schematic *schematic)
 	setup_dnd (sv);
 
 	// Set default sensitive for items
-	gtk_action_set_sensitive (
-	    gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
-	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Paste"),
-	                          FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/ObjectProperties"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Undo"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Redo"), FALSE);
+	gtk_action_set_sensitive (gtk_ui_manager_get_action (ui_manager, "/MainMenu/MenuEdit/Paste"), FALSE);
 
 	g_signal_connect_object (G_OBJECT (sv), "reset_tool", G_CALLBACK (reset_tool_cb), G_OBJECT (sv),
 	                         0);
@@ -1351,9 +1555,8 @@ static void schematic_view_do_load (SchematicView *sv, Schematic *sm, const gboo
 
 	list = schematic_get_items (sm);
 
-	for (; list; list = list->next) {
+	for (; list; list = list->next)
 		g_signal_emit_by_name (G_OBJECT (sm), "item_data_added", list->data);
-	}
 
 	sheet_connect_node_dots_to_signals (sv->priv->sheet);
 
@@ -1369,6 +1572,14 @@ static void schematic_view_do_load (SchematicView *sv, Schematic *sm, const gboo
 static void schematic_view_reload (SchematicView *sv, Schematic *sm)
 {
 	schematic_view_do_load (sv, sm, TRUE);
+}
+
+GtkUIManager *schematic_view_get_ui_manager (SchematicView *sv)
+{
+	if (!sv)
+		return NULL;
+
+	return sv->priv->ui_manager;
 }
 
 static void item_selection_changed_callback (SheetItem *item, gboolean selected, SchematicView *sv)
@@ -1397,20 +1608,29 @@ static void item_data_added_callback (Schematic *schematic, ItemData *data, Sche
 {
 	Sheet *sheet;
 	SheetItem *item;
+	Coords pos = { .0 };
+	cairo_matrix_t *mtx = NULL;
+	gdouble ret_points[4] = { .0 };
 
 	sheet = sv->priv->sheet;
-
-	item = sheet_item_factory_create_sheet_item (sheet, data);
-
+	item = sheet_item_factory_create_sheet_item (sheet, data, &ret_points[0]);
 	if (item != NULL) {
 		sheet_item_place (item, sv->priv->sheet);
-
 		g_object_set (G_OBJECT (item), "action_group", sv->priv->action_group, NULL);
 
-		g_signal_connect (G_OBJECT (item), "selection_changed",
-		                  G_CALLBACK (item_selection_changed_callback), sv);
+		g_signal_connect (G_OBJECT (item), "selection_changed", G_CALLBACK (item_selection_changed_callback), sv);
+
+		mtx = item_data_get_translate (data);
+		if (mtx) {
+			pos.x = mtx->x0;
+			pos.y = mtx->y0;
+			g_signal_emit_by_name (G_OBJECT (data), "created", &pos);
+		} else {
+			g_warning ("Could not get current position of %p item_data\n", data);
+		}
 
 		sheet_add_item (sheet, item);
+
 		sv->priv->empty = FALSE;
 		if (sv->priv->tool == SCHEMATIC_TOOL_PART)
 			schematic_view_reset_tool (sv);

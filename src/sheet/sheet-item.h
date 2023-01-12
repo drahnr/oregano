@@ -45,11 +45,12 @@
 	(G_TYPE_CHECK_CLASS_CAST (klass, sheet_item_get_type (), SheetItemClass))
 #define IS_SHEET_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE (obj, TYPE_SHEET_ITEM))
 
+#include "clipboard.h"
+#include "item-data.h"
+
 typedef struct _SheetItemClass SheetItemClass;
 typedef struct _SheetItemPriv SheetItemPriv;
-
-#include "sheet.h"
-#include "clipboard.h"
+typedef struct _SheetItem SheetItem;
 
 struct _SheetItem
 {
@@ -75,7 +76,7 @@ struct _SheetItemClass
 
 	// Signal handlers.
 	void (*moved)(SheetItem *item);
-	void (*selection_changed)(SheetItem *item);
+	void (*selection_changed)(gpointer *item, gboolean select, gpointer user_data);
 	void (*mouse_over)(SheetItem *item);
 };
 
@@ -99,5 +100,4 @@ void sheet_item_place (SheetItem *item, Sheet *sheet);
 void sheet_item_place_ghost (SheetItem *item, Sheet *sheet);
 void sheet_item_add_menu (SheetItem *item, const char *menu, const GtkActionEntry *action_entries,
                           int nb_entries);
-
 #endif

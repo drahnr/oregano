@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,8 +33,11 @@
  */
 
 #include <gtk/gtk.h>
+#include <goocanvas.h>
 #include <string.h>
 
+#include "sheet.h"
+#include "sheet-item.h"
 #include "cursors.h"
 #include "coords.h"
 #include "wire-item.h"
@@ -42,10 +47,14 @@
 #include "schematic.h"
 #include "schematic-view.h"
 #include "options.h"
+#include "stack.h"
+
+#include "sheet-private.h"
 
 #define NORMAL_COLOR "blue"
 #define SELECTED_COLOR "green"
 #define HIGHLIGHT_COLOR "yellow"
+#define CANVAS_COLOR "white"
 
 #define RESIZER_SIZE 4.0f
 
@@ -54,16 +63,16 @@ static void wire_item_init (WireItem *item);
 static void wire_item_dispose (GObject *object);
 static void wire_item_finalize (GObject *object);
 static void wire_item_moved (SheetItem *object);
-static void wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item);
-static void wire_flipped_callback (ItemData *data, IDFlip horizontal, SheetItem *sheet_item);
+static void wire_created_callback (ItemData *data, Coords *pos, SheetItem *item);
+static void wire_rotated_callback (ItemData *data, gpointer params);
 static void wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void wire_changed_callback (Wire *, WireItem *item);
 static void wire_item_paste (Sheet *sheet, ItemData *data);
-static void selection_changed (WireItem *item, gboolean select, gpointer user_data);
+static void selection_changed (gpointer *item, gboolean select, gpointer user);
 static int select_idle_callback (WireItem *item);
 static int deselect_idle_callback (WireItem *item);
 static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2);
-inline static void get_boundingbox (WireItem *item, Coords *p1, Coords *p2);
+static void get_boundingbox (WireItem *item, Coords *p1, Coords *p2);
 static void mouse_over_wire_callback (WireItem *item, Sheet *sheet);
 static void highlight_wire_callback (Wire *wire, WireItem *item);
 static int unhighlight_wire (WireItem *item);
@@ -162,10 +171,6 @@ static void wire_item_init (WireItem *item)
 
 static void wire_item_dispose (GObject *object)
 {
-	WireItemPriv *priv;
-
-	priv = WIRE_ITEM (object)->priv;
-
 	G_OBJECT_CLASS (wire_item_parent_class)->dispose (object);
 }
 
@@ -187,7 +192,7 @@ static void wire_item_moved (SheetItem *object)
 	//	NG_DEBUG ("wire MOVED callback called - LEGACY");
 }
 
-WireItem *wire_item_new (Sheet *sheet, Wire *wire)
+WireItem *wire_item_new (Sheet *sheet, Wire *wire, gdouble *ret_points)
 {
 	GooCanvasItem *item;
 	WireItem *wire_item;
@@ -198,6 +203,7 @@ WireItem *wire_item_new (Sheet *sheet, Wire *wire)
 
 	g_return_val_if_fail (sheet != NULL, NULL);
 	g_return_val_if_fail (IS_SHEET (sheet), NULL);
+	g_return_val_if_fail (ret_points != NULL, NULL);
 
 	wire_get_pos_and_length (wire, &start_pos, &length);
 
@@ -238,6 +244,11 @@ WireItem *wire_item_new (Sheet *sheet, Wire *wire)
 	points->coords[2] = length.x;
 	points->coords[3] = length.y;
 
+	ret_points[0] = start_pos.x;
+	ret_points[1] = start_pos.y;
+	ret_points[2] = start_pos.x + length.x;
+	ret_points[3] = start_pos.x + length.y;
+
 	priv->line = GOO_CANVAS_POLYLINE (goo_canvas_polyline_new (
 	    GOO_CANVAS_ITEM (wire_item), FALSE, 0, "points", points, "stroke-color",
 	    oregano_options_debug_wires ()
@@ -249,12 +260,12 @@ WireItem *wire_item_new (Sheet *sheet, Wire *wire)
 	goo_canvas_points_unref (points);
 
 	item_data = ITEM_DATA (wire);
-	item_data->rotated_handler_id = g_signal_connect_object (
-	    G_OBJECT (wire), "rotated", G_CALLBACK (wire_rotated_callback), G_OBJECT (wire_item), 0);
-	item_data->flipped_handler_id = g_signal_connect_object (
-	    G_OBJECT (wire), "flipped", G_CALLBACK (wire_flipped_callback), G_OBJECT (wire_item), 0);
+	item_data->created_handler_id = g_signal_connect_object (
+	    G_OBJECT (wire), "created", G_CALLBACK (wire_created_callback), G_OBJECT (wire_item), 0);
 	item_data->moved_handler_id = g_signal_connect_object (
 	    G_OBJECT (wire), "moved", G_CALLBACK (wire_moved_callback), G_OBJECT (wire_item), 0);
+	item_data->rotated_handler_id = g_signal_connect_object (
+	    G_OBJECT (wire), "rotated", G_CALLBACK (wire_rotated_callback), G_OBJECT (wire_item), 0);
 	item_data->changed_handler_id = g_signal_connect_object (
 	    G_OBJECT (wire), "changed", G_CALLBACK (wire_changed_callback), G_OBJECT (wire_item), 0);
 
@@ -375,7 +386,7 @@ gboolean wire_item_event (WireItem *wire_item, GooCanvasItem *sheet_target_item,
 				}
 			}
 			snap_to_grid (sheet->grid, &length.x, &length.y);
-			item_data_set_pos (sheet_item_get_data (SHEET_ITEM (wire_item)), &pos);
+			item_data_set_pos (sheet_item_get_data (SHEET_ITEM (wire_item)), &pos, EMIT_SIGNAL_CHANGED);
 
 			wire_set_length (wire, &length);
 			return TRUE;
@@ -426,37 +437,60 @@ void wire_item_signal_connect_placed (WireItem *wire_item, Sheet *sheet)
 	g_signal_connect (item, "highlight", G_CALLBACK (highlight_wire_callback), wire_item);
 }
 
-static void wire_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
+static void wire_created_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	WireItem *wire_item;
-	GooCanvasPoints *points;
-	Coords start_pos, length;
+	SchematicView *sv = NULL;
+	Sheet *sheet = NULL;
+	stack_data_t sdata = { 0 };
 
-	g_return_if_fail (sheet_item != NULL);
-	g_return_if_fail (IS_WIRE_ITEM (sheet_item));
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_WIRE (data));
+	g_return_if_fail (pos != NULL);
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_WIRE_ITEM (item));
 
-	wire_item = WIRE_ITEM (sheet_item);
+	sheet = sheet_item_get_sheet (item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
 
-	wire_get_pos_and_length (WIRE (data), &start_pos, &length);
+	sdata.type = WIRE_CREATED;
+	sdata.s_item = item;
+	sdata.u.moved.coords.x = pos->x;
+	sdata.u.moved.coords.y = pos->y;
+	sdata.u.moved.delta.x = .0;
+	sdata.u.moved.delta.y = .0;
+	if (stack_is_item_registered (&sdata))
+		return;
 
-	points = goo_canvas_points_new (2);
-	points->coords[0] = 0;
-	points->coords[1] = 0;
-	points->coords[2] = length.x;
-	points->coords[3] = length.y;
-
-	g_object_set (wire_item->priv->line, "points", points, NULL);
-	goo_canvas_points_unref (points);
-
-	g_object_set (wire_item, "x", start_pos.x, "y", start_pos.y, NULL);
-
-	g_object_set (wire_item->priv->resize2, "x", length.x - RESIZER_SIZE, "y",
-	              length.y - RESIZER_SIZE, NULL);
-
-	// Invalidate the bounding box cache.
-	wire_item->priv->cache_valid = FALSE;
+	sdata.group = stack_get_group (sdata.s_item, NEW_GROUP);
+	stack_push (undo_stack, &sdata, sv);
 }
 
+static void wire_rotated_callback (ItemData *data, gpointer params)
+{
+	SchematicView *sv = NULL;
+	Sheet *sheet = NULL;
+	stack_data_t sdata = { 0 };
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_WIRE (data));
+	g_return_if_fail (params != NULL);
+
+	sdata.type = WIRE_ROTATED;
+	sdata.s_item = ((callback_params_t *)params)->s_item;
+	sdata.u.rotated.center = ((callback_params_t *)params)->center;
+	sdata.u.rotated.angle = ((callback_params_t *)params)->angle;
+	sdata.u.rotated.bbox1 = *(((callback_params_t *)params)->bbox1);
+	sdata.u.rotated.bbox2 = *(((callback_params_t *)params)->bbox2);
+	sdata.group = ((callback_params_t *)params)->group;
+	if (stack_is_item_registered (&sdata))
+		return;
+
+	sheet = sheet_item_get_sheet (sdata.s_item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
+	stack_push (undo_stack, &sdata, sv);
+}
+
+#if 0
 static void wire_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
 {
 	GooCanvasPoints *points;
@@ -486,6 +520,7 @@ static void wire_flipped_callback (ItemData *data, IDFlip direction, SheetItem *
 	// Invalidate the bounding box cache.
 	priv->cache_valid = FALSE;
 }
+#endif
 
 static int select_idle_callback (WireItem *item)
 {
@@ -515,7 +550,7 @@ static int deselect_idle_callback (WireItem *item)
 	return FALSE;
 }
 
-static void selection_changed (WireItem *item, gboolean select, gpointer user)
+static void selection_changed (gpointer *item, gboolean select, gpointer user)
 {
 	g_object_ref (G_OBJECT (item));
 	if (select) {
@@ -575,7 +610,7 @@ static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 
 // Retrieves the bounding box. We use a caching scheme for this
 // since it's too expensive to calculate it every time we need it.
-inline static void get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
+static void get_boundingbox (WireItem *item, Coords *p1, Coords *p2)
 {
 	g_return_if_fail (item != NULL);
 	g_return_if_fail (IS_WIRE_ITEM (item));
@@ -708,7 +743,34 @@ static int unhighlight_wire (WireItem *item)
 // FIXME get rid of
 static void wire_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
 {
-	// NG_DEBUG ("wire MOVED callback called - LEGACY");
+	SchematicView *sv = NULL;
+	Sheet *sheet = NULL;
+	stack_data_t sdata = { 0 };
+	Coords *delta = NULL;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_WIRE (data));
+	g_return_if_fail (item != NULL);
+	g_return_if_fail (IS_WIRE_ITEM (item));
+	g_return_if_fail (pos != NULL);
+
+	sheet = sheet_item_get_sheet (item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
+
+	sdata.type = WIRE_MOVED;
+	sdata.s_item = item;
+	sdata.u.moved.coords.x = pos->x;
+	sdata.u.moved.coords.y = pos->y;
+	if (stack_is_item_registered (&sdata))
+		return;
+
+	delta = stack_get_multiple_group (item, pos, &sdata.group);
+	if (delta) {
+		sdata.u.moved.delta.x = delta->x;
+		sdata.u.moved.delta.y = delta->y;
+	}
+
+	stack_push (undo_stack, &sdata, sv);
 }
 
 static void wire_item_place (SheetItem *item, Sheet *sheet)

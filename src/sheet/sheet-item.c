@@ -44,10 +44,12 @@
 
 #include "oregano.h"
 #include "sheet-private.h"
-#include "sheet-item.h"
+#include "sheet-item-factory.h"
 #include "stock.h"
 #include "clipboard.h"
 #include "options.h"
+
+#include "stack.h"
 
 static void sheet_item_class_init (SheetItemClass *klass);
 static void sheet_item_init (SheetItem *item);
@@ -251,8 +253,7 @@ static void sheet_item_set_property (GObject *object, guint prop_id, const GValu
 	goo_canvas_item_simple_changed (simple, TRUE);
 }
 
-static void sheet_item_get_property (GObject *object, guint prop_id, GValue *value,
-                                     GParamSpec *spec)
+void sheet_item_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *spec)
 {
 	SheetItem *sheet_item;
 
@@ -313,7 +314,7 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 	SheetPriv *priv;
 	GList *list;
 
-	static Coords last, current, snapped;
+	static Coords last, snapped;
 	// snapped : Mouse cursor position in window coordinates, snapped to the grid
 	// spacing.
 	// delta   : Move the selected item(s) by this movement.
@@ -418,7 +419,7 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 				item_data_move (item_data, &delta);
 				item_data_get_pos (item_data, &after);
 				snap_to_grid (sheet->grid, &after.x, &after.y);
-				item_data_set_pos (item_data, &after);
+				item_data_set_pos (item_data, &after, EMIT_SIGNAL_MOVED | EMIT_SIGNAL_CHANGED);
 				item_data_register (item_data);
 			}
 			break;
@@ -428,6 +429,8 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 		switch (event->key.keyval) {
 		case GDK_KEY_r: {
 #ifndef FIXME_STILL_MINI_OFFSET
+			stack_data_t sdata = { 0 };
+			ItemData *idata = NULL;
 			Coords bbdelta;
 			GooCanvasBounds bounds;
 
@@ -437,6 +440,12 @@ gboolean sheet_item_event (GooCanvasItem *sheet_item, GooCanvasItem *sheet_targe
 			bbdelta.x = (bounds.x2 - bounds.x1) / 2.;
 			bbdelta.y = (bounds.y2 - bounds.y1) / 2.;
 #endif
+			sdata.type = PART_ROTATED;
+			idata = item_data_new ();
+			sdata.s_item = sheet_item_factory_create_sheet_item (sheet, idata, NULL);
+			sdata.group = stack_get_group (sdata.s_item, NEW_GROUP); 
+			sdata.u.rotated.center = bbdelta;
+			sdata.u.rotated.angle = 90;
 			sheet_rotate_selection (sheet, 90);
 #ifndef FIXME_STILL_MINI_OFFSET
 			// Center the objects around the mouse pointer.
@@ -637,7 +646,7 @@ int sheet_item_floating_event (Sheet *sheet, const GdkEvent *event)
 
 				NG_DEBUG ("Item Data Pos will be %lf %lf", snapped.x, snapped.y)
 
-				item_data_set_pos (floating_data, &snapped);
+				item_data_set_pos (floating_data, &snapped, EMIT_SIGNAL_NONE);
 
 				schematic_add_item (schematic_view_get_schematic_from_sheet (sheet), floating_data);
 
@@ -817,10 +826,13 @@ void sheet_item_edit_properties (SheetItem *item)
 
 void sheet_item_rotate (SheetItem *sheet_item, int angle, Coords *center)
 {
+	Coords b1 = { .0 }, b2 = { .0 };
+
 	g_return_if_fail (sheet_item != NULL);
 	g_return_if_fail (IS_SHEET_ITEM (sheet_item));
 
-	item_data_rotate (sheet_item->priv->data, angle, center);
+	item_data_get_absolute_bbox (sheet_item->priv->data, &b1, &b2);
+	item_data_rotate (sheet_item->priv->data, angle, center, &b1, &b2, "sheet_item_rotate");
 }
 
 void sheet_item_paste (Sheet *sheet, ClipboardData *data)

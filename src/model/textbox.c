@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -46,13 +48,12 @@ static void textbox_class_init (TextboxClass *klass);
 static void textbox_init (Textbox *textbox);
 static void textbox_copy (ItemData *dest, ItemData *src);
 static ItemData *textbox_clone (ItemData *src);
-static void textbox_rotate (ItemData *data, int angle, Coords *center);
+static void textbox_rotate (ItemData *data, gint angle, Coords *center, Coords *bbox1, Coords *bbox2, const char *caller_fn);
+static void textbox_flip (ItemData *data, IDFlip direction, Coords *center);
 static void textbox_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx);
 static int textbox_register (ItemData *data);
 static void textbox_unregister (ItemData *data);
 static gboolean textbox_has_properties (ItemData *data);
-
-static void textbox_flip (ItemData *data, IDFlip direction, Coords *center);
 
 enum { TEXT_CHANGED, FONT_CHANGED, LAST_SIGNAL };
 
@@ -168,7 +169,7 @@ static void textbox_copy (ItemData *dest, ItemData *src)
 	dest_textbox->priv->font = src_textbox->priv->font;
 }
 
-static void textbox_rotate (ItemData *data, int angle, Coords *center)
+static void textbox_rotate (ItemData *data, gint angle, Coords *center, Coords *bbox1, Coords *bbox2, const char *caller_fn)
 {
 	cairo_matrix_t affine;
 	double x, y;
@@ -178,6 +179,9 @@ static void textbox_rotate (ItemData *data, int angle, Coords *center)
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_TEXTBOX (data));
+	g_return_if_fail (center != NULL);
+	g_return_if_fail (bbox1 != NULL);
+	g_return_if_fail (bbox2 != NULL);
 
 	if (angle == 0)
 		return;
@@ -219,8 +223,7 @@ static void textbox_flip (ItemData *data, IDFlip direction, Coords *center)
 	Coords b1, b2;
 	Coords textbox_center = {0.0, 0.0}, delta;
 
-	g_return_if_fail (data != NULL);
-	g_return_if_fail (IS_TEXTBOX (data));
+//	g_return_if_fail (objs != NULL);
 
 	textbox = TEXTBOX (data);
 

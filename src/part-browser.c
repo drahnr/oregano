@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -184,7 +186,7 @@ static void place_cmd (GtkWidget *widget, Browser *br)
 	}
 
 	pos.x = pos.y = 0;
-	item_data_set_pos (ITEM_DATA (part), &pos);
+	item_data_set_pos (ITEM_DATA (part), &pos, EMIT_SIGNAL_MOVED);
 	sheet_connect_part_item_to_floating_group (sheet, (gpointer)br->schematic_view);
 
 	sheet_select_all (sheet, FALSE);
@@ -375,7 +377,7 @@ void part_browser_dnd (GtkSelectionData *selection_data, int x, int y)
 		return;
 	}
 
-	item_data_set_pos (ITEM_DATA (part), &pos);
+	item_data_set_pos (ITEM_DATA (part), &pos, EMIT_SIGNAL_CREATED);
 	sheet_connect_part_item_to_floating_group (sheet, (gpointer)data->schematic_view);
 
 	sheet_select_all (sheet, FALSE);
