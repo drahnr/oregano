@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,6 +37,6 @@
 
 #include "sheet-item.h"
 
-SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data);
+SheetItem *sheet_item_factory_create_sheet_item (Sheet *sheet, ItemData *data, gdouble *ret_points);
 
 #endif /* __SHEET_ITEM_FACTORY_H */

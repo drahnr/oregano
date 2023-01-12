@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -40,8 +42,8 @@ typedef struct _SchematicView SchematicView;
 
 #include <gtk/gtk.h>
 
-#include "schematic.h"
 #include "sheet.h"
+#include "schematic.h"
 
 /*
  * When stretching a schematic to resize
@@ -83,6 +85,7 @@ void schematic_view_reset_tool (SchematicView *sv);
 void schematic_view_set_browser (SchematicView *sv, gpointer p);
 gpointer schematic_view_get_browser (SchematicView *sv);
 void schematic_view_set_parent (SchematicView *sv, GtkDialog *dialog);
+GtkUIManager *schematic_view_get_ui_manager (SchematicView *sv);
 
 // Logging.
 void schematic_view_log_show (SchematicView *sv, gboolean explicit);

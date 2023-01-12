@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,6 +37,9 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "sheet.h"
+#include "sheet-item.h"
+#include "stack.h"
 #include "cursors.h"
 #include "coords.h"
 #include "textbox-item.h"
@@ -44,6 +49,8 @@
 #define NORMAL_COLOR "black"
 #define SELECTED_COLOR "green"
 #define TEXTBOX_FONT "Arial 10"
+
+#define CANVAS_COLOR "white"
 
 static void textbox_item_class_init (TextboxItemClass *klass);
 static void textbox_item_init (TextboxItem *item);
@@ -58,7 +65,7 @@ static void selection_changed (TextboxItem *item, gboolean select, gpointer user
 static int select_idle_callback (TextboxItem *item);
 static int deselect_idle_callback (TextboxItem *item);
 static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2);
-inline static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2);
+static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2);
 static void textbox_item_place (SheetItem *item, Sheet *sheet);
 static void textbox_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void edit_textbox (SheetItem *sheet_item);
@@ -194,6 +201,7 @@ TextboxItem *textbox_item_new (Sheet *sheet, Textbox *textbox)
 	item_data->moved_handler_id =
 	    g_signal_connect_object (G_OBJECT (textbox), "moved", G_CALLBACK (textbox_moved_callback),
 	                             G_OBJECT (textbox_item), 0);
+
 	textbox->text_changed_handler_id = g_signal_connect_object (
 	    G_OBJECT (textbox), "text_changed", G_CALLBACK (textbox_text_changed_callback),
 	    G_OBJECT (textbox_item), 0);
@@ -288,7 +296,7 @@ static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 
 // Retrieves the bounding box. We use a caching scheme for this
 // since it's too expensive to calculate it every time we need it.
-inline static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
+static void get_cached_bounds (TextboxItem *item, Coords *p1, Coords *p2)
 {
 	PangoFontDescription *font;
 	Coords pos;
@@ -409,7 +417,7 @@ static gboolean create_textbox_event (Sheet *sheet, GdkEvent *event)
 
 			textbox_set_text (textbox, _ ("Label"));
 
-			item_data_set_pos (ITEM_DATA (textbox), &pos);
+			item_data_set_pos (ITEM_DATA (textbox), &pos, EMIT_SIGNAL_CHANGED);
 			schematic_add_item (schematic_view_get_schematic_from_sheet (sheet),
 			                    ITEM_DATA (textbox));
 

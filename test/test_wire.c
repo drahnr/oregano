@@ -43,12 +43,12 @@ test_wire_intersection ()
 	Coords where = {-77777.77,-77.7777};
 	const Coords expected = {50.0,50.0};
 
-	Wire *a = wire_new (NULL);
-	Wire *b = wire_new (NULL);
+	Wire *a = wire_new ();
+	Wire *b = wire_new ();
 
-	item_data_set_pos (ITEM_DATA (a), &p1);
+	item_data_set_pos (ITEM_DATA (a), &p1, EMIT_SIGNAL_CHANGED);
 	wire_set_length (a, &l1);
-	item_data_set_pos (ITEM_DATA (b), &p2);
+	item_data_set_pos (ITEM_DATA (b), &p2, EMIT_SIGNAL_CHANGED);
 	wire_set_length (b, &l2);
 
 	g_assert (do_wires_intersect (a,b,&where));
@@ -72,13 +72,13 @@ test_wire_tcrossing ()
 	Coords where = {-77.77,-77.77};
 	const Coords expected = p1;
 
-	Wire *a = wire_new (NULL);
-	Wire *b = wire_new (NULL);
+	Wire *a = wire_new ();
+	Wire *b = wire_new ();
 
 	{
-		item_data_set_pos (ITEM_DATA (a), &p1);
+		item_data_set_pos (ITEM_DATA (a), &p1, EMIT_SIGNAL_CHANGED);
 		wire_set_length (a, &l1);
-		item_data_set_pos (ITEM_DATA (b), &p2);
+		item_data_set_pos (ITEM_DATA (b), &p2, EMIT_SIGNAL_CHANGED);
 		wire_set_length (b, &l2);
 
 		g_assert (is_t_crossing (a, b, &where));
@@ -86,9 +86,9 @@ test_wire_tcrossing ()
 	}
 
 	{
-		item_data_set_pos (ITEM_DATA (a), &p1);
+		item_data_set_pos (ITEM_DATA (a), &p1, EMIT_SIGNAL_CHANGED);
 		wire_set_length (a, &l2);
-		item_data_set_pos (ITEM_DATA (b), &p2);
+		item_data_set_pos (ITEM_DATA (b), &p2, EMIT_SIGNAL_CHANGED);
 		wire_set_length (b, &l1);
 
 		g_assert (!is_t_crossing (a, b, &where));

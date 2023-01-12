@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -63,8 +65,10 @@ struct _PartItemClass
 
 GType part_item_get_type (void);
 PartItem *part_item_new (Sheet *sheet, Part *part);
+GooCanvasItem *part_item_canvas_draw (GooCanvasGroup *group, SymbolObject *object);
 void part_item_create_canvas_items_for_preview (GooCanvasGroup *group, LibraryPart *library_part);
 void part_item_update_node_label (PartItem *part);
 void part_item_show_node_labels (PartItem *part, gboolean b);
+void show_labels (SheetItem *sheet_item, gboolean show);
 
 #endif

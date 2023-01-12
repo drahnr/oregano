@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -66,8 +68,9 @@ static GtkActionEntry entries[] = {
     {"Export", NULL, N_ ("_Export..."), NULL, N_ ("Export schematic"), G_CALLBACK (export_cmd)},
     {"Close", GTK_STOCK_CLOSE, N_ ("_Close"), "<control>W", N_ ("Close the current schematic"),
      G_CALLBACK (close_cmd)},
-    {"Quit", GTK_STOCK_QUIT, N_ ("_Quit"), "<control>Q", N_ ("Close all schematics"),
-     G_CALLBACK (quit_cmd)},
+    {"Quit", GTK_STOCK_QUIT, N_ ("_Quit"), "<control>Q", N_ ("Close all schematics"), G_CALLBACK (quit_cmd)},
+    {"Undo", GTK_STOCK_UNDO, N_ ("_Undo"), "<control>Z", N_ ("Undo last action"), G_CALLBACK (undo_cmd)},
+    {"Redo", GTK_STOCK_REDO, N_ ("_Redo"), "<control><shift>Z", N_ ("Redo actions undone in reverse order"), G_CALLBACK (redo_cmd)},
     {"Cut", GTK_STOCK_CUT, N_ ("C_ut"), "<control>X", NULL, G_CALLBACK (cut_cmd)},
     {"Copy", GTK_STOCK_COPY, N_ ("_Copy"), "<control>C", NULL, G_CALLBACK (copy_cmd)},
     {"Paste", GTK_STOCK_PASTE, N_ ("_Paste"), "<control>V", NULL, G_CALLBACK (paste_cmd)},
@@ -160,6 +163,8 @@ static const char *ui_description = "<ui>"
                                     "      <menuitem action='Quit'/>"
                                     "    </menu>"
                                     "    <menu action='MenuEdit'>"
+				    "      <menuitem action='Undo'/>"
+                                    "      <menuitem action='Redo'/>"
                                     "      <menuitem action='Cut'/>"
                                     "      <menuitem action='Copy'/>"
                                     "      <menuitem action='Paste'/>"
@@ -207,6 +212,8 @@ static const char *ui_description = "<ui>"
                                     "    <toolitem action='Open'/>"
                                     "    <toolitem action='Save'/>"
                                     "    <separator/>"
+                                    "    <toolitem action='Undo'/>"
+                                    "    <toolitem action='Redo'/>"
                                     "    <toolitem action='Cut'/>"
                                     "    <toolitem action='Copy'/>"
                                     "    <toolitem action='Paste'/>"

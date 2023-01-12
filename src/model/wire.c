@@ -9,6 +9,7 @@
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
  *  Guido Trentalancia <guido@trentalancia.com>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -17,6 +18,7 @@
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
  * Copyright (C) 2017       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -49,8 +51,9 @@ static void wire_class_init (WireClass *klass);
 static void wire_init (Wire *wire);
 static void wire_copy (ItemData *dest, ItemData *src);
 static ItemData *wire_clone (ItemData *src);
-static void wire_rotate (ItemData *data, int angle, Coords *center);
-static void wire_flip (ItemData *data, IDFlip direction, Coords *center);
+static void wire_create (ItemData *data);
+static void wire_rotate (ItemData *data, gint angle, Coords *center_pos,
+			Coords *bbox1, Coords *bbox2, const char *caller_fn);
 static void wire_unregister (ItemData *data);
 static int wire_register (ItemData *data);
 static gboolean wire_has_properties (ItemData *data);
@@ -58,6 +61,7 @@ static void wire_print (ItemData *data, cairo_t *cr, SchematicPrintContext *ctx)
 static void wire_changed (ItemData *data);
 
 #include "debug.h"
+#include "stack.h"
 
 enum { ARG_0, ARG_DELETE, ARG_LAST_SIGNAL };
 
@@ -99,10 +103,11 @@ static void wire_class_init (WireClass *klass)
 	                  G_STRUCT_OFFSET (WireClass, delete), NULL, NULL,
 	                  g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
+	item_data_class->create = wire_create;
 	item_data_class->clone = wire_clone;
 	item_data_class->copy = wire_copy;
 	item_data_class->rotate = wire_rotate;
-	item_data_class->flip = wire_flip;
+//	item_data_class->flip = wire_flip;
 	item_data_class->unreg = wire_unregister;
 	item_data_class->reg = wire_register;
 	item_data_class->has_properties = wire_has_properties;
@@ -133,7 +138,13 @@ void wire_dbg_print (Wire *w)
 	          w->priv->length.x, w->priv->length.y);
 }
 
-Wire *wire_new () { return WIRE (g_object_new (TYPE_WIRE, NULL)); }
+Wire *wire_new (void)
+{
+	Wire *wire = NULL;
+
+	wire = WIRE (g_object_new (TYPE_WIRE, NULL));
+	return wire;
+}
 
 gint wire_add_node (Wire *wire, Node *node)
 {
@@ -246,7 +257,7 @@ void wire_set_pos (Wire *wire, Coords *pos)
 	g_return_if_fail (IS_WIRE (wire));
 	g_return_if_fail (pos != NULL);
 
-	item_data_set_pos (ITEM_DATA (wire), pos);
+	item_data_set_pos (ITEM_DATA (wire), pos, EMIT_SIGNAL_CHANGED);
 }
 
 void wire_set_length (Wire *wire, Coords *length)
@@ -332,16 +343,48 @@ static void wire_copy (ItemData *dest, ItemData *src)
 	dest_wire->priv->length = src_wire->priv->length;
 }
 
-static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
+static void wire_create (ItemData *data)
+{
+	cairo_matrix_t affine;
+	Coords start_pos;
+	Wire *wire;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_WIRE (data));
+
+	wire = WIRE (data);
+	wire_get_start_pos (wire, &start_pos);
+
+	start_pos.x = - start_pos.x - 100.0;
+	start_pos.y = - start_pos.y - 100.0;
+
+	cairo_matrix_init_identity (&affine);
+	cairo_matrix_translate (&affine, start_pos.x, start_pos.y);
+
+	// cairo_matrix_transform_distance (&affine, &priv->length.x, &priv->length.y);
+	cairo_matrix_transform_point (&affine, &start_pos.x, &start_pos.y);
+
+	wire_set_pos (wire, &start_pos);
+	wire_update_bbox (wire);
+
+	g_signal_emit_by_name (G_OBJECT (wire), "changed");
+}
+
+static void wire_rotate (ItemData *data, gint angle, Coords *center_pos,
+			Coords *b1, Coords *b2, const char *caller_fn)
 {
 	cairo_matrix_t affine;
 	Coords start_pos;
 	Wire *wire;
 	WirePriv *priv;
+	callback_params_t params = { 0 };
 
 	g_return_if_fail (data != NULL);
 	g_return_if_fail (IS_WIRE (data));
 	g_return_if_fail (center_pos != NULL);
+	g_return_if_fail (b1 != NULL);
+	g_return_if_fail (b2 != NULL);
+	g_return_if_fail (caller_fn != NULL);
 
 	if (angle == 0)
 		return;
@@ -372,13 +415,27 @@ static void wire_rotate (ItemData *data, int angle, Coords *center_pos)
 	// Update bounding box.
 	wire_update_bbox (wire);
 
-	// Let the views (canvas items) know about the rotation.
-	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle); // legacy
-	g_signal_emit_by_name (G_OBJECT (wire), "changed");
-}
+	params.s_item = SHEET_ITEM (stack_get_sheetitem_by_itemdata (data));
+	params.center.x = center_pos->x;
+	params.center.y = center_pos->y;
+	params.angle = angle;
+	params.bbox1 = b1;
+	params.bbox2 = b2;
+	if (!strcmp (caller_fn, "undo_cmd") || !strcmp (caller_fn, "redo_cmd"))
+		return;
 
-// FIXME if we have a center pos, this actually needs to do some transform magic
-static void wire_flip (ItemData *data, IDFlip direction, Coords *center) { return; }
+	if (!strcmp (caller_fn, "rotate_items")) {
+		params.group = stack_get_group_for_rotation (params.s_item, &params.center, angle, b1, b2);
+		if (g_signal_handler_is_connected (G_OBJECT (data), data->rotated_handler_id))
+			g_signal_emit_by_name (G_OBJECT (data), "rotated", &params);
+		if (g_signal_handler_is_connected (G_OBJECT (data), data->changed_handler_id))
+			g_signal_emit_by_name (G_OBJECT (data), "changed");
+	}
+
+	// Let the views (canvas items) know about the rotation.
+//	g_signal_emit_by_name (G_OBJECT (wire), "rotated", angle); // legacy
+//	g_signal_emit_by_name (G_OBJECT (wire), "changed");
+}
 
 void wire_update_bbox (Wire *wire)
 {

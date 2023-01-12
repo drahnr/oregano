@@ -7,12 +7,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -35,6 +37,10 @@
 
 #include <gtk/gtk.h>
 
+typedef struct _Textbox Textbox;
+typedef struct _TextboxClass TextboxClass;
+typedef struct _TextboxPriv TextboxPriv;
+
 #include "clipboard.h"
 #include "item-data.h"
 
@@ -44,13 +50,9 @@
 #define IS_TEXTBOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_TEXTBOX))
 #define IS_TEXTBOX_CLASS(klass) (G_TYPE_CHECK_GET_CLASS ((klass), TYPE_TEXTBOX))
 
-typedef struct _Textbox Textbox;
-typedef struct _TextboxClass TextboxClass;
-typedef struct _TextboxPriv TextboxPriv;
-
 struct _Textbox
 {
-	ItemData parent;
+	ItemData *parent;
 	TextboxPriv *priv;
 	gulong text_changed_handler_id;
 	gulong font_changed_handler_id;
@@ -58,7 +60,7 @@ struct _Textbox
 
 struct _TextboxClass
 {
-	ItemDataClass parent_class;
+	ItemDataClass *parent_class;
 	Textbox *(*dup)(Textbox *textbox);
 };
 

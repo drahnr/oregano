@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -16,6 +17,7 @@
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
  * Copyright (C) 2018       Guido Trentalancia
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,6 +41,7 @@
 #include <math.h>
 
 #include "oregano.h"
+#include "sheet.h"
 #include "sheet-item.h"
 #include "part-item.h"
 #include "part-private.h"
@@ -48,15 +51,18 @@
 #include "part-label.h"
 #include "stock.h"
 #include "dialogs.h"
-#include "sheet.h"
 #include "oregano-utils.h"
 #include "options.h"
+#include "sheet-private.h"
 
-#define NORMAL_COLOR "red"
-#define LABEL_COLOR "dark cyan"
-#define SELECTED_COLOR "green"
+#define NORMAL_COLOR	"red"
+#define LABEL_COLOR	"dark cyan"
+#define SELECTED_COLOR	"green"
+#define CANVAS_COLOR	"white"
 
+#include "node-item.h"
 #include "debug.h"
+#include "stack.h"
 
 static void part_item_class_init (PartItemClass *klass);
 static void part_item_init (PartItem *gspart);
@@ -68,14 +74,14 @@ static int select_idle_callback (PartItem *item);
 static int deselect_idle_callback (PartItem *item);
 static void update_canvas_labels (PartItem *part_item);
 static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2);
-inline static void get_cached_bounds (PartItem *item, Coords *p1, Coords *p2);
-static void show_labels (SheetItem *sheet_item, gboolean show);
+static void get_cached_bounds (PartItem *item, Coords *p1, Coords *p2);
 static void part_item_paste (Sheet *sheet, ItemData *data);
-static void part_rotated_callback (ItemData *data, int angle, SheetItem *item);
-static void part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item);
+static void part_created_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void part_moved_callback (ItemData *data, Coords *pos, SheetItem *item);
+static void part_rotated_callback (ItemData *data, gpointer params /* guint angle, Coords *center, SheetItem *item */);
+static void part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item);
 static void part_changed_callback (ItemData *data, SheetItem *sheet_item);
-
+static void part_deleted_callback (ItemData *data, Coords *pos, SheetItem *item);
 static void part_item_place (SheetItem *item, Sheet *sheet);
 static void part_item_place_ghost (SheetItem *item, Sheet *sheet);
 static void create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part);
@@ -245,7 +251,7 @@ static void part_item_moved (SheetItem *sheet_item)
 	//	g_warning ("part MOVED callback called - LEGACY");
 }
 
-PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
+static PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 {
 	PartItem *part_item;
 	PartItemPriv *priv;
@@ -270,7 +276,7 @@ PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 	item_data_get_relative_bbox (ITEM_DATA (part), &b1, &b2);
 
 	priv->rect = goo_canvas_rect_new (
-	    goo_item, b1.x, b1.y, b2.x - b1.x, b2.y - b1.y, "stroke-color", "green", "line-width", .0,
+	    goo_item, b1.x, b1.y, b2.x - b1.x, b2.y - b1.y, "stroke-color", "green", "line-width", .5,
 	    "fill-color-rgba", 0x7733aa66, "radius-x", 1.0, "radius-y", 1.0, "visibility",
 	    oregano_options_debug_boxes () ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
 
@@ -281,14 +287,18 @@ PartItem *part_item_canvas_new (Sheet *sheet, Part *part)
 	g_object_set (priv->node_group, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
 
 	item_data = ITEM_DATA (part);
-	item_data->rotated_handler_id =
-	    g_signal_connect_object (part, "rotated", G_CALLBACK (part_rotated_callback), part_item, 0);
-	item_data->flipped_handler_id =
-	    g_signal_connect_object (part, "flipped", G_CALLBACK (part_flipped_callback), part_item, 0);
+	item_data->created_handler_id =
+	    g_signal_connect_object (G_OBJECT (part), "created", G_CALLBACK (part_created_callback), G_OBJECT (part_item), 0);
 	item_data->moved_handler_id =
-	    g_signal_connect_object (part, "moved", G_CALLBACK (part_moved_callback), part_item, 0);
+	    g_signal_connect_object (G_OBJECT (part), "moved", G_CALLBACK (part_moved_callback), G_OBJECT (part_item), 0);
+	item_data->rotated_handler_id =
+	    g_signal_connect_object (G_OBJECT (part), "rotated", G_CALLBACK (part_rotated_callback), G_OBJECT (part_item), 0);
+	item_data->flipped_handler_id =
+	    g_signal_connect_object (G_OBJECT (part), "flipped", G_CALLBACK (part_flipped_callback), G_OBJECT (part_item), 0);
 	item_data->changed_handler_id =
-	    g_signal_connect_object (part, "changed", G_CALLBACK (part_changed_callback), part_item, 0);
+	    g_signal_connect_object (G_OBJECT (part), "changed", G_CALLBACK (part_changed_callback), G_OBJECT (part_item), 0);
+	item_data->deleted_handler_id =
+	    g_signal_connect_object (G_OBJECT (part), "deleted", G_CALLBACK (part_deleted_callback), G_OBJECT (part_item), 0);
 
 	return part_item;
 }
@@ -653,7 +663,7 @@ static void edit_properties (SheetItem *object)
 		txtmodel = GTK_TEXT_VIEW (gtk_builder_get_object (gui, "txtmodel"));
 		txtbuffer = gtk_text_buffer_new (NULL);
 
-		filename = g_strdup_printf ("%s/%s.model", OREGANO_MODELDIR, model_name);
+		filename = g_strdup_printf ("%s%s.model", OREGANO_MODELDIR, model_name);
 		if (g_file_get_contents (filename, &str, NULL, &read_error)) {
 			gtk_text_buffer_set_text (txtbuffer, str, -1);
 			g_free (str);
@@ -677,7 +687,11 @@ static void edit_properties (SheetItem *object)
 	gtk_widget_destroy (GTK_WIDGET (prop_dialog->dialog));
 }
 
-inline static GooCanvasAnchorType angle_to_anchor (int angle)
+/**
+ * Defined but not used function
+ */
+#if 0
+static GooCanvasAnchorType angle_to_anchor (int angle)
 {
 	GooCanvasAnchorType anchor;
 	// Get the right anchor for the labels. This is needed since the
@@ -700,6 +714,7 @@ inline static GooCanvasAnchorType angle_to_anchor (int angle)
 
 	return anchor;
 }
+#endif
 
 /**
  * whenever the model changes, this one gets called to update the view
@@ -777,29 +792,6 @@ static void part_changed_callback (ItemData *data, SheetItem *sheet_item)
 #endif
 }
 
-/**
- * a part got rotated
- *
- * @angle the angle the item is rotated towards the default (0) rotation
- *
- */
-static void part_rotated_callback (ItemData *data, int angle, SheetItem *sheet_item)
-{
-	//	g_warning ("ROTATED callback called - LEGACY\n");
-}
-
-/**
- * handles the update of the canvas item when a part gets flipped (within the
- * backend alias model)
- * @data the part in form of a ItemData pointer
- * @direction the new flip state
- * @sheet_item the corresponding sheet_item to the model item @data
- */
-static void part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
-{
-	//	g_warning ("FLIPPED callback called - LEGACY\n");
-}
-
 void part_item_signal_connect_floating (PartItem *item)
 {
 	Sheet *sheet;
@@ -829,6 +821,7 @@ static int select_idle_callback (PartItem *item)
 	for (index = 0; index < GOO_CANVAS_GROUP (item)->items->len; index++) {
 		canvas_item = GOO_CANVAS_ITEM (GOO_CANVAS_GROUP (item)->items->pdata[index]);
 		g_object_set (canvas_item, "stroke-color", SELECTED_COLOR, NULL);
+		g_object_set (canvas_item, "line-width", 0.5, NULL);
 	}
 	g_object_unref (G_OBJECT (item));
 	return FALSE;
@@ -868,7 +861,7 @@ static gboolean is_in_area (SheetItem *object, Coords *p1, Coords *p2)
 	return FALSE;
 }
 
-static void show_labels (SheetItem *sheet_item, gboolean show)
+void show_labels (SheetItem *sheet_item, gboolean show)
 {
 	PartItem *item;
 	PartItemPriv *priv;
@@ -887,7 +880,7 @@ static void show_labels (SheetItem *sheet_item, gboolean show)
 
 // Retrieves the bounding box. We use a caching scheme for this
 // since it's too expensive to calculate it every time we need it.
-inline static void get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
+static void get_cached_bounds (PartItem *item, Coords *p1, Coords *p2)
 {
 	PartItemPriv *priv;
 	priv = item->priv;
@@ -922,6 +915,44 @@ static void part_item_paste (Sheet *sheet, ItemData *data)
 	sheet_add_ghost_item (sheet, data);
 }
 
+GooCanvasItem *part_item_canvas_draw (GooCanvasGroup *group, SymbolObject *object)
+{
+	GooCanvasItem *item = NULL;
+	GooCanvasPoints *points = NULL;
+
+	g_return_val_if_fail (group != NULL, NULL);
+	g_return_val_if_fail (object != NULL, NULL);
+
+	switch (object->type) {
+	case SYMBOL_OBJECT_LINE:
+		points = object->u.uline.line;
+		item = goo_canvas_polyline_new (GOO_CANVAS_ITEM (group), FALSE, 0, "points", points,
+						"stroke-color", NORMAL_COLOR, "line-width", 0.5, NULL);
+		if (object->u.uline.spline)
+			g_object_set (item, "smooth", TRUE, "spline_steps", 5, NULL);
+		break;
+	case SYMBOL_OBJECT_ARC:
+		item = goo_canvas_ellipse_new (GOO_CANVAS_ITEM (group),
+					       (object->u.arc.x2 + object->u.arc.x1) / 2.0,
+					       (object->u.arc.y1 + object->u.arc.y2) / 2.0,
+					       (object->u.arc.x2 - object->u.arc.x1) / 2.0,
+					       (object->u.arc.y1 - object->u.arc.y2) / 2.0,
+					       NULL);
+		break;
+	case SYMBOL_OBJECT_TEXT:
+		item = goo_canvas_text_new (GOO_CANVAS_ITEM (group), object->u.text.str,
+					    (double)object->u.text.x, (double)object->u.text.y, -1,
+					    GOO_CANVAS_ANCHOR_NORTH_EAST, "fill_color", LABEL_COLOR,
+					    "font", "Sans 8", NULL);
+		break;
+	default:
+		g_warning ("Unknown symbol object.\n");
+		break;
+	}
+
+	return item;
+}
+
 PartItem *part_item_new (Sheet *sheet, Part *part)
 {
 	Library *library;
@@ -940,6 +971,7 @@ PartItem *part_item_new (Sheet *sheet, Part *part)
 	create_canvas_labels (item, part);
 	create_canvas_label_nodes (item, part);
 	goo_canvas_item_ensure_updated (GOO_CANVAS_ITEM (item));
+
 	return item;
 }
 
@@ -954,7 +986,6 @@ void part_item_create_canvas_items_for_preview (GooCanvasGroup *group, LibraryPa
 static void create_canvas_items (GooCanvasGroup *group, LibraryPart *library_part)
 {
 	GooCanvasItem *item;
-	GooCanvasPoints *points;
 	GSList *objects;
 	LibrarySymbol *symbol;
 	SymbolObject *object;
@@ -974,33 +1005,9 @@ static void create_canvas_items (GooCanvasGroup *group, LibraryPart *library_par
 
 	for (objects = symbol->symbol_objects; objects; objects = objects->next) {
 		object = (SymbolObject *)(objects->data);
-		switch (object->type) {
-		case SYMBOL_OBJECT_LINE:
-			points = object->u.uline.line;
-			item = goo_canvas_polyline_new (GOO_CANVAS_ITEM (group), FALSE, 0, "points", points,
-			                                "stroke-color", NORMAL_COLOR, "line-width", 0.5, NULL);
-			if (object->u.uline.spline) {
-				g_object_set (item, "smooth", TRUE, "spline_steps", 5, NULL);
-			}
-			break;
-		case SYMBOL_OBJECT_ARC:
-			item = goo_canvas_ellipse_new (GOO_CANVAS_ITEM (group),
-			                               (object->u.arc.x2 + object->u.arc.x1) / 2.0,
-			                               (object->u.arc.y1 + object->u.arc.y2) / 2.0,
-			                               (object->u.arc.x2 - object->u.arc.x1) / 2.0,
-			                               (object->u.arc.y1 - object->u.arc.y2) / 2.0,
-			                               "stroke-color", NORMAL_COLOR, "line_width", 1.0, NULL);
-			break;
-		case SYMBOL_OBJECT_TEXT:
-			item = goo_canvas_text_new (GOO_CANVAS_ITEM (group), object->u.text.str,
-			                            (double)object->u.text.x, (double)object->u.text.y, -1,
-			                            GOO_CANVAS_ANCHOR_NORTH_EAST, "fill_color", LABEL_COLOR,
-			                            "font", "Sans 8", NULL);
-			break;
-		default:
-			g_warning ("Unknown symbol object.\n");
-			continue;
-		}
+
+		item = part_item_canvas_draw (group, object);
+
 		goo_canvas_item_get_bounds (item, &bounds);
 		if (group_bounds.x1 > bounds.x1)
 			group_bounds.x1 = bounds.x1;
@@ -1110,8 +1117,138 @@ static void create_canvas_label_nodes (PartItem *item, Part *part)
 	item->priv->label_nodes = item_list;
 }
 
+static void part_created_callback (ItemData *data, Coords *pos, SheetItem *item)
+{
+	SchematicView *sv = NULL;
+	Sheet *sheet = NULL;
+	stack_data_t sdata = { 0 };
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (pos != NULL);
+	g_return_if_fail (item != NULL);
+
+	sheet = sheet_item_get_sheet (item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
+
+	sdata.type = PART_CREATED;
+	sdata.s_item = item;
+	sdata.u.moved.coords.x = pos->x;
+	sdata.u.moved.coords.y = pos->y;
+	sdata.u.moved.delta.x = .0;
+	sdata.u.moved.delta.y = .0;
+	if (stack_is_item_registered (&sdata))
+		return;
+	sdata.group = stack_get_group (sdata.s_item, NEW_GROUP);
+	stack_push (undo_stack, &sdata, sv);
+}
+
 // This is called when the part data was moved. Update the view accordingly.
-static void part_moved_callback (ItemData *data, Coords *pos, SheetItem *item) {}
+static void part_moved_callback (ItemData *data, Coords *pos, SheetItem *item)
+{
+	SchematicView *sv = NULL;
+	Sheet *sheet = NULL;
+	stack_data_t sdata = { 0 };
+	GList *list = NULL;
+	Coords *delta = NULL;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (pos != NULL);
+	g_return_if_fail (item != NULL);
+
+	sheet = sheet_item_get_sheet (item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
+	for (list = sheet_get_selection (sheet); list; list = list->next)
+		if (item == SHEET_ITEM (list->data))
+			return;
+
+	if (fabs (pos->x + 100.0) < 1e-2 && fabs (pos->y + 100.0) < 1e-2)
+		return;
+
+	sdata.type = PART_MOVED;
+	sdata.s_item = item;
+	sdata.u.moved.coords.x = pos->x;
+	sdata.u.moved.coords.y = pos->y;
+	if (stack_is_item_registered (&sdata))
+		return;
+
+	delta = stack_get_multiple_group (item, pos, &sdata.group);
+	if (delta) {
+		sdata.u.moved.delta.x = delta->x;
+		sdata.u.moved.delta.y = delta->y;
+	}
+
+	stack_push (undo_stack, &sdata, sv);
+}
+
+/**
+ * a part got rotated
+ *
+ * @angle the angle the item is rotated towards the default (0) rotation
+ *
+ */
+static void part_rotated_callback (ItemData *data, gpointer params)
+{
+	stack_data_t sdata = { 0 };
+	Sheet *sheet = NULL;
+	SchematicView *sv = NULL;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+	g_return_if_fail (params != NULL);
+
+	sdata.type = PART_ROTATED;
+	sdata.s_item = ((callback_params_t *)params)->s_item;
+	sdata.u.rotated.center = ((callback_params_t *)params)->center;
+	sdata.u.rotated.angle = ((callback_params_t *)params)->angle;
+	sdata.u.rotated.bbox1 = *(((callback_params_t *)params)->bbox1);
+	sdata.u.rotated.bbox2 = *(((callback_params_t *)params)->bbox2);
+	sdata.group = ((callback_params_t *)params)->group;
+	if (stack_is_item_registered (&sdata))
+		return;
+
+	sheet = sheet_item_get_sheet (sdata.s_item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
+	stack_push (undo_stack, &sdata, sv);
+}
+
+/**
+ * handles the update of the canvas item when a part gets flipped (within the
+ * backend alias model)
+ * @data the part in form of a ItemData pointer
+ * @direction the new flip state
+ * @sheet_item the corresponding sheet_item to the model item @data
+ */
+static void part_flipped_callback (ItemData *data, IDFlip direction, SheetItem *sheet_item)
+{
+       //      g_warning ("FLIPPED callback called - LEGACY\n");
+}
+
+static void part_deleted_callback (ItemData *data, Coords *pos, SheetItem *item)
+{
+	SchematicView *sv = NULL;
+	Sheet *sheet = NULL;
+	stack_data_t sdata = { 0 };
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (pos != NULL);
+	g_return_if_fail (item != NULL);
+
+	sheet = sheet_item_get_sheet (item);
+	sv = schematic_view_get_schematicview_from_sheet (sheet);
+
+	sdata.type = PART_DELETED;
+	sdata.s_item = item;
+	sdata.u.deleted.coords.x = -2.0 * pos->x - 100;
+	sdata.u.deleted.coords.y = -2.0 * pos->y - 100;
+	sdata.u.deleted.canvas_group = GOO_CANVAS_GROUP (PART_ITEM (item));
+	if (stack_is_item_registered (&sdata))
+		return;
+
+	sdata.group = stack_get_group (sdata.s_item, NEW_GROUP);
+	g_object_set (item, "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
+	node_item_show_dots (sheet, &sdata.u.deleted.coords, FALSE);
+	stack_push (undo_stack, &sdata, sv);
+}
 
 static void part_item_place (SheetItem *item, Sheet *sheet)
 {

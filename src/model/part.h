@@ -8,6 +8,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -15,6 +16,7 @@
  * Copyright (C) 2003,2004  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013-2014  Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -36,8 +38,13 @@
 #ifndef __PART_H
 #define __PART_H
 
-#include <gtk/gtk.h>
+typedef struct _Part Part;
+typedef struct _PartClass PartClass;
+typedef struct _Pin Pin;
+typedef struct _PartPriv PartPriv;
 
+#include <gtk/gtk.h>
+#include "item-data.h"
 #include "coords.h"
 #include "clipboard.h"
 #include "load-common.h"
@@ -47,13 +54,6 @@
 #define PART_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_PART, PartClass))
 #define IS_PART(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_PART))
 #define IS_PART_CLASS(klass) (G_TYPE_INSTANCE_GET_CLASS ((klass), TYPE_PART, PartClass))
-
-typedef struct _Part Part;
-typedef struct _PartClass PartClass;
-typedef struct _Pin Pin;
-typedef struct _PartPriv PartPriv;
-
-#include "item-data.h"
 
 struct _Pin
 {
@@ -77,6 +77,15 @@ struct _PartClass
 
 	void (*changed)();
 };
+
+typedef struct callback_params_st {
+	SheetItem *s_item;
+	Coords center;
+	gint angle;
+	Coords *bbox1;
+	Coords *bbox2;
+	gint group;
+} callback_params_t;
 
 GType part_get_type (void);
 Part *part_new ();

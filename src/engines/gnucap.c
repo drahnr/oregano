@@ -231,7 +231,7 @@ static gboolean gnucap_generate_netlist (OreganoEngine *engine, const gchar *fil
 	for (iter = output.models; iter; iter = iter->next) {
 		gchar *model;
 		model = (gchar *)iter->data;
-		g_fprintf (file, ".include %s/%s.model\n", OREGANO_MODELDIR, model);
+		g_fprintf (file, ".include %s%s.model\n", OREGANO_MODELDIR, model);
 	}
 
 	// Prints template parts

@@ -33,6 +33,7 @@
 #include <glib.h>
 
 #include "oregano.h"
+#include "sheet.h"
 #include "sheet-item.h"
 #include "clipboard.h"
 

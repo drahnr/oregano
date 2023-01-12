@@ -37,6 +37,11 @@
 #include <glib.h>
 #include <glib-object.h>
 
+typedef struct _NodeStore NodeStore;
+typedef struct _NodeStoreClass NodeStoreClass;
+typedef struct _NodeRect NodeRect;
+
+#include "item-data.h"
 #include "coords.h"
 
 #define TYPE_NODE_STORE node_store_get_type ()
@@ -45,10 +50,6 @@
 #define IS_NODE_STORE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_NODE_STORE))
 #define NODE_STORE_GET_CLASS(obj)                                                                  \
 	(G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_NODE_STORE, NodeStoreClass))
-
-typedef struct _NodeStore NodeStore;
-typedef struct _NodeStoreClass NodeStoreClass;
-typedef struct _NodeRect NodeRect;
 
 #include "schematic-print-context.h"
 #include "node.h"

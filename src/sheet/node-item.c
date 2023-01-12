@@ -5,12 +5,14 @@
  *  Ricardo Markiewicz <rmarkie@fi.uba.ar>
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
  * Copyright (C) 1999-2001  Richard Hult
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +31,9 @@
  */
 
 #include <gtk/gtk.h>
+#include "sheet.h"
+#include "sheet-private.h"
+#include "coords.h"
 #include "options.h"
 #include "node-item.h"
 
@@ -70,19 +75,31 @@ static void node_item_init (NodeItem *item)
 {
 	item->priv = g_new0 (NodeItemPriv, 1);
 	item->priv->dot_item =
-	    goo_canvas_ellipse_new (GOO_CANVAS_ITEM (item), 0.0, 0.0, 2.0, 2.0, "fill-color", "black",
-	                            "visibility", GOO_CANVAS_ITEM_INVISIBLE, NULL);
-	item->priv->circle_item = goo_canvas_ellipse_new (
-	    GOO_CANVAS_ITEM (item), 0.0, 0.0, 3.0, 3.0, "stroke-color-rgba", 0x3399FFFF, "line-width",
-	    1.0, "visibility",
-	    oregano_options_debug_dots () ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
+		goo_canvas_ellipse_new (GOO_CANVAS_ITEM (item), 0.0, 0.0, 2.0, 2.0, "fill-color", "black", NULL);
+	item->priv->circle_item =
+		goo_canvas_ellipse_new (GOO_CANVAS_ITEM (item), 0.0, 0.0, 3.0, 3.0, "stroke-color-rgba", 0x3399FFFF, "line-width",
+		1.0, "visibility", oregano_options_debug_dots () ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
 }
 
-void node_item_show_dot (NodeItem *item, gboolean show)
+void node_item_show_dots (Sheet *sheet, Coords *pos, gboolean show)
 {
-	g_return_if_fail (item != NULL);
-	g_return_if_fail (IS_NODE_ITEM (item));
+	GList *iter = NULL;
 
-	g_object_set (item->priv->dot_item, "visibility",
-	              show ? GOO_CANVAS_ITEM_VISIBLE : GOO_CANVAS_ITEM_INVISIBLE, NULL);
+	g_return_if_fail (sheet != NULL);
+	g_return_if_fail (IS_SHEET (sheet));
+	g_return_if_fail (pos != NULL);
+
+	for (iter = g_hash_table_get_values (sheet->priv->node_dots); iter; iter = iter->next) {
+		if (show) {
+			goo_canvas_ellipse_new (GOO_CANVAS_ITEM (iter->data), 0.0, 0.0, 2.0, 2.0, "fill-color", "black", NULL);
+			goo_canvas_ellipse_new (GOO_CANVAS_ITEM (iter->data), 0.0, 0.0, 3.0, 3.0, "fill-color", "black",
+				    "stroke-color-rgba", "0x3399FFFF", "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
+		} else {
+			goo_canvas_ellipse_new (GOO_CANVAS_ITEM (iter->data), 0.0, 0.0, 2.0, 2.0, "fill-color", "white", NULL);
+			goo_canvas_ellipse_new (GOO_CANVAS_ITEM (iter->data), 0.0, 0.0, 3.0, 3.0, "fill-color", "white",
+				    "stroke-color-rgba", "white", "visibility", GOO_CANVAS_ITEM_VISIBLE, NULL);
+			goo_canvas_item_remove (GOO_CANVAS_ITEM (iter->data));
+			g_hash_table_remove (sheet->priv->node_dots, pos);
+		}
+	}
 }

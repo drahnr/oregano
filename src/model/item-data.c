@@ -9,6 +9,7 @@
  *  Andres de Barbara <adebarbara@fi.uba.ar>
  *  Marc Lorber <lorber.marc@wanadoo.fr>
  *  Bernhard Schuster <bernhard@ahoi.io>
+ *  Daniel Dwek <todovirtual15@gmail.com>
  *
  * Web page: https://ahoi.io/project/oregano
  *
@@ -16,6 +17,7 @@
  * Copyright (C) 2003,2006  Ricardo Markiewicz
  * Copyright (C) 2009-2012  Marc Lorber
  * Copyright (C) 2013       Bernhard Schuster
+ * Copyright (C) 2022-2023  Daniel Dwek
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -39,7 +41,9 @@
 #include "item-data.h"
 #include "node-store.h"
 
+#include "sheet.h"
 #include "debug.h"
+#include "stack.h"
 
 static void item_data_class_init (ItemDataClass *klass);
 static void item_data_init (ItemData *item_data);
@@ -52,10 +56,12 @@ static void item_data_copy (ItemData *dest, ItemData *src);
 enum { ARG_0, ARG_STORE, ARG_POS };
 
 enum {
+	CREATED,
 	MOVED,
 	ROTATED,
 	FLIPPED,
 	CHANGED, // used to notify the view to reset and recalc the transformation
+	DELETED,
 	HIGHLIGHT,
 	LAST_SIGNAL
 };
@@ -132,18 +138,28 @@ static void item_data_class_init (ItemDataClass *klass)
 
 	object_class->dispose = item_data_dispose;
 	object_class->finalize = item_data_finalize;
+	item_data_signals[CREATED] =
+	    g_signal_new ("created", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (ItemDataClass, created), NULL, NULL,
+	                  g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
+
 	item_data_signals[MOVED] =
 	    g_signal_new ("moved", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
 	                  G_STRUCT_OFFSET (ItemDataClass, moved), NULL, NULL,
 	                  g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
+	item_data_signals[DELETED] =
+	    g_signal_new ("deleted", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST,
+	                  G_STRUCT_OFFSET (ItemDataClass, deleted), NULL, NULL,
+	                  g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
+
 	item_data_signals[ROTATED] =
 	    g_signal_new ("rotated", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
-	                  NULL, g_cclosure_marshal_VOID__INT, G_TYPE_NONE, 1, G_TYPE_INT);
+	                  NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
 	item_data_signals[FLIPPED] =
 	    g_signal_new ("flipped", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
-	                  NULL, g_cclosure_marshal_VOID__INT, G_TYPE_NONE, 1, G_TYPE_INT);
+			  NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
 	item_data_signals[CHANGED] =
 	    g_signal_new ("changed", G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_FIRST, 0, NULL,
@@ -163,7 +179,9 @@ static void item_data_class_init (ItemDataClass *klass)
 	klass->changed = NULL;
 
 	// Signals.
+	klass->created = NULL;
 	klass->moved = NULL;
+	klass->deleted = NULL;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,29 +239,34 @@ void item_data_get_pos (ItemData *item_data, Coords *pos)
 	pos->y = priv->translate.y0;
 }
 
-void item_data_set_pos (ItemData *item_data, Coords *pos)
+void item_data_set_pos (ItemData *item_data, Coords *pos, guint signals)
 {
 	ItemDataPriv *priv;
-	gboolean handler_connected;
 
-	g_return_if_fail (pos);
-	g_return_if_fail (item_data);
+	g_return_if_fail (item_data != NULL);
 	g_return_if_fail (IS_ITEM_DATA (item_data));
+	g_return_if_fail (pos != NULL);
 
 	priv = item_data->priv;
-
 	cairo_matrix_init_translate (&(priv->translate), pos->x, pos->y);
 
-	handler_connected =
-	    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id);
-	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
-	}
-	handler_connected =
-	    g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id);
-	if (handler_connected) {
-		g_signal_emit_by_name (G_OBJECT (item_data), "changed");
-	}
+	if (signals & EMIT_SIGNAL_CREATED)
+		if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->created_handler_id))
+			g_signal_emit_by_name (G_OBJECT (item_data), "created", pos);
+	if (signals & EMIT_SIGNAL_MOVED)
+		if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->moved_handler_id))
+			g_signal_emit_by_name (G_OBJECT (item_data), "moved", pos);
+	if (signals & EMIT_SIGNAL_ROTATED)
+		if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->rotated_handler_id))
+			g_signal_emit_by_name (G_OBJECT (item_data), "rotated", NULL);
+	if (signals & EMIT_SIGNAL_DELETED)
+		if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->deleted_handler_id))
+			g_signal_emit_by_name (G_OBJECT (item_data), "deleted", pos);
+	if (signals & EMIT_SIGNAL_CHANGED)
+		if (g_signal_handler_is_connected (G_OBJECT (item_data), item_data->changed_handler_id))
+			g_signal_emit_by_name (G_OBJECT (item_data), "changed");
+	if (signals & EMIT_SIGNAL_NONE)
+		return;
 }
 
 void item_data_move (ItemData *item_data, const Coords *delta)
@@ -381,7 +404,7 @@ void item_data_list_get_absolute_bbox (GList *item_data_list, Coords *p1, Coords
 	}
 }
 
-void item_data_rotate (ItemData *data, int angle, Coords *center)
+void item_data_create (ItemData *data)
 {
 	ItemDataClass *id_class;
 
@@ -389,12 +412,27 @@ void item_data_rotate (ItemData *data, int angle, Coords *center)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
-	if (id_class->rotate) {
-		id_class->rotate (data, angle, center);
-	}
+	if (id_class->create)
+		id_class->create (data);
 }
 
-void item_data_flip (ItemData *data, IDFlip direction, Coords *center)
+void item_data_rotate (ItemData *data, int angle, Coords *center, Coords *b1, Coords *b2, const char *caller_fn)
+{
+	ItemDataClass *id_class;
+
+	g_return_if_fail (data != NULL);
+	g_return_if_fail (IS_ITEM_DATA (data));
+	g_return_if_fail (center != NULL);
+	g_return_if_fail (b1 != NULL);
+	g_return_if_fail (b2 != NULL);
+	g_return_if_fail (caller_fn != NULL);
+
+	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
+	if (id_class->rotate)
+		id_class->rotate (data, angle, center, b1, b2, caller_fn);
+}
+
+void item_data_flip (ItemData *data, SheetItem *item, Coords *center, IDFlip direction)
 {
 	ItemDataClass *id_class;
 
@@ -402,9 +440,8 @@ void item_data_flip (ItemData *data, IDFlip direction, Coords *center)
 	g_return_if_fail (IS_ITEM_DATA (data));
 
 	id_class = ITEM_DATA_CLASS (G_OBJECT_GET_CLASS (data));
-	if (id_class->flip) {
+	if (id_class->flip)
 		id_class->flip (data, direction, center);
-	}
 }
 
 void item_data_unregister (ItemData *data)
